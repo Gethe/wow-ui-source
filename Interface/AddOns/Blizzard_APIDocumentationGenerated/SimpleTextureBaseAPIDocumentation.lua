@@ -281,11 +281,11 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
-				{ Name = "useAtlasSize", Type = "bool", Nilable = false, Default = false },
-				{ Name = "filterMode", Type = "FilterMode", Nilable = true },
-				{ Name = "resetTexCoords", Type = "bool", Nilable = true },
-				{ Name = "wrapModeHorizontal", Type = "cstring", Nilable = true },
-				{ Name = "wrapModeVertical", Type = "cstring", Nilable = true },
+				{ Name = "useAtlasSize", Type = "bool", Nilable = false, NeverSecret = true, Default = false },
+				{ Name = "filterMode", Type = "FilterMode", Nilable = true, NeverSecret = true },
+				{ Name = "resetTexCoords", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "wrapModeHorizontal", Type = "cstring", Nilable = true, NeverSecret = true },
+				{ Name = "wrapModeVertical", Type = "cstring", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -406,10 +406,10 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "cell", Type = "luaIndex", Nilable = false, ConditionalSecret = true },
-				{ Name = "numRows", Type = "number", Nilable = false },
-				{ Name = "numColumns", Type = "number", Nilable = false },
-				{ Name = "cellWidth", Type = "number", Nilable = true },
-				{ Name = "cellHeight", Type = "number", Nilable = true },
+				{ Name = "numRows", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "numColumns", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "cellWidth", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "cellHeight", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{

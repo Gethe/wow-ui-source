@@ -321,10 +321,6 @@ function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.Filters:SetCollectionFiltersAvailable(false);
 	C_HousingDecor.ExitPreviewState();
 	self:OnTabChanged();
-
-	local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-	local requiresConfirmation = false;
-	EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)

@@ -2061,12 +2061,12 @@ function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)
 end
 
 function CharacterCreateNameAvailabilityStateMixin:OnEvent(event, ...)
-	local available, checkedName = ...;
+	local available, checkedName, reason = ...;
 
 	-- First make sure that the checked name is still what is in the box
 	if checkedName == self:GetParent():GetText() then
 		-- ok they match, so update the state
-		self:UpdateState(available, CHAR_CREATE_NAME_IN_USE);
+		self:UpdateState(available, _G[reason]);
 	end
 end
 

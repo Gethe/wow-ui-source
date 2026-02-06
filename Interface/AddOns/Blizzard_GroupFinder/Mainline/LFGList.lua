@@ -1282,10 +1282,13 @@ function LFGListEntryCreation_UpdateValidState(self)
 	end
 
 	self.ListGroupButton.errorText = errorText;
+
+	self.Name:UpdateEnabledState();
+	self.Description:UpdateEnabledState();
 end
 
 function LFGListEntryCreation_UpdateAuthenticatedState(self)
-	local isAuthenticated = C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedCategory);
+	local isAuthenticated = not IsActivityLockedForCustomText(self.selectedCategory, self.selectedActivity);
 	self.Description.EditBox:SetEnabled(isAuthenticated);
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local isQuestListing = activeEntryInfo and activeEntryInfo.questID or nil;
@@ -1304,7 +1307,7 @@ function LFGListEntryCreation_SetTitleFromActivityInfo(self)
 	end
 	local activityID = activeEntryInfo and activeEntryInfo.activityIDs[1] or (self.selectedActivity or 0);
 	local activityInfo =  C_LFGList.GetActivityInfoTable(activityID);
-	if((activityInfo and activityInfo.isMythicPlusActivity) or not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedCategory)) then
+	if((activityInfo and activityInfo.isMythicPlusActivity) or IsActivityLockedForCustomText(self.selectedCategory, self.selectedActivity)) then
 		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle, self.generalPlaystyle);
 	end
 end
@@ -1313,9 +1316,9 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 	self.editMode = editMode;
 
 	local descInstructions = nil;
-	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedCategory);
+	local isAccountSecured = not IsActivityLockedForCustomText(self:GetParent().selectedCategory, self:GetParent().selectedActivity);
 	if (not isAccountSecured) then
-		descInstructions = LFG_AUTHENTICATOR_DESCRIPTION_BOX;
+		descInstructions = GetLFGLockedDescription(self:GetParent().selectedActivity);
 	end
 
 	if ( editMode ) then
@@ -4449,15 +4452,76 @@ function LFGListEditBox_OnTabPressed(self)
 	end
 end
 
+function GetLFGLockedDescription(activityID)
+	local auth = C_LFGList.IsPlayerAuthenticatedForLFG();
+	local passesLevelCondition = true;
+	if activityID and C_LFGList.ListingUsesEndgameEditRestrictions(activityID) then
+		passesLevelCondition = C_LFGList.IsPlayerValidForEndgameFieldEdits();
+	end
+
+	if not auth and not passesLevelCondition then
+		return LFG_AUTHENTICATOR_AND_MAXLEVEL_DESCRIPTION_BOX;
+	elseif not passesLevelCondition then
+		return LFG_MAXLEVEL_DESCRIPTION_BOX;
+	elseif not auth then
+		return LFG_AUTHENTICATOR_DESCRIPTION_BOX;
+	else
+		return "";
+	end
+end
+
+function GetLFGLockedTooltip(activityID)
+	local auth = C_LFGList.IsPlayerAuthenticatedForLFG();
+	local passesLevelCondition = true;
+	if activityID and C_LFGList.ListingUsesEndgameEditRestrictions(activityID) then
+		passesLevelCondition = C_LFGList.IsPlayerValidForEndgameFieldEdits();
+	end
+
+	if not auth and not passesLevelCondition then
+		return LFG_AUTHENTICATOR_AND_MAXLEVEL_BUTTON_TOOLTIP;
+	elseif not passesLevelCondition then
+		return LFG_MAXLEVEL_BUTTON_TOOLTIP;
+	elseif not auth then
+		return LFG_AUTHENTICATOR_BUTTON_TOOLTIP;
+	else
+		return "";
+	end
+end
+
+function IsActivityLockedForCustomText(activityCategoryID, activityID)
+	local auth = C_LFGList.IsPlayerAuthenticatedForLFG(activityCategoryID);
+	if not auth then
+		return true;
+	end
+
+	if activityID and C_LFGList.ListingUsesEndgameEditRestrictions(activityID) then
+		return not C_LFGList.IsPlayerValidForEndgameFieldEdits();
+	end
+
+	return false;
+end
+
 LFGAuthenticatorMessagingMixin = {}
+
+function LFGAuthenticatorMessagingMixin:GetSelectedActivityID()
+	return self.selectedActivity or self:GetParent().selectedActivity or self:GetParent():GetParent().selectedActivity;
+end
+
+function LFGAuthenticatorMessagingMixin:GetSelectedCategoryID()
+	return self.selectedCategory or self:GetParent().selectedCategory or self:GetParent():GetParent().selectedCategory;
+end
+
 function LFGAuthenticatorMessagingMixin:DisplayTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_AddNormalLine(GameTooltip, LFG_AUTHENTICATOR_BUTTON_TOOLTIP);
+	GameTooltip_AddNormalLine(GameTooltip, GetLFGLockedTooltip(self:GetSelectedActivityID()));
 	GameTooltip:Show();
 end
 
 function LFGAuthenticatorMessagingMixin:DisplayStaticPopup()
-	StaticPopup_Show("GROUP_FINDER_AUTHENTICATOR_POPUP");
+	-- Don't show the static popup if the player isn't max level - save it for missing authenticator only
+	if not C_LFGList.IsPlayerAuthenticatedForLFG() then
+		StaticPopup_Show("GROUP_FINDER_AUTHENTICATOR_POPUP");
+	end
 end
 
 LFGEditBoxMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
@@ -4475,16 +4539,8 @@ function LFGEditBoxMixin:OnLoad()
 	end
 end
 
-function LFGEditBoxMixin:GetSelectedActivityID()
-	return self:GetParent().selectedActivity or self:GetParent():GetParent().selectedActivity;
-end
-
-function LFGEditBoxMixin:GetSelectedCategoryID()
-	return self:GetParent().selectedCategory or self:GetParent():GetParent().selectedCategory;
-end
-
-function LFGEditBoxMixin:OnShow()
-	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetSelectedCategoryID());
+function LFGEditBoxMixin:UpdateEnabledState()
+	local isAccountSecured = not IsActivityLockedForCustomText(self:GetSelectedCategoryID(), self:GetSelectedActivityID());
 	if(self:GetParent().numeric or isAccountSecured) then
 		self:SetEnabled(true);
 		self.LockButton:Hide();
@@ -4495,15 +4551,18 @@ function LFGEditBoxMixin:OnShow()
 	self.editBoxEnabled = self:IsEnabled();
 end
 
+function LFGEditBoxMixin:OnShow()
+	self:UpdateEnabledState();
+end
+
 function LFGEditBoxMixin:OnEnter()
-	if(not C_LFGList.IsPlayerAuthenticatedForLFG(self:GetSelectedCategoryID()) and not self.editBoxEnabled) then
+	if(not self.editBoxEnabled) then
 		self:DisplayTooltip();
 	end
 end
 
 function LFGEditBoxMixin:OnMouseDown(button)
-
-	if(not C_LFGList.IsPlayerAuthenticatedForLFG(self:GetSelectedCategoryID()) and not self.editBoxEnabled) then
+	if(not self.editBoxEnabled) then
 		self:DisplayStaticPopup();
 	end
 end
@@ -4524,16 +4583,31 @@ end
 
 LFGListCreationNameMixin = CreateFromMixins(LFGEditBoxMixin);
 
-function LFGListCreationNameMixin:OnShow()
-	LFGEditBoxMixin.OnShow(self);
-	
-	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedCategory);
-	if not isAccountSecured then
+function LFGListCreationNameMixin:UpdateEnabledState()
+	LFGEditBoxMixin.UpdateEnabledState(self);
+	if IsActivityLockedForCustomText(self:GetSelectedCategoryID(), self:GetSelectedActivityID()) then
 		self:SetSecurityDisablePaste();
 	end
 end
 
+function LFGListCreationNameMixin:OnShow()
+	self:UpdateEnabledState();
+end
+
 LFGListCreationDescriptionMixin = CreateFromMixins(LFGEditBoxMixin);
+
+function LFGListCreationDescriptionMixin:UpdateEnabledState()
+	local isAccountSecured = not IsActivityLockedForCustomText(self:GetSelectedCategoryID(), self:GetSelectedActivityID());
+
+	if not isAccountSecured then
+		self.EditBox:SetSecurityDisablePaste();
+	end
+
+	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or GetLFGLockedDescription(self:GetSelectedActivityID()));
+	self.EditBox:SetEnabled(isAccountSecured);
+	self.LockButton:SetShown(not isAccountSecured);
+	self.editBoxEnabled = isAccountSecured;
+end
 
 function LFGListCreationDescriptionMixin:OnLoad()
 	StoreSecureReference("LFGListCreationDescription", self.EditBox);
@@ -4545,22 +4619,13 @@ function LFGListCreationDescriptionMixin:OnLoad()
 end
 
 function LFGListCreationDescriptionMixin:OnShow()
-	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedCategory);
-
-	if not isAccountSecured then
-		self.EditBox:SetSecurityDisablePaste();
-	end
-
-	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
-	self.EditBox:SetEnabled(isAccountSecured);
-	self.LockButton:SetShown(not isAccountSecured);
-	self.editBoxEnabled = isAccountSecured;
+	self:UpdateEnabledState();
 end
 
 LFGListCreateGroupDisabledStateButtonMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
 
 function LFGListCreateGroupDisabledStateButtonMixin:OnClick()
-	if(not C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedCategory)) then
+	if(IsActivityLockedForCustomText(self:GetSelectedCategoryID(), self:GetSelectedActivityID())) then
 		self:DisplayStaticPopup();
 	end
 end

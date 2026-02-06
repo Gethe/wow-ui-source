@@ -125,6 +125,10 @@ function AuraUtil.DefaultAuraCompare(a, b)
 		return aFromPlayer;
 	end
 
+	if a.isPriorityAura ~= b.isPriorityAura then
+		return a.isPriorityAura;
+	end
+
 	if a.canApplyAura ~= b.canApplyAura then
 		return a.canApplyAura;
 	end
@@ -163,9 +167,10 @@ AuraUtil.AuraFilters =
 	Maw = "MAW",
 	ExternalDefensive = "EXTERNAL_DEFENSIVE",
 	CrowdControl = "CROWD_CONTROL",
-	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs 
+	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
 	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
 	BigDefensive = "BIG_DEFENSIVE",
+	Important = "IMPORTANT",
 };
 
 function AuraUtil.CreateFilterString(...)
@@ -226,6 +231,7 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		end
 	elseif aura.isHelpful and not ignoreBuffs and AuraUtil.ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) then
 		aura.isBuff = true;
+		aura.isPriorityAura = AuraUtil.IsPriorityDebuff(aura.spellId); -- TODO: Rename API to IsPriorityAura.
 		return AuraUtil.AuraUpdateChangedType.Buff;
 	elseif aura.isHarmful and aura.isRaid then
 		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then

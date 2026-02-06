@@ -64,6 +64,12 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	end,
 	OnButton3 = function()
 	end,
+	OnShow = function(dialog, _data)
+		-- Disable 'Use Gold' button if player cannot afford.
+		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		local canAfford = cost and cost <= GetMoney();
+		dialog:GetButton2():SetEnabled(canAfford);
+	end,
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -280,11 +286,13 @@ function TransmogFrameMixin:UpdateCostDisplay()
 	self.OutfitCollection:SetSaveOutfitDisabledTooltip(nil);
 	if cost then
 		canClear = true;
-		if cost > GetMoney() then
+
+		local canAfford = cost <= GetMoney();
+		canApply = canAfford or C_TransmogOutfitInfo.IsUsableDiscountAvailable();
+
+		if not canAfford then
 			SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "red");
 			self.OutfitCollection:SetSaveOutfitDisabledTooltip(TRANSMOG_SAVE_OUTFIT_CANNOT_AFFORD_TOOLTIP);
-		else
-			canApply = true;
 		end
 	end
 
@@ -1908,8 +1916,14 @@ function TransmogWardrobeItemsMixin:SelectVisual(visualID)
 		end
 
 		local displayType = Enum.TransmogOutfitDisplayType.Assigned;
-		if C_TransmogCollection.IsAppearanceHiddenVisual(sourceID) then
-			displayType = Enum.TransmogOutfitDisplayType.Hidden;
+		if selectedSlotData.transmogLocation:IsAppearance() then
+			if C_TransmogCollection.IsAppearanceHiddenVisual(sourceID) then
+				displayType = Enum.TransmogOutfitDisplayType.Hidden;
+			end
+		else
+			if C_TransmogCollection.IsSpellItemEnchantmentHiddenVisual(sourceID) then
+				displayType = Enum.TransmogOutfitDisplayType.Hidden;
+			end
 		end
 		C_TransmogOutfitInfo.SetPendingTransmog(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption, sourceID, displayType);
 

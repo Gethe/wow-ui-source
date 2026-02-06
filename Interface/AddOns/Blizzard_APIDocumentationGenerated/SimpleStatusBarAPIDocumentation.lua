@@ -217,7 +217,7 @@ local SimpleStatusBarAPI =
 			{
 				{ Name = "minValue", Type = "number", Nilable = false },
 				{ Name = "maxValue", Type = "number", Nilable = false },
-				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, NeverSecret = true, Default = "Immediate" },
 			},
 		},
 		{
@@ -328,7 +328,7 @@ local SimpleStatusBarAPI =
 			Arguments =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
-				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, NeverSecret = true, Default = "Immediate" },
 			},
 		},
 	},

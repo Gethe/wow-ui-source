@@ -8,8 +8,10 @@ function HousingPhotoSharingMixin:ResetEditBoxes()
 	self.TitleFrame.PhotoSharingTitleEditBox:SetText("");
 	self.TitleFrame.PhotoSharingTitleEditBox.TitleText:Show();
 
-	self.DescriptionFrame.PhotoSharingDescriptionEditBox:SetText("");
-	self.DescriptionFrame.PhotoSharingDescriptionEditBox.DescriptionText:Show();
+	self.DescriptionFrame.PhotoSharingDescriptionEditBox:SetText(" " .. PHOTO_SHARING_PREPOP_DESCRIPTION);
+	self.DescriptionFrame.PhotoSharingDescriptionEditBox:SetCursorPosition(0);
+	self.DescriptionFrame.PhotoSharingDescriptionEditBox:Hide();
+	self.DescriptionFrame.DescriptionText:Show();
 end
 
 function HousingPhotoSharingMixin:UpdatePublishButton()
@@ -88,11 +90,6 @@ function HousingPhotoSharingSubmitButtonMixin:OnClick()
 	if C_HousingPhotoSharing.IsAuthorized() then
 		local descriptionText = self:GetParent().DescriptionFrame.PhotoSharingDescriptionEditBox:GetText();
 		local titleText = self:GetParent().TitleFrame.PhotoSharingTitleEditBox:GetText();
-
-		if descriptionText == "" then
-			descriptionText = PHOTO_SHARING_PREPOP_DESCRIPTION;
-		end
-
 		C_HousingPhotoSharing.UploadPhotoToService(titleText, descriptionText);
 		self:GetParent():Hide();
 	else

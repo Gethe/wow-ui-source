@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="HousingPhotoSharingFrame" parentKey="HousingPhotoSharingFrame" mixin="HousingPhotoSharingMixin" inherits="SettingsFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="HousingPhotoSharingFrame" parentKey="HousingPhotoSharingFrame" mixin="HousingPhotoSharingMixin" inherits="SettingsFrameTemplate" ignoreParentScale="true" scale="0.72" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="490" y="747"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -14,10 +14,9 @@
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
-					<Size y="741"/>
+					<Size x="482" y="739"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-6"/>
-						<Anchor point="TOPRIGHT" x="-6" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -180,6 +179,18 @@
 					<Anchor point="TOP" x="0" y="-595"/>
 				</Anchors>
 				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_LABEL" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="DescriptionText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_PLACEHOLDER">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
 							<Size x="8" y="8"/>
@@ -238,46 +249,21 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox name="PhotoSharingDescriptionEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="PhotoSharingDescriptionEditBox" autoFocus="false">
+					<EditBox name="PhotoSharingDescriptionEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="PhotoSharingDescriptionEditBox" autoFocus="false" hidden="true">
 						<Size x="440" y="60"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"  y="-25" x="5"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString inherits="GameFontNormal" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_LABEL" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-5" y="23"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="DescriptionText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_PLACEHOLDER">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 						<Scripts>
-							<OnEditFocusGained>
-								if ( self:GetText() == "" or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION ) then
-									self.DescriptionText:Hide();
-									self:SetText(" " .. PHOTO_SHARING_PREPOP_DESCRIPTION);
-
-									-- Better editbox support for this could be warranted.
-									-- This ensures the cursor is at the start of the edit box and nothing is highlighted by waiting two frames.
-									RunNextFrame(
-										function()
-											RunNextFrame( function()
-												self:ClearHighlightText();
-												self:SetCursorPosition(0);
-											end );
-										end );
+							<OnShow>
+								if self:GetText() == "" or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION then
+									self:GetParent().DescriptionText:Hide();
 								end
-							</OnEditFocusGained>
+							</OnShow>
 							<OnEditFocusLost>
-								if ( self:GetText() == "" or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION ) then
-									self.DescriptionText:Show();
-									self:SetText("");
+								if self:GetText() == ""  or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION then
+									self:GetParent().DescriptionText:Show();
+									self:Hide();
 								end
 							</OnEditFocusLost>
 							<OnTabPressed>
@@ -290,6 +276,12 @@
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
 				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						PhotoSharingDescriptionEditBox:Show();
+						PhotoSharingDescriptionEditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="ErrorTextFrame" frameLevel="3" hidden="false" setAllPoints="true">
 				<Size x="380" y="20"/>

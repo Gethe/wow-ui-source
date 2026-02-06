@@ -600,13 +600,13 @@ function CatalogShopMixin:PurchaseProduct()
 	local completelyOwned = productInfo.isFullyOwned;
 	if completelyOwned then
 		self:OnError(Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	elseif C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID) then
-		-- TODO - fix this
-	--else
-		-- TODO - fix this
-		--if (productInfo and productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion) then
-			--self:OnError(Enum.StoreError.AlreadyOwned, false, "Expansion");
-		--end
+	else
+		if productInfo.isVCProduct then
+			local productIDList = {productInfo.catalogShopProductID};
+			C_CatalogShop.ConfirmHousingPurchase(productIDList);
+		else
+			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
+		end
 	end
 end
 

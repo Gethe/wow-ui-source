@@ -30,15 +30,16 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitDisplayType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Unassigned", Type = "TransmogOutfitDisplayType", EnumValue = 0 },
 				{ Name = "Assigned", Type = "TransmogOutfitDisplayType", EnumValue = 1 },
 				{ Name = "Equipped", Type = "TransmogOutfitDisplayType", EnumValue = 2 },
 				{ Name = "Hidden", Type = "TransmogOutfitDisplayType", EnumValue = 3 },
+				{ Name = "Disabled", Type = "TransmogOutfitDisplayType", EnumValue = 4 },
 			},
 		},
 		{

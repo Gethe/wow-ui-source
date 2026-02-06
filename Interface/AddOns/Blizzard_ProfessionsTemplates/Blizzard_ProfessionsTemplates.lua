@@ -548,7 +548,17 @@ ProfessionsCustomerTableCellIlvlMixin = CreateFromMixins(TableBuilderCellMixin);
 function ProfessionsCustomerTableCellIlvlMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
 
-	local text = order.iLvlMax and CRAFTING_ORDER_ILVL_DISPLAY_RANGE:format(order.iLvlMin, order.iLvlMax) or order.iLvlMin;
+	local text = nil;
+	if order.iLvlMax then
+		text = ORDER_ILVL_DISPLAY_RANGE:format(order.iLvlMin, order.iLvlMax);
+	else
+		if order.craftingQualityIDs then
+			text = INTEGER_LARGER_THAN:format(order.iLvlMin);
+		else
+			text = order.iLvlMin;
+		end
+	end
+
 	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 

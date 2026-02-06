@@ -198,6 +198,7 @@ local Club =
 		{
 			Name = "DestroyMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -284,6 +285,7 @@ local Club =
 		{
 			Name = "EditMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -397,6 +399,7 @@ local Club =
 		{
 			Name = "GetClubInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -429,6 +432,7 @@ local Club =
 		{
 			Name = "GetClubMembers",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -506,6 +510,7 @@ local Club =
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -605,6 +610,7 @@ local Club =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -639,6 +645,7 @@ local Club =
 		{
 			Name = "GetMessageInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get info about a particular message." },
@@ -658,6 +665,7 @@ local Club =
 		{
 			Name = "GetMessageRanges",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the ranges of the messages currently downloaded." },
@@ -676,6 +684,7 @@ local Club =
 		{
 			Name = "GetMessagesBefore",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages before (and including) the specified messageId limited by count. These are filtered by ignored players" },
@@ -696,6 +705,7 @@ local Club =
 		{
 			Name = "GetMessagesInRange",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages in the given range. These are filtered by ignored players" },
@@ -716,6 +726,7 @@ local Club =
 		{
 			Name = "GetStreamInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -750,6 +761,7 @@ local Club =
 		{
 			Name = "GetStreams",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -766,6 +778,7 @@ local Club =
 		{
 			Name = "GetSubscribedClubs",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -809,6 +822,7 @@ local Club =
 		{
 			Name = "IsBeginningOfStream",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the given message is the first message in the stream, taking into account ignored messages" },
@@ -915,6 +929,7 @@ local Club =
 		{
 			Name = "RequestMoreMessagesBefore",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Call this when the user scrolls near the top of the message view, and more need to be displayed. The history will be downloaded backwards (newest to oldest)." },
@@ -1038,6 +1053,7 @@ local Club =
 		{
 			Name = "SetAvatarTexture",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1787,8 +1803,8 @@ local Club =
 				{ Name = "clubType", Type = "ClubType", Nilable = true },
 				{ Name = "guid", Type = "WOWGUID", Nilable = true },
 				{ Name = "bnetAccountId", Type = "number", Nilable = true },
-				{ Name = "memberNote", Type = "string", Nilable = true, ConditionalSecret = true },
-				{ Name = "officerNote", Type = "string", Nilable = true, ConditionalSecret = true },
+				{ Name = "memberNote", Type = "string", Nilable = true },
+				{ Name = "officerNote", Type = "string", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "race", Type = "number", Nilable = true },
 				{ Name = "level", Type = "number", Nilable = true },
