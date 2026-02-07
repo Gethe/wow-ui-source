@@ -155,6 +155,10 @@ function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUni
 		CompactUnitFrame_SetUpFrame(unitFrame, setupFn);
 	end
 
+	if unitFrame.SetupOverride then
+		unitFrame:SetupOverride();
+	end
+
 	namePlateFrameBase:OnOptionsUpdated();
 
 	self:UpdateInsetsForType(namePlateType, namePlateFrameBase);

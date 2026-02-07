@@ -1,10 +1,25 @@
-local BarHeight = 18;
+
+local barHeight = 18;
+local customOptions = 
+{
+	healthBarHeight = barHeight,
+	castBarHeight = barHeight,
+	castBarFontHeight = 12,
+	maxHealOverflowRatio = 1.0,
+	ignoreIconSize = true,
+	ignoreIconPoint = true,
+	ignoreBarSize = true,
+	ignoreBarPoints = true,
+	ignoreOverAbsorbGlow = true,
+	ignoreOverHealAbsorbGlow = true,
+	nameFont = SystemFont_LargeNamePlateFixed,
+};
 
 CommentatorNamePlateMixin = {}
 
 function CommentatorNamePlateMixin:OnLoad()
 	CompactUnitFrame_OnLoad(self);
-	
+
 	-- Purposely inverting the upscaling so that our frame appears 1:1 at 1080p.
 	self:SetScale(COMMENTATOR_INVERSE_SCALE);
 
@@ -21,15 +36,18 @@ function CommentatorNamePlateMixin:OnLoad()
 	self.SetupOverride = self.OnSetupOverride;
 	self.UpdateNameOverride = self.OnUpdateNameOverride;
 	self.UpdateHealthBorderOverride = self.OnUpdateHealthBorderOverride;
-	self.UpdateHealthColorOverride = self.OnUpdateHealthColorOverride;
 	self.CommentatorTeamSwapped = self.OnCommentatorTeamSwapped;
 
 	-- Attaching elements to inherited frames and textures to preserve as much of the original
 	-- functionality as possible without redefining it in the XML.
-	self:GetHealthBar().border:ClearAllPoints();
-	self:GetHealthBar().border = CreateFrame("FRAME", nil, self:GetHealthBar(), "CommentatorNamePlateFullBorderTemplate");
-	self:GetHealthBar():SetHeight(BarHeight);
-	
+	self.HealthBarsContainer.border:ClearAllPoints();
+	self.HealthBarsContainer.border = CreateFrame("FRAME", nil, self.HealthBarsContainer, "CommentatorNamePlateFullBorderTemplate");
+	self.HealthBarsContainer.healthBar:SetHeight(barHeight);
+
+	-- We cannot leverage the setup functions or frame functions in Blizzard_Nameplates because many
+	-- values are repeatedly overwritten (ex. UpdateNamePlateOptions).
+	self.customOptions = customOptions;
+
 	if (self:GetCastBar()) then
 		self:GetCastBar():SetScript("OnShow", nil);
 		self:GetCastBar().Border:SetAlpha(0);
@@ -40,22 +58,14 @@ function CommentatorNamePlateMixin:OnLoad()
 		self:GetCastBar().Flash:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
 		self:GetCastBar().Flash:SetBlendMode("ADD");
 
-		local fontName, fontSize, fontFlags = self.CastBar.Text:GetFont();
-		self:GetCastBar():SetHeight(BarHeight);
-		self:GetCastBar().Text:SetFont(fontName, 12, fontFlags);
+		self:GetCastBar():SetHeight(barHeight);
 	end
-
-	self.name:SetFontObject(SystemFont_LargeNamePlateFixed);
 
 	self.LevelFrame:Hide();
 end
 
 function CommentatorNamePlateMixin:GetCastBar()
-	return self.CastBar;
-end
-
-function CommentatorNamePlateMixin:GetHealthBar()
-	return self.healthBar;
+	return self.castBar;
 end
 
 function CommentatorNamePlateMixin:OnEvent(event, ...)
@@ -85,11 +95,6 @@ function CommentatorNamePlateMixin:OnUpdate(elapsed)
 	CompactUnitFrame_OnUpdate(self, elapsed);
 
 	self:UpdateCrowdControlAuras();
-end
-
-function CommentatorNamePlateMixin:OnSizeChanged(w, h)
-	PixelUtil.SetPoint(self.healthBar, "LEFT", self, "LEFT", 12, 5);
-	PixelUtil.SetPoint(self.healthBar, "RIGHT", self, "RIGHT", -12, 5);
 end
 
 function CommentatorNamePlateMixin:GetNameText()
@@ -123,24 +128,22 @@ function CommentatorNamePlateMixin:ApplyLossOfControlAtIndex(index)
 end
 
 function CommentatorNamePlateMixin:SetPointsByPixelUtil()
-	self.healthBar:ClearAllPoints();
-	PixelUtil.SetSize(self.healthBar, 190, BarHeight);
-	PixelUtil.SetPoint(self.healthBar, "LEFT", self, "LEFT", 0, -10);
+	self.HealthBarsContainer:ClearAllPoints();
+	PixelUtil.SetSize(self.HealthBarsContainer, 190, barHeight);
+	PixelUtil.SetPoint(self.HealthBarsContainer, "LEFT", self, "LEFT", 0, -10);
 	
-	self.healthBar:SetFrameLevel(self:GetFrameLevel() - 1);
-	self.healthBar.border:UpdateSizes();
+	self.HealthBarsContainer:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	if (self:GetCastBar()) then
-		PixelUtil.SetWidth(self:GetCastBar(), 170, BarHeight);
-		PixelUtil.SetPoint(self:GetCastBar(), "TOP", self.healthBar, "BOTTOM", 0, -6);
+		PixelUtil.SetWidth(self:GetCastBar(), 170, barHeight);
+		PixelUtil.SetPoint(self:GetCastBar(), "TOP", self.HealthBarsContainer, "BOTTOM", 0, -6);
 	
 		self:GetCastBar().Text:ClearAllPoints();
-		local iconSize = BarHeight + 2;
+		local iconSize = barHeight + 2;
 		local textOffset = iconSize / 2;
 		PixelUtil.SetPoint(self:GetCastBar().Text, "CENTER", self:GetCastBar(), "CENTER", textOffset, 0);
 	
 		self:GetCastBar().Icon:ClearAllPoints();
-		self:GetCastBar().Icon:SetDrawLayer("OVERLAY", 7);
 		PixelUtil.SetSize(self:GetCastBar().Icon, iconSize, iconSize);
 		PixelUtil.SetPoint(self:GetCastBar().Icon, "TOPLEFT", self:GetCastBar(), "TOPLEFT", -1, 1);
 
@@ -151,7 +154,7 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 	PixelUtil.SetPoint(self.name, "BOTTOM", self.healthBar, "TOP", 0, 4);
 
 	self.ClassIcon:ClearAllPoints();
-	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.healthBar, "LEFT", 0, 0);
+	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
 
 	self.CCIcon:ClearAllPoints();
 	PixelUtil.SetPoint(self.CCIcon, "CENTER", self.ClassIcon, "CENTER", 0, 0);
@@ -169,8 +172,9 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 	PixelUtil.SetPoint(self.Mask, "CENTER", self.ClassIcon, "CENTER", 0, 0);
 end
 
-function CommentatorNamePlateMixin:OnSetupOverride(setupOptions, frameOptions)
+function CommentatorNamePlateMixin:OnSetupOverride()
 	self:SetPointsByPixelUtil();
+	self.optionTable.useClassColors = true; -- Force enable for Classic.
 	-- CUF can continue.
 	return false;
 end
@@ -191,7 +195,7 @@ end
 
 function CommentatorNamePlateMixin:SetBorderColors()
 	local color = C_Commentator.GetTeamColorByUnit(self.unit);
-	self:GetHealthBar().border:SetVertexColor(color.r, color.g, color.b, color.a);
+	self.HealthBarsContainer.border:SetVertexColor(color.r, color.g, color.b, color.a);
 	if (self:GetCastBar()) then
 		self:GetCastBar().border:SetVertexColor(color.r, color.g, color.b, color.a);
 	end
@@ -202,15 +206,6 @@ function CommentatorNamePlateMixin:OnUpdateHealthBorderOverride()
 
 	local class = select(2, UnitClass(self.unit))
 	self.ClassIcon:SetAtlas(GetClassAtlas(class));
-
-	-- CUF cannot continue.
-	return true;
-end
-
-function CommentatorNamePlateMixin:OnUpdateHealthColorOverride()
-	local localizedClass, englishClass = UnitClass(self.unit);
-	local classColor = RAID_CLASS_COLORS[englishClass];
-	self:GetHealthBar():SetStatusBarColor(classColor.r, classColor.g, classColor.b);
 
 	-- CUF cannot continue.
 	return true;
@@ -227,7 +222,7 @@ function CommentatorNamePlateMixin:UpdateCrowdControlAuras()
 		self.CCCooldown:SetCooldown(expirationTime - duration, duration);
 
 		if spellID ~= nil then
-			local icon = select(3, GetSpellInfo(spellID));
+			local icon = C_Spell.GetSpellTexture(spellID);
 			if icon then
 				self.CCIcon:SetTexture(icon);
 			end
