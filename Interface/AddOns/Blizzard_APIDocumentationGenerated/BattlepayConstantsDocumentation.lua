@@ -21,6 +21,21 @@ local BattlepayConstants =
 			},
 		},
 		{
+			Name = "BulkPurchaseStatus",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "PlacingOrders", Type = "BulkPurchaseStatus", EnumValue = 0 },
+				{ Name = "PurchasesPending", Type = "BulkPurchaseStatus", EnumValue = 1 },
+				{ Name = "FetchEntitlements", Type = "BulkPurchaseStatus", EnumValue = 2 },
+				{ Name = "Done", Type = "BulkPurchaseStatus", EnumValue = 3 },
+				{ Name = "Failed", Type = "BulkPurchaseStatus", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "BulkRefundResult",
 			Type = "Enumeration",
 			NumValues = 6,

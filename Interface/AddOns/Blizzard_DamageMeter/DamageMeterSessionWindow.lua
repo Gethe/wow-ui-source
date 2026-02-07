@@ -21,6 +21,10 @@ local DAMAGE_METER_TYPE_ALWAYS_SHOWS_LOCAL_PLAYER = {
 	[Enum.DamageMeterType.AvoidableDamageTaken] = true,
 };
 
+local DAMAGE_METER_TYPE_SUPPRESS_ICON = {
+	[Enum.DamageMeterType.EnemyDamageTaken] = true,
+};
+
 local DAMAGE_METER_TYPE_NAMES = {
 	[Enum.DamageMeterType.DamageDone] = DAMAGE_METER_TYPE_DAMAGE_DONE,
 	[Enum.DamageMeterType.Dps] = DAMAGE_METER_TYPE_DPS,
@@ -562,6 +566,11 @@ function DamageMeterSessionWindowMixin:AlwaysShowsLocalPlayer()
 	return DAMAGE_METER_TYPE_ALWAYS_SHOWS_LOCAL_PLAYER[damageMeterType];
 end
 
+function DamageMeterSessionWindowMixin:SuppressIcon()
+	local damageMeterType = self:GetDamageMeterType();
+	return DAMAGE_METER_TYPE_SUPPRESS_ICON[damageMeterType];
+end
+
 function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 	combatSession = combatSession or self:GetCombatSession();
 
@@ -573,6 +582,7 @@ function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 	local hadLocalPlayerIndex = self.localPlayerIndex ~= nil;
 	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
 	local alwaysShowsLocalPlayer = self:AlwaysShowsLocalPlayer();
+	local suppressIcon = self:SuppressIcon();
 	local damageMeterType = self:GetDamageMeterType();
 
 	self.localPlayerIndex = nil;
@@ -599,6 +609,7 @@ function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 		combatSource.sessionTotalAmount = sessionTotalAmount;
 		combatSource.index = i;
 		combatSource.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
+		combatSource.suppressIcon = suppressIcon;
 		combatSource.damageMeterType = damageMeterType;
 
 		dataProvider:Insert(combatSource);

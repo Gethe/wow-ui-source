@@ -940,7 +940,7 @@ function ClassTalentsFrameMixin:SetCommitCastBarActive(active)
 	if active then
 		-- Show the castbar high enough to be over both the Hero Spec Selection dialog and ourselves
 		local anchor = CreateAnchor("BOTTOM", self.heroSpecSelectionDialog.DisabledOverlay, "BOTTOM", 0, 140);
-		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(UIParent, { overrideBarType = "applyingtalents", overrideAnchor = anchor, overrideStrata = "DIALOG" });
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(UIParent, { overrideBarType = CastingBarType.ApplyingTalents, overrideAnchor = anchor, overrideStrata = "DIALOG" });
 	else
 		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 	end

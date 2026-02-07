@@ -131,11 +131,11 @@ local UnitAura =
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
@@ -152,7 +152,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -170,7 +170,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -188,7 +188,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "spellName", Type = "cstring", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -243,7 +243,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 				{ Name = "maxSlots", Type = "number", Nilable = true },
 				{ Name = "continuationToken", Type = "number", Nilable = true },
@@ -263,7 +263,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -296,7 +296,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -353,7 +353,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -369,7 +369,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -388,7 +388,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -407,7 +407,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 			},

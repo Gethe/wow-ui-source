@@ -50,10 +50,16 @@ function DamageMeterEntryMixin:UpdateIcon()
 		end
 	else
 		local texture = self:GetIconTexture();
-		if texture ~= self.iconTexture then
-			self.iconTexture = texture;
+		if texture then
+			if texture ~= self.iconTexture then
+				self.iconTexture = texture;
+				self.iconAtlasElement = nil;
+				self:GetIcon():SetTexture(texture);
+			end
+		else
 			self.iconAtlasElement = nil;
-			self:GetIcon():SetTexture(texture);
+			self.iconTexture = nil;
+			self:GetIcon():SetTexture(nil);
 		end
 	end
 end
@@ -455,8 +461,16 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.deathTimeSeconds = combatSource.deathTimeSeconds;
 	self.isCreature = combatSource.sourceCreatureID ~= nil;
 	self.classification = combatSource.classification;
+	self:SetSuppressIcon(combatSource.suppressIcon);
 
 	DamageMeterEntryMixin.Init(self, combatSource);
+end
+
+function DamageMeterSourceEntryMixin:SetSuppressIcon(suppressIcon)
+	if self.suppressIcon ~= suppressIcon then
+		self.suppressIcon = suppressIcon;
+		self:UpdateStyle();
+	end
 end
 
 function DamageMeterSourceEntryMixin:IsCreature()
@@ -469,7 +483,7 @@ function DamageMeterSourceEntryMixin:GetIconAtlasElement()
 		return nil;
 	end
 
-	if not self.classFilename then
+	if not self.classFilename or #self.classFilename == 0 then
 		return nil;
 	end
 
@@ -477,6 +491,10 @@ function DamageMeterSourceEntryMixin:GetIconAtlasElement()
 end
 
 function DamageMeterEntryMixin:GetIconTexture()
+	if self.specIconID == 0 then
+		return nil;
+	end
+
 	return self.specIconID;
 end
 
@@ -536,6 +554,14 @@ function DamageMeterSourceEntryMixin:GetValueText()
 	return DamageMeterEntryMixin.GetValueText(self);
 end
 
+function DamageMeterSourceEntryMixin:ShouldShowBarIcons()
+	if self.suppressIcon then
+		return false;
+	end
+
+	return DamageMeterEntryMixin.ShouldShowBarIcons(self);
+end
+
 DamageMeterSpellEntryMixin = {};
 
 function DamageMeterSpellEntryMixin:Init(combatSpell)
@@ -574,6 +600,19 @@ end
 
 function DamageMeterSpellEntryMixin:GetSpellID()
 	return self.spellID;
+end
+
+function DamageMeterSpellEntryMixin:GetIconAtlasElement()
+	-- If spec is set it takes precedence over class.
+	if self.specIconID and self.specIconID ~= 0 then
+		return nil;
+	end
+
+	if not self.unitClassFilename or #self.unitClassFilename == 0 then
+		return nil;
+	end
+
+	return GetClassAtlas(self.unitClassFilename);
 end
 
 function DamageMeterSpellEntryMixin:GetIconTexture()

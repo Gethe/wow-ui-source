@@ -8,12 +8,17 @@ local function SetInstructionText(scrollBoxText, elementData)
 	scrollBoxText:SetElementText(elementData.text, HOUSING_HEADER_COLOR);
 end
 
+local function BarDividerReset(pool, barDivider)
+	barDivider:SetHeaderText("");
+	Pool_HideAndClearAnchors(pool, barDivider);
+end
+
 local Templates = {
 	["CATALOG_ENTRY_DECOR"] = { template = "HousingCatalogDecorEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
 	["CATALOG_ENTRY_ROOM"] = { template = "HousingCatalogRoomEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
 	["CATALOG_ENTRY_BUNDLE"] = { template = "HousingCatalogBundleDisplayTemplate", initFunc = HousingCatalogBundleDisplayMixin.Init, resetFunc = HousingCatalogBundleDisplayMixin.Reset },
-	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = { template = "BarDividerTemplate", initFunc = nop, resetFunc = Pool_HideAndClearAnchors },
-	["CATALOG_ENTRY_HEADER"] = { template = "BarDividerTemplate", initFunc = SetHeaderText, resetFunc = Pool_HideAndClearAnchors },
+	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = { template = "BarDividerTemplate", initFunc = nop, resetFunc = BarDividerReset },
+	["CATALOG_ENTRY_HEADER"] = { template = "BarDividerTemplate", initFunc = SetHeaderText, resetFunc = BarDividerReset },
 	["CATALOG_ENTRY_INSTRUCTIONS"] = { template = "ScrollBoxTextContainerTemplate", initFunc = SetInstructionText, resetFunc = Pool_HideAndClearAnchors },
 };
 
