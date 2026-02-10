@@ -878,6 +878,9 @@ function CatalogShopVCFrameMixin:OpenTopUpFlow()
 		if hearthsteelBalance then
 			CatalogShopTopUpFrame:SetCurrentBalance(hearthsteelBalance);
 		end
+		
+		local shouldShowWarning = C_CatalogShop.ShouldShowHousingWarning();
+		CatalogShopTopUpFrame.TopUpProductContainerFrame.HousingWarningText:SetShown(shouldShowWarning);
 
 		CatalogShopTopUpFrame:SetParentFrame(self:GetParent());
 		CatalogShopTopUpFrame:Show();
@@ -912,6 +915,10 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local selectedProductInfo = self:GetDetailsFrameProductInfo();
 	local showVCFrame = selectedProductInfo and selectedProductInfo.isVCProduct;
 	CatalogShopFrame.CatalogShopVCFrame:SetShown(showVCFrame);
+
+	local containsHousingItem = selectedProductInfo.containsHousingItem;
+	local showHousingWarning = containsHousingItem and C_CatalogShop.ShouldShowHousingWarning();
+	self.HousingWarningText:SetShown(showHousingWarning);
 
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(selectedProductInfo.catalogShopProductID);
 	-- update state based on product info

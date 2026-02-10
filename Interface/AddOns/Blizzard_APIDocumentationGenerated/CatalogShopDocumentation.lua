@@ -430,6 +430,15 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "ShouldShowHousingWarning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldShowHousingWarning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "StartHousingVCPurchaseConfirmation",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -749,6 +758,7 @@ local CatalogShop =
 				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "consumableQuantity", Type = "number", Nilable = true },
 				{ Name = "isVCProduct", Type = "bool", Nilable = false },
+				{ Name = "containsHousingItem", Type = "bool", Nilable = false },
 			},
 		},
 		{
