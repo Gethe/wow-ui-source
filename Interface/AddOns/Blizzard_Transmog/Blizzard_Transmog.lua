@@ -108,6 +108,9 @@ function TransmogFrameMixin:OnLoad()
 	self:SetPortraitAtlasRaw("transmog-icon-ui");
 	self:SetTitle(TRANSMOGRIFY);
 
+	if not HelpPlatesSupported() then
+		self.HelpPlateButton:Hide();
+	end
 	self.HelpPlateButton:SetScript("OnClick", function()
 		if not HelpPlate.IsShowingHelpInfo(self.HELP_PLATE_INFO) then
 			self:RefreshHelpPlate();
@@ -117,6 +120,22 @@ function TransmogFrameMixin:OnLoad()
 			HelpPlate.Hide(userToggled);
 		end
 	end);
+
+	local function OutfitCollectionFrameCollapsedCallback()
+		self:SetWidth(self.collapsedWidth);
+		-- Reparent the SaveOutfitButton and MoneyFrame to the TransmogFrame so they remain visible
+		self.OutfitCollection.SaveOutfitButton:SetParent(self);
+		self.OutfitCollection.SaveOutfitButton:SetFrameLevel(300);
+		self.OutfitCollection.MoneyFrame:SetParent(self);
+		self.OutfitCollection.MoneyFrame:SetFrameLevel(300);
+		self.OutfitCollection:InitSaveOutfitElements();
+
+		-- Shift the CharacterPreview to occupy the space freed up by collapsing the OutfitCollection
+		local point, _, _, offsetX, offsetY = self.OutfitCollection:GetPoint();
+		self.CharacterPreview:ClearAllPoints();
+		self.CharacterPreview:SetPoint(point, offsetX, offsetY);
+	end;
+	self.OutfitCollection.CollapsedCallback = OutfitCollectionFrameCollapsedCallback;
 
 	self.WardrobeCollection.GetSelectedSlotCallback = GenerateClosure(self.CharacterPreview.GetSelectedSlotData, self.CharacterPreview);
 	self.WardrobeCollection.GetCurrentTransmogInfoCallback = GenerateClosure(self.CharacterPreview.GetCurrentTransmogInfo, self.CharacterPreview);
@@ -207,6 +226,7 @@ function TransmogFrameMixin:RefreshOutfits(selectActiveOutfit)
 				name = outfitInfo.name,
 				situationCategories = outfitInfo.situationCategories,
 				icon = outfitInfo.icon,
+				isEventOutfit = outfitInfo.isEventOutfit,
 				onClickCallback = onClickCallback,
 				onEditCallback = onEditCallback
 			};
@@ -263,6 +283,7 @@ function TransmogFrameMixin:UpdateCostDisplay()
 	local canApply = false;
 	local canClear = false;
 	SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "white");
+	self.OutfitCollection:SetSaveOutfitDisabledTooltip(nil);
 	if cost then
 		canClear = true;
 
@@ -271,6 +292,7 @@ function TransmogFrameMixin:UpdateCostDisplay()
 
 		if not canAfford then
 			SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "red");
+			self.OutfitCollection:SetSaveOutfitDisabledTooltip(TRANSMOG_SAVE_OUTFIT_CANNOT_AFFORD_TOOLTIP);
 		end
 	end
 
@@ -288,6 +310,9 @@ function TransmogFrameMixin:SelectSlot(slotFrame, forceRefresh)
 	self.WardrobeCollection:UpdateSlot(slotFrame.slotData, forceRefresh);
 end
 
+function TransmogFrameMixin:GetViewedOutfitIcons()
+	return self.CharacterPreview:GetCurrentTransmogIcons();
+end
 
 TransmogOutfitCollectionMixin = {
 	DYNAMIC_EVENTS = {
@@ -295,17 +320,34 @@ TransmogOutfitCollectionMixin = {
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS"
 	};
 	HELPTIP_INFO = {
-		text = TRANSMOG_OUTFITS_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.RightEdgeTop,
-		alignment = HelpTip.Alignment.Center,
-		offsetX = -33,
-		offsetY = -33,
-		system = "TransmogOutfitCollection",
-		acknowledgeOnHide = true,
-		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogOutfits
+		[Enum.FrameTutorialAccount.TransmogOutfits] =
+		{
+			text = TRANSMOG_OUTFITS_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeTop,
+			alignment = HelpTip.Alignment.Center,
+			offsetX = -33,
+			offsetY = -33,
+			system = "TransmogOutfitCollection",
+			acknowledgeOnHide = true,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogOutfits
+		},
+		[Enum.FrameTutorialAccount.TransmogTrialOfStyle] =
+		{
+			text = TRANSMOG_TRIAL_OF_STYLE_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeTop,
+			alignment = HelpTip.Alignment.Center,
+			offsetX = -33,
+			offsetY = -33,
+			system = "TransmogOutfitCollection",
+			acknowledgeOnHide = true,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogTrialOfStyle
+		}
 	};
+	CollapsedCallback = nil;
 };
 
 function TransmogOutfitCollectionMixin:OnLoad()
@@ -340,27 +382,24 @@ function TransmogOutfitCollectionMixin:OnLoad()
 	self.PurchaseOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.PurchaseOutfitButton:SetScript("OnClick", function()
-		local function ClickCallback()
-			-- Explicitly hide pending popup if showing so the confirm dialog is positioned correctly.
-			StaticPopup_Hide("TRANSMOG_PENDING_CHANGES");
-			StaticPopup_Show("CONFIRM_BUY_OUTFIT_SLOT");
-
-			HelpTip:HideAllSystem("TransmogOutfitCollection");
-		end;
-
-		if C_TransmogOutfitInfo.HasPendingOutfitTransmogs() or C_TransmogOutfitInfo.HasPendingOutfitSituations() then
-			local dialogData = {
-				confirmCallback = ClickCallback
-			};
-			StaticPopup_Show("TRANSMOG_PENDING_CHANGES", nil, nil, dialogData);
-		else
-			ClickCallback();
-		end
+		StaticPopup_Show("CONFIRM_BUY_OUTFIT_SLOT");
+		HelpTip:HideAllSystem("TransmogOutfitCollection");
 	end);
 
+	self:InitSaveOutfitElements();
+end
+
+function TransmogOutfitCollectionMixin:InitSaveOutfitElements()
 	self.SaveOutfitButton:SetScript("OnEnter", function(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-		GameTooltip:SetText(TRANSMOG_SAVE_OUTFIT_TOOLTIP);
+
+		local disabledTooltip = self:GetSaveOutfitDisabledTooltip();
+		if disabledTooltip then
+			GameTooltip_AddErrorLine(GameTooltip, disabledTooltip);
+		else
+			GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_SAVE_OUTFIT_TOOLTIP);
+		end
+		GameTooltip:Show();
 	end);
 
 	self.SaveOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -436,9 +475,21 @@ function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutfit)
 	local source = Enum.TransmogOutfitEntrySource.PlayerPurchased;
 	local unlockedOutfitCount = C_TransmogOutfitInfo.GetNumberOfOutfitsUnlockedForSource(source);
 	local maxOutfitCount = C_TransmogOutfitInfo.GetMaxNumberOfTotalOutfitsForSource(source);
-	local enabled = unlockedOutfitCount < maxOutfitCount;
-	self.PurchaseOutfitButton:SetEnabled(enabled);
-	self.PurchaseOutfitButton.Icon:SetDesaturated(not enabled);
+	local hasOutfitsToPurchase = unlockedOutfitCount < maxOutfitCount;
+	local hasOutfitsToSelect = C_TransmogOutfitInfo.GetMaxNumberOfUsableOutfits() > 1;
+
+	self.PurchaseOutfitButton:SetEnabled(hasOutfitsToPurchase);
+	self.PurchaseOutfitButton.Icon:SetDesaturated(not hasOutfitsToPurchase);
+
+	-- If we have no outfits to purchase, and can only select one outfit, collapse the outfit collection frame.
+	if(not hasOutfitsToPurchase and not hasOutfitsToSelect) then
+		self:Collapse();
+	end
+end
+
+function TransmogOutfitCollectionMixin:Collapse()
+		self:Hide();
+		self.CollapsedCallback();
 end
 
 function TransmogOutfitCollectionMixin:RefreshUsableDiscountText()
@@ -446,9 +497,20 @@ function TransmogOutfitCollectionMixin:RefreshUsableDiscountText()
 end
 
 function TransmogOutfitCollectionMixin:CheckShowHelptips()
+	local showTrialOfStyleHelptip = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogTrialOfStyle) and C_TransmogOutfitInfo.TransmogEventActive();
+
+	-- Use OutfitList as the parent for helptips here instead of any scroll box element to prevent the help tip being masked.
 	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogOutfits) then
-		-- Use OutfitList as the parent instead of any scroll box element to prevent the help tip being masked.
-		HelpTip:Show(self.OutfitList, self.HELPTIP_INFO);
+		local helptipInfo = self.HELPTIP_INFO[Enum.FrameTutorialAccount.TransmogOutfits];
+		if showTrialOfStyleHelptip then
+			helptipInfo.onAcknowledgeCallback = function()
+				self:CheckShowHelptips();
+			end;
+		end
+
+		HelpTip:Show(self.OutfitList, helptipInfo);
+	elseif showTrialOfStyleHelptip then
+		HelpTip:Show(self.OutfitList, self.HELPTIP_INFO[Enum.FrameTutorialAccount.TransmogTrialOfStyle]);
 	end
 end
 
@@ -463,6 +525,11 @@ function TransmogOutfitCollectionMixin:UpdateShowEquippedGearButton()
 	local isLockedOutfit = C_TransmogOutfitInfo.IsEquippedGearOutfitLocked();
 	overlayFX.OverlayLocked:SetShown(isLockedOutfit);
 	overlayFX.OverlayLocked:ShowAutoCastEnabled(isLockedOutfit);
+
+	-- Trial of Style visuals
+	local inTransmogEvent = C_TransmogOutfitInfo.InTransmogEvent();
+	self.ShowEquippedGearSpellFrame.Button:SetEnabled(not inTransmogEvent);
+	self.ShowEquippedGearSpellFrame.Button.Icon:SetDesaturated(inTransmogEvent);
 end
 
 function TransmogOutfitCollectionMixin:UpdateSelectedOutfit()
@@ -535,6 +602,14 @@ function TransmogOutfitCollectionMixin:SetOutfitSavedState(outfitSaved)
 	self.outfitSaved = outfitSaved;
 end
 
+function TransmogOutfitCollectionMixin:GetSaveOutfitDisabledTooltip()
+	return self.saveOutfitDisabledTooltip;
+end
+
+function TransmogOutfitCollectionMixin:SetSaveOutfitDisabledTooltip(tooltip)
+	self.saveOutfitDisabledTooltip = tooltip;
+end
+
 
 ShowEquippedGearSpellFrameMixin = {};
 
@@ -553,30 +628,18 @@ function ShowEquippedGearSpellFrameMixin:OnLoad()
 end
 
 function ShowEquippedGearSpellFrameMixin:OnIconClick(_button, buttonName)
-	local function ClickCallback()
-		local toggleLock = false;
-
-		if buttonName == "RightButton" then
-			toggleLock = true;
-		end
-
-		C_TransmogOutfitInfo.ClearDisplayedOutfit(Enum.TransmogSituationTrigger.Manual, toggleLock);
-	end;
-
 	-- If already active and normally clicking, nothing will happen so don't possibly show pending dialog.
 	local activeOutfit = C_TransmogOutfitInfo.IsEquippedGearOutfitDisplayed();
 	if activeOutfit and buttonName == "LeftButton" then
 		return;
 	end
 
-	if C_TransmogOutfitInfo.HasPendingOutfitTransmogs() or C_TransmogOutfitInfo.HasPendingOutfitSituations() then
-		local dialogData = {
-			confirmCallback = ClickCallback
-		};
-		StaticPopup_Show("TRANSMOG_PENDING_CHANGES", nil, nil, dialogData);
-	else
-		ClickCallback();
+	local toggleLock = false;
+	if buttonName == "RightButton" then
+		toggleLock = true;
 	end
+
+	C_TransmogOutfitInfo.ClearDisplayedOutfit(Enum.TransmogSituationTrigger.Manual, toggleLock);
 end
 
 function ShowEquippedGearSpellFrameMixin:OnIconDragStart()
@@ -593,7 +656,7 @@ function TransmogOutfitPopupMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.BorderBox.IconSelectorEditBox:SetFocus();
-	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Equipment);
+	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Transmog);
 	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
@@ -899,6 +962,11 @@ function TransmogCharacterMixin:SetupSlotSection(groupData)
 end
 
 function TransmogCharacterMixin:RefreshHideIgnoredToggle()
+	if not DisplayTypeUnassignedSupported() then
+		self.HideIgnoredToggle:Hide();
+		return;
+	end;
+
 	local hideIgnored = GetCVarBool("transmogHideIgnoredSlots");
 	self.HideIgnoredToggle.Checkbox:SetChecked(hideIgnored);
 	self.HideIgnoredToggle.Text:SetFontObject(hideIgnored and "GameFontHighlight" or "GameFontNormal");
@@ -1141,6 +1209,18 @@ function TransmogCharacterMixin:GetCurrentTransmogInfo()
 	return transmogInfo;
 end
 
+function TransmogCharacterMixin:GetCurrentTransmogIcons()
+	local transmogIcons = {};
+	for slotFrame in self.CharacterAppearanceSlotFramePool:EnumerateActive() do
+		local slotFrameIcons = slotFrame:GetCurrentIcons();
+		for _index, slotFrameIcon in ipairs(slotFrameIcons) do
+			table.insert(transmogIcons, slotFrameIcon);
+		end
+	end
+
+	return transmogIcons;
+end
+
 -- Used for custom set data formats.
 function TransmogCharacterMixin:GetItemTransmogInfoList()
 	local actor = self.ModelScene:GetPlayerActor();
@@ -1189,6 +1269,18 @@ TransmogWardrobeMixin = {
 			acknowledgeOnHide = true,
 			cvarBitfield = "closedInfoFramesAccountWide",
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations
+		},
+		[Enum.FrameTutorialAccount.TransmogCustomSetsMigration] =
+		{
+			text = TRANSMOG_CUSTOM_SETS_MIGRATION_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			alignment = HelpTip.Alignment.Center,
+			offsetY = 5,
+			system = "TransmogWardrobe",
+			acknowledgeOnHide = true,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSetsMigration
 		}
 	};
 };
@@ -1213,6 +1305,7 @@ function TransmogWardrobeMixin:OnShow()
 
 	-- Situation info may have changed in between showing transmog frame.
 	self.TabContent.SituationsFrame:Init();
+	self:UpdateTabs();
 end
 
 function TransmogWardrobeMixin:OnHide()
@@ -1223,7 +1316,7 @@ function TransmogWardrobeMixin:UpdateTabs()
 	self.TabHeaders:SetTabShown(self.itemsTabID, true);
 	self.TabHeaders:SetTabShown(self.setsTabID, true);
 	self.TabHeaders:SetTabShown(self.custmSetsTabID, true);
-	self.TabHeaders:SetTabShown(self.situationsTabID, true);
+	self.TabHeaders:SetTabShown(self.situationsTabID, self.TabContent.SituationsFrame:CanShow());
 end
 
 function TransmogWardrobeMixin:SetToDefaultAvailableTab()
@@ -1231,7 +1324,9 @@ function TransmogWardrobeMixin:SetToDefaultAvailableTab()
 end
 
 function TransmogWardrobeMixin:SetToItemsTab()
-	self:SetTab(self.itemsTabID);
+	if TabSystemOwnerMixin.GetTab(self) ~= self.itemsTabID then
+		self:SetTab(self.itemsTabID);
+	end
 end
 
 function TransmogWardrobeMixin:SetTab(tabID)
@@ -1246,12 +1341,29 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 
 	local helpTipParent = self:GetTabButton(tabID);
 	local bitfieldFlag;
-	if tabID == self.setsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSets;
-	elseif tabID == self.custmSetsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSets;
-	elseif tabID == self.situationsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations;
+
+	-- Only show custom set migration helptip if the player has any custom sets, otherwise mark it as seen and check the other tips.
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogCustomSetsMigration) then
+		local customSets = C_TransmogCollection.GetCustomSets();
+		if #customSets > 0 then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSetsMigration;
+			helpTipParent = self:GetTabButton(self.custmSetsTabID);
+		else
+			local helptipInfo = self.HELPTIP_INFO[Enum.FrameTutorialAccount.TransmogCustomSetsMigration];
+			if helptipInfo then
+				SetCVarBitfield(helptipInfo.cvarBitfield, helptipInfo.bitfieldFlag, true);
+			end
+		end
+	end
+
+	if not bitfieldFlag then
+		if tabID == self.setsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSets;
+		elseif tabID == self.custmSetsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSets;
+		elseif tabID == self.situationsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations;
+		end
 	end
 
 	if bitfieldFlag and not GetCVarBitfield("closedInfoFramesAccountWide", bitfieldFlag) then
@@ -1305,38 +1417,38 @@ function TransmogWardrobeItemsMixin:OnLoad()
 		C_TransmogOutfitInfo.SetPendingTransmog(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption, transmogID, displayType);
 	end
 
-	self.DisplayTypeUnassignedButton.SavedFrame.Anim:SetScript("OnFinished", function()
-		self.DisplayTypeUnassignedButton.SavedFrame:Hide();
+	local displayTypeUnassignedButton = self.DisplayTypes.DisplayTypeUnassignedButton;
+	local displayTypeEquippedButton = self.DisplayTypes.DisplayTypeEquippedButton;
+
+	if not DisplayTypeUnassignedSupported() then
+		displayTypeUnassignedButton:Hide();
+	else
+		displayTypeUnassignedButton.SavedFrame.Anim:SetScript("OnFinished", function()
+			displayTypeUnassignedButton.SavedFrame:Hide();
+		end);
+
+		displayTypeUnassignedButton:SetScript("OnLeave", GameTooltip_Hide);
+
+		displayTypeUnassignedButton:SetScript("OnClick", function()
+			PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
+			SetPendingDisplayTypeForSlot(Enum.TransmogOutfitDisplayType.Unassigned);
+		end);
+	end
+
+	displayTypeEquippedButton.SavedFrame.Anim:SetScript("OnFinished", function()
+		displayTypeEquippedButton.SavedFrame:Hide();
 	end);
 
-	self.DisplayTypeUnassignedButton:SetScript("OnEnter", function(button)
-		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-		GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED);
-		GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_TOOLTIP);
-		GameTooltip:Show();
-	end);
-
-	self.DisplayTypeUnassignedButton:SetScript("OnLeave", GameTooltip_Hide);
-
-	self.DisplayTypeUnassignedButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
-		SetPendingDisplayTypeForSlot(Enum.TransmogOutfitDisplayType.Unassigned);
-	end);
-
-	self.DisplayTypeEquippedButton.SavedFrame.Anim:SetScript("OnFinished", function()
-		self.DisplayTypeEquippedButton.SavedFrame:Hide();
-	end);
-
-	self.DisplayTypeEquippedButton:SetScript("OnEnter", function(button)
+	displayTypeEquippedButton:SetScript("OnEnter", function(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED);
 		GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED_TOOLTIP);
 		GameTooltip:Show();
 	end);
 
-	self.DisplayTypeEquippedButton:SetScript("OnLeave", GameTooltip_Hide);
+	displayTypeEquippedButton:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.DisplayTypeEquippedButton:SetScript("OnClick", function()
+	displayTypeEquippedButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 		SetPendingDisplayTypeForSlot(Enum.TransmogOutfitDisplayType.Equipped);
 	end);
@@ -1358,6 +1470,7 @@ function TransmogWardrobeItemsMixin:OnLoad()
 	end);
 
 	self:Reset();
+	self.DisplayTypes:Layout();
 end
 
 function TransmogWardrobeItemsMixin:OnShow()
@@ -1422,6 +1535,14 @@ function TransmogWardrobeItemsMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
 		self:RefreshDisplayTypeButtons();
 	end
+end
+
+function TransmogWardrobeItemsMixin:OnKeyDown(key)
+	if key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY then
+		self:UpdateSelectedVisualFromKeyPress(key);
+		return false;
+	end
+	return true;
 end
 
 function TransmogWardrobeItemsMixin:Init(wardrobeCollection)
@@ -1592,8 +1713,8 @@ function TransmogWardrobeItemsMixin:RefreshWeaponDropdown()
 end
 
 function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
-	local unassignedButton = self.DisplayTypeUnassignedButton;
-	local equippedButton = self.DisplayTypeEquippedButton;
+	local unassignedButton = self.DisplayTypes.DisplayTypeUnassignedButton;
+	local equippedButton = self.DisplayTypes.DisplayTypeEquippedButton;
 
 	local selectedSlotData = self:GetSelectedSlotCallback();
 	if not selectedSlotData or not selectedSlotData.transmogLocation then
@@ -1609,8 +1730,19 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 		return;
 	end
 
-	unassignedButton:Show();
-	equippedButton:Show();
+	-- Slightly different logic if the current weapon option is an artifact option.
+	local artifactOptionSelected = false;
+	if selectedSlotData.artifactOptionsInfo then
+		for _index, artifactOptionInfo in ipairs(selectedSlotData.artifactOptionsInfo) do
+			if artifactOptionInfo.weaponOption == selectedSlotData.currentWeaponOptionInfo.weaponOption then
+				artifactOptionSelected = true;
+				break;
+			end
+		end
+	end
+
+	unassignedButton:SetShown(DisplayTypeUnassignedSupported());
+	equippedButton:SetShown(not artifactOptionSelected);
 
 	local function SetDisplayTypeButtonState(displayTypeButton, selected)
 		local stateAtlas;
@@ -1660,33 +1792,49 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 		displayTypeButton:SetEnabled(not selected);
 	end
 
-	-- Unassigned Button.
 	local unassignedAtlas;
 	if selectedSlotData.transmogLocation:IsIllusion() then
 		unassignedAtlas = "transmog-appearance-unassigned-enchant";
 	else
 		unassignedAtlas = C_TransmogOutfitInfo.GetUnassignedDisplayAtlasForSlot(selectedSlotData.transmogLocation:GetSlot());
 	end
-	unassignedButton.IconFrame.Icon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
 
-	local isUnassigned = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned;
-	SetDisplayTypeButtonState(unassignedButton, isUnassigned);
+	-- Unassigned Button.
+	if unassignedButton:IsShown() then
+		local buttonText = artifactOptionSelected and TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_ARTIFACT or TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED;
+		local tooltipText = artifactOptionSelected and TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_ARTIFACT_TOOLTIP or TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_TOOLTIP;
 
-	-- Equipped Button.
-	local equippedIcon = equippedButton.IconFrame.Icon;
-	if outfitSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.Ok then
-		equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
-	else
-		local textureName = GetInventoryItemTexture("player", selectedSlotData.transmogLocation:GetSlotID());
-		if textureName then
-			equippedIcon:SetTexture(textureName);
-		else
-			equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
-		end
+		unassignedButton:SetText(buttonText);
+		unassignedButton:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, buttonText);
+			GameTooltip_AddNormalLine(GameTooltip, tooltipText);
+			GameTooltip:Show();
+		end);
+
+		unassignedButton.IconFrame.Icon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
+
+		local isUnassigned = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned;
+		SetDisplayTypeButtonState(unassignedButton, isUnassigned);
 	end
 
-	local isEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
-	SetDisplayTypeButtonState(equippedButton, isEquipped);
+	-- Equipped Button.
+	if equippedButton:IsShown() then
+		local equippedIcon = equippedButton.IconFrame.Icon;
+		if outfitSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.Ok then
+			equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
+		else
+			local textureName = GetInventoryItemTexture("player", selectedSlotData.transmogLocation:GetSlotID());
+			if textureName then
+				equippedIcon:SetTexture(textureName);
+			else
+				equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
+			end
+		end
+
+		local isEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
+		SetDisplayTypeButtonState(equippedButton, isEquipped);
+	end
 end
 
 function TransmogWardrobeItemsMixin:RefreshSecondaryAppearanceToggle()
@@ -1768,12 +1916,122 @@ function TransmogWardrobeItemsMixin:SelectVisual(visualID)
 		end
 
 		local displayType = Enum.TransmogOutfitDisplayType.Assigned;
-		if C_TransmogCollection.IsAppearanceHiddenVisual(sourceID) then
-			displayType = Enum.TransmogOutfitDisplayType.Hidden;
+		if selectedSlotData.transmogLocation:IsAppearance() then
+			if C_TransmogCollection.IsAppearanceHiddenVisual(sourceID) then
+				displayType = Enum.TransmogOutfitDisplayType.Hidden;
+			end
+		else
+			if C_TransmogCollection.IsSpellItemEnchantmentHiddenVisual(sourceID) then
+				displayType = Enum.TransmogOutfitDisplayType.Hidden;
+			end
 		end
 		C_TransmogOutfitInfo.SetPendingTransmog(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption, sourceID, displayType);
 
 		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
+	end
+end
+
+function TransmogWardrobeItemsMixin:UpdateSelectedVisualFromKeyPress(key)
+	local selectedSlotData = self:GetSelectedSlotCallback();
+	if not selectedSlotData or not selectedSlotData.transmogLocation then
+		return;
+	end
+
+	-- Keyboard navigation only works if selecting something in the paged grid.
+	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
+	if not outfitSlotInfo or outfitSlotInfo.transmogID == NoTransmogID or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped then
+		return;
+	end
+
+	-- Get the current index relative to the entire displayed collection.
+	local startingIndex = self.PagedContent:FindIndexByPredicate(function(elementData)
+		if selectedSlotData.transmogLocation:IsAppearance() then
+			local mustBeUsable = true;
+			local sourceID = self:GetAnAppearanceSourceFromVisual(elementData.appearanceInfo.visualID, mustBeUsable);
+
+			return sourceID == outfitSlotInfo.transmogID;
+		else
+			return elementData.appearanceInfo.sourceID == outfitSlotInfo.transmogID;
+		end
+	end);
+
+	-- Could happen if the selected item is filtered out.
+	if startingIndex == nil then
+		return;
+	end
+
+	-- Find the updated target index that we should navigate to.
+	local contentSize = self.PagedContent:GetSize();
+	local templateKey = "COLLECTION_ITEM";
+	local viewIndex = 1;
+	local maxColumns, maxRows = self.PagedContent:TryGetMaxGridCountForTemplateInView(templateKey, viewIndex);
+	if maxColumns == nil or maxRows == nil then
+		return;
+	end
+
+	-- If moving would go past the ends, cap to the end. If on the end to start, wrap to the other cap.
+	-- Moving up/down jumps a whole row.
+	local targetIndex = startingIndex;
+	if key == WARDROBE_PREV_VISUAL_KEY then
+		targetIndex = targetIndex - 1;
+		if targetIndex <= 0 then
+			targetIndex = contentSize;
+		end
+	elseif key == WARDROBE_NEXT_VISUAL_KEY then
+		targetIndex = targetIndex + 1;
+		if targetIndex > contentSize then
+			targetIndex = 1;
+		end
+	elseif key == WARDROBE_UP_VISUAL_KEY then
+		if targetIndex == 1 then
+			targetIndex = contentSize;
+		else
+			targetIndex = targetIndex - maxColumns;
+			if targetIndex <= 0 then
+				targetIndex = 1;
+			end
+		end
+	elseif key == WARDROBE_DOWN_VISUAL_KEY then
+		if targetIndex == contentSize then
+			targetIndex = 1;
+		else
+			targetIndex = targetIndex + maxColumns;
+			if targetIndex > contentSize then
+				targetIndex = contentSize;
+			end
+		end
+	end
+
+	if targetIndex == startingIndex then
+		return;
+	end
+
+	-- Select and page to new index.
+	local targetElementData = self.PagedContent:GetElementDataByIndex(targetIndex);
+	if self.transmogLocation:IsAppearance() then
+		local mustBeUsable = true;
+		local sourceID = self:GetAnAppearanceSourceFromVisual(targetElementData.appearanceInfo.visualID, mustBeUsable);
+
+		local itemID = C_Transmog.GetItemIDForSource(sourceID);
+		if not itemID then
+			return;
+		end
+
+		-- Handles sparse cases, ensures things can be validly selected.
+		local item = Item:CreateFromItemID(itemID);
+		item:ContinueOnItemLoad(function()
+			-- Since the player may have run another key press while waiting here on a previous item, make sure the starting info is still the same to ensure a valid state.
+			local currentOutfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
+			if currentOutfitSlotInfo.transmogID ~= outfitSlotInfo.transmogID or currentOutfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or currentOutfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped then
+				return;
+			end
+
+			self:SelectVisual(targetElementData.appearanceInfo.visualID);
+			self:RefreshPagedEntry();
+		end);
+	else
+		self:SelectVisual(targetElementData.appearanceInfo.visualID);
+		self:RefreshPagedEntry();
 	end
 end
 
@@ -2289,7 +2547,7 @@ function TransmogWardrobeCustomSetsMixin:OnLoad()
 	end);
 
 	self.NewCustomSetButton:SetScript("OnEnter", function(button)
-		local showTooltip = self.NewCustomSetButton.Text:IsTruncated() or not button:IsEnabled();
+		local showTooltip = self.NewCustomSetButton.Text:IsTruncated() or self.NewCustomSetButton.disabledTooltip;
 		if showTooltip then
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 
@@ -2300,8 +2558,8 @@ function TransmogWardrobeCustomSetsMixin:OnLoad()
 				end
 			end
 
-			if not button:IsEnabled() then
-				GameTooltip_AddErrorLine(GameTooltip, TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED);
+			if self.NewCustomSetButton.disabledTooltip then
+				GameTooltip_AddErrorLine(GameTooltip, self.NewCustomSetButton.disabledTooltip);
 			end
 
 			GameTooltip:Show();
@@ -2332,6 +2590,7 @@ function TransmogWardrobeCustomSetsMixin:OnEvent(event, ...)
 	if event == "UNIT_FORM_CHANGED" then
 		self:HandleFormChanged();
 	elseif event == "TRANSMOG_CUSTOM_SETS_CHANGED" then
+		self:RefreshNewCustomSetButton();
 		self:RefreshCollectionEntries();
 	elseif event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
 		self:RefreshCameras();
@@ -2366,10 +2625,20 @@ function TransmogWardrobeCustomSetsMixin:HandleFormChanged()
 end
 
 function TransmogWardrobeCustomSetsMixin:RefreshNewCustomSetButton()
-	-- Enable the new custom set button if there is at least 1 valid slot apperance to make a custom set from.
-	local itemTransmogInfoList = self:GetItemTransmogInfoListCallback();
-	local hasValidAppearance = TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList);
-	self.NewCustomSetButton:SetEnabled(hasValidAppearance);
+	-- Enable the new custom set button if not at max custom sets, and there is at least 1 valid slot apperance to make a custom set from.
+	self.NewCustomSetButton.disabledTooltip = nil;
+
+	local customSets = C_TransmogCollection.GetCustomSets();
+	if #customSets >= C_TransmogCollection.GetNumMaxCustomSets() then
+		self.NewCustomSetButton.disabledTooltip = TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED_MAX_COUNT;
+	else
+		local itemTransmogInfoList = self:GetItemTransmogInfoListCallback();
+		if not TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList) then
+			self.NewCustomSetButton.disabledTooltip = TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED;
+		end
+	end
+
+	self.NewCustomSetButton:SetEnabled(self.NewCustomSetButton.disabledTooltip == nil);
 end
 
 function TransmogWardrobeCustomSetsMixin:RefreshCollectionEntries()
@@ -2427,7 +2696,7 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 				local slot = C_TransmogOutfitInfo.GetTransmogOutfitSlotFromInventorySlot(indexCustomSetInfo - 1);
 
 				-- Weapon slots are special here, as there is ambiguity with weapon options.
-				local isValidSlot = slot ~= nil and not C_TransmogOutfitInfo.IsSlotWeaponSlot(slot);
+				local isValidSlot = slot ~= nil and slot ~= Constants.TransmogOutfitDataConsts.TRANSMOG_OUTFIT_SLOT_NONE and not C_TransmogOutfitInfo.IsSlotWeaponSlot(slot);
 				if isValidSlot and customSetInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
 					slotMatched = false;
 
@@ -2546,7 +2815,12 @@ function TransmogWardrobeSituationsMixin:Init()
 			situationFrame:Show();
 		end
 		self.Situations:Layout();
+		self.hasSituationData = true;
 	end
+end
+
+function TransmogWardrobeSituationsMixin:CanShow()
+	return self.hasSituationData;
 end
 
 function TransmogWardrobeSituationsMixin:Refresh()

@@ -1,12 +1,28 @@
 local DAMAGE_METER_CATEGORIES = {
-	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken, Enum.DamageMeterType.AvoidableDamageTaken}; },
+	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken, Enum.DamageMeterType.AvoidableDamageTaken, Enum.DamageMeterType.EnemyDamageTaken}; },
 	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps }; },
-	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels}; },
+	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels, Enum.DamageMeterType.Deaths}; },
 };
 
 local DAMAGE_METER_TYPE_VALUE_PER_SECOND_AS_PRIMARY = {
 	[Enum.DamageMeterType.Dps] = true,
 	[Enum.DamageMeterType.Hps] = true,
+};
+
+local DAMAGE_METER_TYPE_ALWAYS_SHOWS_LOCAL_PLAYER = {
+	[Enum.DamageMeterType.DamageDone] = true,
+	[Enum.DamageMeterType.Dps] = true,
+	[Enum.DamageMeterType.HealingDone] = true,
+	[Enum.DamageMeterType.Hps] = true,
+	[Enum.DamageMeterType.Absorbs] = true,
+	[Enum.DamageMeterType.Interrupts] = true,
+	[Enum.DamageMeterType.Dispels] = true,
+	[Enum.DamageMeterType.DamageTaken] = true,
+	[Enum.DamageMeterType.AvoidableDamageTaken] = true,
+};
+
+local DAMAGE_METER_TYPE_SUPPRESS_ICON = {
+	[Enum.DamageMeterType.EnemyDamageTaken] = true,
 };
 
 local DAMAGE_METER_TYPE_NAMES = {
@@ -19,6 +35,8 @@ local DAMAGE_METER_TYPE_NAMES = {
 	[Enum.DamageMeterType.Dispels] = DAMAGE_METER_TYPE_DISPELS,
 	[Enum.DamageMeterType.DamageTaken] = DAMAGE_METER_TYPE_DAMAGE_TAKEN,
 	[Enum.DamageMeterType.AvoidableDamageTaken] = DAMAGE_METER_TYPE_AVOIDABLE_DAMAGE_TAKEN,
+	[Enum.DamageMeterType.Deaths] = DAMAGE_METER_TYPE_DEATHS,
+	[Enum.DamageMeterType.EnemyDamageTaken] = DAMAGE_METER_TYPE_ENEMY_DAMAGE_TAKEN,
 };
 
 local function GetDamageMeterTypeName(damageMeterType)
@@ -124,6 +142,10 @@ function DamageMeterSessionWindowMixin:GetNotActiveFontString()
 	return self.NotActive;
 end
 
+function DamageMeterSessionWindowMixin:GetSessionTimerFontString()
+	return self.SessionTimer;
+end
+
 function DamageMeterSessionWindowMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 
@@ -149,7 +171,10 @@ function DamageMeterSessionWindowMixin:OnEvent(event, ...)
 	if event == "DAMAGE_METER_COMBAT_SESSION_UPDATED" then
 		local type, sessionID = ...;
 		if self:GetDamageMeterType() == type then
-			if self:GetSessionID() == sessionID or self:GetSessionType() ~= nil then
+			-- Two events are always dispatched: one for the overall session (with no sessionID) and one for
+			-- the current session with its sessionID. The window should only ever process one of them to avoid
+			-- doing double work.
+			if self:GetSessionID() == sessionID or (sessionID == 0 and self:GetSessionType() ~= nil) then
 				self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 			end
 		end
@@ -163,8 +188,57 @@ function DamageMeterSessionWindowMixin:OnEvent(event, ...)
 end
 
 function DamageMeterSessionWindowMixin:OnEnter()
-	-- Handle showing the ResizeButton under the correct conditions.
-	self:SetScript("OnUpdate", function()
+	-- NOTE: This intentionally omits an OnLeave handler because the OnLeave processing is handled in the OnUpdate.
+	self:SetOnUpdateReason("MouseOver", true);
+end
+
+function DamageMeterSessionWindowMixin:OnDragStart()
+	if not self:CanMoveOrResize() then
+		return;
+	end
+
+	self:StartMoving();
+end
+
+function DamageMeterSessionWindowMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
+
+function DamageMeterSessionWindowMixin:ShouldEnableOnUpdate()
+	if self.onUpdateReasons then
+		for _reason, enabled in pairs(self.onUpdateReasons) do
+			if enabled then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
+function DamageMeterSessionWindowMixin:IsUpdateReasonEnabled(reason)
+	return self.onUpdateReasons and self.onUpdateReasons[reason];
+end
+
+function DamageMeterSessionWindowMixin:SetOnUpdateReason(reason, enabled)
+	local onUpdateReasons = GetOrCreateTableEntry(self, "onUpdateReasons");
+	onUpdateReasons[reason] = enabled;
+
+	local hasOnUpdate = self:GetScript("OnUpdate") ~= nil;
+	local shouldHaveOnUpdate = self:ShouldEnableOnUpdate();
+	if hasOnUpdate ~= shouldHaveOnUpdate then
+		if self:ShouldEnableOnUpdate() then
+			self:SetScript("OnUpdate", self.OnUpdate);
+		else
+			self:SetScript("OnUpdate", nil);
+		end
+	end
+end
+
+-- Dynamically installed script handler for OnUpdate depending on reasons like "mouse over" or "has active session timer"
+function DamageMeterSessionWindowMixin:OnUpdate()
+	if self:IsUpdateReasonEnabled("MouseOver") then
+		-- Handle showing the ResizeButton under the correct conditions.
 		local resizeButton = self:GetResizeButton();
 		local isMouseOver = self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing();
 		local shouldResizeButtonBeShown = self:CanMoveOrResize();
@@ -185,8 +259,6 @@ function DamageMeterSessionWindowMixin:OnEnter()
 		elseif not isMouseOver then
 			self.playedMouseOverAnims = false;
 
-			self:SetScript("OnUpdate", nil);
-
 			local reverse = true;
 
 			self.EmphasizeScrollBar:Play(reverse);
@@ -198,35 +270,38 @@ function DamageMeterSessionWindowMixin:OnEnter()
 			if shouldChangeBackgroundOpacity then
 				self.ShowBackground:Play(reverse);
 			end
-		end
-	end);
-end
 
-function DamageMeterSessionWindowMixin:OnDragStart()
-	if not self:CanMoveOrResize() then
-		return;
+			self:SetOnUpdateReason("MouseOver", false);
+		end
 	end
 
-	self:StartMoving();
+	if self:IsUpdateReasonEnabled("SessionTimer") then
+		local sessionType = self:GetSessionType();
+		local sessionDuration = C_DamageMeter.GetSessionDurationSeconds(sessionType);
+		self:SetSessionDuration(sessionDuration);
+	end
 end
 
-function DamageMeterSessionWindowMixin:OnDragStop()
-	self:StopMovingOrSizing();
-end
+function DamageMeterSessionWindowMixin:SetupEntry(frame)
+	frame.hasBeenSetup = true;
 
-function DamageMeterSessionWindowMixin:SetupEntry(frame, elementData)
-	frame:Init(elementData);
 	frame:SetUseClassColor(self:ShouldUseClassColor());
 	frame:SetBarHeight(self:GetBarHeight());
 	frame:SetTextScale(self:GetTextScale());
 	frame:SetShowBarIcons(self:ShouldShowBarIcons());
 	frame:SetStyle(self:GetStyle());
+	frame:SetNumberDisplayType(self:GetNumberDisplayType());
 	frame:SetBackgroundAlpha(self:GetBackgroundAlpha());
+	frame:EnableMouse(not self:IsNonInteractive());
 
 	-- For the existing implementation, clicks need to happen on mouse down because rebuilding the data
 	-- provider with every change ends up hiding all frames and clearing their button state, meaning a
 	-- mouse up might not happen.
 	frame:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+end
+
+function DamageMeterSessionWindowMixin:InitEntry(frame, elementData)
+	frame:Init(elementData);
 
 	frame:SetScript("OnClick", function(button, mouseButtonName)
 		if mouseButtonName == "LeftButton" or mouseButtonName == "RightButton" then
@@ -245,7 +320,18 @@ end
 function DamageMeterSessionWindowMixin:InitializeScrollBox()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("DamageMeterSourceEntryTemplate", function(frame, elementData)
-		self:SetupEntry(frame, elementData);
+		self:InitEntry(frame, elementData);
+	end);
+
+	ScrollUtil.AddAcquiredFrameCallback(self:GetScrollBox(), function(o, frame, elementData, new)
+		if not frame.hasBeenSetup then
+			self:SetupEntry(frame);
+		end
+	end);
+
+	ScrollUtil.AddReleasedFrameCallback(self:GetScrollBox(), function(o, frame, elementData)
+		-- Settings can change while the frame isn't being used, so it needs to be setup once it's aquired again.
+		frame.hasBeenSetup = false;
 	end);
 
 	self:InitializeScrollBoxPadding(view);
@@ -321,6 +407,10 @@ function DamageMeterSessionWindowMixin:InitializeSessionDropdown()
 				sessionName = DAMAGE_METER_COMBAT_NUMBER:format(availableCombatSession.sessionID);
 			end
 
+			if availableCombatSession.durationSeconds then
+				sessionName = ("%s [%s]"):format(sessionName, SecondsToClock(availableCombatSession.durationSeconds));
+			end
+
 			rootDescription:CreateRadio(sessionName, IsSelected, SetSelected, sessionData);
 		end
 
@@ -351,6 +441,14 @@ function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 		return self:GetDamageMeterOwner():CanMoveOrResizeSessionWindow(self) and self:IsLocked();
 	end
 
+	local function CanMakeSessionWindowNonInteractive()
+		return not self:IsNonInteractive();
+	end
+
+	local function CanMakeSessionWindowInteractive()
+		return self:IsNonInteractive();
+	end
+
 	self:GetSettingsDropdown():SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_DAMAGE_METER_WINDOW_SETTINGS");
 
@@ -375,6 +473,18 @@ function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 		if CanUnlockSessionWindow() then
 			rootDescription:CreateButton(DAMAGE_METER_UNLOCK_WINDOW, function(...)
 				self:GetDamageMeterOwner():SetSessionWindowLocked(self, false);
+			end);
+		end
+
+		if CanMakeSessionWindowNonInteractive() then
+			rootDescription:CreateButton(DAMAGE_METER_MAKE_UNINTERACTABLE, function(...)
+				self:GetDamageMeterOwner():SetSessionWindowNonInteractive(self, true);
+			end);
+		end
+
+		if CanMakeSessionWindowInteractive() then
+			rootDescription:CreateButton(DAMAGE_METER_MAKE_INTERACTABLE, function(...)
+				self:GetDamageMeterOwner():SetSessionWindowNonInteractive(self, false);
 			end);
 		end
 
@@ -448,28 +558,43 @@ end
 
 function DamageMeterSessionWindowMixin:ShowsValuePerSecondAsPrimary()
 	local damageMeterType = self:GetDamageMeterType();
-	return DAMAGE_METER_TYPE_VALUE_PER_SECOND_AS_PRIMARY[damageMeterType] == true;
+	return DAMAGE_METER_TYPE_VALUE_PER_SECOND_AS_PRIMARY[damageMeterType];
 end
 
-function DamageMeterSessionWindowMixin:BuildDataProvider()
+function DamageMeterSessionWindowMixin:AlwaysShowsLocalPlayer()
+	local damageMeterType = self:GetDamageMeterType();
+	return DAMAGE_METER_TYPE_ALWAYS_SHOWS_LOCAL_PLAYER[damageMeterType];
+end
+
+function DamageMeterSessionWindowMixin:SuppressIcon()
+	local damageMeterType = self:GetDamageMeterType();
+	return DAMAGE_METER_TYPE_SUPPRESS_ICON[damageMeterType];
+end
+
+function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
+	combatSession = combatSession or self:GetCombatSession();
+
 	local sourceWindow = self:GetSourceWindow();
 	local dataProvider = CreateDataProvider();
-	local combatSession = self:GetCombatSession();
 	local combatSources = combatSession and combatSession.combatSources or {};
 	local maxAmount = combatSession and combatSession.maxAmount or 0;
+	local sessionTotalAmount = combatSession and combatSession.totalAmount or 0;
 	local hadLocalPlayerIndex = self.localPlayerIndex ~= nil;
 	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
+	local alwaysShowsLocalPlayer = self:AlwaysShowsLocalPlayer();
+	local suppressIcon = self:SuppressIcon();
+	local damageMeterType = self:GetDamageMeterType();
 
 	self.localPlayerIndex = nil;
 	self.needsSourceWindowRefresh = false;
 
 	for i, combatSource in ipairs(combatSources) do
-		if combatSource.isLocalPlayer then
+		if combatSource.isLocalPlayer and alwaysShowsLocalPlayer then
 			self.localPlayerIndex = i;
 		end
 
 		-- Determine if the source window is currently showing for this source and if its data is stale.
-		if combatSource.sourceGUID == sourceWindow:GetSourceGUID() then
+		if sourceWindow:IsShowingSource(combatSource) then
 			-- Changes in the total amount need to be reflected in the source window.
 			if combatSource.totalAmount ~= sourceWindow:GetTotalAmount() then
 				self.needsSourceWindowRefresh = true;
@@ -481,8 +606,11 @@ function DamageMeterSessionWindowMixin:BuildDataProvider()
 		end
 
 		combatSource.maxAmount = maxAmount;
+		combatSource.sessionTotalAmount = sessionTotalAmount;
 		combatSource.index = i;
 		combatSource.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
+		combatSource.suppressIcon = suppressIcon;
+		combatSource.damageMeterType = damageMeterType;
 
 		dataProvider:Insert(combatSource);
 	end
@@ -499,7 +627,8 @@ function DamageMeterSessionWindowMixin:ShowLocalPlayerEntry(earlierInList)
 	local elementData = scrollBox:FindElementData(self.localPlayerIndex);
 
 	local localPlayerEntry = self:GetLocalPlayerEntry();
-	self:SetupEntry(localPlayerEntry, elementData);
+	self:SetupEntry(localPlayerEntry);
+	self:InitEntry(localPlayerEntry, elementData);
 
 	localPlayerEntry:ClearAllPoints();
 	if earlierInList then
@@ -560,12 +689,48 @@ function DamageMeterSessionWindowMixin:OnScrollBoxScroll()
 	self:EnsureLocalPlayerPresent();
 end
 
+function DamageMeterSessionWindowMixin:UpdateExistingDataProvider(dataProvider)
+	local currentProvider = self:GetScrollBox():GetDataProvider();
+	if not currentProvider then
+		return false;
+	end
+
+	if currentProvider:GetSize() ~= dataProvider:GetSize() then
+		return false;
+	end
+
+	-- It's important to leave the collection the same, but the values of each item in the collection
+	-- can be updated, as long as the frames to which the elements are attached are updated with
+	-- the new values.
+	for i = 1, currentProvider:GetSize() do
+		-- This could use SetTablePairsToTable in the future, but if so check for self assignment
+		-- so the table isn't wiped. It's possible that the new and old elements are pointers to
+		-- the same element.
+		Mixin(currentProvider.collection[i], dataProvider.collection[i]);
+	end
+
+	self:GetScrollBox():ForEachFrame(function(frame)
+		local elementData = currentProvider:Find(frame:GetOrderIndex());
+		self:InitEntry(frame, elementData);
+	end);
+
+	return true;
+end
+
 function DamageMeterSessionWindowMixin:Refresh(retainScrollPosition)
-	self:GetScrollBox():SetDataProvider(self:BuildDataProvider(), retainScrollPosition);
+	local combatSession = self:GetCombatSession();
+	local dataProvider = self:BuildDataProvider(combatSession);
+
+	-- Only completely rebuild the data provider if necessary. Avoid rebuilding it on basic updates
+	-- to the internal data as that results in a lot of unnecessary work.
+	if not retainScrollPosition or not self:UpdateExistingDataProvider(dataProvider) then
+		self:GetScrollBox():SetDataProvider(dataProvider, retainScrollPosition);
+	end
 
 	self:EnsureLocalPlayerPresent();
 	self:EnsureSourceWindowUpToDate();
 	self:UpdateNotActiveText();
+	self:UpdateSessionTimerState(combatSession);
 end
 
 function DamageMeterSessionWindowMixin:EnumerateEntryFrames()
@@ -617,7 +782,7 @@ function DamageMeterSessionWindowMixin:GetDamageMeterType()
 end
 
 -- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
--- any code other than DamageMeterMixin:SetSessionWindowFrameSessionID
+-- any code other than DamageMeterMixin:SetSessionWindowSessionID
 function DamageMeterSessionWindowMixin:SetSession(sessionType, sessionID)
 	self.sessionType = sessionType;
 	self.sessionID = sessionID;
@@ -638,7 +803,7 @@ function DamageMeterSessionWindowMixin:GetSessionID()
 end
 
 function DamageMeterSessionWindowMixin:IsResizing()
-	return self.isResizing == true;
+	return self.isResizing;
 end
 
 -- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
@@ -650,7 +815,26 @@ function DamageMeterSessionWindowMixin:SetLocked(locked)
 end
 
 function DamageMeterSessionWindowMixin:IsLocked()
-	return self.isLocked == true;
+	return self.isLocked;
+end
+
+function DamageMeterSessionWindowMixin:IsNonInteractive()
+	return self.isNonInteractive;
+end
+
+function DamageMeterSessionWindowMixin:SetNonInteractive(nonInteractive)
+	if nonInteractive ~= self:IsNonInteractive() then
+		self.isNonInteractive = nonInteractive;
+		self:InitializeSettingsDropdown();
+
+		local enabled = not nonInteractive;
+		self:EnableMouse(enabled);
+		self:GetSessionDropdown():EnableMouse(enabled);
+		self:GetDamageMeterTypeDropdown():EnableMouse(enabled);
+		self:GetResizeButton():EnableMouse(enabled);
+
+		self:ForEachEntryFrame(function(frame) frame:EnableMouse(enabled); end);
+	end
 end
 
 function DamageMeterSessionWindowMixin:CanMoveOrResize()
@@ -669,7 +853,65 @@ function DamageMeterSessionWindowMixin:RefreshLayout()
 	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
+-- Returns whether or not to display a session timer and if that session timer needs to be updated each frame.
+local function ShouldDisplaySessionTimer(sessionType, sessionID, inCombat)
+	if (not sessionType and sessionID) or sessionType == Enum.DamageMeterSessionType.Expired then
+		return true, false;
+	end
+
+	return inCombat, true;
+end
+
+function DamageMeterSessionWindowMixin:IsPlayerInCombat()
+	local isInCombat = UnitAffectingCombat("player");
+	return isInCombat;
+end
+
+function DamageMeterSessionWindowMixin:SetSessionDuration(durationSeconds)
+	if durationSeconds and durationSeconds ~= 0 then
+		local timerText = ("[%s] "):format(SecondsToClock(durationSeconds));
+		self:GetSessionTimerFontString():SetText(timerText);
+	else
+		self:GetSessionTimerFontString():SetText("");
+	end
+end
+
+function DamageMeterSessionWindowMixin:ShowSessionTimerFromCombatSession(combatSession)
+	local durationSeconds = combatSession and combatSession.durationSeconds;
+	self:SetSessionDuration(durationSeconds);
+end
+
+function DamageMeterSessionWindowMixin:ShowSessionTimer(needsOnUpdate, combatSession)
+	self:ClearSessionTimer();
+	self:ShowSessionTimerFromCombatSession(combatSession);
+	self:SetOnUpdateReason("SessionTimer", needsOnUpdate);
+end
+
+function DamageMeterSessionWindowMixin:ClearSessionTimer()
+	self:SetOnUpdateReason("SessionTimer", false);
+	self:GetSessionTimerFontString():SetText("");
+end
+
+function DamageMeterSessionWindowMixin:UpdateSessionTimerState(combatSession)
+	combatSession = combatSession or self:GetCombatSession();
+	local sessionType = self:GetSessionType();
+	local sessionID = self:GetSessionID();
+	local inCombat = self:IsPlayerInCombat();
+	local showTimer, needsTimerUpdate = ShouldDisplaySessionTimer(sessionType, sessionID, inCombat);
+	if showTimer then
+		self:ShowSessionTimer(needsTimerUpdate, combatSession);
+	else
+		self:ClearSessionTimer();
+	end
+end
+
 function DamageMeterSessionWindowMixin:ShowSourceWindow(source)
+	-- Leverage the death recap UI to show death breakdown.
+	if source.deathRecapID and source.deathRecapID ~= 0 then
+		OpenDeathRecapUI(source.deathRecapID);
+		return;
+	end
+
 	local sourceWindow = self:GetSourceWindow();
 	sourceWindow:SetSource(source);
 	sourceWindow:AnchorToSessionWindow(self);
@@ -697,12 +939,10 @@ function DamageMeterSessionWindowMixin:OnUseClassColorChanged(useClassColor)
 end
 
 function DamageMeterSessionWindowMixin:ShouldUseClassColor()
-	return self.useClassColor == true;
+	return self.useClassColor;
 end
 
 function DamageMeterSessionWindowMixin:SetUseClassColor(useClassColor)
-	useClassColor = (useClassColor == true);
-
 	if self.useClassColor ~= useClassColor then
 		self.useClassColor = useClassColor;
 		self:OnUseClassColorChanged(useClassColor);
@@ -748,12 +988,10 @@ function DamageMeterSessionWindowMixin:OnShowBarIconsChanged(showBarIcons)
 end
 
 function DamageMeterSessionWindowMixin:ShouldShowBarIcons()
-	return self.showBarIcons == true;
+	return self.showBarIcons;
 end
 
 function DamageMeterSessionWindowMixin:SetShowBarIcons(showBarIcons)
-	showBarIcons = (showBarIcons == true);
-
 	if self.showBarIcons ~= showBarIcons then
 		self.showBarIcons = showBarIcons;
 		self:OnShowBarIconsChanged(showBarIcons);
@@ -791,6 +1029,21 @@ function DamageMeterSessionWindowMixin:SetStyle(style)
 	if self.style ~= style then
 		self.style = style;
 		self:OnStyleChanged(style);
+	end
+end
+
+function DamageMeterSessionWindowMixin:OnNumberDisplayTypeChanged(numberDisplayType)
+	self:ForEachEntryFrame(function(frame) frame:SetNumberDisplayType(numberDisplayType); end);
+end
+
+function DamageMeterSessionWindowMixin:GetNumberDisplayType()
+	return self.numberDisplayType or Enum.DamageMeterNumbers.Minimal;
+end
+
+function DamageMeterSessionWindowMixin:SetNumberDisplayType(numberDisplayType)
+	if self.numberDisplayType ~= numberDisplayType then
+		self.numberDisplayType = numberDisplayType;
+		self:OnNumberDisplayTypeChanged(numberDisplayType);
 	end
 end
 

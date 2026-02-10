@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Browser name="HousingPhotoSharingBrowserTemplate" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
+		<Frames>
+			<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEscapePressed>
+				self:ClearFocus();
+			</OnEscapePressed>
+			<OnButtonUpdate>
+				if (action == "doneloading") then
+					self:GetParent():SetInitialLoading(false);
+				end
+			</OnButtonUpdate>
+		</Scripts>
+	</Browser>
+
+	<Browser name="HousingPhotoSharingBrowserTemplatePopup" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
+		<Frames>
+			<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEscapePressed>
+				self:ClearFocus();
+			</OnEscapePressed>
+			<OnButtonUpdate>
+				if (action == "doneloading") then
+					self:GetParent():SetInitialLoading(false);
+				end
+			</OnButtonUpdate>
+		</Scripts>
+	</Browser>
+
+	<Frame name="HousingPhotoSharingBrowser" toplevel="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" enableMouse="true" mixin="HousingPhotoSharingBrowserMixin">
+		<Size x="1090" y="820"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Browser parentKey="Browser" name="PhotoSharingBrowser" inherits="HousingPhotoSharingBrowserTemplate" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.homepage = "HousingPhotoSharing";
+					</OnLoad>
+				</Scripts>
+			</Browser>
+			<Frame parentKey="SpinnerOverlay" inherits="SpinnerTemplate" frameLevel="3" frameStrata="HIGH">
+				<Size x="120" y="120"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GoogleSSONotice" frameLevel="3" frameStrata="HIGH">
+				<Size x="312" y="40"/>
+				<Anchors>
+					<Anchor point="TOP" y="-22"/>
+					<Anchor point="LEFT" x="390"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontWhite" text="PHOTO_SHARING_GOOGLE_NOTICE" justifyH="CENTER" justifyV="MIDDLE"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Size x="312" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="6" y="-6"/>
+								<Anchor point="TOPRIGHT" x="-6" y="6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingPhotoSharingBrowserPopup" toplevel="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" enableMouse="true" mixin="HousingPhotoSharingBrowserPopupMixin">
+		<Size x="800" y="500"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Browser parentKey="Browser" name="PhotoSharingBrowserPopup" inherits="HousingPhotoSharingBrowserTemplatePopup" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+			</Browser>
+			<Frame parentKey="SpinnerOverlay" inherits="SpinnerTemplate" frameLevel="3" frameStrata="HIGH">
+				<Size x="120" y="120"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

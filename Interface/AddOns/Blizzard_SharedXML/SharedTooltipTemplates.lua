@@ -20,7 +20,11 @@ function SharedTooltip_OnLoad(self)
 end
 
 function SharedTooltip_OnHide(self)
-	self:SetPadding(0, 0, 0, 0);
+	if self.ClearPadding then
+		self:ClearPadding();
+	else
+		self:SetPadding(0, 0, 0, 0);
+	end
 end
 
 local DEFAULT_TOOLTIP_OFFSET_X = -17;

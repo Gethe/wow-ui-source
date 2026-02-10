@@ -476,10 +476,6 @@ function TargetFrameMixin:CheckDead()
 end
 
 function TargetFrameMixin:OnUpdate(elapsed)
-	if (self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit)) then
-		self.totFrame:Update();
-	end
-
 	self.elapsed = (self.elapsed or 0) + elapsed;
 	if (self.elapsed > 0.5) then
 		self.elapsed = 0;
@@ -1130,7 +1126,24 @@ end
 -- Target of Target Frame
 --
 
+local targetOfTargetCVar = "showTargetOfTarget";
+
 TargetOfTargetMixin = {};
+
+function TargetOfTargetMixin:OnLoad()
+	CVarCallbackRegistry:RegisterCallback(targetOfTargetCVar, self.OnTargetOfTargetCVarChanged, self);
+	self:OnTargetOfTargetCVarChanged();
+end
+
+function TargetOfTargetMixin:OnTargetOfTargetCVarChanged()
+	self.showTargetOfTarget = CVarCallbackRegistry:GetCVarValueBool(targetOfTargetCVar);
+	if self.showTargetOfTarget then
+		self:SetScript("OnUpdate", self.Update);
+	else
+		self:SetScript("OnUpdate", nil);
+	end
+	self:Update();
+end
 
 function TargetOfTargetMixin:OnShow()
 	local parent = self:GetParent();
@@ -1144,7 +1157,7 @@ end
 
 function TargetOfTargetMixin:Update()
 	local parent = self:GetParent();
-	if (CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit)
+	if (self.showTargetOfTarget and UnitExists(parent.unit) and UnitExists(self.unit)
 		and (not UnitIsUnit(PlayerFrame.unit, parent.unit)) and (UnitHealth(parent.unit) > 0)) then
 		if (not self:IsShown()) then
 			self:Show();

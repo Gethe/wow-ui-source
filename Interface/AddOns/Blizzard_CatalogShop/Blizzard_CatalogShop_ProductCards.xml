@@ -25,7 +25,50 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-
+	
+	<!-- Section Header Template with Opt-out Link -->
+	<Frame name="CatalogShopSectionHeaderOptOutLinkTemplate" mixin="CatalogShopSectionHeaderOptOutLinkMixin" virtual="true" enableMouse="true">
+		<Size x="557" y="42"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="headerText" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontNormalLarge">
+					<Size x="0" y="42"/>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="sectionHeaderRule" atlas="shop-list-rule" useAtlasSize="true" >
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.headerText" relativePoint="RIGHT" x="32" y="-8"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Help">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.headerText" relativePoint="TOPRIGHT" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="I" file="Interface\common\help-i">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+	
 	<!-- Services Small Card Template -->
 	<Button name="SmallCatalogShopServicesCardTemplate" mixin="SmallCatalogShopServicesCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
@@ -40,6 +83,9 @@
 
 	<!-- Toys Small Card Template -->
 	<Button name="SmallCatalogShopToysCardTemplate" mixin="SmallCatalogShopToysCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Decor Small Card Template -->
+	<Button name="SmallCatalogShopDecorCardTemplate" mixin="SmallCatalogShopDecorCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
 	<!-- Access Small Card Template -->
 	<Button name="SmallCatalogShopAccessCardTemplate" mixin="SmallCatalogShopAccessCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
@@ -65,6 +111,9 @@
 
 	<!-- Toys Details Card Template -->
 	<Button name="DetailsCatalogShopToysCardTemplate" mixin="DetailsCatalogShopToysCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Decor Details Card Template -->
+	<Button name="DetailsCatalogShopDecorCardTemplate" mixin="DetailsCatalogShopDecorCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
 	<!-- Access Details Card Template -->
 	<Button name="DetailsCatalogShopAccessCardTemplate" mixin="DetailsCatalogShopAccessCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />

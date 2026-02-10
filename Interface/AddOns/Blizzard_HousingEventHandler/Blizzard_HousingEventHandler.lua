@@ -6,21 +6,13 @@ function HousingFramesUtil.IsHousingMarketShopAvailable()
 end
 
 StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
-	text = HOUSING_PREVIEW_DECOR_WARNING,
+	text = HOUSING_PREVIEW_DECOR_WARNING_AR_ONLY,
 	button1 = OKAY,
 	button2 = CANCEL,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-
-	OnShow = function(dialog, _data)
-		if not HousingFramesUtil.IsHousingMarketShopAvailable() then
-			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING_AR_ONLY);
-		else
-			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING);
-		end
-	end,
 
 	OnAccept = function(dialog, cb)
 		cb();
@@ -32,10 +24,6 @@ StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
 function HousingFramesUtil.LeaveHouseEditor()
 	if C_HousingDecor.GetNumPreviewDecor() > 0 then
 		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
-			local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-			local requiresConfirmation = false;
-			EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
-
 			C_HouseEditor.LeaveHouseEditor();
 		end);
 	else

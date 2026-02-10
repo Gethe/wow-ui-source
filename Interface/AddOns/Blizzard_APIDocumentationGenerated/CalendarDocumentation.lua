@@ -246,6 +246,7 @@ local Calendar =
 			Name = "EventGetInvite",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -262,6 +263,7 @@ local Calendar =
 			Name = "EventGetInviteResponseTime",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -523,6 +525,7 @@ local Calendar =
 		{
 			Name = "GetClubCalendarEvents",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -541,6 +544,7 @@ local Calendar =
 			Name = "GetDayEvent",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

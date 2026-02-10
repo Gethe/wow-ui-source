@@ -210,3 +210,19 @@ function TooltipDataRules.WorldLootObjectPickUpIndicator(tooltip, tooltipData)
 	EventRegistry:TriggerEvent("WorldLootObjectTooltip.Shown", inventoryType, tooltip, tooltipData.id, tooltipData.worldLootObjectGUID); 
 end
 TooltipDataProcessor.AddTooltipPostCall(TooltipTypeEnums.Spell, TooltipDataRules.WorldLootObjectPickUpIndicator);
+
+--the purpose of this is to account for the close button when the tooltip is floating.
+function TooltipDataRules.AccountForCloseButtonOnItems(tooltip, lineData)
+	if tooltip == ItemRefTooltip and lineData.rightText and lineData.lineIndex == 1 then
+			local textureSettings = {
+				width = 10,
+				height = 2,
+				region = Enum.TooltipTextureRelativeRegion.RightLine,
+				anchor = Enum.TooltipTextureAnchor.RightCenter,
+				vertexColor = {r = 0, g = 0, b = 0, a = 0},
+			};
+			-- texture doesn't matter because we are setting alpha to 0.
+			tooltip:AddTexture("Interface\\Icons\\Achievement_General_StayClassy", textureSettings); 
+	end
+end
+TooltipDataProcessor.AddLinePostCall(LineTypeEnums.ItemName, TooltipDataRules.AccountForCloseButtonOnItems);

@@ -12,6 +12,26 @@ local Browser =
 	Events =
 	{
 		{
+			Name = "SimpleBrowserPopup",
+			Type = "Event",
+			LiteralName = "SIMPLE_BROWSER_POPUP",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "url", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SimpleBrowserSocialCallbackInvoked",
+			Type = "Event",
+			LiteralName = "SIMPLE_BROWSER_SOCIAL_CALLBACK_INVOKED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "url", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "SimpleBrowserWebError",
 			Type = "Event",
 			LiteralName = "SIMPLE_BROWSER_WEB_ERROR",

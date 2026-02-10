@@ -376,10 +376,7 @@ function CooldownViewerDataStoreSerializationMixin:SerializeLayouts(singleLayout
 				return; -- nil is totally fine, it just means we don't need to write anything to layoutContainer.
 			end
 
-			local currentKeyType = type(currentKey);
-			if currentKeyType ~= "number" then
-				assertsafe(false, "AddCooldownOverrideToLayout: All keys must be numbers (found %s)", currentKeyType);
-			end
+			assertsafe(tonumber(currentKey) ~= nil, "AddCooldownOverrideToLayout: All keys must be numbers (found %s)", tostring(currentKey));
 		end
 
 		for key = 1, lastKeyIndex do

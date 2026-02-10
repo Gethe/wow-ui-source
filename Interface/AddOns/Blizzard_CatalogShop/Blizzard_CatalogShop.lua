@@ -1,3 +1,6 @@
+local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
+local HouseChestAtlasMarkup = CreateAtlasMarkup("house-chest-icon", 16, 16);
+
 ----------------------------------------------------------------------------------
 -- CatalogShopMixin
 ----------------------------------------------------------------------------------
@@ -7,8 +10,8 @@ local CATALOG_SHOP_DYNAMIC_EVENTS = {
 	"CATALOG_SHOP_REBUILD_SCROLL_BOX",
 	"CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
 	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
-	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE",
 	"CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED",
+	"BULK_REFUND_RESULT_RECEIVED",
 };
 
 function CatalogShopMixin.GetBaseProductInfo(productID)
@@ -46,6 +49,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
 	self:RegisterEvent("SET_SEEN_PRODUCTS");
+	self:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -185,7 +189,7 @@ function CatalogShopMixin:HidePreviewFrames()
 	self.ToyContainerFrame:Hide();
 	self.ModelSceneContainerFrame:Hide();
 	self.ServicesContainerFrame:Hide();
-	self.CrossGameContainerFrame:Hide();
+	self.PMTImageContainerFrame:Hide();
 end
 
 function CatalogShopMixin:ShowLoadingScreen()
@@ -204,6 +208,7 @@ function CatalogShopMixin:ShowLoadingScreen()
 	self.ProductContainerFrame:Hide();
 	self.HeaderFrame:Hide();
 	self.CatalogShopDetailsFrame:Hide();
+	self.CatalogShopVCFrame:Hide();
 	self.ProductDetailsContainerFrame:Hide();
 	self.PersistentRefundContainerFrame:Hide();
 	self:HidePreviewFrames();
@@ -234,6 +239,7 @@ function CatalogShopMixin:ShowUnavailableScreen()
 	self.ProductContainerFrame:Hide();
 	self.ProductDetailsContainerFrame:Hide();
 	self.CatalogShopDetailsFrame:Hide();
+	self.CatalogShopVCFrame:Hide();
 	self.CatalogShopUnavailableScreenFrame:Show();
 end
 
@@ -271,6 +277,7 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		end
 
 		self.HeaderFrame:SetCategories(self.categoryIDs);
+		EventRegistry:TriggerEvent("CatalogShop.DataRefreshed");
 	elseif event == "CATALOG_SHOP_REBUILD_SCROLL_BOX" then
 		local resetSelection = false;
 		self.ProductContainerFrame:UpdateProducts(resetSelection);
@@ -353,14 +360,34 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--...handle it
 	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE") then
 		local currencyCode, balance = ...;
-	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE") then
-		local currencyCode = ...;
+		balance = tonumber(balance);
+		if (currencyCode and currencyCode == Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE) then
+			EventRegistry:TriggerEvent("CatalogShop.OnVCUpdated", balance);
+		end
 	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
-		-- TODO (WOW12-40870): Implement this
+		self.PersistentRefundContainerFrame:UpdateState();
+
+		-- TODO (WOW12-45327): Clean up this selected product logic (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+		local selectedProductInfo = self:GetSelectedProductInfo();
+		if (selectedProductInfo) then
+			self.CatalogShopDetailsFrame:UpdateState();
+		end
 	elseif (event == "SET_SEEN_PRODUCTS") then
 		local productIds = ...;
 		if not CatalogShopOutbound.SavedSet_HasAny() then
 			CatalogShopOutbound.SavedSet_Set(productIds);
+		end
+	elseif (event == "BULK_PURCHASE_RESULT_RECEIVED") then
+		local result, productResults, topUpProductID, purchaseAmount = ...;
+		if (result == Enum.BulkPurchaseResult.ResultInsufficientFunds) then
+			if self.CatalogShopVCFrame then
+				self.CatalogShopVCFrame:HandleInsufficientFunds(topUpProductID, purchaseAmount);
+			end
+		end
+	elseif (event == "BULK_REFUND_RESULT_RECEIVED") then
+		local result = ...;
+		if (result == Enum.BulkRefundResult.ResultOk) then
+			C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
 		end
 	end
 end
@@ -574,13 +601,13 @@ function CatalogShopMixin:PurchaseProduct()
 	local completelyOwned = productInfo.isFullyOwned;
 	if completelyOwned then
 		self:OnError(Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	elseif C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID) then
-		-- TODO - fix this
-	--else
-		-- TODO - fix this
-		--if (productInfo and productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion) then
-			--self:OnError(Enum.StoreError.AlreadyOwned, false, "Expansion");
-		--end
+	else
+		if productInfo.isVCProduct then
+			local productIDList = {productInfo.catalogShopProductID};
+			C_CatalogShop.ConfirmHousingPurchase(productIDList);
+		else
+			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
+		end
 	end
 end
 
@@ -647,13 +674,18 @@ function CatalogShopMixin:OnProductSelected(data)
 
 	-- Show the right side details frame if our product container frame is shown OR if the selected product is a bundle (enables purchase and details)
 	local selectedProductInfo = CatalogShopFrame:GetSelectedProductInfo();
-	self.CatalogShopDetailsFrame:SetShown(self.ProductContainerFrame:IsShown() or (selectedProductInfo and selectedProductInfo.isBundle));
+	local showDetails = self.ProductContainerFrame:IsShown() or (selectedProductInfo and selectedProductInfo.isBundle)
+	self.CatalogShopDetailsFrame:SetShown(showDetails);
+
+	local showVCFrame = selectedProductInfo and selectedProductInfo.isVCProduct;
+	self.CatalogShopVCFrame:SetShown(showVCFrame);
 end
 
 function CatalogShopMixin:OnNoProductsSelected()
 	self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.NoResults.BackgroundTexture);
 	self:HidePreviewFrames();
 	self.CatalogShopDetailsFrame:Hide();
+	self.CatalogShopVCFrame:Hide();
 end
 
 function CatalogShopMixin:OnCategorySelected(categoryID)
@@ -669,6 +701,10 @@ end
 function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.ProductContainerFrame:SetShown(not showDetails);
 	self.ProductDetailsContainerFrame:SetShown(showDetails);
+
+	local showVCFrame = not showDetails and (productInfo and productInfo.isVCProduct);
+	self.CatalogShopVCFrame:SetShown(showVCFrame);
+
 	self.CatalogShopDetailsFrame:SetShown(not showDetails);
 	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
@@ -770,6 +806,85 @@ function CatalogShopMixin:ClearSearchBox()
 end
 
 ----------------------------------------------------------------------------------
+-- CatalogShopVCFrameMixin
+----------------------------------------------------------------------------------
+CatalogShopVCFrameMixin = {};
+function CatalogShopVCFrameMixin:OnLoad()
+	-- Refreshing VC when data is loaded, this allows GetVirutalCurrencyBalance can be called safely OnShow
+	EventRegistry:RegisterCallback("CatalogShop.DataRefreshed", self.RefreshVC, self);
+end
+
+function CatalogShopVCFrameMixin:OnVCUpdated(amount)
+	amount = tonumber(amount);
+	if amount then
+		self.vcAmount:SetText(amount);
+		LayoutMixin.Layout(self);
+	end
+end
+
+function CatalogShopVCFrameMixin:RefreshVC()
+	C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+	-- Call to C_CatalogShop.RefreshVirtualCurrencyBalance will trigger CatalogShop.OnVCUpdated
+end
+
+function CatalogShopVCFrameMixin:CancelRefreshTicker()
+	if self.periodicRefreshTicker then
+		self.periodicRefreshTicker:Cancel();
+		self.periodicRefreshTicker = nil;
+	end
+end
+
+function CatalogShopVCFrameMixin:OnShow()
+	LayoutMixin.OnShow(self);
+
+	EventRegistry:RegisterCallback("CatalogShop.OnVCUpdated", self.OnVCUpdated, self);
+	self:CancelRefreshTicker();
+
+	local refreshCurrencyTimeSeconds = 20;
+	self.periodicRefreshTicker = C_Timer.NewTicker(refreshCurrencyTimeSeconds, function() self:RefreshVC(); end);
+
+	-- Update our text with the most current value known.
+	local currentVC = C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+	if currentVC then
+		self:OnVCUpdated(currentVC);
+	end
+end
+
+function CatalogShopVCFrameMixin:OnHide()
+	self:CancelRefreshTicker();
+	EventRegistry:UnregisterCallback("CatalogShop.OnVCUpdated", self);
+end
+
+function CatalogShopVCFrameMixin:HandleInsufficientFunds(suggestedProductID, purchaseAmount)
+	if CatalogShopTopUpFrame then
+		local hearthsteelBalance = C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+		if hearthsteelBalance then
+			if purchaseAmount then
+				CatalogShopTopUpFrame:SetDesiredQuantity(purchaseAmount);
+			end
+			CatalogShopTopUpFrame:SetCurrentBalance(hearthsteelBalance);
+		end
+		if suggestedProductID then
+			CatalogShopTopUpFrame:SetSuggestedProduct(suggestedProductID);
+		end
+		CatalogShopTopUpFrame:SetParentFrame(self:GetParent());
+		CatalogShopTopUpFrame:Show();
+	end
+end
+
+function CatalogShopVCFrameMixin:OpenTopUpFlow()
+	if CatalogShopTopUpFrame then
+		local hearthsteelBalance = C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+		if hearthsteelBalance then
+			CatalogShopTopUpFrame:SetCurrentBalance(hearthsteelBalance);
+		end
+
+		CatalogShopTopUpFrame:SetParentFrame(self:GetParent());
+		CatalogShopTopUpFrame:Show();
+	end
+end
+
+----------------------------------------------------------------------------------
 -- CatalogShopProductDetailsFrameMixin
 ----------------------------------------------------------------------------------
 CatalogShopProductDetailsFrameMixin = {};
@@ -795,6 +910,9 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	CatalogShopFrame.CatalogShopDetailsFrame:SetShown(true);
 
 	local selectedProductInfo = self:GetDetailsFrameProductInfo();
+	local showVCFrame = selectedProductInfo and selectedProductInfo.isVCProduct;
+	CatalogShopFrame.CatalogShopVCFrame:SetShown(showVCFrame);
+
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(selectedProductInfo.catalogShopProductID);
 	-- update state based on product info
 
@@ -816,6 +934,23 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		self.ProductType:SetShown(false);
 	end
 
+	if (not not selectedProductInfo.consumableQuantity) then
+		if (selectedProductInfo.isBundle) then
+			self.QuantityOwned:SetShown(selectedProductInfo.consumableQuantity > 0 and (not selectedProductInfo.isFullyOwned));
+			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..CATALOG_SHOP_DECOR_BUNDLE_OWNED);
+			self.QuantityOwned.tooltip = {
+				name = CATALOG_SHOP_DECOR_BUNDLE_OWNED,
+				description = CATALOG_SHOP_DECOR_BUNDLE_OWNED_TOOLTIP,
+			};
+		else
+			self.QuantityOwned:Show();
+			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED, selectedProductInfo.consumableQuantity));
+			self.QuantityOwned.tooltip = nil;
+		end
+	else
+		self.QuantityOwned:Hide();
+	end
+
 	local isBundleChild = selectedProductInfo.isBundleChild;
 	self.LegalDisclaimerText:SetShown(not isBundleChild);
 
@@ -831,7 +966,11 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local shouldShowPendingPurchasesText = isPurchasable and selectedProductInfo.hasPendingOrders;
 	local shouldShowDynamicBundleDiscountText = isPurchasable and (not shouldShowPendingPurchasesText) and selectedProductInfo.isDynamicallyDiscounted;
 
-	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
+	if selectedProductInfo.isVCProduct then
+		self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price.." "..HearthsteelAtlasMarkup);
+	else
+		self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
+	end
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
 
 	-- Adjust for text fields
@@ -894,4 +1033,18 @@ function BackgroundContainerMixin:SetBackgroundTexture(backgroundAtlas)
 		self.nextBackground:SetAtlas(backgroundAtlas);
 		self.nextFadeIn:Play();
 	end
+end
+
+----------------------------------------------------------------------------------
+-- QuantityOwnedMixin
+----------------------------------------------------------------------------------
+QuantityOwnedMixin = {};
+function QuantityOwnedMixin:OnEnter()
+	if (self:IsShown() and self.tooltip ~= nil) then
+		CatalogShopFrame:ShowTooltip(self, self.tooltip.name, self.tooltip.description);
+	end
+end
+
+function QuantityOwnedMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
 end

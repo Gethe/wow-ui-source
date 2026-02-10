@@ -21,8 +21,9 @@ function NamePlateRaidTargetMixin:ShouldBeShown()
 		return false;
 	end
 
+	-- Unlike other nameplate components, raid icons are still shown when in ShowOnlyNames mode.
 	if self:IsShowOnlyName() then
-		return false;
+		return true;
 	end
 
 	if self:IsWidgetsOnlyMode() then

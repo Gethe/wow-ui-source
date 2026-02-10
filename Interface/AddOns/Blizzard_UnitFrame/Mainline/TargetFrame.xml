@@ -610,6 +610,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent function="UnitFrame_OnEvent"/>

@@ -133,6 +133,8 @@ local VoiceChat =
 		{
 			Name = "GetChannel",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -142,12 +144,14 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "channel", Type = "VoiceChatChannel", Nilable = true },
+				{ Name = "channel", Type = "VoiceChatChannel", Nilable = false },
 			},
 		},
 		{
 			Name = "GetChannelForChannelType",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -157,12 +161,14 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "channel", Type = "VoiceChatChannel", Nilable = true },
+				{ Name = "channel", Type = "VoiceChatChannel", Nilable = false },
 			},
 		},
 		{
 			Name = "GetChannelForCommunityStream",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -173,7 +179,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "channel", Type = "VoiceChatChannel", Nilable = true },
+				{ Name = "channel", Type = "VoiceChatChannel", Nilable = false },
 			},
 		},
 		{
@@ -1417,15 +1423,15 @@ local VoiceChat =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "streamId", Type = "ClubStreamId", Nilable = false },
-				{ Name = "volume", Type = "number", Nilable = false },
-				{ Name = "isActive", Type = "bool", Nilable = false },
-				{ Name = "isMuted", Type = "bool", Nilable = false },
-				{ Name = "isTransmitting", Type = "bool", Nilable = false },
-				{ Name = "isTranscribing", Type = "bool", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false, NeverSecret = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = false, NeverSecret = true },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = false, NeverSecret = true },
+				{ Name = "volume", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "isActive", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isMuted", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTransmitting", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTranscribing", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
 			},
 		},

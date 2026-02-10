@@ -105,6 +105,20 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "GetClockTime",
+			Type = "Function",
+			Documentation = { "Returns the current time of the clock source used by this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "clockTime", Type = "FrameTime", Nilable = false },
+			},
+		},
+		{
 			Name = "GetElapsedDuration",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -193,31 +193,46 @@ end
 function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
-		if self:NeedsAddedAuraUpdate(aura.spellId) then
+		if self:NeedsAddedAuraUpdate(aura) then
 			self:RefreshData();
 			break;
 		end
 	end
 end
 
-function CooldownViewerItemMixin:OnPlayerTotemUpdateEvent(slot, name, startTime, duration, modRate, spellID)
-	if not self:NeedsTotemUpdate(slot, spellID) then
-		return;
+function CooldownViewerItemMixin:GetPreferredTotemSlotInfo()
+	if self.preferredTotemUpdateSlot then
+		local totems = self:GetCurrentPlayerTotemCache();
+		local preferredTotemInfo = totems[self.preferredTotemUpdateSlot];
+		if preferredTotemInfo and preferredTotemInfo.spellID == self:GetSpellID() then
+			return preferredTotemInfo;
+		end
 	end
+end
 
-	if duration == 0 then
-		self:ClearTotemData();
+function CooldownViewerItemMixin:RefreshTotemData()
+	local previousTotemSlot = self:GetTotemSlot();
+	self:ClearTotemData();
+
+	local preferredTotemInfo = self:GetPreferredTotemSlotInfo();
+	if preferredTotemInfo then
+		self:SetTotemData(preferredTotemInfo);
 	else
-		self:SetTotemData({
-			slot = slot,
-			expirationTime = startTime + duration,
-			duration = duration,
-			name = name,
-			modRate = modRate;
-		});
+		local totems = self:GetCurrentPlayerTotemCache();
+		for slot, totemInfo in pairs(totems) do
+			if self:NeedsTotemUpdate(previousTotemSlot, slot, totemInfo.spellID) then
+				self:SetTotemData(totemInfo);
+				return;
+			end
+		end
 	end
+end
 
-	self:RefreshData();
+function CooldownViewerItemMixin:OnPlayerTotemUpdateEvent(slot, spellID)
+	if self:NeedsTotemUpdate(self:GetTotemSlot(), slot, spellID) then
+		self.preferredTotemUpdateSlot = slot;
+		self:RefreshData();
+	end
 end
 
 function CooldownViewerItemMixin:GetFallbackSpellTexture()
@@ -335,13 +350,10 @@ function CooldownViewerItemMixin:OnActiveStateChanged()
 end
 
 function CooldownViewerItemMixin:SetIsActive(active)
-	if active == self.isActive then
-		return;
+	if active ~= self.isActive then
+		self.isActive = active;
+		self:OnActiveStateChanged();
 	end
-
-	self.isActive = active;
-
-	self:OnActiveStateChanged();
 end
 
 function CooldownViewerItemMixin:IsActive()
@@ -390,7 +402,12 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, start
 	return false;
 end
 
-function CooldownViewerItemMixin:NeedsAddedAuraUpdate(spellID)
+function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
+	if auraInfo.sourceUnit ~= "player" then
+		return false;
+	end
+
+	local spellID = auraInfo.spellId;
 	if self:UpdateLinkedSpell(spellID) then
 		return true;
 	end
@@ -402,7 +419,7 @@ function CooldownViewerItemMixin:NeedsAddedAuraUpdate(spellID)
 	return false;
 end
 
-function CooldownViewerItemMixin:NeedsTotemUpdate(slot, spellID)
+function CooldownViewerItemMixin:NeedsTotemUpdate(previousTotemSlot, slot, spellID)
 	if self:UpdateLinkedSpell(spellID) then
 		return true;
 	end
@@ -413,8 +430,7 @@ function CooldownViewerItemMixin:NeedsTotemUpdate(slot, spellID)
 
 	-- If a totem is destroyed the totem's spellID may already be set to 0, in which case
 	-- it's necessary to use the slot to determine if the update is needed.
-	local totemData = self:GetTotemData();
-	if spellID == 0 and totemData and totemData.slot == slot then
+	if spellID == 0 and slot and previousTotemSlot == slot then
 		return true;
 	end
 
@@ -569,6 +585,26 @@ function CooldownViewerItemMixin:TriggerChargeGainedAlert()
 	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.ChargeGained);
 end
 
+function CooldownViewerItemMixin:TriggerAuraAppliedAlert()
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.OnAuraApplied);
+end
+
+function CooldownViewerItemMixin:CheckTriggerAuraAppliedAlert(auraInstanceID)
+	if auraInstanceID and auraInstanceID == self:GetAuraSpellInstanceID() then
+		self:TriggerAuraAppliedAlert();
+	end
+end
+
+function CooldownViewerItemMixin:TriggerAuraRemovedAlert()
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.OnAuraRemoved);
+end
+
+function CooldownViewerItemMixin:CheckTriggerAuraRemovedAlert(auraInstanceID)
+	if auraInstanceID and auraInstanceID == self:GetAuraSpellInstanceID() then
+		self:TriggerAuraRemovedAlert();
+	end
+end
+
 function CooldownViewerItemMixin:OnNewTarget()
 	-- This is the first thing that should happen when handling a target switch
 	-- Clear out all state data that was built while a previous target existed.
@@ -664,6 +700,7 @@ function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	self.previousCooldownChargesCount = nil;
 	self.cooldownChargesCount = nil;
 	self.cooldownChargesShown = nil;
+	self.preferredTotemUpdateSlot = nil;
 
 	if self.needsRangeCheck == true then
 		C_Spell.EnableSpellRangeCheck(self.rangeCheckSpellID, false);
@@ -753,6 +790,8 @@ function CooldownViewerCooldownItemMixin:NeedsSpellRangeUpdate(spellID)
 end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNow)
+	self:RefreshTotemData();
+
 	-- If the spell results in a self buff, give those values precedence over the spell's cooldown until the buff is gone.
 	if self:CanUseAuraForCooldown() then
 		local totemData = self:GetTotemData();
@@ -1225,6 +1264,7 @@ end
 
 function CooldownViewerBuffIconItemMixin:RefreshData()
 	self:ClearVisualDataSource();
+	self:RefreshTotemData();
 	self:RefreshAuraInstance();
 	self:RefreshCooldownInfo();
 	self:RefreshSpellTexture();
@@ -1382,6 +1422,7 @@ end
 
 function CooldownViewerBuffBarItemMixin:RefreshData()
 	self:RefreshAuraInstance();
+	self:RefreshTotemData();
 	self:RefreshSpellTexture();
 	self:RefreshCooldownInfo();
 	self:RefreshName();
@@ -1516,9 +1557,9 @@ function CooldownViewerMixin:OnEvent(event, ...)
 		self:OnUnitTarget(unit);
 	elseif event == "PLAYER_TOTEM_UPDATE" then
 		local slot = ...;
-		local _haveTotem, name, startTime, duration, _icon, modRate, spellID = GetTotemInfo(slot);
+		local _haveTotem, _name, _startTime, _duration, _icon, _modRate, spellID = GetTotemInfo(slot);
 		for itemFrame in self.itemFramePool:EnumerateActive() do
-			itemFrame:OnPlayerTotemUpdateEvent(slot, name, startTime, duration, modRate, spellID);
+			itemFrame:OnPlayerTotemUpdateEvent(slot, spellID);
 		end
 	end
 end
@@ -1531,6 +1572,9 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 end
 
 function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+	-- Called first so that item frames still have the right aura instanceIDs set.
+	self:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo);
+
 	if unit == "player" and unitAuraUpdateInfo then
 		if unitAuraUpdateInfo.removedAuraInstanceIDs then
 			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
@@ -1561,6 +1605,29 @@ function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
 		end
 	elseif unit == "target" then
 		self:RefreshActiveFramesForTargetChange();
+	end
+
+	-- Called last so that item frames have already processed the aura changes.
+	self:CheckAuraAddedAlertTriggers(unitAuraUpdateInfo);
+end
+
+function CooldownViewerMixin:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo)
+	if unitAuraUpdateInfo and unitAuraUpdateInfo.removedAuraInstanceIDs then
+		for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+			for itemFrame in self.itemFramePool:EnumerateActive() do
+				itemFrame:CheckTriggerAuraRemovedAlert(auraInstanceID);
+			end
+		end
+	end
+end
+
+function CooldownViewerMixin:CheckAuraAddedAlertTriggers(unitAuraUpdateInfo)
+	if unitAuraUpdateInfo and unitAuraUpdateInfo.addedAuras then
+		for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+			for itemFrame in self.itemFramePool:EnumerateActive() do
+				itemFrame:CheckTriggerAuraAppliedAlert(aura.auraInstanceID);
+			end
+		end
 	end
 end
 

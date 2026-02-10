@@ -236,6 +236,7 @@ local MajorFactions =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+				{ Name = "useJourneyUnlockToast", Type = "bool", Nilable = false },
 				{ Name = "unlockDescription", Type = "cstring", Nilable = true },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },

@@ -1276,6 +1276,12 @@ local function GetDruidCatModelInfo(race, sex)
 		else
 			return { displayID = 86524, spellVisualKitID = 134579 };
 		end
+	elseif race == "Harronir" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 126275, spellVisualKitID = 258851 };
+		else
+			return { displayID = 126277, spellVisualKitID = 258851 };
+		end
 	end
 end
 

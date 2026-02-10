@@ -7,6 +7,15 @@ local FrameAPITooltip =
 	Functions =
 	{
 		{
+			Name = "ClearPadding",
+			Type = "Function",
+			Documentation = { "Set all padding values to 0.0 and remove the Padding SecretAspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetLeftLine",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

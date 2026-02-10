@@ -239,9 +239,19 @@ function NamePlateAurasMixin:RemoveAura(auraInstanceID)
 	return false;
 end
 
+local function BuffCompare(a, b)
+	local aImportant = a.spellId ~= nil and C_Spell.IsSpellImportant(a.spellId);
+	local bImportant = b.spellId ~= nil and C_Spell.IsSpellImportant(b.spellId);
+	if aImportant ~= bImportant then
+		return aImportant;
+	end
+
+	return a.auraInstanceID < b.auraInstanceID;
+end
+
 function NamePlateAurasMixin:ParseAllAuras()
 	if self.buffList == nil then
-		self.buffList = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+		self.buffList = TableUtil.CreatePriorityTable(BuffCompare, TableUtil.Constants.AssociativePriorityTable);
 		self.debuffList = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 		self.crowdControlList = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 	else

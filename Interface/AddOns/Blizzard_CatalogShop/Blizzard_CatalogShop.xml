@@ -307,7 +307,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="CrossGameContainerFrame" mixin="CrossGameContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
+			<Frame parentKey="PMTImageContainerFrame" mixin="PMTImageContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOMLEFT" x="550" y="0"/>
 					<Anchor point="BOTTOMLEFT" x="550" y="0" />
@@ -360,6 +360,68 @@
 				</Scripts>
 			</Frame>
 
+			<Frame parentKey="CatalogShopVCFrame" hidden="true" inherits="HorizontalLayoutFrame" mixin="CatalogShopVCFrameMixin" frameLevel="1000">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOMRIGHT" x="-45" y="-45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="vcAmount" inherits="GameFontNormalHuge3" text="1000">
+							<KeyValues>
+								<!-- HorizontalLayoutFrame -->
+								<KeyValue key="layoutIndex" value="10" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+								<KeyValue key="leftPadding" value="13" type="number"/>
+								<KeyValue key="topPadding" value="19" type="number"/>
+								<KeyValue key="bottomPadding" value="19" type="number"/>
+							</KeyValues>
+						</FontString>
+						<Texture parentKey="vcIcon" atlas="hearthsteel-icon-32x32">
+							<Size x="32" y="32"/>
+							<KeyValues>
+								<!-- HorizontalLayoutFrame -->
+								<KeyValue key="layoutIndex" value="20" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+								<KeyValue key="leftPadding" value="0" type="number"/>
+							</KeyValues>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="vcPurchaseButton" inherits="IconButtonTemplate">
+						<KeyValues>
+							<!-- HorizontalLayoutFrame -->
+							<KeyValue key="layoutIndex" value="30" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+							<KeyValue key="leftPadding" value="20" type="number"/>
+							<KeyValue key="rightPadding" value="28" type="number"/>
+							<KeyValue key="topPadding" value="16" type="number"/>
+							<KeyValue key="bottomPadding" value="16" type="number"/>
+							<!-- IconButtonTemplate -->
+							<KeyValue key="iconWidth" value="32" type="number"/>
+							<KeyValue key="iconHeight" value="32" type="number"/>
+							<KeyValue key="iconAtlas" value="128-redbutton-plus" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick>
+								self:GetParent():OpenTopUpFlow();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Border" inherits="NineSlicePanelTemplate" frameLevel="980">
+						<Layers>
+							<Layer level="ARTWORK" >
+								<Texture parentKey="Border" atlas="generic-frame-chamfered-12d-2o" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnHide method="OnHide" />
+				</Scripts>
+				</Frame>
+			
 			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
 					<KeyValue key="fixedWidth" value="320" type="string"/>
@@ -389,10 +451,24 @@
 							</KeyValues>
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="ProductDescription" inherits="SystemFont_Small2" wordwrap="true" maxLines="4" justifyH="CENTER" justifyV="MIDDLE" >
+						<FontString parentKey="QuantityOwned" inherits="SystemFont_Small2" mixin="QuantityOwnedMixin" wordwrap="true" maxLines="1" justifyH="CENTER" justifyV="MIDDLE" >
 							<Size x="290" />
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="20" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
+							<Color color="NORMAL_FONT_COLOR"/>
+							<Scripts>
+								<OnEnter method="OnEnter"/>
+								<OnLeave method="OnLeave"/>
+							</Scripts>
+						</FontString>
+						<FontString parentKey="ProductDescription" inherits="SystemFont_Small2" wordwrap="true" maxLines="4" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="290" />
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="25" type="number"/>
 								<KeyValue key="topPadding" value="0" type="number"/>
 								<KeyValue key="bottomPadding" value="10" type="number"/>
 								<KeyValue key="leftPadding" value="15" type="number"/>
@@ -403,7 +479,7 @@
 							<Size x="290" />
 							<Color color="GRAY_FONT_COLOR"/>
 							<KeyValues>
-								<KeyValue key="layoutIndex" value="25" type="number"/>
+								<KeyValue key="layoutIndex" value="30" type="number"/>
 								<KeyValue key="topPadding" value="0" type="number"/>
 								<KeyValue key="bottomPadding" value="10" type="number"/>
 								<KeyValue key="leftPadding" value="15" type="number"/>
@@ -415,7 +491,7 @@
 					<Frame name="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
 						<Size x="320" y="41"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="30" type="number"/>
+							<KeyValue key="layoutIndex" value="35" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="0" type="number"/>
 						</KeyValues>
@@ -423,7 +499,7 @@
 					<Frame parentKey="ProductRefundContainer" inherits="ProductRefundContainerTemplate" hidden="true">
 						<Size x="320" y="100"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="35" type="number"/>
+							<KeyValue key="layoutIndex" value="40" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="0" type="number"/>
 						</KeyValues>
@@ -431,7 +507,7 @@
 					<Frame parentKey="ButtonContainer" >
 						<Size x="320" y="50"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="40" type="number"/>
+							<KeyValue key="layoutIndex" value="45" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="15" type="number"/>
 							<KeyValue key="leftPadding" value="0" type="number"/>
@@ -510,8 +586,7 @@
 
 			<Frame parentKey="PersistentRefundContainerFrame" inherits="CatalogShopPersistentRefundContainerFrameTemplate" frameLevel="1000" hidden="true" >
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ProductContainerFrame.ProductsHeader" relativePoint="TOP" y="0" />
-					<Anchor point="RIGHT" relativeKey="$parent.CatalogShopDetailsFrame" relativePoint="RIGHT" x="-116" />
+					<Anchor point="RIGHT" relativeKey="$parent.CatalogShopVCFrame" relativePoint="LEFT" x="0" />
 				</Anchors>
 			</Frame>
 

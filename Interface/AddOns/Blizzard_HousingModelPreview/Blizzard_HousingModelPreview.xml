@@ -103,7 +103,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="HousingModelPreviewFrame" mixin="HousingModelPreviewFrameMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="HousingModelPreviewFrame" mixin="HousingModelPreviewFrameMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" parent="UIParent" hidden="true">
 		<Size x="450" y="545"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="70" y="-104"/>

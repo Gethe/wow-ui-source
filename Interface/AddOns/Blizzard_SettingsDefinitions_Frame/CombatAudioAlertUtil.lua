@@ -59,6 +59,16 @@ local sayCastInfo = {
 	{str = CAA_SAY_CASTS_END_OF_CAST},
 };
 
+local playerDebuffFormatInfo = {
+	{formatStr = CAA_SAY_YOUR_DEBUFFS_FORMAT_FULL},
+	{formatStr = CAA_SAY_YOUR_DEBUFFS_FORMAT_NO_SPELLNAME, noValue = true},
+};
+
+local debuffSelfAlertInfo = {
+	{formatStr = LOC_OPTION_OFF, noValue = true},
+	{formatStr = CAA_DEBUFF_SELF_ALERT_FORMAT_DEBUFF_TYPE},
+};
+
 local playerHealthFormatInfo = {
 	{formatStr = CAA_SAY_HEALTH_FORMAT_FULL},
 	{formatStr = CAA_SAY_HEALTH_FORMAT_NO_PERCENT},
@@ -122,6 +132,18 @@ local unitThrottleInfo = {
 	},
 };
 
+local unitCategoryInfo = {
+	["player"] = {
+		[Enum.CombatAudioAlertType.Health] = Enum.CombatAudioAlertCategory.PlayerHealth,
+		[Enum.CombatAudioAlertType.Cast] = Enum.CombatAudioAlertCategory.PlayerCast,
+	},
+
+	["target"] = {
+		[Enum.CombatAudioAlertType.Health] = Enum.CombatAudioAlertCategory.TargetHealth,
+		[Enum.CombatAudioAlertType.Cast] = Enum.CombatAudioAlertCategory.TargetCast,
+	},
+};
+
 local playerResourceFormatInfo = {
 	{formatStr = CAA_SAY_RESOURCE_FORMAT_FULL},
 	{formatStr = CAA_SAY_RESOURCE_FORMAT_NO_PERCENT,},
@@ -129,11 +151,6 @@ local playerResourceFormatInfo = {
 	{formatStr = CAA_SAY_RESOURCE_FORMAT_NO_RESOURCE, noStringValue = true},
 	{formatStr = CAA_SAY_RESOURCE_FORMAT_NUM_ONLY, noStringValue = true},
 	{formatStr = CAA_SAY_RESOURCE_FORMAT_NUM_ONLY, noStringValue = true, divideByTen = true},
-};
-
-local playerResourceThrottleInfo = {
-	[Enum.CombatAudioAlertType.Health] = Enum.CombatAudioAlertThrottle.PlayerHealth,
-	[Enum.CombatAudioAlertType.Cast] = Enum.CombatAudioAlertThrottle.PlayerCast,
 };
 
 function CombatAudioAlertUtil.GetPercentInfo(cvarVal)
@@ -149,7 +166,7 @@ function CombatAudioAlertUtil.GetPartyHealthPercentInfo(cvarVal)
 end
 
 function CombatAudioAlertUtil.GetCurrentPartyHealthPercentInfo()
-	local cvarVal = CombatAudioAlertUtil.GetCAACvarValueNumber("PARTY_HEALTH_PCT_CVAR");
+	local cvarVal = CombatAudioAlertUtil.GetCAACVarValueNumber("PARTY_HEALTH_PCT_CVAR");
 	return CombatAudioAlertUtil.GetPartyHealthPercentInfo(cvarVal);
 end
 
@@ -173,6 +190,28 @@ function CombatAudioAlertUtil.EnumerateSayCastInfo()
 	return ipairs(sayCastInfo);
 end
 
+function CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal)
+	return playerDebuffFormatInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumeratePlayerDebuffFormatInfo()
+	return ipairs(playerDebuffFormatInfo);
+end
+
+function CombatAudioAlertUtil.GetPlayerDebuffFormattedString(spellName)
+	local cvarVal = CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_YOUR_DEBUFFS_FORMAT_CVAR");
+	local formatInfo = CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal);
+	return CombatAudioAlertUtil.GetFormattedString(formatInfo, spellName);
+end
+
+function CombatAudioAlertUtil.GetDebuffSelfAlertInfo(cvarVal)
+	return debuffSelfAlertInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateDebuffSelfAlertInfo()
+	return ipairs(debuffSelfAlertInfo);
+end
+
 function CombatAudioAlertUtil.EnumerateUnitFormatInfo(unit, alertType)
 	local formatInfoTbl = unitFormatInfo[unit][alertType];
 	return ipairs(formatInfoTbl);
@@ -184,6 +223,10 @@ end
 
 function CombatAudioAlertUtil.GetUnitThrottleType(unit, alertType)
 	return unitThrottleInfo[unit][alertType];
+end
+
+function CombatAudioAlertUtil.GetUnitCategoryType(unit, alertType)
+	return unitCategoryInfo[unit][alertType];
 end
 
 function CombatAudioAlertUtil.ConvertToAlertUnitEnum(unit)
@@ -233,6 +276,14 @@ function CombatAudioAlertUtil.GetResourceThrottleType(powerTypeOrToken)
 	end
 end
 
+function CombatAudioAlertUtil.GetResourceCategoryType(powerTypeOrToken)
+	if CombatAudioAlertUtil.IsPlayerResource1(powerTypeOrToken) then
+		return Enum.CombatAudioAlertCategory.PlayerResource1;
+	else
+		return Enum.CombatAudioAlertCategory.PlayerResource2;
+	end
+end
+
 function CombatAudioAlertUtil.ConvertToResourceSettingEnum(powerTypeOrToken, isPercent)
 	if CombatAudioAlertUtil.IsPlayerResource1(powerTypeOrToken) then
 		return isPercent and Enum.CombatAudioAlertSpecSetting.Resource1Percent or Enum.CombatAudioAlertSpecSetting.Resource1Format;
@@ -267,7 +318,7 @@ function CombatAudioAlertUtil.GetPlayerResourceFormattedString(powerTypeOrToken,
 	return CombatAudioAlertUtil.GetFormattedString(formatInfo, stringVal, numberVal);
 end
 
-function CombatAudioAlertUtil.GetCAACvarValueNumber(cvarConstant)
+function CombatAudioAlertUtil.GetCAACVarValueNumber(cvarConstant)
 	return CVarCallbackRegistry:GetCVarNumberOrDefault(CombatAudioAlertConstants.CVars[cvarConstant].name);
 end
 

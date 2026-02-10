@@ -16,7 +16,7 @@ local AbbreviateConfigAPI =
 
 			Returns =
 			{
-				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 		{
@@ -26,7 +26,7 @@ local AbbreviateConfigAPI =
 
 			Arguments =
 			{
-				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 	},

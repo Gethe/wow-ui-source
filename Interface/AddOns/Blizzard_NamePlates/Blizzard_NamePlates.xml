@@ -111,18 +111,12 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="bgTexture" atlas="UI-HUD-CoolDownManager-Bar-BG">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="3"/>
-										<Anchor point="BOTTOMRIGHT" x="5" y="-6"/>
-									</Anchors>
+									<!-- Anchoring handled dynamically in lua.-->
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture parentKey="selectedBorder" atlas="UI-HUD-Nameplates-Selected">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="3"/>
-										<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
-									</Anchors>
+									<!-- Anchoring handled dynamically in lua.-->
 								</Texture>
 								<Texture parentKey="deselectedOverlay" atlas="ui-hud-nameplates-deselected-overlay">
 									<Anchors>
@@ -190,10 +184,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-16" y="3"/>
-								<Anchor point="BOTTOMRIGHT" x="16" y="-3"/>
-							</Anchors>
+							<!-- Anchoring and size handled dynamically in lua.-->
 						</Texture>
 						<Texture parentKey="CastTargetIndicator" atlas="ui-hud-nameplates-targetedbyenemy">
 							<Anchors>
@@ -255,9 +246,7 @@
 
 			<Frame parentKey="RaidTargetFrame" mixin="NamePlateRaidTargetMixin" collapsesLayout="true">
 				<Size x="22" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="LEFT"/>
-				</Anchors>
+				<!-- Anchoring handled dynamically in lua.-->
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />

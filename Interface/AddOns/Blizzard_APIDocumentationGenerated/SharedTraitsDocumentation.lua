@@ -1028,6 +1028,7 @@ local SharedTraits =
 				{ Name = "activeEntry", Type = "TraitEntryRankInfo", Nilable = true },
 				{ Name = "nextEntry", Type = "TraitEntryRankInfo", Nilable = true },
 				{ Name = "maxRanks", Type = "number", Nilable = false },
+				{ Name = "totalMaxRanks", Type = "number", Nilable = false },
 				{ Name = "type", Type = "TraitNodeType", Nilable = false },
 				{ Name = "visibleEdges", Type = "table", InnerType = "TraitOutEdgeInfo", Nilable = false },
 				{ Name = "meetsEdgeRequirements", Type = "bool", Nilable = false },
@@ -1093,6 +1094,8 @@ local SharedTraits =
 				{ Name = "gates", Type = "table", InnerType = "TraitGateInfo", Nilable = false },
 				{ Name = "hideSingleRankNumbers", Type = "bool", Nilable = false },
 				{ Name = "rootNodeID", Type = "number", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "titleText", Type = "string", Nilable = true },
 			},
 		},
 		{

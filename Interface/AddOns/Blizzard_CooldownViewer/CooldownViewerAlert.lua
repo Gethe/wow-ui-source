@@ -10,6 +10,8 @@ local alertWhenText =
 	[Enum.CooldownViewerAlertEventType.PandemicTime] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_PANDEMIC,
 	[Enum.CooldownViewerAlertEventType.OnCooldown] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_ON_COOLDOWN,
 	[Enum.CooldownViewerAlertEventType.ChargeGained] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_CHARGE_GAINED,
+	[Enum.CooldownViewerAlertEventType.OnAuraApplied] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AURA_APPLIED,
+	[Enum.CooldownViewerAlertEventType.OnAuraRemoved] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AURA_REMOVED,
 };
 
 function CooldownViewerAlert_GetTypeAtlas(alertType)
@@ -91,8 +93,12 @@ function CooldownViewerAlert_GetEvent(alert)
 	return alert[COOLDOWN_ALERT_FIELD_EVENT];
 end
 
-function CooldownViewerAlert_GetEventText(alert)
-	return alertWhenText[CooldownViewerAlert_GetEvent(alert)] or "";
+function CooldownViewerAlert_GetEventText(alertOrAlertEventType)
+	if type(alertOrAlertEventType) == "table" then
+		return alertWhenText[CooldownViewerAlert_GetEvent(alertOrAlertEventType)] or "";
+	else
+		return alertWhenText[alertOrAlertEventType] or "";
+	end
 end
 
 function CooldownViewerAlert_SetPayload(alert, alertPayload)
@@ -209,6 +215,8 @@ local ttsAlertFormatters =
 	[Enum.CooldownViewerAlertEventType.PandemicTime] = "%s",
 	[Enum.CooldownViewerAlertEventType.OnCooldown] = "%s",
 	[Enum.CooldownViewerAlertEventType.ChargeGained] = "%s",
+	[Enum.CooldownViewerAlertEventType.OnAuraApplied] = "%s",
+	[Enum.CooldownViewerAlertEventType.OnAuraRemoved] = "%s",
 };
 
 local function CooldownViewerAlert_PlayTTSAlert(_cooldownItem, spellName, alert)

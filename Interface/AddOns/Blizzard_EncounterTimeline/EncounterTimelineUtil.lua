@@ -1,12 +1,6 @@
 EncounterTimelineUtil = {};
 
-function EncounterTimelineUtil.GetEventInfoList()
-	local eventIDs = C_EncounterTimeline.GetEventList();
-	local eventInfos = TableUtil.Transform(eventIDs, C_EncounterTimeline.GetEventInfo);
-	return eventInfos;
-end
-
-function EncounterTimelineUtil.GetEventIndicatorIconMask()
+function EncounterTimelineUtil.GetIndicatorIconMask()
 	local visibleIconMask = Constants.EncounterTimelineIconMasks.EncounterTimelineNoIcons;
 
 	if CVarCallbackRegistry:GetCVarValueBool(EncounterTimelineIndicatorIconCVars.Enabled) then
@@ -29,25 +23,48 @@ function EncounterTimelineUtil.GetEventIndicatorIconMask()
 	return visibleIconMask;
 end
 
-EncounterTimelineOrientationMixin = {};
+function EncounterTimelineUtil.GetViewTypeFromEditMode(editModeViewType)
+	-- We keep the two enums separate to allow for the timeline view type
+	-- enum to have extra entries that aren't exposed for user configuration.
 
-function EncounterTimelineOrientationMixin:GetStartPoint()
+	if editModeViewType == Enum.EncounterEventsViewType.Timeline then
+		return Enum.EncounterTimelineViewType.Timeline;
+	elseif editModeViewType == Enum.EncounterEventsViewType.Bars then
+		return Enum.EncounterTimelineViewType.Bars;
+	else
+		assertsafe(false, "Unknown EncounterEventsViewType variant (%s)", editModeViewType);
+		return Enum.EncounterTimelineViewType.Timeline;
+	end
+end
+
+local TerminalEventStates = {
+	[Enum.EncounterTimelineEventState.Canceled] = true;
+	[Enum.EncounterTimelineEventState.Finished] = true;
+};
+
+function EncounterTimelineUtil.IsTerminalEventState(state)
+	return TerminalEventStates[state] == true;
+end
+
+EncounterTimelineTrackOrientationMixin = {};
+
+function EncounterTimelineTrackOrientationMixin:GetStartPoint()
 	return self.primaryAxisStartPoint;
 end
 
-function EncounterTimelineOrientationMixin:GetEndPoint()
+function EncounterTimelineTrackOrientationMixin:GetEndPoint()
 	return self.primaryAxisEndPoint;
 end
 
-function EncounterTimelineOrientationMixin:IsHorizontal()
+function EncounterTimelineTrackOrientationMixin:IsHorizontal()
 	return self.primaryAxisIsVertical ~= true;
 end
 
-function EncounterTimelineOrientationMixin:IsVertical()
+function EncounterTimelineTrackOrientationMixin:IsVertical()
 	return self.primaryAxisIsVertical == true;
 end
 
-function EncounterTimelineOrientationMixin:GetOrientedExtents(w, h)
+function EncounterTimelineTrackOrientationMixin:GetOrientedExtents(w, h)
 	if self.primaryAxisIsVertical then
 		return h, w;
 	else
@@ -55,7 +72,7 @@ function EncounterTimelineOrientationMixin:GetOrientedExtents(w, h)
 	end
 end
 
-function EncounterTimelineOrientationMixin:GetOrientedOffsets(x, y)
+function EncounterTimelineTrackOrientationMixin:GetOrientedOffsets(x, y)
 	x = x * self.primaryAxisOffsetMultiplier;
 	y = y * self.crossAxisOffsetMultiplier;
 
@@ -66,11 +83,11 @@ function EncounterTimelineOrientationMixin:GetOrientedOffsets(x, y)
 	end
 end
 
-function EncounterTimelineOrientationMixin:GetOrientedTexCoord(x1, y1, x2, y2, x3, y3, x4, y4)
+function EncounterTimelineTrackOrientationMixin:GetOrientedTexCoord(x1, y1, x2, y2, x3, y3, x4, y4)
 	return self.texCoordTranslator(x1, y1, x2, y2, x3, y3, x4, y4);
 end
 
-function EncounterTimelineOrientationMixin:GetTranslatedPointName(point)
+function EncounterTimelineTrackOrientationMixin:GetTranslatedPointName(point)
 	if point == "START" then
 		return self:GetStartPoint();
 	elseif point == "END" then
@@ -80,9 +97,9 @@ function EncounterTimelineOrientationMixin:GetTranslatedPointName(point)
 	end
 end
 
-function EncounterTimelineUtil.CreateOrientation(orientationSetting, iconDirectionSetting)
-	local orientationData = EncounterEventOrientationSetup[orientationSetting][iconDirectionSetting];
-	local orientation = CreateFromMixins(EncounterTimelineOrientationMixin, orientationData);
+function EncounterTimelineUtil.CreateTrackOrientation(orientationSetting, iconDirectionSetting)
+	local orientationData = EncounterTimelineTrackOrientationSetup[orientationSetting][iconDirectionSetting];
+	local orientation = CreateFromMixins(EncounterTimelineTrackOrientationMixin, orientationData);
 
 	-- This field will (probably) be used at some point for swapping the
 	-- spell name from left/right while in a vertical orientation; for now
@@ -129,29 +146,29 @@ function EncounterTimelineOrientedTextureMixin:SetOrientedTexCoordPerVertex(orie
 	self:SetTexCoord(orientation:GetOrientedTexCoord(x1, y1, x2, y2, x3, y3, x4, y4));
 end
 
-EncounterTimelineInterpolatorMixin = {};
+EncounterTimelineTrackInterpolatorMixin = {};
 
-function EncounterTimelineInterpolatorMixin:Init()
+function EncounterTimelineTrackInterpolatorMixin:Init()
 	self:SetFixedOffset(0);
 end
 
-function EncounterTimelineInterpolatorMixin:Reset()
+function EncounterTimelineTrackInterpolatorMixin:Reset()
 	self:SetFixedOffset(0);
 end
 
-function EncounterTimelineInterpolatorMixin:GetCurrentOffset()
+function EncounterTimelineTrackInterpolatorMixin:GetCurrentOffset()
 	return Lerp(self.offsetFrom, self.offsetTo, self:GetCurrentProgress());
 end
 
-function EncounterTimelineInterpolatorMixin:GetCurrentProgress()
+function EncounterTimelineTrackInterpolatorMixin:GetCurrentProgress()
 	return ClampedPercentageBetween(self.currentTime, self.startTime, self.endTime);
 end
 
-function EncounterTimelineInterpolatorMixin:GetCurrentTime()
+function EncounterTimelineTrackInterpolatorMixin:GetCurrentTime()
 	return self.currentTime;
 end
 
-function EncounterTimelineInterpolatorMixin:SetFixedOffset(offset)
+function EncounterTimelineTrackInterpolatorMixin:SetFixedOffset(offset)
 	self.offsetFrom = offset;
 	self.offsetTo = offset;
 	self.startTime = 0;
@@ -160,7 +177,7 @@ function EncounterTimelineInterpolatorMixin:SetFixedOffset(offset)
 	self.currentTime = 0;
 end
 
-function EncounterTimelineInterpolatorMixin:SetInterpolatedOffset(offsetFrom, offsetTo, startTime, endTime, useAbsoluteTime)
+function EncounterTimelineTrackInterpolatorMixin:SetInterpolatedOffset(offsetFrom, offsetTo, startTime, endTime, useAbsoluteTime)
 	self.offsetFrom = offsetFrom;
 	self.offsetTo = offsetTo;
 	self.startTime = startTime;
@@ -169,7 +186,7 @@ function EncounterTimelineInterpolatorMixin:SetInterpolatedOffset(offsetFrom, of
 	self.currentTime = 0;
 end
 
-function EncounterTimelineInterpolatorMixin:Update(eventID)
+function EncounterTimelineTrackInterpolatorMixin:Update(eventID)
 	local currentTime;
 
 	if self.useAbsoluteTime then
@@ -189,8 +206,8 @@ function EncounterTimelineInterpolatorMixin:Update(eventID)
 	return self:GetCurrentOffset();
 end
 
-function EncounterTimelineUtil.CreateInterpolator()
-	local interpolator = CreateFromMixins(EncounterTimelineInterpolatorMixin);
+function EncounterTimelineUtil.CreateTrackInterpolator()
+	local interpolator = CreateFromMixins(EncounterTimelineTrackInterpolatorMixin);
 	interpolator:Reset();
 	return interpolator;
 end

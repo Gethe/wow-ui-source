@@ -68,6 +68,12 @@ function ScriptErrorsFrameMixin:OnLoad()
 	end);
 
 	self:RegisterEvent("LUA_WARNING");
+
+	local unhandledErrors = ScriptErrors:GetUnhandledErrors();
+	for _, error in pairs(unhandledErrors) do
+		self:DisplayMessageInternal(error.errorMessage, ErrorMessageType, error.stack, error.locals);
+	end
+	ScriptErrors:ClearUnhandledErrors();
 end
 
 function ScriptErrorsFrameMixin:OnShow()

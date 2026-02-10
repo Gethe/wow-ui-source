@@ -1223,7 +1223,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	local hasDifficultyIcon = iconIndex ~= nil;
 	self.info.difficultyIcon:SetShown(hasDifficultyIcon);
 	if hasDifficultyIcon then
-		self.info.instanceTitle:SetPoint("LEFT", self.info.difficultyIcon, "RIGHT", -6, -0);
+		self.info.instanceTitle:SetPoint("LEFT", self.info.difficultyIcon, "RIGHT", 3, 0);
 		EncounterJournal_SetFlagIcon(self.info.difficultyIcon, iconIndex);
 	else
 		self.info.instanceTitle:SetPoint("TOPLEFT", 65, -20);

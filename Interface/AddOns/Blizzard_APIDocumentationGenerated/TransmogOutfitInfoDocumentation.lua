@@ -492,6 +492,15 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "InTransmogEvent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inTransmogEvent", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEquippedGearOutfitDisplayed",
 			Type = "Function",
 
@@ -610,6 +619,16 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "SetOutfitToOutfit",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetOutfitToSet",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -669,6 +688,15 @@ local TransmogOutfitInfo =
 			Returns =
 			{
 				{ Name = "hasSecondary", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogEventActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "transmogEventActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -40,6 +40,7 @@ local function SetSavedWindowData(windowIndex, windowData)
 	savedWindowData.sessionType = windowData.sessionType;
 	savedWindowData.shown = windowData.sessionWindow and windowData.sessionWindow:IsShown() or false;
 	savedWindowData.locked = windowData.locked;
+	savedWindowData.nonInteractive = windowData.nonInteractive;
 	-- sessionID is intentionally not preserved in saved data as it's specific to the player's recent encounters.
 end
 
@@ -132,6 +133,11 @@ function DamageMeterMixin:IsEditing()
 	return self.isEditing;
 end
 
+function DamageMeterMixin:IsPlayerInCombat()
+	local isInCombat = UnitAffectingCombat("player");
+	return isInCombat;
+end
+
 function DamageMeterMixin:ShouldBeShown()
 	if self:IsEditing() then
 		return true;
@@ -150,8 +156,7 @@ function DamageMeterMixin:ShouldBeShown()
 		if self.visibility == Enum.DamageMeterVisibility.Always then
 			return true;
 		elseif self.visibility == Enum.DamageMeterVisibility.InCombat then
-			local isInCombat = UnitAffectingCombat("player");
-			return isInCombat;
+			return self:IsPlayerInCombat();
 		elseif self.visibility == Enum.DamageMeterVisibility.Hidden then
 			return false;
 		else
@@ -165,6 +170,11 @@ end
 function DamageMeterMixin:UpdateShownState()
 	local shouldBeShown = self:ShouldBeShown();
 	self:SetShown(shouldBeShown);
+	self:UpdateSessionTimerState();
+end
+
+function DamageMeterMixin:UpdateSessionTimerState()
+	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:UpdateSessionTimerState(); end);
 end
 
 function DamageMeterMixin:RefreshLayout()
@@ -250,6 +260,7 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 	sessionWindow:SetShowBarIcons(self:ShouldShowBarIcons());
 	sessionWindow:SetBackgroundAlpha(self:GetBackgroundAlpha());
 	sessionWindow:SetStyle(self:GetStyle());
+	sessionWindow:SetNumberDisplayType(self:GetNumberDisplayType());
 
 	-- Each new window should render above the previous ones.
 	sessionWindow:SetFrameLevel(windowIndex);
@@ -281,8 +292,12 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 
 	sessionWindow:Show();
 
-	if windowData.locked == true then
+	if windowData.locked then
 		sessionWindow:SetLocked(true);
+	end
+
+	if windowData.nonInteractive then
+		sessionWindow:SetNonInteractive(true);
 	end
 end
 
@@ -307,12 +322,20 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 			windowData.damageMeterType = savedWindowData.damageMeterType;
 			windowData.sessionType = savedWindowData.sessionType;
 			windowData.locked = savedWindowData.locked;
+			windowData.nonInteractive = savedWindowData.nonInteractive;
 
 			if savedWindowData.shown then
 				self:SetupSessionWindow(windowData, i);
 			end
 		end
 	end
+end
+
+function DamageMeterMixin:GetSessionWindowData(sessionWindow)
+	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
+	local windowData = self.windowDataList[sessionWindowIndex];
+
+	return sessionWindowIndex, windowData;
 end
 
 function DamageMeterMixin:ShowNewSessionWindow()
@@ -363,8 +386,7 @@ function DamageMeterMixin:HideSessionWindow(sessionWindow)
 		return;
 	end
 
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-	local windowData = self.windowDataList[sessionWindowIndex];
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
 
 	windowData.sessionWindow:Hide();
 
@@ -377,8 +399,7 @@ function DamageMeterMixin:HideAllSessionWindows()
 end
 
 function DamageMeterMixin:SetSessionWindowDamageMeterType(sessionWindow, damageMeterType)
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-	local windowData = self.windowDataList[sessionWindowIndex];
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
 
 	windowData.damageMeterType = damageMeterType;
 
@@ -388,14 +409,12 @@ function DamageMeterMixin:SetSessionWindowDamageMeterType(sessionWindow, damageM
 end
 
 function DamageMeterMixin:GetSessionWindowDamageMeterType(sessionWindow)
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-
-	return self.windowDataList[sessionWindowIndex].damageMeterType;
+	local _, windowData = self:GetSessionWindowData(sessionWindow);
+	return windowData.damageMeterType;
 end
 
 function DamageMeterMixin:SetSessionWindowSessionID(sessionWindow, sessionType, sessionID)
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-	local windowData = self.windowDataList[sessionWindowIndex];
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
 
 	windowData.sessionType = sessionType;
 	windowData.sessionID = sessionID;
@@ -414,8 +433,7 @@ function DamageMeterMixin:GetSessionID()
 end
 
 function DamageMeterMixin:SetSessionWindowLocked(sessionWindow, locked)
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-	local windowData = self.windowDataList[sessionWindowIndex];
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
 
 	windowData.locked = locked;
 
@@ -424,17 +442,25 @@ function DamageMeterMixin:SetSessionWindowLocked(sessionWindow, locked)
 	sessionWindow:SetLocked(locked);
 end
 
+function DamageMeterMixin:SetSessionWindowNonInteractive(sessionWindow, nonInteractive)
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
+
+	windowData.nonInteractive = nonInteractive;
+
+	SetSavedWindowData(sessionWindowIndex, windowData);
+
+	sessionWindow:SetNonInteractive(nonInteractive);
+end
+
 function DamageMeterMixin:OnUseClassColorChanged(useClassColor)
 	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:SetUseClassColor(useClassColor); end);
 end
 
 function DamageMeterMixin:ShouldUseClassColor()
-	return self.useClassColor == true;
+	return self.useClassColor;
 end
 
 function DamageMeterMixin:SetUseClassColor(useClassColor)
-	useClassColor = (useClassColor == true);
-
 	if self.useClassColor ~= useClassColor then
 		self.useClassColor = useClassColor;
 		self:OnUseClassColorChanged(useClassColor);
@@ -507,12 +533,10 @@ function DamageMeterMixin:OnShowBarIconsChanged(showBarIcons)
 end
 
 function DamageMeterMixin:ShouldShowBarIcons()
-	return self.showBarIcons == true;
+	return self.showBarIcons;
 end
 
 function DamageMeterMixin:SetShowBarIcons(showBarIcons)
-	showBarIcons = (showBarIcons == true);
-
 	if self.showBarIcons ~= showBarIcons then
 		self.showBarIcons = showBarIcons;
 		self:OnShowBarIconsChanged(showBarIcons);
@@ -546,6 +570,21 @@ function DamageMeterMixin:SetStyle(style)
 	if self.style ~= style then
 		self.style = style;
 		self:OnStyleChanged(style);
+	end
+end
+
+function DamageMeterMixin:OnNumberDisplayTypeChanged(numberDisplayType)
+	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:SetNumberDisplayType(numberDisplayType); end);
+end
+
+function DamageMeterMixin:GetNumberDisplayType()
+	return self.numberDisplayType or Enum.DamageMeterNumbers.Minimal;
+end
+
+function DamageMeterMixin:SetNumberDisplayType(numberDisplayType)
+	if self.numberDisplayType ~= numberDisplayType then
+		self.numberDisplayType = numberDisplayType;
+		self:OnNumberDisplayTypeChanged(numberDisplayType);
 	end
 end
 

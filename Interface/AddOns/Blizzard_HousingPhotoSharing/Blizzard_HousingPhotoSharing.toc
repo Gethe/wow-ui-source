@@ -1,0 +1,8 @@
+## Title: Blizzard Housing Photo Sharing
+## Author: Blizzard Entertainment
+## AllowLoadGameType: standard
+
+Blizzard_HousingPhotoSharing.lua
+Blizzard_HousingPhotoSharing.xml
+Blizzard_HousingPhotoSharingBrowser.lua
+Blizzard_HousingPhotoSharingBrowser.xml

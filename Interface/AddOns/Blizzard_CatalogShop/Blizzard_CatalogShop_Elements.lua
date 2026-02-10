@@ -460,29 +460,28 @@ end
 
 
 ----------------------------------------------------------------------------------
--- CrossGameContainerFrameMixin
+-- PMTImageContainerFrameMixin
 ----------------------------------------------------------------------------------
-CrossGameContainerFrameMixin = {};
-function CrossGameContainerFrameMixin:OnLoad()
+PMTImageContainerFrameMixin = {};
+function PMTImageContainerFrameMixin:OnLoad()
 end
 
-function CrossGameContainerFrameMixin:OnShow()
+function PMTImageContainerFrameMixin:OnShow()
 end
 
-function CrossGameContainerFrameMixin:OnHide()
+function PMTImageContainerFrameMixin:OnHide()
 end
 
-local function SetAlternateProductURLImage(displayInfo)
-	local texture = CatalogShopFrame.CrossGameContainerFrame.PMTImageForNoModel;
+local function SetMissingModelProductURLImage(productPMTURL)
+	local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
 
-	if displayInfo and displayInfo.otherProductPMTURL then
-		C_Texture.SetURLTexture(texture, displayInfo.otherProductPMTURL);
+	if productPMTURL then
+		C_Texture.SetURLTexture(texture, productPMTURL);
 	end
 end
 
--- TODO: Add support for correct localized flavor based on PMT attribute [WOW11-145789]
 local function SetMissingLicenseCaptionText(displayInfo)
-	local text = CatalogShopFrame.CrossGameContainerFrame.OtherProductWarningText;
+	local text = CatalogShopFrame.PMTImageContainerFrame.OtherProductWarningText;
 
 	if not displayInfo then
 		text:SetText("");
@@ -517,9 +516,15 @@ local function SetMissingLicenseCaptionText(displayInfo)
 	end
 end
 
-function CrossGameContainerFrameMixin:SetDisplayInfo(displayInfo)
+function PMTImageContainerFrameMixin:SetPMTImageOnly(displayData)
+	self.WatermarkLogoTexture:Hide();
+	SetMissingModelProductURLImage(displayData.fallbackPMTImageURL);
+	SetMissingLicenseCaptionText(nil);
+end
+
+function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo)
 	CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
-	SetAlternateProductURLImage(displayInfo);
+	SetMissingModelProductURLImage(displayInfo.productPMTURL);
 	SetMissingLicenseCaptionText(displayInfo);
 end
 

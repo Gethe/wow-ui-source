@@ -813,6 +813,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -911,7 +912,7 @@ local Unit =
 			Name = "UnitClassFromGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1654,6 +1655,7 @@ local Unit =
 		{
 			Name = "UnitIsAFK",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1774,6 +1776,7 @@ local Unit =
 		{
 			Name = "UnitIsDND",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3653,6 +3656,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerMountDisplayChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_MOUNT_DISPLAY_CHANGED",
@@ -4762,6 +4775,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{

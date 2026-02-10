@@ -2634,19 +2634,23 @@ function EditModeAccountSettingsMixin:GetEncounterEventsFrames()
 end
 
 function EditModeAccountSettingsMixin:RefreshEncounterEvents()
-	local showEncounterEventsFrames = self.settingsCheckButtons.EncounterEvents:IsControlChecked();
+	local showEncounterEventsFrames = self.settingsCheckButtons.EncounterEvents:IsControlChecked() and self.settingsCheckButtons.EncounterEvents:ShouldEnable();
 	local encounterEventsFrames = self:GetEncounterEventsFrames();
 
+	local function ShowEncounterEventFrame(_, encounterEventsFrame)
+		encounterEventsFrame:SetIsEditing(true);
+		encounterEventsFrame:HighlightSystem();
+	end
+
+	local function HideEncounterEventFrame(_, encounterEventsFrame)
+		encounterEventsFrame:SetIsEditing(false);
+		encounterEventsFrame:ClearHighlight();
+	end
+
 	if showEncounterEventsFrames then
-		for _, encounterEventsFrame in ipairs(encounterEventsFrames) do
-			encounterEventsFrame:SetIsEditing(true);
-			encounterEventsFrame:HighlightSystem();
-		end
+		secureexecuterange(encounterEventsFrames, ShowEncounterEventFrame);
 	else
-		for _, encounterEventsFrame in ipairs(encounterEventsFrames) do
-			encounterEventsFrame:SetIsEditing(false);
-			encounterEventsFrame:ClearHighlight();
-		end
+		secureexecuterange(encounterEventsFrames, HideEncounterEventFrame);
 	end
 end
 

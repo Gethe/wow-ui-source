@@ -150,9 +150,12 @@ do
 		
 		return view:GetExtentTo(scrollBox, size);
 	end
-
+	
 	function ScrollBoxListBiaxalViewMixin:RecalculateExtent(scrollBox)
-		self:PrepareRecalculateExtent();
+		-- Extents need to be recalculated when the data provider contents change or the
+		-- view width changes. We can skip rebuilding the entire cache once we're tracking
+		-- add, remove, or replacements in the data provider.
+		self:RebuildTemplateInfoCache();
 
 		local infos = self.templateInfoCache:GetTemplateInfos();
 		self.hasIdenticalTemplateSize = HasIdenticalTemplateSize(self, infos);

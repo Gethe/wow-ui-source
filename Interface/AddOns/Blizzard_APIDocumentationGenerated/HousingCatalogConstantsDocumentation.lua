@@ -5,9 +5,9 @@ local HousingCatalogConstants =
 		{
 			Name = "HousingCatalogEntryModelScenePresets",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 1317,
-			MaxValue = 1339,
+			MaxValue = 1452,
 			Fields =
 			{
 				{ Name = "DecorDefault", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1317 },
@@ -19,6 +19,7 @@ local HousingCatalogConstants =
 				{ Name = "DecorCeiling", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1338 },
 				{ Name = "DecorWall", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1339 },
 				{ Name = "DecorFlat", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1318 },
+				{ Name = "DecorHorizontalSurface", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1452 },
 			},
 		},
 		{

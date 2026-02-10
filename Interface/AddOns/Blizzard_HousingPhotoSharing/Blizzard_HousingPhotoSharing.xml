@@ -1,0 +1,322 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingPhotoSharingFrame" parentKey="HousingPhotoSharingFrame" mixin="HousingPhotoSharingMixin" inherits="SettingsFrameTemplate" ignoreParentScale="true" scale="0.72" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="490" y="747"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size x="482" y="739"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TitleContainer" frameLevel="510">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-24" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="TitleText" text="PHOTO_SHARING_PREVIEW_TITLE" inherits="GameFontNormal" wordwrap="false">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Border" frameLevel="2" setAllPoints="true"/>
+			<Frame parentKey="HeaderTextFrame" frameLevel="3" hidden="false" setAllPoints="true">
+				<Size x="450" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" x="20"/>
+					<Anchor point="TOP" y="-40"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="HeaderText" inherits="GameFontNormal" text="PHOTO_SHARING_PREVIEW_HEADER" justifyH="CENTER" wordwrap="true">
+							<Size x="450" y="40"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ScreenshotContainer" frameLevel="3" hidden="false" setAllPoints="true">
+				<Size x="450" y="450"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ScreenshotPreview" atlas="UI-Frame-DialogBox-BackgroundTile">
+							<Size x="450" y="450"/>
+							<Anchors>
+								<Anchor point="TOP" y="-80"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TitleFrame">
+				<Size x="450" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-540"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox name="PhotoSharingTitleEditBox" multiLine="false" letters="100" setAllPoints="true" parentKey="PhotoSharingTitleEditBox" autoFocus="false">
+						<Size x="450" y="15"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-25" x="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontNormal" text="PHOTO_SHARING_PREVIEW_EDITBOX_TITLE_LABEL" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-5" y="23"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="TitleText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="PHOTO_SHARING_PREVIEW_EDITBOX_TITLE_PLACEHOLDER">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self.TitleText:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								if ( self:GetText() == "" ) then
+									self.TitleText:Show();
+								end
+							</OnEditFocusLost>
+							<OnTabPressed>
+								EditBox_HandleTabbing(self, PHOTO_SHARING_TAB_LIST);
+							</OnTabPressed>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Frame name="DescriptionFrame" parentKey="DescriptionFrame">
+				<Size x="450" y="60"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-595"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_LABEL" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="DescriptionText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="PHOTO_SHARING_PREVIEW_EDITBOX_DESCRIPTION_PLACEHOLDER">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox name="PhotoSharingDescriptionEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="PhotoSharingDescriptionEditBox" autoFocus="false" hidden="true">
+						<Size x="440" y="60"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"  y="-25" x="5"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								if self:GetText() == "" or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION then
+									self:GetParent().DescriptionText:Hide();
+								end
+							</OnShow>
+							<OnEditFocusLost>
+								if self:GetText() == ""  or self:GetText() == " " .. PHOTO_SHARING_PREPOP_DESCRIPTION then
+									self:GetParent().DescriptionText:Show();
+									self:Hide();
+								end
+							</OnEditFocusLost>
+							<OnTabPressed>
+								EditBox_HandleTabbing(self, PHOTO_SHARING_TAB_LIST);
+							</OnTabPressed>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						PhotoSharingDescriptionEditBox:Show();
+						PhotoSharingDescriptionEditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ErrorTextFrame" frameLevel="3" hidden="false" setAllPoints="true">
+				<Size x="380" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" x="67"/>
+					<Anchor point="BOTTOM" y="42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ErrorText" inherits="GameFontRed" text="PHOTO_SHARING_PREVIEW_CONNECT_NOTIFICATION" justifyH="CENTER">
+							<Size x="380" y="20"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="PublishButton" inherits="UIPanelButtonTemplate" mixin="HousingPhotoSharingSubmitButtonMixin" motionScriptsWhileDisabled="true" text="PHOTO_SHARING_SIGN_IN">
+				<Size x="135" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="117"/>
+					<Anchor point="BOTTOM" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" mixin="HousingPhotoSharingCancelButtonMixin" motionScriptsWhileDisabled="true" text="CANCEL">
+				<Size x="135" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="263"/>
+					<Anchor point="BOTTOM" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

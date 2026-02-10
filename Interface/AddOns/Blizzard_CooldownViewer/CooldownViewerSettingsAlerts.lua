@@ -90,14 +90,6 @@ function CooldownViewerSettingsEditAlertMixin:AddCurrentAlert()
 	return status;
 end
 
-local eventTypeDropdownData =
-{
-	[Enum.CooldownViewerAlertEventType.Available] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE,
-	[Enum.CooldownViewerAlertEventType.PandemicTime] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_PANDEMIC,
-	[Enum.CooldownViewerAlertEventType.OnCooldown] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_ON_COOLDOWN,
-	[Enum.CooldownViewerAlertEventType.ChargeGained] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_CHARGE_GAINED,
-};
-
 local soundCategoryKeyToText =
 {
 	Animals = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_ANIMALS,
@@ -149,7 +141,7 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 
 		if validEventTypes then
 			for eventType in pairs(validEventTypes) do
-				rootDescription:CreateButton(eventTypeDropdownData[eventType], SetAlertEvent, eventType);
+				rootDescription:CreateButton(CooldownViewerAlert_GetEventText(eventType), SetAlertEvent, eventType);
 			end
 		else
 			-- TODO: Add "nothing available...", or likely prevent the frame from showing up at all, this could be queried externally.

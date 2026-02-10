@@ -36,7 +36,7 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="LockIcon" atlas="talents-gate" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" x="20" y="2"/>
+						<Anchor point="RIGHT" x="25" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -94,6 +94,7 @@ DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncodingUtilDocumentation.lua
+EncounterEventsDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EncounterTimelineDocumentation.lua
@@ -118,6 +119,7 @@ FrameAPIFogOfWarFrameDocumentation.lua
 FrameAPIModelSceneFrameDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPIModelSceneFrameActorBaseDocumentation.lua
+FrameAPINamePlateDocumentation.lua
 FrameAPIQuestPOIDocumentation.lua
 FrameAPIScenarioPOIDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua
@@ -154,6 +156,7 @@ HousingFixturePointFrameAPIDocumentation.lua
 HousingLayoutPinFrameAPIDocumentation.lua
 HousingLayoutUIDocumentation.lua
 HousingNeighborhoodUIDocumentation.lua
+HousingPhotoSharingUIDocumentation.lua
 HousingUIDocumentation.lua
 ImmersiveInteractionManagerDocumentation.lua
 InGameNavigationDocumentation.lua
@@ -207,6 +210,7 @@ UIModelInfoDocumentation.lua
 MountJournalDocumentation.lua
 MovieDocumentation.lua
 MythicPlusInfoDocumentation.lua
+NamePlateDocumentation.lua
 NamePlateManagerDocumentation.lua
 NeighborhoodInitiativeDocumentation.lua
 NewItemsDocumentation.lua
@@ -391,7 +395,7 @@ BaseDocumentation.lua
 BattlePetConstantsDocumentation.lua
 BattlepayConstantsDocumentation.lua
 BountySharedDocumentation.lua
-ButtonConstantsDocumentation.lua
+ButtonStateDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
 CatalogShopConstantsDocumentation.lua
@@ -407,6 +411,7 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 ColorOverrideConstantsDocumentation.lua
 CombatAudioAlertConstantsDocumentation.lua
+CombatAudioAlertSharedDocumentation.lua
 CombatLogConstantsDocumentation.lua
 CombatLogSharedDocumentation.lua
 CombatTextSharedDocumentation.lua
@@ -430,6 +435,7 @@ DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_MainlineDocumentation.lua
 EncodingUtilConstantsDocumentation.lua
+EncounterEventsSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EncounterTimelineConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
@@ -452,6 +458,7 @@ HousingCatalogConstantsDocumentation.lua
 HousingDecorSharedDocumentation.lua
 HousingLayoutUITypesDocumentation.lua
 HousingUISharedDocumentation.lua
+ImageSharingConstantsDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
@@ -475,7 +482,6 @@ ModelAnimationSharedDocumentation.lua
 MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
 MythicPlusInfoSharedDocumentation.lua
-NamePlateDocumentation.lua
 NamePlateConstantsDocumentation.lua
 NeighborhoodInitiativesConstantsDocumentation.lua
 PVPMgrConstantsDocumentation.lua
@@ -517,6 +523,7 @@ SecretAspectConstantsDocumentation.lua
 SecretPredicatesDocumentation.lua
 SecretWrapperConstantsDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
+SharedScriptObjectNamePlateFrameDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua

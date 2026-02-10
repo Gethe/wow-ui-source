@@ -26,7 +26,7 @@ function HousingBulletinBoardFrameMixin:OnHide()
 end
 
 function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
-	self.GearDropdown:Show();
+	
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.neighborhoodOwnerType = neighborhoodInfo.neighborhoodOwnerType;
 	self.ResidentsTab:OnNeighborhoodInfoUpdated(neighborhoodInfo);
@@ -37,9 +37,15 @@ function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodIn
 		self.Background:SetAtlas(bgAtlasPrefix .. bgAtlasSuffix);
 	end
 
-	self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
-	end);
+	if self.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.Charter or self.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.Guild then
+		self.GearDropdown:Show();
+
+		self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
+		end);
+	else
+		self.GearDropdown:Hide();
+	end
 end
 
 function HousingBulletinBoardFrameMixin:ReportNeighborhood()
@@ -507,6 +513,7 @@ local NeighborhoodInviteErrorTypeStrings = {
 	[Enum.NeighborhoodInviteResult.InviteLimit] = HOUSING_NEIGHBORHOOD_INVITE_ERR_LIMIT,
 	[Enum.NeighborhoodInviteResult.NotEnoughPlots] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NO_PLOTS,
 	[Enum.NeighborhoodInviteResult.NotFound] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NOT_FOUND,
+	[Enum.NeighborhoodInviteResult.AlreadyInNeighborhood] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
 };
 
 local INVITE_RESIDENT_SHOWING_EVENTS = {
@@ -642,7 +649,10 @@ function HousingInviteResidentFrameMixin:OnSendInviteClicked()
 	self.SendInviteButton:Disable();
 	self.InviteButtonLoadingSpinner:Show();
 	self.pendingInvite = true;
-	self.pendingInviteName = C_CharacterServices.CapitalizeCharName(self.PlayerSearchBox:GetText());
+
+	-- Player names cannot have spaces so we trim the input text for ease of use.
+	local searchText = StringUtil.RemoveTrailingSpaces(self.PlayerSearchBox:GetText());
+	self.pendingInviteName = C_CharacterServices.CapitalizeCharName(searchText);
 	C_HousingNeighborhood.InvitePlayerToNeighborhood(self.pendingInviteName);
 	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
 end

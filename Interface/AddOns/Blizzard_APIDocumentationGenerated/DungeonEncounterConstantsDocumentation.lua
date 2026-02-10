@@ -66,12 +66,13 @@ local DungeonEncounterConstants =
 		{
 			Name = "EncounterEventFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Disabled", Type = "EncounterEventFlags", EnumValue = 1 },
+				{ Name = "IgnoreCastConsume", Type = "EncounterEventFlags", EnumValue = 2 },
 			},
 		},
 		{

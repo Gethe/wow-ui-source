@@ -29,8 +29,13 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="NotActive" inherits="GameFontNormalMed1" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="20" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SessionTimer" inherits="GameFontNormalMed1" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-9"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -66,7 +71,7 @@
 					<KeyValue key="hasShadow" type="boolean" value="false"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SessionTimer" relativePoint="TOPRIGHT" x="0" y="6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

@@ -138,7 +138,7 @@ MinimapMixin = { };
 
 function MinimapMixin:OnLoad()
 	self.fadeOut = nil;
-	self:RegisterEvent("MINIMAP_PING");
+	self:RegisterEventCallback("MINIMAP_PING", function() PlaySound(SOUNDKIT.MAP_PING); end);
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -242,9 +242,6 @@ end
 function MinimapMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
-	elseif ( event == "MINIMAP_PING" ) then
-		local arg1, arg2, arg3 = ...;
-		Minimap_SetPing(arg2, arg3, 1);
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
 		self.ZoomIn:Enable();
 		self.ZoomOut:Enable();
@@ -301,12 +298,6 @@ end
 function Minimap_OnUpdate(self)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR");
 	GameTooltip:SetMinimapMouseover();
-end
-
-function Minimap_SetPing(x, y, playSound)
-	if ( playSound ) then
-		PlaySound(SOUNDKIT.MAP_PING);
-	end
 end
 
 MinimapZoomInButtonMixin = { };

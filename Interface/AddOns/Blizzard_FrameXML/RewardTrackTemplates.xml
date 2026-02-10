@@ -7,7 +7,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" parentArray="Textures">
-					<Size x="40" y="39"/>
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -21,24 +21,36 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark" useAtlasSize="true" parentArray="Textures">
+				<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-small" parentArray="Textures">
+					<Size x="59" y="59"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-13" y="10"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Level" inherits="GameFontNormal">
+				<Texture parentKey="EarnedCheckmark" atlas="activities-icon-checkmark-small" useAtlasSize="true" parentArray="Textures">
 					<Anchors>
-						<Anchor point="BOTTOM" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelRectangle" atlas="ui-journeys-delve-rewardicon-rectangle-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.IconBorder" point="BOTTOM" y="-9"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor relativeKey="$parent.LevelRectangle" point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<MaskTexture parentKey="HexMask" atlas="CovenantSanctum-Renown-Hexagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+				<MaskTexture parentKey="HexMask" atlas="ui-journeys-delve-rewardicon-octagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</MaskTexture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightTexture" parentArray="Textures" alphaMode="ADD">
+				<Texture parentKey="HighlightTexture" parentArray="Textures" alphaMode="ADD" alpha="0.4">
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -50,18 +62,26 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="EarnedAnim" looping="NONE" setToFinalAlpha="false">
+				<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="EarnedCheckmark" duration="0.0" order="2" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+				<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
-	<!--! TODO lots of temp art or missing art needs to be placed here -->
 	<Frame name="RenownLevelCardTemplate" mixin="RenownLevelMixin" virtual="true">
 		<Size x="135" y="130"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-reward-bar" useAtlasSize="true" setAllPoints="true"/>
+				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-reward-bar" useAtlasSize="true" setAllPoints="true" parentArray="Textures"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" parentArray="Textures">
-					<Size x="40" y="39"/>
+					<Size x="45" y="45"/>
 					<Anchors>
 						<Anchor point="BOTTOM" y="-20"/>
 					</Anchors>
@@ -69,18 +89,19 @@
 				
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="LevelSquare" atlas="ui-journeys-delve-level-square" useAtlasSize="true">
+				<Texture parentKey="LevelSquare" atlas="ui-journeys-delve-level-square" parentArray="Textures">
+					<Size x="38" y="38"/>
 					<Anchors>
 						<Anchor point="TOP" y="9"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Level" inherits="GameFontNormal">
+				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.LevelSquare"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RewardName" inherits="GameFontHighlight" justifyV="TOP">
-					<Size x="120" y="85"/>
+				<FontString parentKey="RewardName" inherits="GameFontHighlight">
+					<Size x="90" y="85"/>
 					<Anchors>
 						<Anchor point="CENTER" y="1"/>
 					</Anchors>
@@ -219,15 +240,15 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString parentKey="Level" inherits="GameFontNormal">
+								<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.LevelFrame"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="HIGHLIGHT">
-								<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Icon-Hover" useAtlasSize="true" alphaMode="ADD">
-									<Size x="55" y="55"/>
+								<Texture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+									<Size x="40" y="40"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 									</Anchors>
@@ -281,6 +302,16 @@
 		<Size x="570" y="185"/>
 		<Frames>
 			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<MaskTexture parentKey="Mask" atlas="ui-journeys-scroll-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="570" y="570"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="ParagonLevelFrame" hidden="true">
 						<Size x="200" y="50"/>
@@ -328,8 +359,8 @@
 								</FontString>
 							</Layer>
 							<Layer level="HIGHLIGHT">
-								<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Icon-Hover" useAtlasSize="true" alphaMode="ADD">
-									<Size x="55" y="55"/>
+								<Texture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+									<Size x="40" y="40"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 									</Anchors>

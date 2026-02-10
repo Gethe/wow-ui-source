@@ -220,7 +220,7 @@ local NeighborhoodInitiative =
 			Name = "InitiativeTasksTrackedUpdated",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASKS_TRACKED_UPDATED",
-			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "NeighborhoodInitiativeUpdated",

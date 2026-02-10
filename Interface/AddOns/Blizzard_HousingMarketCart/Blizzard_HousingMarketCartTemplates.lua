@@ -73,6 +73,9 @@ end
 function HousingMarketCartFrameMixin:StartCurrencyRefreshTicker()
 	self:StopCurrencyRefreshTicker();
 
+	-- Perform an immediate refresh upon starting the ticker
+	C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+
 	local currencyRefreshTickTime = 20;
 	self.CurrencyRefreshTicker = C_Timer.NewTicker(currencyRefreshTickTime, function()
 		C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
@@ -136,6 +139,8 @@ function HousingMarketCartFrameMixin:PlayHearthsteelBalanceUpdateAnim()
 	self.HearthSteelCoinGlow:Show();
 	self.HearthSteelCoinGlow.Anim:Play();
 	self.deferedHearthsteelAnim = false;
+
+	PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_HEARTHSTEEL);
 end
 
 function HousingMarketCartFrameMixin:GetEventNamespace()
@@ -283,6 +288,11 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 
 		local hearthsteelBalance, _icon, _iconIsAtlas = self:GetCartCurrencyInfo();
 		if totalPrice > hearthsteelBalance then
+			local neededAmount = totalPrice - hearthsteelBalance;
+			local bestVCProductID = C_CatalogShop.FindBestCurrencyProductForNeededAmount(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE, neededAmount);
+			if bestVCProductID then
+				CatalogShopTopUpFlowInboundInterface.SetSuggestedProduct(bestVCProductID);
+			end
 			CatalogShopTopUpFlowInboundInterface.SetDesiredQuantity(totalPrice);
 			CatalogShopTopUpFlowInboundInterface.SetCurrentBalance(hearthsteelBalance);
 			CatalogShopTopUpFlowInboundInterface.SetShown(true, self:GetParent());
@@ -567,8 +577,6 @@ function HousingMarketCartDataManagerMixin:ClearCartInternal()
 end
 
 function HousingMarketCartDataManagerMixin:ClearCart(requiresConfirmation)
-	PlaySound(SOUNDKIT.HOUSING_MARKET_REMOVE_ALL_ITEMS_BUTTON);
-
 	if #self.cartList < 1 then
 		return;
 	end
@@ -628,13 +636,13 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 					if isMatchingDecor and hasMatchingBundleParent and not cartItem.markedForRemoval and not isBundleParent then
 						Promote(cartItem);
 
-						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCartInternal call
+						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCart call
 
 						if isBundleChild then
 							bundlesToRemove[cartItem.bundleCatalogShopProductID] = true;
 							cartItem.markedForRemoval = true;
 						else
-							self:RemoveFromCartInternal(i, cartItem);
+							self:RemoveFromCart(cartItem);
 						end
 
 						break;
@@ -644,9 +652,9 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 		end
 
 		for bundleProdID, _toRemove in pairs(bundlesToRemove) do
-			for i, cartItem in ipairs(self.cartList) do
+			for _i, cartItem in ipairs(self.cartList) do
 				if cartItem.bundleCatalogShopProductID == bundleProdID and cartItem.isBundleParent then
-					self:RemoveFromCartInternal(i, cartItem);
+					self:RemoveFromCart(cartItem);
 
 					break;
 				end
@@ -683,7 +691,13 @@ function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_REMOVE_FRO
 	for _i, cartItem in ipairs(self.cartList) do
 		if cartItem.decorGUID == decorGUID then
 			cartItem.decorGUID = nil;
-			self:UpdateCart();
+
+			if C_Housing.IsHousingMarketCartFullRemoveEnabled() and not cartItem.bundleCatalogShopProductID then
+				self:RemoveFromCart(cartItem);
+			else
+				self:UpdateCart();
+			end
+
 			break;
 		end
 	end

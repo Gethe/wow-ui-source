@@ -9,7 +9,7 @@ EncounterWarningsConstants = {
 
 EncounterWarningsSettingDefaults = {
 	IconScale = 1.0;
-	TooltipsEnabled = true;
+	TooltipAnchor = Enum.EncounterEventsTooltipAnchor.Default;
 };
 
 EncounterWarningsSystemSeverity = {
@@ -31,12 +31,6 @@ EncounterWarningsSeverityFonts = {
 	[Enum.EncounterEventSeverity.High] = function() return SystemFont_Outline_Slug_Huge2; end,
 	[Enum.EncounterEventSeverity.Medium] = function() return SystemFont_Huge1_Outline_Slug; end,
 	[Enum.EncounterEventSeverity.Low] = function() return SystemFont_Outline_Slug_Large2; end,
-};
-
-EncounterWarningsSeverityColors = {
-	[Enum.EncounterEventSeverity.High] = function() return ENCOUNTER_WARNINGS_CRITICAL_FONT_COLOR; end,
-	[Enum.EncounterEventSeverity.Medium] = function() return ENCOUNTER_WARNINGS_MEDIUM_FONT_COLOR; end,
-	[Enum.EncounterEventSeverity.Low] = function() return ENCOUNTER_WARNINGS_MINOR_FONT_COLOR; end,
 };
 
 -- All CVars in the following list are imported into the CVarCallbackRegistry

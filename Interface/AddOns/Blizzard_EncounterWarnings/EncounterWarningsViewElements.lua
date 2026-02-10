@@ -64,7 +64,7 @@ function EncounterWarningsTextElementMixin:Init(encounterWarningInfo, parentView
 
 	local maximumTextSize = EncounterWarningsUtil.GetMaximumTextSizeForSeverity(encounterWarningInfo.severity);
 	local textFontObject = EncounterWarningsUtil.GetFontObjectForSeverity(encounterWarningInfo.severity);
-	local textColor = EncounterWarningsUtil.GetTextColorForSeverity(encounterWarningInfo.severity);
+	local textColor = encounterWarningInfo.color;
 
 	self:SetFontObject(textFontObject);
 	self:SetTextColor(textColor:GetRGB());

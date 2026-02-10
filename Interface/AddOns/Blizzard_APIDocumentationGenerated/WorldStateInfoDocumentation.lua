@@ -15,6 +15,7 @@ local WorldStateInfo =
 			Name = "CancelPlayerCountdown",
 			Type = "Event",
 			LiteralName = "CANCEL_PLAYER_COUNTDOWN",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -27,6 +28,7 @@ local WorldStateInfo =
 			Name = "StartPlayerCountdown",
 			Type = "Event",
 			LiteralName = "START_PLAYER_COUNTDOWN",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

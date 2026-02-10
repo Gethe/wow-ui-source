@@ -19,6 +19,7 @@ local SimpleTextureAPI =
 		{
 			Name = "GetMaskTexture",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -35,6 +36,7 @@ local SimpleTextureAPI =
 		{
 			Name = "GetNumMaskTextures",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{

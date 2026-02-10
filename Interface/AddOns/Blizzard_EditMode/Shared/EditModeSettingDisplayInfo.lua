@@ -920,6 +920,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	},
 
 	[Enum.EditModeSystem.EncounterEvents] = {
+		-- Type
+		{
+			setting = Enum.EditModeEncounterEventsSetting.ViewType,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsViewType.Timeline, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE_TIMELINE},
+				{value = Enum.EncounterEventsViewType.Bars, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE_BARS},
+			},
+		},
+
 		-- Orientation
 		{
 			setting = Enum.EditModeEncounterEventsSetting.Orientation,
@@ -968,6 +980,29 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			formatter = ShowAsPercentage,
 		},
 
+		-- Padding
+		{
+			setting = Enum.EditModeEncounterEventsSetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 20,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Bar Width
+		{
+			setting = Enum.EditModeEncounterEventsSetting.BarWidth,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_BAR_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
 		-- Background
 		{
 			setting = Enum.EditModeEncounterEventsSetting.BackgroundTransparency,
@@ -1006,17 +1041,30 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
+		-- Tooltips
+		{
+			setting = Enum.EditModeEncounterEventsSetting.TooltipAnchor,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsTooltipAnchor.Hidden, text = NONE},
+				{value = Enum.EncounterEventsTooltipAnchor.Default, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS_HUD},
+				{value = Enum.EncounterEventsTooltipAnchor.Cursor, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS_CURSOR},
+			},
+		},
+
+		-- Flip Horizontally
+		{
+			setting = Enum.EditModeEncounterEventsSetting.FlipHorizontally,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_FLIP_HORIZONTAL,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
 		-- Show Spell Name
 		{
 			setting = Enum.EditModeEncounterEventsSetting.ShowSpellName,
 			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_SHOW_SPELL_NAME,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
-
-		-- Show Tooltips
-		{
-			setting = Enum.EditModeEncounterEventsSetting.ShowTooltips,
-			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_SHOW_TOOLTIPS,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
@@ -1044,7 +1092,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 
 		-- Numbers
-		--[[ NYI: Hiding.
 		{
 			setting = Enum.EditModeDamageMeterSetting.Numbers,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS,
@@ -1055,7 +1102,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{ value = Enum.DamageMeterNumbers.Complete, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPLETE },
 			},
 		},
-		--]]
 
 		-- Frame Width
 		{

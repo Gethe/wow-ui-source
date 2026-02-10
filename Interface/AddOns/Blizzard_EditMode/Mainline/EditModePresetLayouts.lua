@@ -760,6 +760,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.EncounterEvents] = {
 		[Enum.EditModeEncounterEventsSystemIndices.Timeline] = {
 			settings = {
+				[Enum.EditModeEncounterEventsSetting.ViewType] = Enum.EncounterEventsViewType.Timeline,
 				[Enum.EditModeEncounterEventsSetting.Orientation] = Enum.EncounterEventsOrientation.Vertical,
 				[Enum.EditModeEncounterEventsSetting.IconDirection] = Enum.EncounterEventsIconDirection.Right,
 				[Enum.EditModeEncounterEventsSetting.IconSize] = 5,
@@ -768,8 +769,11 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.BackgroundTransparency] = 0,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.InEncounter,
 				[Enum.EditModeEncounterEventsSetting.ShowSpellName] = 0,
-				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 1,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 				[Enum.EditModeEncounterEventsSetting.ShowTimer] = 1,
+				[Enum.EditModeEncounterEventsSetting.FlipHorizontally] = 0,
+				[Enum.EditModeEncounterEventsSetting.BarWidth] = 50,
+				[Enum.EditModeEncounterEventsSetting.Padding] = 2,
 			},
 			anchorInfo = {
 				point = "BOTTOMRIGHT",
@@ -785,7 +789,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 1,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",
@@ -801,7 +805,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 1,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",
@@ -818,7 +822,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 1,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",

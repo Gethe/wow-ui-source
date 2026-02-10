@@ -24,6 +24,16 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "BulkRefundDecors",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseCatalogShopInteraction",
 			Type = "Function",
 		},
@@ -35,6 +45,22 @@ local CatalogShop =
 			Arguments =
 			{
 				{ Name = "productIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FindBestCurrencyProductForNeededAmount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "vcCurrencyCode", Type = "string", Nilable = false },
+				{ Name = "amountNeeded", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vcProductID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -274,6 +300,15 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetVCProductInfos",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vcProductInfos", Type = "table", InnerType = "CatalogShopVCProductInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVirtualCurrencyBalance",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -317,6 +352,10 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "OnLegalPersonalizedOptOutClicked",
+			Type = "Function",
+		},
+		{
 			Name = "OpenCatalogShopInteractionFromHouse",
 			Type = "Function",
 
@@ -337,6 +376,7 @@ local CatalogShop =
 		{
 			Name = "ProductDisplayedTelemetry",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -349,6 +389,7 @@ local CatalogShop =
 		{
 			Name = "ProductSelectedTelemetry",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -411,6 +452,18 @@ local CatalogShop =
 			{
 				{ Name = "result", Type = "BulkPurchaseResult", Nilable = false },
 				{ Name = "productResults", Type = "table", InnerType = "BulkPurchaseIndividualProductResult", Nilable = false },
+				{ Name = "bestTopUpProductID", Type = "number", Nilable = true },
+				{ Name = "totalCost", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "BulkRefundResultReceived",
+			Type = "Event",
+			LiteralName = "BULK_REFUND_RESULT_RECEIVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "BulkRefundResult", Nilable = false },
 			},
 		},
 		{
@@ -596,6 +649,7 @@ local CatalogShop =
 			{
 				{ Name = "childProductID", Type = "number", Nilable = false },
 				{ Name = "displayOrder", Type = "number", Nilable = false },
+				{ Name = "quantityInBundle", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -633,8 +687,8 @@ local CatalogShop =
 				{ Name = "productType", Type = "string", Nilable = true },
 				{ Name = "itemDescription", Type = "string", Nilable = true },
 				{ Name = "hasUnknownLicense", Type = "bool", Nilable = false },
+				{ Name = "productPMTURL", Type = "string", Nilable = true },
 				{ Name = "otherProductImageAtlasName", Type = "string", Nilable = true },
-				{ Name = "otherProductPMTURL", Type = "string", Nilable = true },
 				{ Name = "otherProductGameTitleBaseTag", Type = "string", Nilable = true },
 				{ Name = "otherProductGameType", Type = "string", Nilable = true },
 				{ Name = "customLoopingSoundStart", Type = "number", Nilable = true },
@@ -694,6 +748,7 @@ local CatalogShop =
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
 				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "consumableQuantity", Type = "number", Nilable = true },
+				{ Name = "isVCProduct", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -706,6 +761,7 @@ local CatalogShop =
 				{ Name = "parentCatalogShopCategoryInfoID", Type = "number", Nilable = true },
 				{ Name = "cardType", Type = "string", Nilable = true },
 				{ Name = "scrollGridSize", Type = "number", Nilable = true },
+				{ Name = "shouldShowRecommendationOptOutDisclaimer", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -730,6 +786,14 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "CatalogShopVCProductInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "vcProductID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CatalogShopVirtualCurrency",
 			Type = "Structure",
 			Fields =
@@ -745,7 +809,8 @@ local CatalogShop =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "timeRemainingSeconds", Type = "time_t", Nilable = false },
-				{ Name = "standaloneDecorProductID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "price", Type = "string", Nilable = false },
 			},
 		},
 	},

@@ -1,16 +1,4 @@
 
-TopUpFlowConstants = 
-{
-	TestProductIDs = {
-		{productID=2023433},
-		{productID=2023434},
-		{productID=2023435},
-		{productID=2023432},
-		{productID=2023431},
-		{productID=2023436},
-	},
-}
-
 local ScreenPadding =
 {
 	Horizontal = 100,
@@ -47,6 +35,8 @@ end
 function CatalogShopTopUpFrameMixin:OnShow()
 	self:SetAttribute("isshown", true);
 
+	PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_FLOW_PANEL_OPEN);
+
 	self.TopUpProductContainerFrame:Init();
 	if C_Glue.IsOnGlueScreen() then
 		FrameUtil.SetParentMaintainRenderLayering(self, CatalogShopFrame);
@@ -65,6 +55,7 @@ function CatalogShopTopUpFrameMixin:OnHide()
 		self.TopUpProductContainerFrame:SetSelectedProductInfo(nil);
 	end
 	self:HideCoverFrame();
+	self.PurchaseTotal:Hide();
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
@@ -97,18 +88,49 @@ function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 		end
 	elseif (name == "parentframe") then
 		if value then
-			FrameUtil.SetParentMaintainRenderLayering(self, value);
+			self:SetParentFrame(value);
 		end
 	elseif (name == "setdesiredquantity") then
-		self.desiredQuantity = tonumber(value);
-		if self.desiredQuantity then
-			self.PurchaseTotal:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_PURCHASE, self.desiredQuantity));
+		value = tonumber(value);
+		if value then
+			self:SetDesiredQuantity(value);
 		end
 	elseif (name == "setcurrentbalance") then
-		self.currentBalance = tonumber(value);
-		if self.currentBalance then
-			self.CurrentBalance:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_CURRENT_BALANCE, self.currentBalance));
+		value = tonumber(value);
+		if value then
+			self:SetCurrentBalance(value);
 		end
+	elseif  (name == "setsuggestedproduct") then
+		value = tonumber(value);
+		if value then
+			self:SetSuggestedProduct(value);
+		end
+	end
+end
+
+function CatalogShopTopUpFrameMixin:SetParentFrame(parent)
+	FrameUtil.SetParentMaintainRenderLayering(self, parent);
+end
+
+function CatalogShopTopUpFrameMixin:SetDesiredQuantity(value)
+	self.desiredQuantity = tonumber(value);
+	if self.desiredQuantity then
+		self.PurchaseTotal:Show();
+		self.PurchaseTotal:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_PURCHASE, self.desiredQuantity));
+	end
+end
+
+function CatalogShopTopUpFrameMixin:SetCurrentBalance(value)
+	self.currentBalance = tonumber(value);
+	if self.currentBalance then
+		self.CurrentBalance:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_CURRENT_BALANCE, self.currentBalance));
+	end
+end
+
+function CatalogShopTopUpFrameMixin:SetSuggestedProduct(productID)
+	self.suggestedTopUpProduct = productID;
+	if self.suggestedTopUpProduct then
+		self.TopUpProductContainerFrame:SetSuggestedProductID(productID);
 	end
 end
 

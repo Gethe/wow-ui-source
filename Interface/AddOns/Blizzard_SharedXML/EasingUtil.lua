@@ -94,7 +94,14 @@ function EasingUtil.InOutExponential(percent)
 end
 
 function EasingUtil.OutBack(percent)
-	local c1 = 1.70158;  -- Overshoot the target by 10% (supposedly).
+	local c1 = 1.70158;  -- Overshoot the target by 10%.
 	local c3 = c1 + 1;
 	return 1 + c3 * ((percent - 1) ^ 3) + c1 * ((percent - 1) ^ 2);
+end
+
+function EasingUtil.InBack(percent)
+	local c1 = 1.70158;  -- Overshoot the target by 10%.
+	local c3 = c1 + 1;
+
+	return c3 * (percent ^ 3) - c1 * (percent ^ 2)
 end

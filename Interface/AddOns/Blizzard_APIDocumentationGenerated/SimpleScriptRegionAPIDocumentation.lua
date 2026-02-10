@@ -9,6 +9,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "CanChangeProtectedState",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{
@@ -252,6 +253,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetSourceLocation",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectDebug },
 
 			Arguments =
 			{
@@ -297,6 +299,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "HasScript",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -348,6 +352,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsAnchoringRestricted",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{
@@ -361,6 +366,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsAnchoringSecret",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
 
 			Arguments =
 			{

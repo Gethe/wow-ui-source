@@ -44,9 +44,11 @@ end
 
 local trackingState = CreatePredictedTrackingState();
 
+local PlaySound = PlaySound;
+
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
-	self:RegisterEvent("MINIMAP_PING");
+	self:RegisterEventCallback("MINIMAP_PING", function() PlaySound(SOUNDKIT.MAP_PING); end);
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
@@ -112,9 +114,6 @@ end
 function Minimap_OnEvent(self, event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
-	elseif ( event == "MINIMAP_PING" ) then
-		local arg1, arg2, arg3 = ...;
-		Minimap_SetPing(arg2, arg3, 1);
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
 		MinimapZoomIn:Enable();
 		MinimapZoomOut:Enable();
@@ -126,12 +125,6 @@ function Minimap_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		Minimap_Update();
-	end
-end
-
-function Minimap_SetPing(x, y, playSound)
-	if ( playSound ) then
-		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 
@@ -219,7 +212,7 @@ end
 function MiniMapLFGFrame_OnEvent(self, event, ...)
 	if (	event == "PLAYER_ENTERING_WORLD" or
 			event == "GROUP_ROSTER_UPDATE" or
-			event == "LFG_UPDATE" or 
+			event == "LFG_UPDATE" or
 			event == "LFG_QUEUE_STATUS_UPDATE" ) then
 		--Try each LFG type
 		local hasLFGMode = false;
@@ -346,7 +339,7 @@ function MiniMapTracking_Update()
 		local trackingInfo = C_Minimap.GetTrackingInfo(id);
 		if trackingInfo then
 			if trackingInfo.active then
-				if (trackingInfo.type == "spell") then 
+				if (trackingInfo.type == "spell") then
 					if (currentTexture == trackingInfo.texture) then
 						return;
 					end
@@ -398,7 +391,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 
 		local class = select(2, UnitClass("player"));
 		local isHunterClass = class == "HUNTER";
-	
+
 		for index = 1, C_Minimap.GetNumTrackingTypes() do
 			local trackingInfo = C_Minimap.GetTrackingInfo(index);
 			if trackingInfo then
@@ -416,36 +409,36 @@ function MiniMapTrackingButtonMixin:OnLoad()
 		local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
 			local name = trackingInfo.name;
 			trackingInfo.text = name;
-	
+
 			local texture = trackingInfo.texture;
 			local desc = parentDescription:CreateCheckbox(
 				name,
 				IsTrackingActive,
 				ToggleTrackingSelected,
 				trackingInfo);
-	
+
 			desc:AddInitializer(function(button, description, menu)
 				local rightTexture = button:AttachTexture();
 				rightTexture:SetSize(20, 20);
 				rightTexture:SetPoint("RIGHT");
 				rightTexture:SetTexture(texture);
-		
+
 				local fontString = button.fontString;
 				fontString:SetPoint("RIGHT", rightTexture, "LEFT");
-	
+
 				if trackingInfo.type == "spell" then
 					local uv0, uv1 = .0625, .9;
 					rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
 				end
-					
+
 				-- The size is explicitly provided because this requires a right-justified icon.
 				local width, height = fontString:GetUnboundedStringWidth() + 60, 20;
 				return width, height;
 			end);
-	
+
 			return desc;
 		end
-	
+
 		local hunterCount = #hunterInfo;
 		if hunterCount > 0 then
 			local hunterMenuDesc = rootDescription;
@@ -469,7 +462,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 				CreateCheckboxWithIcon(townfolkMenuDesc, info);
 			end
 		end
-	
+
 		for index, info in ipairs(regularInfo) do
 			CreateCheckboxWithIcon(rootDescription, info);
 		end
@@ -521,7 +514,7 @@ end
 --
 -- Dungeon Difficulty
 --
-						
+
 IS_GUILD_GROUP = nil;
 
 function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
@@ -738,7 +731,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 	MiniMapBattlefieldFrame.tooltip = nil;
 	MiniMapBattlefieldFrame.waitTime = {};
 	MiniMapBattlefieldFrame.status = nil;
-	
+
 	-- Copy current queues into previous queues
 	if ( not tooltipOnly ) then
 		PREVIOUS_BATTLEFIELD_QUEUES = {};
@@ -747,7 +740,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 		end
 		CURRENT_BATTLEFIELD_QUEUES = {};
 	end
-	
+
 	for i=1, GetMaxBattlefieldID() do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity = GetBattlefieldStatus(i);
 		if ( mapName ) then
@@ -772,7 +765,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				timeInQueue = GetBattlefieldTimeWaited(i)/1000;
 				if ( waitTime == 0 ) then
 					waitTime = QUEUE_TIME_UNAVAILABLE;
-				elseif ( waitTime < 60000 ) then 
+				elseif ( waitTime < 60000 ) then
 					waitTime = LESS_THAN_ONE_MINUTE;
 				else
 					waitTime = SecondsToTime(waitTime/1000, 1);
@@ -783,7 +776,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				else
 					tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
 				end
-				
+
 				if ( not tooltipOnly ) then
 					if ( not IsAlreadyInQueue(mapName) ) then
 						UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
@@ -811,7 +804,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 			elseif ( status == "active" ) then
 				-- In the battleground
 				if ( teamSize ~= 0 ) then
-					tooltip = mapName;			
+					tooltip = mapName;
 				else
 					tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
 				end
@@ -832,7 +825,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				else
 					MiniMapBattlefieldFrame.tooltip = tooltip;
 				end
-				
+
 				if ( not eligibleInQueue and status ~= "active" and status ~= "confirm" ) then
 					if ( waitingOnOtherActivity ) then
 						MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_SUSPENDED_QUEUE_STATUS;
@@ -843,12 +836,12 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 			end
 		end
 	end
-	
+
 	-- See if should add right click message
 	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
 		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
 	end
-	
+
 	if ( not tooltipOnly ) then
 		if ( numberQueues == 0 ) then
 			-- Clear everything out

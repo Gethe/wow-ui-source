@@ -1,241 +1,365 @@
+-- Settings common to all view types and event frames.
+
 EncounterTimelineSettingsMixin = {};
 
 function EncounterTimelineSettingsMixin:OnLoad()
-	self.crossAxisExtent = EncounterTimelineSettingDefaults.CrossAxisExtent;
-	self.crossAxisOffset = EncounterTimelineSettingDefaults.CrossAxisOffset;
-	self.eventCountdownEnabled = EncounterTimelineSettingDefaults.EventCountdownEnabled;
-	self.eventIconScale = EncounterTimelineSettingDefaults.EventIconScale;
-	self.eventTextEnabled = EncounterTimelineSettingDefaults.EventTextEnabled;
-	self.eventTooltipsEnabled = EncounterTimelineSettingDefaults.EventTooltipsEnabled;
-	self.eventIndicatorIconMask = EncounterTimelineSettingDefaults.EventIndicatorIconMask;
-	self.viewBackgroundAlpha = EncounterTimelineSettingDefaults.ViewBackgroundAlpha;
-	self.viewOrientation = EncounterTimelineUtil.CreateOrientation(EncounterTimelineSettingDefaults.ViewOrientation, EncounterTimelineSettingDefaults.ViewDirection);
-	self.pipDuration = EncounterTimelineSettingDefaults.PipDuration;
-	self.pipIconShown = EncounterTimelineSettingDefaults.PipIconShown;
-	self.pipTextAnchor = EncounterTimelineSettingDefaults.PipTextAnchor;
-	self.pipTextShown = EncounterTimelineSettingDefaults.PipTextShown;
+	self.flipHorizontally = EncounterTimelineSettingDefaults.FlipHorizontally;
+	self.highlightTime = EncounterTimelineSettingDefaults.HighlightTime;
+	self.iconScale = EncounterTimelineSettingDefaults.IconScale;
+	self.indicatorIconMask = EncounterTimelineSettingDefaults.IndicatorIconMask;
+	self.showCountdown = EncounterTimelineSettingDefaults.ShowCountdown;
+	self.showText = EncounterTimelineSettingDefaults.ShowText;
+	self.tooltipAnchor = EncounterTimelineSettingDefaults.TooltipAnchor;
 end
 
-function EncounterTimelineSettingsMixin:OnCrossAxisExtentChanged(_crossAxisExtent)
+function EncounterTimelineSettingsMixin:OnFlipHorizontallyChanged(_flipHorizontally)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnCrossAxisOffsetChanged(_crossAxisOffset)
+function EncounterTimelineSettingsMixin:OnHighlightTimeChanged(_highlightTime)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnEventCountdownEnabledChanged(_countdownEnabled)
+function EncounterTimelineSettingsMixin:OnIconScaleChanged(_iconScale)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnEventIconScaleChanged(_iconScale)
+function EncounterTimelineSettingsMixin:OnIndicatorIconMaskChanged(_indicatorIconMask)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnEventTextEnabledChanged(_textEnabled)
+function EncounterTimelineSettingsMixin:OnShowCountdownChanged(_showCountdown)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnEventTooltipsEnabledChanged(_tooltipsEnabled)
+function EncounterTimelineSettingsMixin:OnShowTextChanged(_showText)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnEventIndicatorIconMaskChanged(_iconMask)
+function EncounterTimelineSettingsMixin:OnTooltipAnchorChanged(_tooltipAnchor)
 	-- Implement in a derived mixin.
 end
 
-function EncounterTimelineSettingsMixin:OnViewBackgroundAlphaChanged(_backgroundAlpha)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:GetHighlightTime()
+	return self.highlightTime;
 end
 
-function EncounterTimelineSettingsMixin:OnViewOrientationChanged(_viewOrientation)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:GetIconScale()
+	return self.iconScale;
 end
 
-function EncounterTimelineSettingsMixin:OnPipDurationChanged(_pipDuration)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:GetIndicatorIconMask()
+	return self.indicatorIconMask;
 end
 
-function EncounterTimelineSettingsMixin:OnPipIconShownChanged(_pipIconShown)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:GetTooltipAnchor()
+	return self.tooltipAnchor;
 end
 
-function EncounterTimelineSettingsMixin:OnPipTextAnchorChanged(_pipTextAnchor)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:ShouldShowCountdown()
+	return self.showCountdown == true;
 end
 
-function EncounterTimelineSettingsMixin:OnPipTextShownChanged(_pipTextShown)
-	-- Implement in a derived mixin.
+function EncounterTimelineSettingsMixin:ShouldFlipHorizontally()
+	return self.flipHorizontally == true;
 end
 
-function EncounterTimelineSettingsMixin:GetCrossAxisExtent()
-	return self.crossAxisExtent;
+function EncounterTimelineSettingsMixin:ShouldShowText()
+	return self.showText == true;
 end
 
-function EncounterTimelineSettingsMixin:GetCrossAxisOffset()
-	return self.crossAxisOffset;
-end
-
-function EncounterTimelineSettingsMixin:GetEventCountdownEnabled()
-	return self.eventCountdownEnabled == true;
-end
-
-function EncounterTimelineSettingsMixin:GetEventIconScale()
-	return self.eventIconScale;
-end
-
-function EncounterTimelineSettingsMixin:GetEventTextEnabled()
-	return self.eventTextEnabled == true;
-end
-
-function EncounterTimelineSettingsMixin:GetEventTooltipsEnabled()
-	return self.eventTooltipsEnabled == true;
-end
-
-function EncounterTimelineSettingsMixin:GetEventIndicatorIconMask()
-	return self.eventIndicatorIconMask;
-end
-
-function EncounterTimelineSettingsMixin:GetViewBackgroundAlpha()
-	return self.viewBackgroundAlpha;
-end
-
-function EncounterTimelineSettingsMixin:GetViewOrientation()
-	return self.viewOrientation;
-end
-
-function EncounterTimelineSettingsMixin:GetPipDuration()
-	return self.pipDuration;
-end
-
-function EncounterTimelineSettingsMixin:GetPipIconShown()
-	return self.pipIconShown == true;
-end
-
-function EncounterTimelineSettingsMixin:GetPipTextAnchor()
-	return self.pipTextAnchor;
-end
-
-function EncounterTimelineSettingsMixin:GetPipTextShown()
-	return self.pipTextShown == true;
-end
-
-function EncounterTimelineSettingsMixin:SetCrossAxisExtent(extent)
-	assert(type(extent) == "number", "SetCrossAxisExtent: 'extent' must be a number");
-
-	if not ApproximatelyEqual(self:GetCrossAxisExtent(), extent) then
-		self.crossAxisExtent = extent;
-		self:OnCrossAxisExtentChanged(extent);
+function EncounterTimelineSettingsMixin:SetFlipHorizontally(flipHorizontally)
+	if self.flipHorizontally ~= flipHorizontally then
+		self.flipHorizontally = flipHorizontally;
+		self:OnFlipHorizontallyChanged(flipHorizontally);
 	end
 end
 
-function EncounterTimelineSettingsMixin:SetCrossAxisOffset(offset)
-	assert(type(offset) == "number", "SetCrossAxisOffset: 'offset' must be a number");
+function EncounterTimelineSettingsMixin:SetHighlightTime(highlightTime)
+	if self.highlightTime ~= highlightTime then
+		self.highlightTime = highlightTime;
+		self:OnHighlightTimeChanged(highlightTime);
+	end
+end
 
-	if not ApproximatelyEqual(self:GetCrossAxisOffset(), offset) then
+function EncounterTimelineSettingsMixin:SetIconScale(iconScale)
+	if self.iconScale ~= iconScale then
+		self.iconScale = iconScale;
+		self:OnIconScaleChanged(iconScale);
+	end
+end
+
+function EncounterTimelineSettingsMixin:SetIndicatorIconMask(indicatorIconMask)
+	if self.indicatorIconMask ~= indicatorIconMask then
+		self.indicatorIconMask = indicatorIconMask;
+		self:OnIndicatorIconMaskChanged(indicatorIconMask);
+	end
+end
+
+function EncounterTimelineSettingsMixin:SetShowCountdown(showCountdown)
+	if self.showCountdown ~= showCountdown then
+		self.showCountdown = showCountdown;
+		self:OnShowCountdownChanged(showCountdown);
+	end
+end
+
+function EncounterTimelineSettingsMixin:SetShowText(showText)
+	if self.showText ~= showText then
+		self.showText = showText;
+		self:OnShowTextChanged(showText);
+	end
+end
+
+function EncounterTimelineSettingsMixin:SetTooltipAnchor(tooltipAnchor)
+	if self.tooltipAnchor ~= tooltipAnchor then
+		self.tooltipAnchor = tooltipAnchor;
+		self:OnTooltipAnchorChanged(tooltipAnchor);
+	end
+end
+
+-- Settings common to all view types, but not event frames.
+
+EncounterTimelineViewSettingsMixin = CreateFromMixins(EncounterTimelineSettingsMixin);
+
+function EncounterTimelineViewSettingsMixin:OnLoad()
+	EncounterTimelineSettingsMixin.OnLoad(self);
+
+	self.backgroundAlpha = EncounterTimelineViewSettingDefaults.BackgroundAlpha;
+end
+
+function EncounterTimelineViewSettingsMixin:OnBackgroundAlphaChanged(_backgroundAlpha)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineViewSettingsMixin:GetBackgroundAlpha()
+	return self.backgroundAlpha;
+end
+
+function EncounterTimelineViewSettingsMixin:SetBackgroundAlpha(backgroundAlpha)
+	if self.backgroundAlpha ~= backgroundAlpha then
+		self.backgroundAlpha = backgroundAlpha;
+		self:OnBackgroundAlphaChanged(backgroundAlpha);
+	end
+end
+
+-- Settings shared between track views and event frames.
+
+EncounterTimelineTrackSettingsMixin = {};
+
+function EncounterTimelineTrackSettingsMixin:OnLoad()
+	self.crossAxisOffset = EncounterTimelineTrackSettingDefaults.CrossAxisOffset;
+	self.trackOrientation = EncounterTimelineUtil.CreateTrackOrientation(EncounterTimelineTrackSettingDefaults.Orientation, EncounterTimelineTrackSettingDefaults.IconDirection);
+end
+
+function EncounterTimelineTrackSettingsMixin:OnCrossAxisOffsetChanged(_crossAxisOffset)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackSettingsMixin:OnTrackOrientationChanged(_trackOrientation)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackSettingsMixin:GetCrossAxisOffset()
+	return self.crossAxisOffset;
+end
+
+function EncounterTimelineTrackSettingsMixin:GetTrackOrientation()
+	return self.trackOrientation;
+end
+
+function EncounterTimelineTrackSettingsMixin:SetCrossAxisOffset(offset)
+	if self.crossAxisOffset ~= offset then
 		self.crossAxisOffset = offset;
 		self:OnCrossAxisOffsetChanged(offset);
 	end
 end
 
-function EncounterTimelineSettingsMixin:SetEventCountdownEnabled(countdownEnabled)
-	assert(type(countdownEnabled) == "boolean", "SetEventCountdownEnabled: 'countdownEnabled' must be a boolean");
-
-	if self:GetEventCountdownEnabled() ~= countdownEnabled then
-		self.eventCountdownEnabled = countdownEnabled;
-		self:OnEventCountdownEnabledChanged(countdownEnabled);
+function EncounterTimelineTrackSettingsMixin:SetTrackOrientation(orientation)
+	if self.trackOrientation ~= orientation then
+		self.trackOrientation = orientation;
+		self:OnTrackOrientationChanged(orientation);
 	end
 end
 
-function EncounterTimelineSettingsMixin:SetEventIconScale(iconScale)
-	assert(type(iconScale) == "number", "SetEventIconScale: 'iconScale' must be a number");
-	assert(iconScale > 0);
+-- Settings specific to track views.
 
-	if not ApproximatelyEqual(self:GetEventIconScale(), iconScale) then
-		self.eventIconScale = iconScale;
-		self:OnEventIconScaleChanged(iconScale);
+EncounterTimelineTrackViewSettingsMixin = CreateFromMixins(EncounterTimelineTrackSettingsMixin);
+
+function EncounterTimelineTrackViewSettingsMixin:OnLoad()
+	EncounterTimelineTrackSettingsMixin.OnLoad(self);
+
+	self.crossAxisExtent = EncounterTimelineTrackViewSettingDefaults.CrossAxisExtent;
+	self.pipTextAnchor = EncounterTimelineTrackViewSettingDefaults.PipTextAnchor;
+	self.showPipIcon = EncounterTimelineTrackViewSettingDefaults.ShowPipIcon;
+	self.showPipText = EncounterTimelineTrackViewSettingDefaults.ShowPipText;
+end
+
+function EncounterTimelineTrackViewSettingsMixin:OnCrossAxisExtentChanged(_crossAxisExtent)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackViewSettingsMixin:OnPipTextAnchorChanged(_pipTextAnchor)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackViewSettingsMixin:OnShowPipIconChanged(_showPipIcon)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackViewSettingsMixin:OnShowPipTextChanged(_showPipText)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTrackViewSettingsMixin:GetCrossAxisExtent()
+	return self.crossAxisExtent;
+end
+
+function EncounterTimelineTrackViewSettingsMixin:GetPipTextAnchor()
+	return self.pipTextAnchor;
+end
+
+function EncounterTimelineTrackViewSettingsMixin:ShouldShowPipIcon()
+	return self.showPipIcon == true;
+end
+
+function EncounterTimelineTrackViewSettingsMixin:ShouldShowPipText()
+	return self.showPipText == true;
+end
+
+function EncounterTimelineTrackViewSettingsMixin:SetCrossAxisExtent(extent)
+	if self.crossAxisExtent ~= extent then
+		self.crossAxisExtent = extent;
+		self:OnCrossAxisExtentChanged(extent);
 	end
 end
 
-function EncounterTimelineSettingsMixin:SetEventTextEnabled(textEnabled)
-	assert(type(textEnabled) == "boolean", "SetEventTextEnabled: 'textEnabled' must be a boolean");
-
-	if self:GetEventTextEnabled() ~= textEnabled then
-		self.eventTextEnabled = textEnabled;
-		self:OnEventTextEnabledChanged(textEnabled);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetEventTooltipsEnabled(tooltipsEnabled)
-	assert(type(tooltipsEnabled) == "boolean", "SetEventTooltipsEnabled: 'tooltipsEnabled' must be a boolean");
-
-	if self:GetEventTooltipsEnabled() ~= tooltipsEnabled then
-		self.eventTooltipsEnabled = tooltipsEnabled;
-		self:OnEventTooltipsEnabledChanged(tooltipsEnabled);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetEventIndicatorIconMask(iconMask)
-	assert(type(iconMask) == "number", "SetEventIndicatorIconMask: 'iconMask' must be a bitmask");
-
-	if self:GetEventIndicatorIconMask() ~= iconMask then
-		self.eventIndicatorIconMask = iconMask;
-		self:OnEventIndicatorIconMaskChanged(iconMask);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetViewBackgroundAlpha(backgroundAlpha)
-	assert(type(backgroundAlpha) == "number", "SetViewBackgroundAlpha: 'backgroundAlpha' must be a number");
-	assert(backgroundAlpha >= 0 and backgroundAlpha <= 1);
-
-	if not ApproximatelyEqual(self:GetViewBackgroundAlpha(), backgroundAlpha) then
-		self.viewBackgroundAlpha = backgroundAlpha;
-		self:OnViewBackgroundAlphaChanged(backgroundAlpha);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetViewOrientation(orientation)
-	-- Skipping non-trivial assert; 'orientation' should be an EncounterTimelineOrientationMixin.
-	-- As we can't trivially compare, setting always invokes the on-change func.
-
-	self.viewOrientation = orientation;
-	self:OnViewOrientationChanged(orientation);
-end
-
-function EncounterTimelineSettingsMixin:SetPipDuration(pipDuration)
-	assert(type(pipDuration) == "number", "SetPipDuration: 'pipDuration' must be a number");
-
-	if self:GetPipDuration() ~= pipDuration then
-		self.pipDuration = pipDuration;
-		self:OnPipDurationChanged(pipDuration);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetPipIconShown(pipIconShown)
-	assert(type(pipIconShown) == "boolean", "SetPipIconShown: 'pipIconShown' must be a boolean");
-
-	if self:GetPipIconShown() ~= pipIconShown then
-		self.pipIconShown = pipIconShown;
-		self:OnPipIconShownChanged(pipIconShown);
-	end
-end
-
-function EncounterTimelineSettingsMixin:SetPipTextAnchor(pipTextAnchor)
-	assert(type(pipTextAnchor) == "table", "SetPipTextAnchor: 'pipTextAnchor' must be an anchor description");
-	assert(type(pipTextAnchor.point) == "string", "SetPipTextAnchor: 'pipTextAnchor' must be an anchor description");
-	assert(type(pipTextAnchor.relativePoint) == "string", "SetPipTextAnchor: 'pipTextAnchor' must be an anchor description");
-	assert(type(pipTextAnchor.x) == "number", "SetPipTextAnchor: 'pipTextAnchor' must be an anchor description");
-	assert(type(pipTextAnchor.y) == "number", "SetPipTextAnchor: 'pipTextAnchor' must be an anchor description");
-
+function EncounterTimelineTrackViewSettingsMixin:SetPipTextAnchor(pipTextAnchor)
 	self.pipTextAnchor = pipTextAnchor;
 	self:OnPipTextAnchorChanged(pipTextAnchor);
 end
 
-function EncounterTimelineSettingsMixin:SetPipTextShown(pipTextShown)
-	assert(type(pipTextShown) == "boolean", "SetPipTextShown: 'pipTextShown' must be a boolean");
+function EncounterTimelineTrackViewSettingsMixin:SetShowPipIcon(showPipIcon)
+	if self.showPipIcon ~= showPipIcon then
+		self.showPipIcon = showPipIcon;
+		self:OnShowPipIconChanged(showPipIcon);
+	end
+end
 
-	if self:GetPipTextShown() ~= pipTextShown then
-		self.pipTextShown = pipTextShown;
-		self:OnPipTextShownChanged(pipTextShown);
+function EncounterTimelineTrackViewSettingsMixin:SetShowPipText(showPipText)
+	if self.showPipText ~= showPipText then
+		self.showPipText = showPipText;
+		self:OnShowPipTextChanged(showPipText);
+	end
+end
+
+-- Settings shared between timer views and event frames.
+
+EncounterTimelineTimerSettingsMixin = {};
+
+function EncounterTimelineTimerSettingsMixin:OnLoad()
+	self.showIcon = EncounterTimelineTimerSettingDefaults.ShowIcon;
+	self.showTimerSpark = EncounterTimelineTimerSettingDefaults.ShowTimerSpark;
+	self.timerFillDirection = EncounterTimelineTimerSettingDefaults.TimerFillDirection;
+end
+
+function EncounterTimelineTimerSettingsMixin:OnShowIconChanged(_showIcon)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerSettingsMixin:OnShowTimerSparkChanged(_showTimerSpark)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerSettingsMixin:OnTimerFillDirectionChanged(_timerFillDirection)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerSettingsMixin:GetTimerFillDirection()
+	return self.timerFillDirection;
+end
+
+function EncounterTimelineTimerSettingsMixin:ShouldShowIcon()
+	return self.showIcon == true;
+end
+
+function EncounterTimelineTimerSettingsMixin:ShouldShowTimerSpark()
+	return self.showTimerSpark == true;
+end
+
+function EncounterTimelineTimerSettingsMixin:SetShowIcon(showIcon)
+	if self.showIcon ~= showIcon then
+		self.showIcon = showIcon;
+		self:OnShowIconChanged(showIcon);
+	end
+end
+
+function EncounterTimelineTimerSettingsMixin:SetShowTimerSpark(showTimerSpark)
+	if self.showTimerSpark ~= showTimerSpark then
+		self.showTimerSpark = showTimerSpark;
+		self:OnShowTimerSparkChanged(showTimerSpark);
+	end
+end
+
+function EncounterTimelineTimerSettingsMixin:SetTimerFillDirection(timerFillDirection)
+	if self.timerFillDirection ~= timerFillDirection then
+		self.timerFillDirection = timerFillDirection;
+		self:OnTimerFillDirectionChanged(timerFillDirection);
+	end
+end
+
+-- Settings shared specific to timer views.
+
+EncounterTimelineTimerViewSettingsMixin = CreateFromMixins(EncounterTimelineTimerSettingsMixin);
+
+function EncounterTimelineTimerViewSettingsMixin:OnLoad()
+	EncounterTimelineTimerSettingsMixin.OnLoad(self);
+
+	self.timerLayoutDirection = EncounterTimelineTimerViewSettingDefaults.TimerLayoutDirection;
+	self.timerSpacing = EncounterTimelineTimerViewSettingDefaults.TimerSpacing;
+	self.timerWidthScale = EncounterTimelineTimerViewSettingDefaults.TimerWidthScale;
+end
+
+function EncounterTimelineTimerViewSettingsMixin:OnTimerLayoutDirectionChanged(_timerLayoutDirection)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerViewSettingsMixin:OnTimerSpacingChanged(_timerSpacing)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerViewSettingsMixin:OnTimerWidthScaleChanged(_timerWidthScale)
+	-- Implement in a derived mixin.
+end
+
+function EncounterTimelineTimerViewSettingsMixin:GetTimerLayoutDirection()
+	return self.timerLayoutDirection;
+end
+
+function EncounterTimelineTimerViewSettingsMixin:GetTimerSpacing()
+	return self.timerSpacing;
+end
+
+function EncounterTimelineTimerViewSettingsMixin:GetTimerWidthScale()
+	return self.timerWidthScale;
+end
+
+function EncounterTimelineTimerViewSettingsMixin:SetTimerLayoutDirection(timerLayoutDirection)
+	if self.timerLayoutDirection ~= timerLayoutDirection then
+		self.timerLayoutDirection = timerLayoutDirection;
+		self:OnTimerLayoutDirectionChanged(timerLayoutDirection);
+	end
+end
+
+function EncounterTimelineTimerViewSettingsMixin:SetTimerSpacing(timerSpacing)
+	if self.timerSpacing ~= timerSpacing then
+		self.timerSpacing = timerSpacing;
+		self:OnTimerSpacingChanged(timerSpacing);
+	end
+end
+
+function EncounterTimelineTimerViewSettingsMixin:SetTimerWidthScale(timerWidthScale)
+	if self.timerWidthScale ~= timerWidthScale then
+		self.timerWidthScale = timerWidthScale;
+		self:OnTimerWidthScaleChanged(timerWidthScale);
 	end
 end

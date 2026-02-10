@@ -775,6 +775,21 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "IsSpellItemEnchantmentHiddenVisual",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellItemEnchantmentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHiddenVisual", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsingDefaultFilters",
 			Type = "Function",
 

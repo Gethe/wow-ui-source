@@ -1,45 +1,55 @@
 local CASTBAR_STAGE_INVALID = -1;
 local CASTBAR_STAGE_DURATION_INVALID = -1;
 
-CASTING_BAR_TYPES = {
-	applyingcrafting = {
+CastingBarType = {
+	ApplyingCrafting = secretwrap("applyingcrafting"),
+	ApplyingTalents = secretwrap("applyingtalents"),
+	Standard = secretwrap("standard"),
+	Empowered = secretwrap("empowered"),
+	Channel = secretwrap("channel"),
+	Uninterruptable = secretwrap("uninterruptable"),
+	Interrupted = secretwrap("interrupted"),
+};
+
+CastingBarTypeInfo = {
+	[CastingBarType.ApplyingCrafting] = {
 		filling = "ui-castingbar-filling-applyingcrafting",
 		full = "ui-castingbar-full-applyingcrafting",
 		glow = "ui-castingbar-full-glow-applyingcrafting",
 		sparkFx = "CraftingGlow",
 		finishAnim = "CraftingFinish",
 	},
-	applyingtalents = {
+	[CastingBarType.ApplyingTalents] = {
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
 		sparkFx = "StandardGlow",
 	},
-	standard = {
+	[CastingBarType.Standard] = {
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
 		sparkFx = "StandardGlow",
 		finishAnim = "StandardFinish",
 	},
-	empowered = {
+	[CastingBarType.Empowered] = {
 		filling = "",
 		full = "",
 		glow = "",
 	},
-	channel = {
+	[CastingBarType.Channel] = {
 		filling = "ui-castingbar-filling-channel",
 		full = "ui-castingbar-full-channel",
 		glow = "ui-castingbar-full-glow-channel",
 		sparkFx = "ChannelShadow",
 		finishAnim = "ChannelFinish",
 	},
-	uninterruptable = {
+	[CastingBarType.Uninterruptable] = {
 		filling = "ui-castingbar-uninterruptable",
 		full = "ui-castingbar-uninterruptable",
 		glow = "ui-castingbar-full-glow-standard",
 	},
-	interrupted = {
+	[CastingBarType.Interrupted] = {
 		filling = "ui-castingbar-interrupted",
 		full = "ui-castingbar-interrupted",
 		glow = "ui-castingbar-full-glow-standard",
@@ -177,29 +187,29 @@ end
 
 function CastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
 	if isTradeSkill then
-		return "applyingcrafting";
+		return CastingBarType.ApplyingCrafting;
 	end
 	if notInterruptible then
-		return "uninterruptable";
+		return CastingBarType.Uninterruptable;
 	end
 	if isChannel then
-		return "channel";
+		return CastingBarType.Channel;
 	end
 	if isEmpowered then
-		return "empowered";
+		return CastingBarType.Empowered;
 	end
-	return "standard";
+	return CastingBarType.Standard;
 end
 
 function CastingBarMixin:IsInterruptable()
-	return self.barType ~= "uninterruptable";
+	return self.barType ~= CastingBarType.Uninterruptable;
 end
 
 function CastingBarMixin:GetTypeInfo(barType)
 	if not barType then
-		barType = "standard";
+		barType = CastingBarType.Standard;
 	end
-	return CASTING_BAR_TYPES[barType];
+	return CastingBarTypeInfo[barType];
 end
 
 local function GetInterruptText(interruptedBy)
@@ -223,7 +233,7 @@ end
 
 function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, castID, interruptedBy)
 	if ( empoweredInterrupt or (self:IsShown() and (self.casting and castID == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
-		self.barType = "interrupted"; -- failed and interrupted use same bar art
+		self.barType = CastingBarType.Interrupted; -- failed and interrupted use same bar art
 
 		--We don't want to show the full state for the empowered texture since it produces a gradient.
 		self:SetStatusBarTexture(empoweredInterrupt and nil or self:GetTypeInfo(self.barType).full);
@@ -590,10 +600,10 @@ function CastingBarMixin:ShowSpark()
 
 	local currentBarType = self.barType;
 
-	if currentBarType == "interrupted" then
+	if currentBarType == CastingBarType.Interrupted then
 		self.Spark:SetAtlas("ui-castingbar-pip-red");
 		self.Spark.offsetY = 0;
-	elseif currentBarType == "empowered" then
+	elseif currentBarType == CastingBarType.Empowered then
 		self.Spark:SetAtlas("ui-castingbar-empower-cursor");
 		self.Spark.offsetY = 4;
 	else
@@ -601,7 +611,7 @@ function CastingBarMixin:ShowSpark()
 		self.Spark.offsetY = 0;
 	end
 
-	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
+	for barType, barTypeInfo in pairs(CastingBarTypeInfo) do
 		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
 		if sparkFx then
 			sparkFx:SetShown(self.playCastFX and barType == currentBarType);
@@ -614,7 +624,7 @@ function CastingBarMixin:HideSpark()
 		self.Spark:Hide();
 	end
 
-	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
+	for barType, barTypeInfo in pairs(CastingBarTypeInfo) do
 		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
 		if sparkFx then
 			sparkFx:Hide();
@@ -690,7 +700,7 @@ function CastingBarMixin:PlayFinishAnim()
 		end
 	end
 
-	if self.barType == "empowered" then
+	if self.barType == CastingBarType.Empowered then
 		for i = 1, self.CurrSpellStage do
 			local stageTier = self.StageTiers[i];
 			if stageTier and stageTier.FinishAnim then
@@ -709,7 +719,7 @@ function CastingBarMixin:StopFinishAnims()
 		self.FadeOutAnim:Stop();
 	end
 
-	for _, barTypeInfo in pairs(CASTING_BAR_TYPES) do
+	for _, barTypeInfo in pairs(CastingBarTypeInfo) do
 		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim];
 		if finishAnim then
 			finishAnim:Stop();
@@ -815,18 +825,11 @@ function CastingBarMixin:UpdateIconShown()
 
 	if self.BorderShield then
 		local shieldShown = self.showShield and not self:IsInterruptable();
-		if shieldShown then
-			self.BorderShield:Show();
+		self.BorderShield:SetShown(shieldShown);
 			if self.BarBorder then
-				self.BarBorder:Hide();
+			self.BarBorder:SetShown(not shieldShown);
 			end
-		else
-			self.BorderShield:Hide();
-			if self.BarBorder then
-				self.BarBorder:Show();
 			end
-		end
-	end
 end
 
 function CastingBarMixin:SetTargetNameTextShown(showTargetNameText)
@@ -1201,7 +1204,7 @@ end
 
 -- Default values for castData parameter of CastingBarMixin:SimulateCast
 local DEFAULT_SIMULATE_CAST_DATA = {
-	barType = "standard",
+	barType = CastingBarType.Standard,
 	iconTexture = "Interface\\Icons\\INV_Misc_QuestionMark",
 	spellName = UNIT_NAMEPLATES_SPELL_NAME_PREVIEW,
 	targetName = UNIT_NAMEPLATES_TARGET_NAME_PREVIEW,
@@ -1265,7 +1268,7 @@ end
 --	Will display any currently active Player cast, and any future Player casts until EndReplacingPlayerBar is called.
 --
 --	overrideInfo:
---		overrideBarType = [CASTING_BAR_TYPES] -- Use a specific bar type rather than have it determined by the type of spell being cast, defines textures used (Default: nil)
+--		overrideBarType = [CastingBarType] -- Use a specific bar type rather than have it determined by the type of spell being cast, defines textures used (Default: nil)
 --		overrideLook 	= ["CLASSIC", "UNIT", "OVERLAY"] -- Use a specific bar look, defines component sizing and anchoring (Default: "OVERLAY")
 --		overrideAnchor 	= [AnchorUtilAnchorInstance] -- Specify a point to anchor the cast bar to, should be created via CreateAnchor (Default: Center of parentFrame)
 --		overrideStrata	= [FRAMESTRATA] -- Specify a frame strata to set to (Default: "HIGH")

@@ -105,7 +105,7 @@ StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1,
 	timeout = 0,
-	exclusive = 1,
+	multiple = 1,
 	whileDead = 1,
 };
 
@@ -3178,3 +3178,16 @@ StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	whileDead = 1,
 	showAlert = 1,
 }
+
+StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
+	text = "%s",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	fullScreenCover = true,
+	hideOnEscape = 1,
+	OnShow = function(dialog, data)
+		dialog:SetFrameStrata("FULLSCREEN_DIALOG");
+		dialog:SetFrameLevel(3000);
+	end,
+};

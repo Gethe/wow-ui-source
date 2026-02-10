@@ -60,6 +60,15 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "ClearText",
+			Type = "Function",
+			Documentation = { "Sets text to an empty string and removes the Text secret aspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
 			MayReturnNothing = true,

@@ -17,6 +17,15 @@ local Totem =
 			},
 		},
 		{
+			Name = "GetNumTotemSlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numSlots", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotemCannotDismiss",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

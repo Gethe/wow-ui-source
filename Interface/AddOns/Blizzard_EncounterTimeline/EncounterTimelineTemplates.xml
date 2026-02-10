@@ -3,11 +3,53 @@
 	<!-- Textures used on event frames should inherit from this to disable texel snapping, as this makes the translations visually smoother. -->
 	<Texture name="EncounterTimelineTextureTemplate" texelSnappingBias="0.0" snapToPixelGrid="false" virtual="true"/>
 
+	<Texture name="EncounterTimelineQueuedIconTemplate" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued-icon" virtual="true">
+		<Size x="10" y="10"/>
+	</Texture>
+
+	<Frame name="EncounterTimelineQueuedIconContainerTemplate" mixin="EncounterTimelineQueuedIconMixin" useParentLevel="true" virtual="true">
+		<Size x="30" y="10"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Dot2" parentArray="Dots" inherits="EncounterTimelineQueuedIconTemplate">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dot1" parentArray="Dots" inherits="EncounterTimelineQueuedIconTemplate">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Dot2" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dot3" parentArray="Dots" inherits="EncounterTimelineQueuedIconTemplate">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Dot2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ShowAnimation">
+				<Translation childKey="Dot1" duration="0.2" order="1" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot1" duration="0.3" order="1" startDelay="0.2" smoothing="OUT" offsetX="0" offsetY="-10"/>
+				<Translation childKey="Dot2" duration="0.2" order="1" startDelay="0.2" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot2" duration="0.3" order="1" startDelay="0.4" smoothing="OUT" offsetX="0" offsetY="-10"/>
+				<Translation childKey="Dot3" duration="0.2" order="1" startDelay="0.4" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot3" duration="0.3" order="1" startDelay="0.6" smoothing="OUT" offsetX="0" offsetY="-10"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="HideAnimation" inherits="VisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="Dot1" duration="0.2" order="1" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot1" duration="0.3" order="1" startDelay="0.2" smoothing="OUT" offsetX="0" offsetY="-10"/>
+				<Translation childKey="Dot2" duration="0.2" order="1" startDelay="0.2" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot2" duration="0.3" order="1" startDelay="0.4" smoothing="OUT" offsetX="0" offsetY="-10"/>
+				<Translation childKey="Dot3" duration="0.2" order="1" startDelay="0.4" smoothing="OUT" offsetX="0" offsetY="10"/>
+				<Translation childKey="Dot3" duration="0.3" order="1" startDelay="0.6" smoothing="OUT" offsetX="0" offsetY="-10"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
 	<Frame name="EncounterTimelineEventIconTemplate" mixin="EncounterTimelineEventIconMixin" virtual="true">
 		<Size x="35" y="35"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="IconTexture" inherits="EncounterTimelineTextureTemplate" setAllPoints="true">
@@ -59,17 +101,21 @@
 						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="PausedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-pause-icon" hidden="true">
-					<Size x="18" y="18"/>
+				<Texture parentKey="PausedIcon" inherits="EncounterTimelineTextureTemplate" mixin="EncounterTimelinePausedIconMixin" atlas="combattimeline-fx-pause-icon" hidden="true">
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="QueuedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued-icon" hidden="true">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ShowAnimation">
+							<Scale duration="0.25" order="1" smoothing="IN_OUT" fromScaleX="1" fromScaleY="1" toScaleX="1.1" toScaleY="1.1"/>
+							<Scale duration="0.25" order="1" startDelay="0.25" smoothing="IN_OUT" fromScaleX="1.1" fromScaleY="1.1" toScaleX="1" toScaleY="1"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="HideAnimation" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Scale duration="0.25" order="1" smoothing="IN_OUT" fromScaleX="1" fromScaleY="1" toScaleX="1.1" toScaleY="1.1"/>
+							<Scale duration="0.25" order="1" startDelay="0.25" smoothing="IN_OUT" fromScaleX="1.1" fromScaleY="1.1" toScaleX="1" toScaleY="1"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -97,6 +143,13 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="QueuedIcon" inherits="EncounterTimelineQueuedIconContainerTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" y="4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="HighlightAnimation" setToFinalAlpha="true">
 				<Rotation childKey="HighlightSwirl" duration="0.6" order="1" smoothing="OUT" degrees="-180">
@@ -107,6 +160,11 @@
 				<Alpha childKey="HighlightGlow" duration="0.2" order="2" smoothing="OUT" fromAlpha="0.7" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
 
 	<!--

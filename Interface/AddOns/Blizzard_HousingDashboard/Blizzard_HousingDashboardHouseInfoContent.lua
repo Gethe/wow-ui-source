@@ -6,6 +6,7 @@ local HouseInfoLifetimeEvents =
 	"INITIATIVE_TASKS_TRACKED_UPDATED",
 	"INITIATIVE_TASKS_TRACKED_LIST_CHANGED",
 	"INITIATIVE_ACTIVITY_LOG_UPDATED",
+	"PLAYER_LEVEL_CHANGED",
 };
 
 local HOUSE_DROPDOWN_WIDTH = 200;
@@ -123,6 +124,8 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 			self.ContentFrame.InitiativesFrame:RefreshInitiativeTab();
 			self.ContentFrame.InitiativesFrame:RefreshTrackedTasks();
 		end
+	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
+		self.ContentFrame:UpdateTabs();
 	end
 end
 
@@ -268,13 +271,11 @@ function HousingDashboardHouseInfoContentFrameMixin:UpdateTabs()
 	self.TabSystem:SetTabEnabled(self.endeavorTabID, C_NeighborhoodInitiative.IsInitiativeEnabled(), HOUSING_ENDEAVORS_DISABLED);
 
 	local playerMeetsReqLevel = C_NeighborhoodInitiative.PlayerMeetsRequiredLevel();
+	local playerHasInitiativeAccess = C_NeighborhoodInitiative.PlayerHasInitiativeAccess();
 	if not playerMeetsReqLevel then
 		local reqLevel = C_NeighborhoodInitiative.GetRequiredLevel();
 		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerMeetsReqLevel, HOUSING_ENDEAVORS_MIN_LEVEL:format(reqLevel));
-	end
-
-	local playerHasInitiativeAccess = C_NeighborhoodInitiative.PlayerHasInitiativeAccess();
-	if not playerHasInitiativeAccess then
+	elseif not playerHasInitiativeAccess then
 		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerHasInitiativeAccess, HOUSING_ENDEAVORS_DISABLED);
 	end
 
@@ -333,6 +334,10 @@ function InitiativesTabMixin:OnHide()
 	end
 	if self.targetValue then
 		self:SetCurrentPoints(self.targetValue);
+	end
+	if self.loopSoundHandle then
+		StopSound(self.loopSoundHandle);
+		self.loopSoundHandle = nil;
 	end
 end
 
@@ -536,12 +541,10 @@ function InitiativesTabMixin:SetupTaskList()
 			if data.completed and data.taskType ~= Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 				button.ActivityXP:Hide();
 				button.Checkmark:Show();
-				button.BGAlphaAdd:Show();
 			else
 				button.ActivityXP:SetText(data.progressContributionAmount);
 				button.ActivityXP:Show();
 				button.Checkmark:Hide();
-				button.BGAlphaAdd:Hide();
 			end
 
 			button:UpdateTracked();
@@ -719,7 +722,12 @@ function InitiativesTabMixin:SetCurrentPoints(barValue)
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.InitiativeSetFrame.ProgressBar.TextContainer.ProgressText:SetFormattedText(ENDEAVOR_INITIATIVES_PROGRESS_TEXT, barValue, self.thresholdMax);
+	local barMax = self.thresholdMax;
+	if barMax == 0 then
+		barMax = 1000
+	end
+
+	self.InitiativeSetFrame.ProgressBar.TextContainer.ProgressText:SetFormattedText(ENDEAVOR_INITIATIVES_PROGRESS_TEXT, (barValue / barMax) * 100.0);
 	self.InitiativeSetFrame.ProgressBar.BarEnd:SetShown(barValue > 0);
 
 	if self.targetValue and barValue >= self.targetValue then
@@ -736,7 +744,7 @@ function InitiativeTaskButtonMixin:Init()
 end
 
 function InitiativeTaskButtonMixin:SetCollapseState(isCollapsed)
-	local atlas = isCollapsed and "ui-questtrackerbutton-expand-all" or "UI-QuestTrackerButton-Collapse-All";
+	local atlas = isCollapsed and "ui-questtrackerbutton-expand-all" or "ui-questtrackerbutton-collapse-all";
 	self.CollapseIcon:SetAtlas(atlas);
 	self.CollapseIconAlphaAdd:SetAtlas(atlas);
 end
@@ -755,8 +763,14 @@ function InitiativeTaskButtonMixin:OnEnter()
 	if data.requirementsList then
 		self.showingTooltip = true;
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+		self.BGAlphaAdd:Show();
 		self:ShowTooltip();
 	end
+end
+
+function InitiativeTaskButtonMixin:OnLeave()
+	self.BGAlphaAdd:Hide();
+	GameTooltip_Hide();
 end
 
 -- Returns true if this method acted on the click
@@ -812,6 +826,7 @@ function InitiativeTaskButtonMixin:OnClick(button)
 		local node = self:GetElementData();
 		if data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableFinite then
 			node:ToggleCollapsed();
+			PlaySound(SOUNDKIT.HOUSING_SOCIAL_MENU_MINIMIZE_MAXIMIZE);
 			self:SetCollapseState(node:IsCollapsed());
 		end
 	end
@@ -953,4 +968,5 @@ function InitiativeActiveNeighborhoodSwitcherMixin:OnClick()
 	if neighborhoodGUID then
 		C_NeighborhoodInitiative.SetActiveNeighborhood(neighborhoodGUID);
 	end
+	PlaySound(SOUNDKIT.HOUSING_ENDEAVORS_SET_ACTIVE_ENDEAVOR);
 end

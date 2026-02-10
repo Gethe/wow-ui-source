@@ -34,6 +34,7 @@
 				<Translation childKey="Mask.Shine" duration="1" order="1" startDelay="0.5" smoothing="OUT" offsetX="400" offsetY="0"/>
 				<Alpha childKey="ToastBG" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="0.72"/>
 				<Alpha childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="GlowLineBottom" duration="0.0" order="1" startDelay="0.0" smoothing="IN" offsetX="0" offsetY="+242"/>
 				<Translation childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" smoothing="IN" offsetX="0" offsetY="-242"/>
 				<Alpha childKey="Glow1" duration="0.5" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
 				<Alpha childKey="Glow2" duration="0.86666" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
@@ -49,11 +50,6 @@
 				<Alpha childKey="TopBorder" duration="0.13333" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="TopIcon" duration="0.13333" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha startDelay="4" duration="0.75" order="2" fromAlpha="1" toAlpha="0"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

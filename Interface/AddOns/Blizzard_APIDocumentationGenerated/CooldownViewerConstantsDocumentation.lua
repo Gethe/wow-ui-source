@@ -42,15 +42,17 @@ local CooldownViewerConstants =
 		{
 			Name = "CooldownViewerAlertEventType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Available", Type = "CooldownViewerAlertEventType", EnumValue = 1 },
 				{ Name = "PandemicTime", Type = "CooldownViewerAlertEventType", EnumValue = 2 },
 				{ Name = "OnCooldown", Type = "CooldownViewerAlertEventType", EnumValue = 3 },
 				{ Name = "ChargeGained", Type = "CooldownViewerAlertEventType", EnumValue = 4 },
+				{ Name = "OnAuraApplied", Type = "CooldownViewerAlertEventType", EnumValue = 5 },
+				{ Name = "OnAuraRemoved", Type = "CooldownViewerAlertEventType", EnumValue = 6 },
 			},
 		},
 		{

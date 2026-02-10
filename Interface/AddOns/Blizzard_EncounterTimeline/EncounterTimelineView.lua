@@ -1,373 +1,351 @@
-EncounterTimelineViewMixin = CreateFromMixins(EncounterTimelineControllerMixin, EncounterTimelineSettingsMixin);
+EncounterTimelineViewMixin = CreateFromMixins(EncounterTimelineFrameManagerMixin, EncounterTimelineDataProviderMixin, EncounterTimelineViewSettingsMixin);
 
 function EncounterTimelineViewMixin:OnLoad()
-	EncounterTimelineControllerMixin.OnLoad(self);
-	EncounterTimelineSettingsMixin.OnLoad(self);
+	EncounterTimelineFrameManagerMixin.OnLoad(self);
+	EncounterTimelineDataProviderMixin.OnLoad(self);
+	EncounterTimelineViewSettingsMixin.OnLoad(self);
 
-	self:RegisterEventFrameTemplate("Frame", "EncounterTimelineSpellEventFrameTemplate");
+	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_ACTIVATED");
+	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_DEACTIVATED");
+
+	self.eventFramePools = CreateFramePoolCollection();
 end
 
-function EncounterTimelineViewMixin:OnTracksUpdated()
-	self:SetTrackPadding(Enum.EncounterTimelineTrack.Queued, 10, 0);
-	self:SetTrackExtent(Enum.EncounterTimelineTrack.Medium, self:CalculateMediumTrackExtent());
-	self:SetTrackExtent(Enum.EncounterTimelineTrack.Short, self:CalculateShortTrackExtent());
+function EncounterTimelineViewMixin:OnShow()
+	self:AddAllEvents(C_EncounterTimeline.GetEventList());
+	self:SetDynamicEventsRegistered(true);
 end
 
-function EncounterTimelineViewMixin:OnEventFrameAcquired(eventFrame, isNewObject)
-	eventFrame:SetFrameLevel(self:GetFrameLevel());
-	eventFrame:SetCrossAxisOffset(self:GetCrossAxisOffset());
-	eventFrame:SetCrossAxisExtent(self:GetCrossAxisExtent());
-	eventFrame:SetEventCountdownEnabled(self:GetEventCountdownEnabled());
-	eventFrame:SetEventIconScale(self:GetEventIconScale());
-	eventFrame:SetEventTextEnabled(self:GetEventTextEnabled());
-	eventFrame:SetEventTooltipsEnabled(self:GetEventTooltipsEnabled());
-	eventFrame:SetEventIndicatorIconMask(self:GetEventIndicatorIconMask());
-	eventFrame:SetViewOrientation(self:GetViewOrientation());
+function EncounterTimelineViewMixin:OnHide()
+	self:SetDynamicEventsRegistered(false);
+	self:RemoveAllEvents();
+end
 
-	EventRegistry:TriggerEvent("EncounterTimeline.OnEventFrameAcquired", self, eventFrame, isNewObject);
+function EncounterTimelineViewMixin:OnEvent(event, ...)
+	EncounterTimelineDataProviderMixin.OnEvent(self, event, ...);
+
+	if event == "ENCOUNTER_TIMELINE_VIEW_ACTIVATED" then
+		local viewType = ...;
+
+		if viewType == self:GetViewType() then
+			self:ActivateView();
+		end
+	elseif event == "ENCOUNTER_TIMELINE_VIEW_DEACTIVATED" then
+		local viewType = ...;
+
+		if viewType == self:GetViewType() then
+			self:DeactivateView();
+		end
+	end
+end
+
+function EncounterTimelineViewMixin:OnSizeChanged(width, height)
+	EventRegistry:TriggerEvent("EncounterTimeline.OnViewSizeChanged", self, width, height);
+end
+
+function EncounterTimelineViewMixin:OnViewActivated()
+	-- Override in a derived mixin to be notified when the view has activated.
+end
+
+function EncounterTimelineViewMixin:OnViewDeactivated()
+	-- Override in a derived mixin to be notified when the view is about to
+	-- be deactivated.
+end
+
+function EncounterTimelineViewMixin:OnEventAdded(eventInfo)
+	local eventID = eventInfo.id;
+
+	-- Newly added events don't have frames associated with them; if this
+	-- event is in a state where it should do so immediately then acquire
+	-- one now.
+
+	if self:ShouldAcquireFrameForEvent(eventID) then
+		self:AcquireEventFrame(eventID);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventStateChanged(eventID, state)
+	local eventFrame = self:GetEventFrame(eventID);
+
+	-- Event state change transitions are permitted to attempt acquisition of
+	-- event frames in case we didn't set one up when it was initially added.
+
+	if eventFrame == nil and self:ShouldAcquireFrameForEvent(eventID) then
+		eventFrame = self:AcquireEventFrame(eventID);
+	end
+
+	if eventFrame ~= nil then
+		eventFrame:SetEventState(state);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventTrackChanged(eventID, track, trackSortIndex)
+	-- We skip track change transitions on frames that are in a terminal state
+	-- as these updates are likely just going to apply movement interpolations
+	-- which are pointless for frames animating out.
+
+	if EncounterTimelineUtil.IsTerminalEventState(self:GetEventState(eventID)) then
+		return;
+	end
+
+	local eventFrame = self:GetEventFrame(eventID);
+
+	-- Event track change transitions are permitted to attempt acquisition of
+	-- event frames in case we didn't set one up when it was initially added.
+
+	if eventFrame == nil and self:ShouldAcquireFrameForEvent(eventID) then
+		eventFrame = self:AcquireEventFrame(eventID);
+	end
+
+	if eventFrame ~= nil then
+		eventFrame:SetEventTrack(track, trackSortIndex);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventBlockStateChanged(eventID, blocked)
+	-- We don't skip block state transitions on frames in terminal event
+	-- states. Events in terminal states will never _enter_ a blocked state,
+	-- but entering a terminal state may simultaneously (in the same tick)
+	-- leave one, which is expected to require visual modifications.
+
+	local eventFrame = self:GetEventFrame(eventID);
+
+	if eventFrame ~= nil then
+		eventFrame:SetEventBlocked(blocked);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventHighlight(eventID)
+	-- Skip highlight animations on frames that are in a terminal state, as
+	-- they'll be in the process of animating out anyway.
+
+	if EncounterTimelineUtil.IsTerminalEventState(self:GetEventState(eventID)) then
+		return;
+	end
+
+	local eventFrame = self:GetEventFrame(eventID);
+
+	if eventFrame ~= nil then
+		eventFrame:HighlightFrame();
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventRemoved(eventID)
+	-- When removing an event we only want to release event frames if they're
+	-- actively attached to this event still. Detached event frames shouldn't
+	-- be released - frames in such a state are assumed to be animating out
+	-- and will release themselves when finished.
+
+	local eventFrame = self:GetEventFrame(eventID);
+
+	if self:IsEventFrameAttached(eventFrame, eventID) then
+		self:ReleaseEventFrame(eventFrame);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventFrameAcquired(eventFrame, eventID, isNewObject)
+	self:InitializeEventFrame(eventID, eventFrame);
+
+	EventRegistry:TriggerEvent("EncounterTimeline.OnEventFrameAcquired", self, eventFrame, eventID, isNewObject);
 end
 
 function EncounterTimelineViewMixin:OnEventFrameReleased(eventFrame)
 	EventRegistry:TriggerEvent("EncounterTimeline.OnEventFrameReleased", self, eventFrame);
 end
 
-function EncounterTimelineViewMixin:OnLayoutUpdated()
-	-- Layout changes trigger a reset of the timeline. This is to drastically
-	-- simplify code elsewhere that'd need to accomodate all the anchors and
-	-- interpolated offsets potentially changing.
-	--
-	-- We hope this only happens when there's a settings change, which should
-	-- be so infrequent as to not matter.
+function EncounterTimelineViewMixin:OnFlipHorizontallyChanged(flipHorizontally)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetFlipHorizontally(flipHorizontally);
+	end
+end
 
+function EncounterTimelineViewMixin:OnHighlightTimeChanged(highlightTime)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetHighlightTime(highlightTime);
+	end
+end
+
+function EncounterTimelineViewMixin:OnIconScaleChanged(iconScale)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetIconScale(iconScale);
+	end
+end
+
+function EncounterTimelineViewMixin:OnIndicatorIconMaskChanged(indicatorIconMask)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetIndicatorIconMask(indicatorIconMask);
+	end
+end
+
+function EncounterTimelineViewMixin:OnShowCountdownChanged(showCountdown)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetShowCountdown(showCountdown);
+	end
+end
+
+function EncounterTimelineViewMixin:OnShowTextChanged(showText)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetShowText(showText);
+	end
+end
+
+function EncounterTimelineViewMixin:OnTooltipAnchorChanged(tooltipAnchor)
+	for eventFrame in self:EnumerateEventFrames() do
+		eventFrame:SetTooltipAnchor(tooltipAnchor);
+	end
+end
+
+function EncounterTimelineViewMixin:ActivateView()
+	if self:IsViewActive() then
+		return;
+	end
+
+	if not self:CanActivateView() then
+		return;
+	end
+
+	-- Activation of a view just shows this frame and notifies the parent
+	-- container. We don't register for dynamic events or add events directly
+	-- here as the parent container may not be visible - instead, allow the
+	-- OnShow script to fire and handle that for us.
+
+	self:Show();
+	self:OnViewActivated();
+
+	EventRegistry:TriggerEvent("EncounterTimeline.OnViewActivated", self);
+end
+
+function EncounterTimelineViewMixin:DeactivateView()
+	if not self:IsViewActive() then
+		return;
+	end
+
+	-- Deactivation is the inverse of activation with the added wrinkle that
+	-- for safety reasons we deactivate all dynamic event registrations and
+	-- remove all events before hiding to guard against scenarios where
+	-- deferred script execution for OnHide might be in effect.
+
+	self:OnViewDeactivated();
+	self:SetDynamicEventsRegistered(false);
 	self:RemoveAllEvents();
-	self:UpdateEventFrameInitialAnchor();
-	self:UpdateView();
-	self:AddAllEvents(EncounterTimelineUtil.GetEventInfoList());
+	self:Hide();
+
+	EventRegistry:TriggerEvent("EncounterTimeline.OnViewDeactivated", self);
 end
 
-function EncounterTimelineViewMixin:OnCrossAxisOffsetChanged(crossAxisOffset)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetCrossAxisOffset(crossAxisOffset);
-	end
+function EncounterTimelineViewMixin:CanActivateView()
+	-- Override if there are additional reasons that this view shouldn't
+	-- attempt to self-activate. Note that deactivation of a view is never
+	-- blocked.
 
-	self:MarkLayoutDirty();
+	return C_EncounterTimeline.GetViewType() == self:GetViewType();
 end
 
-function EncounterTimelineViewMixin:OnCrossAxisExtentChanged(crossAxisExtent)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetCrossAxisExtent(crossAxisExtent);
-	end
-
-	self:MarkLayoutDirty();
+function EncounterTimelineViewMixin:GetViewType()
+	-- Override in a derived mixin to return an appropriate view type enumerant.
+	assertsafe(false, "GetViewType must be implemented in a derived mixin");
+	return nil;
 end
 
-function EncounterTimelineViewMixin:OnEventCountdownEnabledChanged(countdownEnabled)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetEventCountdownEnabled(countdownEnabled);
-	end
+function EncounterTimelineViewMixin:IsViewActive()
+	return self:IsShown();
 end
 
-function EncounterTimelineViewMixin:OnEventIconScaleChanged(iconScale)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetEventIconScale(iconScale);
-	end
-end
-
-function EncounterTimelineViewMixin:OnEventTextEnabledChanged(textEnabled)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetEventTextEnabled(textEnabled);
-	end
-end
-
-function EncounterTimelineViewMixin:OnEventTooltipsEnabledChanged(tooltipsEnabled)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetEventTooltipsEnabled(tooltipsEnabled);
-	end
-end
-
-function EncounterTimelineViewMixin:OnEventIndicatorIconMaskChanged(iconMask)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetEventIndicatorIconMask(iconMask);
-	end
-end
-
-function EncounterTimelineViewMixin:OnViewBackgroundAlphaChanged(_backgroundAlpha)
-	self:UpdateBackground();
-end
-
-function EncounterTimelineViewMixin:OnViewOrientationChanged(viewOrientation)
-	for eventFrame in self:EnumerateEventFrames() do
-		eventFrame:SetViewOrientation(viewOrientation);
-	end
-
-	self:MarkLayoutDirty();
-end
-
-function EncounterTimelineViewMixin:OnPipDurationChanged(_pipDuration)
-	self:UpdatePip();
-end
-
-function EncounterTimelineViewMixin:OnPipIconShownChanged(_pipIconShown)
-	self:UpdatePip();
-end
-
-function EncounterTimelineViewMixin:OnPipTextAnchorChanged(_pipTextAnchor)
-	self:UpdatePip();
-end
-
-function EncounterTimelineViewMixin:OnPipTextShownChanged(_pipTextShown)
-	self:UpdatePip();
-end
-
-function EncounterTimelineViewMixin:GetBackgroundTexture()
-	return self.Background;
-end
-
-function EncounterTimelineViewMixin:GetPipTexture()
-	return self.PipIcon;
-end
-
-function EncounterTimelineViewMixin:GetPipFontString()
-	return self.PipText;
-end
-
-function EncounterTimelineViewMixin:GetLongTrackDividerTexture()
-	return self.LongDivider;
-end
-
-function EncounterTimelineViewMixin:GetQueuedTrackDividerTexture()
-	return self.QueueDivider;
-end
-
-function EncounterTimelineViewMixin:GetLineStartAtlas()
-	return "combattimeline-line-left";
-end
-
-function EncounterTimelineViewMixin:GetLineStartTexture()
-	return self.LineStart;
-end
-
-function EncounterTimelineViewMixin:GetLineEndAtlas()
-	return "combattimeline-line-right";
-end
-
-function EncounterTimelineViewMixin:GetLineEndTexture()
-	return self.LineEnd;
-end
-
-function EncounterTimelineViewMixin:GetLineBreakMaskTexture(index)
-	return self.lineBreakMasks[index];
-end
-
-function EncounterTimelineViewMixin:GetEventFramePool(_eventID, framePoolCollection)
-	-- At present, all events are spells. Maybe one day we could stick UI
-	-- widgets on this thing? :)
-
-	return framePoolCollection:GetPool("EncounterTimelineSpellEventFrameTemplate");
-end
-
-function EncounterTimelineViewMixin:GetEventFrameInitialAnchor(_eventID)
-	-- The initial anchor is cached across repeated calls; this should be
-	-- invalidated if layout fundamentally changes.
-
-	local initialAnchor = self.eventFrameInitialAnchor;
-
-	if initialAnchor ~= nil then
-		return initialAnchor;
-	end
-
-	local orientation = self:GetViewOrientation();
-	self.eventFrameInitialAnchor = CreateAnchor("CENTER", self, orientation:GetStartPoint(), 0, 0);
-	return self.eventFrameInitialAnchor;
-end
-
-function EncounterTimelineViewMixin:UpdateEventFrameInitialAnchor()
-	self.eventFrameInitialAnchor = nil;
-end
-
-function EncounterTimelineViewMixin:CalculateLongTrackDividerOffset()
-	local trackData = self:GetTrackData(EncounterTimelineConstants.LongTrackDividerOffsetTrack);
-
-	if trackData ~= nil then
-		return trackData.offsetEnd + EncounterTimelineConstants.LongTrackDividerOffsetExtra;
+function EncounterTimelineViewMixin:SetViewActive(active)
+	if active then
+		self:ActivateView();
 	else
-		return 0;
+		self:DeactivateView();
 	end
 end
 
-function EncounterTimelineViewMixin:CalculateQueuedTrackDividerOffset()
-	local trackData = self:GetTrackData(EncounterTimelineConstants.QueuedTrackDividerOffsetTrack);
+function EncounterTimelineViewMixin:GetEventFramePoolCollection()
+	return self.eventFramePools;
+end
 
-	if trackData ~= nil then
-		return trackData.offsetEnd + EncounterTimelineConstants.QueuedTrackDividerOffsetExtra;
-	else
-		return 0;
+function EncounterTimelineViewMixin:InitializeEventFrameSettings(eventFrame)
+	-- Override in a derived mixin to copy down appropriate settings to event
+	-- frames and set up an initial anchor point.
+
+	eventFrame:SetFlipHorizontally(self:ShouldFlipHorizontally());
+	eventFrame:SetIconScale(self:GetIconScale());
+	eventFrame:SetIndicatorIconMask(self:GetIndicatorIconMask());
+	eventFrame:SetShowCountdown(self:ShouldShowCountdown());
+	eventFrame:SetShowText(self:ShouldShowText());
+	eventFrame:SetTooltipAnchor(self:GetTooltipAnchor());
+end
+
+function EncounterTimelineViewMixin:InitializeEventFrame(eventID, eventFrame)
+	local eventInfo = self:GetEventInfo(eventID);
+	local timer = self:GetEventTimer(eventID);
+	local state = self:GetEventState(eventID);
+	local track, trackSortIndex = self:GetEventTrack(eventID);
+	local blocked = self:IsEventBlocked(eventID);
+
+	self:InitializeEventFrameSettings(eventFrame);
+
+	eventFrame:Init(eventInfo, timer, state, track, trackSortIndex, blocked);
+
+	if self:ShouldShowEventFrameOnInitialization(eventFrame) then
+		eventFrame:Show();
 	end
 end
 
-function EncounterTimelineViewMixin:CalculateMediumTrackExtent()
-	return 55;
-end
-
-function EncounterTimelineViewMixin:CalculateShortTrackExtent()
-	local lineStartWidth, _lineStartHeight = GetAtlasSize(self:GetLineStartAtlas());
-	local lineEndWidth, _lineEndHeight = GetAtlasSize(self:GetLineEndAtlas());
-
-	return lineStartWidth + lineEndWidth;
-end
-
-function EncounterTimelineViewMixin:EnumerateLineBreakMaskTextures()
-	return ipairs(self.lineBreakMasks);
-end
-
-function EncounterTimelineViewMixin:UpdateBackground()
-	local orientation = self:GetViewOrientation();
-	local backgroundTexture = self:GetBackgroundTexture();
-
-	if orientation:IsVertical() then
-		backgroundTexture:SetAtlas("combattimeline-line-shadow-vertical");
-	else
-		backgroundTexture:SetAtlas("combattimeline-line-shadow");
+function EncounterTimelineViewMixin:RegisterEventFramePool(frameType, templateName)
+	local function ResetEventFrame(eventFramePool, eventFrame)
+		self:ResetEventFrame(eventFramePool, eventFrame);
 	end
 
-	backgroundTexture:SetAlpha(self:GetViewBackgroundAlpha());
+	local eventFramePools = self:GetEventFramePoolCollection();
+	eventFramePools:CreatePool(frameType, self, templateName, ResetEventFrame);
 end
 
-function EncounterTimelineViewMixin:UpdatePip()
-	local orientation = self:GetViewOrientation();
-	local pipTexture = self:GetPipTexture();
-	local pipFontString = self:GetPipFontString();
+function EncounterTimelineViewMixin:ReinitializeAllEventFrames()
+	self:ReleaseAllEventFrames();
 
-	do
-		pipTexture:ClearAllPoints();
-		pipTexture:SetOrientedPoint(orientation, "CENTER", self, "START", self:CalculateOffsetForDuration(self:GetPipDuration()), self:GetCrossAxisOffset());
-		pipTexture:SetShown(self:GetPipIconShown());
-	end
-
-	do
-		local point, _relativeTo, relativePoint, x, y = self:GetPipTextAnchor():Get();
-
-		pipFontString:ClearAllPoints();
-		pipFontString:SetPoint(point, pipTexture, relativePoint, x, y);
-		pipFontString:SetFormattedText("%d", self:GetPipDuration());
-		pipFontString:SetShown(self:GetPipTextShown());
-	end
-end
-
-function EncounterTimelineViewMixin:UpdateLongTrackDivider()
-	local orientation = self:GetViewOrientation();
-	local trackData = self:GetTrackData(Enum.EncounterTimelineTrack.Long);
-	local divider = self:GetLongTrackDividerTexture();
-
-	divider:ClearAllPoints();
-	divider:SetOrientedPoint(orientation, "END", self, "START", self:CalculateLongTrackDividerOffset(), self:GetCrossAxisOffset());
-	divider:SetOrientedTexCoordToDefaults(orientation);
-	divider:SetShown(trackData ~= nil and trackData.maximumEventCount > 0);
-end
-
-function EncounterTimelineViewMixin:UpdateQueuedTrackDivider()
-	local orientation = self:GetViewOrientation();
-	local trackData = self:GetTrackData(Enum.EncounterTimelineTrack.Queued);
-	local divider = self:GetQueuedTrackDividerTexture();
-
-	-- EETODO: Art here is temporary; just need something for display. This
-	-- is basically just a flipped version of the long track divider.
-
-	divider:ClearAllPoints();
-	divider:SetOrientedPoint(orientation, "START", self, "START", self:CalculateQueuedTrackDividerOffset(), self:GetCrossAxisOffset());
-	divider:SetOrientedTexCoord(orientation, 1, 0, 0, 1);
-	divider:SetShown(trackData ~= nil and trackData.maximumEventCount > 0);
-end
-
-function EncounterTimelineViewMixin:UpdateLineTextures()
-	-- The anchoring of the track line is set up such that we'll anchor the
-	-- "end"-facing point of our frame across from the start of the timeline
-	-- to the end offset of the configured track.
-	--
-	-- The art itself is split into two line segments to deal with texture
-	-- mask limitations. We anchor the end line segment to the end of our
-	-- frame, and attach start line segment to the end line segment.
-	--
-	-- This setup means that if, for some reason, the track line extent is
-	-- greater than the actual size of the track that we keep the little
-	-- marker signaling the end of the timeline toward the end of the actual
-	-- track.
-
-	local orientation = self:GetViewOrientation();
-
-	-- Line end texture
-	do
-		local texture = self:GetLineEndTexture();
-		local offset = self:CalculateOffsetForDuration(0);
-
-		texture:ClearAllPoints();
-		texture:SetOrientedAtlas(orientation, self:GetLineEndAtlas());
-		texture:SetOrientedPoint(orientation, "END", self, "START", offset, self:GetCrossAxisOffset());
-		texture:SetOrientedTexCoordToDefaults(orientation);
-	end
-
-	-- Line start texture
-	do
-		local texture = self:GetLineStartTexture();
-
-		texture:ClearAllPoints();
-		texture:SetOrientedAtlas(orientation, self:GetLineStartAtlas());
-		texture:SetOrientedPoint(orientation, "END", self:GetLineEndTexture(), "START", 0, 0);
-		texture:SetOrientedTexCoordToDefaults(orientation);
-	end
-
-	-- The line break masks should be positioned at fixed intervals. We need
-	-- to do this in two passes to ensure we don't accidentally try to attach
-	-- four+ mask textures to one half of the bar art.
-
-	local shortTrackData = self:GetTrackData(Enum.EncounterTimelineTrack.Short);
-
-	for _maskIndex, maskTexture in self:EnumerateLineBreakMaskTextures() do
-		maskTexture:ClearAllPoints();
-		self:GetLineStartTexture():RemoveMaskTexture(maskTexture);
-		self:GetLineEndTexture():RemoveMaskTexture(maskTexture);
-	end
-
-	for maskIndex, maskTexture in self:EnumerateLineBreakMaskTextures() do
-		local durationOffset = 1;
-		local durationInterval = 2;
-		local duration = durationOffset + ((maskIndex - 1) * durationInterval);
-		local offset = self:CalculateOffsetForDuration(duration);
-
-		maskTexture:SetOrientedPoint(orientation, "CENTER", self, "START", offset, self:GetCrossAxisOffset());
-
-		local lineSegmentTexture;
-
-		if duration <= (shortTrackData.duration / 2) then
-			lineSegmentTexture = self:GetLineEndTexture();
-		else
-			lineSegmentTexture = self:GetLineStartTexture();
-		end
-
-		if lineSegmentTexture:GetNumMaskTextures() < 3 then
-			lineSegmentTexture:AddMaskTexture(maskTexture);
-		end
-
-		-- We can't use SetRegionTextureRotation here because changing texcoords
-		-- of a texture used as a mask isn't supported. Thankfully, this asset
-		-- is a regular square with just a small cutout - so we can use normal
-		-- rotation APIs instead.
-
-		if orientation:IsVertical() then
-			maskTexture:SetRotation(90);
-		else
-			maskTexture:SetRotation(0);
+	for eventID in self:EnumerateEvents() do
+		if self:ShouldAcquireFrameForEvent(eventID) then
+			self:AcquireEventFrame(eventID);
 		end
 	end
 end
 
-function EncounterTimelineViewMixin:UpdateView()
-	self:UpdateBackground();
-	self:UpdatePip();
-	self:UpdateLongTrackDivider();
-	self:UpdateQueuedTrackDivider();
-	self:UpdateLineTextures();
+function EncounterTimelineViewMixin:ResetEventFrame(_eventFramePool, eventFrame)
+	eventFrame:Reset();
+	eventFrame:ClearAllPoints();
+	eventFrame:Hide();
+end
 
-	local orientation = self:GetViewOrientation();
-	self:SetSize(orientation:GetOrientedExtents(self:GetPrimaryAxisExtent(), self:GetCrossAxisExtent()));
+function EncounterTimelineViewMixin:SetDynamicEventsRegistered(registered)
+	local dynamicEvents = self:GetDynamicEventRegistrations();
+
+	if registered then
+		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
+	else
+		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
+	end
+end
+
+function EncounterTimelineViewMixin:ShouldAcquireFrameForEvent(eventID)
+	local state = self:GetEventState(eventID);
+
+	if EncounterTimelineUtil.IsTerminalEventState(state) then
+		-- Event is in a terminal state; don't acquire a frame.
+		return false;
+	end
+
+	local track = self:GetEventTrack(eventID);
+
+	if track == Enum.EncounterTimelineTrack.Indeterminate then
+		-- Event isn't on a visible track; don't acquire a frame.
+		return false;
+	end
+
+	return true;
+end
+
+function EncounterTimelineViewMixin:ShouldShowEventFrameOnInitialization(_eventFrame)
+	-- Override if event frames shouldn't be automatically shown upon
+	-- acquisition and initialization.
+	return true;
 end

@@ -8,13 +8,14 @@ MICRO_BUTTONS = {
 	"QuestLogMicroButton",
 	"SocialsMicroButton",
 	"GuildMicroButton",
-	"EJMicroButton",
-	"CollectionsMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
+	"CollectionsMicroButton",
+	"EJMicroButton",
+	"StoreMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
-	"StoreMicroButton",
+	
 }
 
 function UpdateMicroButtons()

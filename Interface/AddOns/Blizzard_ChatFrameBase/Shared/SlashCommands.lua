@@ -1522,22 +1522,41 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.VOICECHAT, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXTTOSPEECH, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	if TextToSpeechCommands:EvaluateTextToSpeechCommand(msg) then
+	local cmd, success, failureText, failureTextNarrated = TextToSpeechCommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
+	elseif success then
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	else
-		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
-		TextToSpeechCommands:ShowHelp(msg);
+		if not failureText then
+			failureText, failureTextNarrated = TextToSpeechCommands:GetCommandHelpText(cmd);
+		end
+
+		if failureText then
+			TextToSpeechCommands:SpeakConfirmation(failureText, failureTextNarrated);
+		else
+			TextToSpeechCommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+		end
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	local success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
-	if not success then
+	local cmd, success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+	elseif success then
+		if not cmd.isMainToggle and not GetCVarBool("CAAEnabled") then
+			CAACommands:SpeakConfirmation(SLASH_CAA_DISABLED_WARNING, SLASH_CAA_DISABLED_WARNING_NARRATED);
+		end
+	else
+		if not failureText then
+			failureText, failureTextNarrated = CAACommands:GetCommandHelpText(cmd);
+		end
+
 		if failureText then
 			CAACommands:SpeakConfirmation(failureText, failureTextNarrated);
 		else
 			CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
-			CAACommands:ShowHelp(msg);
 		end
 	end
 end);

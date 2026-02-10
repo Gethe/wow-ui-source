@@ -282,3 +282,16 @@ StaticPopupDialogs["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	anchorPoint = "CENTER",
 	anchorOffsetY = 150,
 };
+
+StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
+	text = "%s",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	fullScreenCover = true,
+	hideOnEscape = 1,
+	OnShow = function(dialog, data)
+		dialog:SetFrameStrata("FULLSCREEN_DIALOG");
+		dialog:SetFrameLevel(3000);
+	end,
+};

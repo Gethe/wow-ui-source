@@ -117,6 +117,7 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetDistinctPerRecordID(false);
 
 	local editorMode = C_HouseEditor.GetActiveHouseEditorMode();
 	self.catalogSearcher:SetEditorModeContext(editorMode);
@@ -140,9 +141,12 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	--add a dialog confirming that you want to switch tabs, as doing so will delete your preview decor.
 	self.TabSystem:SetTabSelectedCallback(function(tabID, isUserAction)
 		if tabID == self.storageTabID and C_HousingDecor.GetNumPreviewDecor() > 0 then
-			StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
-				self:SetTab(tabID, isUserAction);
-			end);
+			if not StaticPopup_Visible("CONFIRM_DESTROY_PREVIEW_DECOR") then
+				StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+					self:SetTab(tabID, isUserAction);
+				end);
+			end
+
 			return true; --stops the tab from being selected, for now.
 		else
 			return self:SetTab(tabID, isUserAction);
@@ -307,6 +311,7 @@ end
 
 function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetDistinctPerRecordID(false);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = true;
 	categorySearchParams.includeFeaturedCategory = false;
@@ -316,10 +321,6 @@ function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.Filters:SetCollectionFiltersAvailable(false);
 	C_HousingDecor.ExitPreviewState();
 	self:OnTabChanged();
-
-	local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-	local requiresConfirmation = false;
-	EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
@@ -328,6 +329,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 	end
 
 	self.catalogSearcher:SetOwnedOnly(false);
+	self.catalogSearcher:SetDistinctPerRecordID(true);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
 	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();

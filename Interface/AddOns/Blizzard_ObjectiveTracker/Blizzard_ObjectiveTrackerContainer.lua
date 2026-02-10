@@ -99,10 +99,13 @@ function ObjectiveTrackerContainerMixin:Update(dirtyUpdate)
 	if prevModule then
 		self.NineSlice:SetPoint("BOTTOM", prevModule, "BOTTOM", 0, -self.bottomModulePadding);
 		self.NineSlice:Show();
-		local wasShown = self.Header:IsShown();
 		self:Show();
 	else
-		self:Hide();
+		if EditModeManagerFrame:IsEditModeActive() then
+			self:Show();
+		else
+			self:Hide();
+		end
 	end
 
 	if self:IsInDefaultPosition() then

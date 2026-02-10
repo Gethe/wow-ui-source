@@ -773,6 +773,136 @@ function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip,
 	return initializer;
 end
 
+SettingsColorSwatchMixin = CreateFromMixins(CallbackRegistryMixin, DefaultTooltipMixin, ColorSwatchMixin);
+SettingsColorSwatchMixin:GenerateCallbackEvents(
+	{
+		"OnValueChanged",
+	}
+);
+
+function SettingsColorSwatchMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	DefaultTooltipMixin.OnLoad(self);
+	self.tooltipXOffset = 0;
+end
+
+function SettingsColorSwatchMixin:Init(value, initTooltip, initialSwatchColorFn)
+	self:SetValue(value);
+	self:SetTooltipFunc(initTooltip);
+
+	local cachedColor = CreateColor(0, 0, 0, 0); -- Making this here to avoid churn
+	local function GetColorString(r, g, b)
+		cachedColor:SetRGB(r, g, b);
+		return cachedColor:GenerateHexColor();
+	end
+
+	local function OnSwatchClick(swatch, button, isDown)
+		local info = {};
+		info.swatch = swatch;
+
+		local color = initialSwatchColorFn();
+		info.r, info.g, info.b = color:GetRGB();
+
+		info.swatchFunc = function()
+			self:TriggerEvent(SettingsColorSwatchMixin.Event.OnValueChanged, GetColorString(ColorPickerFrame:GetColorRGB()));
+		end;
+
+		info.cancelFunc = function()
+			self:TriggerEvent(SettingsColorSwatchMixin.Event.OnValueChanged, GetColorString(ColorPickerFrame:GetPreviousValues()));
+		end;
+
+		ColorPickerFrame:SetupColorPickerAndShow(info);
+	end
+
+	self:SetScript("OnClick", OnSwatchClick);
+	self:SetValue(value);
+end
+
+function SettingsColorSwatchMixin:Release()
+	self:SetScript("OnClick", nil);
+end
+
+function SettingsColorSwatchMixin:SetValue(value)
+	self:SetColorValue(CreateColorFromHexString(value));
+end
+
+function SettingsColorSwatchMixin:SetColorValue(color)
+	self:SetColor(color);
+end
+
+function SettingsColorSwatchMixin:OnEnter()
+	DefaultTooltipMixin.OnEnter(self);
+	ColorSwatchMixin.OnEnter(self);
+end
+
+function SettingsColorSwatchMixin:OnLeave()
+	DefaultTooltipMixin.OnLeave(self);
+	ColorSwatchMixin.OnLeave(self);
+end
+
+SettingsColorSwatchControlMixin = CreateFromMixins(SettingsControlMixin);
+
+function SettingsColorSwatchControlMixin:OnLoad()
+	SettingsControlMixin.OnLoad(self);
+
+	self.ColorSwatch = CreateFrame("Button", nil, self, "SettingsColorSwatchTemplate");
+	self.ColorSwatch:SetPoint("LEFT", self, "CENTER", -73, 0);
+end
+
+function SettingsColorSwatchControlMixin:Init(initializer)
+	SettingsControlMixin.Init(self, initializer);
+
+	local setting = self:GetSetting();
+	local initTooltip = GenerateClosure(InitializeSettingTooltip, initializer);
+
+	local function GetSwatchColor()
+		local colorString = setting:GetValue();
+		return CreateColorFromHexString(colorString);
+	end
+
+	self.ColorSwatch:Init(setting:GetValue(), initTooltip, GetSwatchColor);
+	self.cbrHandles:RegisterCallback(self.ColorSwatch, SettingsColorSwatchMixin.Event.OnValueChanged, self.OnSwatchValueChanged, self);
+
+	self.Tooltip:SetScript("OnMouseUp", function(_tooltip, button, upInside)
+		if button == "LeftButton" and upInside then
+			self.ColorSwatch:Click();
+		end
+	end);
+
+	self:EvaluateState();
+end
+
+function SettingsColorSwatchControlMixin:OnSwatchValueChanged(value)
+	self:GetSetting():SetValue(value);
+end
+
+function SettingsColorSwatchControlMixin:Release()
+	self.ColorSwatch:Release();
+	SettingsControlMixin.Release(self);
+end
+
+function SettingsColorSwatchControlMixin:SetButtonState(_enabled)
+	-- TODO: Is there a visual state on color swatches for enabled/disabled?
+	-- Not yet...
+	-- self.ColorSwatch:SetEnabled(enabled);
+end
+
+function SettingsColorSwatchControlMixin:OnSettingValueChanged(setting, value)
+	SettingsControlMixin.OnSettingValueChanged(self, setting, value);
+	self:EvaluateState();
+end
+
+function SettingsColorSwatchControlMixin:SetValue(value)
+	self.ColorSwatch:SetValue(value);
+end
+
+function SettingsColorSwatchControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
+	local enabled = self:IsEnabled();
+	self:SetButtonState(enabled);
+	self:DisplayEnabled(enabled);
+end
+
 SettingsCheckboxWithButtonControlMixin = CreateFromMixins(SettingsControlMixin);
 
 function SettingsCheckboxWithButtonControlMixin:OnLoad()
@@ -801,16 +931,13 @@ function SettingsCheckboxWithButtonControlMixin:Init(initializer)
 	self.Checkbox:Init(setting:GetValue(), initTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
-	self.Button:SetText(self.data.buttonText);
+	self.Button:SetText(self:EvaluateName(self.data.buttonText));
 	self.Button:SetScript("OnClick", self.data.OnButtonClick);
 
 	self:EvaluateState();
 end
 
 function SettingsCheckboxWithButtonControlMixin:OnCheckboxValueChanged(value)
-	local initializer = self:GetElementData();
-	local setting = initializer:GetSetting();
-	setting:SetValue(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
@@ -845,26 +972,43 @@ function SettingsCheckboxWithButtonControlMixin:SetValue(value)
 	end
 end
 
+function SettingsCheckboxWithButtonControlMixin:EvaluateName()
+	if type(self.data.buttonText) == "function" then
+		return self.data.buttonText();
+	end
+
+	return self.data.buttonText;
+end
+
 function SettingsCheckboxWithButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = self:IsEnabled();
+
+	-- User provided callback
+	if (self.data.OnEvaluateState ~= nil) then
+		self.data.OnEvaluateState(self);
+	end
 
 	local clickEnabled = enabled;
 	if self.data.clickRequiresSet and not self:GetSetting():GetValue() then
 		clickEnabled = false;
 	end
 
+	self.Button:SetText(self:EvaluateName())
 	self:SetButtonState(clickEnabled);
 	self:DisplayEnabled(enabled);
 end
 
-function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, buttonClick, clickRequiresSet, tooltip)
+function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, buttonClick, evaluateState, clickRequiresSet, tooltip)
 	local data = Settings.CreateSettingInitializerData(setting, nil, tooltip);
 	data.buttonText = buttonText;
 	data.OnButtonClick = buttonClick;
+	data.OnEvaluateState = evaluateState;
 	data.clickRequiresSet = clickRequiresSet;
+
 	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
 	initializer:AddSearchTags(buttonText);
+
 	return initializer;
 end
 
@@ -1134,6 +1278,18 @@ function SettingsCheckboxWithColorSwatchControlMixin:Init(initializer)
 
 	self.ColorSwatch:SetScript("OnClick", self.data.OnSwatchClick);
 
+	self.ColorSwatch:SetScript("OnEnter", function()
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self.ColorSwatch, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(tooltip, self.data.swatchTooltipTitle);
+		GameTooltip_AddNormalLine(tooltip, self.data.swatchTooltipText);
+		tooltip:Show();
+	end);
+
+	self.ColorSwatch:SetScript("OnLeave", function()
+		GetAppropriateTooltip():Hide();
+	end);
+
 	if self.data.initialSwatchColorFn then
 		self.ColorSwatch:SetColor(self.data.initialSwatchColorFn());
 	end
@@ -1192,12 +1348,14 @@ function SettingsCheckboxWithColorSwatchControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
-function CreateSettingsCheckboxWithColorSwatchInitializer(setting, swatchClick, clickRequiresSet, invertClickRequiresSet, tooltip, initialSwatchColorFn)
-	local data = Settings.CreateSettingInitializerData(setting, nil, tooltip);
+function CreateSettingsCheckboxWithColorSwatchInitializer(setting, checkboxTooltip, swatchClick, clickRequiresSet, invertClickRequiresSet, initialSwatchColorFn, swatchTooltipTitle, swatchTooltipText)
+	local data = Settings.CreateSettingInitializerData(setting, nil, checkboxTooltip);
 	data.OnSwatchClick = swatchClick;
 	data.clickRequiresSet = clickRequiresSet;
 	data.invertClickRequiresSet = not not invertClickRequiresSet;
 	data.initialSwatchColorFn = initialSwatchColorFn;
+	data.swatchTooltipTitle = swatchTooltipTitle;
+	data.swatchTooltipText = swatchTooltipText;
 	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithColorSwatchControlTemplate", data);
 	return initializer;
 end

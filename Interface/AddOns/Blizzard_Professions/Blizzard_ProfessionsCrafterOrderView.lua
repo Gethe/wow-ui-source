@@ -19,6 +19,8 @@ function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
 
 		local reagent = Professions.CreateCurrencyReagent(reward.currencyType);
 		self:SetReagent(reagent, self.reward.count);
+
+		self:SetItemButtonCount(self.reward.count);
 	end
 
 	self:Show();
@@ -31,7 +33,12 @@ function ProfessionsCrafterOrderRewardMixin:OnEnter()
 	if itemLink then
 		GameTooltip:SetHyperlink(itemLink);
 	elseif self.reward.currencyType then
-		GameTooltip:SetCurrencyByID(self.reward.currencyType, self.reward.count);
+		local tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", self.reward.currencyType, self.reward.count);
+		tooltipInfo.excludeLines = {
+				Enum.TooltipDataLineType.Blank,
+				Enum.TooltipDataLineType.CurrencyTotal,
+		};
+		GameTooltip:ProcessInfo(tooltipInfo);
 	end
 end
 

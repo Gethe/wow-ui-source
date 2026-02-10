@@ -24,6 +24,18 @@ local DispelOverlayOrientation = EnumUtil.MakeEnum(
 	"HorizontalLeftToRight"
 );
 
+local function CompactUnitFrame_CreateAuraPriorityTables(frame)
+	assertsafe(frame.debuffs == nil, "CompactUnitFrame_CreateAuraPriorityTables called multiple times on the same frame");
+
+	frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
+	frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	frame.bigDefensives = TableUtil.CreatePriorityTable(AuraUtil.BigDefensiveAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	frame.dispels = {};
+	for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
+		frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	end
+end
+
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
 	-- Name.."HealthBar" for examples. This is ignored by nameplates.
@@ -61,6 +73,7 @@ function CompactUnitFrame_OnLoad(self)
 	self.maxDebuffs = 0;
 	self.maxDispelDebuffs = 0;
 	CompactUnitFrame_SetOptionTable(self, OPTION_TABLE_NONE);
+	CompactUnitFrame_CreateAuraPriorityTables(self);
 
 	if not self.disableMouse then
 		CompactUnitFrame_SetUpClicks(self);
@@ -704,6 +717,10 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	if frame.UpdateIsDead then
 		frame:UpdateIsDead();
 	end
+
+	if frame.background then
+		frame.background:SetVertexColor(CompactUnitFrame_GetOptionCustomHealthBarColorBG(frame):GetRGB());
+	end
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -852,6 +869,19 @@ function CompactUnitFrame_UpdateName(frame)
 		elseif ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
+		elseif ( frame.colorNameWithClassColor ) then
+			-- Use class color when option is enabled
+			local _, class = UnitClass(frame.unit);
+			if ( class ) then
+				local classColor = RAID_CLASS_COLORS[class];
+				if ( classColor ) then
+					frame.name:SetVertexColor(classColor.r, classColor.g, classColor.b);
+				else
+					frame.name:SetVertexColor(1.0, 1.0, 1.0);
+				end
+			else
+				frame.name:SetVertexColor(1.0, 1.0, 1.0);
+			end
 		elseif ( frame.optionTable.colorNameBySelection ) then
 			if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit)  and not UnitIsFriend("player", frame.unit)  ) then
 				frame.name:SetVertexColor(1.0, 0.0, 0.0);
@@ -1616,16 +1646,10 @@ end
 
 --Other internal functions
 do
-	local function CompactUnitFrame_InitializePriorityTables(frame)
-		if frame.debuffs == nil then
-			frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
-			frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			frame.bigDefensives = TableUtil.CreatePriorityTable(AuraUtil.BigDefensiveAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			frame.dispels = {};
-			for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
-				frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			end
-		else
+	local function CompactUnitFrame_ClearPriorityTables(frame)
+		assertsafe(frame.debuffs ~= nil, "Aura Priority tables not initialized for frame %s.", tostring(frame:GetDebugName()));
+
+		if frame.debuffs then
 			frame.debuffs:Clear();
 			frame.buffs:Clear();
 			frame.bigDefensives:Clear();
@@ -1719,7 +1743,7 @@ do
 		frame.buffsChanged = true;
 		frame.dispelsChanged = true;
 
-		CompactUnitFrame_InitializePriorityTables(frame);
+		CompactUnitFrame_ClearPriorityTables(frame);
 
 		local function HandleAura(aura)
 			CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);
@@ -2006,13 +2030,14 @@ function CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdate)
 	end
 
 	local lastShownDebuff;
-	for i = 3, 1, -1 do
-		local debuff = frame["Debuff"..i];
+	for i = #frame.debuffFrames, 1, -1 do
+		local debuff = frame.debuffFrames[i];
 		if debuff:IsShown() then
 			lastShownDebuff = debuff;
 			break;
 		end
 	end
+
 	frame.PrivateAuraAnchor1:ClearAllPoints();
 	if lastShownDebuff then
 		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", lastShownDebuff, "BOTTOMRIGHT", 0, 0);
@@ -2057,6 +2082,10 @@ end
 
 function CompactUnitFrame_GetOptionCustomHealthBarColors(frame)
 	return frame.optionTable.healthBarColor or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+end
+
+function CompactUnitFrame_GetOptionCustomHealthBarColorBG(frame)
+	return frame.optionTable.healthBarColorBG or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR_BG;
 end
 
 function CompactUnitFrame_GetOptionHealthText(frame, options)
@@ -2589,7 +2618,7 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	local forceUpdatePrivateAuras = true;
 	frame.privateAuraBorderScale = iconScale;
-	frame.privateAuraSize = auraSize * BOSS_DEBUFF_SCALE_INCREASE;
+	frame.privateAuraSize = auraSize; -- Search tag: * BOSS_DEBUFF_SCALE_INCREASE
 	CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdatePrivateAuras);
 	CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType);
 

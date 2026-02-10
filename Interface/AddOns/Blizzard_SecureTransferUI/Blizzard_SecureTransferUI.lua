@@ -116,7 +116,11 @@ local SECURE_TRANSFER_DIALOGS = {
 		button1 = ACCEPT,
 		text = HOUSING_MARKET_PURCHASE_CONFIRMATION,
 		onAccept = function(self)
+			PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CONFIRMATION_DIALOG_BUTTON);
 			C_SecureTransfer.CompleteHousingPurchase();
+		end,
+		onCancel = function(self)
+			PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CONFIRMATION_DIALOG_BUTTON);
 		end,
 		waitForEvent = "BULK_PURCHASE_RESULT_RECEIVED",
 		eventCallback = function(self, ...)
@@ -135,14 +139,17 @@ local SECURE_TRANSFER_DIALOGS = {
 			self:Hide();
 			SecureTransferDialog_Show("SLOW_HOUSING_PURCHASE");
 		end,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		fullScreenCover = true,
 	},
 	["SLOW_HOUSING_PURCHASE"] = {
 		text = HOUSING_MARKET_PURCHASE_SLOW_DESC,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		hideButton2 = true,
 	},
 	["HOUSING_PURCHASE_FAILURE"] = {
 		text = HOUSING_MARKET_PURCHASE_FAILURE,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		hideButton2 = true,
 	},
 	["START_HOUSING_VC_PURCHASE"] = {

@@ -19,12 +19,11 @@ function EncounterWarningsViewMixin:OnHide()
 end
 
 function EncounterWarningsViewMixin:OnEnter()
-	local shouldShowTooltip = self:GetTooltipsEnabled(self);
-	self:SetTooltipShown(shouldShowTooltip);
+	self:ShowTooltip();
 end
 
 function EncounterWarningsViewMixin:OnLeave()
-	self:SetTooltipShown(false);
+	self:HideTooltip();
 
 	if self.hideOnMouseLeave then
 		self.hideOnMouseLeave = false;
@@ -195,18 +194,6 @@ function EncounterWarningsViewMixin:StopAnimating()
 	animationGroup:Stop();
 end
 
-function EncounterWarningsViewMixin:SetTooltipShown(shown)
-	local tooltip = self:GetTooltipFrame();
-	local encounterWarningInfo = self:GetCurrentWarning();
-
-	if shown and encounterWarningInfo ~= nil then
-		GameTooltip_SetDefaultAnchor(tooltip, self);
-		tooltip:SetSpellByID(encounterWarningInfo.tooltipSpellID);
-	elseif tooltip:IsOwned(self) then
-		tooltip:Hide();
-	end
-end
-
 function EncounterWarningsViewMixin:UpdateIconScale()
 	-- Icon scale is processed external to the icon elements because it's
 	-- easier for us to handle dynamic changes to them in edit mode and
@@ -216,4 +203,52 @@ function EncounterWarningsViewMixin:UpdateIconScale()
 	local iconScale = self:GetIconScale(self);
 	self:GetLeftIconElement():SetScale(iconScale);
 	self:GetRightIconElement():SetScale(iconScale);
+end
+
+function EncounterWarningsViewMixin:CanShowTooltipForWarning(encounterWarningInfo)
+	return encounterWarningInfo ~= nil and encounterWarningInfo.spellID ~= nil;
+end
+
+function EncounterWarningsViewMixin:ShowTooltip()
+	local tooltipAnchor = self:GetTooltipAnchor();
+	local tooltipFrame = self:GetTooltipFrame();
+
+	if tooltipFrame == nil then
+		return;
+	end
+
+	self:HideTooltip();
+
+	if tooltipAnchor == Enum.EncounterEventsTooltipAnchor.Hidden then
+		return;
+	end
+
+	local encounterWarningInfo = self:GetCurrentWarning();
+
+	if encounterWarningInfo == nil then
+		return;
+	end
+
+	if tooltipAnchor == Enum.EncounterEventsTooltipAnchor.Default then
+		GameTooltip_SetDefaultAnchor(tooltipFrame, self);
+	elseif tooltipAnchor == Enum.EncounterEventsTooltipAnchor.Cursor then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	else
+		assertsafe(false, "Unsupported tooltip anchor mode (%s)", tooltipAnchor);
+	end
+
+	self:PopulateTooltip(tooltipFrame, encounterWarningInfo);
+	tooltipFrame:Show();
+end
+
+function EncounterWarningsViewMixin:PopulateTooltip(tooltipFrame, encounterWarningInfo)
+	tooltipFrame:SetSpellByID(encounterWarningInfo.tooltipSpellID);
+end
+
+function EncounterWarningsViewMixin:HideTooltip()
+	local tooltipFrame = self:GetTooltipFrame();
+
+	if tooltipFrame ~= nil and tooltipFrame:IsOwned(self) then
+		tooltipFrame:Hide();
+	end
 end

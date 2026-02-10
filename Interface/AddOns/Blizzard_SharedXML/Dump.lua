@@ -320,13 +320,20 @@ function DevTools_DumpValue(val, prefix, firstPrefix, suffix, context)
 										firstPrefix, valType, suffix));
 		return;
 	elseif (valType == "userdata") then
+		local userdataContents = dumpobject(val);
 		local userdataName = context:GetUserdataName(val, 'value');
-		if (userdataName) then
-			context:Write(string.format(FORMATS.opaqueTypeValName,
-										firstPrefix, valType, userdataName, suffix));
+		if (userdataContents ~= nil) then
+			local userdataIdentifier;
+			if (userdataName) then
+				userdataIdentifier = string.format(FORMATS.opaqueTypeValName, "", valType, userdataName, " ");
+			else
+				userdataIdentifier = string.format(FORMATS.opaqueTypeVal, "", valType, " ");
+			end
+			DevTools_DumpValue(userdataContents, prefix, firstPrefix .. userdataIdentifier, suffix, context);
+		elseif (userdataName) then
+			context:Write(string.format(FORMATS.opaqueTypeValName, firstPrefix, valType, userdataName, suffix));
 		else
-			context:Write(string.format(FORMATS.opaqueTypeVal,
-										firstPrefix, valType, suffix));
+			context:Write(string.format(FORMATS.opaqueTypeVal, firstPrefix, valType, suffix));
 		end
 		return;
 	elseif (valType == "function") then

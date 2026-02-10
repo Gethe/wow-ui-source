@@ -260,7 +260,7 @@
 
 	<!-- Progress Reward Card -->
 	<Frame name="JourneyProgressRewardCardTemplate" virtual="true">
-		<Size x="310" y="85"/>
+		<Size x="317" y="106"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-card" useAtlasSize="true" setAllPoints="true"/>
@@ -389,8 +389,8 @@
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBar" relativePoint="LEFT" x="0"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER">
-									<Size x="30" y="10"/>
+								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="MIDDLE">
+									<Size x="40" y="35"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBg" x="-2"/>
 									</Anchors>
@@ -405,10 +405,10 @@
 						</Layers>
 					</Frame>
 					<StatusBar parentKey="DelveRewardProgressBar">
-						<Size x="648" y="14"/>
+						<Size x="560" y="14"/>
 						<BarTexture atlas="ui-journeys-progressbar-fill"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-28"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -416,7 +416,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture atlas="ui-journeys-progressbar-frame" useAtlasSize="true"/>
+								<Texture parentKey="DelveRewardProgressBarFrame" atlas="ui-journeys-progressbar-frame" useAtlasSize="true"/>
 							</Layer>
 						</Layers>
 					</StatusBar>
@@ -437,7 +437,7 @@
 					<Frame parentKey="EncounterRewardProgressFrame" inherits="RewardProgressFrameTemplate" hidden="true">
 						<KeyValues>
 							<KeyValue key="elementWidth" value="135" type="number"/>
-							<KeyValue key="elementSpacing" value="15" type="number"/>
+							<KeyValue key="elementSpacing" value="-5" type="number"/>
 							<KeyValue key="rewardButtonXOffset" value="30" type="number"/>
 							<KeyValue key="elementTemplate" value="RenownLevelCardTemplate" type="string"/>
 							<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
@@ -630,6 +630,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

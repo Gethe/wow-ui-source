@@ -187,7 +187,9 @@ end
 
 function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
 	-- Timerunners levels can go above the purchased max level to the max current expansion level
-	return (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+	local maxLevelForExpansion = (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+	local maxPlayerLevel = GetMaxPlayerLevel(); -- In case this particular player's max level is capped for some reason. (This is how Classic pre-patches work.)
+	return math.min(maxLevelForExpansion, maxPlayerLevel);
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ACTIVE_GAME_MODE_UPDATED", GameRulesUtil.OnActiveGameModeUpdated, GameRulesUtil);

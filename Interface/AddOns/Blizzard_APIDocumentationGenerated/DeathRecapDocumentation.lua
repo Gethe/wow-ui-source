@@ -38,6 +38,22 @@ local DeathRecap =
 			},
 		},
 		{
+			Name = "GetRecapMaxHealth",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the max health for the unit that died in the provided death recap." },
+
+			Arguments =
+			{
+				{ Name = "recapID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasRecapEvents",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

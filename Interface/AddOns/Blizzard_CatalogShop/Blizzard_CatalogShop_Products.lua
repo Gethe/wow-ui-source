@@ -11,6 +11,7 @@ end
 CatalogShopProductContainerFrameMixin = {};
 function CatalogShopProductContainerFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("CatalogShop.AllDataRefresh", self.AllDataRefresh, self);
+	EventRegistry:RegisterCallback("CatalogShop.OnModelSceneActorFailedToLoad", self.OnModelSceneFailure, self);
 end
 
 function CatalogShopProductContainerFrameMixin:Init()
@@ -204,7 +205,12 @@ function CatalogShopProductContainerFrameMixin:OnHide()
 end
 
 function CatalogShopProductContainerFrameMixin:OnEvent(event, ...)
-	-- TODO handle events here
+end
+
+function CatalogShopProductContainerFrameMixin:OnModelSceneFailure(displayInfo)
+	CatalogShopFrame.ModelSceneContainerFrame:Hide();
+	CatalogShopFrame.PMTImageContainerFrame:Show();
+	CatalogShopFrame.PMTImageContainerFrame:SetPMTImageOnly(displayInfo);
 end
 
 function ModelSceneShouldAllowRotation(modelSceneID)
@@ -250,8 +256,8 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 	if displayInfo.hasUnknownLicense then
-		CatalogShopFrame.CrossGameContainerFrame:Show();
-		CatalogShopFrame.CrossGameContainerFrame:SetDisplayInfo(displayInfo);
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
 	elseif productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
 	elseif productType == CatalogShopConstants.ProductType.Toy then
@@ -497,11 +503,14 @@ function ProductContainerFrameMixin:InitProductContainer()
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
+		local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
 		if elementData.elementType == CatalogShopConstants.ScrollViewElementType.Header then
-			factory(CatalogShopConstants.CardTemplate.Header, InitializeSection)
+			if sectionInfo.shouldShowRecommendationOptOutDisclaimer then
+				factory(CatalogShopConstants.CardTemplate.HeaderPersonalized, InitializeSection);
+			else
+				factory(CatalogShopConstants.CardTemplate.Header, InitializeSection);
+			end
 		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
-			local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
-			
 			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
 			if scrollViewSize == 1 then
 				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Token then
@@ -524,6 +533,8 @@ function ProductContainerFrameMixin:InitProductContainer()
 					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
 					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton);
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+					factory(CatalogShopConstants.CardTemplate.SmallDecor, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
 					factory(CatalogShopConstants.CardTemplate.SmallAccess, InitializeButton);
 				else

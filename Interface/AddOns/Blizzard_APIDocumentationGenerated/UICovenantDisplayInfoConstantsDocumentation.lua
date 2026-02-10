@@ -5,13 +5,14 @@ local UICovenantDisplayInfoConstants =
 		{
 			Name = "UICovenantDisplayInfoFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "DisplayCovenantAsJourney", Type = "UICovenantDisplayInfoFlags", EnumValue = 1 },
 				{ Name = "UseJourneyRewardTrack", Type = "UICovenantDisplayInfoFlags", EnumValue = 2 },
+				{ Name = "UseJourneyUnlockToastText", Type = "UICovenantDisplayInfoFlags", EnumValue = 3 },
 			},
 		},
 	},

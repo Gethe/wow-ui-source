@@ -312,51 +312,99 @@ function ClassTalentImportExportMixin:ReadLoadoutHeader(importStream)
 	return true, serializationVersion, specID, treeHash;
 end
 
+function ClassTalentImportExportMixin:CreateImportLoadoutEntryInfoFromSingleNode(results, configID, treeNodeInfo, indexInfo)
+	if not treeNodeInfo or not indexInfo then
+		return;
+	end
+
+	if not indexInfo.isNodeSelected then
+		return;
+	end
+
+	local result = {};
+	result.nodeID = treeNodeInfo.ID;
+
+	-- For now this assumes there is only ever one granted rank. If this changes it will need to be stored in the loadout string/stream.
+	result.ranksGranted = indexInfo.isNodeGranted and 1 or 0;
+
+	if indexInfo.isNodeSelected and not indexInfo.isNodeGranted then
+		result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNodeInfo.maxRanks;
+	else
+		result.ranksPurchased = 0;
+	end
+
+	result.selectionEntryID = nil;
+
+	if indexInfo.isChoiceNode and indexInfo.choiceNodeSelection then
+		result.selectionEntryID = treeNodeInfo.entryIDs[indexInfo.choiceNodeSelection];
+	elseif treeNodeInfo.activeEntry then
+		result.selectionEntryID = treeNodeInfo.activeEntry.entryID;
+	end
+
+	if not result.selectionEntryID then
+		result.selectionEntryID = treeNodeInfo.entryIDs[1];
+	end
+
+	-- There's something wrong with this loadout string if we still don't have an entry ID.
+	if result.selectionEntryID ~= nil then
+		table.insert(results, result);
+	end
+end
+
+function ClassTalentImportExportMixin:CreateImportLoadoutEntryInfoFromTieredNode(results, configID, treeNodeInfo, indexInfo)
+	if not treeNodeInfo or not indexInfo then
+		return;
+	end
+
+	if not indexInfo.isNodeSelected then
+		return;
+	end
+
+	local totalRanksPurchased = 0;
+	if not indexInfo.isNodeGranted then
+		totalRanksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNodeInfo.maxRanks;
+	end
+
+	-- Tiered nodes are made of up multiple entryIDs, each with their own maxRanks.
+	-- We know the total number of ranks purchased for this node, so we apply them in order to each entryID until we run out of ranks.
+	local remainingRanks = totalRanksPurchased;
+	for index, entryID in ipairs(treeNodeInfo.entryIDs) do
+		local entryInfo = C_Traits.GetEntryInfo(configID, entryID);
+		if entryInfo then
+			local ranksForThisEntry = math.min(remainingRanks, entryInfo.maxRanks);
+			local isGranted = indexInfo.isNodeGranted and (index == 1);
+			local hasAnyRanksInThisEntry = ranksForThisEntry > 0 or isGranted;
+			if hasAnyRanksInThisEntry then
+				local result = {
+					nodeID = treeNodeInfo.ID;
+					-- For now this assumes there is only ever one granted rank. If this changes it will need to be stored in the loadout string/stream.
+					-- Also, this assumes that the first entryID is the one that would be granted.
+					ranksGranted = isGranted and 1 or 0;
+					ranksPurchased = ranksForThisEntry;
+					selectionEntryID = entryID;
+				};
+				table.insert(results, result);
+			end
+
+			remainingRanks = remainingRanks - ranksForThisEntry;
+		end
+	end
+end
+
 -- converts from compact bit-packing format to LoadoutEntryInfo format to pass to ImportLoadout API
 function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(configID, treeID, loadoutContent)
 	local results = {};
 	local treeNodes = C_Traits.GetTreeNodes(treeID);
-	local count = 1;
-	for i, treeNodeID in ipairs(treeNodes) do
-
-		local indexInfo = loadoutContent[i];
-
-		if (indexInfo.isNodeSelected) then
-			local treeNode = C_Traits.GetNodeInfo(configID, treeNodeID);
-			if (treeNode) then
-				local result = {};
-				result.nodeID = treeNode.ID;
-
-				 -- For now this assumes there is only ever one granted rank. If this changes it will need to be stored in the loadout string/stream.
-				result.ranksGranted = indexInfo.isNodeGranted and 1 or 0;
-
-				if (indexInfo.isNodeSelected and not indexInfo.isNodeGranted) then
-					result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNode.maxRanks;
-				else
-					result.ranksPurchased = 0;
-				end
-
-					result.selectionEntryID = nil;
-
-					if (indexInfo.isChoiceNode and indexInfo.choiceNodeSelection) then
-						result.selectionEntryID = treeNode.entryIDs[indexInfo.choiceNodeSelection];
-					elseif (treeNode.activeEntry) then
-						result.selectionEntryID = treeNode.activeEntry.entryID;
-					end
-
-					if (not result.selectionEntryID) then
-						result.selectionEntryID = treeNode.entryIDs[1];
-					end
-
-					-- There's something wrong with this loadout string if we still don't have an entry ID.
-					if (result.selectionEntryID ~= nil) then
-						results[count] = result;
-						count = count + 1;
-					end
-
+	for index, treeNodeID in ipairs(treeNodes) do
+		local indexInfo = loadoutContent[index];
+		local treeNodeInfo = C_Traits.GetNodeInfo(configID, treeNodeID);
+		if treeNodeInfo then
+			if treeNodeInfo.type == Enum.TraitNodeType.Tiered then
+				self:CreateImportLoadoutEntryInfoFromTieredNode(results, configID, treeNodeInfo, indexInfo);
+			else
+				self:CreateImportLoadoutEntryInfoFromSingleNode(results, configID, treeNodeInfo, indexInfo);
 			end
 		end
-
 	end
 
 	return results;
