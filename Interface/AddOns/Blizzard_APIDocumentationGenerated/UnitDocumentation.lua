@@ -813,6 +813,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -4774,6 +4775,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{

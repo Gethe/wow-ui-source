@@ -17,7 +17,6 @@ RAID_MARKER_REMOVE_ID = 0;
 RAID_MARKER_RESET_ID = -1;
 
 NUM_RAID_MARKERS = 8;
-MAX_NUM_GROUPS = 8;
 
 CRFM_ButtonStateBehaviorMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
@@ -98,13 +97,9 @@ function CompactRaidFrameManager_OnLoad(self)
 	FlowContainer_SetStartingOffset(self.displayFrame, 0, -48);
 
 	do --filter group pool
-		self.filterGroupPool = CreateFramePool("Button", self, "CRFManagerFilterGroupButtonTemplate");
-		local parent = self.displayFrame.filterOptions;
-
 		local buttons = {};
-		for i = 1,MAX_NUM_GROUPS do
-			local button = self.filterGroupPool:Acquire();
-			button:SetParent(parent);
+		for i = 1, MAX_RAID_GROUPS do
+			local button = CreateFrame("Button", nil, self.displayFrame.filterOptions, "CRFManagerFilterGroupButtonTemplate");
 			button:SetParentKey("filterGroup"..i);
 			button:SetText(i);
 			button:SetID(i);
@@ -112,8 +107,10 @@ function CompactRaidFrameManager_OnLoad(self)
 			button:Show();
 		end
 
-		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, MAX_NUM_GROUPS / 2, 2, 0);
-		local anchor = CreateAnchor("TOPLEFT", parent.filterRoleTank, "BOTTOMLEFT", 0, 0);
+		self.displayFrame.filterOptions.filterGroupButtons = buttons;
+
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, MAX_RAID_GROUPS / 2, 2, 0);
+		local anchor = CreateAnchor("TOPLEFT", self.displayFrame.filterOptions.filterRoleTank, "BOTTOMLEFT", 0, 0);
 		AnchorUtil.GridLayout(buttons, anchor, layout);
 	end
 
@@ -581,18 +578,21 @@ end
 
 local usedGroups = {};
 function CompactRaidFrameManager_UpdateFilterInfo()
-	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleTank);
-	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleHealer);
-	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleDamager);
+	local filterOptions = CompactRaidFrameManager.displayFrame.filterOptions;
 
-	RaidUtil_GetUsedGroups(usedGroups);
+	CompactRaidFrameManager_UpdateRoleFilterButton(filterOptions.filterRoleTank);
+	CompactRaidFrameManager_UpdateRoleFilterButton(filterOptions.filterRoleHealer);
+	CompactRaidFrameManager_UpdateRoleFilterButton(filterOptions.filterRoleDamager);
 
-	local localPlayerSubgroup = GetLocalPlayerSubgroup();
+	if filterOptions.filterGroupButtons then
+		RaidUtil_GetUsedGroups(usedGroups);
 
-	for i=1, MAX_RAID_GROUPS do
-		local showPlayerIndicator = i == localPlayerSubgroup;
-		local button = CompactRaidFrameManager.displayFrame.filterOptions["filterGroup"..i];
-		CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups, showPlayerIndicator);
+		local localPlayerSubgroup = GetLocalPlayerSubgroup();
+
+		for i, button in ipairs(filterOptions.filterGroupButtons) do
+			local showPlayerIndicator = i == localPlayerSubgroup;
+			CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups, showPlayerIndicator);
+		end
 	end
 end
 

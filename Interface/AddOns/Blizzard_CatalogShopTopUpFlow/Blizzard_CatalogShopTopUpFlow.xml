@@ -68,8 +68,17 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="HousingWarningText" inherits="Game16Font" wordwrap="true" text="CATALOG_SHOP_HOUSING_WARNING" justifyH="CENTER" justifyV="MIDDLE">
+							<Color color="NORMAL_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM" x="0" y="-38" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
-
 			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
