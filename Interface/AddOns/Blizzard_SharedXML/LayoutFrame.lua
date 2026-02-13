@@ -45,7 +45,11 @@ function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
 		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
 		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
-		assertsafe(false, "Duplicate layoutIndex found: %d for %s and %s", left.layoutIndex, leftName, rightName);
+		local leftVisible = (left.IsVisible and left:IsVisible()) or "novis";
+		local rightVisible = (right.IsVisible and right:IsVisible()) or "novis";
+		local leftShown = (left.IsShown and left:IsShown()) or "noshown";
+		local rightShown = (right.IsShown and right:IsShown()) or "noshown";
+		assertsafe(false, "Duplicate layoutIndex found: %d for %s (vis = %s, shown = %s) and %s (vis = %s, shown = %s)", left.layoutIndex, leftName, tostring(leftVisible), tostring(leftShown), rightName, tostring(rightVisible), tostring(rightShown));
 	end
 
 	return left.layoutIndex < right.layoutIndex;
@@ -632,7 +636,7 @@ function StaticGridLayoutFrameMixin:Layout()
 	local childXPadding = self.childXPadding or 0;
 	local childYPadding = self.childYPadding or 0;
 
-	-- Iterate through frames and determine overall widths and heights to use for each column and row 
+	-- Iterate through frames and determine overall widths and heights to use for each column and row
 	-- based on the widest/tallest frame in each respective column and row
 	for childIndex, childFrame in ipairs(layoutChildren) do
 		if IsLayoutFrame(childFrame) then

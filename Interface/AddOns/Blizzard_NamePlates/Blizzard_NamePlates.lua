@@ -96,6 +96,10 @@ function NamePlateDriverMixin:UnregisterScriptNamePlate(namePlateUnitToken)
 	self.scriptNamePlates[namePlateUnitToken] = nil;
 end
 
+function NamePlateDriverMixin:IsScriptNamePlateRegistered(namePlateUnitToken)
+	return self.scriptNamePlates[namePlateUnitToken] ~= nil;
+end
+
 function NamePlateDriverMixin:GetNamePlateForUnit(namePlateUnitToken)
 	if self.scriptNamePlates then
 		local scriptNamePlate = self.scriptNamePlates[namePlateUnitToken];

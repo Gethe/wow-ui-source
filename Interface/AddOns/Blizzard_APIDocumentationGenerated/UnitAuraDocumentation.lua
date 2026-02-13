@@ -184,7 +184,7 @@ local UnitAura =
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
 			RequiresNonSecretAura = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

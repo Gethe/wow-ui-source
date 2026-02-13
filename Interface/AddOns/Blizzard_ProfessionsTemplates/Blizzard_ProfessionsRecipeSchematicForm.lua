@@ -423,7 +423,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	if not newTransaction and (self.transaction and self.transaction:IsRecraft()) and isRecraftOverride == nil then
 		isRecraft = true;
 	end
-	
+
+	self.isRecraft = isRecraft;
+
 	if newTransaction then
 		self.QualityDialog:Close();
 	end
@@ -870,6 +872,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			if reagentType == Enum.CraftingReagentType.Basic then
 				if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 					slot.Button:SetScript("OnClick", function(button, buttonName, down)
+						if slot:IsLoading() then
+							return;
+						end
+
 						if IsShiftKeyDown() then
 							local qualityIndex = Professions.FindFirstQualityAllocated(self.transaction, reagentSlotSchematic) or 1;
 							Professions.HandleQualityReagentLink(recipeID, reagentSlotSchematic, qualityIndex);
@@ -901,6 +907,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					end);
 
 					slot.Button:SetScript("OnEnter", function()
+						if slot:IsLoading() then
+							return;
+						end
+
 						GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 						local noInstruction = self.isInspection;
 						Professions.SetupReagentQualityPickerTooltip(slot, self.transaction, noInstruction);
@@ -908,12 +918,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					end);
 				else
 					slot.Button:SetScript("OnClick", function(button, buttonName, down)
+						if slot:IsLoading() then
+							return;
+						end
+
 						if IsShiftKeyDown() then
 							Professions.HandleFixedReagentLink(recipeID, reagentSlotSchematic);
 						end
 					end);
 
 					slot.Button:SetScript("OnEnter", function()
+						if slot:IsLoading() then
+							return;
+						end
+
 						GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 						local reagent = slot.Button:GetReagent();
 						if reagent.currencyID then
@@ -933,6 +951,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				slot.Button:SetLocked(locked);
 
 				slot.Button:SetScript("OnEnter", function()
+					if slot:IsLoading() then
+						return;
+					end
+
 					GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 
 					local slotInfo = reagentSlotSchematic.slotInfo;
@@ -960,6 +982,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				end);
 
 				slot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
+					if slot:IsLoading() then
+						return;
+					end
+
 					if locked then
 						return;
 					end
@@ -1085,6 +1111,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.salvageSlot:Show();
 
 		self.salvageSlot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
+			if self.salvageSlot:IsLoading() then
+				return;
+			end
+
 			if buttonName == "LeftButton" then
 				if IsProfessionsItemFlyoutOpen() then
 					CloseProfessionsItemFlyout();
@@ -1119,6 +1149,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end);
 
 		self.salvageSlot.Button:SetScript("OnEnter", function()
+			if self.salvageSlot:IsLoading() then
+				return;
+			end
+
 			GameTooltip:SetOwner(self.salvageSlot.Button, "ANCHOR_RIGHT");
 
 			local salvageItem = self.transaction:GetSalvageAllocation();
@@ -1148,6 +1182,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.enchantSlot:Show();
 
 		self.enchantSlot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
+			if self.enchantSlot:IsLoading() then
+				return;
+			end
+
 			if buttonName == "LeftButton" then
 				if IsProfessionsItemFlyoutOpen() then
 					CloseProfessionsItemFlyout();
@@ -1181,6 +1219,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end);
 
 		self.enchantSlot.Button:SetScript("OnEnter", function(button)
+			if self.enchantSlot:IsLoading() then
+				return;
+			end
+
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 
 			local item = self.transaction:GetEnchantAllocation();
@@ -1309,12 +1351,14 @@ function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 	end
 
+	local currentRecipeInfo = self:GetRecipeInfo();
+	local isRecipeInfoRecraft = currentRecipeInfo and currentRecipeInfo.isRecraft;
 	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	local maxWidth = minimized and 250 or 800;
 	local multiline = minimized;
 	if isRecipeInfoRecraft then
 		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
-	elseif isRecraft then
+	elseif self.isRecraft then
 		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(text), maxWidth, multiline);
 	else
 		SetTextToFit(self.OutputText, text, maxWidth, multiline);

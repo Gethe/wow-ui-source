@@ -764,6 +764,10 @@ function QuestInfo_ShowRewards()
 		BeginRewardsSection();
 		local index;
 		local baseIndex = rewardsCount;
+		-- TODO: Investigate why GameTooltip:SetQuestLogCurrency is not indexing
+		-- into rewards like C_QuestLog.GetQuestRewardCurrencyInfo
+		local choiceItemIndex = 0;
+		local choiceCurrencyIndex = 0;
 		for i = 1, numQuestChoices do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
@@ -779,8 +783,12 @@ function QuestInfo_ShowRewards()
 
 			if (lootType == 0) then -- LOOT_LIST_ITEM
 				QuestInfo_ShowRewardAsItem(questItem, i);
+				choiceItemIndex = choiceItemIndex + 1;
+				questItem:SetID(choiceItemIndex);
 			elseif (lootType == 1) then -- LOOT_LIST_CURRENCY
 				QuestInfo_ShowChoiceRewardAsCurrency(questItem, i, true);
+				choiceCurrencyIndex = choiceCurrencyIndex + 1;
+				questItem:SetID(choiceCurrencyIndex);
 			end
 
 			AddRewardElement(questItem);

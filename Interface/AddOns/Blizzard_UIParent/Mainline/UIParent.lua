@@ -322,6 +322,9 @@ function UIParent_OnLoad(self)
 
 	-- Events(s) for Remix Event
 	self:RegisterEvent("REMIX_END_OF_EVENT");
+
+	-- Events(s) for Journeys
+	self:RegisterEvent("SHOW_JOURNEYS_UI");
 end
 
 function UIParent_OnShow(self)
@@ -2293,6 +2296,12 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif event == "REMIX_END_OF_EVENT" then
 		StaticPopup_Show("REMIX_END_OF_EVENT_NOTICE");
+	elseif event == "SHOW_JOURNEYS_UI" then
+		if not EncounterJournal then
+			EncounterJournal_LoadUI();
+		end	
+		local factionID = ...;
+		EncounterJournal_OpenToJourney(factionID);
     end
 end
 

@@ -91,7 +91,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetStatusBarColor",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor },
+			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -256,7 +256,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarColor",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor },
+			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =

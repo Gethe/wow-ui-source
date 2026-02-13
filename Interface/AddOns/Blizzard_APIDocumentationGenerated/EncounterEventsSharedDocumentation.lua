@@ -34,7 +34,7 @@ local EncounterEventsShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "file", Type = "fileID", Nilable = false, Documentation = { "Sound file to be played when triggered." } },
+				{ Name = "file", Type = "FileAsset", Nilable = false, Documentation = { "Sound file to be played when triggered." } },
 				{ Name = "channel", Type = "UISoundSubType", Nilable = false, Default = "g_defaultSI3UISoundSubTypeForLua", Documentation = { "Sound channel to play this file on." } },
 				{ Name = "volume", Type = "number", Nilable = false, Default = 1, Documentation = { "Volume scalar for the sound file." } },
 			},

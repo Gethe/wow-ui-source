@@ -139,7 +139,13 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="JourneyCardProgressBarBG" atlas="ui-journeys-renown-progressbar-BG" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="JourneyCardProgressBarFrame" atlas="ui-journeys-renown-progressbar-frame" useAtlasSize="true">
+							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
@@ -157,7 +163,7 @@
 						<Anchor point="TOPLEFT" x="25" y="-25"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="JourneyCardLevel" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="JourneyCardLevel" inherits="GameFontNormalMed2" justifyH="LEFT" justifyV="TOP">
 					<Size x="150" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.JourneyCardName" x="0"/>
