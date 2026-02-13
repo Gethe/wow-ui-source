@@ -991,6 +991,10 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	end
 end
 
+local function GetInitialContainerFrameOffsetX()
+	return EditModeUtil:GetRightActionBarWidth() + CONTAINER_OFFSET_X;
+end
+
 function UpdateContainerFrameAnchors()
 	local frame, xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
 	local screenWidth = GetScreenWidth();
@@ -1003,8 +1007,8 @@ function UpdateContainerFrameAnchors()
 	while ( containerScale > CONTAINER_SCALE ) do
 		screenHeight = GetScreenHeight() / containerScale;
 		-- Adjust the start anchor for bags depending on the multibars
-		xOffset = CONTAINER_OFFSET_X / containerScale; 
-		yOffset = CONTAINER_OFFSET_Y / containerScale; 
+		xOffset = GetInitialContainerFrameOffsetX() / containerScale;
+		yOffset = CONTAINER_OFFSET_Y / containerScale;
 		-- freeScreenHeight determines when to start a new column of bags
 		freeScreenHeight = screenHeight - yOffset;
 		leftMostPoint = screenWidth - xOffset;
@@ -1033,7 +1037,7 @@ function UpdateContainerFrameAnchors()
 	
 	screenHeight = GetScreenHeight() / containerScale;
 	-- Adjust the start anchor for bags depending on the multibars
-	xOffset = CONTAINER_OFFSET_X / containerScale;
+	xOffset = GetInitialContainerFrameOffsetX() / containerScale;
 	yOffset = CONTAINER_OFFSET_Y / containerScale;
 	-- freeScreenHeight determines when to start a new column of bags
 	freeScreenHeight = screenHeight - yOffset;

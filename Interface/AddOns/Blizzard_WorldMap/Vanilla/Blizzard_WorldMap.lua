@@ -47,6 +47,7 @@ end
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
 		self.MiniBorderFrame:Hide();
+		self:SetFrameStrata("FULLSCREEN");
 
 		WorldMapFrame_SetOpacity(0);
 
@@ -69,6 +70,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 	else
 		self.MiniBorderFrame:Show();
 		self:SetMovable("true");
+		self:SetFrameStrata("MEDIUM");
 
 		WorldMapFrame:ClearAllPoints();
 		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, -12);
