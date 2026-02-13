@@ -159,7 +159,12 @@ function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
 		return elementData.catalogShopProductID == productInfo.catalogShopProductID;
 	end);
 	if foundElementData then
-		scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		local isSelected = scrollContainer.selectionBehavior:IsElementDataSelected(foundElementData);
+		if isSelected then
+			scrollBox:ScrollToElementData(foundElementData, ScrollBoxConstants.AlignNearest);
+		else
+			scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		end
 		return true;
 	end
 
