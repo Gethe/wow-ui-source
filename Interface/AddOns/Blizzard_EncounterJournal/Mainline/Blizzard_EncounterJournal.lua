@@ -296,7 +296,6 @@ function EncounterJournal_OnLoad(self)
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
-	self:RegisterEvent("SHOW_JOURNEYS_UI");
 
 	self.encounter.freeHeaders = {};
 	self.encounter.usedHeaders = {};
@@ -988,9 +987,6 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "SPELL_TEXT_UPDATE" then
 		local spellID = ...;
 		EncounterJournal_UpdateSpellText(self, spellID);
-	elseif  event == "SHOW_JOURNEYS_UI" then
-		local factionID = ...;
-		EncounterJournal_OpenToJourney(factionID);
 	end
 end
 

@@ -57,11 +57,7 @@ local function IsSavedWindowDataValid(savedWindowData)
 		return false;
 	end
 
-	if savedWindowData.sessionType == nil then
-		return false;
-	end
-
-	if type(savedWindowData.sessionType) ~= "number" then
+	if savedWindowData.sessionType and type(savedWindowData.sessionType) ~= "number" then
 		return false;
 	end
 
@@ -92,6 +88,13 @@ function DamageMeterMixin:OnEvent(event, ...)
 	end
 end
 
+function DamageMeterMixin:GetDefaultWindowData()
+	return {
+			damageMeterType = Enum.DamageMeterType.DamageDone;
+			sessionType = self:GetSessionType();
+			sessionID = self:GetSessionID(); };
+end
+
 function DamageMeterMixin:InitializeWindowDataList()
 	-- Recreate all previously open windows and their respective damageMeterTypes.
 	-- Any windows that were previously moved or resized will be positioned when the
@@ -101,7 +104,12 @@ function DamageMeterMixin:InitializeWindowDataList()
 	-- If it doesn't exist, create the primary session window, which much always exist and can't be hidden.
 	-- This can happen if the saved window data doesn't exist or has been corrupted.
 	if self:GetPrimarySessionWindow() == nil then
-		self:ShowNewSessionWindow();
+		local windowData = self:GetDefaultWindowData();
+		self.windowDataList[PRIMARY_SESSION_WINDOW_INDEX] = windowData;
+
+		self:SetupSessionWindow(windowData, PRIMARY_SESSION_WINDOW_INDEX);
+
+		SetSavedWindowData(PRIMARY_SESSION_WINDOW_INDEX, windowData);
 	end
 end
 
@@ -320,7 +328,7 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 			end
 
 			windowData.damageMeterType = savedWindowData.damageMeterType;
-			windowData.sessionType = savedWindowData.sessionType;
+			windowData.sessionType = savedWindowData.sessionType or self:GetSessionType();
 			windowData.locked = savedWindowData.locked;
 			windowData.nonInteractive = savedWindowData.nonInteractive;
 
@@ -349,11 +357,7 @@ function DamageMeterMixin:ShowNewSessionWindow()
 	if sessionWindowIndex then
 		windowData = self.windowDataList[sessionWindowIndex];
 	else
-		windowData = {
-			damageMeterType = Enum.DamageMeterType.DamageDone;
-			sessionType = self:GetSessionType();
-			sessionID = self:GetSessionID();
-		};
+		windowData = self:GetDefaultWindowData();
 		table.insert(self.windowDataList, windowData );
 
 		sessionWindowIndex = #self.windowDataList;

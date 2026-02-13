@@ -302,6 +302,15 @@
 						<Anchor point="CENTER" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.texture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.texture" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="texture"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" atlas="bag-border" useAtlasSize="false"/>

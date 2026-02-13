@@ -96,7 +96,8 @@ end
 
 function DelvesCompanionConfigurationFrameMixin:OnShow()
     self:Refresh();
-    self:TryShowSeasonHelptip();
+	--TODO: Evaluate for next season
+	--self:TryShowSeasonHelptip();
     FrameUtil.RegisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
     PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end

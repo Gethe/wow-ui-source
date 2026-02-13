@@ -223,6 +223,12 @@ local function GetPreviewNamePlate()
 		return nil;
 	end
 
+	-- Prevent a lua error in C_NamePlate.GetNamePlateForUnit if settings are changed (e.g. Defaults button)
+	-- while the preview nameplate isn't on the screen.
+	if not NamePlateDriverFrame:IsScriptNamePlateRegistered(NamePlateConstants.PREVIEW_UNIT_TOKEN) then
+		return nil;
+	end
+
 	return NamePlateDriverFrame:GetNamePlateForUnit(NamePlateConstants.PREVIEW_UNIT_TOKEN);
 end
 
