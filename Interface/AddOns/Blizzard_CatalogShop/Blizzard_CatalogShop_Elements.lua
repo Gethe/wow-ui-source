@@ -734,21 +734,24 @@ function CatalogShopPersistentRefundContainerFrameMixin:UpdateState()
 		return;
 	end
 
-	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
-	if CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
-		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()
-		or (not categoryInfo.showPersistentRefundButton) then
+	if (CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
+		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()) then
 		return;
 	end
 
-	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors();
+	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
+	if (not categoryInfo.showPersistentRefundButton) then
+		return;
+	end
+
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors();
 	if #refundableDecorInfos <= 0 then
 		return;
 	end
 
 	self:Show();
 
-	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
 	self.RefundTextFrame.RefundText:SetText(timeLeftFormatted);
 	self.RefundCountFrame.RefundCountText:SetText(tostring(#refundableDecorInfos));
 
@@ -779,14 +782,14 @@ function ProductRefundContainerMixin:UpdateState()
 		return;
 	end
 
-	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors(self.productID);
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors(self.productID);
 	if #refundableDecorInfos <= 0 then
 		return;
 	end
 
 	self:Show();
 
-	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
 	local refundTimeLeft = CATALOG_SHOP_REFUND_TIME_LEFT:format(timeLeftFormatted);
 	self.RefundTextFrame.RefundText:SetText(refundTimeLeft);
 

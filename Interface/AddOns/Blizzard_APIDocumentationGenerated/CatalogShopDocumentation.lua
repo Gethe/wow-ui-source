@@ -261,12 +261,13 @@ local CatalogShop =
 
 			Arguments =
 			{
-				{ Name = "productIDOpt", Type = "number", Nilable = true },
+				{ Name = "productIdFilterOpt", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "refundableDecorInfos", Type = "table", InnerType = "RefundableDecorInfo", Nilable = false },
+				{ Name = "minTimeRemainingSeconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{

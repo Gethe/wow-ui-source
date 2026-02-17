@@ -715,6 +715,15 @@ function HousingMarketCartDataManagerMixin:OnUpdateItemInfo(itemID)
 end
 
 function HousingMarketCartDataManagerMixin:PlaceInWorld(placeItemData)
+	local tryGetOwnedInfo = true;
+	local currentlyIndoors, invalidIndoors, invalidOutdoors = Blizzard_HousingCatalogUtil.GetInsideAndIsInvalidIndoorsOutdoors(Enum.HousingCatalogEntryType.Decor, placeItemData.decorID, tryGetOwnedInfo);
+
+	if invalidIndoors or invalidOutdoors then
+		local errorText = currentlyIndoors and HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE_ERROR or HOUSING_DECOR_ONLY_PLACEABLE_INSIDE_ERROR;
+		UIErrorsFrame:AddExternalErrorMessage(errorText);
+		return;
+	end
+
 	-- Catalog shop bundle items are managed by product ID so only set pending place for non-bundle items
 	if not placeItemData.bundleCatalogShopProductID then
 		self.pendingPlaceCartID = placeItemData.cartID;
