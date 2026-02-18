@@ -935,7 +935,7 @@ local LFGListInfo =
 				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },
-				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false, NeverSecret = true },
 			},
 		},
 		{

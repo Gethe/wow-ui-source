@@ -157,8 +157,8 @@ function CompactRaidFrameManager_OnLoad(self)
 	end
 
 	--divider pools to be filled out on update
-	self.container.dividerVerticalPool = CreateTexturePool(self, "ARTWORK", 0, "CRFManagerDividerVertical");
-	self.container.dividerHorizontalPool = CreateTexturePool(self, "ARTWORK", 0, "CRFManagerDividerHorizontal");
+	self.dividerVerticalPool = CreateTexturePool(self, "ARTWORK", 0, "CRFManagerDividerVertical");
+	self.dividerHorizontalPool = CreateTexturePool(self, "ARTWORK", 0, "CRFManagerDividerHorizontal");
 
 	if (C_Ping.IsPingSystemEnabled()) then
 		do --restrict pings dropdown
@@ -406,7 +406,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	end
 
 	local function AddVerticalDivider(verticalDividerPadding)
-		local frame = CompactRaidFrameContainer.dividerVerticalPool:Acquire();
+		local frame = CompactRaidFrameManager.dividerVerticalPool:Acquire();
 
 		Space(verticalDividerPadding);
 		AddAndShow(frame);
@@ -414,7 +414,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	end
 
 	local function AddHorizontalDivider()
-		local frame = CompactRaidFrameContainer.dividerHorizontalPool:Acquire();
+		local frame = CompactRaidFrameManager.dividerHorizontalPool:Acquire();
 		FlowContainer_AddLineBreak(container);
 		AddAndShow(frame);
 		FlowContainer_AddLineBreak(container);
@@ -470,8 +470,8 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 
 	CompactRaidFrameManager.Background:SetAtlas(GetBackgroundAtlas(isRaid, isLeader, isAssist));
 
-	CompactRaidFrameContainer.dividerVerticalPool:ReleaseAll();
-	CompactRaidFrameContainer.dividerHorizontalPool:ReleaseAll();
+	CompactRaidFrameManager.dividerVerticalPool:ReleaseAll();
+	CompactRaidFrameManager.dividerHorizontalPool:ReleaseAll();
 
 	displayFrame.ModeControlDropdown:SetShown(isLeader);
 
