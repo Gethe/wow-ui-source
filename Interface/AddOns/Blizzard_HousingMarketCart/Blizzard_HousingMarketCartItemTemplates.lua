@@ -112,7 +112,11 @@ function HousingMarketCartItemMixin:Refresh()
 
 	-- Can't actually disable enable here since we need on click in the disabled state for drag
 	self.enabled = not not self.elementData.decorGUID;
-	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID);
+
+	local tryGetOwnedInfo = true;
+	local _currentlyIndoors, invalidIndoors, invalidOutdoors = Blizzard_HousingCatalogUtil.GetInsideAndIsInvalidIndoorsOutdoors(Enum.HousingCatalogEntryType.Decor, self.elementData.decorID, tryGetOwnedInfo);
+
+	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID and not invalidIndoors and not invalidOutdoors);
 
 	self.ItemName:SetText(self.elementData.name or "");
 	self.Icon:SetTexture(self.elementData.icon or nil);
@@ -271,7 +275,9 @@ function HousingMarketCartBundleItemMixin:Refresh()
 		return;
 	end
 
-	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID);
+	local tryGetOwnedInfo = true;
+	local _currentlyIndoors, invalidIndoors, invalidOutdoors = Blizzard_HousingCatalogUtil.GetInsideAndIsInvalidIndoorsOutdoors(Enum.HousingCatalogEntryType.Decor, self.elementData.decorID, tryGetOwnedInfo);
+	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID and not invalidIndoors and not invalidOutdoors);
 
 	self.VisualContainer.ItemName:SetText(self.elementData.name or "");
 	self.VisualContainer.Icon:SetTexture(self.elementData.icon or nil);

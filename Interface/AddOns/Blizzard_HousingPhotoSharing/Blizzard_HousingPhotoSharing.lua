@@ -14,15 +14,20 @@ function HousingPhotoSharingMixin:ResetEditBoxes()
 	self.DescriptionFrame.DescriptionText:Show();
 end
 
-function HousingPhotoSharingMixin:UpdatePublishButton()
+function HousingPhotoSharingMixin:UpdatePublishButton(showNotification)
+	local notification;
 	if C_HousingPhotoSharing.IsAuthorized() then
 		self.ErrorTextFrame.ErrorText:Hide();
 		self.PublishButton:SetText(PHOTO_SHARING_PREVIEW_PUBLISH);
-		UIErrorsFrame:AddMessage(PHOTO_SHARING_SIGN_IN_NOTIFICATION, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		notification = PHOTO_SHARING_SIGN_IN_NOTIFICATION;
 	else
 		self.ErrorTextFrame.ErrorText:Show();
 		self.PublishButton:SetText(PHOTO_SHARING_SIGN_IN);
-		UIErrorsFrame:AddMessage(PHOTO_SHARING_DISCONNECT_NOTIFICATION, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		notification = PHOTO_SHARING_DISCONNECT_NOTIFICATION;
+	end
+
+	if showNotification then
+		UIErrorsFrame:AddMessage(notification, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
 end
 
@@ -69,7 +74,8 @@ function HousingPhotoSharingMixin:OnEvent(event, ...)
 			self:Show();
 		end);
 	elseif event == "PHOTO_SHARING_AUTHORIZATION_UPDATED" then
-		self:UpdatePublishButton();
+		local showNotification = ...;
+		self:UpdatePublishButton(showNotification);
 	elseif event == "PHOTO_SHARING_PHOTO_UPLOAD_STATUS" then
 		local status = ...;
 		if status == Enum.PhotoSharingUploadStatus.Success then

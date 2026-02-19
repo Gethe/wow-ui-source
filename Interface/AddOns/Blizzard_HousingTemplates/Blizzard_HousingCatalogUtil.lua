@@ -36,3 +36,12 @@ function Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(productID)
 		OpenShop();
 	end
 end
+
+function Blizzard_HousingCatalogUtil.GetInsideAndIsInvalidIndoorsOutdoors(catalogEntryType, decorID, tryGetOwnedInfo)
+	local entryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(catalogEntryType, decorID, tryGetOwnedInfo);
+	local currentlyIndoors = C_Housing.IsInsideHouse();
+	local invalidIndoors = currentlyIndoors and not entryInfo.isAllowedIndoors;
+	local invalidOutdoors = not currentlyIndoors and not entryInfo.isAllowedOutdoors;
+
+	return currentlyIndoors, invalidIndoors, invalidOutdoors;
+end
