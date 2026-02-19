@@ -145,6 +145,7 @@ local PvpInfo =
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenLossOfControlInfoRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

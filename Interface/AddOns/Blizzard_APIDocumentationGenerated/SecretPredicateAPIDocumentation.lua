@@ -367,6 +367,40 @@ local SecretPredicateAPI =
 				{ Name = "isSpellCastingSecret", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldUnitThreatStateBeSecret",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if queries for unit threat status will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobUnit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitThreatSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitThreatValuesBeSecret",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if queries for unit threat values will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobUnit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitThreatSecret", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

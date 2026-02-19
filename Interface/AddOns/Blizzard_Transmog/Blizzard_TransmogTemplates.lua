@@ -84,8 +84,8 @@ function TransmogOutfitEntryMixin:Init(elementData)
 
 	-- Trial of Style visuals
 	local inTransmogEvent = C_TransmogOutfitInfo.InTransmogEvent();
-	self.OutfitIcon:SetEnabled(not inTransmogEvent);
-	self.OutfitIcon.Icon:SetDesaturated(inTransmogEvent);
+	self.OutfitIcon:SetEnabled(not inTransmogEvent or elementData.isEventOutfit);
+	self.OutfitIcon.Icon:SetDesaturated(inTransmogEvent and not elementData.isEventOutfit);
 
 	local normalAtlas = "transmog-outfit-card";
 	if elementData.isEventOutfit then

@@ -25,6 +25,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataByUnit",
 			Type = "Function",
+			SecretWhenLossOfControlInfoRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -131,7 +132,7 @@ local LossOfControl =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "locType", Type = "cstring", Nilable = false },
+				{ Name = "locType", Type = "cstring", Nilable = false, NeverSecret = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "displayText", Type = "cstring", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = false },
@@ -139,9 +140,9 @@ local LossOfControl =
 				{ Name = "timeRemaining", Type = "number", Nilable = true },
 				{ Name = "duration", Type = "number", Nilable = true },
 				{ Name = "lockoutSchool", Type = "number", Nilable = false },
-				{ Name = "priority", Type = "number", Nilable = false },
-				{ Name = "displayType", Type = "number", Nilable = false },
-				{ Name = "auraInstanceID", Type = "number", Nilable = true },
+				{ Name = "priority", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "displayType", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "auraInstanceID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 	},
