@@ -95,8 +95,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "target", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "target", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -782,7 +782,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -798,7 +798,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -824,7 +824,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -840,7 +840,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1031,6 +1031,7 @@ local Unit =
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitThreatValuesRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1189,7 +1190,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1204,8 +1205,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "healerUnit", Type = "UnitToken", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
 				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
 			},
 		},
@@ -1217,8 +1218,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "healerGUID", Type = "UnitToken", Nilable = true },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerGUID", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true },
 			},
 
 			Returns =
@@ -1234,7 +1235,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1250,7 +1251,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1356,7 +1357,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1373,7 +1374,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 			},
 
@@ -1392,7 +1393,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
 			},
@@ -1410,7 +1411,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 			},
 
@@ -2445,7 +2446,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -2477,7 +2478,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2591,7 +2592,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2660,7 +2661,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2679,7 +2680,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2699,7 +2700,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
@@ -2718,7 +2719,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "number", Nilable = false, Default = 0 },
 			},
 
@@ -2738,7 +2739,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenNamePlate", Nilable = false },
 			},
 
 			Returns =
@@ -3014,7 +3015,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -3070,6 +3071,7 @@ local Unit =
 		{
 			Name = "UnitThreatLeadSituation",
 			Type = "Function",
+			SecretWhenUnitThreatStateRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a threat state (0-3; representing none, yellow, orange, red) that indicates how far the provided unit is above the secondmost threat on the provided mob. If the unit is not first on threat, will always return red. Can return nil if the provided mob does not exist." },
 
@@ -3087,6 +3089,7 @@ local Unit =
 		{
 			Name = "UnitThreatPercentageOfLead",
 			Type = "Function",
+			SecretWhenUnitThreatValuesRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3103,6 +3106,7 @@ local Unit =
 		{
 			Name = "UnitThreatSituation",
 			Type = "Function",
+			SecretWhenUnitThreatStateRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

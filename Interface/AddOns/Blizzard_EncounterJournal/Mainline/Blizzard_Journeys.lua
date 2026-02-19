@@ -277,7 +277,7 @@ function JourneysFrameMixin:ResetView(majorFactionData, majorfactionID)
 		-- Progress shown, looks like we selected something from the navbar or other link. Switch to the new one.
 		NavBar_Reset(EncounterJournal.navBar);
 		self.JourneyProgress.majorFactionData = majorFactionData;
-		self.JourneyProgress:Refresh();
+		self.JourneyProgress:Refresh(true);
 	elseif majorFactionData and self.JourneyOverview:IsShown() then
 		-- Overview shown, looks like we selected something from the navbar or other link. Go to the progress page for selected journey
 		self.JourneyOverview:Hide();
@@ -363,7 +363,7 @@ end
 function JourneyProgressFrameMixin:OnShow()
 	EncounterJournal.instanceSelect.ExpansionDropdown:SetShown(false);
 
-	self:Refresh();
+	self:Refresh(true);
 end
 
 function JourneyProgressFrameMixin:OnHide()
@@ -395,14 +395,16 @@ function JourneyProgressFrameMixin:OnMouseWheel(direction)
 	self.track:SetSelection(centerIndex, forceRefresh, skipSound, overrideStopSound);
 end
 
-function JourneyProgressFrameMixin:Refresh()
-	local buttonData = {
-		id = self.majorFactionData and self.majorFactionData.factionID or 0,
-		name = self.majorFactionData and self.majorFactionData.name or "",
-		listFunc = GetJourneysForNavBar,
-	};
-	NavBar_AddButton(EncounterJournal.navBar, buttonData);
-	self:GetLevels();
+function JourneyProgressFrameMixin:Refresh(fromOnShow)
+	if fromOnShow then
+		local buttonData = {
+			id = self.majorFactionData and self.majorFactionData.factionID or 0,
+			name = self.majorFactionData and self.majorFactionData.name or "",
+			listFunc = GetJourneysForNavBar,
+		};
+		NavBar_AddButton(EncounterJournal.navBar, buttonData);
+		self:GetLevels();
+	end
 	if self.majorFactionData.isRenownJourney then
 		self.OverviewBtn:Show();
 	else
@@ -512,7 +514,7 @@ end
 function JourneyProgressFrameMixin:OnLevelEffectFinished()
 	self.levelEffect = nil;
 	self.displayLevel = self.displayLevel + 1;
-	self:Refresh();
+	self:Refresh(false);
 end
 
 function JourneyProgressFrameMixin:PlayLevelEffect()
