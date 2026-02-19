@@ -617,6 +617,8 @@ function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
 		self.ProductDetailsContainerFrame:UpdateProductInfo(productInfo);
+	elseif productInfo then
+		self.ProductContainerFrame:TrySelectProduct(productInfo);
 	end
 	self.CatalogShopDetailsFrame:MarkDirty();
 end
