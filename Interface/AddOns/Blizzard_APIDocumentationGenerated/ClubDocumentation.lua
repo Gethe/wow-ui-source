@@ -1795,7 +1795,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "isSelf", Type = "bool", Nilable = false },
+				{ Name = "isSelf", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "memberId", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
