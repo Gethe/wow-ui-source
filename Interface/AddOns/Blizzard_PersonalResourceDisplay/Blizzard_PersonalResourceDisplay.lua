@@ -124,6 +124,12 @@ function PersonalResourceDisplayMixin:OnShow()
 	self:SetupHealthBar();
 	self:SetupPowerBar();
 	self:SetupAlternatePowerBar();
+
+	-- Refresh health and health prediction on show
+	-- We might be hiding this frame out of combat which means we're not registered for health updates
+	-- (Power changes are handled in the OnUpdate)
+	self:UpdateHealth();
+	self:UpdateHealthPrediction();
 end
 
 function PersonalResourceDisplayMixin:OnHide()
