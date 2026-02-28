@@ -15,6 +15,7 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="IconBorder" parentArray="Textures">
+					<Size x="55" y="55"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -32,7 +33,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="LevelRectangle" atlas="ui-journeys-delve-rewardicon-rectangle-frame" useAtlasSize="true">
+				<Texture parentKey="LevelRectangle" atlas="ui-journeys-delve-rewardicon-rectangle-frame" useAtlasSize="true" parentArray="Textures">
 					<Anchors>
 						<Anchor relativeKey="$parent.IconBorder" point="BOTTOM" y="-9"/>
 					</Anchors>
@@ -106,6 +107,14 @@
 						<Anchor point="CENTER" y="1"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="IconBorder" atlas="ui-journeys-delve-rewardicon-square-frame" parentArray="Textures">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

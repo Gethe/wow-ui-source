@@ -290,11 +290,11 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	container.DiscountAmount:SetShown(shouldShowDiscountPercentage);
 	container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
 
-	local consumableQuantity = self.productInfo.consumableQuantity;
-	local shouldShowConsumableQuantity = (not shouldShowDiscountPercentage) and consumableQuantity;
-	container.ConsumableQuantityBackground:SetShown(shouldShowConsumableQuantity);
-	container.ConsumableQuantityText:SetShown(shouldShowConsumableQuantity);
-	container.ConsumableQuantityText:SetText(consumableQuantity);
+	local quantityInBundle = self.productInfo.quantityInBundle;
+	local shouldShowQuantityInBundle = (not not quantityInBundle) and quantityInBundle > 1;
+	container.QuantityInBundleBackground:SetShown(shouldShowQuantityInBundle);
+	container.QuantityInBundleText:SetShown(shouldShowQuantityInBundle);
+	container.QuantityInBundleText:SetText(quantityInBundle);
 	self:ShowNotification();
 end
 

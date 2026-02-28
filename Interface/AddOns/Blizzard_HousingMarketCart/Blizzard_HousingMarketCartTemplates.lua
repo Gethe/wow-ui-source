@@ -636,13 +636,13 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 					if isMatchingDecor and hasMatchingBundleParent and not cartItem.markedForRemoval and not isBundleParent then
 						Promote(cartItem);
 
-						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCartInternal call
+						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCart call
 
 						if isBundleChild then
 							bundlesToRemove[cartItem.bundleCatalogShopProductID] = true;
 							cartItem.markedForRemoval = true;
 						else
-							self:RemoveFromCartInternal(i, cartItem);
+							self:RemoveFromCart(cartItem);
 						end
 
 						break;
@@ -652,9 +652,9 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 		end
 
 		for bundleProdID, _toRemove in pairs(bundlesToRemove) do
-			for i, cartItem in ipairs(self.cartList) do
+			for _i, cartItem in ipairs(self.cartList) do
 				if cartItem.bundleCatalogShopProductID == bundleProdID and cartItem.isBundleParent then
-					self:RemoveFromCartInternal(i, cartItem);
+					self:RemoveFromCart(cartItem);
 
 					break;
 				end
@@ -691,7 +691,13 @@ function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_REMOVE_FRO
 	for _i, cartItem in ipairs(self.cartList) do
 		if cartItem.decorGUID == decorGUID then
 			cartItem.decorGUID = nil;
-			self:UpdateCart();
+
+			if C_Housing.IsHousingMarketCartFullRemoveEnabled() and not cartItem.bundleCatalogShopProductID then
+				self:RemoveFromCart(cartItem);
+			else
+				self:UpdateCart();
+			end
+
 			break;
 		end
 	end
@@ -709,6 +715,15 @@ function HousingMarketCartDataManagerMixin:OnUpdateItemInfo(itemID)
 end
 
 function HousingMarketCartDataManagerMixin:PlaceInWorld(placeItemData)
+	local tryGetOwnedInfo = true;
+	local currentlyIndoors, invalidIndoors, invalidOutdoors = Blizzard_HousingCatalogUtil.GetInsideAndIsInvalidIndoorsOutdoors(Enum.HousingCatalogEntryType.Decor, placeItemData.decorID, tryGetOwnedInfo);
+
+	if invalidIndoors or invalidOutdoors then
+		local errorText = currentlyIndoors and HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE_ERROR or HOUSING_DECOR_ONLY_PLACEABLE_INSIDE_ERROR;
+		UIErrorsFrame:AddExternalErrorMessage(errorText);
+		return;
+	end
+
 	-- Catalog shop bundle items are managed by product ID so only set pending place for non-bundle items
 	if not placeItemData.bundleCatalogShopProductID then
 		self.pendingPlaceCartID = placeItemData.cartID;

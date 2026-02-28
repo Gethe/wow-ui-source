@@ -261,12 +261,13 @@ local CatalogShop =
 
 			Arguments =
 			{
-				{ Name = "productIDOpt", Type = "number", Nilable = true },
+				{ Name = "productIdFilterOpt", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "refundableDecorInfos", Type = "table", InnerType = "RefundableDecorInfo", Nilable = false },
+				{ Name = "minTimeRemainingSeconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -427,6 +428,15 @@ local CatalogShop =
 			Arguments =
 			{
 				{ Name = "currencyCode", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowHousingWarning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldShowHousingWarning", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -649,6 +659,7 @@ local CatalogShop =
 			{
 				{ Name = "childProductID", Type = "number", Nilable = false },
 				{ Name = "displayOrder", Type = "number", Nilable = false },
+				{ Name = "quantityInBundle", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -748,6 +759,7 @@ local CatalogShop =
 				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "consumableQuantity", Type = "number", Nilable = true },
 				{ Name = "isVCProduct", Type = "bool", Nilable = false },
+				{ Name = "containsHousingItem", Type = "bool", Nilable = false },
 			},
 		},
 		{

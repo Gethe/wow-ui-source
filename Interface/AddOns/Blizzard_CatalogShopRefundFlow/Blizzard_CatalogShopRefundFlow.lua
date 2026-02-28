@@ -74,6 +74,7 @@ function CatalogShopRefundFrameMixin:OnLoad()
 		responseEventName = "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED",
 		responseEventCallback = function()
 			self:StopProcessing();
+			PlaySound(SOUNDKIT.CATALOG_SHOP_REFUND_COMPLETE);
 		end,
 		timeoutSeconds = CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED_TIMEOUT_SECONDS,
 		timeoutCallback = function()
@@ -89,11 +90,7 @@ function CatalogShopRefundFrameMixin:OnLoad()
 		responseEventName = "BULK_REFUND_RESULT_RECEIVED",
 		responseEventCallback = function(result)
 			if (result == Enum.BulkRefundResult.ResultOk) then
-				-- TODO (WOW12-25993): This timer is a workaround for the server-side entitlements refresh delay.
-				--                     When WOW12-25993 is being worked on, remove this timer and just call the inner function directly.
-				C_Timer.NewTimer(10, function()
-					self.refreshRequest:StartRequest();
-				end);
+				self.refreshRequest:StartRequest();
 			else
 				self:StopProcessing();
 				self:ShowBulkRefundError(BLIZZARD_STORE_ERROR_TITLE_OTHER);
@@ -381,4 +378,32 @@ end
 
 function CatalogShopRefundFrameMixin:ShowBulkRefundError(errorMessage)
 	CatalogShopRefundFlowOutbound.ShowBulkRefundError(errorMessage);
+end
+
+----------------------------------------------------------------------------------
+-- CatalogShopRefundFlowProcessingContainerMixin
+----------------------------------------------------------------------------------
+CatalogShopRefundFlowProcessingContainerMixin = {};
+function CatalogShopRefundFlowProcessingContainerMixin:OnLoad()
+	local startingSound = nil;
+	local loopingSound = SOUNDKIT.CATALOG_SHOP_REFUND_PROCESSING_LOOP;
+	local endingSound = nil;
+
+	local loopStartDelay = 0; -- Delay before the looping sound starts
+	local loopEndDelay = 0; -- Delay before the looping sound ends
+	local loopFadeTime = 0; -- Time to fade out the looping sound
+
+	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
+
+function CatalogShopRefundFlowProcessingContainerMixin:OnShow()
+	self.loopingSoundEmitter:StartLoopingSound();
+end
+
+function CatalogShopRefundFlowProcessingContainerMixin:StopLoopingSound()
+	self.loopingSoundEmitter:CancelLoopingSound();
+end
+
+function CatalogShopRefundFlowProcessingContainerMixin:OnHide()
+	self:StopLoopingSound();
 end

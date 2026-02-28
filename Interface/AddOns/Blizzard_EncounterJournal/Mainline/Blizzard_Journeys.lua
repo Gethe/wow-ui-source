@@ -75,7 +75,7 @@ end
 
 function JourneysFrameMixin:Refresh()
 	local dataProvider = CreateDataProvider();
-	local renownIDs = C_MajorFactions.GetMajorFactionIDs(self.expansionFilter);
+	local renownIDs = C_MajorFactions.GetMajorFactionIDs(self.expansionFilter or LE_EXPANSION_LEVEL_CURRENT);
 	self.dataProvider = dataProvider;
 	self.renownJourneyData = {};
 	self.encountersJourneyData = {};
@@ -145,27 +145,28 @@ function JourneysFrameMixin:SetupJourneysList()
 		local currentValue, threshold, rewardQuestID, hasRewardPending, _, paragonStorageLevel = C_Reputation.GetFactionParagonInfo(factionID);
 
 		if rewardQuestID then
-			local itemID = select(6, GetQuestLogRewardInfo(1, rewardQuestID));
+			
+			QuestEventListener:AddCallback(rewardQuestID, function()
+				local itemID = select(6, GetQuestLogRewardInfo(1, rewardQuestID));
+				if itemID then
+					local item = Item:CreateFromItemID(itemID);
+					item:ContinueOnItemLoad(function()
+						local itemName, itemLink, _, _, _, _, _, _, _, itemIcon, _, _, _, _, _, _, _, itemDescription = C_Item.GetItemInfo(itemID);
 
-			if itemID then
-				local item = Item:CreateFromItemID(itemID);
-
-				item:ContinueOnItemLoad(function()
-					local itemName, itemLink, _, _, _, _, _, _, _, itemIcon, _, _, _, _, _, _, _, itemDescription = C_Item.GetItemInfo(itemID);
-
-					button.majorFactionData.paragonInfo = {
-						["value"] = currentValue,
-						["threshold"] = threshold,
-						["level"] = paragonStorageLevel,
-						["rewardInfo"] = {
-							["name"] = itemName,
-							["icon"] = itemIcon,
-							["description"] = itemDescription,
-							["isWarbandItem"] = C_Item.IsItemBindToAccount(itemLink),
-						},
-					};
-				end);
-			end
+						button.majorFactionData.paragonInfo = {
+							["value"] = currentValue,
+							["threshold"] = threshold,
+							["level"] = paragonStorageLevel,
+							["rewardInfo"] = {
+								["name"] = itemName,
+								["icon"] = itemIcon,
+								["description"] = itemDescription,
+								["isWarbandItem"] = C_Item.IsItemBindToAccount(itemLink),
+							},
+						};
+					end);
+				end
+			end);
 		end
 	end
 
@@ -186,7 +187,7 @@ function JourneysFrameMixin:SetupJourneysList()
 
 		if isLocked then
 			button.RenownCardFactionLevel:SetText(MAJOR_FACTION_BUTTON_FACTION_LOCKED);
-		elseif button.majorFactionData.paragonInfo and button.majorFactionData.paragonInfo.level ~= 0 then
+		elseif button.majorFactionData.maxLevel == button.majorFactionData.renownLevel then
 			button.RenownCardFactionLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL);
 		else
 			button.RenownCardFactionLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel));
@@ -221,11 +222,10 @@ function JourneysFrameMixin:SetupJourneysList()
 		button.PushedTexture:SetAtlas(pressedButtonAtlas:format(elementData.textureKit), TextureKitConstants.UseAtlasSize);
 		button:UpdateHighlightForState();
 
+		button.JourneyCardProgressBar:SetShown(not isLocked);
 		if isLocked then
 			button.JourneyCardLevel:SetText(MAJOR_FACTION_BUTTON_FACTION_LOCKED);
-			button.JourneyCardProgressBar:SetMinMaxValues(0, 0);
-			button.JourneyCardProgressBar:SetValue(0);
-		elseif button.majorFactionData.paragonInfo and button.majorFactionData.paragonInfo.level ~= 0 then
+		elseif button.majorFactionData.paragonInfo and button.majorFactionData.maxLevel == button.majorFactionData.renownLevel then
 			local paragonInfo = button.majorFactionData.paragonInfo;
 
 			button.JourneyCardLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL);
@@ -234,7 +234,11 @@ function JourneysFrameMixin:SetupJourneysList()
 		else
 			button.JourneyCardLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel));
 			button.JourneyCardProgressBar:SetMinMaxValues(0, elementData.renownLevelThreshold);
-			button.JourneyCardProgressBar:SetValue(elementData.renownReputationEarned);
+			if elementData.renownLevel == elementData.maxLevel then
+				button.JourneyCardProgressBar:SetValue(elementData.renownLevelThreshold);
+			else
+				button.JourneyCardProgressBar:SetValue(elementData.renownReputationEarned);
+			end
 		end
 	end
 
@@ -273,7 +277,7 @@ function JourneysFrameMixin:ResetView(majorFactionData, majorfactionID)
 		-- Progress shown, looks like we selected something from the navbar or other link. Switch to the new one.
 		NavBar_Reset(EncounterJournal.navBar);
 		self.JourneyProgress.majorFactionData = majorFactionData;
-		self.JourneyProgress:Refresh();
+		self.JourneyProgress:Refresh(true);
 	elseif majorFactionData and self.JourneyOverview:IsShown() then
 		-- Overview shown, looks like we selected something from the navbar or other link. Go to the progress page for selected journey
 		self.JourneyOverview:Hide();
@@ -358,15 +362,8 @@ end
 
 function JourneyProgressFrameMixin:OnShow()
 	EncounterJournal.instanceSelect.ExpansionDropdown:SetShown(false);
-	local buttonData = {
-		id = self.majorFactionData and self.majorFactionData.factionID or 0,
-		name = self.majorFactionData and self.majorFactionData.name or "",
-		listFunc = GetJourneysForNavBar,
-	};
-	NavBar_AddButton(EncounterJournal.navBar, buttonData);
 
-	self:GetLevels();
-	self:Refresh();
+	self:Refresh(true);
 end
 
 function JourneyProgressFrameMixin:OnHide()
@@ -398,7 +395,16 @@ function JourneyProgressFrameMixin:OnMouseWheel(direction)
 	self.track:SetSelection(centerIndex, forceRefresh, skipSound, overrideStopSound);
 end
 
-function JourneyProgressFrameMixin:Refresh()
+function JourneyProgressFrameMixin:Refresh(fromOnShow)
+	if fromOnShow then
+		local buttonData = {
+			id = self.majorFactionData and self.majorFactionData.factionID or 0,
+			name = self.majorFactionData and self.majorFactionData.name or "",
+			listFunc = GetJourneysForNavBar,
+		};
+		NavBar_AddButton(EncounterJournal.navBar, buttonData);
+		self:GetLevels();
+	end
 	if self.majorFactionData.isRenownJourney then
 		self.OverviewBtn:Show();
 	else
@@ -411,7 +417,7 @@ function JourneyProgressFrameMixin:Refresh()
 	if self.majorFactionData.isUnlocked and not C_MajorFactions.IsMajorFactionHiddenFromExpansionPage(self.majorFactionData.factionID) then
 		self:SetupProgressDetails();
 	end
-	local displayLevel = math.min(self.displayLevel + 1, self.maxLevel);
+	local displayLevel = math.min(self.displayLevel + 1, self.majorFactionData.maxLevel);
 	local forceRefresh = true;
 	self:SelectLevel(not self.isLocked and displayLevel or 1, forceRefresh);
 	self.LevelSkipButton:SetShown((self.actualLevel - self.displayLevel) > 3);
@@ -448,7 +454,7 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 	local threshold;
 	local progress;
 
-	if self.majorFactionData.paragonInfo and self.majorFactionData.renownLevel == self.maxLevel  then
+	if self.majorFactionData.paragonInfo and self.majorFactionData.renownLevel == self.majorFactionData.maxLevel  then
 		level = self.majorFactionData.renownLevel + self.majorFactionData.paragonInfo.level;
 		threshold = self.majorFactionData.paragonInfo.threshold;
 		progress = self.majorFactionData.paragonInfo.value - (threshold * self.majorFactionData.paragonInfo.level);
@@ -459,13 +465,19 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 	end
 
 	progressFrame.JourneyLevel:SetText(level);
-	progressFrame.JourneyLevelProgress:SetText(JOURNEYS_CURRENT_PROGRESS:format(progress, threshold));
+	if not self.majorFactionData.paragonInfo and self.actualLevel == self.majorFactionData.maxLevel then
+		progressFrame.JourneyLevelProgress:SetText(JOURNEYS_CURRENT_PROGRESS:format(threshold, threshold));
+	else
+		progressFrame.JourneyLevelProgress:SetText(JOURNEYS_CURRENT_PROGRESS:format(progress, threshold));
+	end
 	
 	if not C_MajorFactions.ShouldUseJourneyRewardTrack(self.majorFactionData.factionID)  then
 		self.DelveRewardProgressBar:Hide();
 	else
-		self.DelveRewardProgressBar:SetMinMaxValues(0, threshold);
-		self.DelveRewardProgressBar:SetValue(progress);
+		local totalMax = threshold * self.majorFactionData.maxLevel;
+		local currentTotal = self.actualLevel * threshold + progress;
+		self.DelveRewardProgressBar:SetMinMaxValues(0, totalMax);
+		self.DelveRewardProgressBar:SetValue(currentTotal);
 		self.DelveRewardProgressBar:Show();
 		local maskTexture = self.track.ClipFrame.Mask;
 		if maskTexture then
@@ -502,7 +514,7 @@ end
 function JourneyProgressFrameMixin:OnLevelEffectFinished()
 	self.levelEffect = nil;
 	self.displayLevel = self.displayLevel + 1;
-	self:Refresh();
+	self:Refresh(false);
 end
 
 function JourneyProgressFrameMixin:PlayLevelEffect()
@@ -545,7 +557,7 @@ end
 
 function JourneyProgressFrameMixin:SetupRewardTrack()
 	self.renownLevelsInfo = C_MajorFactions.GetRenownLevels(self.majorFactionData.factionID);
-	self.maxLevel = self.renownLevelsInfo[#self.renownLevelsInfo].level;
+	self.maxLevel = self.majorFactionData.maxLevel;
 
 	for level, levelInfo in ipairs(self.renownLevelsInfo) do
 		levelInfo.rewardInfo = C_MajorFactions.GetRenownRewardsForLevel(self.majorFactionData.factionID, level);
@@ -933,12 +945,6 @@ function JourneysProgressBarMixin:RefreshBar(majorFactionData)
 	-- Show a full bar if we have max renown
 	local currentValue = C_MajorFactions.HasMaximumRenown(majorFactionData.factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned;
 	local maxValue = majorFactionData.renownLevelThreshold;
-
-	if majorFactionData.paragonInfo and majorFactionData.paragonInfo.level ~= 0 then
-		local paragonInfo = majorFactionData.paragonInfo;
-		currentValue = paragonInfo.value - (paragonInfo.threshold * paragonInfo.level);
-		maxValue = paragonInfo.threshold;
-	end
 
 	if not currentValue or not maxValue or maxValue == 0 then
 		return;

@@ -136,12 +136,12 @@ function PrivateAuraUnitWatcher:Init(unit)
 	self.debuffFramePool = CreateFramePool("FRAME", nil, "PrivateAuraTemplate");
 	self.callback = C_FunctionContainers.CreateCallback(function(updateInfo)
 		if self:HandleUpdateInfo(updateInfo) then
-			self:MarkDirty();
+			local skipParse = true;
+			self:MarkDirty(skipParse);
 		end
 	end);
 	C_UnitAurasPrivate.AddPrivateAuraUpdateCallback(unit, self.callback);
 
-	self:ParseAllAuras();
 	self:MarkDirty();
 end
 
@@ -260,11 +260,20 @@ function PrivateAuraUnitWatcher:UpdateAllAnchors()
 	end
 end
 
-function PrivateAuraUnitWatcher:MarkDirty()
+function PrivateAuraUnitWatcher:MarkDirty(skipParse)
 	if not self.isDirty then
 		self.isDirty = true;
 		C_Timer.After(0, function()
 			self.isDirty = false;
+
+			-- This needs to be done first because the actual unit referenced by the watcher may have changed
+			-- even if the unit token remains the same
+			-- When an actual aura update happens parse isn't required, this is only to handle the case of
+			-- group reorganization.
+			if not skipParse then
+				self:ParseAllAuras();
+			end
+
 			self:UpdateAllAnchors();
 		end);
 	end
@@ -293,12 +302,12 @@ end
 
 local function AddPrivateAnchor(anchor)
 	local unit = anchor.unitToken;
-	if not unitWatchers[unit] then
-		local newWatcher = CreateFromMixins(PrivateAuraUnitWatcher);
-		newWatcher:Init(unit)
-		unitWatchers[unit] = newWatcher;
+	local watcher = unitWatchers[unit];
+	if not watcher then
+		watcher = CreateAndInitFromMixin(PrivateAuraUnitWatcher, unit);
+		unitWatchers[unit] = watcher;
 	end
-	unitWatchers[unit]:AddAnchor(anchor);
+	watcher:AddAnchor(anchor);
 end
 C_UnitAurasPrivate.SetPrivateAuraAnchorAddedCallback(AddPrivateAnchor);
 

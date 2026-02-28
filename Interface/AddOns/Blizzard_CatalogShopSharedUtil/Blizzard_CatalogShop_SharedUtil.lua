@@ -968,15 +968,17 @@ function CatalogShopUtil.CatalogShopTryOn(actor, itemModifiedAppearanceID, allow
 	end
 end
 
-function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isPlayerTransmogScene, tryUseOverrideAnim, isOverrideData)
+function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, productType, tryUseOverrideAnim, isOverrideData)
 	if not actorDisplayData then
 		return;
 	end
 
-	actor:SetSheathed(actorDisplayData.sheatheWeapon, actorDisplayData.hideWeapon);
-	actor:SetAutoDress(actorDisplayData.autoDress);
+	if productType ~= CatalogShopConstants.ProductType.Decor then
+		actor:SetSheathed(actorDisplayData.sheatheWeapon, actorDisplayData.hideWeapon);
+		actor:SetAutoDress(actorDisplayData.autoDress);
+	end
 
-	if isPlayerTransmogScene then
+	if productType == CatalogShopConstants.ProductType.Transmog then
 		--[[  Transmogs have some unique fixups that are required ]]--
 		local hasAlternateForm = false;
 		if not C_Glue.IsOnGlueScreen() then
@@ -1065,7 +1067,6 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	-- APPLY CHANGES TO ACTOR
 	local productType = displayData.productType;
-	local isTransmogScene = false;
 	local actorDisplayBucket = displayData.actorDisplayBucket;
 	local actorDisplayData;
 	local actor;
@@ -1081,7 +1082,6 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	if productType == CatalogShopConstants.ProductType.Transmog then
 		actor = modelScene.CachedPlayerActor;
-		isTransmogScene = true;
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
 		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
@@ -1094,10 +1094,10 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	local overrideActorDiplayData = displayData.overrideActorDisplayBucket and displayData.overrideActorDisplayBucket[1] or nil;
 	if actor then
-		CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isTransmogScene, tryUseOverrideAnim)
+		CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, productType, tryUseOverrideAnim)
 		if overrideActorDiplayData then
 			local isOverrideData = true;
-			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
+			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, productType, tryUseOverrideAnim, isOverrideData)
 		end
 	else
 		if not actorDisplayBucket then
@@ -1106,10 +1106,10 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
 			actor = modelScene:GetActorByTag(actorDisplayDataFromBucket.scriptTag);
 			if actor then
-				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayDataFromBucket, isTransmogScene, tryUseOverrideAnim)
+				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayDataFromBucket, productType, tryUseOverrideAnim)
 				if overrideActorDiplayData then
 					local isOverrideData = true;
-					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
+					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, productType, tryUseOverrideAnim, isOverrideData)
 				end
 			end
 		end

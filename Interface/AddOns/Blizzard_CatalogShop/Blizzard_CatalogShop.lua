@@ -1,4 +1,5 @@
 local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
+local HouseChestAtlasMarkup = CreateAtlasMarkup("house-chest-icon", 16, 16);
 
 ----------------------------------------------------------------------------------
 -- CatalogShopMixin
@@ -877,6 +878,9 @@ function CatalogShopVCFrameMixin:OpenTopUpFlow()
 		if hearthsteelBalance then
 			CatalogShopTopUpFrame:SetCurrentBalance(hearthsteelBalance);
 		end
+		
+		local shouldShowWarning = C_CatalogShop.ShouldShowHousingWarning();
+		CatalogShopTopUpFrame.TopUpProductContainerFrame.HousingWarningText:SetShown(shouldShowWarning);
 
 		CatalogShopTopUpFrame:SetParentFrame(self:GetParent());
 		CatalogShopTopUpFrame:Show();
@@ -912,6 +916,10 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local showVCFrame = selectedProductInfo and selectedProductInfo.isVCProduct;
 	CatalogShopFrame.CatalogShopVCFrame:SetShown(showVCFrame);
 
+	local containsHousingItem = selectedProductInfo.containsHousingItem;
+	local showHousingWarning = containsHousingItem and C_CatalogShop.ShouldShowHousingWarning();
+	self.HousingWarningText:SetShown(showHousingWarning);
+
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(selectedProductInfo.catalogShopProductID);
 	-- update state based on product info
 
@@ -931,6 +939,23 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		self.ProductType:SetText(productTypeStr);
 	else
 		self.ProductType:SetShown(false);
+	end
+
+	if (not not selectedProductInfo.consumableQuantity) then
+		if (selectedProductInfo.isBundle) then
+			self.QuantityOwned:SetShown(selectedProductInfo.consumableQuantity > 0 and (not selectedProductInfo.isFullyOwned));
+			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..CATALOG_SHOP_DECOR_BUNDLE_OWNED);
+			self.QuantityOwned.tooltip = {
+				name = CATALOG_SHOP_DECOR_BUNDLE_OWNED,
+				description = CATALOG_SHOP_DECOR_BUNDLE_OWNED_TOOLTIP,
+			};
+		else
+			self.QuantityOwned:Show();
+			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED, selectedProductInfo.consumableQuantity));
+			self.QuantityOwned.tooltip = nil;
+		end
+	else
+		self.QuantityOwned:Hide();
 	end
 
 	local isBundleChild = selectedProductInfo.isBundleChild;
@@ -1015,4 +1040,18 @@ function BackgroundContainerMixin:SetBackgroundTexture(backgroundAtlas)
 		self.nextBackground:SetAtlas(backgroundAtlas);
 		self.nextFadeIn:Play();
 	end
+end
+
+----------------------------------------------------------------------------------
+-- QuantityOwnedMixin
+----------------------------------------------------------------------------------
+QuantityOwnedMixin = {};
+function QuantityOwnedMixin:OnEnter()
+	if (self:IsShown() and self.tooltip ~= nil) then
+		CatalogShopFrame:ShowTooltip(self, self.tooltip.name, self.tooltip.description);
+	end
+end
+
+function QuantityOwnedMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
 end

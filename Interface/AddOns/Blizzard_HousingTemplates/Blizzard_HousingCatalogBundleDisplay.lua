@@ -20,11 +20,7 @@ function HousingCatalogBundleDisplayMixin:OnEnter()
 		local decorInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorEntry.decorID, tryGetOwnedInfo);
 		if decorInfo then
 			local entryString = HOUSING_BUNDLE_DECOR_ENTRY_FORMAT:format(decorInfo.name, decorEntry.quantity);
-			if index == 1 then
-				decorListString = entryString;
-			else
-				decorListString = decorListString .. ", " .. entryString;
-			end
+			decorListString = decorListString .. "|n- " .. entryString;
 		end
 	end
 

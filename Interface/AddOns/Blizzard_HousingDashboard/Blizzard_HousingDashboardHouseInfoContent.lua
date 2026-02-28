@@ -125,7 +125,9 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 			self.ContentFrame.InitiativesFrame:RefreshTrackedTasks();
 		end
 	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
-		self.ContentFrame:UpdateTabs();
+		if self.tabsInitialized then
+			self.ContentFrame:UpdateTabs();
+		end
 	end
 end
 

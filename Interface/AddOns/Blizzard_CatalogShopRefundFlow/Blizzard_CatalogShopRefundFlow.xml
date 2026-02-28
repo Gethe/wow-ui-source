@@ -140,7 +140,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="ProcessingContainer" frameLevel="2000" hidden="true">
+			<Frame parentKey="ProcessingContainer" mixin="CatalogShopRefundFlowProcessingContainerMixin" frameLevel="2000" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBg" x="0" y="0" />
 					<Anchor point="BOTTOMRIGHT" x="0" y="0" />
@@ -168,6 +168,11 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>
 			</Frame>
 
 			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">

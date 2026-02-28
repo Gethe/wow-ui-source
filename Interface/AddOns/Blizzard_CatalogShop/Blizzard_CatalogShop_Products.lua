@@ -116,7 +116,9 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 
 		-- Retrigger selection behavior because the selected product was incomplete
 		if selectedProductIsUpdating then
+			self.silenceSelectionSounds = true;
 			self:OnProductSelected(foundElementData);
+			self.silenceSelectionSounds = false;
 		end
 	end
 end

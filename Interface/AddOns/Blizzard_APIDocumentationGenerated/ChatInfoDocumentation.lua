@@ -555,6 +555,7 @@ local ChatInfo =
 			Name = "SendChatMessage",
 			Type = "Function",
 			HasRestrictions = true,
+			RestrictedForMacroChatMessages = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

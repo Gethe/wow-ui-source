@@ -75,6 +75,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetDrawBling",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.CooldownStyle },
 
 			Arguments =
 			{
@@ -88,6 +89,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetDrawEdge",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.CooldownStyle },
 
 			Arguments =
 			{
@@ -101,6 +103,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetDrawSwipe",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.CooldownStyle },
 
 			Arguments =
 			{
@@ -317,7 +320,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawBling",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.CooldownStyle },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -327,7 +331,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawEdge",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.CooldownStyle },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -337,7 +342,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawSwipe",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.CooldownStyle },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -347,7 +353,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetEdgeColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.CooldownStyle },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -435,7 +442,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetSwipeColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.CooldownStyle },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

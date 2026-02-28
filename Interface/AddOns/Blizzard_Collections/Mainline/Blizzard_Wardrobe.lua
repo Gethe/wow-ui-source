@@ -1498,10 +1498,15 @@ function WardrobeItemModelMixin:UpdateContentTracking()
 		return;
 	end
 
+	local transmogLocation = itemsCollectionFrame:GetTransmogLocation();
+	if not transmogLocation then
+		return;
+	end
+
 	self:ClearTrackables();
 
-	if not itemsCollectionFrame:GetTransmogLocation():IsIllusion() then
-		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame:GetTransmogLocation());
+	if not transmogLocation:IsIllusion() then
+		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), transmogLocation);
 		for _index, sourceInfo in ipairs(sources) do
 			if sourceInfo.playerCanCollect then
 				self:AddTrackable(Enum.ContentTrackingType.Appearance, sourceInfo.sourceID);
@@ -1535,11 +1540,16 @@ function WardrobeItemModelMixin:GetSourceInfoForTracking()
 		return;
 	end
 
-	if itemsCollectionFrame:GetTransmogLocation():IsIllusion() then
+	local transmogLocation = itemsCollectionFrame:GetTransmogLocation();
+	if not transmogLocation then
+		return;
+	end
+
+	if transmogLocation:IsIllusion() then
 		return nil;
 	else
 		local sourceIndex = itemsCollectionFrame.tooltipSourceIndex or 1;
-		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame:GetTransmogLocation());
+		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), transmogLocation);
 		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(sourceIndex, #sources);
 		return sources[index];
 	end

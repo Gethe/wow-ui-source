@@ -1183,7 +1183,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "hideStatus", Type = "bool", Nilable = true },
 			},
 

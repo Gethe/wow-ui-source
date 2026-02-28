@@ -240,6 +240,7 @@ local MajorFactions =
 				{ Name = "unlockDescription", Type = "cstring", Nilable = true },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },

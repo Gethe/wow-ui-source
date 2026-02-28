@@ -75,6 +75,18 @@ NewSettings["12.0.0"] = {
 
 NewSettings["12.0.1"] = {
 	"enableConnectToPhotoSharing",
+	"NAMEPLATES_LABEL", -- entire section is new
+	"COMBAT_WARNINGS_LABEL", -- entire section is new
+	"DAMAGE_METER_LABEL", -- entire section is new
+	"SPELL_DIMINISH_SECTION_HEADER_LABEL", -- entire section is new
+	"EXTERNAL_DEFENSIVES_LABEL", -- entire section is new
+	"CAA_COMBAT_AUDIO_ALERTS_LABEL", -- entire section is new
+	"chatBubblesRaid",
+	"raidFramesDisplayClassColor",
+	"raidFramesDisplayLargerRoleSpecificDebuffs",
+	"raidFramesCenterBigDefensive",
+	"raidFramesDispelIndicatorType",
+	"raidFramesDispelIndicatorOverlay",
 }
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()

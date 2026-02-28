@@ -124,6 +124,13 @@ function PersonalResourceDisplayMixin:OnShow()
 	self:SetupHealthBar();
 	self:SetupPowerBar();
 	self:SetupAlternatePowerBar();
+
+	-- Refresh max health, current health, and health prediction on show (SetupMaxHealth calls UpdateHealth)
+	-- We might be hiding this frame out of combat which means we're not registered for health updates
+	-- Ex. You take damage while out of combat, then enter combat, or your max health changes because you switched specs
+	-- (Power changes are handled in the OnUpdate)
+	self:SetupMaxHealth();
+	self:UpdateHealthPrediction();
 end
 
 function PersonalResourceDisplayMixin:OnHide()

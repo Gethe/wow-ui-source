@@ -130,15 +130,15 @@
 								<Anchor point="TOPRIGHT" x="-22" y="-22" />
 							</Anchors>
 						</Texture>
-						<Texture parentKey="ConsumableQuantityBackground" atlas="tokens-counterbg-large" hidden="true" >
+						<Texture parentKey="QuantityInBundleBackground" atlas="tokens-counterbg-large" hidden="true" >
 							<Size x="38" y="38" />
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-22" y="-22" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="ConsumableQuantityText" inherits="Game22Font" justifyV="TOP" justifyH="CENTER" hidden="true" >
+						<FontString parentKey="QuantityInBundleText" inherits="GameFontNormalLarge" justifyV="TOP" justifyH="CENTER" hidden="true" >
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.ConsumableQuantityBackground" relativePoint="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.QuantityInBundleBackground" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
 							<Color color="WHITE_FONT_COLOR"/>
 						</FontString>

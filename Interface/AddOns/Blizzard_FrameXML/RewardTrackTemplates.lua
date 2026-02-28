@@ -399,7 +399,7 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	end
 
 	if self.IconBorder then
-		self.IconBorder:SetAtlas(borderAtlas:format(textureKit), TextureKitConstants.UseAtlasSize);
+		self.IconBorder:SetAtlas(borderAtlas:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	if self.LevelRectangle then

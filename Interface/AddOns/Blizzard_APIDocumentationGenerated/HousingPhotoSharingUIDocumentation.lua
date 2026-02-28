@@ -101,6 +101,10 @@ local HousingPhotoSharingUI =
 			Type = "Event",
 			LiteralName = "PHOTO_SHARING_AUTHORIZATION_UPDATED",
 			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "showNotification", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "PhotoSharingPhotoUploadStatus",

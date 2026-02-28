@@ -532,6 +532,15 @@
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.creature" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.creature" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="creature"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<NormalTexture inherits="UI-EJ-BossModelButton"/>
@@ -548,7 +557,7 @@
 			</OnDisable>
 			<OnEnable>
 				self:SetSize(50, 49);
-				self.creature:SetSize(30, 30);
+				self.creature:SetSize(36, 36);
 			</OnEnable>
 			<OnClick>
 				EncounterJournal_DisplayCreature(self);

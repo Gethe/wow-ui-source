@@ -75,6 +75,7 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 				productInfo.isBundleChild = true;
 				productInfo.displayOrder = childInfo.displayOrder;
 				productInfo.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childInfo.childProductID);
+				productInfo.quantityInBundle = childInfo.quantityInBundle;
 				dataProvider:Insert(productInfo);
 			end
 		end

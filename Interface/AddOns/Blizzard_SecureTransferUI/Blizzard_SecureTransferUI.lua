@@ -316,7 +316,9 @@ function SecureTransferDialog_OnShow(self)
 end
 
 function SecureTransferDialog_OnHide(self)
-    SecureTransferOutbound.UpdateSendMailButton();
+	if ( not C_Glue.IsOnGlueScreen() ) then
+		SecureTransferOutbound.UpdateSendMailButton();
+	end
 
 	-- Cleanup spinner if hiding early
 	if (self.waitingForEvents) then

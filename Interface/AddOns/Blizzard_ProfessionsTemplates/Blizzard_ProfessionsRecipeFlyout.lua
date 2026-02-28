@@ -468,13 +468,13 @@ local SelectRecraftMixin = CreateFromMixins(FlyoutBehaviorMixin);
 function SelectRecraftMixin:GetElements(filterAvailable)
 	local itemGUIDs = C_TradeSkillUI.GetRecraftItems(self:GetRecipeID());
 	local items = ItemUtil.TransformItemGUIDsToItems(itemGUIDs);
-	return {items = items, itemGUIDs = itemGUIDs};
+	return {items = items};
 end
 
 function SelectRecraftMixin:PopulateDataProvider(dataProvider, elements)
 	for index, item in ipairs(elements.items) do
 		local elementData = CreateDataProviderItemElement(item);
-		elementData.itemGUID = elements.itemGUIDs[index];
+		elementData.itemGUID = item:GetItemGUID();
 		dataProvider:Insert(elementData);
 	end
 end
@@ -490,7 +490,8 @@ function SelectRecraftMixin:OnElementEnter(elementData, tooltip)
 end
 
 function SelectRecraftMixin:IsElementEnabled(elementData, count)
-	return C_TradeSkillUI.IsOriginalCraftRecipeLearned(elementData.itemGUID);
+	local itemGUID = elementData.itemGUID;
+	return C_TradeSkillUI.IsOriginalCraftRecipeLearned(itemGUID);
 end
 
 function SelectRecraftMixin:CanModifyFilter()
@@ -506,26 +507,17 @@ end
 local SelectEnchantMixin = CreateFromMixins(FlyoutBehaviorMixin);
 
 function SelectEnchantMixin:GetElements(filterAvailable)
-	local includeItems = {};
-	local includeItemGUIDs = {};
-
 	-- GetEnchantItems no longer returns items that would fail level eligibiity requirements.
-	local transaction = self:GetTransaction();
-	local reagentInfos = transaction:CreateCraftingReagentInfoTbl();
-	local enchantItemGUIDs = C_TradeSkillUI.GetEnchantItems(self:GetRecipeID(), reagentInfos);
-	for index, item in ipairs(ItemUtil.TransformItemGUIDsToItems(enchantItemGUIDs)) do
-		table.insert(includeItems, item);
-		table.insert(includeItemGUIDs, enchantItemGUIDs[index]);
-	end
-
-	local elementsData = {items = includeItems, itemGUIDs = includeItemGUIDs};
-	return elementsData;
+	local reagentInfos = self:GetTransaction():CreateCraftingReagentInfoTbl();
+	local itemGUIDs = C_TradeSkillUI.GetEnchantItems(self:GetRecipeID(), reagentInfos);
+	local items = ItemUtil.TransformItemGUIDsToItems(itemGUIDs);
+	return {items = items};
 end
 
 function SelectEnchantMixin:PopulateDataProvider(dataProvider, elements)
 	for index, item in ipairs(elements.items) do
 		local elementData = CreateDataProviderItemElement(item);
-		elementData.itemGUID = elements.itemGUIDs[index];
+		elementData.itemGUID = item:GetItemGUID();
 		dataProvider:Insert(elementData);
 	end
 end
@@ -650,8 +642,7 @@ function MCRFlyoutMixin:GetElements(filterAvailable)
 	local reagents = reagentSlotSchematic.reagents;
 	local currencyReagents = FilterCurrencyReagents(reagents, filterAvailable);
 	local items = Professions.GenerateItemsFromEligibleItemSlots(reagents, filterAvailable);
-	local elementData = {currencyReagents = currencyReagents, items = items};
-	return elementData;
+	return {items = items, currencyReagents = currencyReagents};
 end
 
 function MCRFlyoutMixin:PopulateDataProvider(dataProvider, elements)
@@ -726,14 +717,13 @@ function OrderRecraftFlyoutMixin:GetElements(filterAvailable)
 	local isIndexTable = true;
 	local itemGUIDs = tFilter(C_TradeSkillUI.GetRecraftItems(), Professions.AnyRecraftablePredicate, isIndexTable);
 	local items = ItemUtil.TransformItemGUIDsToItems(itemGUIDs);
-	local elementData = {items = items, itemGUIDs = itemGUIDs};
-	return elementData;
+	return {items = items};
 end
 
 function OrderRecraftFlyoutMixin:PopulateDataProvider(dataProvider, elements)
 	for index, item in ipairs(elements.items) do
 		local elementData = CreateDataProviderItemElement(item);
-		elementData.itemGUID = elements.itemGUIDs[index];
+		elementData.itemGUID = item:GetItemGUID();
 		dataProvider:Insert(elementData);
 	end
 end
@@ -755,8 +745,7 @@ function OrderMCRFlyoutMixin:GetElements(filterAvailable)
 	local reagents = reagentSlotSchematic.reagents;
 	local currencyReagents = FilterCurrencyReagents(reagents, filterAvailable);
 	local items = Professions.GenerateItemsFromEligibleItemSlots(reagents, filterAvailable);
-	local elementData = {currencyReagents = currencyReagents, items = items};
-	return elementData;
+	return {items = items, currencyReagents = currencyReagents};
 end
 
 function OrderMCRFlyoutMixin:PopulateDataProvider(dataProvider, elements)

@@ -162,6 +162,22 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetPlayerCompanionPDEID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "pdeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoleNodeForCompanion",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -190,6 +206,16 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "subTreeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTieredEntrancePDEID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "pdeID", Type = "number", Nilable = false },
 			},
 		},
 		{

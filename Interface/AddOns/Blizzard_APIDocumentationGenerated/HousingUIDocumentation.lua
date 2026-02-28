@@ -258,6 +258,15 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "IsHousingMarketCartFullRemoveEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHousingMarketCartFullRemoveEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHousingMarketEnabled",
 			Type = "Function",
 

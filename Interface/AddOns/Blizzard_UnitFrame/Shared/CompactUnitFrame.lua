@@ -72,6 +72,7 @@ function CompactUnitFrame_OnLoad(self)
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
 	self.maxDispelDebuffs = 0;
+	self.powerBarUsedHeight = 0;
 	CompactUnitFrame_SetOptionTable(self, OPTION_TABLE_NONE);
 	CompactUnitFrame_CreateAuraPriorityTables(self);
 
@@ -2589,12 +2590,12 @@ function DefaultCompactUnitFrameSetup(frame)
 	CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, nil, auraOrganizationType, "DispelOverlay");
 
 	local function ScaleFontString(fontString)
-		local fontName, fontSize, fontFlags = fontString:GetFont();
+		local _fontName, fontSize, _fontFlags = fontString:GetFont();
 		if not fontString.cachedBaseFontSize then
 			fontString.cachedBaseFontSize = fontSize;
 		end
 		local newSize = fontString.cachedBaseFontSize * componentScale;
-		fontString:SetFont(fontName, newSize, fontFlags);
+		fontString:SetFontHeight(newSize);
 		fontString:SetHeight(newSize);
 	end
 

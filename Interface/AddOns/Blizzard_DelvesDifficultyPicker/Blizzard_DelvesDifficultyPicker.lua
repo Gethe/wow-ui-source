@@ -20,11 +20,11 @@ local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
 
 -- Stores the last selected tier. If one hasn't been selected (value: 0), we'll force the player to select one.
 -- If the last selected isn't available, we'll default to the highest unlocked tier.
-local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
+local LAST_TIER_SELECTED_CVAR = "lastSelectedTieredEntranceTier";
 
 -- Stores the highest unlocked delve difficulty tier. Default is 1
 -- If this does not match the actual highest tier, we'll notify the player that they have new, higher tiers available
-local HIGHEST_TIER_UNLOCKED_CVAR = "highestUnlockedDelvesTier";
+local HIGHEST_TIER_UNLOCKED_CVAR = "highestUnlockedTieredEntranceTier";
 
 local TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH = 110;
 local TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH = 130;
@@ -119,7 +119,9 @@ function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
 
 	local options = self:GetOptions();
 	if options then
-		local oldHighestUnlockedTier = GetCVarNumberOrDefault(HIGHEST_TIER_UNLOCKED_CVAR);
+		local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
+		local defaultTier = 0;
+		local oldHighestUnlockedTier = GetCVarTableValue(HIGHEST_TIER_UNLOCKED_CVAR, pdeID, defaultTier);
 		local newHighestUnlockedTier = nil;
 		for tier, optionInfo in ipairs(options) do
 			local tierIsUnlocked = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete;
@@ -139,14 +141,16 @@ function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
 			end
 		end
 		if newHighestUnlockedTier then
-			SetCVar(HIGHEST_TIER_UNLOCKED_CVAR, newHighestUnlockedTier);
+			SetCVarTableValue(HIGHEST_TIER_UNLOCKED_CVAR, pdeID, newHighestUnlockedTier);
 		end
 	end
 end
 
 function DelvesDifficultyPickerFrameMixin:TryShowHelpTip()
 	local selectedOption = self:GetSelectedOption();
-	local lastSelectedTier = GetCVarNumberOrDefault(LAST_TIER_SELECTED_CVAR);
+	local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
+	local defaultTier = 0;
+	local lastSelectedTier = GetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, defaultTier);
 
 	-- If there's no option selected and last selected tier is 0, we're seeing the FTUE and should show the helptip
 	if not selectedOption and lastSelectedTier == 0 then
@@ -215,7 +219,8 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			DelvesDifficultyPickerFrame:SetSelectedOption(option);
 			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
 			DelvesDifficultyPickerFrame:UpdatePortalButtonState();
-			SetCVar(LAST_TIER_SELECTED_CVAR, option.orderIndex + 1); -- order index starts at 0, so we need to offset it.
+			local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
+			SetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, option.orderIndex + 1); -- order index starts at 0, so we need to offset it.
 		end
 
 		local function SetupButton(option, isLocked)
@@ -293,7 +298,9 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 	DelvesDifficultyPickerFrame:SetSelectedOption(nil);
 	local highestUnlockedLevel = nil;
 	local highestUnlockedLevelOptionID = nil;
-	local lastSelectedTier = GetCVarNumberOrDefault(LAST_TIER_SELECTED_CVAR);
+	local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
+	local defaultTier = 0;
+	local lastSelectedTier = GetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, defaultTier);
 
 	if self.gossipOptions then
 		highestUnlockedLevel = self.gossipOptions[1].orderIndex;

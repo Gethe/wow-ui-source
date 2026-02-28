@@ -227,6 +227,14 @@ function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 	self.Currency:SetShown(showCurrency);
 end
 
+function GenericTraitFrameMixin:ShouldInstantiateInvisibleButtons()
+	-- Overrides TalentFrameBaseMixin.
+
+	-- It's important to instantiate invisible buttons that could change visibility.
+	-- Since the GenericTraitFrame covers a lot of trees we should assume that something might change visibility.
+	return true;
+end
+
 function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
 	-- Overrides TalentFrameBaseMixin.
 

@@ -276,6 +276,7 @@ local ItemUpgrade =
 				{ Name = "levelStats", Type = "table", InnerType = "ItemUpgradeStat", Nilable = false },
 				{ Name = "currencyCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
 				{ Name = "itemCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeItemCost", Nilable = false },
+				{ Name = "moneyCost", Type = "WOWMONEY", Nilable = true },
 				{ Name = "failureMessage", Type = "string", Nilable = true },
 			},
 		},
