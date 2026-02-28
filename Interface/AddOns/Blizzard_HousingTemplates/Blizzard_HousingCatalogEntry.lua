@@ -703,19 +703,20 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 			end);
 
-			local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
-			
 			local showDisabledTooltip = function(tooltip, elementDescription)
 				GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
 			end
 
-			destroySingleButtonDesc:SetEnabled(canDestroyEntry);
-			if not canDestroyEntry then
+			destroySingleButtonDesc:SetEnabled(self.entryInfo.destroyableInstanceCount > 0);
+
+			if self.entryInfo.destroyableInstanceCount <= 0 then
 				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
 			end
 
-			if self.entryInfo.quantity > 1 then
-				local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY_ALL, function()
+			local bulkDestroyAmount = 5
+			local canDestroyMultiple = self.entryInfo.destroyableInstanceCount >= bulkDestroyAmount
+			if canDestroyMultiple then
+				local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY .. " (" .. bulkDestroyAmount .. ")", function()
 					local popupData = {
 						destroyAll = true,
 						owner = self,
@@ -724,8 +725,8 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 					local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.quantity, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 					StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 				end);
-				destroyAllButtonDesc:SetEnabled(canDestroyEntry);
-				if not canDestroyEntry then
+				destroyAllButtonDesc:SetEnabled(canDestroyMultiple);
+				if not canDestroyMultiple then
 					destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
 				end
 			end

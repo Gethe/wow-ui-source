@@ -8,22 +8,6 @@ local HousingCatalogUI =
 	Functions =
 	{
 		{
-			Name = "CanDestroyEntry",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns false if the entry can't be deleted from storage; Typically these types of entries are something that doesn't count towards the max storage limit" },
-
-			Arguments =
-			{
-				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canDelete", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CreateCatalogSearcher",
 			Type = "Function",
 			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays" },
@@ -200,6 +184,22 @@ local HousingCatalogUI =
 			{
 				{ Name = "totalOwnedCount", Type = "number", Nilable = false, Documentation = { "The total number of owned decor in storage, including both exempt and non-exempt decor" } },
 				{ Name = "exemptDecorCount", Type = "number", Nilable = false, Documentation = { "The number of decor that do not count against the max storage limit" } },
+			},
+		},
+		{
+			Name = "GetDestroyableInstanceCount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the number of instances that can be to be destroyed in storage; These instances count towards the max storage limit" },
+
+			Arguments =
+			{
+				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "destroyableInstanceCount", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -455,6 +455,7 @@ local HousingCatalogUI =
 				{ Name = "showQuantity", Type = "bool", Nilable = false, Documentation = { "Typically false if quantity isn't used by or meaningful for this particular kind of catalog entry" } },
 				{ Name = "quantity", Type = "number", Nilable = false, Documentation = { "The number of fully instantiated instances of this entry that exist in storage; Does not include unredeemed instances (see remainingRedeemable)" } },
 				{ Name = "remainingRedeemable", Type = "number", Nilable = false, Documentation = { "The number of unredeemed instances of this entry that exist in storage; Some auto-awarded housing objects are granted in this 'lazily-instantiated' way, and will be 'redeemed' on first being placed" } },
+				{ Name = "destroyableInstanceCount", Type = "number", Nilable = false, Documentation = { "The number of instances that can be destroyed for this entry." } },
 				{ Name = "numPlaced", Type = "number", Nilable = false, Documentation = { "The total number of instances of this entry that have been placed across all of the player's houses and plots" } },
 				{ Name = "isUniqueTrophy", Type = "bool", Nilable = false, Documentation = { "This decor is flagged to display as a unique trophy item." } },
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that is allowed to be placed outside, within a plot" } },

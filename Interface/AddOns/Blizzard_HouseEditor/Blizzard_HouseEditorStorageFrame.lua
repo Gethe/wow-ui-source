@@ -334,8 +334,12 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 	categorySearchParams.withOwnedEntriesOnly = false;
 	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();
 	self.Categories:SetCategorySearchParams(categorySearchParams);
-	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
+
+	if isUserAction then
+		self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
+	end
+
 	self.Filters:SetCollectionFiltersAvailable(true);
 	self:CheckStartMarketInteraction();
 	C_HousingDecor.EnterPreviewState();

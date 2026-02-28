@@ -506,6 +506,23 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerIsSpellTarget",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit is the player. Returns false if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerVehicleHasComboPoints",
 			Type = "Function",
 
@@ -2203,24 +2220,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitIsSpellTarget",
-			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit matches the target param. Returns false if the unit is not casting a spell or the spell has no target." },
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "target", Type = "UnitToken", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "UnitIsTapDenied",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -2739,7 +2738,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenNamePlate", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -3342,15 +3341,12 @@ local Unit =
 			Type = "Event",
 			LiteralName = "ARENA_COOLDOWNS_UPDATE",
 			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
-			},
 		},
 		{
 			Name = "ArenaCrowdControlSpellUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			SecretWhenLossOfControlInfoRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3723,6 +3719,7 @@ local Unit =
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			SecretWhenUnitIdentityRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3912,6 +3909,17 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_AREA_CHANGED",
 			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitArenaCooldownsUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_ARENA_COOLDOWNS_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Only signaled when the active player is a commentator or spectator." },
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },

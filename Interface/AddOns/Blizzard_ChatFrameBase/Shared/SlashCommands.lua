@@ -1377,7 +1377,19 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 	if ( not target ) then
 		target = "target";
 	end
-	if ( tonumber(marker) ) then
+
+	-- Prefixing with an "!" will prevent toggling the marker if it's already assigned.
+	if ( string.find(marker, "^!") ) then
+		marker = tonumber(string.match(marker, "%d+"));
+
+		if ( GetRaidTargetIndex(target) == marker ) then
+			return;
+		end
+	else
+		marker = tonumber(marker);
+	end
+
+	if ( marker ) then
 		SetRaidTarget(target, tonumber(marker));	--Using /tm 0 will clear the target marker.
 	end
 end);

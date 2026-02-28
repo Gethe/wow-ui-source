@@ -910,7 +910,7 @@ function CastingBarMixin:GetHighlightWhenCastTarget()
 end
 
 function CastingBarMixin:UpdateHighlightWhenCastTarget()
-	self:SetIsHighlightedCastTarget(self:GetHighlightWhenCastTarget() and UnitIsSpellTarget(self.unit, "player"));
+	self:SetIsHighlightedCastTarget(self:GetHighlightWhenCastTarget() and PlayerIsSpellTarget(self.unit));
 end
 
 function CastingBarMixin:SetIsHighlightedCastTarget(isHighlightedCastTarget)
