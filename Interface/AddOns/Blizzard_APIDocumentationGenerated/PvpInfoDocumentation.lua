@@ -142,6 +142,21 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetArenaCrowdControlDuration",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -1753,10 +1768,10 @@ local PvpInfo =
 				{ Name = "honorableKills", Type = "number", Nilable = false },
 				{ Name = "deaths", Type = "number", Nilable = false },
 				{ Name = "honorGained", Type = "number", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = false },
-				{ Name = "raceName", Type = "string", Nilable = false },
-				{ Name = "className", Type = "string", Nilable = false },
-				{ Name = "classToken", Type = "string", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "raceName", Type = "string", Nilable = false, NeverSecret = true },
+				{ Name = "className", Type = "string", Nilable = false, NeverSecret = true },
+				{ Name = "classToken", Type = "string", Nilable = false, NeverSecret = true },
 				{ Name = "damageDone", Type = "number", Nilable = false },
 				{ Name = "healingDone", Type = "number", Nilable = false },
 				{ Name = "rating", Type = "number", Nilable = false },

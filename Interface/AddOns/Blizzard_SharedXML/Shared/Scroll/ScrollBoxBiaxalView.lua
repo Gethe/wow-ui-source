@@ -142,7 +142,7 @@ do
 		return true;
 	end
 
-	local function CalculateSizes(view, tbl, size)
+	local function CalculateSizes(scrollBox, view, tbl, size)
 		for dataIndex, elementData in view:EnumerateDataProvider() do
 			local frameWidth, frameHeight = view:CalculateFrameSize(dataIndex, elementData);
 			table.insert(tbl, {frameWidth, frameHeight});
@@ -165,12 +165,12 @@ do
 		if size > 0 then
 			if self.elementSizeCalculator then
 				self.calculatedElementSizes = {};
-				extent = CalculateSizes(self, self.calculatedElementSizes, size);
+				extent = CalculateSizes(scrollBox, self, self.calculatedElementSizes, size);
 			elseif self:HasIdenticalElementSize() then 
 				extent = self:GetExtentTo(scrollBox, size);
 			else
 				self.templateSizes = {};
-				extent = CalculateSizes(self, self.templateSizes, size);
+				extent = CalculateSizes(scrollBox, self, self.templateSizes, size);
 			end
 		end
 	

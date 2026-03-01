@@ -180,6 +180,8 @@ function DelvesCompanionConfigurationFrameMixin:OnHide()
     C_PlayerInteractionManager.ClearInteraction();
     FrameUtil.UnregisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
     PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	-- Nuke the companion ID on closure, common pathways will set it on open and DelvesUI accessors will default to the active mirror data companion otherwise
+	DelvesCompanionConfigurationFrame.playerCompanionID = nil;
 end
 
 --[[ Companion Portrait ]]

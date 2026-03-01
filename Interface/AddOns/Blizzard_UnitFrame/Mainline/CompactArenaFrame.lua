@@ -378,7 +378,7 @@ end
 
 function ArenaUnitFrameCcRemoverMixin:OnShow()
 	if self.unitToken then
-		FrameUtil.RegisterFrameForUnitEvents(self, ccRemoverShownEvents, self.unitToken);
+		FrameUtil.RegisterFrameForEvents(self, ccRemoverShownEvents);
 	end
 
 	self:UpdateCooldown();
@@ -418,7 +418,7 @@ function ArenaUnitFrameCcRemoverMixin:SetUnit(unitToken)
 	if self.unitToken then
 		FrameUtil.RegisterFrameForUnitEvents(self, ccRemoverAlwaysEvents, self.unitToken);
 		if self:IsShown() then
-			FrameUtil.RegisterFrameForUnitEvents(self, ccRemoverShownEvents, self.unitToken);
+			FrameUtil.RegisterFrameForEvents(self, ccRemoverShownEvents);
 		end
 	end
 

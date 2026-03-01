@@ -132,7 +132,7 @@ local LossOfControl =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "locType", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "locType", Type = "cstring", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "displayText", Type = "cstring", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = false },

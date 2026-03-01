@@ -131,7 +131,7 @@ function ChatFrameMixin:ConfigEventHandler(event, ...)
 			-- GMOTD may have arrived before this frame registered for the event
 			if ( not self.checkedGMOTD and self:IsEventRegistered("GUILD_MOTD") ) then
 				self.checkedGMOTD = true;
-				ChatFrameUtil.DisplayGMOTD(self, GetGuildRosterMOTD());
+				ChatFrameUtil.DisplayGMOTD(self, C_GuildInfo.GetMOTD());
 			end
 		end
 		return true;

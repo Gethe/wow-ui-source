@@ -1777,11 +1777,11 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-		dialog:GetEditBox():SetText(select(7, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1790,7 +1790,8 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
@@ -1807,12 +1808,11 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		local fullName, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-
-		dialog:GetEditBox():SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1821,7 +1821,8 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
