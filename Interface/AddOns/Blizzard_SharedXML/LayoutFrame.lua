@@ -42,14 +42,14 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 end
 
 function LayoutIndexComparator(left, right)
-	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
-		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
-		local leftVisible = (left.IsVisible and left:IsVisible()) or "novis";
-		local rightVisible = (right.IsVisible and right:IsVisible()) or "novis";
-		local leftShown = (left.IsShown and left:IsShown()) or "noshown";
-		local rightShown = (right.IsShown and right:IsShown()) or "noshown";
-		assertsafe(false, "Duplicate layoutIndex found: %d for %s (vis = %s, shown = %s) and %s (vis = %s, shown = %s)", left.layoutIndex, leftName, tostring(leftVisible), tostring(leftShown), rightName, tostring(rightVisible), tostring(rightShown));
+	if left.layoutIndex == right.layoutIndex and left ~= right then
+		local leftName = not left.GetDebugName and "unnamed" or left:GetDebugName();
+		local rightName = not right.GetDebugName and "unnamed" or right:GetDebugName();
+		local leftVisible = not left.IsVisible and "novis" or left:IsVisible();
+		local rightVisible = not right.IsVisible and "novis" or right:IsVisible();
+		local leftShown = not left.IsShown and "noshown" or left:IsShown();
+		local rightShown = not right.IsShown and "noshown" or right:IsShown();
+		GMError(("Duplicate layoutIndex found: %d for %s (vis = %s, shown = %s) and %s (vis = %s, shown = %s)"):format(left.layoutIndex, tostring(leftName), tostring(leftVisible), tostring(leftShown), tostring(rightName), tostring(rightVisible), tostring(rightShown)));
 	end
 
 	return left.layoutIndex < right.layoutIndex;
