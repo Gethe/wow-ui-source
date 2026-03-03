@@ -346,7 +346,8 @@ end
 --- Landing Page                                                         ---
 ---------------------------------------------------------------------------------
 function IsGarrisonLandingPageFeatured()
-	return ExpansionLandingPageMinimapButton and ExpansionLandingPageMinimapButton:IsInGarrisonMode();
+	local button = ExpansionLandingPageMinimapButton;
+	return button and button:IsShown() and button:IsInGarrisonMode();
 end
 
 function ShowGarrisonLandingPage(garrTypeID)
