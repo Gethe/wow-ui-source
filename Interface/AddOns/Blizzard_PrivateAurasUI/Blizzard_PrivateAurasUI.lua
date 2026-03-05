@@ -13,10 +13,16 @@ function PrivateAuraMixin:OnEnter()
 	PrivateAurasTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 	PrivateAurasTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
 	PrivateAurasTooltip:SetUnitPrivateAura(self.unit, self.auraInfo.auraInstanceID);
+
+	self.needsOnUpdateMouseFocus = true;
+	self:UpdateOnUpdate();
 end
 
 function PrivateAuraMixin:OnLeave()
 	PrivateAurasTooltip:Hide();
+
+	self.needsOnUpdateMouseFocus = false;
+	self:UpdateOnUpdate();
 end
 
 function PrivateAuraMixin:OnUpdate()
@@ -56,16 +62,26 @@ function PrivateAuraMixin:UpdateExpirationTime(auraInfo)
 			timeLeft = timeLeft / auraInfo.timeMod;
 		end
 
-		if not self.timeLeft then
-			self.timeLeft = timeLeft;
-			self:SetScript("OnUpdate", self.OnUpdate);
-		else
-			self.timeLeft = timeLeft;
-		end
+		self.timeLeft = timeLeft;
+		self.needsOnUpdateTimeLeft = true;
 	else
 		self.Duration:Hide();
-		self:SetScript("OnUpdate", nil);
 		self.timeLeft = nil;
+		self.needsOnUpdateTimeLeft = false;
+	end
+
+	self:UpdateOnUpdate();
+end
+
+function PrivateAuraMixin:UpdateOnUpdate()
+	local needsOnUpdate = self.needsOnUpdateMouseFocus or self.needsOnUpdateTimeLeft;
+	if needsOnUpdate ~= self.hasOnUpdate then
+		self.hasOnUpdate = needsOnUpdate;
+		if needsOnUpdate then
+			self:SetScript("OnUpdate", self.OnUpdate);
+		else
+			self:SetScript("OnUpdate", nil);
+		end
 	end
 end
 
