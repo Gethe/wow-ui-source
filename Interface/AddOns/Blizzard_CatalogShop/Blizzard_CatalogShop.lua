@@ -37,9 +37,6 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
-	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
-	-- RNM: Removed becuase this was no longer used in Shop 2.0 
-	-- self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -844,6 +841,7 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local isTokenOnGlues = (C_Glue.IsOnGlueScreen() and displayInfo.productType == CatalogShopConstants.ProductType.Token);
 	local isPurchasable = (not isTokenOnGlues and not selectedProductInfo.isFullyOwned);
 	local shouldShowPendingPurchasesText = isPurchasable and selectedProductInfo.hasPendingOrders;
+	local shouldShowDynamicBundleDiscountText = isPurchasable and (not shouldShowPendingPurchasesText) and selectedProductInfo.isDynamicallyDiscounted;
 
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
@@ -851,9 +849,10 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	-- Adjust for text fields
 	self.ButtonContainer.NoPriceInGlues:SetShown(isTokenOnGlues);
 	self.ButtonContainer.PendingPurchasesText:SetShown(shouldShowPendingPurchasesText);
+	self.ButtonContainer.DynamicBundleDiscountText:SetShown(shouldShowDynamicBundleDiscountText);
 	if isTokenOnGlues then
 		self.ButtonContainer:SetSize(320, 80);
-	elseif shouldShowPendingPurchasesText then
+	elseif shouldShowPendingPurchasesText or shouldShowDynamicBundleDiscountText then
 		self.ButtonContainer:SetSize(320, 60);
 	else
 		self.ButtonContainer:SetSize(320, 50);

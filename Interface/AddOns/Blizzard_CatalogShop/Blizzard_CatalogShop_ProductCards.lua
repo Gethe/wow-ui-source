@@ -235,6 +235,10 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	container.Name:SetText(self.productInfo.name);
 	local isFullyOwned = self.productInfo.isFullyOwned;
 	container.PurchasedIcon:SetShown(isFullyOwned);
+	local discountPercentage = self.productInfo.discountPercentage or 0;
+	container.DiscountSaleTag:SetShown(not isFullyOwned and discountPercentage > 0);
+	container.DiscountAmount:SetShown(not isFullyOwned and discountPercentage > 0);
+	container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
 end
 
 
@@ -271,9 +275,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
 	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
 
-	local isFullyOwned = self.productInfo.isFullyOwned;
-	local discountPercentage = self.productInfo.discountPercentage or 0;
-	if discountPercentage > 0 and not isFullyOwned then
+	if self.productInfo.shouldShowOriginalPrice then
 		local priceElement = container.OriginalPrice;
 		priceElement:ClearAllPoints();
 		priceElement:SetPoint("TOP", container, "BOTTOM", 0, 27);
@@ -297,10 +299,6 @@ function SmallCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetPoint("RIGHT", -15, 0);
 		discountPriceElement:SetText(self.productInfo.price);
 
-		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
-		container.DiscountAmount:Show();
-
-		container.DiscountSaleTag:Show();
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
 		container.Strikethrough:Show();
@@ -316,8 +314,6 @@ function SmallCatalogShopProductCardMixin:Layout()
 		priceElement:SetText(self.productInfo.price);
 		priceElement:Show();
 
-		container.DiscountSaleTag:Hide();
-		container.DiscountAmount:Hide();
 		container.DiscountPrice:Hide();
 		container.OriginalPrice:Hide();
 		container.Strikethrough:Hide();				
@@ -679,9 +675,7 @@ function WideCatalogShopProductCardMixin:Layout()
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
 	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
 
-	local isFullyOwned = self.productInfo.isFullyOwned;
-	local discountPercentage = self.productInfo.discountPercentage or 0;
-	if discountPercentage > 0 and not isFullyOwned then
+	if self.productInfo.shouldShowOriginalPrice then
 		local priceElement = container.OriginalPrice;
 		priceElement:ClearAllPoints();
 		priceElement:SetSize(175, 20);
@@ -705,10 +699,6 @@ function WideCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetJustifyH("LEFT");
 		discountPriceElement:SetText(self.productInfo.price);
 
-		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
-		container.DiscountAmount:Show();
-
-		container.DiscountSaleTag:Show();
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
 		container.Strikethrough:Show();
@@ -725,8 +715,6 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:SetText(self.productInfo.price);
 		priceElement:Show();
 
-		container.DiscountSaleTag:Hide();
-		container.DiscountAmount:Hide();
 		container.DiscountPrice:Hide();
 		container.OriginalPrice:Hide();
 		container.Strikethrough:Hide();				
