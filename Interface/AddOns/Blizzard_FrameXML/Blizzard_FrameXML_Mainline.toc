@@ -49,6 +49,7 @@ Mainline\InstanceAbandon.xml
 CustomizationDebugFrame.xml
 Mainline\RaidWarning.xml
 Shared\CinematicFrame.lua
+Mainline\CinematicFrameButton.xml
 Shared\CinematicFrame.xml
 Mainline\ColorPickerFrame.lua
 Mainline\ColorPickerFrame.xml

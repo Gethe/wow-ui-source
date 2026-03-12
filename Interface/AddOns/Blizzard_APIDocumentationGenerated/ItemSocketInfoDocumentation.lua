@@ -271,6 +271,9 @@ local ItemSocketInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ItemSocketInfo);

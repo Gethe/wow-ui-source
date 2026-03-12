@@ -30,7 +30,7 @@ local QuestInfoSystem =
 
 			Arguments =
 			{
-				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "clampFavorToCycleCap", Type = "bool", Nilable = true },
 			},
 
@@ -139,6 +139,9 @@ local QuestInfoSystem =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

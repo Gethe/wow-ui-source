@@ -160,17 +160,6 @@ function MoneyFrame_SetDisplayForced(frame, forceShow)
 	frame.forceShow = forceShow;
 end
 
-local function GetMoneyFrame(frameOrName)
-	local argType = type(frameOrName);
-	if argType == "table" then
-		return frameOrName;
-	elseif argType == "string" then
-		return _G[frameOrName];
-	end
-
-	return nil;
-end
-
 local function MoneyFrame_MarkIconsDirty(frame)
 	frame.moneyIconsDirty = true;
 end

@@ -704,7 +704,7 @@ function ScrollingMessageFrameMixin:AcquireFontString()
 end
 
 function ScrollingMessageFrameMixin:InitializeFontString(fontString)
-	fontString:SetToDefaults();
+	fontString:ClearText();
 	fontString:SetFontObject(self:GetFontObject());
 	fontString:SetNonSpaceWrap(true);
 end

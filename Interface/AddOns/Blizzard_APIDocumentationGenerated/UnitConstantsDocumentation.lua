@@ -66,6 +66,9 @@ local UnitConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitConstants);

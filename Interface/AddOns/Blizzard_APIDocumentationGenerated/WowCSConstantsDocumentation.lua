@@ -5,7 +5,7 @@ local WowCSConstants =
 		{
 			Name = "FragmentID",
 			Type = "Enumeration",
-			NumValues = 72,
+			NumValues = 73,
 			MinValue = 0,
 			MaxValue = 255,
 			Fields =
@@ -76,6 +76,7 @@ local WowCSConstants =
 				{ Name = "TagHousingPoolObject", Type = "FragmentID", EnumValue = 223 },
 				{ Name = "TagHouseExteriorPiece", Type = "FragmentID", EnumValue = 224 },
 				{ Name = "TagHouseExteriorRoot", Type = "FragmentID", EnumValue = 225 },
+				{ Name = "TagHousingDecorProxyGameObject", Type = "FragmentID", EnumValue = 226 },
 				{ Name = "TestFragment_1", Type = "FragmentID", EnumValue = 250 },
 				{ Name = "TestFragment_2", Type = "FragmentID", EnumValue = 251 },
 				{ Name = "TestFragment_3", Type = "FragmentID", EnumValue = 252 },
@@ -84,6 +85,9 @@ local WowCSConstants =
 				{ Name = "ReservedArchetypeSeparator", Type = "FragmentID", EnumValue = 255 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

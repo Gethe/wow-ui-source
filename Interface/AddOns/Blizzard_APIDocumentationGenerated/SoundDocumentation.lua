@@ -125,6 +125,9 @@ local Sound =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Sound);

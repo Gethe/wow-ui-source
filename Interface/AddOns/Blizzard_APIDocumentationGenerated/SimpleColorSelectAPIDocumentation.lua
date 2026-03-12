@@ -238,6 +238,9 @@ local SimpleColorSelectAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleColorSelectAPI);

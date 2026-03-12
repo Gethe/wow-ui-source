@@ -173,6 +173,9 @@ local LuaColorCurveObjectAPI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LuaColorCurveObjectAPI);

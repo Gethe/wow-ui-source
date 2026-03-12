@@ -137,7 +137,7 @@ local ActionBarFrame =
 			Name = "GetActionCharges",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -154,7 +154,7 @@ local ActionBarFrame =
 			Name = "GetActionCooldown",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -188,7 +188,7 @@ local ActionBarFrame =
 			Name = "GetActionDisplayCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Depending on the action type, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
 
@@ -208,7 +208,7 @@ local ActionBarFrame =
 			Name = "GetActionLossOfControlCooldown",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -276,7 +276,7 @@ local ActionBarFrame =
 			Name = "GetActionUseCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1062,6 +1062,9 @@ local ActionBarFrame =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

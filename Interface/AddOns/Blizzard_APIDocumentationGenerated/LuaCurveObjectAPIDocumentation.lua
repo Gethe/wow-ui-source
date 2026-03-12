@@ -144,6 +144,9 @@ local LuaCurveObjectAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LuaCurveObjectAPI);

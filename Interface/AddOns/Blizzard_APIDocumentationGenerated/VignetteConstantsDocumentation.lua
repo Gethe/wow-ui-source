@@ -31,6 +31,9 @@ local VignetteConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(VignetteConstants);

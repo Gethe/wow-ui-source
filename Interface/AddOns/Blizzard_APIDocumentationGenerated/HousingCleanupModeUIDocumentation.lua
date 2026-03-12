@@ -41,6 +41,7 @@ local HousingCleanupModeUI =
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
+				{ Name = "targetType", Type = "HousingCleanupModeTargetType", Nilable = false },
 			},
 		},
 		{
@@ -52,6 +53,22 @@ local HousingCleanupModeUI =
 	},
 
 	Tables =
+	{
+		{
+			Name = "HousingCleanupModeTargetType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "HousingCleanupModeTargetType", EnumValue = 0 },
+				{ Name = "Decor", Type = "HousingCleanupModeTargetType", EnumValue = 1 },
+				{ Name = "HouseExterior", Type = "HousingCleanupModeTargetType", EnumValue = 2 },
+			},
+		},
+	},
+	Predicates =
 	{
 	},
 };

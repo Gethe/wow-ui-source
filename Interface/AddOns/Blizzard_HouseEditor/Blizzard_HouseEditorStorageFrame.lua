@@ -116,7 +116,8 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	self.catalogSearcher = C_HousingCatalog.CreateCatalogSearcher();
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
-	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetStoredOnly(true);
+	self.catalogSearcher:SetBaseVariantOnly(false);
 
 	local editorMode = C_HouseEditor.GetActiveHouseEditorMode();
 	self.catalogSearcher:SetEditorModeContext(editorMode);
@@ -140,9 +141,12 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	--add a dialog confirming that you want to switch tabs, as doing so will delete your preview decor.
 	self.TabSystem:SetTabSelectedCallback(function(tabID, isUserAction)
 		if tabID == self.storageTabID and C_HousingDecor.GetNumPreviewDecor() > 0 then
-			StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
-				self:SetTab(tabID, isUserAction);
-			end);
+			if not StaticPopup_Visible("CONFIRM_DESTROY_PREVIEW_DECOR") then
+				StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+					self:SetTab(tabID, isUserAction);
+				end);
+			end
+
 			return true; --stops the tab from being selected, for now.
 		else
 			return self:SetTab(tabID, isUserAction);
@@ -164,8 +168,8 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 	if event == "HOUSING_STORAGE_UPDATED" and self.catalogSearcher then
 		self.catalogSearcher:RunSearch();
 	elseif event == "HOUSING_STORAGE_ENTRY_UPDATED" then
-		local entryID = ...;
-		self:OnCatalogEntryUpdated(entryID);
+		local entryVariantID = ...;
+		self:OnCatalogEntryUpdated(entryVariantID);
 	elseif event == "HOUSE_EDITOR_MODE_CHANGED" then
 		local newMode = ...;
 		self:UpdateEditorMode(newMode);
@@ -298,6 +302,7 @@ function HouseEditorStorageFrameMixin:OnEntryResultsUpdated()
 end
 
 function HouseEditorStorageFrameMixin:OnTabChanged()
+	self:RestoreFilterAndFocusState();
 	self:UpdateMarketTabNotification();
 	self:UpdateCategoryText();
 	self:UpdateCategoryTotal();
@@ -305,8 +310,42 @@ function HouseEditorStorageFrameMixin:OnTabChanged()
 	EventRegistry:TriggerEvent("HouseEditorStorage.TabChanged");
 end
 
+function HouseEditorStorageFrameMixin:GetCurrentSavedStateKey()
+	return self:GetTab();
+end
+
+function HouseEditorStorageFrameMixin:GetDefaultFocusedCategoryID()
+	if self:IsInMarketTab() then
+		return Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID;
+	end
+
+	return Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID;
+end
+
+function HouseEditorStorageFrameMixin:SetSavedStateKey(key)
+	self.Filters:SetSavedStateKey(key);
+	self.Categories:SetSavedStateKey(key);
+end
+
+function HouseEditorStorageFrameMixin:ClearSavedStateKey()
+	self:SetSavedStateKey(nil);
+end
+
+function HouseEditorStorageFrameMixin:RestoreFilterAndFocusState()
+	local key = self:GetCurrentSavedStateKey();
+	self:SetSavedStateKey(key);
+
+	if self.customCatalogData then
+		return;
+	end
+
+	self.Categories:RestoreFocusState(key, self:GetDefaultFocusedCategoryID());
+	self.Filters:RestoreFilterState(key);
+end
+
 function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
-	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetStoredOnly(true);
+	self.catalogSearcher:SetBaseVariantOnly(false);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = true;
 	categorySearchParams.includeFeaturedCategory = false;
@@ -316,10 +355,6 @@ function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.Filters:SetCollectionFiltersAvailable(false);
 	C_HousingDecor.ExitPreviewState();
 	self:OnTabChanged();
-
-	local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-	local requiresConfirmation = false;
-	EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
@@ -327,18 +362,18 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 		PlaySound(SOUNDKIT.HOUSING_MARKET_ENTER_CATALOG);
 	end
 
-	self.catalogSearcher:SetOwnedOnly(false);
+	self.catalogSearcher:SetStoredOnly(false);
+	self.catalogSearcher:SetBaseVariantOnly(true);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
 	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();
 	self.Categories:SetCategorySearchParams(categorySearchParams);
-	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
 	self.Filters:SetCollectionFiltersAvailable(true);
 	self:CheckStartMarketInteraction();
 	C_HousingDecor.EnterPreviewState();
-	self:OnTabChanged();
 
+	self:OnTabChanged();
 	SetCartFrameShown(self:ShouldShowMarketShop());
 end
 
@@ -457,9 +492,9 @@ function HouseEditorStorageFrameMixin:HasUnseenDecor()
 		else
 			local entries = self.catalogSearcher:GetAllSearchItems();
 			local decorIDs = {};
-			for _i, entryID in ipairs(entries) do
-				if entryID.entryType == Enum.HousingCatalogEntryType.Decor then
-					table.insert(decorIDs, entryID.recordID);
+			for _i, entryVariantID in ipairs(entries) do
+				if entryVariantID.entryType == Enum.HousingCatalogEntryType.Decor then
+					table.insert(decorIDs, entryVariantID.recordID);
 				end
 			end
 
@@ -477,7 +512,7 @@ function HouseEditorStorageFrameMixin:CheckShowMarketAllCategoryNotification()
 end
 
 function HouseEditorStorageFrameMixin:ShouldShowMarketTabNotification()
-	if self:IsInMarketTab() or self.TabSystem:IsTabEnabled(self.marketTabID) then
+	if self:IsInMarketTab() then
 		return false;
 	end
 
@@ -516,8 +551,8 @@ function HouseEditorStorageFrameMixin:GetAvailableProductIDs()
 		table.insert(availableProductIDs, bundleEntry.productID);
 	end
 
-	for _i, decorEntry in ipairs(C_HousingCatalog.GetFeaturedDecor()) do
-		table.insert(availableProductIDs, decorEntry.productID);
+	for _i, smallProductInfo in ipairs(C_HousingCatalog.GetFeaturedSmallProducts()) do
+		table.insert(availableProductIDs, smallProductInfo.productID);
 	end
 
 	return availableProductIDs;
@@ -554,8 +589,8 @@ function HouseEditorStorageFrameMixin:UpdateCatalogData()
 	if self.Categories:IsFeaturedCategoryFocused() then
 		if self.hasMarketData then
 			local entries = C_HousingCatalog.GetFeaturedBundles();
-			for _i, decorEntry in ipairs(C_HousingCatalog.GetFeaturedDecor()) do
-				table.insert(entries, decorEntry.entryID);
+			for _i, smallProductInfo in ipairs(C_HousingCatalog.GetFeaturedSmallProducts()) do
+				table.insert(entries, smallProductInfo);
 			end
 
 			local retainCurrentPosition = true;
@@ -572,14 +607,15 @@ function HouseEditorStorageFrameMixin:UpdateCatalogData()
 		if self:IsInMarketTab() then
 			if self.Categories:IsAllCategoryFocused() then
 				local decorIDs = {};
-				for _i, entryID in ipairs(entries) do
-					if entryID.entryType == Enum.HousingCatalogEntryType.Decor then
-						table.insert(decorIDs, entryID.recordID);
+				for _i, entryVariantID in ipairs(entries) do
+					if entryVariantID.entryType == Enum.HousingCatalogEntryType.Decor then
+						table.insert(decorIDs, entryVariantID.recordID);
 					end
 				end
 
+				-- Note: if we have filters set this may or may not be all the decor in the market catalog.
 				SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenHousingMarketDecorIDs, decorIDs);
-				self.hasUnseenDecor = false;
+				self.checkedNumSearchItems = nil;
 			end
 		end
 	end
@@ -615,6 +651,9 @@ function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
 		return;
 	end
 
+	-- Avoid saving any focus or filter changes from changing modes.
+	self:ClearSavedStateKey();
+
 	if newEditorMode ~= self.catalogSearcher:GetEditorModeContext() then
 		self.catalogSearcher:SetEditorModeContext(newEditorMode);
 		local categorySearchParams = self.Categories:GetCategorySearchParams();
@@ -624,16 +663,12 @@ function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
 
 	if self.lastEditorMode ~= newEditorMode then
 		if newEditorMode == Enum.HouseEditorMode.Layout then
-			self.savedSortType = self.catalogSearcher:GetSortType();
-			self.catalogSearcher:SetSortType(Enum.HousingCatalogSortType.Alphabetical);
 			self.Filters:ResetFiltersToDefault();
+			self.catalogSearcher:SetSortType(Enum.HousingCatalogSortType.Alphabetical);
 			self.Filters:SetEnabled(false);
 			self:ClearSearchText();
 		else
-			self.catalogSearcher:SetSortType(self.savedSortType or Enum.HousingCatalogSortType.DateAdded);
-
 			if self.lastEditorMode == Enum.HouseEditorMode.Layout then
-				self.Filters:SetEnabled(true);
 				self:ClearSearchText();
 			end
 		end
@@ -641,6 +676,11 @@ function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
 		self:UpdateMarketTabVisibility();
 
 		self.lastEditorMode = newEditorMode;
+	end
+
+	if newEditorMode == Enum.HouseEditorMode.BasicDecor then
+		self:RestoreFilterAndFocusState();
+		self.Filters:SetEnabled(true);
 	end
 
 	self:UpdateCategoryTotal();
@@ -686,10 +726,10 @@ function HouseEditorStorageFrameMixin:UpdateCategoryTotal()
 	end
 end
 
-function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryID)
-	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
+function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryVariantID)
+	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryVariantID);
 
-	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
+	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryVariantID);
 	
 	-- If option was added or removed entirely, reset our options list
 	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
@@ -698,7 +738,7 @@ function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryID)
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data
-	if entryInfo and optionFrame then
+	if entryInfo and optionFrame and optionFrame.UpdateEntryData then
 		optionFrame:UpdateEntryData();
 	end
 end
@@ -757,7 +797,7 @@ function HouseEditorStorageFrameMixin:OnCategoryFocusChanged(focusedCategoryID, 
 	self.customCatalogData = nil;
 
 	local isFeaturedCategory = (focusedCategoryID == Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
-	self.Filters:SetEnabled(not isFeaturedCategory);
+	self.Filters:SetEnabled(not isFeaturedCategory and (C_HouseEditor.GetActiveHouseEditorMode() ~= Enum.HouseEditorMode.Layout));
 	if isFeaturedCategory then
 		-- Force a minimum width to fit bundles.
 		self:SetWidth(FIXED_BUNDLE_WIDTH);

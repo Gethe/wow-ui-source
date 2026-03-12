@@ -122,7 +122,7 @@ function CombatTextMixin:OnEvent(event, ...)
 	-- See if we should display the message or not
 	if ( not info.show ) then
 		-- When Resists aren't being shown, partial resists should display as Damage
-		if (info.cvar == "floatingCombatTextDamageReduction" and arg3) then
+		if (info.cvar == "floatingCombatTextDamageReduction_v2" and arg3) then
 			if ( strsub(messageType, 1, 5) == "SPELL" ) then
 				messageType = arg4 and "SPELL_DAMAGE_CRIT" or "SPELL_DAMAGE";
 			else
@@ -156,27 +156,27 @@ function CombatTextMixin:OnEvent(event, ...)
 	elseif ( messageType == "SPELL_AURA_END" or messageType == "SPELL_AURA_END_HARMFUL" ) then
 		message = format(AURA_END, data);
 	elseif ( messageType == "HEAL" or messageType == "PERIODIC_HEAL") then
-		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and messageType == "HEAL" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers_v2") and messageType == "HEAL" and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3);
 		end
 	elseif ( messageType == "HEAL_ABSORB" or messageType == "PERIODIC_HEAL_ABSORB") then
-		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and messageType == "HEAL_ABSORB" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers_v2") and messageType == "HEAL_ABSORB" and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."] "..format(ABSORB_TRAILER, arg4);
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
 		end
 	elseif ( messageType == "HEAL_CRIT" or messageType == "PERIODIC_HEAL_CRIT" ) then
 		displayType = "crit";
-		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers_v2") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3);
 		end
 	elseif ( messageType == "HEAL_CRIT_ABSORB" ) then
 		displayType = "crit";
-		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers_v2") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."] "..format(ABSORB_TRAILER, arg4);
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
@@ -274,7 +274,7 @@ function CombatTextMixin:OnEvent(event, ...)
 			message = nil;
 		end
 	elseif (messageType == "ABSORB_ADDED") then
-		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers_v2") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")".." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
@@ -492,7 +492,7 @@ function CombatTextMixin:UpdateDisplayedMessages()
 		end
 	end
 	-- Update scrolldirection
-	local textFloatMode = CVarCallbackRegistry:GetCVarValue("floatingCombatTextFloatMode");
+	local textFloatMode = CVarCallbackRegistry:GetCVarValue("floatingCombatTextFloatMode_v2");
 	if ( textFloatMode == "1" ) then
 		self.scrollFunction = CombatTextUtil.StandardScroll;
 		self.textLocations = {

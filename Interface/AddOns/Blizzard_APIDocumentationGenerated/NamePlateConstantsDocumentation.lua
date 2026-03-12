@@ -160,6 +160,9 @@ local NamePlateConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(NamePlateConstants);

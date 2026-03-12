@@ -40,6 +40,9 @@ local SimpleAnimTextureCoordTranslationAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimTextureCoordTranslationAPI);

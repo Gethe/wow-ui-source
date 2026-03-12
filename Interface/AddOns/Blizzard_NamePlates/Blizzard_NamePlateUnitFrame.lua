@@ -5,6 +5,7 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_FRIENDLY_NPCS_CVAR)
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.THREAT_DISPLAY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.DEBUFF_PADDING_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR);
+CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR);
 
 local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
 
@@ -130,6 +131,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.THREAT_DISPLAY_CVAR, self.UpdateThreatDisplay, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self.UpdateAnchors, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self.UpdateShowOnlyName, self);
+	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self.UpdateNameClassColor, self);
 
 	self:RegisterUnitEvent("UNIT_AURA", self.unit);
 	self:RegisterUnitEvent("UNIT_FACTION", self.unit);
@@ -153,6 +155,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	self:UpdateBehindCamera();
 	self:UpdateWidgetsOnlyMode();
 	self:UpdateShowOnlyName();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetActive(not C_Commentator.IsSpectating());
 	self.AurasFrame:SetUnit(self.unit);
@@ -171,6 +174,7 @@ function NamePlateUnitFrameMixin:OnUnitCleared()
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.THREAT_DISPLAY_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self);
+	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self);
 
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("UNIT_FACTION");
@@ -270,6 +274,7 @@ function NamePlateUnitFrameMixin:UpdateIsPlayer()
 	self.isPlayer = isPlayer;
 
 	self:UpdateShowOnlyName();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsPlayer(self.isPlayer);
 	self.HealthBarsContainer.healthBar:SetIsPlayer(self.isPlayer);
@@ -308,6 +313,7 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 	self:UpdateShowOnlyName();
 	self:UpdateIsSimplified();
 	self:UpdateRaidTarget();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
 end
@@ -319,7 +325,10 @@ end
 function NamePlateUnitFrameMixin:UpdateIsDead()
 	local isDead = false;
 
-	if self.unit ~= nil then
+	-- Allow special cases (e.g. the Options Preview Nameplate) to control whether the nameplate is displaying for a dead unit.
+	if self.explicitIsDead ~= nil then
+		isDead = self.explicitIsDead;
+	elseif self.unit ~= nil then
 		isDead = UnitIsDead(self.unit);
 	end
 
@@ -598,6 +607,22 @@ function NamePlateUnitFrameMixin:UpdateShowOnlyName()
 	self:UpdateAnchors();
 end
 
+function NamePlateUnitFrameMixin:UpdateNameClassColor()
+	local colorNameWithClassColor = false;
+
+	if self:IsFriend() and self:IsPlayer() and CVarCallbackRegistry:GetCVarValueBool(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR) then
+		colorNameWithClassColor = true;
+	end
+
+	if self.colorNameWithClassColor == colorNameWithClassColor then
+		return;
+	end
+
+	self.colorNameWithClassColor = colorNameWithClassColor;
+
+	CompactUnitFrame_UpdateName(self);
+end
+
 function NamePlateUnitFrameMixin:UpdateThreatDisplay()
 	if self:IsFriend() == false then
 		self.displayAggroFlash = CVarCallbackRegistry:GetCVarBitfieldIndex(NamePlateConstants.THREAT_DISPLAY_CVAR, Enum.NamePlateThreatDisplay.Flash);
@@ -656,6 +681,16 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		-- don't display at the same time. Only interruptable spells display the spell icon.
 		PixelUtil.SetSize(self.castBar.BorderShield, setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
 		PixelUtil.SetPoint(self.castBar.BorderShield, "RIGHT", self.castBar.Icon, "RIGHT", 0, 0);
+
+		-- The smallest nameplates need slightly different anchoring to look correct when everything is so scaled down.
+		local namePlateSize = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.SIZE_CVAR);
+		if namePlateSize < 2 then
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "TOPLEFT", self.castBar, "TOPLEFT", -20, 3);
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "BOTTOMRIGHT", self.castBar, "BOTTOMRIGHT", 20, -3);
+		else
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "TOPLEFT", self.castBar, "TOPLEFT", -26, 3);
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "BOTTOMRIGHT", self.castBar, "BOTTOMRIGHT", 25, -3);
+		end
 	end
 
 	-- Health Bar
@@ -708,23 +743,23 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 
 		PixelUtil.SetHeight(self.name, self.name:GetLineHeight());
 
-		if not customOptions or not customOptions.ignoreOverAbsorbGlow then
-			self.overAbsorbGlow:ClearAllPoints();
-			PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
-			PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
-			PixelUtil.SetHeight(self.overAbsorbGlow, 8);
-		end
+		self.overAbsorbGlow:ClearAllPoints();
+		PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
+		PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
+		PixelUtil.SetHeight(self.overAbsorbGlow, 8);
 
-		if not customOptions or not customOptions.ignoreOverHealAbsorbGlow then
-			self.overHealAbsorbGlow:ClearAllPoints();
-			PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
-			PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
-			PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
-		end
+		self.overHealAbsorbGlow:ClearAllPoints();
+		PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
+		PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
+		PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
 
 		local bgTexture = healthBar.bgTexture;
 		PixelUtil.SetPoint(bgTexture, "TOPLEFT", healthBar, "TOPLEFT", -2, 3);
-		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 5, -6);
+		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 6, -6);
+
+		local selectedBorder = healthBar.selectedBorder;
+		PixelUtil.SetPoint(selectedBorder, "TOPLEFT", bgTexture, "TOPLEFT", -1, 1);
+		PixelUtil.SetPoint(selectedBorder, "BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", -3, 3);
 	end
 
 	-- Auras Frame
@@ -737,6 +772,17 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 			PixelUtil.SetPoint(self.AurasFrame.DebuffListFrame, "BOTTOM", self.name, "TOP", 0, debuffPadding);
 		end
 	end
+
+	-- Raid Target Frame
+	do
+		self.RaidTargetFrame:ClearAllPoints();
+
+		if self:IsShowOnlyName() then
+			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.name, "TOP", 0, 10);
+		else
+			PixelUtil.SetPoint(self.RaidTargetFrame, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
+		end
+	end
 end
 
 function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
@@ -746,11 +792,13 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 	self.explicitIsMinusMob = explicitValues.isMinusMob;
 	self.explicitThreatSituation = explicitValues.threatSituation;
 	self.explicitAggroFlash = explicitValues.aggroFlash;
+	self.explicitIsDead = explicitValues.isDead;
 
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsSimplified();
 	self:UpdateNameOverride();
+	self:UpdateIsDead();
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);

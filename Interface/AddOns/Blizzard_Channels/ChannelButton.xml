@@ -33,7 +33,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="ChannelButtonHeaderTemplate" mixin="ChannelButtonHeaderMixin" inherits="ChannelButtonBaseTemplate" virtual="true">
+	<Button name="ChannelButtonHeaderTemplate" mixin="ChannelButtonHeaderMixin" inherits="ChannelButtonBaseTemplate" ignoreChildrenForBounds="true" virtual="true">
 		<Size x="173" y="20"/>
 		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-category-background"/>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
@@ -48,7 +48,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="ChannelButtonTemplate" mixin="ChannelButtonMixin" inherits="ChannelButtonBaseTemplate" virtual="true">
+	<Button name="ChannelButtonTemplate" mixin="ChannelButtonMixin" inherits="ChannelButtonBaseTemplate" ignoreChildrenForBounds="true" virtual="true">
 		<Frames>
 			<Frame parentKey="Speaker" inherits="VoiceChatHeadsetTemplate">
 				<Size x="54" y="27"/>

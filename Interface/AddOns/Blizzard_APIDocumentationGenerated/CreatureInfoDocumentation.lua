@@ -172,6 +172,9 @@ local CreatureInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CreatureInfo);

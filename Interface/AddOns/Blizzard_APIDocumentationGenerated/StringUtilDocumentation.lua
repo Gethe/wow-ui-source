@@ -8,6 +8,36 @@ local StringUtil =
 	Functions =
 	{
 		{
+			Name = "CreateAbbreviatedNumberFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers to abbreviated strings, eg. 123456 -> '123k'." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "AbbreviatedNumberFormatter", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateNumericRuleFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers to strings with flexible rulesets." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "NumericRuleFormatter", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateSecondsFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers measuring durations in seconds to strings, eg. 93 -> '1m 33s'." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "SecondsFormatter", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaFormatString",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -114,6 +144,22 @@ local StringUtil =
 				{ Name = "maintainBrackets", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all '[' and ']' characters." } },
 				{ Name = "stripNewlines", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, remove all '|n' quoted code sequences." } },
 				{ Name = "maintainAtlases", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|A' and '|a' quoted code sequences." } },
+				{ Name = "maintainTextures", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|T' and '|t' quoted code sequences." } },
+			},
+
+			Returns =
+			{
+				{ Name = "stripped", Type = "stringView", Nilable = false },
+			},
+		},
+		{
+			Name = "StripTextureMarkupForLooseFiles",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 
 			Returns =
@@ -190,8 +236,12 @@ local StringUtil =
 				{ Name = "maintainBrackets", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all '[' and ']' characters." } },
 				{ Name = "stripNewlines", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, remove all '|n' quoted code sequences." } },
 				{ Name = "maintainAtlases", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|A' and '|a' quoted code sequences." } },
+				{ Name = "maintainTextures", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|T' and '|t' quoted code sequences." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

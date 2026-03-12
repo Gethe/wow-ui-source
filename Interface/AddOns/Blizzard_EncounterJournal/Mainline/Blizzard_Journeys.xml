@@ -139,7 +139,13 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="JourneyCardProgressBarBG" atlas="ui-journeys-renown-progressbar-BG" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="JourneyCardProgressBarFrame" atlas="ui-journeys-renown-progressbar-frame" useAtlasSize="true">
+							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
@@ -157,7 +163,7 @@
 						<Anchor point="TOPLEFT" x="25" y="-25"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="JourneyCardLevel" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="JourneyCardLevel" inherits="GameFontNormalMed2" justifyH="LEFT" justifyV="TOP">
 					<Size x="150" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.JourneyCardName" x="0"/>
@@ -260,10 +266,11 @@
 
 	<!-- Progress Reward Card -->
 	<Frame name="JourneyProgressRewardCardTemplate" virtual="true">
-		<Size x="310" y="85"/>
+		<Size x="317" y="106"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-card" useAtlasSize="true" setAllPoints="true"/>
+				<Texture parentKey="RewardCardBGGlow" atlas="ui-journeys-delve-card-glow" useAtlasSize="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="RewardCardIcon">
@@ -290,14 +297,26 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="RewardCardIconBorderDefault" atlas="UI-Frame-IconBorder" useAtlasSize="false">
-					<Size x="50" y="50"/>
+				<Texture parentKey="RewardCardIconBorderDefault" atlas="ui-journeys-delve-rewardicon-square-frame" useAtlasSize="false">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FrameGlow" alpha="0" atlas="ui-journeys-delve-rewardicon-square-frame-glow" useAtlasSize="false">
+					<Size x="58" y="58"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+				<Alpha childKey="FrameGlow" duration="1" order="1" startDelay="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="FrameGlow" duration="1" order="2" endDelay="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<!-- Journeys Frame -->
@@ -389,8 +408,8 @@
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBar" relativePoint="LEFT" x="0"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER">
-									<Size x="30" y="10"/>
+								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="MIDDLE">
+									<Size x="40" y="35"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBg" x="-2"/>
 									</Anchors>
@@ -405,10 +424,10 @@
 						</Layers>
 					</Frame>
 					<StatusBar parentKey="DelveRewardProgressBar">
-						<Size x="648" y="14"/>
+						<Size x="560" y="14"/>
 						<BarTexture atlas="ui-journeys-progressbar-fill"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-28"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -416,7 +435,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture atlas="ui-journeys-progressbar-frame" useAtlasSize="true"/>
+								<Texture parentKey="DelveRewardProgressBarFrame" atlas="ui-journeys-progressbar-frame" useAtlasSize="true"/>
 							</Layer>
 						</Layers>
 					</StatusBar>
@@ -437,7 +456,7 @@
 					<Frame parentKey="EncounterRewardProgressFrame" inherits="RewardProgressFrameTemplate" hidden="true">
 						<KeyValues>
 							<KeyValue key="elementWidth" value="135" type="number"/>
-							<KeyValue key="elementSpacing" value="15" type="number"/>
+							<KeyValue key="elementSpacing" value="-5" type="number"/>
 							<KeyValue key="rewardButtonXOffset" value="30" type="number"/>
 							<KeyValue key="elementTemplate" value="RenownLevelCardTemplate" type="string"/>
 							<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
@@ -450,7 +469,7 @@
 					<Frame parentKey="DelvesCompanionConfigurationFrame" hidden="true">
 						<Size x="310" y="85"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-15"/>
 							<Anchor point="CENTER"/>
 						</Anchors>
 						<Frames>
@@ -630,6 +649,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

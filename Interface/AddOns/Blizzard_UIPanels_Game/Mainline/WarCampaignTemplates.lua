@@ -93,8 +93,9 @@ function CampaignTooltipMixin:SetJourneyCampaign(campaign)
 	self.Description:SetSpacing(lineSpacing);
 
 	self.Title:SetText(campaign.name);
-	self.ChapterTitle:SetText(CampaignUtil.BuildChapterProgressText(campaign, CAMPAIGN_PROGRESS_CHAPTERS_TOOLTIP));
-	self.Description:SetText(CampaignUtil.BuildAllChaptersText(campaign, lineSpacing));
+	local canHideChapters = true;
+	self.ChapterTitle:SetText(CampaignUtil.BuildChapterProgressText(campaign, CAMPAIGN_PROGRESS_CHAPTERS_TOOLTIP, canHideChapters, CAMPAIGN_PROGRESS_CHAPTERS_PERCENT_TOOLTIP));
+	self.Description:SetText(CampaignUtil.BuildAllChaptersText(campaign, lineSpacing, canHideChapters));
 
 	self:Layout();
 	self:Show();

@@ -179,9 +179,14 @@ end
 local function DevTools_InitUserdataCache(context)
 	local ret = {};
 
+	-- Table access checks are required here because there exist a few tables
+	-- in the environment with secret keys. Dump infrastructure is tainted
+	-- and promptly is told that it cannot run head-first into tables with
+	-- secret keys, which breaks population of these caches and prevents any
+	-- value with a userdata handle being dumped.
 	for _,k in ipairs(DT.userdataSymbols) do
 		local v = getglobal(k);
-		if (type(v) == 'table') then
+		if (type(v) == 'table') and canaccesstable(v) then
 			local u = rawget(v,0);
 			if (type(u) == 'userdata') then
 				ret[u] = k .. '[0]';
@@ -190,7 +195,7 @@ local function DevTools_InitUserdataCache(context)
 	end
 
 	for k,v in pairs(getfenv(0)) do
-		if (type(v) == 'table') then
+		if (type(v) == 'table') and canaccesstable(v) then
 			local u = rawget(v, 0);
 			if (type(u) == 'userdata') then
 				if (not ret[u]) then
@@ -320,13 +325,20 @@ function DevTools_DumpValue(val, prefix, firstPrefix, suffix, context)
 										firstPrefix, valType, suffix));
 		return;
 	elseif (valType == "userdata") then
+		local userdataContents = dumpobject(val);
 		local userdataName = context:GetUserdataName(val, 'value');
-		if (userdataName) then
-			context:Write(string.format(FORMATS.opaqueTypeValName,
-										firstPrefix, valType, userdataName, suffix));
+		if (userdataContents ~= nil) then
+			local userdataIdentifier;
+			if (userdataName) then
+				userdataIdentifier = string.format(FORMATS.opaqueTypeValName, "", valType, userdataName, " ");
+			else
+				userdataIdentifier = string.format(FORMATS.opaqueTypeVal, "", valType, " ");
+			end
+			DevTools_DumpValue(userdataContents, prefix, firstPrefix .. userdataIdentifier, suffix, context);
+		elseif (userdataName) then
+			context:Write(string.format(FORMATS.opaqueTypeValName, firstPrefix, valType, userdataName, suffix));
 		else
-			context:Write(string.format(FORMATS.opaqueTypeVal,
-										firstPrefix, valType, suffix));
+			context:Write(string.format(FORMATS.opaqueTypeVal, firstPrefix, valType, suffix));
 		end
 		return;
 	elseif (valType == "function") then
@@ -410,8 +422,7 @@ function DevTools_RunDump(value, context)
 	end
 end
 
--- Dump the specified list of value
-function DevTools_Dump(value, startKey)
+function DevTools_CreateDumpContext(startKey)
 	local context = {
 		depth = 0,
 		key = startKey,
@@ -422,7 +433,12 @@ function DevTools_Dump(value, startKey)
 	context.GetUserdataName = Pick_Cache_Function(DevTools_Cache_Userdata, DEVTOOLS_USE_USERDATA_CACHE);
 	context.GetThreadName = Pick_Cache_Function(DevTools_Cache_Thread, DEVTOOLS_USE_THREAD_CACHE)
 	context.Write = DevTools_Write;
+	return context;
+end
 
+-- Dump the specified list of value
+function DevTools_Dump(value, startKey)
+	local context = DevTools_CreateDumpContext(startKey);
 	DevTools_RunDump(value, context);
 end
 

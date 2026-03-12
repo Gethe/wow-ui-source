@@ -61,6 +61,9 @@ local SimpleAnimAlphaAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimAlphaAPI);

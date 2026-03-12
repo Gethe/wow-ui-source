@@ -21,7 +21,7 @@ local PlayerScript =
 		{
 			Name = "Ambiguate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1625,6 +1625,9 @@ local PlayerScript =
 				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

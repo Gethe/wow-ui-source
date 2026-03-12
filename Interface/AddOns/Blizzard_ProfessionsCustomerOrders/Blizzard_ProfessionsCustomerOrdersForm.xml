@@ -162,7 +162,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CRAFTINGORDER.include, AUTOCOMPLETE_LIST.CRAFTINGORDER.exclude);
+						AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.CRAFTINGORDER.include, AUTOCOMPLETE_LIST.CRAFTINGORDER.exclude);
 						self.addHighlightedText = true;
 						self.autoCompleteContext = "craftingorder";
 					</OnLoad>

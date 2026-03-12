@@ -1580,8 +1580,12 @@ local QuestLog =
 				{ Name = "seal", Type = "textureAtlas", Nilable = false },
 				{ Name = "signature", Type = "cstring", Nilable = false },
 				{ Name = "poiIcon", Type = "textureAtlas", Nilable = false },
+				{ Name = "mapPinInfo", Type = "UIMapPinInfo", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

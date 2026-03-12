@@ -304,13 +304,13 @@
 			<OnShow function="GameTooltip_CalculatePadding"/>
 			<OnHide inherit="prepend">
 				self.ItemTooltip:Hide();
-				self:SetPadding(0, 0, 0, 0);
+				self:ClearPadding();
 				self.BottomFontString:Hide();
 			</OnHide>
 		</Scripts>
 	</GameTooltip>
 
-	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate">
+	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate" parent="UIParent">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>

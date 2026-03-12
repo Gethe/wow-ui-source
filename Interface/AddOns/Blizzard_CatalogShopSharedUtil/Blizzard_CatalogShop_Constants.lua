@@ -22,6 +22,7 @@ CatalogShopConstants =
 	CardTemplate =
 	{
 		Header = "CatalogShopSectionHeaderTemplate",
+		HeaderPersonalized = "CatalogShopSectionHeaderOptOutLinkTemplate",
 		Wide = "WideCatalogShopProductCardTemplate",
 		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
 		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",
@@ -34,6 +35,8 @@ CatalogShopConstants =
 		SmallTender = "SmallCatalogShopTenderCardTemplate",
 		SmallToys = "SmallCatalogShopToysCardTemplate",
 		SmallAccess = "SmallCatalogShopAccessCardTemplate",
+		SmallDecor = "SmallCatalogShopDecorCardTemplate",
+		SmallRoom = "SmallCatalogShopRoomCardTemplate",
 
 		Details = "DetailsCatalogShopProductCardTemplate",
 		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
@@ -42,6 +45,8 @@ CatalogShopConstants =
 		DetailsTender = "DetailsCatalogShopTenderCardTemplate",
 		DetailsToys = "DetailsCatalogShopToysCardTemplate",
 		DetailsAccess = "DetailsCatalogShopAccessCardTemplate",
+		DetailsDecor = "DetailsCatalogShopDecorCardTemplate",
+		DetailsRoom = "DetailsCatalogShopRoomCardTemplate",
 	},
 
 	ModelSceneContext =
@@ -81,6 +86,7 @@ CatalogShopConstants =
 		Decor = "Decor",
 		Access = "Access",
 		GameTime = "Game Time",
+		Room = "Room",
 	},
 
 	-- These names match up with names in CatalogShop_C::GetOtherFlavorGameData
@@ -116,7 +122,7 @@ CatalogShopConstants =
 	Celebrate =
 	{
 		CreatureID = 27823,
-		SpellVisualID = 173390,
+		SpellVisualID = 259750,
 	},
 
 	NoResults =

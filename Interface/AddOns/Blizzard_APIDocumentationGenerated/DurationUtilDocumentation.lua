@@ -36,6 +36,9 @@ local DurationUtil =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DurationUtil);

@@ -419,6 +419,9 @@ local SimpleMessageFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleMessageFrameAPI);

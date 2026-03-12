@@ -26,6 +26,9 @@ local UIAction =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIAction);

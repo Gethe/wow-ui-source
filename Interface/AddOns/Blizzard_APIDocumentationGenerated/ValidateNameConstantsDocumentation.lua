@@ -45,6 +45,9 @@ local ValidateNameConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ValidateNameConstants);

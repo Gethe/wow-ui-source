@@ -34,6 +34,34 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "talents-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
+	ScenarioChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "themed-scenario-challenge-gold-circle",
+		disabled = "talents-node-circle-gray",
+		selectable = "talents-node-circle-green",
+		maxed = "themed-scenario-challenge-gold-circle",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "talents-node-circle-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
+
+	DelveChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "ritual-sites-frame-default",
+		disabled = "ritual-sites-frame-locked",
+		selectable = "ritual-sites-frame-default",
+		maxed = "ritual-sites-frame-selected",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "ritual-sites-frame-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
 
 	Choice = {
 		iconMask = "talents-node-choice-mask",
@@ -154,10 +182,11 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "lemixartifact-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
 	CapstoneCircle = {
 		iconMask = "talents-node-circle-mask",
 		shadow = "talents-node-circle-shadow",
-		normal = "talents-node-apex-large-gray",
+		normal = "talents-node-apex-large-yellow",
 		disabled = "talents-node-apex-large-gray",
 		selectable = "talents-node-apex-large-green",
 		maxed = "talents-node-apex-large-yellow",
@@ -175,7 +204,7 @@ TalentButtonArtMixin.ArtSet = {
 	CapstoneSquare = {
 		iconMask = nil,
 		shadow = "talents-node-square-shadow",
-		normal = "talents-node-apex-active-large-gray",
+		normal = "talents-node-apex-active-large-yellow",
 		disabled = "talents-node-apex-active-large-gray",
 		selectable = "talents-node-apex-active-large-green",
 		maxed = "talents-node-apex-active-large-yellow",

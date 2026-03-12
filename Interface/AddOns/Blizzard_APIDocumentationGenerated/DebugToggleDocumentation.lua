@@ -7,6 +7,15 @@ local DebugToggle =
 	Functions =
 	{
 		{
+			Name = "IsCollisionEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleAnimKitDisplay",
 			Type = "Function",
 		},
@@ -45,6 +54,9 @@ local DebugToggle =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

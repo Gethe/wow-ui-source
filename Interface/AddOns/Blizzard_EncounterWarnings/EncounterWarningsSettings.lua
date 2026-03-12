@@ -2,14 +2,14 @@ EncounterWarningsSettingsMixin = {};
 
 function EncounterWarningsSettingsMixin:OnLoad()
 	self.iconScale = EncounterWarningsSettingDefaults.IconScale;
-	self.tooltipsEnabled = EncounterWarningsSettingDefaults.TooltipsEnabled;
+	self.tooltipAnchor = EncounterWarningsSettingDefaults.TooltipAnchor;
 end
 
 function EncounterWarningsSettingsMixin:OnIconScaleChanged(_iconScale)
 	-- Override in a derived mixin.
 end
 
-function EncounterWarningsSettingsMixin:OnTooltipsEnabledChanged(_tooltipsEnabled)
+function EncounterWarningsSettingsMixin:OnTooltipAnchorChanged(_tooltipAnchor)
 	-- Override in a derived mixin.
 end
 
@@ -17,25 +17,20 @@ function EncounterWarningsSettingsMixin:GetIconScale()
 	return self.iconScale;
 end
 
-function EncounterWarningsSettingsMixin:GetTooltipsEnabled()
-	return self.tooltipsEnabled == true;
+function EncounterWarningsSettingsMixin:GetTooltipAnchor()
+	return self.tooltipAnchor;
 end
 
 function EncounterWarningsSettingsMixin:SetIconScale(iconScale)
-	assert(type(iconScale) == "number", "SetIconScale: 'iconScale' must be a number");
-	assert(iconScale > 0, "SetIconScale: 'iconScale' must be > 0");
-
-	if not ApproximatelyEqual(self:GetIconScale(), iconScale) then
+	if self.iconScale ~= iconScale then
 		self.iconScale = iconScale;
 		self:OnIconScaleChanged(iconScale);
 	end
 end
 
-function EncounterWarningsSettingsMixin:SetTooltipsEnabled(tooltipsEnabled)
-	assert(type(tooltipsEnabled) == "boolean", "SetTooltipsEnabled: 'tooltipsEnabled' must be a boolean");
-
-	if self:GetTooltipsEnabled() ~= tooltipsEnabled then
-		self.tooltipsEnabled = tooltipsEnabled;
-		self:OnTooltipsEnabledChanged(tooltipsEnabled);
+function EncounterWarningsSettingsMixin:SetTooltipAnchor(tooltipAnchor)
+	if self.tooltipAnchor ~= tooltipAnchor then
+		self.tooltipAnchor = tooltipAnchor;
+		self:OnTooltipAnchorChanged(tooltipAnchor);
 	end
 end

@@ -92,6 +92,9 @@ local FrameAPISimpleCheckout =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPISimpleCheckout);

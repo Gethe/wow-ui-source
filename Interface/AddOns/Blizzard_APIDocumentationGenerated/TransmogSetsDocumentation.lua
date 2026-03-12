@@ -337,6 +337,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "HasAvailableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAvailableSets", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasUsableSets",
 			Type = "Function",
 
@@ -530,6 +539,9 @@ local TransmogSets =
 				{ Name = "collected", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

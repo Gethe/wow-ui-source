@@ -40,6 +40,12 @@
 			
 			- If this bar displays an actionbarpage of index NORMAL_BAR_1 through NORMAL_BAR_6 or EXTRA_BAR_1 through EXTRA_BAR_3 (not EXTRA_BAR though)
 			<KeyValue key="isNormalBar" value="false" type="boolean"/>
+
+			- If this bar has an "UpdateEndCaps" method that should be invoked when the bar end caps might need updating.
+			<KeyValue key="dynamicEndCaps" value="false" type="boolean"/>
+
+			- If this bar has "SetBackgroundArtShown" and "ShouldShowBackgroundArt" methods that should be invoked when the bar art might need updating.
+			<KeyValue key="dynamicBackgroundArt" value="false" type="boolean"/>
 		-->
 
 		<Scripts>

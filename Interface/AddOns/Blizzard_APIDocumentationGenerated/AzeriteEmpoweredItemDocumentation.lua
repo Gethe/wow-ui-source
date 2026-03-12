@@ -344,6 +344,9 @@ local AzeriteEmpoweredItem =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AzeriteEmpoweredItem);

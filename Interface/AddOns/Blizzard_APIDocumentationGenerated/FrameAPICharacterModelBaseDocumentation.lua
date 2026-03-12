@@ -278,6 +278,9 @@ local FrameAPICharacterModelBase =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPICharacterModelBase);

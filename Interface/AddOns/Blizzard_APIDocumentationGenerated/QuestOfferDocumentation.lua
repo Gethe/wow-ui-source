@@ -113,6 +113,9 @@ local QuestOffer =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestOffer);

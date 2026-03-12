@@ -105,6 +105,92 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "EvaluateTotalDuration",
+			Type = "Function",
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Calculates the total duration in seconds and evaluates it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
+			Name = "FormatElapsedDuration",
+			Type = "Function",
+			SecretWhenNumericFormatterSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Formats the elapsed duration of this object to a string." },
+
+			Arguments =
+			{
+				{ Name = "formatter", Type = "NumericFormatter", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "formatted", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "FormatRemainingDuration",
+			Type = "Function",
+			SecretWhenNumericFormatterSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Formats the remaining duration of this object to a string." },
+
+			Arguments =
+			{
+				{ Name = "formatter", Type = "NumericFormatter", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "formatted", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "FormatTotalDuration",
+			Type = "Function",
+			SecretWhenNumericFormatterSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Formats the total duration of this object to a string." },
+
+			Arguments =
+			{
+				{ Name = "formatter", Type = "NumericFormatter", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "formatted", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetClockTime",
+			Type = "Function",
+			Documentation = { "Returns the current time of the clock source used by this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "clockTime", Type = "FrameTime", Nilable = false },
+			},
+		},
+		{
 			Name = "GetElapsedDuration",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -322,6 +408,9 @@ local LuaDurationObjectAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

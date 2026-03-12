@@ -1,0 +1,40 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="HousingMarketProductDisplayTemplate" mixin="HousingMarketProductDisplayMixin" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="HousingMarketSmallProductDisplayTemplate" mixin="HousingMarketSmallProductDisplayMixin" inherits="HousingMarketProductDisplayTemplate" registerForDrag="LeftButton" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR" type="global"/>
+			<KeyValue key="hoverSound" value="SOUNDKIT.HOUSING_ITEM_HOVER" type="global"/>
+		</KeyValues>
+		<Size x="131" y="176"/>
+		<Scripts>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="HousingMarketBundleDisplayTemplate" mixin="HousingMarketBundleDisplayMixin" inherits="HousingMarketProductDisplayTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="HOUSING_BUNDLE_CLICK_TO_VIEW" type="global"/>
+			<KeyValue key="hoverSound" value="SOUNDKIT.HOUSING_MARKET_CATALOG_BUNDLE_HOVER" type="global"/>
+		</KeyValues>
+		<Size x="400" y="231"/>
+		<Frames>
+			<Button parentKey="Contents" inherits="WideCatalogShopProductCardTemplate" scale="0.717">
+				<KeyValues>
+					<KeyValue key="nonInteractive" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Button>
+</Ui>

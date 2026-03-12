@@ -97,6 +97,9 @@ local Movie =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Movie);

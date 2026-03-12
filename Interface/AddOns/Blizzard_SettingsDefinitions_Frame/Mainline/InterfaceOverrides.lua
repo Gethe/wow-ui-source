@@ -71,14 +71,18 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 		local invertClickRequiresSet = true;
 		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
 			displayClassColorsSetting,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
 			OpenHealthBarColorPicker,
 			clickRequiresSet,
 			invertClickRequiresSet,
-			COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
-			GetCVarHealthBarColor
+			GetCVarHealthBarColor,
+			COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR
 		);
 
 		layout:AddInitializer(displayClassColorsInitializer);
+
+		Settings.SetupCVarColorSwatch(category, "raidFramesHealthBarColorBG", COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR_BG, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_BG_COLOR);
 	end
 
 	-- Pets
@@ -173,6 +177,35 @@ function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 		end
 
 		Settings.SetupCVarDropdown(category, "pvpFramesHealthText", Settings.VarType.String, GetOptions, PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
+	end
+end
+
+function InterfaceOverrides.CreateHousingSettings(category, layout)
+	-----Housing 
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(HOUSING_SETTINGS_LABEL));
+
+	--Decor Light Radius indicators
+	do
+		local lightRadiusIndicatorSetting, lightRadiusIndicatorInitializer = Settings.SetupCVarCheckbox(category, "housingDecorLightRadiusIndicatorsEnabled", DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_ENABLED);
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.LightRadiusIndicatorType.Always, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS);
+			container:Add(Enum.LightRadiusIndicatorType.Overlap, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP);
+			container:Add(Enum.LightRadiusIndicatorType.Never, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER);
+			return container:GetData();
+		end
+
+		local _, selectedDecorInitializer = Settings.SetupCVarDropdown(category, "housingSelectedDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+		local _, otherDecorInitializer = Settings.SetupCVarDropdown(category, "housingOtherDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+
+
+		local function IsModifiable()
+			return lightRadiusIndicatorSetting:GetValue();
+		end
+
+		selectedDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
+		otherDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
 	end
 end
 

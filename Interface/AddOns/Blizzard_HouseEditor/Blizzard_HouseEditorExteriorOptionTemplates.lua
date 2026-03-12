@@ -173,7 +173,19 @@ function HouseExteriorTypeDropdownMixin:IsChoiceSelected(choiceData)
 end
 
 function HouseExteriorTypeDropdownMixin:OnSelectChoice(choiceData)
-	C_HouseExterior.SetHouseExteriorType(choiceData.houseExteriorTypeID);
+	-- If any decor is attached to the house, give the player a confirmation dialog to check what they want to do with it
+	if C_HouseExterior.IsAnyDecorAttachedToHouseExterior() then
+		HousingFramesUtil.ShowFixtureDecorActionConfirmation(function(fixtureDecorAction) self:OnSelectionChoiceCallback(choiceData, fixtureDecorAction) end);
+		return;
+	end
+	-- Otherwise just proceed with selection with a default
+	self:OnSelectionChoiceCallback(choiceData, Enum.HousingFixtureDecorAction.Store);
+end
+
+function HouseExteriorTypeDropdownMixin:OnSelectionChoiceCallback(choiceData, fixtureDecorAction)
+	if fixtureDecorAction then
+		C_HouseExterior.SetHouseExteriorType(choiceData.houseExteriorTypeID, fixtureDecorAction);
+	end
 end
 
 function HouseExteriorTypeDropdownMixin:ShowHouseExteriorTypeOptions(selectedExteriorTypeID, exteriorTypeOptions)
@@ -197,7 +209,19 @@ function HouseExteriorSizeDropdownMixin:IsChoiceSelected(choiceData)
 end
 
 function HouseExteriorSizeDropdownMixin:OnSelectChoice(choiceData)
-	C_HouseExterior.SetHouseExteriorSize(choiceData.size);
+	-- If any decor is attached to the house, give the player a confirmation dialog to check what they want to do with it
+	if C_HouseExterior.IsAnyDecorAttachedToHouseExterior() then
+		HousingFramesUtil.ShowFixtureDecorActionConfirmation(function(fixtureDecorAction) self:OnSelectionChoiceCallback(choiceData, fixtureDecorAction); end);
+		return;
+	end
+	-- Otherwise just proceed with selection with a default
+	self:OnSelectionChoiceCallback(choiceData, Enum.HousingFixtureDecorAction.Store);
+end
+
+function HouseExteriorSizeDropdownMixin:OnSelectionChoiceCallback(choiceData, fixtureDecorAction)
+	if fixtureDecorAction then
+		C_HouseExterior.SetHouseExteriorSize(choiceData.size, fixtureDecorAction);
+	end
 end
 
 function HouseExteriorSizeDropdownMixin:ShowHouseExteriorSizeOptions(selectedSize, exteriorSizeOptions)
@@ -221,15 +245,30 @@ function HouseExteriorCoreFixtureDropdownMixin:IsChoiceSelected(choiceData)
 end
 
 function HouseExteriorCoreFixtureDropdownMixin:OnSelectChoice(choiceData)
-	C_HouseExterior.SelectCoreFixtureOption(choiceData.fixtureID);
+	if not self.isVariantSelection then
+		-- If any decor is attached to the existing fixture, give the player a confirmation dialog to check what they want to do with it
+		-- (Variants always reparent any attached decor to the new fixture, so they don't need the extra confirmation)
+		if C_HouseExterior.IsAnyDecorAttachedToCoreFixture(self.coreFixtureType) then
+			HousingFramesUtil.ShowFixtureDecorActionConfirmation(function(fixtureDecorAction) self:OnSelectionChoiceCallback(choiceData, fixtureDecorAction); end);
+			return;
+		end
+	end
+	-- Otherwise just proceed with selection with a default
+	self:OnSelectionChoiceCallback(choiceData, Enum.HousingFixtureDecorAction.Store);
 end
 
-function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions, useColorNames)
+function HouseExteriorCoreFixtureDropdownMixin:OnSelectionChoiceCallback(choiceData, fixtureDecorAction)
+	if fixtureDecorAction then
+		C_HouseExterior.SelectCoreFixtureOption(choiceData.fixtureID, fixtureDecorAction);
+	end
+end
+
+function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions)
 	-- TODO: Remove all this once we have real color name data
 	local houseTypeID = C_HouseExterior.GetCurrentHouseExteriorType();
 	local typeSpecificNames = houseTypeID and HouseExteriorColorNames.TypeSpecific[houseTypeID] or nil;
 	for choiceIndex, choiceData in ipairs(fixtureOptions) do
-		if useColorNames then
+		if self.isVariantSelection then
 			-- TODO: If/when we can redo the data setup for exterior color definitions, ideally color name is part of the choice struct, rather than the color ID
 			local overrideColorName = typeSpecificNames and typeSpecificNames[choiceData.colorID];
 			local colorName = overrideColorName or HouseExteriorColorNames.Default[choiceData.colorID];
@@ -253,7 +292,7 @@ function HouseExteriorOptionElementMixin:ExteriorEntryOnLoad()
 end
 
 -- Expected values
---	choiceData: choiceIndex, isNoneOption, fixtureID, typeName, name, ineligibleChoice, isLocked, lockedText
+--	choiceData: choiceIndex, isNoneOption, fixtureID, typeName, typeID, name, ineligibleChoice, isLocked, lockedText
 --	listStateData: isSelected, hasAFailedReq, hasALockedChoice
 function HouseExteriorOptionElementMixin:Init(choiceData, listStateData)
 	self.choiceData = choiceData;
@@ -272,23 +311,53 @@ function HouseExteriorOptionElementMixin:Reset()
 end
 
 local FixtureTypeToSoundKit = {
-	["Door"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_DOOR,
-	["Roof Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_ROOF_WINDOW,
-	["Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_WINDOW,
-	["Tower"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_TOWER,
-	["Chimney"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_CHIMNEY,
+	[Enum.HousingFixtureType.Door] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_DOOR,
+	[Enum.HousingFixtureType.RoofWindow] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_ROOF_WINDOW,
+	[Enum.HousingFixtureType.Window] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_WINDOW,
+	[Enum.HousingFixtureType.Tower] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_TOWER,
+	[Enum.HousingFixtureType.Chimney] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_CHIMNEY,
 };
 
 function HouseExteriorOptionElementMixin:OnClick()
-	if self.choiceData and not self.isSelected and not self.choiceData.isLocked then
-		if self.choiceData.isNoneOption then
-			C_HouseExterior.RemoveFixtureFromSelectedPoint();
-			PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_NONE);
-		else
-			C_HouseExterior.SelectFixtureOption(self.choiceData.fixtureID);
-			local soundKit = FixtureTypeToSoundKit[self.choiceData.typeName] or SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION;
-			PlaySound(soundKit);
-		end
+	if not self.choiceData or self.isSelected or self.choiceData.isLocked then
+		return;
+	end
+
+	local doSelectFunction;
+
+	if self.choiceData.isNoneOption then
+		PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_NONE);
+	else
+		local soundKit = FixtureTypeToSoundKit[self.choiceData.typeID] or SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION;
+		PlaySound(soundKit);
+	end
+
+	-- First check whether any decor is attached to this fixture point
+	local anyAttachedDecor = C_HouseExterior.IsAnyDecorAttachedToSelectedFixturePoint();
+	if not anyAttachedDecor and self.choiceData.typeID == Enum.HousingFixtureType.Door then
+		-- Otherwise, if this selection is a door (meaning selection will move the existing door), check that there's no decor attached to the existing door
+		anyAttachedDecor = C_HouseExterior.IsAnyDecorAttachedToDoor();
+	end
+
+	-- If any decor is attached to an affected fixture, give the player a confirmation dialog to check what they want to do with it
+	if anyAttachedDecor then
+		HousingFramesUtil.ShowFixtureDecorActionConfirmation(function(fixtureDecorAction) self:OnSelectionChoiceCallback(fixtureDecorAction); end);
+		return;
+	else
+		-- Otherwise just proceed with selection with a default
+		self:OnSelectionChoiceCallback(Enum.HousingFixtureDecorAction.Store);
+	end
+end
+
+function HouseExteriorOptionElementMixin:OnSelectionChoiceCallback(fixtureDecorAction)
+	if not fixtureDecorAction then
+		return;
+	end
+
+	if self.choiceData.isNoneOption then
+		C_HouseExterior.RemoveFixtureFromSelectedPoint(fixtureDecorAction);
+	else
+		C_HouseExterior.SelectFixtureOption(self.choiceData.fixtureID, fixtureDecorAction);
 	end
 end
 
@@ -417,6 +486,32 @@ function HouseExteriorFixtureOptionListMixin:ClearAndHide()
 	self:ClearData();
 	self:Hide();
 end
+
+----------------- Checkbox Option Mixin -----------------
+HouseExteriorCheckboxOptionMixin = {};
+
+function HouseExteriorCheckboxOptionMixin:OnLoad()
+	self.Label:SetText(self.label);
+
+	self.Button:SetScript("OnClick", function(button, buttonName, down)
+		local isChecked = button:GetChecked();
+		PlaySound(isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		if self.onClickCallback then
+			self.onClickCallback(isChecked);
+		end
+	end);
+end
+
+function HouseExteriorCheckboxOptionMixin:SetChecked(checked)
+	self.Button:SetChecked(checked);
+end
+
+function HouseExteriorCheckboxOptionMixin:SetOnClickCallback(onClickCallback)
+	self.onClickCallback = onClickCallback;
+end
+
+
+----------------- Helpers -----------------
 
 -- TODO: Create some new data & stop using the ExteriorComponent "COLOR" field for player-facing color names altogether
 -- It is not meant for the kind of granular color specificity we're looking for here

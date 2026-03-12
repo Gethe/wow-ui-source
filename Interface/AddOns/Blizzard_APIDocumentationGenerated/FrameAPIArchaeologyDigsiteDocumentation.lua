@@ -15,6 +15,9 @@ local FrameAPIArchaeologyDigsite =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIArchaeologyDigsite);

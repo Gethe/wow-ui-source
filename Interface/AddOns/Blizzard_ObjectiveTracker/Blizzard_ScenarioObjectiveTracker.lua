@@ -261,6 +261,12 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		return;
 	end
 
+	if C_ScenarioInfo.IsTieredEntranceScenario() then
+		local spells = C_ScenarioInfo.GetTieredEntranceActiveSpells();
+		self.TieredEntranceTraitsBlock.Container:SetSpells(spells);
+		self:LayoutBlock(self.TieredEntranceTraitsBlock);
+	end
+
 	if isInScenario then
 		if not provingGroundsActive and not scenarioCompleted then
 			-- This is the only place the ObjectivesBlock can be added
@@ -558,7 +564,15 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 		self.NormalBG:SetPoint("TOPLEFT", offsets.normalBGX, offsets.normalBGY);
 		self.FinalBG:SetPoint("TOPLEFT", offsets.finalBGX, offsets.finalBGY);
 	end
-	
+
+	local displayInfo = C_ScenarioInfo.GetDisplayInfo();
+	if displayInfo then
+		self.ThemeOverlay:Show();
+		self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
+	else
+		self.ThemeOverlay:Hide();
+	end
+
 	self:UpdateFindGroupButton(scenarioID);
 end
 

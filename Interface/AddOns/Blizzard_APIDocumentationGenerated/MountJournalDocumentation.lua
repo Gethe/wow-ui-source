@@ -692,6 +692,9 @@ local MountJournal =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MountJournal);

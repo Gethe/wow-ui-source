@@ -489,6 +489,9 @@ local PetJournalInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PetJournalInfo);

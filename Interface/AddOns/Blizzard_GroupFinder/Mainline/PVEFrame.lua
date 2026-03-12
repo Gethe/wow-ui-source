@@ -398,6 +398,7 @@ function PVEFrameMixin:OnLoad()
 	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
+	self:RegisterEvent("AJ_PVP_TRAINING_GROUNDS_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
 
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
@@ -470,6 +471,8 @@ function PVEFrameMixin:OnEvent(event, ...)
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
+	elseif ( event == "AJ_PVP_TRAINING_GROUNDS_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "TrainingGroundsFrame");
 	end
 end
 

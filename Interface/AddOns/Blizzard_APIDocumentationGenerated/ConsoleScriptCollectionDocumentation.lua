@@ -116,6 +116,9 @@ local ConsoleScriptCollection =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ConsoleScriptCollection);

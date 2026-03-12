@@ -51,6 +51,9 @@ local StorePublicUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(StorePublicUI);

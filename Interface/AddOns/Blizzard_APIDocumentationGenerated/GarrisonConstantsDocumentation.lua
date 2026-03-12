@@ -371,6 +371,9 @@ local GarrisonConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GarrisonConstants);

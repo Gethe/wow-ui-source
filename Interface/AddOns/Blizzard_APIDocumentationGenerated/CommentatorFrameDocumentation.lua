@@ -1844,6 +1844,9 @@ local CommentatorFrame =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CommentatorFrame);

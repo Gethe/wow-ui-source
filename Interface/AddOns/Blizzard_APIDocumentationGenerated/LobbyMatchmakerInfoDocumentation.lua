@@ -140,6 +140,9 @@ local LobbyMatchmakerInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LobbyMatchmakerInfo);

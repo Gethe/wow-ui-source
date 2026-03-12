@@ -87,6 +87,9 @@ local LegendaryCraftingTypes =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LegendaryCraftingTypes);

@@ -200,6 +200,9 @@ local PlayerChoice =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerChoice);

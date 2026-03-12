@@ -63,6 +63,9 @@ local FogOfWar =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FogOfWar);

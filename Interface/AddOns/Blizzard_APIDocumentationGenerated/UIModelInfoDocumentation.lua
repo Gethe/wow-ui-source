@@ -189,6 +189,9 @@ local UIModelInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIModelInfo);

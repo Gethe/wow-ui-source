@@ -77,6 +77,9 @@ local UIEventToastConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIEventToastConstants);

@@ -38,6 +38,9 @@ local LiveEvent =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LiveEvent);

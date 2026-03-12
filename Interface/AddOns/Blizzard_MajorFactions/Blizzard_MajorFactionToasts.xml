@@ -62,7 +62,7 @@
 			<Layer level="ARTWORK" textureSubLevel="5">
 				<Texture parentKey="GlowLineBottom" alpha="0" atlas="evergreen-toast-celebration-bottomline" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="135"/>
+						<Anchor point="CENTER" x="0" y="-107"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="TopBorder" alpha="0" atlas="evergreen-toast-celebration-topfiligree" useAtlasSize="true">

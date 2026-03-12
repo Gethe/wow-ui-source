@@ -1,6 +1,6 @@
 --[[ LOCALS ]]
 local MAX_DISPLAYED_BUTTONS = 12;
-local LAST_LOCKED_ABILITIES_CVAR = "lastLockedDelvesCompanionAbilities";
+local LAST_LOCKED_ABILITIES_CVAR = "lastLockedTieredEntranceCompanionAbilities";
 local UPDATE_LAST_LOCKED_ABILITIES_DELAY = 0.2; -- 200ms
 
 local COMPANION_ABILITY_LIST_ON_SHOW_EVENTS = {
@@ -18,7 +18,6 @@ local function UpdateLastLockedAbilities()
 	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function()
 		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
-		local lastLockedAbilities = "";
 		local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 
 		-- configID can be nil if player has not set up their companion yet
@@ -26,14 +25,18 @@ local function UpdateLastLockedAbilities()
 			return;
 		end
 
+		local lastLockedAbilities = { };
 		local nodes = C_Traits.GetTreeNodes(traitTreeID);
 		for _, node in ipairs(nodes) do
 			local nodeInfo = C_Traits.GetNodeInfo(configID, node);
 			if nodeInfo and nodeInfo.activeRank < 1 then
-				lastLockedAbilities = lastLockedAbilities .. tostring(node) .. " ";
+				lastLockedAbilities[node] = 1;
 			end
 		end
-		SetCVar(LAST_LOCKED_ABILITIES_CVAR, lastLockedAbilities);
+		local pdeID = C_DelvesUI.GetPlayerCompanionPDEID(GetPlayerCompanionID());
+		if pdeID then
+			SetCVarTableValue(LAST_LOCKED_ABILITIES_CVAR, pdeID, lastLockedAbilities);
+		end
 	end);
 end
 
@@ -95,12 +98,13 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 
 		-- Now that the buttons are sorted, check to see what the last locked abilities were. If any
 		-- are no longer locked, then give them a glow!
-		local lastLockedAbilities = GetCVar(LAST_LOCKED_ABILITIES_CVAR);
+		local pdeID = C_DelvesUI.GetPlayerCompanionPDEID(GetPlayerCompanionID());
+		local lastLockedAbilities = GetCVarTableValue(LAST_LOCKED_ABILITIES_CVAR, pdeID);
 		if lastLockedAbilities then
 			for _, button in ipairs(self.buttons) do
 				if button.locked then
 					button.NewGlow:Hide();
-				elseif not button.locked and string.find(lastLockedAbilities, tostring(button.nodeID)) then
+				elseif not button.locked and lastLockedAbilities[button.nodeID] then
 					button.NewGlow:Show();
 					button:SetScript("OnHide", function(button)
 						button.NewGlow:Hide();

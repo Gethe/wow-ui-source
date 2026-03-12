@@ -71,11 +71,6 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 end
 
 function GenericTraitFrameMixin:OnShow()
-	-- Changes can happen to the tree while it was hidden that may require a full update so mark it
-	-- as dirty before calling the base OnShow. For example, skyriding talents can be automatically
-	-- purchased on level up.
-	self:MarkTreeDirty();
-
 	TalentFrameBaseMixin.OnShow(self);
 
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
@@ -105,18 +100,6 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 
 	if event == "TRAIT_SYSTEM_NPC_CLOSED" then
 		HideUIPanel(self);
-	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
-		-- Hack: traitNodeInfo.canPurchaseRank is not getting updated after currency changes, so button state does not get updated.
-		-- This is a temp fix to dirty all nodes to force it to get latest node info.
-		local treeID = ...;
-		if treeID == self:GetTalentTreeID() then
-			for talentButton in self:EnumerateAllTalentButtons() do
-				local nodeID = talentButton:GetNodeID();
-				if nodeID then
-					self:MarkNodeInfoCacheDirty(nodeID);
-				end
-			end
-		end
 	end
 end
 
@@ -225,6 +208,14 @@ function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 		end
 	end
 	self.Currency:SetShown(showCurrency);
+end
+
+function GenericTraitFrameMixin:ShouldInstantiateInvisibleButtons()
+	-- Overrides TalentFrameBaseMixin.
+
+	-- It's important to instantiate invisible buttons that could change visibility.
+	-- Since the GenericTraitFrame covers a lot of trees we should assume that something might change visibility.
+	return true;
 end
 
 function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)

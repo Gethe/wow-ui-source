@@ -1,5 +1,40 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingCatalogDyeDisplayTemplate" mixin="HousingCatalogDyeDisplayMixin" virtual="true">
+		<!--
+		spacingAdjust: adjust how much spacing is between icons.
+		<KeyValues>
+			<KeyValue key="spacingAdjust" value="0" type="number"/>
+		</KeyValues>
+		-->
+		<Size x="30" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Dye1" atlas="dye-drop_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dye2" atlas="dye-drop_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Dye1" relativePoint="RIGHT" x="-6" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dye3" atlas="dye-drop_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Dye2" relativePoint="RIGHT" x="-6" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="BaseHousingCatalogEntryTemplate" mixin="HousingCatalogEntryMixin" registerForDrag="LeftButton" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="backgroundDefault" value="house-chest-list-Item-default" type="string" />
@@ -44,28 +79,15 @@
 						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
 					</Anchors>
 				</Texture>
-
-				<Texture parentKey="Dye1" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="8"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Dye2" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Dye1" relativePoint="RIGHT" x="-6" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Dye3" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Dye2" relativePoint="RIGHT" x="-6" y="0"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="DyeDisplay" inherits="HousingCatalogDyeDisplayTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="10" y="8"/>
+				</Anchors>
+			</Frame>
+
 			<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate">
 				<Size x="80" y="80"/>
 				<Anchors>

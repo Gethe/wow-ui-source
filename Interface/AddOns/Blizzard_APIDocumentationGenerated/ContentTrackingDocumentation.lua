@@ -349,6 +349,9 @@ local ContentTracking =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ContentTracking);

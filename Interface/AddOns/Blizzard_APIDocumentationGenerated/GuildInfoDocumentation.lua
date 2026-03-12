@@ -104,6 +104,26 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GetInfoText",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "infoText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMOTD",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "motd", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GuildControlGetRankFlags",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -292,6 +312,17 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "SetInfoText",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "infoText", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "SetLeader",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -304,6 +335,7 @@ local GuildInfo =
 		{
 			Name = "SetMOTD",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -406,6 +438,7 @@ local GuildInfo =
 			Name = "GuildMotd",
 			Type = "Event",
 			LiteralName = "GUILD_MOTD",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -629,6 +662,9 @@ local GuildInfo =
 				{ Name = "reservedNameExpirationTime", Type = "time_t", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

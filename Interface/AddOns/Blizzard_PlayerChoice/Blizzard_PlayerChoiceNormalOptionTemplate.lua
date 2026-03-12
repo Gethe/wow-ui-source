@@ -88,10 +88,11 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupHeader()
 
 		self.Header.Contents.Text:SetText(self.optionInfo.header);
 
+		-- hack: related to text_width_incorrect_bug
 		if self.Header.Contents.Text:GetNumLines() > 1 then
-			self.Header.Contents.Text:SetWidth(self.Header.Contents.Text:GetWrappedWidth());
+			self.Header.Contents.Text:SetWidth(self.Header.Contents.Text:GetWrappedWidth() + 0.1);
 		else
-			self.Header.Contents.Text:SetWidth(self.Header.Contents.Text:GetStringWidth());
+			self.Header.Contents.Text:SetWidth(self.Header.Contents.Text:GetStringWidth() + 0.1);
 		end
 
 		self.Header:Show();

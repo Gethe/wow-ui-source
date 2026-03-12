@@ -92,9 +92,9 @@ function NamePlateHealthBarMixin:UpdateSelectionBorder()
 
 	local borderColor = nil;
 	if isTarget then
-		borderColor = NamePlateConstants.TARGET_BORDER_COLOR;
+		borderColor = NAMEPLATE_BORDER_TARGET_COLOR;
 	elseif isFocus then
-		borderColor = NamePlateConstants.FOCUS_TARGET_BORDER_COLOR;
+		borderColor = NAMEPLATE_BORDER_FOCUS_TARGET_COLOR;
 	end
 
 	if borderColor then

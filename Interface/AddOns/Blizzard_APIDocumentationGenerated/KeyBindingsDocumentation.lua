@@ -249,6 +249,9 @@ local KeyBindings =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(KeyBindings);

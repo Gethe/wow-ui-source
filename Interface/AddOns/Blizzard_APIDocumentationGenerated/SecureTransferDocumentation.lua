@@ -38,6 +38,16 @@ local SecureTransfer =
 			},
 		},
 		{
+			Name = "GetHousingPurchaseQuantity",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHousingVCPurchaseProductID",
 			Type = "Function",
 			HasRestrictions = true,
@@ -109,6 +119,9 @@ local SecureTransfer =
 				{ Name = "sendMoney", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

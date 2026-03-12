@@ -31,6 +31,15 @@ local Cinematic =
 			},
 		},
 		{
+			Name = "GetCurrentCinematicSummary",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "summary", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "InCinematic",
 			Type = "Function",
 
@@ -114,6 +123,9 @@ local Cinematic =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

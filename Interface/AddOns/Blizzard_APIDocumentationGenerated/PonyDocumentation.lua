@@ -17,6 +17,9 @@ local Pony =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Pony);

@@ -470,6 +470,9 @@ local AddOns =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AddOns);

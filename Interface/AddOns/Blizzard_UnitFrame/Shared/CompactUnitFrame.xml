@@ -78,9 +78,12 @@
 		</Layers>
 	</Frame>
 	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxPrivateAuras" value="5" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" parentKey="background" atlas="RaidFrame-Hp-Bg" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true"/>
+				<Texture name="$parentBackground" parentKey="background" atlas="raidframe-hp-bg-white" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true"/>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="5">
 				<Texture name="$parentMyHealPrediction" parentKey="myHealPrediction"/>

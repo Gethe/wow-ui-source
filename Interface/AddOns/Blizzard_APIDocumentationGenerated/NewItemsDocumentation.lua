@@ -47,6 +47,9 @@ local NewItems =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(NewItems);

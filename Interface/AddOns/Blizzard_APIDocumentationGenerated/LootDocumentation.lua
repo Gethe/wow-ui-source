@@ -431,6 +431,9 @@ local Loot =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Loot);

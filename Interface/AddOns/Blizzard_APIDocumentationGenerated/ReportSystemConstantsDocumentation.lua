@@ -146,6 +146,9 @@ local ReportSystemConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ReportSystemConstants);

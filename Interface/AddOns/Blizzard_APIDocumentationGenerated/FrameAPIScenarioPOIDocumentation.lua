@@ -44,6 +44,9 @@ local FrameAPIScenarioPOI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIScenarioPOI);

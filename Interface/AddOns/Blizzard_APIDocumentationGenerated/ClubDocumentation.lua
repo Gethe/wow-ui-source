@@ -198,6 +198,7 @@ local Club =
 		{
 			Name = "DestroyMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -284,6 +285,7 @@ local Club =
 		{
 			Name = "EditMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -397,6 +399,7 @@ local Club =
 		{
 			Name = "GetClubInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -429,6 +432,7 @@ local Club =
 		{
 			Name = "GetClubMembers",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -506,6 +510,7 @@ local Club =
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -605,6 +610,7 @@ local Club =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -639,6 +645,7 @@ local Club =
 		{
 			Name = "GetMessageInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get info about a particular message." },
@@ -658,6 +665,7 @@ local Club =
 		{
 			Name = "GetMessageRanges",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the ranges of the messages currently downloaded." },
@@ -676,6 +684,7 @@ local Club =
 		{
 			Name = "GetMessagesBefore",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages before (and including) the specified messageId limited by count. These are filtered by ignored players" },
@@ -696,6 +705,7 @@ local Club =
 		{
 			Name = "GetMessagesInRange",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages in the given range. These are filtered by ignored players" },
@@ -716,6 +726,7 @@ local Club =
 		{
 			Name = "GetStreamInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -750,6 +761,7 @@ local Club =
 		{
 			Name = "GetStreams",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -766,6 +778,7 @@ local Club =
 		{
 			Name = "GetSubscribedClubs",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -809,6 +822,7 @@ local Club =
 		{
 			Name = "IsBeginningOfStream",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the given message is the first message in the stream, taking into account ignored messages" },
@@ -915,6 +929,7 @@ local Club =
 		{
 			Name = "RequestMoreMessagesBefore",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Call this when the user scrolls near the top of the message view, and more need to be displayed. The history will be downloaded backwards (newest to oldest)." },
@@ -1038,6 +1053,7 @@ local Club =
 		{
 			Name = "SetAvatarTexture",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1731,14 +1747,14 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false, NeverSecret = true },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortName", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "broadcast", Type = "string", Nilable = false },
-				{ Name = "clubType", Type = "ClubType", Nilable = false },
+				{ Name = "clubType", Type = "ClubType", Nilable = false, NeverSecret = true },
 				{ Name = "avatarId", Type = "number", Nilable = false },
-				{ Name = "memberCount", Type = "number", Nilable = true },
+				{ Name = "memberCount", Type = "number", Nilable = true, NeverSecret = true },
 				{ Name = "favoriteTimeStamp", Type = "BigUInteger", Nilable = true },
 				{ Name = "joinTime", Type = "BigUInteger", Nilable = true },
 				{ Name = "socialQueueingEnabled", Type = "bool", Nilable = true },
@@ -1779,7 +1795,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "isSelf", Type = "bool", Nilable = false },
+				{ Name = "isSelf", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "memberId", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
@@ -1808,7 +1824,7 @@ local Club =
 				{ Name = "guildRankOrder", Type = "luaIndex", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
-				{ Name = "faction", Type = "PvPFaction", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true, NeverSecret = true },
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
@@ -1923,7 +1939,7 @@ local Club =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subject", Type = "string", Nilable = false },
 				{ Name = "leadersAndModeratorsOnly", Type = "bool", Nilable = false },
-				{ Name = "streamType", Type = "ClubStreamType", Nilable = false },
+				{ Name = "streamType", Type = "ClubStreamType", Nilable = false, NeverSecret = true },
 				{ Name = "creationTime", Type = "BigUInteger", Nilable = false },
 			},
 		},
@@ -1949,6 +1965,14 @@ local Club =
 				{ Name = "defaultStreamId", Type = "ClubStreamId", Nilable = true },
 				{ Name = "creator", Type = "ClubMemberInfo", Nilable = false },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequiresClubsInitialized",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

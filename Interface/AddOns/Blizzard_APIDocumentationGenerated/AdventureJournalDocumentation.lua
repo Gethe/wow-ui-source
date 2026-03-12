@@ -74,6 +74,12 @@ local AdventureJournal =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "AjPvpTrainingGroundsAction",
+			Type = "Event",
+			LiteralName = "AJ_PVP_TRAINING_GROUNDS_ACTION",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "AjQuestLogOpen",
 			Type = "Event",
 			LiteralName = "AJ_QUEST_LOG_OPEN",
@@ -113,6 +119,9 @@ local AdventureJournal =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

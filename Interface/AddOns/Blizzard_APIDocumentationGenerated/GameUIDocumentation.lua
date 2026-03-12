@@ -35,6 +35,9 @@ local GameUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GameUI);

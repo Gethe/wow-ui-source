@@ -62,6 +62,9 @@ local Cursor =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Cursor);

@@ -16,12 +16,14 @@ local ExteriorCustomizationModeShownEvents =
 	"HOUSING_SET_FIXTURE_RESPONSE",
 	"HOUSING_SET_EXTERIOR_HOUSE_TYPE_RESPONSE",
 	"HOUSING_SET_EXTERIOR_HOUSE_SIZE_RESPONSE",
+	"HOUSE_EXTERIOR_DECOR_HIDDEN_CHANGED",
 };
 
 HouseEditorExteriorCustomizationModeMixin = {};
 
 function HouseEditorExteriorCustomizationModeMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, ExteriorCustomizationModeLifetimeEvents);
+	self.CoreOptionsPanel.HideDecorButton:SetOnClickCallback(GenerateClosure(self.OnHideDecorClicked, self));
 
 	self.fixturePointPool = CreateFramePool("BUTTON", self, "HousingExteriorFixturePointTemplate", HousingExteriorFixturePointMixin.Reset);
 end
@@ -70,6 +72,9 @@ function HouseEditorExteriorCustomizationModeMixin:OnEvent(event, ...)
 		self:UpdateHouseTypeOptions();
 	elseif event == "HOUSE_LEVEL_CHANGED" then
 		self:UpdateHouseSizeOptions();
+	elseif event == "HOUSE_EXTERIOR_DECOR_HIDDEN_CHANGED" then
+		local isDecorHidden = ...;
+		self:UpdateHideDecorOption(isDecorHidden);
 	end
 end
 
@@ -93,6 +98,8 @@ function HouseEditorExteriorCustomizationModeMixin:OnShow()
 	if C_HouseExterior.HasHoveredFixture() then
 		self:UpdateHoveredFixture(true);
 	end
+
+	self:UpdateHideDecorOption(C_HouseExterior.IsExteriorDecorHidden());
 
 	PlaySound(SOUNDKIT.HOUSING_ENTER_EXTERIOR_EDIT_MODE);
 end
@@ -146,28 +153,34 @@ function HouseEditorExteriorCustomizationModeMixin:UpdateHouseSizeOptions(skipLa
 	end
 end
 
-function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureDropdown(dropdown, selectedOption, options, useColorNames)
+function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureDropdown(dropdown, selectedOption, options)
 	if options and #options > 1 then
-		dropdown:ShowCoreFixtureInfo(selectedOption, options, useColorNames);
+		dropdown:ShowCoreFixtureInfo(selectedOption, options);
 	else
 		dropdown:ClearAndHide();
 	end
 end
 
 function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureOptions(skipLayout)
-	local stylesUseColorNames = false;
-	local variantsUseColorNames = true;
 	local baseFixtureInfo = C_HouseExterior.GetCoreFixtureOptionsInfo(Enum.HousingFixtureType.Base);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseStyleOption, baseFixtureInfo and baseFixtureInfo.selectedStyleFixtureID or nil, baseFixtureInfo and baseFixtureInfo.styleOptions or nil, stylesUseColorNames);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseVariantOption, baseFixtureInfo and baseFixtureInfo.selectedVariantFixtureID or nil, baseFixtureInfo and baseFixtureInfo.currentStyleVariantOptions or nil, variantsUseColorNames);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseStyleOption, baseFixtureInfo and baseFixtureInfo.selectedStyleFixtureID or nil, baseFixtureInfo and baseFixtureInfo.styleOptions or nil);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseVariantOption, baseFixtureInfo and baseFixtureInfo.selectedVariantFixtureID or nil, baseFixtureInfo and baseFixtureInfo.currentStyleVariantOptions or nil);
 
 	local roofFixtureInfo = C_HouseExterior.GetCoreFixtureOptionsInfo(Enum.HousingFixtureType.Roof);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofStyleOption, roofFixtureInfo and roofFixtureInfo.selectedStyleFixtureID or nil, roofFixtureInfo and roofFixtureInfo.styleOptions or nil, stylesUseColorNames);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofVariantOption, roofFixtureInfo and roofFixtureInfo.selectedVariantFixtureID or nil, roofFixtureInfo and roofFixtureInfo.currentStyleVariantOptions or nil, variantsUseColorNames);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofStyleOption, roofFixtureInfo and roofFixtureInfo.selectedStyleFixtureID or nil, roofFixtureInfo and roofFixtureInfo.styleOptions or nil);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofVariantOption, roofFixtureInfo and roofFixtureInfo.selectedVariantFixtureID or nil, roofFixtureInfo and roofFixtureInfo.currentStyleVariantOptions or nil);
 
 	if not skipLayout then
 		self.CoreOptionsPanel:Layout();
 	end
+end
+
+function HouseEditorExteriorCustomizationModeMixin:UpdateHideDecorOption(isDecorHidden)
+	self.CoreOptionsPanel.HideDecorButton:SetChecked(isDecorHidden);
+end
+
+function HouseEditorExteriorCustomizationModeMixin:OnHideDecorClicked(isChecked)
+	C_HouseExterior.SetExteriorDecorHidden(isChecked);
 end
 
 function HouseEditorExteriorCustomizationModeMixin:UpdateAllPointVisuals()

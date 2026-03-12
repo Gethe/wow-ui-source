@@ -382,6 +382,18 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetGradientMaskWithDyes",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "grad0DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad1DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad2DyeColorID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetModelByCreatureDisplayID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -616,6 +628,9 @@ local FrameAPIModelSceneFrameActorBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

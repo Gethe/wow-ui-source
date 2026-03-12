@@ -3038,7 +3038,6 @@
 						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel" x="-8"/>
 					</Anchors>
 				</Texture>
-				<!-- TODO Need an icon border, texture art still WIP --> <!-- Interface\Delves\DelvesCuriosIconBorder -->
 				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
 					<Size x="35" y="35"/>
 					<Anchors>
@@ -3046,20 +3045,23 @@
 						<Anchor point="CENTER" relativeKey="$parent.Background"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="DecorType" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString parentKey="DecorName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-5"/>
-						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="DecorName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.DecorType" relativePoint="BOTTOM" y="-3"/>
 						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel"/>
 						<Anchor point="RIGHT" x="-35"/>
 						<Anchor point="BOTTOM" y="15"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="housing-item-wood-frame_64">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 	</ContainedAlertFrame>

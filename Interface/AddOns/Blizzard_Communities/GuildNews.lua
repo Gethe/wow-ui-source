@@ -75,7 +75,7 @@ function CommunitiesGuildNews_Update(self)
 	end
 	
 	local dataProvider = CreateDataProvider();
-	local motd = GetGuildRosterMOTD();
+	local motd = C_GuildInfo.GetMOTD();
 	if motd ~= "" then
 		dataProvider:Insert({motd=motd});
 	end
@@ -208,7 +208,7 @@ function CommunitiesGuildNewsButton_OnEnter(self)
 		if ( self.text:IsTruncated() ) then
 			CommunitiesGuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(GUILD_MOTD_LABEL);
-			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, true);
+			GameTooltip:AddLine(C_GuildInfo.GetMOTD(), 1, 1, 1, true);
 			GameTooltip:Show();
 		end
 	end

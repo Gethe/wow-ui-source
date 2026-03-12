@@ -45,6 +45,15 @@ function PossessActionBarMixin:UpdateState()
 	self:UpdateShownButtons();
 end
 
+function PossessActionBarMixin:ShouldShowBackgroundArt()
+	return MainMenuBar:IsShown()
+		and self:IsInDefaultPosition()
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.Orientation)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.NumRows)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconSize)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconPadding);
+end
+
 function PossessActionBarMixin:SetBackgroundArtShown(shown)
 	if (self.BackgroundArtTextures)	then
 		for index, texture in ipairs(self.BackgroundArtTextures) do

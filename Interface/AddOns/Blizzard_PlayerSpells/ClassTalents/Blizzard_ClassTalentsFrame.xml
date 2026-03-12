@@ -45,7 +45,7 @@
 			<KeyValue key="bottomPadding" value="82" type="number"/>
 			<KeyValue key="rightPadding" value="0" type="number"/>
 			<KeyValue key="basePanOffsetX" value="49" type="number"/>
-			<KeyValue key="basePanOffsetY" value="21" type="number"/>
+			<KeyValue key="basePanOffsetY" value="24" type="number"/>
 			<KeyValue key="maximumCommitTime" value="6" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value=".3" type="number"/>
 			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
@@ -53,6 +53,7 @@
 			<KeyValue key="enableCommitSpinner" value="true" type="boolean"/>
 			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 			<KeyValue key="heroSpecSelectionDialog" value="HeroTalentsSelectionDialog" type="global" />
+			<KeyValue key="refreshOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -211,13 +212,13 @@
 
 			<Frame parentKey="ClassCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="372" y="-48"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="372" y="-45"/>
 				</Anchors>
 			</Frame>
 
 			<Frame parentKey="SpecCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-401" y="-48"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-401" y="-45"/>
 				</Anchors>
 			</Frame>
 

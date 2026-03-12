@@ -83,6 +83,7 @@
 				</Scale>
 				<Alpha childKey="ToastBG" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="0.72"/>
 				<Alpha childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="GlowLineBottom" duration="0.0" order="1" startDelay="0.0" smoothing="IN" offsetX="0" offsetY="+242"/>
 				<Translation childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" smoothing="IN" offsetX="0" offsetY="-242"/>
 				<Alpha childKey="Glow1" duration="0.5" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
 				<Alpha childKey="Glow2" duration="0.86666" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
@@ -93,21 +94,9 @@
 				<Translation childKey="Star2" duration="1" order="1" startDelay="0.6" offsetX="0" offsetY="50"/>
 				<Alpha childKey="Star2" duration="0.3" order="1" startDelay="0.6" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Star2" duration="0.3" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
-
-				<Alpha parentKey="HoldAlpha" startDelay="0.5" duration="4.5" fromAlpha="1" toAlpha="1" order="1">
-					<Scripts>
-						<OnPlay>
-							self:GetParent():GetParent():OnHoldAnimStarted();
-						</OnPlay>
-					</Scripts>
-				</Alpha>
-
-				<Alpha parentKey="FadeAlpha" duration="0.75" fromAlpha="1" toAlpha="0" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="3.05" fromAlpha="1" toAlpha="0" duration="1.0" parentKey="animOut"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

@@ -1276,6 +1276,12 @@ local function GetDruidCatModelInfo(race, sex)
 		else
 			return { displayID = 86524, spellVisualKitID = 134579 };
 		end
+	elseif race == "Harronir" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 126275, spellVisualKitID = 258851 };
+		else
+			return { displayID = 126277, spellVisualKitID = 258851 };
+		end
 	end
 end
 
@@ -2055,12 +2061,12 @@ function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)
 end
 
 function CharacterCreateNameAvailabilityStateMixin:OnEvent(event, ...)
-	local available, checkedName = ...;
+	local available, checkedName, reason = ...;
 
 	-- First make sure that the checked name is still what is in the box
 	if checkedName == self:GetParent():GetText() then
 		-- ok they match, so update the state
-		self:UpdateState(available, CHAR_CREATE_NAME_IN_USE);
+		self:UpdateState(available, _G[reason]);
 	end
 end
 

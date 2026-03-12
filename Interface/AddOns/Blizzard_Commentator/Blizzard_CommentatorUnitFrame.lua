@@ -16,12 +16,12 @@ CommentatorUnitFrameMixin = {};
 local CommentatorUnitFrameEvents =
 {
 	"COMMENTATOR_COMBAT_EVENT",
-	"ARENA_COOLDOWNS_UPDATE",
 	"ARENA_CROWD_CONTROL_SPELL_UPDATE",
 	"COMMENTATOR_PLAYER_UPDATE",
 	"COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE",
 	"LOSS_OF_CONTROL_COMMENTATOR_ADDED",
 	"LOSS_OF_CONTROL_COMMENTATOR_UPDATE",
+	"UNIT_ARENA_COOLDOWNS_UPDATE",
 };
 
 local LifeState = 
@@ -151,7 +151,7 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 		self:OnCommentatorCombatEvent(C_Commentator.GetCombatEventInfo());
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
 		self:InitSpells();
-	elseif event == "ARENA_COOLDOWNS_UPDATE" then
+	elseif event == "UNIT_ARENA_COOLDOWNS_UPDATE" then
 		local unitToken = ...;
 		if unitToken == self.unitToken then
 			self:UpdateCCRemover();

@@ -16,7 +16,7 @@ function HousingUpgradeFrameMixin:OnLoad()
 
 	self.maxLevel = C_Housing.GetMaxHouseLevel() + 1; --+1 for the "coming soon" level
 	self.houseLevelRewardInfos = {};
-	table.insert(self.houseLevelRewardInfos, {level = self.maxLevel, rewards = "no rewards"});
+	table.insert(self.houseLevelRewardInfos, {level = self.maxLevel, isMax = true});
 	for i = 1, self.maxLevel - 1 do
 		table.insert(self.houseLevelRewardInfos, i, {
 			level = i;
@@ -55,7 +55,7 @@ end
 function HousingUpgradeFrameMixin:AllRewardsLoaded()
 	local allRewardsLoaded = true;
 	for _, info in ipairs(self.houseLevelRewardInfos) do
-		if not info.rewards then
+		if not info.rewards and not info.isMax then
 			allRewardsLoaded = false;
 			break;
 		end
@@ -152,6 +152,10 @@ function HousingUpgradeFrameMixin:SelectLevel(level, fromOnShow, forceRefresh)
 	end
 end
 
+function HousingUpgradeFrameMixin:CanUpgrade(neededFavor, selectedLevel)
+	return self.houseFavor >= neededFavor and self.actualLevel < selectedLevel and self.maxLevel > selectedLevel;
+end
+
 function HousingUpgradeFrameMixin:RefreshSelectedElement()
 	local elements = self.TrackFrame:GetElements();
 	local frame = elements[self.displayLevel];
@@ -160,8 +164,9 @@ function HousingUpgradeFrameMixin:RefreshSelectedElement()
 		frame:Refresh(self.actualLevel, self.displayLevel, selected, self.houseFavor);
 
 		local neededFavor = C_Housing.GetHouseLevelFavorForLevel(self.displayLevel);
-		self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel);
-		if self:IsShown() and self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
+		local canUpgrade = self:CanUpgrade(neededFavor, self.displayLevel);
+		self.TrackFrame.ReminderText:SetShown(canUpgrade);
+		if self:IsShown() and canUpgrade then
 			PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_FILLED);
 		end
 	end
@@ -192,9 +197,9 @@ local ValueTypeStrings = {
 };
 
 local ValueTypePortraits = {
-	[Enum.HouseLevelRewardValueType.InteriorDecor] = "house-decor-budget-icon",
-	[Enum.HouseLevelRewardValueType.ExteriorDecor] = "house-outdoor-budget-icon",
-	[Enum.HouseLevelRewardValueType.Rooms] =         "house-room-limit-icon",
+	[Enum.HouseLevelRewardValueType.InteriorDecor] = "Reward_GenericBudget",
+	[Enum.HouseLevelRewardValueType.ExteriorDecor] = "Reward_GenericBudget",
+	[Enum.HouseLevelRewardValueType.Rooms] =         "Reward_GenericRoom",
 	[Enum.HouseLevelRewardValueType.Fixtures] =      "house-fixture-budget-icon",
 }
 
@@ -210,14 +215,14 @@ local QuestionMarkIconFileDataID = 134400;
 function HousingUpgradeFrameMixin:SetRewards(selectedLevel)
 
 	local neededFavor = C_Housing.GetHouseLevelFavorForLevel(selectedLevel);
-	self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < selectedLevel)
-
-	local rewards = self.houseLevelRewardInfos[selectedLevel].rewards;
+	self.TrackFrame.ReminderText:SetShown(self:CanUpgrade(neededFavor, selectedLevel))
+	local info = self.houseLevelRewardInfos[selectedLevel];
+	local rewards = info.rewards;
 
 	self.rewardPoolLarge:ReleaseAll();
 	self.rewardPoolSmall:ReleaseAll();
 
-	if rewards == "no rewards" then
+	if info.isMax then
 		self.RewardsFrame.ComingSoonText:Show();
 		return;
 	else
@@ -303,13 +308,14 @@ end
 
 function HouseUpgradeLevelFrameMixin:Refresh(actualLevel, displayLevel, selected, currentFavor)
 	local level = self:GetLevel();
+	local isMax = self.info and self.info.isMax;
 	local earned = level <= actualLevel;
 	local enoughFavor = C_Housing.GetHouseLevelFavorForLevel(level) <= currentFavor;
 
-	self.Pip:SetShown(enoughFavor and (actualLevel < level));
+	self.Pip:SetShown(not isMax and enoughFavor and (actualLevel < level));
 	self.Checkmark:SetShown(level <= actualLevel);
 
-	self.Level:SetText(level);
+	self.Level:SetText(isMax and HOUSING_DASHBOARD_ETC_LEVEL or level);
 
 	if selected then
 		self.Plaque:SetAtlas("house-upgrade-reward-level-plaque-active");
@@ -518,6 +524,18 @@ function HouseUpgradeProgressBarMixin:UpdateFill()
 		return;
 	end
 
+	if self:IsVisible() and self.targetPercentage ~= self.currentPercentage then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_START);
+
+		if self.loopSoundHandle then
+			StopSound(self.loopSoundHandle);
+			self.loopSoundHandle = nil;
+		end
+
+		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_LOOP);
+		self.loopSoundHandle = soundHandle;
+	end
+
 	local function UpdateGivenPercentage(newPercentage)
 		local rotateAmount = (0.5 - newPercentage) * 2 * math.pi;
 		self:DoToEdges("SetRotation", rotateAmount);
@@ -585,18 +603,6 @@ function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
 	local finalDisplayPercentage = ((basePercentage * barDegreesVisible) + (barDegreesCovered / 2)) / 360;
 
 	self.targetPercentage = finalDisplayPercentage;
-
-	if self:IsVisible() and self.targetPercentage ~= self.currentPercentage then
-		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_START);
-
-		if self.loopSoundHandle then
-			StopSound(self.loopSoundHandle);
-			self.loopSoundHandle = nil;
-		end
-
-		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_LOOP);
-		self.loopSoundHandle = soundHandle;
-	end
 end
 
 

@@ -18,6 +18,9 @@ local GARRISON_FOLLOWER_TYPEConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GARRISON_FOLLOWER_TYPEConstants);

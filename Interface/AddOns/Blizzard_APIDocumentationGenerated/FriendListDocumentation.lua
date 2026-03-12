@@ -632,6 +632,14 @@ local FriendList =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresFriendList",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FriendList);

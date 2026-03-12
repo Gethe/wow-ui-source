@@ -96,6 +96,9 @@ local UIManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIManager);

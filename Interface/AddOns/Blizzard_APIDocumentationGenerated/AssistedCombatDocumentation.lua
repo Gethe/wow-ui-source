@@ -65,6 +65,9 @@ local AssistedCombat =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AssistedCombat);

@@ -54,6 +54,17 @@ function SetCVarTable(name, tbl)
 	SetCVar(name, encodedTbl);
 end
 
+function GetCVarTableValue(name, key, default)
+	local tbl = GetCVarTable(name);
+	return tbl[key] or default;
+end
+
+function SetCVarTableValue(name, key, value)
+	local tbl = GetCVarTable(name);
+	tbl[key] = value;
+	SetCVarTable(name, tbl);
+end
+
 -- Assumes every value stored in the cvar is of the same type. The purpose
 -- of using this accessor is to add type strictness to avoid scenarios where
 -- nil is implicitly converted to "0" or false and to relieve the callsites of
@@ -136,7 +147,10 @@ function CVarCallbackRegistry:GetCVarValue(cvar)
 	if value == nil then
 		value = GetCVar(cvar);
 
-		if self.cachable[cvar] then
+		-- Only cache values if execution isn't tainted, as otherwise all
+		-- future reads of this cached value (until evicted by a CVAR_UPDATE)
+		-- will taint execution.
+		if self.cachable[cvar] and issecure() then
 			self.cvarValueCache[cvar] = value;
 		end
 	end

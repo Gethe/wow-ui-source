@@ -278,9 +278,17 @@ local RecentAllies =
 				{ Name = "isDND", Type = "bool", Nilable = false },
 				{ Name = "isAFK", Type = "bool", Nilable = false },
 				{ Name = "pinExpirationDate", Type = "time_t", Nilable = true },
-				{ Name = "hasFriendRequestPending", Type = "bool", Nilable = false },
+				{ Name = "friendRequestSentThisSession", Type = "bool", Nilable = false },
 				{ Name = "currentLocation", Type = "string", Nilable = true },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequiresRecentAllies",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

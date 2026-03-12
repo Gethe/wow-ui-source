@@ -6,6 +6,7 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupSelfHighlightSelectButtonMixin,
 		UnitPopupPvpFlagButtonMixin,
 		UnitPopupLootSubsectionTitle,
+		UnitPopupLootMethodButtonMixin,
 		UnitPopupSelectLootSpecializationButtonMixin,
 		UnitPopupInstanceSubsectionTitle,
 		UnitPopupConvertToRaidButtonMixin,

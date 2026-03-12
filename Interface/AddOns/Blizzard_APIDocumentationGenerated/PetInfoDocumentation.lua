@@ -189,6 +189,9 @@ local PetInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PetInfo);

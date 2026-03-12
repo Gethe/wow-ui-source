@@ -283,13 +283,13 @@ function GroupLootFrame_StopNeedAnimation(self)
 	end
 end
 
-function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID)
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel)
 	local frame = BonusRollFrame;
-	
+
 	if ( frame:IsShown() and frame.spellID == spellID ) then
 		return;
 	end
-	
+
 	-- No valid currency data--use the fall back.
 	if ( currencyID == 0 ) then
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
@@ -311,6 +311,24 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, curr
 	frame.remaining = duration;
 	frame.CurrentCountFrame.currencyID = currencyID;
 	frame.difficultyID = difficultyID;
+	frame.PromptFrame.EncounterJournalLinkButton.displayItemID = displayItemID;
+	frame.PromptFrame.EncounterJournalLinkButton.itemContext = itemContext;
+	frame.PromptFrame.EncounterJournalLinkButton.treasureContextLevel = treasureContextLevel;
+
+	-- If a specific item has been provided for the bonus roll show the icon for that item, otherwise show the generic bonus roll icon.
+	frame.PromptFrame.Icon:SetAtlas("BonusLoot-Chest", TextureKitConstants.IgnoreAtlasSize);
+
+	if displayItemID and displayItemID ~= 0 then
+		local item = Item:CreateFromItemID(displayItemID);
+		item:ContinueOnItemLoad(function()
+			if frame.PromptFrame.EncounterJournalLinkButton.displayItemID == displayItemID then
+				local itemIcon = select(10, C_Item.GetItemInfo(displayItemID));
+				if itemIcon then
+					frame.PromptFrame.Icon:SetTexture(itemIcon);
+				end
+			end
+		end);
+	end
 
 	local instanceID, encounterID = GetJournalInfoForSpellConfirmation(spellID);
 	frame.instanceID = instanceID;
@@ -389,7 +407,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
 		self.rewardSpecID = rewardSpecID;
-		self.currencyID = currencyID; 
+		self.currencyID = currencyID;
 		self.isSecondaryResult = isSecondaryResult;
 		self.isCorrupted = isCorrupted;
 		self.StartRollAnim:Finish();
@@ -488,15 +506,15 @@ end
 EncounterJournalLinkButtonMixin = {};
 
 function EncounterJournalLinkButtonMixin:IsLinkDataAvailable()
-    if ( BonusRollFrame.instanceID and BonusRollFrame.instanceID ~= 0 ) then
-        local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
-        -- Mythic+ doesn't yet have all the itemContext info available 
-        --that we need to properly show item tooltips
-        if ( difficultyID ~= nil and difficultyID ~= DifficultyUtil.ID.DungeonChallenge) then
-            return true;
-        end
-    end
-    return false;
+	if ( BonusRollFrame.instanceID and BonusRollFrame.instanceID ~= 0 ) then
+		local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
+		-- Mythic+ doesn't yet have all the itemContext info available
+		--that we need to properly show item tooltips
+		if ( difficultyID ~= nil and difficultyID ~= DifficultyUtil.ID.DungeonChallenge) then
+			return true;
+		end
+	end
+	return false;
 end
 
 function EncounterJournalLinkButtonMixin:OnShow()
@@ -516,11 +534,18 @@ end
 
 function EncounterJournalLinkButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, BONUS_ROLL_TOOLTIP_TITLE);
-	GameTooltip_AddNormalLine(GameTooltip, BONUS_ROLL_TOOLTIP_TEXT);
 
-	if ( self:IsLinkDataAvailable() ) then
-		GameTooltip_AddInstructionLine(GameTooltip, BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK);
+	-- If a specific item has been provided for the bonus roll show the tooltip for that item, otherwise show the generic bonus roll tooltip.
+	if self.displayItemID and self.displayItemID ~= 0 then
+		local treasureContextLevel = self.treasureContextLevel and self.treasureContextLevel > 0 and self.treasureContextLevel or nil;
+		GameTooltip:SetItemByID(self.displayItemID, nil, self.itemContext, treasureContextLevel);
+	else
+		GameTooltip_SetTitle(GameTooltip, BONUS_ROLL_TOOLTIP_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, BONUS_ROLL_TOOLTIP_TEXT);
+
+		if self:IsLinkDataAvailable() then
+			GameTooltip_AddInstructionLine(GameTooltip, BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK);
+		end
 	end
 
 	GameTooltip:Show();

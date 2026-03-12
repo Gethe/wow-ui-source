@@ -1,26 +1,73 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<ScopedModifier forbidden="true">
-		<Frame name="HouseEditorLayoutFloorSelectTemplate" mixin="HouseEditorLayoutFloorSelectMixin" virtual="true">
-			<Size x="150" y="50"/>
-			<Anchors>
-				<Anchor point="BOTTOMRIGHT" x="-40" y="50" />
-			</Anchors>
+		<Button name="HouseEditorLayoutFloorLineTemplate" mixin="HouseEditorLayoutFloorLineMixin" virtual="true">
+			<Size x="256" y="40"/>
 			<Layers>
+				<Layer level="BORDER">
+					<Texture parentKey="TopDivider" atlas="housing-floor-list-divider-default" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="BottomDivider" atlas="housing-floor-list-divider-default" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="DoorIcon" atlas="housing-floor-door-inactive" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="LEFT" x="4" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="FloorText" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE">
 						<Size x="0" y="0"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>
+						<Color color="HOUSING_STORAGE_HEADER_COLOR"/>
 					</FontString>
 				</Layer>
 			</Layers>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<Frame name="HouseEditorLayoutFloorSelectTemplate" mixin="HouseEditorLayoutFloorSelectMixin" virtual="true">
+			<Size x="280" y="128"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" x="-40" y="50" />
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" atlas="housing-floor-container-bg" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER" x="-12" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
 			<Frames>
+				<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+					<KeyValues>
+						<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Frame>
 				<Button parentKey="UpButton">
 					<Size x="16" y="16" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="5"/>
 					</Anchors>
 					<NormalTexture atlas="housing-floor-arrow-up-default" setAllPoints="true"/>
 					<PushedTexture atlas="housing-floor-arrow-up-pressed" setAllPoints="true"/>
@@ -30,7 +77,7 @@
 				<Button parentKey="DownButton">
 					<Size x="16" y="16" />
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="-5"/>
 					</Anchors>
 					<NormalTexture atlas="housing-floor-arrow-down-default" setAllPoints="true"/>
 					<PushedTexture atlas="housing-floor-arrow-down-pressed" setAllPoints="true"/>
@@ -48,9 +95,9 @@
 
 		<Frame name="HouseEditorLayoutModeTemplate" mixin="HouseEditorLayoutModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
 			<Frames>
-				<Frame parentKey="RoomCount" inherits="HouseEditorRoomCountTemplate"/>
-				<Frame parentKey="FloorSelect" inherits="HouseEditorLayoutFloorSelectTemplate"/>
-				<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+				<Frame parentKey="RoomCount" inherits="HouseEditorRoomCountTemplate" frameLevel="1000"/>
+				<Frame parentKey="FloorSelect" inherits="HouseEditorLayoutFloorSelectTemplate" frameLevel="1000"/>
+				<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate" frameLevel="1000">
 					<Frames>
 						<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
 							<KeyValues>

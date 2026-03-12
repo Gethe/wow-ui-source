@@ -7,7 +7,7 @@
 				<AbsDimension x="250" y="120"/>
 			</minResize>
 			<maxResize>
-				<AbsDimension x="800" y="800"/>
+				<AbsDimension x="600" y="600"/>
 			</maxResize>
 		</ResizeBounds>
 		<Layers>

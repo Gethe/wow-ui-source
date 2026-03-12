@@ -39,6 +39,14 @@ local ActionBarShared =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresValidActionSlot",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ActionBarShared);

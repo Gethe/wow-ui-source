@@ -19,6 +19,9 @@ local GamePadConst =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GamePadConst);

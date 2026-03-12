@@ -322,6 +322,9 @@ function UIParent_OnLoad(self)
 
 	-- Events(s) for Remix Event
 	self:RegisterEvent("REMIX_END_OF_EVENT");
+
+	-- Events(s) for Journeys
+	self:RegisterEvent("SHOW_JOURNEYS_UI");
 end
 
 function UIParent_OnShow(self)
@@ -1060,7 +1063,7 @@ function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();
 	end
-	DeathRecapFrame_OpenRecap(id);
+	DeathRecapFrame:OpenRecap(id);
 end
 
 function InspectUnit(unit)
@@ -1572,7 +1575,7 @@ function UIParent_OnEvent(self, event, ...)
 				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.BonusRoll then
-					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
+					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID, spellConfirmation.displayItemID, spellConfirmation.itemContext, spellConfirmation.treasureContextLevel);
 				end
 			end
 		end
@@ -1734,7 +1737,7 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
+		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel = ...;
 		if ( confirmType == Enum.ConfirmationPromptUIType.StaticText ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert ) then
@@ -1744,7 +1747,7 @@ function UIParent_OnEvent(self, event, ...)
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", text, nil, spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.BonusRoll ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
@@ -2293,6 +2296,12 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif event == "REMIX_END_OF_EVENT" then
 		StaticPopup_Show("REMIX_END_OF_EVENT_NOTICE");
+	elseif event == "SHOW_JOURNEYS_UI" then
+		if not EncounterJournal then
+			EncounterJournal_LoadUI();
+		end	
+		local factionID = ...;
+		EncounterJournal_OpenToJourney(factionID);
     end
 end
 
@@ -2382,8 +2391,12 @@ function ToggleGameMenu()
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
 	elseif(ALLOW_PLAYER_CHOICE_ON_GAME_MENU_TOGGLE and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then
+	elseif (HousingInspectModeManagerFrame and HousingInspectModeManagerFrame:IsInspectModeActive()) then
+		HousingInspectModeManagerFrame:ExitInspectMode();
 	elseif(ReportFrame and ReportFrame:IsShown()) then
 		ReportFrame:Hide();
+	elseif(PhotoSharingFrame and PhotoSharingFrame:IsShown()) then
+		PhotoSharingFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);

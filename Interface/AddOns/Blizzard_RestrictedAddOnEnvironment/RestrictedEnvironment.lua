@@ -158,7 +158,7 @@ ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
 ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
 ENV.UnitTargetsVehicleInRaidUI = UnitTargetsVehicleInRaidUI;
 
-local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
+local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true, ["outfit"] = true}
 local function scrubActionInfo(actionType, id, subType, ...)
 	if actionType == "spell" and subType == "assistedcombat" then
 		return actionType, C_AssistedCombat.GetActionSpell(), subType, ...;
@@ -211,6 +211,16 @@ function ENV.UnitHasVehicleUI(unit)
     return UnitHasVehicleUI(unit) and
         (UnitCanAssist("player", unit:gsub("(%D+)(%d*)", "%1pet%2")) and true) or
         (UnitCanAssist("player", unit) and false);
+end
+
+function ENV.GetTransmogOutfitIndex(outfitID)
+	local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(outfitID);
+
+	if outfitInfo then
+		return outfitInfo.playerFacingOutfitIndex;
+	else
+		return nil;
+	end
 end
 
 -- The following functions are outbound calls to Lua functions defined in the

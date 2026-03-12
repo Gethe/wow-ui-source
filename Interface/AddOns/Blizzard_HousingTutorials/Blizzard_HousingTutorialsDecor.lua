@@ -175,7 +175,15 @@ function HouseDecorQuestTutorialMixin:UpdateInProgressHelpTip()
 	if helpTipInfo.formattingText then
 		local objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
 		if objectiveText and not finished then
-			self.helpTipInfos[HousingTutorialStates.QuestTutorials.QuestInProgress].text = helpTipInfo.formattingText:format(objectiveText);
+			local text = helpTipInfo.formattingText;
+			if self.questID == HousingTutorialQuestIDs.CleanupQuest then
+				local removeBindingText = GetBindingKey("HOUSING_REMOVEDECOR") or NPE_UNBOUND_KEYBIND;
+				text = text:format(removeBindingText, objectiveText);
+			else
+				text = text:format(objectiveText);
+			end
+
+			self.helpTipInfos[HousingTutorialStates.QuestTutorials.QuestInProgress].text = text;
 		else
 			HelpTip:Hide(self.helpTipParent, helpTipInfo.text);
 		end

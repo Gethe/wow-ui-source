@@ -27,6 +27,9 @@ local UITextureConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UITextureConstants);

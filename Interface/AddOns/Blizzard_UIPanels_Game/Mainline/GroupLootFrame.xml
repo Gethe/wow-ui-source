@@ -147,7 +147,7 @@
 			<Frame parentKey="PromptFrame" useParentLevel="true" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="BonusLoot-Chest">
+						<Texture parentKey="Icon">
 							<Size x="45" y="45"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" x="9" y="-11"/>

@@ -114,6 +114,7 @@ CompactUnitFrameProfiles:Init({
 	raidFramesDisplayAggroHighlight				= { option = "displayAggroHighlight", target = "all" },
 	raidFramesDisplayClassColor					= { option = "useClassColors", },
 	raidFramesHealthBarColor					= { option = "healthBarColor", accessor = CUF_GetCVarColor, },
+	raidFramesHealthBarColorBG					= { option = "healthBarColorBG", accessor = CUF_GetCVarColor, },
 	raidOptionDisplayPets						= { option = "DisplayPets", mutator = CUF_SetRaidFrameManagerSetting, },
 	raidOptionDisplayMainTankAndAssist			= { option = "DisplayMainTankAndAssist", mutator = CUF_SetRaidFrameManagerSetting, },
 	raidFramesDisplayDebuffs					= { option = "displayDebuffs", },

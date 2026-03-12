@@ -17,6 +17,9 @@ local CameraConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CameraConstants);

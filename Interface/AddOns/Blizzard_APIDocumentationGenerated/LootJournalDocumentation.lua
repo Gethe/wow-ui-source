@@ -75,6 +75,9 @@ local LootJournal =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LootJournal);

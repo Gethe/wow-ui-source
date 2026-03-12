@@ -512,6 +512,9 @@ local LFGInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LFGInfo);

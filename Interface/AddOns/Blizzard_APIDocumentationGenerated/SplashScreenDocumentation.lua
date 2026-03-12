@@ -82,6 +82,9 @@ local SplashScreen =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SplashScreen);

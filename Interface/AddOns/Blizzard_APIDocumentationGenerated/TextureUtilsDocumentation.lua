@@ -206,6 +206,9 @@ local TextureUtils =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TextureUtils);

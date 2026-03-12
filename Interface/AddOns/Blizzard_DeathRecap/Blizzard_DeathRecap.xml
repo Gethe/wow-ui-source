@@ -1,18 +1,34 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_DeathRecap.lua"/>
 
-	<Frame name="DeathRecapEntryTemplate" parentArray="DeathRecapEntry" virtual="true">
-		<Size x="348" y="32"/>
+	<Frame name="DeathRecapEntryTemplate" mixin="DeathRecapEntryMixin" parentArray="DeathRecapEntry" virtual="true">
+		<Size y="32"/>
 		<Frames>
 			<Frame parentKey="DamageInfo">
+				<Size x="140"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="100" y="0"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">
+						<Texture parentKey="TombstoneIcon" atlas="deathrecap-icon-tombstone" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="AvoidableIcon" atlas="damagemeters-avoidabledamage-icon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TombstoneIcon" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DeadlyIcon" atlas="icons_16x16_deadly" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AvoidableIcon" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin" maxLines="1">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="9" type="number"/>
 							</KeyValues>
@@ -22,7 +38,7 @@
 							</Anchors>
 							<Color r="0.75" g="0.05" b="0.05" a="1"/>
 						</FontString>
-						<FontString parentKey="AmountLarge" inherits="GameFontNormalLarge2" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" hidden="true" mixin="AutoScalingFontStringMixin">
+						<FontString parentKey="AmountLarge" inherits="GameFontNormalLarge2" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" hidden="true" mixin="AutoScalingFontStringMixin" maxLines="1">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>
 							</KeyValues>
@@ -34,10 +50,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter function="DeathRecapFrame_Amount_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="SpellInfo">
 				<Anchors>
@@ -74,16 +86,15 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter function="DeathRecapFrame_Spell_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
-	<Frame name="DeathRecapFrame" frameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
-		<Size x="380" y="326"/>
+	<Frame name="DeathRecapFrame" mixin="DeathRecapMixin" frameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
+		<Size x="410" y="326"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -191,66 +202,28 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-32"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						self:GetParent():StartMoving();
-					</OnDragStart>
-					<OnDragStop>
-						self:GetParent():StopMovingOrSizing();
-					</OnDragStop>
-				</Scripts>
 			</Button>
-			<Frame parentKey="Recap1" inherits="DeathRecapEntryTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="16" y="64"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="tombstone" atlas="deathrecap-icon-tombstone" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.DamageInfo.Amount" relativePoint="LEFT" x="-10" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentKey="Recap2" inherits="DeathRecapEntryTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Recap1" relativePoint="TOP" x="0" y="14"/>
+					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Recap3" inherits="DeathRecapEntryTemplate">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Recap2" relativePoint="TOP" x="0" y="14"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="Recap4" inherits="DeathRecapEntryTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Recap3" relativePoint="TOP" x="0" y="14"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Recap5" inherits="DeathRecapEntryTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Recap4" relativePoint="TOP" x="0" y="14"/>
-				</Anchors>
-			</Frame>
+			</EventFrame>
 			<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="144" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="15"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(DeathRecapFrame);
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnHide function="DeathRecapFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

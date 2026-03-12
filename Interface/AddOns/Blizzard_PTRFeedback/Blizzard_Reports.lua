@@ -122,6 +122,21 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 
 		return results
 	end
+
+	local GetAreaID = function()
+		local mapID = C_Map.GetBestMapForUnit("player")
+		if (mapID) then
+			local position = C_Map.GetPlayerMapPosition(mapID, "player")
+			if (position) then
+				local areaIDs = C_MapExplorationInfo.GetExploredAreaIDsAtPosition(mapID, position)
+				if (areaIDs[1]) then
+					return areaIDs[1]
+				end
+			end
+		end
+
+		return 0
+	end
 	
 	if (setAsFeedback) then
 		survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetFeedbackMessageKey)
@@ -141,6 +156,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 	survey:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
 	survey:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
 	survey:AddDataCollection(collector.RunFunction, IsTimerunningActive)
+	survey:AddDataCollection(collector.RunFunction, GetAreaID)
 	
 	if not (ignoreTypeQuestion) then
 		survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }}, nil, true)

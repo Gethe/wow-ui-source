@@ -47,6 +47,9 @@ local LevelSquish =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LevelSquish);

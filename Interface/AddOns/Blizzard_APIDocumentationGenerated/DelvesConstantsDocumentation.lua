@@ -41,6 +41,19 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "TieredEntranceType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
+				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
+				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "DelveAssistActionData",
 			Type = "Structure",
 			Fields =
@@ -63,6 +76,19 @@ local DelvesConstants =
 				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
 			},
 		},
+		{
+			Name = "TieredEntranceConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_TIER_LEVEL", Type = "number", Value = 1 },
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_MAP_ID", Type = "number", Value = 3 },
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_PLAYER_CONDITION_ID", Type = "number", Value = 6 },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

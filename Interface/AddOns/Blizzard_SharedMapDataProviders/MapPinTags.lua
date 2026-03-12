@@ -1,1 +1,1 @@
-MapPinTags =  EnumUtil.MakeEnum("QuestOffer", "Event", "FlightPoint", "WorldQuest", "BonusObjective");
+MapPinTags =  EnumUtil.MakeEnum("QuestOffer", "Event", "FlightPoint", "WorldQuest", "BonusObjective", "IsSuppressible");

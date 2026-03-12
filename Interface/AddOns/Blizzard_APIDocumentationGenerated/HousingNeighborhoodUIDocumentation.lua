@@ -411,6 +411,9 @@ local HousingNeighborhoodUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingNeighborhoodUI);

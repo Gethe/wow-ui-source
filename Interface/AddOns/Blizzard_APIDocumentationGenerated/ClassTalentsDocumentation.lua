@@ -428,6 +428,9 @@ local ClassTalents =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClassTalents);

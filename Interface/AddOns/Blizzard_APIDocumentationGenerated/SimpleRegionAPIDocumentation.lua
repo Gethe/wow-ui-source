@@ -223,6 +223,9 @@ local SimpleRegionAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleRegionAPI);

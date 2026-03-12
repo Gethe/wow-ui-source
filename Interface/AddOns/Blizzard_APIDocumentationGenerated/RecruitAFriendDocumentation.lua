@@ -455,6 +455,9 @@ local RecruitAFriend =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RecruitAFriend);

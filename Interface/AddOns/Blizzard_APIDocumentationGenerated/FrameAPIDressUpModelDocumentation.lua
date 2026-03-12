@@ -263,6 +263,9 @@ local FrameAPIDressUpModel =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIDressUpModel);

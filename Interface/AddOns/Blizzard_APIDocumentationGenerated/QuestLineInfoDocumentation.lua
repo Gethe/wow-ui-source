@@ -158,6 +158,9 @@ local QuestLineInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestLineInfo);

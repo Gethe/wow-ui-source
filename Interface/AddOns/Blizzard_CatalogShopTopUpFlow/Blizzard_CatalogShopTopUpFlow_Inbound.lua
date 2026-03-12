@@ -34,3 +34,7 @@ end
 function CatalogShopTopUpFlowInboundInterface.SetCurrentBalance(currentBalance)
 	CatalogShopTopUpFrame:SetAttribute("setcurrentbalance", currentBalance);
 end
+
+function CatalogShopTopUpFlowInboundInterface.SetSuggestedProduct(productID)
+	CatalogShopTopUpFrame:SetAttribute("setsuggestedproduct", productID);
+end

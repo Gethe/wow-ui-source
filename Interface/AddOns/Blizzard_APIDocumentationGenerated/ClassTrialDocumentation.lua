@@ -28,6 +28,9 @@ local ClassTrial =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClassTrial);

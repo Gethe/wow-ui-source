@@ -11,7 +11,7 @@ HousingCatalogCategoriesMixin = {};
 function HousingCatalogCategoriesMixin:OnLoad()
 	self.categoryPool = CreateFramePool("BUTTON", self, "HousingCatalogCategoryTemplate");
 	self.subcategoryPool = CreateFramePool("BUTTON", self, "HousingCatalogSubcategoryTemplate");
-	self.categorySearchParams = { withOwnedEntriesOnly = false };
+	self.categorySearchParams = { withStoredEntriesOnly = false };
 	self.AllSubcategoriesStandIn:SetSize(self.subcategoryButtonSize, self.subcategoryButtonSize);
 end
 
@@ -42,6 +42,11 @@ end
 function HousingCatalogCategoriesMixin:Initialize(onFocusChangedCallback, initialSearchParams)
 	self.onFocusChangedCallback = onFocusChangedCallback;
 	self.categorySearchParams = initialSearchParams;
+	self.savedFocusStates = {};
+end
+
+function HousingCatalogCategoriesMixin:SetSavedStateKey(key)
+	self.savedStateKey = key;
 end
 
 function HousingCatalogCategoriesMixin:PopulateCategories(tryRetainFocus)
@@ -50,7 +55,7 @@ function HousingCatalogCategoriesMixin:PopulateCategories(tryRetainFocus)
 	self.categories = {};
 
 	-- Cache info for all categories regardless of filter so that we have a stable backing collection to filter from and update
-	local noFilterParams = { withOwnedEntriesOnly = false, includeFeaturedCategory = true };
+	local noFilterParams = { withStoredEntriesOnly = false, includeFeaturedCategory = true };
 	local categoryIDs = C_HousingCatalog.SearchCatalogCategories(noFilterParams);
 	for _, categoryID in ipairs(categoryIDs) do
 		local categoryInfo = C_HousingCatalog.GetCatalogCategoryInfo(categoryID);
@@ -162,6 +167,10 @@ function HousingCatalogCategoriesMixin:ClearFocus(forceRebuild)
 end
 
 function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcategoryID, forceRebuild, forceFocusChanged)
+	if not self.categories then
+		return;
+	end
+
 	-- Default to the "All" category if no category specified
 	focusedCategoryID = focusedCategoryID or Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID;
 
@@ -197,6 +206,10 @@ function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcat
 		if self.onFocusChangedCallback then
 			self.onFocusChangedCallback(self.focusedCategoryID, self.focusedSubcategoryID);
 		end
+	end
+
+	if didAnyFocusChange then
+		self:SaveFocusState();
 	end
 end
 
@@ -458,6 +471,31 @@ function HousingCatalogCategoriesMixin:OnSubcategoryUpdated(subcategoryID)
 		local forceRebuild = true;
 		self:SetFocus(self.focusedCategoryID, self.focusedSubcategoryID, forceRebuild);
 	end
+end
+
+function HousingCatalogCategoriesMixin:SaveFocusState()
+	local key = self.savedStateKey;
+
+	if key then
+		self.savedFocusStates[key] = {
+			categoryID = self.focusedCategoryID,
+			subcategoryID = self.focusedSubcategoryID,
+		};
+	end
+end
+
+function HousingCatalogCategoriesMixin:RestoreFocusState(key, defaultFocusedCategoryID)
+	local savedState = self.savedFocusStates[key];
+	if not savedState then
+		if defaultFocusedCategoryID then
+			self:SetFocus(defaultFocusedCategoryID, nil);
+			return true;
+		end
+		return false;
+	end
+
+	self:SetFocus(savedState.categoryID, savedState.subcategoryID);
+	return true;
 end
 
 function HousingCatalogCategoriesMixin:OnCategoryClicked(categoryFrame)

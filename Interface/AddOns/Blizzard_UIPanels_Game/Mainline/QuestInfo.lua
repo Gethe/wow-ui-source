@@ -47,8 +47,6 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		end
 	end
 
-	QuestFrame.AccountCompletedNotice:Refresh();
-
 	QuestInfoFrame.questLog = template.questLog;
 	QuestInfoFrame.chooseItems = template.chooseItems;
 	QuestInfoFrame.acceptButton = acceptButton;
@@ -764,6 +762,11 @@ function QuestInfo_ShowRewards()
 		BeginRewardsSection();
 		local index;
 		local baseIndex = rewardsCount;
+
+		-- TODO: Investigate why GameTooltip:SetQuestLogCurrency is not indexing
+		-- into rewards like C_QuestLog.GetQuestRewardCurrencyInfo
+		local choiceItemIndex = 0;
+		local choiceCurrencyIndex = 0;
 		for i = 1, numQuestChoices do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
@@ -779,8 +782,16 @@ function QuestInfo_ShowRewards()
 
 			if (lootType == 0) then -- LOOT_LIST_ITEM
 				QuestInfo_ShowRewardAsItem(questItem, i);
+				if QuestInfoFrame.questLog then
+					choiceItemIndex = choiceItemIndex + 1;
+					questItem:SetID(choiceItemIndex);
+				end
 			elseif (lootType == 1) then -- LOOT_LIST_CURRENCY
 				QuestInfo_ShowChoiceRewardAsCurrency(questItem, i, true);
+				if QuestInfoFrame.questLog then
+					choiceCurrencyIndex = choiceCurrencyIndex + 1;
+					questItem:SetID(choiceCurrencyIndex);
+				end
 			end
 
 			AddRewardElement(questItem);

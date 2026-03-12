@@ -22,6 +22,9 @@ local ItemQualities =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ItemQualities);

@@ -19,6 +19,9 @@ local LogConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LogConstants);

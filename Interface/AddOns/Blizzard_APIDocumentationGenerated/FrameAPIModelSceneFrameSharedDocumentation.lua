@@ -15,6 +15,9 @@ local FrameAPIModelSceneFrameShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIModelSceneFrameShared);

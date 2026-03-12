@@ -16,6 +16,9 @@ local TraitConfig =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TraitConfig);

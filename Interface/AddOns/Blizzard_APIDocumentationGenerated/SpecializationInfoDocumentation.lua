@@ -554,6 +554,9 @@ local SpecializationInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpecializationInfo);

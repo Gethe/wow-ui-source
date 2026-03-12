@@ -32,6 +32,9 @@ local ClassColor =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClassColor);

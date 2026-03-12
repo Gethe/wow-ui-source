@@ -24,6 +24,9 @@ local CovenantCallingsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CovenantCallingsConstants);

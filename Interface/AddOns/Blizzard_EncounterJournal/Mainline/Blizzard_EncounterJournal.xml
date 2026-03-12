@@ -532,6 +532,15 @@
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.creature" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.creature" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="creature"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<NormalTexture inherits="UI-EJ-BossModelButton"/>
@@ -548,7 +557,7 @@
 			</OnDisable>
 			<OnEnable>
 				self:SetSize(50, 49);
-				self.creature:SetSize(30, 30);
+				self.creature:SetSize(36, 36);
 			</OnEnable>
 			<OnClick>
 				EncounterJournal_DisplayCreature(self);
@@ -1603,13 +1612,13 @@
 									<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
 									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="55" y="-10"/>
+										<Anchor point="TOPLEFT" x="60" y="-16"/>
 									</Anchors>
 								</Texture>
 								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
 									<Size x="290" y="12"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.difficultyIcon" relativePoint="RIGHT" x="-4" y="0"/>
+										<!-- Anchored dynamically in lua-->
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>

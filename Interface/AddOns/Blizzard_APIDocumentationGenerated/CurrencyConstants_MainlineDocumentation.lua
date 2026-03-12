@@ -108,6 +108,9 @@ local CurrencyConstants_Mainline =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CurrencyConstants_Mainline);

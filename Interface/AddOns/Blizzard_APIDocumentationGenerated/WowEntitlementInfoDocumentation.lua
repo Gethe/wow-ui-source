@@ -65,6 +65,9 @@ local WowEntitlementInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WowEntitlementInfo);

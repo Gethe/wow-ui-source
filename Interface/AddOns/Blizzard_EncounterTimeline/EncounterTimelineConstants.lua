@@ -25,10 +25,6 @@ EncounterTimelineConstants = {
 	-- 'amount' parameter passed to FrameDeltaLerp to fade out the trail texture
 	-- that follows timeline events when it's no longer needed.
 	TrailAlphaFadeRate = 0.4;
-
-	-- Alpha value used for paused events on the timeline. Separate from the alpha
-	-- applied per-track with curve madness.
-	PausedEventAlpha = 0.6;
 };
 
 -- Anchor definitions for timeline pip text. These can't be trivially handled
@@ -43,40 +39,80 @@ EncounterTimelinePipTextAnchors = {
 	VerticalFlipped = AnchorUtil.CreateAnchor("RIGHT", nil, "LEFT", -20, 0);
 };
 
-EncounterTimelineSettingDefaults = {
-	EventCountdownEnabled = true;
-	EventIconScale = 1.0;
-	EventTextEnabled = true;
-	EventTooltipsEnabled = true;
-	EventIndicatorIconMask = Constants.EncounterTimelineIconMasks.EncounterTimelineAllIcons;
-	ViewBackgroundAlpha = 1.0;
-	ViewDirection = Enum.EncounterEventsIconDirection.Right;
-	ViewOrientation = Enum.EncounterEventsOrientation.Horizontal;
-
-	-- The following settings aren't edit mode exposed, but are made available
-	-- for small tweaks.
-
-	PipDuration = 5.0;
-	PipIconShown = true;
-	PipTextAnchor = EncounterTimelinePipTextAnchors.Horizontal;
-	PipTextShown = true;
-
-	-- Offsets the timeline bar and all events up or down along the timeline.
-	CrossAxisOffset = 0;
-	-- The height of the timeline.
-	CrossAxisExtent = 55;
+EncounterTimelineTimerLayoutDirection = {
+	-- Anchor timers to the top of the timer list and grow downwards.
+	TopToBottom = 1,
+	-- Anchor timers to the bottom of the timer list and grow upwards.
+	BottomToTop = 2,
 };
 
-EncounterTimelineLayoutDefaults = {
-	-- Amount of padding to apply to the start of the timeline.
-	PrimaryAxisStartPadding = 20;
+EncounterTimelineSettingDefaults = {
+	-- If true, flip timeline orientation across the horizontal axis.
+	FlipHorizontally = false,
+	-- Time point at which animation effects for imminent events should be applied.
+	HighlightTime = 5.0,
+	-- Scale of icons for event displays.
+	IconScale = 1.0,
+	-- Bitmask of permitted spell support iconography indicators.
+	IndicatorIconMask = Constants.EncounterTimelineIconMasks.EncounterTimelineAllIcons,
+	-- If true, show countdown text or swipes.
+	ShowCountdown = true,
+	-- If true, show spell name or status texts.
+	ShowText = false,
+	-- Anchor mode for tooltips on hover.
+	TooltipAnchor = Enum.EncounterEventsTooltipAnchor.Default,
+};
+
+EncounterTimelineViewSettingDefaults = {
+	-- Alpha for background art assets.
+	BackgroundAlpha = 0.0,
+};
+
+EncounterTimelineTrackSettingDefaults = {
+	-- Offsets the track view and all events up or down along the timeline.
+	CrossAxisOffset = 0,
+	-- Icon travel direction for timeline events.
+	IconDirection = Enum.EncounterEventsIconDirection.Right,
+	-- General orientation of the track view.
+	Orientation = Enum.EncounterEventsOrientation.Horizontal,
+};
+
+EncounterTimelineTimerSettingDefaults = {
+	ShowIcon = true,
+	ShowTimerSpark = true,
+	TimerFillDirection = Enum.StatusBarTimerDirection.RemainingTime,
+};
+
+EncounterTimelineTrackViewSettingDefaults = {
+	-- Size allocated to the cross-axis of the timeline view (eg. if horizontal, this is the height).
+	CrossAxisExtent = 55,
+	-- AnchorMixin for positioning the pip text.
+	PipTextAnchor = EncounterTimelinePipTextAnchors.Horizontal,
+	-- If true, show a diamond on the timeline at the event highlight time point.
+	ShowPipIcon = true,
+	-- If true, show text below the pip diamond with the event highlight time as text (eg. "5").
+	ShowPipText = true,
+};
+
+EncounterTimelineTimerViewSettingDefaults = {
+	-- Flow direction for timer bars.
+	TimerLayoutDirection = EncounterTimelineTimerLayoutDirection.BottomToTop,
+	-- Spacing between elements in the timer bar display.
+	TimerSpacing = 2,
+	-- Width scaling to apply to the timer view display.
+	TimerWidthScale = 1.0,
+};
+
+EncounterTimelineTrackLayoutDefaults = {
 	-- Amount of padding to apply to the end of the timeline.
 	PrimaryAxisEndPadding = 20;
+	-- Amount of padding to apply to the start of the timeline.
+	PrimaryAxisStartPadding = 20;
 	-- Controls the size allocated to events in sorted tracks (eg. long or queued).
 	SortedEventExtent = 38;
 };
 
-EncounterEventOrientationSetup = {
+EncounterTimelineTrackOrientationSetup = {
 	[Enum.EncounterEventsOrientation.Horizontal] = {
 		[Enum.EncounterEventsIconDirection.Right] = {
 			primaryAxisOffsetMultiplier = 1;
@@ -142,12 +178,12 @@ EncounterTimelineIconSetMasks = {
 -- Curve to apply alpha changes to encounter event icons based on their
 -- current track. The 'x' coordinate is a track enum.
 
-EncounterTimelineIconAlphaCurve = C_CurveUtil.CreateCurve();
-EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Long, 0.6);
-EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Medium, 1.0);
-EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Short, 1.0);
-EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Queued, 1.0);
-EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Indeterminate, 1.0);
+EncounterTimelineTrackAlphaCurve = C_CurveUtil.CreateCurve();
+EncounterTimelineTrackAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Long, 0.6);
+EncounterTimelineTrackAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Medium, 1.0);
+EncounterTimelineTrackAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Short, 1.0);
+EncounterTimelineTrackAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Queued, 1.0);
+EncounterTimelineTrackAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Indeterminate, 1.0);
 
 -- Curve used to animate alpha changes to the trail highlight behind event
 -- icons as they move through linear timeline tracks. The 'x' coordinate is
@@ -174,3 +210,11 @@ EncounterTimelineSeverityFrameLevelCurve = C_CurveUtil.CreateCurve();
 EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.Low, 10);
 EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.Medium, 20);
 EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.High, 30);
+
+-- Seconds formatter used for durations shown on timer bars.
+
+EncounterTimelineSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
+EncounterTimelineSecondsFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, false, false);
+EncounterTimelineSecondsFormatter:SetDesiredUnitCount(2);
+EncounterTimelineSecondsFormatter:SetMinInterval(SecondsFormatter.Interval.Seconds);
+EncounterTimelineSecondsFormatter:SetStripIntervalWhitespace(true);

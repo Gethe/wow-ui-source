@@ -34,6 +34,9 @@ local SpellDiminishConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellDiminishConstants);

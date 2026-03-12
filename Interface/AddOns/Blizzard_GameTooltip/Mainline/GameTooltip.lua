@@ -195,7 +195,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) ) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) > 0) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -241,8 +241,8 @@ function GameTooltip_CalculatePadding(tooltip)
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
 
 	if not isItemTooltipShown and not isBottomFontStringShown then
-		if tooltip.SetPadding then
-			tooltip:SetPadding(0, 0, 0, 0);
+		if tooltip.ClearPadding then
+			tooltip:ClearPadding();
 		end
 		return;
 	end
@@ -402,7 +402,7 @@ function GameTooltip_OnHide(self)
 	if self.ItemTooltip then
 		EmbeddedItemTooltip_Hide(self.ItemTooltip);
 	end
-	self:SetPadding(0, 0, 0, 0);
+	self:ClearPadding();
 
 	self:ClearHandlerInfo();
 

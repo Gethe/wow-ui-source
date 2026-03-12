@@ -39,6 +39,9 @@ local ExternalEventURL =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ExternalEventURL);

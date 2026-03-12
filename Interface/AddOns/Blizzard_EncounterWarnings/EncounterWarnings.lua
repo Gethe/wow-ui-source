@@ -171,7 +171,7 @@ function EncounterWarningsSystemFrameMixin:UpdateSystemSettingVisibility()
 	self:UpdateVisibility();
 end
 
-function EncounterWarningsSystemFrameMixin:UpdateSystemSettingShowTooltips()
-	local tooltipsEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTooltips);
-	self:GetView():SetTooltipsEnabled(tooltipsEnabled);
+function EncounterWarningsSystemFrameMixin:UpdateSystemSettingTooltipAnchor()
+	local tooltipAnchor = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.TooltipAnchor);
+	self:GetView():SetTooltipAnchor(tooltipAnchor);
 end

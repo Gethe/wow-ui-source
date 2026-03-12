@@ -37,6 +37,9 @@ local GameError =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GameError);

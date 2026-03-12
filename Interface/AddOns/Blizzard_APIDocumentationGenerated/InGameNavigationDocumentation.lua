@@ -110,6 +110,9 @@ local InGameNavigation =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InGameNavigation);

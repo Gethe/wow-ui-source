@@ -364,6 +364,9 @@ local MinimapFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MinimapFrameAPI);

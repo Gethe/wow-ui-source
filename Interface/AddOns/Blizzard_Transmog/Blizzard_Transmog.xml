@@ -3,6 +3,9 @@
 	<Script file="Blizzard_Transmog.lua"/>
 
 	<Frame name="TransmogFrame" mixin="TransmogFrameMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="collapsedWidth" value="1308" type="number"/>
+		</KeyValues>
 		<Size x="1618" y="883"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-41"/>
@@ -13,7 +16,7 @@
 					<Anchor point="TOPLEFT" x="38" y="19"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="OutfitCollection" mixin="TransmogOutfitCollectionMixin">
+			<Frame parentKey="OutfitCollection" mixin="TransmogOutfitCollectionMixin" frameLevel="1">
 				<Size x="312" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-21"/>
@@ -21,12 +24,34 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="transmog-outfit-darkbg" setAllPoints="true"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="GradientTop" atlas="transmog-outfit-toptexture" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GradientBottom" atlas="transmog-outfit-bottomtexture" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="DividerBar" atlas="transmog-outfit-darkbg-cornerline">
 							<Size x="6" y="860"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="2" y="0"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="UsableDiscountText" inherits="GameFontNormal" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="CENTER" text="TRANSMOG_USABLE_DISCOUNT" hidden="true">
+							<Size x="287" y="18"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="11" y="42"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -36,22 +61,11 @@
 							<KeyValue key="labelText" value="TRANSMOG_SHOW_EQUIPPED_GEAR" type="global"/>
 							<KeyValue key="spellButtonJustifyLeft" value="true" type="boolean"/>
 							<KeyValue key="buttonBorderAtlas" value="transmog-outfit-spellframe" type="string"/>
-							<KeyValue key="textPadRight" value="28" type="number"/>
 						</KeyValues>
 						<Size x="280" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="14" y="-44"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="Checkmark" atlas="transmog-icon-tick" hidden="true">
-									<Size x="24" y="21"/>
-									<Anchors>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Frames>
 							<Frame parentKey="OverlayFX" frameLevel="100">
 								<Size x="36" y="36"/>
@@ -163,6 +177,12 @@
 									<Anchor point="BOTTOMRIGHT" x="9" y="6"/>
 								</Anchors>
 							</Frame>
+							<Frame parentKey="TooltipOverlay">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Money"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Money" relativePoint="BOTTOMRIGHT" x="-10" y="0"/>
+								</Anchors>
+							</Frame>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -181,7 +201,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.OutfitCollection" relativePoint="TOPRIGHT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CharacterPreview" mixin="TransmogCharacterMixin">
+			<Frame parentKey="CharacterPreview" mixin="TransmogCharacterMixin" frameLevel="1">
 				<Size x="658" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.OutfitCollection" relativePoint="TOPRIGHT"/>
@@ -341,23 +361,69 @@
 							</Frame>
 						</Frames>
 					</ModelScene>
-					<Frame parentKey="HideIgnoredToggle">
-						<Size x="30" y="29"/>
+					<Frame parentKey="ToggleOptions" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="5" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="25" y="-25"/>
 						</Anchors>
 						<Frames>
-							<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+							<Frame parentKey="HideIgnoredToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_HIDE_UNASSIGNED_SLOTS">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="SheatheWeaponToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_SHEATHE_WEAPON">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="PreviewedWeaponToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="3" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_PREVIEWED_WEAPON_TOGGLE">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 						</Frames>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_HIDE_UNASSIGNED_SLOTS">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 					</Frame>
 					<Frame parentKey="LeftSlots" inherits="VerticalLayoutFrame">
 						<KeyValues>
@@ -391,7 +457,7 @@
 					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="WardrobeCollection" mixin="TransmogWardrobeMixin" inherits="TabSystemOwnerTemplate">
+			<Frame parentKey="WardrobeCollection" mixin="TransmogWardrobeMixin" inherits="TabSystemOwnerTemplate" frameLevel="1">
 				<Size x="644" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CharacterPreview" relativePoint="TOPRIGHT"/>
@@ -466,21 +532,31 @@
 											<Anchor point="TOPRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPLEFT" x="-10" y="1"/>
 										</Anchors>
 									</EditBox>
-									<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate" hidden="false">
+									<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="-31" y="-106"/>
 										</Anchors>
 									</DropdownButton>
-									<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED">
+									<Frame parentKey="DisplayTypes" inherits="HorizontalLayoutFrame">
+										<KeyValues>
+											<KeyValue key="spacing" value="25" type="number"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.ActiveSlotTitle" relativePoint="BOTTOMLEFT" x="16" y="-21"/>
 										</Anchors>
-									</Button>
-									<Button parentKey="DisplayTypeEquippedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.DisplayTypeUnassignedButton" relativePoint="TOPRIGHT" x="25" y="0"/>
-										</Anchors>
-									</Button>
+										<Frames>
+											<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="1" type="number"/>
+												</KeyValues>
+											</Button>
+											<Button parentKey="DisplayTypeEquippedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="2" type="number"/>
+												</KeyValues>
+											</Button>
+										</Frames>
+									</Frame>
 									<Frame parentKey="PagedContent" inherits="PagedNaturalSizeGridContentFrameTemplate">
 										<KeyValues>
 											<KeyValue key="viewsPerPage" value="1" type="number"/>
@@ -501,7 +577,7 @@
 													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
-													<Anchor point="BOTTOM"/>
+													<Anchor point="BOTTOM" x="0" y="5"/>
 												</Anchors>
 											</Frame>
 										</Frames>
@@ -525,12 +601,18 @@
 											</Layer>
 										</Layers>
 									</Frame>
+									<DropdownButton parentKey="WeaponSheatheDropdown" inherits="WowStyle1DropdownTemplate">
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" x="29" y="22"/>
+										</Anchors>
+									</DropdownButton>
 								</Frames>
 								<Scripts>
 									<OnLoad method="OnLoad"/>
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
+									<OnKeyDown method="OnKeyDown"/>
 								</Scripts>
 							</Frame>
 							<Frame parentKey="SetsFrame" mixin="TransmogWardrobeSetsMixin" setAllPoints="true">
@@ -561,6 +643,16 @@
 											<Anchor point="TOPLEFT" x="26" y="-72"/>
 											<Anchor point="BOTTOMRIGHT" x="-26" y="10"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString parentKey="NoEntriesText" inherits="GameFontNormalMed2" text="TRANSMOG_SETS_NONE" hidden="true">
+													<Size x="590"/>
+													<Anchors>
+														<Anchor point="CENTER" x="-3" y="31"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Frames>
 											<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
 											<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
@@ -571,7 +663,7 @@
 													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
-													<Anchor point="BOTTOM"/>
+													<Anchor point="BOTTOM" x="0" y="5"/>
 												</Anchors>
 											</Frame>
 										</Frames>
@@ -608,6 +700,16 @@
 											<Anchor point="TOPLEFT" x="26" y="-72"/>
 											<Anchor point="BOTTOMRIGHT" x="-26" y="10"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString parentKey="NoEntriesText" inherits="GameFontNormalMed2" text="TRANSMOG_CUSTOM_SETS_NONE" hidden="true">
+													<Size x="590"/>
+													<Anchors>
+														<Anchor point="CENTER" x="-3" y="31"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Frames>
 											<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
 											<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
@@ -618,7 +720,7 @@
 													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
-													<Anchor point="BOTTOM"/>
+													<Anchor point="BOTTOM" x="0" y="5"/>
 												</Anchors>
 											</Frame>
 										</Frames>
@@ -657,7 +759,7 @@
 											<KeyValue key="spacing" value="15" type="number"/>
 										</KeyValues>
 										<Anchors>
-											<Anchor point="TOPLEFT" x="43" y="-261"/>
+											<Anchor point="TOPLEFT" x="43" y="-235"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -684,7 +786,7 @@
 										</Layers>
 									</Frame>
 									<Button parentKey="ApplyButton" inherits="SharedButtonTemplate" motionScriptsWhileDisabled="true" text="TRANSMOG_SITUATIONS_APPLY">
-										<Size x="146" y="33"/>
+										<Size x="165" y="33"/>
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="32"/>
 										</Anchors>

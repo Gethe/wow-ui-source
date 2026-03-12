@@ -99,6 +99,9 @@ local GarrisonShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GarrisonShared);

@@ -15,6 +15,7 @@ function StatusTrackingManagerMixin:RegisterEvents()
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED");
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterEvent("TRACKED_HOUSE_CHANGED");
+	self:RegisterEvent("PLAYER_MAX_LEVEL_UPDATE");
 	self:RegisterUnitEvent("UNIT_LEVEL", "player");
 end
 

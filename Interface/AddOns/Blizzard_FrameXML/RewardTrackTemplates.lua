@@ -47,39 +47,6 @@ function RewardTrackFrameMixin:Init(elementList, paragonInfo)
 		tinsert(self.Elements, frame);
 		if lastFrame then
 			frame:SetPoint("LEFT", lastFrame, "RIGHT", self.elementSpacing, 0);
-
-			-- If paragon info was passed along, show the paragon reward(s) at the end of the track
-			if paragonInfo then
-				self.ClipFrame.ParagonLevelFrame:SetPoint("LEFT", frame, "RIGHT", 15, 0);
-				self.ClipFrame.ParagonLevelFrame.Icon:SetTexture(paragonInfo.rewardInfo.icon);
-				self.ClipFrame.ParagonLevelFrame.Level:SetText(paragonInfo.level + self.numElements);
-
-				self.ClipFrame.ParagonLevelFrame.info = paragonInfo.rewardInfo;
-				self.ClipFrame.ParagonLevelFrame:SetScript("OnEnter", function(frame)
-					GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
-					GameTooltip_SetTitle(GameTooltip, frame.info.name);
-
-					if frame.info.isWarbandItem then
-						GameTooltip_AddColoredLine(GameTooltip, RENOWN_REWARD_ACCOUNT_UNLOCK_LABEL, ACCOUNT_WIDE_FONT_COLOR);
-					end
-
-					GameTooltip_AddBlankLineToTooltip(GameTooltip);
-					GameTooltip_AddNormalLine(GameTooltip, frame.info.description);
-
-					GameTooltip:Show();
-				end);
-
-				self.ClipFrame.ParagonLevelFrame:SetScript("OnLeave", function(frame)
-					if GameTooltip:GetOwner() == frame then
-						GameTooltip_Hide();
-					end
-				end);
-
-				self.ClipFrame.ParagonLevelFrame:Show();
-			else
-				self.ClipFrame.ParagonLevelFrame:ClearAllPoints();
-				self.ClipFrame.ParagonLevelFrame:Hide();
-			end
 		else
 			self.headElement = frame;
 			frame:SetPoint("CENTER");
@@ -90,6 +57,40 @@ function RewardTrackFrameMixin:Init(elementList, paragonInfo)
 
 	for i, elementInfo in ipairs(elementList) do
 		self.Elements[i]:SetInfo(elementList[i]);
+	end
+
+	-- If paragon info was passed along, show the paragon reward(s) at the end of the track
+	if paragonInfo and lastFrame.info.locked == false then
+		self.ClipFrame.ParagonLevelFrame:SetPoint("LEFT", lastFrame, "RIGHT", 15, 0);
+		self.ClipFrame.ParagonLevelFrame.Icon:SetTexture(paragonInfo.rewardInfo.icon);
+		self.ClipFrame.ParagonLevelFrame.HighlightTexture:SetTexture(paragonInfo.rewardInfo.icon);
+		self.ClipFrame.ParagonLevelFrame.Level:SetText(paragonInfo.level + self.numElements);
+
+		self.ClipFrame.ParagonLevelFrame.info = paragonInfo.rewardInfo;
+		self.ClipFrame.ParagonLevelFrame:SetScript("OnEnter", function(lastFrame)
+			GameTooltip:SetOwner(lastFrame, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, lastFrame.info.name);
+
+			if lastFrame.info.isWarbandItem then
+				GameTooltip_AddColoredLine(GameTooltip, RENOWN_REWARD_ACCOUNT_UNLOCK_LABEL, ACCOUNT_WIDE_FONT_COLOR);
+			end
+
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, lastFrame.info.description);
+
+			GameTooltip:Show();
+		end);
+
+		self.ClipFrame.ParagonLevelFrame:SetScript("OnLeave", function(lastFrame)
+			if GameTooltip:GetOwner() == lastFrame then
+				GameTooltip_Hide();
+			end
+		end);
+
+		self.ClipFrame.ParagonLevelFrame:Show();
+	else
+		self.ClipFrame.ParagonLevelFrame:ClearAllPoints();
+		self.ClipFrame.ParagonLevelFrame:Hide();
 	end
 end
 
@@ -238,9 +239,9 @@ function RewardTrackFrameMixin:RequestStop()
 	end
 end
 
-RewardTrackButtonMixin = { };
+RewardTrackArtButtonMixin = { };
 
-function RewardTrackButtonMixin:OnLoad()
+function RewardTrackArtButtonMixin:OnLoad()
 	if self.direction == 1 then
 		self:GetNormalTexture():SetTexCoord(1, 0, 0, 1);
 		self:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
@@ -248,6 +249,8 @@ function RewardTrackButtonMixin:OnLoad()
 		self:GetDisabledTexture():SetTexCoord(1, 0, 0, 1);
 	end
 end
+
+RewardTrackButtonMixin = { };
 
 function RewardTrackButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
@@ -336,18 +339,6 @@ function RenownLevelMixin:TryInit()
 	self.init = true;
 	self.Level:SetText(self.info.level);
 
-	if self.info.isCapstone then
-		if self.HexMask then
-			self.Icon:AddMaskTexture(self.HexMask);
-			self.HighlightTexture:SetAtlas("CovenantSanctum-Renown-Hexagon-Hover", TextureKitConstants.UseAtlasSize);
-		end
-	else
-		if self.HexMask then
-			self.Icon:RemoveMaskTexture(self.HexMask);
-			self.HighlightTexture:SetAtlas("CovenantSanctum-Renown-Icon-Hover", TextureKitConstants.UseAtlasSize);
-		end
-	end
-
 	local maskTexture = self:GetParent().Mask;
 	if maskTexture then
 		for i, texture in ipairs(self.Textures) do
@@ -367,34 +358,62 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 
 	local level = self:GetLevel();
 	local earned = level <= displayLevel;
+	local lastEarned = level == displayLevel;
+	local iconShape = "square";
+	local maskAtlas = "ui-journeys-delve-rewardicon-%s-mask";
 	local borderAtlas;
-	-- There is no "Standard" milestone border, using the default instead
-	local textureKit = self.info.textureKit or "Standard";
-	if selected then
-		borderAtlas = "CovenantSanctum-Renown-Next-Border-%s";
-		if self.info.isCapstone then
-			borderAtlas = "CovenantSanctum-Renown-Hexagon-Next-Border-%s";
-		elseif self.info.isMilestone and textureKit ~= "Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Next-Border-%s";
-		end
-	elseif earned then
-		borderAtlas = "CovenantSanctum-Renown-Icon-Border-%s";
-		if self.info.isCapstone then
-			borderAtlas = "CovenantSanctum-Renown-Hexagon-Border-%s";
-		elseif self.info.isMilestone and textureKit ~="Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Border-%s";
-		end
-	else
-		borderAtlas = "CovenantSanctum-Renown-Icon-Border-Disabled";
-		if self.info.isCapstone then
-			borderAtlas = "CovenantSanctum-Renown-Hexagon-Border-Disabled";
-		elseif self.info.isMilestone and textureKit ~="Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Disabled-Border-%s";
+	local rectangleFrameAtlas;
+	local backgroundFrameAtlas;
+
+	local reward = self.info.rewardInfo[1];
+	if reward and reward.rewardType then
+		local rewardIsItem = reward.rewardType == Enum.RenownRewardDisplayType.Item;
+		local rewardIsMount = reward.rewardType == Enum.RenownRewardDisplayType.Mount;
+		local rewardIsTitle =  reward.rewardType == Enum.RenownRewardDisplayType.Title;
+		local rewardIsCurrency = reward.rewardType == Enum.RenownRewardDisplayType.Currency;
+
+		if rewardIsItem or rewardIsMount or rewardIsTitle then
+			iconShape = "ring";
+		elseif rewardIsCurrency then
+			iconShape = "octagon";
 		end
 	end
 
+	if selected then
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-yellow";
+		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-yellow";
+	elseif earned then
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame";
+		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame";
+	else
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-grey";
+		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-grey";
+	end
+
+	if lastEarned then
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-green";
+	elseif earned then
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar";
+	else
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-grey";
+	end
+
+	if self.IconMask then
+		self.IconMask:SetAtlas(maskAtlas:format(iconShape), TextureKitConstants.IgnoreAtlasSize);
+		self.Icon:AddMaskTexture(self.IconMask);
+		self.HighlightTexture:AddMaskTexture(self.IconMask);
+	end
+
 	if self.IconBorder then
-		self.IconBorder:SetAtlas(borderAtlas:format(textureKit), TextureKitConstants.UseAtlasSize);
+		self.IconBorder:SetAtlas(borderAtlas:format(iconShape), TextureKitConstants.IgnoreAtlasSize);
+	end
+
+	if self.LevelRectangle then
+		self.LevelRectangle:SetAtlas(rectangleFrameAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
+	if self.RewardCardBG then
+		self.RewardCardBG:SetAtlas(backgroundFrameAtlas, TextureKitConstants.UseAtlasSize);
 	end
 
 	if earned then
@@ -405,14 +424,17 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 		self.Level:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	end
 
-	if self.Check then
-		self.Check:SetShown(level <= actualLevel);
+	if self.EarnedCheckmark then
+		self.EarnedCheckmark:SetShown(level <= displayLevel);
 	end
 end
 
 function RenownLevelMixin:SetIcon()
 	local icon = RenownRewardUtil.GetRenownRewardInfo(self.info.rewardInfo[1], GenerateClosure(self.SetIcon, self));
 	self.Icon:SetTexture(icon);
+	if self.HighlightTexture then
+		self.HighlightTexture:SetTexture(icon);
+	end
 end
 
 function RenownLevelMixin:SetRewardName()
@@ -422,6 +444,9 @@ end
 
 function RenownLevelMixin:ApplyAlpha(alpha)
 	self.Level:SetAlpha(alpha);
+	if self.RewardName then
+		self.RewardName:SetAlpha(alpha);
+	end
 end
 
 function RenownLevelMixin:OnMouseUp()

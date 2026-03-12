@@ -19,3 +19,9 @@ end
 function ColorSwatchMixin:OnLeave()
 	self:SetBorderColor(HIGHLIGHT_FONT_COLOR);
 end
+
+function ColorSwatchMixin:OnShow()
+	PixelUtil.SetSize(self.SwatchBg, 14, 14);
+	PixelUtil.SetSize(self.InnerBorder, 12, 12);
+	PixelUtil.SetSize(self.Color, 10, 10);
+end

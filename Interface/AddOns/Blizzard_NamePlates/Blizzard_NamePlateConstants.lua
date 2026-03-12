@@ -18,11 +18,9 @@ NamePlateConstants =
 	SOFT_TARGET_ICON_INTERACT_CVAR = "SoftTargetIconInteract";
 	SHOW_FRIENDLY_NPCS_CVAR = "nameplateShowFriendlyNpcs";
 	SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR = "nameplateShowOnlyNameForFriendlyPlayerUnits";
+	USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR = "nameplateUseClassColorForFriendlyPlayerUnitNames";
 
 	PREVIEW_UNIT_TOKEN = "preview";
-
-	TARGET_BORDER_COLOR = CreateColor(1, 1, 1);
-	FOCUS_TARGET_BORDER_COLOR = CreateColor(1.0, 0.49, 0.039);
 
 	AURA_ITEM_HEIGHT = 25;
 	LARGE_HEALTH_BAR_HEIGHT = 20;

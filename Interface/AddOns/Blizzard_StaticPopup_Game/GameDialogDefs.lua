@@ -1,17 +1,40 @@
+local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+timeFormatter:SetStripIntervalWhitespace(true);
+
+local function SetLockDeclineTimeText(button, originalText, timeleft)
+	local timeText = timeFormatter:Format(timeleft);
+	button:SetText(("%s (%s)"):format(originalText, timeText));
+end
+
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	local button2 = dialog:GetButton2();
+	local originalButtonText = button2:GetText();
+	button2:Disable();
+
+	dialog.originalHideOnEscape = dialog.hideOnEscape;
+	dialog.hideOnEscape = false;
 	dialog.declineTimeLeft = declineTimeLeft or .5;
-	dialog:GetButton2():SetButtonState("NORMAL", true);
+
+	SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
+
 	dialog.ticker = C_Timer.NewTicker(.5, function()
 		dialog.declineTimeLeft = dialog.declineTimeLeft - .5;
-		if (dialog.declineTimeLeft == 0) then
+
+		if dialog.declineTimeLeft <= 0 then
 			dialog.ticker:Cancel();
-			dialog:GetButton2():SetButtonState("NORMAL", false);
-			return;
+			button2:Enable();
+			button2:SetText(originalButtonText);
+
+			dialog.hideOnEscape = dialog.originalHideOnEscape;
+			dialog.declineTimeLeft = nil;
+			dialog.ticker = nil;
+			dialog.originalHideOnEscape = nil;
 		else
-			dialog:GetButton2():SetButtonState("NORMAL", true);
+			button2:Disable();
+			SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
 		end
 	end);
-	dialog.hideOnEscape = false;
 end
 
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
@@ -105,7 +128,7 @@ StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1,
 	timeout = 0,
-	exclusive = 1,
+	multiple = 1,
 	whileDead = 1,
 };
 
@@ -917,7 +940,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	button1 = ACCEPT_ALT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.CHANINVITE.include, AUTOCOMPLETE_LIST.CHANINVITE.exclude },
 	maxLetters = 31,
 	whileDead = 1,
@@ -1501,7 +1524,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
 	maxLetters = 12 + 1 + 64,
 	OnAccept = function(dialog, data)
@@ -1605,7 +1628,7 @@ StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
 	OnShow = function(dialog, data)
 		local currentNote = data.interactionData.note;
 		dialog:GetEditBox():SetText(currentNote or "");
-		
+
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1723,7 +1746,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.IGNORE.include, AUTOCOMPLETE_LIST.IGNORE.exclude },
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(dialog, data)
@@ -1777,11 +1800,11 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-		dialog:GetEditBox():SetText(select(7, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1790,7 +1813,8 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
@@ -1807,12 +1831,11 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		local fullName, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-
-		dialog:GetEditBox():SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1821,7 +1844,8 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
@@ -3178,3 +3202,16 @@ StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	whileDead = 1,
 	showAlert = 1,
 }
+
+StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
+	text = "%s",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	fullScreenCover = true,
+	hideOnEscape = 1,
+	OnShow = function(dialog, data)
+		dialog:SetFrameStrata("FULLSCREEN_DIALOG");
+		dialog:SetFrameLevel(3000);
+	end,
+};

@@ -130,6 +130,9 @@ local RestrictedActions =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RestrictedActions);

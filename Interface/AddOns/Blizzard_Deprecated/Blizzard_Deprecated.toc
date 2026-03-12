@@ -2,3 +2,4 @@
 ## Notes: C API functions that are exposed for backwards compatibility. They will be removed at the next expansion. Upgrade your code to the new APIs as soon as possible.
 
 11_0_0_SpellBookAPITransitionGuide.lua
+Deprecated_12_0_1.lua

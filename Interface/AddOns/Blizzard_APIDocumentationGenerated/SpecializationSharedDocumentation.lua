@@ -117,6 +117,9 @@ local SpecializationShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpecializationShared);

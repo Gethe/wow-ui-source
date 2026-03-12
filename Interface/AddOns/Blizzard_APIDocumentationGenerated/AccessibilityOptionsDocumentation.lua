@@ -16,6 +16,9 @@ local AccessibilityOptions =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AccessibilityOptions);

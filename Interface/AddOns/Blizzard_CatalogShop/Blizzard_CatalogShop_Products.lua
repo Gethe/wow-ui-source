@@ -11,6 +11,7 @@ end
 CatalogShopProductContainerFrameMixin = {};
 function CatalogShopProductContainerFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("CatalogShop.AllDataRefresh", self.AllDataRefresh, self);
+	EventRegistry:RegisterCallback("CatalogShop.OnModelSceneActorFailedToLoad", self.OnModelSceneFailure, self);
 end
 
 function CatalogShopProductContainerFrameMixin:Init()
@@ -115,7 +116,9 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 
 		-- Retrigger selection behavior because the selected product was incomplete
 		if selectedProductIsUpdating then
+			self.silenceSelectionSounds = true;
 			self:OnProductSelected(foundElementData);
+			self.silenceSelectionSounds = false;
 		end
 	end
 end
@@ -177,8 +180,12 @@ function CatalogShopProductContainerFrameMixin:TrySelectProductByID(productID)
 		return elementData.catalogShopProductID == productID;
 	end);
 	if foundElementData then
-		scrollContainer.selectionBehavior:SelectElementData(foundElementData);
-		scrollContainer.ScrollBox:ScrollToElementData(foundElementData, ScrollBoxConstants.AlignNearest);
+		local isSelected = scrollContainer.selectionBehavior:IsElementDataSelected(foundElementData);
+		if isSelected then
+			scrollBox:ScrollToElementData(foundElementData, ScrollBoxConstants.AlignNearest);
+		else
+			scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		end
 		return true;
 	end
 
@@ -204,7 +211,12 @@ function CatalogShopProductContainerFrameMixin:OnHide()
 end
 
 function CatalogShopProductContainerFrameMixin:OnEvent(event, ...)
-	-- TODO handle events here
+end
+
+function CatalogShopProductContainerFrameMixin:OnModelSceneFailure(displayInfo)
+	CatalogShopFrame.ModelSceneContainerFrame:Hide();
+	CatalogShopFrame.PMTImageContainerFrame:Show();
+	CatalogShopFrame.PMTImageContainerFrame:SetForFailedModelScene(displayInfo);
 end
 
 function ModelSceneShouldAllowRotation(modelSceneID)
@@ -250,8 +262,8 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 	if displayInfo.hasUnknownLicense then
-		CatalogShopFrame.CrossGameContainerFrame:Show();
-		CatalogShopFrame.CrossGameContainerFrame:SetDisplayInfo(displayInfo);
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
 	elseif productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
 	elseif productType == CatalogShopConstants.ProductType.Toy then
@@ -312,6 +324,9 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		if productInfo.previewIconTexture then
 			iconFrame.Icon:SetAtlas(productInfo.previewIconTexture);
 		end
+	elseif productType == CatalogShopConstants.ProductType.Room then
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+		CatalogShopFrame.PMTImageContainerFrame:SetForHousingRoom(displayInfo);
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end
@@ -401,6 +416,17 @@ function ProductContainerFrameMixin:InitProductContainer()
 		-- (We have 2 products) Look for the collection sort order
 		local lhsOrder = C_CatalogShop.GetProductSortOrder(lhs.categoryID, lhs.sectionID, lhs.catalogShopProductID) or 999;
 		local rhsOrder = C_CatalogShop.GetProductSortOrder(rhs.categoryID, rhs.sectionID, rhs.catalogShopProductID) or 999;
+
+		-- Add 100 to any product's order value if it's 'owned'. We want to sort owned products to the bottom of their Sections
+		local lhsOwned = lhs.isFullyOwned or false;
+		if lhsOwned then
+			lhsOrder = lhsOrder + 100;
+		end
+		local rhsOwned = rhs.isFullyOwned or false;
+		if rhsOwned then
+			rhsOrder = rhsOrder + 100;
+		end
+
 		return lhsOrder < rhsOrder;
 	end
 
@@ -497,39 +523,18 @@ function ProductContainerFrameMixin:InitProductContainer()
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
+		local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
 		if elementData.elementType == CatalogShopConstants.ScrollViewElementType.Header then
-			factory(CatalogShopConstants.CardTemplate.Header, InitializeSection)
-		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
-			local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
-			
-			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
-			if scrollViewSize == 1 then
-				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Token then
-					factory(CatalogShopConstants.CardTemplate.WideCardToken, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
-					factory(CatalogShopConstants.CardTemplate.WideCardSubscription, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.GameTime then
-					factory(CatalogShopConstants.CardTemplate.WideCardGameTime, InitializeButton);
-				else
-					factory(CatalogShopConstants.CardTemplate.Wide, InitializeButton);
-				end
+			if sectionInfo.shouldShowRecommendationOptOutDisclaimer then
+				factory(CatalogShopConstants.CardTemplate.HeaderPersonalized, InitializeSection);
 			else
-				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
-					factory(CatalogShopConstants.CardTemplate.SmallServices, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
-					factory(CatalogShopConstants.CardTemplate.SmallSubscriptions, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.GameTime then
-					factory(CatalogShopConstants.CardTemplate.SmallGameTime, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Tender then
-					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
-					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton);
-				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
-					factory(CatalogShopConstants.CardTemplate.SmallAccess, InitializeButton);
-				else
-					factory(CatalogShopConstants.CardTemplate.Small, InitializeButton);
-				end
+				factory(CatalogShopConstants.CardTemplate.Header, InitializeSection);
 			end
+		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
+			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
+			local useWideCard = (scrollViewSize == 1);
+			local cardTemplate = CatalogShopUtil.GetCardTemplate(useWideCard, elementData.cardDisplayData.productType);
+			factory(cardTemplate, InitializeButton);
 		end
 	end
 	self:SetupScrollView(GetProductContainerElementFactory);

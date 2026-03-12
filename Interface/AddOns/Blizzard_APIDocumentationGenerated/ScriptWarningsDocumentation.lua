@@ -26,6 +26,9 @@ local ScriptWarnings =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ScriptWarnings);

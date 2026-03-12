@@ -1,6 +1,6 @@
 ## Title: Blizzard_CooldownViewer
 ## AllowLoadGameType: standard
-## Dependencies: Blizzard_EditMode
+## Dependencies: Blizzard_EditMode, Blizzard_ChatFrameBase
 CooldownViewerSettingsConstants.lua
 CooldownViewerUtil.lua
 CooldownViewerVisualAlert.lua
@@ -25,3 +25,4 @@ CooldownViewerSettings.xml
 CooldownViewer.lua
 PandemicAlertAnimation.xml
 CooldownViewer.xml
+SlashCommandRegistration.lua [AllowLoadEnvironment global]

@@ -148,6 +148,9 @@ local ClickBindings =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClickBindings);

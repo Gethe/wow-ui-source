@@ -202,6 +202,9 @@ local HousingLayoutPinFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingLayoutPinFrameAPI);

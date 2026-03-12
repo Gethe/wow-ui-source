@@ -6,21 +6,13 @@ function HousingFramesUtil.IsHousingMarketShopAvailable()
 end
 
 StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
-	text = HOUSING_PREVIEW_DECOR_WARNING,
+	text = HOUSING_PREVIEW_DECOR_WARNING_AR_ONLY,
 	button1 = OKAY,
 	button2 = CANCEL,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-
-	OnShow = function(dialog, _data)
-		if not HousingFramesUtil.IsHousingMarketShopAvailable() then
-			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING_AR_ONLY);
-		else
-			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING);
-		end
-	end,
 
 	OnAccept = function(dialog, cb)
 		cb();
@@ -32,10 +24,6 @@ StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
 function HousingFramesUtil.LeaveHouseEditor()
 	if C_HousingDecor.GetNumPreviewDecor() > 0 then
 		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
-			local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-			local requiresConfirmation = false;
-			EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
-
 			C_HouseEditor.LeaveHouseEditor();
 		end);
 	else
@@ -171,7 +159,7 @@ function HousingFramesUtil.RotateBasicDecorSelection(direction)
 	PlaySound(SOUNDKIT.HOUSING_ROTATE_ITEM);
 end
 
-function HousingFramesUtil.PreviewHousingCatalogEntryInfo(entryInfo)
+function HousingFramesUtil.PreviewHousingCatalogEntryInfo(entryInfo, variantInfo)
 	if not entryInfo then
 		return false;
 	end
@@ -179,20 +167,20 @@ function HousingFramesUtil.PreviewHousingCatalogEntryInfo(entryInfo)
 		C_AddOns.LoadAddOn("Blizzard_HousingModelPreview");
 	end
 	if HousingModelPreviewFrame then
-		HousingModelPreviewFrame:ShowCatalogEntryInfo(entryInfo);
+		HousingModelPreviewFrame:ShowCatalogEntryInfo(entryInfo, variantInfo);
 		return true;
 	end
 
 	return false;
 end
 
-function HousingFramesUtil.PreviewHousingCatalogEntryID(entryID)
-	if not C_HousingCatalog or not entryID then
+function HousingFramesUtil.PreviewHousingCatalogEntryVariantID(entryVariantID)
+	if not C_HousingCatalog or not entryVariantID then
 		return false;
 	end
 
-	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
-	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryVariantID);
+	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo, C_HousingCatalog.GetCatalogEntryVariantInfo(entryVariantID));
 end
 
 function HousingFramesUtil.PreviewHousingDecorID(decorID)
@@ -200,8 +188,7 @@ function HousingFramesUtil.PreviewHousingDecorID(decorID)
 		return false;
 	end
 
-	local tryGetOwnedInfo = true;
-	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID, tryGetOwnedInfo);
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID);
 	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
 end
 
@@ -212,8 +199,7 @@ function HousingFramesUtil.PreviewHousingItem(itemIdentifier)
 		return false;
 	end
 
-	local tryGetOwnedInfo = true;
-	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByItem(itemIdentifier, tryGetOwnedInfo);
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByItem(itemIdentifier);
 	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
 end
 
@@ -252,6 +238,39 @@ function HousingFramesUtil.OpenFrameToTaskID(taskID)
 	if HousingDashboardFrame then
 		HousingDashboardFrame:OpenInitiativesFrameToTaskID(taskID);
 	end
+end
+
+StaticPopupDialogs["HOUSING_FIXTURE_DECOR_ACTION_CONFIRM"] = {
+	text = HOUSING_FIXTURE_ATTACHED_DECOR_CONFIRMATION,
+	button1 = HOUSING_FIXTURE_ATTACHED_DECOR_CONFIRMATION_STORE,
+	button2 = HOUSING_FIXTURE_ATTACHED_DECOR_CONFIRMATION_DETACH,
+	selectCallbackByIndex = true,
+	closeButton = true,
+	closeButtonIsHide = true,
+
+	OnButton1 = function(self, data)
+		if data.callback then
+			data.callback(Enum.HousingFixtureDecorAction.Store);
+		end
+		self:Hide();
+	end,
+	OnButton2 = function(self, data)
+		if data.callback then
+			data.callback(Enum.HousingFixtureDecorAction.Detach);
+		end
+		self:Hide();
+	end,
+	OnCloseClicked = function (self, data)
+		if data.callback then
+			data.callback(nil);
+		end
+		self:Hide();
+	end,
+	hideOnEscape = 0,
+};
+
+function HousingFramesUtil.ShowFixtureDecorActionConfirmation(callback)
+	StaticPopup_Show("HOUSING_FIXTURE_DECOR_ACTION_CONFIRM", nil, nil, { callback = callback });
 end
 
 -- Handler for events that may fire while relevant Housing addons may not be loaded

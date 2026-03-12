@@ -44,6 +44,14 @@ local SpellShared =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresValidSpellIdentifier",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellShared);

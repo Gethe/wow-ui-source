@@ -39,6 +39,9 @@ local CovenantCallings =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CovenantCallings);

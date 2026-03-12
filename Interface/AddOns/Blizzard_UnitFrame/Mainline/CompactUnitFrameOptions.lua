@@ -3,6 +3,7 @@
 DefaultCompactUnitFrameOptions = {
 	useClassColors = true,
 	healthBarColor = COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR,
+	healthBarColorBG = COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR_BG,
 	displaySelectionHighlight = true,
 	displayAggroHighlight = true,
 	displayName = true,
@@ -131,7 +132,6 @@ DefaultCompactNamePlateFrameSetUpOptions = {
 	healthBarAlpha = 0.75,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,
@@ -145,7 +145,6 @@ DefaultCompactNamePlatePlayerFrameSetUpOptions = {
 	healthBarAlpha = 1,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,

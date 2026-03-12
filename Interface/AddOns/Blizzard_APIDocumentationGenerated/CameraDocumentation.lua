@@ -50,6 +50,9 @@ local Camera =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Camera);

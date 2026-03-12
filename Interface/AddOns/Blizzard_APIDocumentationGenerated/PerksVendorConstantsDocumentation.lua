@@ -43,6 +43,9 @@ local PerksVendorConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PerksVendorConstants);

@@ -22,6 +22,9 @@ local SkillInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SkillInfo);

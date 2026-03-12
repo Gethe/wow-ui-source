@@ -479,6 +479,12 @@ local TransmogItems =
 		{
 			Name = "GetIllusions",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = true },
+			},
 
 			Returns =
 			{
@@ -772,6 +778,21 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellItemEnchantmentHiddenVisual",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellItemEnchantmentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHiddenVisual", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1152,6 +1173,7 @@ local TransmogItems =
 				{ Name = "transmoglink", Type = "string", Nilable = false },
 				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
 				{ Name = "itemSubclass", Type = "number", Nilable = false },
+				{ Name = "ignoreModelAttachmentChecksForIllusion", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1207,6 +1229,9 @@ local TransmogItems =
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

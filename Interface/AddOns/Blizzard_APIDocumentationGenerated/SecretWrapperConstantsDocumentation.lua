@@ -16,6 +16,9 @@ local SecretWrapperConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SecretWrapperConstants);

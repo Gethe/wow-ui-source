@@ -140,6 +140,34 @@ function HouseInfoButtonMixin:IsActive()
 	return HousingCornerstoneHouseInfoFrame and HousingCornerstoneHouseInfoFrame:IsShown();
 end
 
+-- Inherits BaseHousingControlButtonMixin
+HouseInspectorButtonMixin = {};
+
+function HouseInspectorButtonMixin:EnterMode()
+	if not HousingInspectModeManagerFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingInspectModeUI");
+	end
+
+	C_HousingInspectMode.EnterInspectMode();
+end
+
+function HouseInspectorButtonMixin:LeaveMode()
+	C_HousingInspectMode.ExitInspectMode();
+end
+
+function HouseInspectorButtonMixin:CheckEnabled()
+	-- Inspect mode cannot be entered if the HouseEditor is active
+	if C_HouseEditor.IsHouseEditorActive() then
+		return false, HOUSING_CONTROLS_INSPECT_UNAVAILABLE_EDITOR_ACTIVE;
+	end
+
+	return true;
+end
+
+function HouseInspectorButtonMixin:IsActive()
+	return C_HousingInspectMode.IsInInspectMode();
+end
+
 -- Inherits HousingControlModeButtonMixin
 HouseSettingsButtonMixin = {};
 

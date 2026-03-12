@@ -76,12 +76,23 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.Title" relativePoint="TOP" y="5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" spacing="1.5" inherits="GameFontNormalMed1">
-					<Size x="200" y="130"/>
+				<FontString parentKey="ModifiersLabel" inherits="Game16Font" text="TIERED_ENTRANCE_AFFIXES" hidden="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-15" y="-30"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="EntranceErrorText" inherits="GameFontNormal, TruncatedTooltipFontStringTemplate" maxLines="1">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-23" y="17"/>
+					</Anchors>
+					<Color color="ERROR_COLOR"/>
+				</FontString>			
+				<Texture parentKey="DividingLine" atlas="ritual-sites-line" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ModifiersLabel" relativePoint="BOTTOM" x="0" y="-74"/>
+					</Anchors>					
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -105,7 +116,6 @@
 			<!-- Difficulty Dropdown -->
 			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" mixin="DelvesDifficultyPickerDropdownMixin" motionScriptsWhileDisabled="true">
 				<Anchors>
-					<Anchor point="CENTER"/>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Frames>
@@ -179,7 +189,8 @@
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.RewardText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOP" relativeKey="$parent.RewardText" relativePoint="BOTTOM" x="0" y="-5"/>
+							<Anchor point="LEFT" x="15"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -193,7 +204,65 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
+
+			<!-- Challenges -->
+			<Frame parentKey="ChallengesContainerFrame" mixin="DelveChallengesContainerFrameMixin" inherits="TalentFrameGridTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="topPadding" value="8" type="number"/>
+					<KeyValue key="bottomPadding" value="0" type="number"/>
+					<KeyValue key="leftPadding" value="8" type="number"/>
+					<KeyValue key="stride" value="5" type="number"/>
+					<KeyValue key="paddingX" value="20" type="number"/>
+					<KeyValue key="paddingY" value="20" type="number"/>
+					<KeyValue key="getTemplateType" value="DelveChallengesContainerFrameMixin.GetTemplateForTalentType" type="global"/>
+					<KeyValue key="refreshOnShow" value="true" type="boolean"/>
+					<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+				</KeyValues>
+				<Size x="296" y="140"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Title"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="Game16Font" text="TIERED_ENTRANCE_CHALLENGES">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="BlockingFrame" setAllPoints="true" enableMouse="true" propagateMouseInput="Motion" frameLevel="9000" hidden="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontHighlight" text="TIERED_ENTRANCE_PARTY_LEADER_ONLY" justifyH="CENTER" justifyV="MIDDLE" maxLines="2">
+									<Size x="280" y="28"/>
+									<Anchors>
+										<Anchor point="BOTTOM" y="-2"/>
+									</Anchors>
+									<Color color="ERROR_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" spacing="1.5" inherits="GameFontNormalMed1, TruncatedTooltipFontStringTemplate">
+					<Size x="200" y="130"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-15" y="-32"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.DelveRewardsContainerFrame" relativePoint="TOP" y="20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnShow method="OnShow"/>

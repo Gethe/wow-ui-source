@@ -28,6 +28,9 @@ local LoadingScreen =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LoadingScreen);

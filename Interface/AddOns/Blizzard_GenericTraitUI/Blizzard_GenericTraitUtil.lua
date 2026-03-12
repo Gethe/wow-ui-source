@@ -7,11 +7,11 @@ local GenericTraitFrameLayoutOptions = {
 	-- Note: It might be a good idea to have a more generic style in the future but for
 	-- now we're just going to use what we have.
 	Default = {
-		NineSliceTextureKit = "thewarwithin",
+		NineSliceTextureKit = "midnight",
 		NineSliceFormatString = "ui-frame-%s-border",
 		TitleDividerAtlas = "dragonriding-talents-line",
 		TitleDividerShown = true,
-		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
+		BackgroundAtlas = "ui-frame-midnight-backgroundtile",
 		HeaderSize = { Width = 500, Height = 50 },
 		FrameSize = { Width = 650, Height = 750 },
 		ShowInset = false,
@@ -25,20 +25,9 @@ local GenericTraitFrameLayoutOptions = {
 		HideCurrencyDisplay = false,
 	},
 
-	Dragonflight = {
-		NineSliceTextureKit = "Dragonflight",
-		DetailTopAtlas = "dragonflight-golddetailtop",
-		BackgroundAtlas = "dragonriding-talents-background",
-		HeaderSize = { Width = 500, Height = 130 },
-		PanOffset = { x = -80, y = -35 },
-		CloseButtonOffset = { x = -3, y = -10 },
-		UseOldNineSlice = true,
-	},
-
 	Skyriding = {
 		NineSliceLayoutName = "ButtonFrameTemplateNoPortraitLessPadding",
 		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile",
-		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
 		HeaderSize = { Width = 350, Height = 50 },
 		PanOffset = { x = 20, y = -50 },
 		FrameSize = { Width = 450, Height = 450 },
@@ -46,33 +35,18 @@ local GenericTraitFrameLayoutOptions = {
 		UseOldNineSlice = true,
 	},
 
-	TheWeaver = {
-		Title = GENERIC_TRAIT_FRAME_THE_WEAVER_TITLE,
-	},
-
-	TheGeneral = {
-		Title = GENERIC_TRAIT_FRAME_THE_GENERAL_TITLE,
-	},
-
-	TheVizier = {
-		Title = GENERIC_TRAIT_FRAME_THE_VIZIER_TITLE,
-	},
-
 	DRIVE = {
 		NineSliceFormatString = "ui-frame-%s-border-small",
-		Title = GENERIC_TRAIT_FRAME_DRIVE_TITLE,
 		HeaderSize = { Width = 250, Height = 50 },
 		PanOffset = { x = 140, y = -35 },
 		FrameSize = { Width = 350, Height = 575 },
 	},
 
 	Visions = {
-		Title = GENERIC_TRAIT_FRAME_VISIONS_TITLE,
 		BackgroundAtlas = "talenttree-horrificvision-background",
 	},
 
 	TitanConsole = {
-		Title = GENERIC_TRAIT_FRAME_TITAN_CONSOLE_TITLE,
 		TitleDividerShown = false,
 		BackgroundAtlas = "talenttree-titanconsole-background",
 		HeaderSize = { Width = 430, Height = 50 },
@@ -80,10 +54,6 @@ local GenericTraitFrameLayoutOptions = {
 		HeaderOffset = { x = 0, y = -37 },
 		CurrencyOffset = { x = 40, y = -14 },
 		PanOffset = { x = 12, y = -15 },
-	},
-
-	ReshiiWraps = {
-		Title = GENERIC_TRAIT_FRAME_RESHII_WRAPS_TITLE,
 	},
 
 	ZulAmanLoaBlessing = {
@@ -98,15 +68,6 @@ local GenericTraitFrameLayouts = {
 	-- Skyriding
 	[672] = GenericTraitFrameLayoutOptions.Skyriding,
 
-	-- Pact: The Weaver
-	[1042] = GenericTraitFrameLayoutOptions.TheWeaver,
-
-	-- Pact: The General
-	[1045] = GenericTraitFrameLayoutOptions.TheGeneral,
-
-	-- Pact: The Vizier
-	[1046] = GenericTraitFrameLayoutOptions.TheVizier,
-
 	-- D.R.I.V.E
 	[1056] = GenericTraitFrameLayoutOptions.DRIVE,
 
@@ -115,9 +76,6 @@ local GenericTraitFrameLayouts = {
 
 	-- Titan Console (OC Delve)
 	[1061] = GenericTraitFrameLayoutOptions.TitanConsole,
-
-	-- Reshii Wraps (11.2.0 Cloak)
-	[1115] = GenericTraitFrameLayoutOptions.ReshiiWraps,
 
 	-- Zul'Aman Loa Blessing
 	[1166] = GenericTraitFrameLayoutOptions.ZulAmanLoaBlessing,
@@ -159,8 +117,19 @@ function GenericTraitUtil.GetEdgeTemplateType(edgeVisualStyle)
 	return TemplatesByEdgeVisualStyle[edgeVisualStyle];
 end
 
+local bgAtlasFormatStr = "ui-frame-%s-backgroundtile";
+
 function GenericTraitUtil.GetFrameLayoutInfo(treeID)
 	local layoutInfo = GenericTraitFrameLayouts[treeID] or {};
+	local configID = C_Traits.GetConfigIDByTreeID(treeID);
+	local treeInfo = configID and C_Traits.GetTreeInfo(configID, treeID);
+	if treeInfo then
+		layoutInfo.Title = treeInfo.titleText;
+		layoutInfo.NineSliceTextureKit = layoutInfo.NineSliceTextureKit or treeInfo.uiTextureKit;
+		if not layoutInfo.BackgroundAtlas and treeInfo.uiTextureKit then
+			layoutInfo.BackgroundAtlas = bgAtlasFormatStr:format(treeInfo.uiTextureKit);
+		end
+	end
 	return setmetatable(layoutInfo, {__index = GenericTraitFrameLayoutOptions.Default});
 end
 

@@ -119,6 +119,7 @@ local LFGListInfo =
 			Name = "GetActiveEntryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 
 			Returns =
 			{
@@ -225,6 +226,7 @@ local LFGListInfo =
 			Name = "GetApplicantInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -372,6 +374,7 @@ local LFGListInfo =
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -388,6 +391,7 @@ local LFGListInfo =
 			Name = "GetSearchResultLeaderInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -404,6 +408,7 @@ local LFGListInfo =
 			Name = "GetSearchResultPlayerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -467,12 +472,36 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsPlayerValidForEndgameFieldEdits",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPremadeGroupFinderEnabled",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ListingUsesEndgameEditRestrictions",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEndgameListing", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -809,9 +838,9 @@ local LFGListInfo =
 			Fields =
 			{
 				{ Name = "applicantID", Type = "number", Nilable = false },
-				{ Name = "applicationStatus", Type = "cstring", Nilable = false },
-				{ Name = "pendingApplicationStatus", Type = "cstring", Nilable = true },
-				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "applicationStatus", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "pendingApplicationStatus", Type = "cstring", Nilable = true, NeverSecret = true },
+				{ Name = "numMembers", Type = "number", Nilable = false, NeverSecret = true },
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "displayOrderID", Type = "number", Nilable = false },
@@ -836,7 +865,7 @@ local LFGListInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false, NeverSecret = true },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
 				{ Name = "name", Type = "kstringLfgListApplicant", Nilable = false },
@@ -906,7 +935,7 @@ local LFGListInfo =
 				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },
-				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -955,6 +984,9 @@ local LFGListInfo =
 				{ Name = "itIT", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

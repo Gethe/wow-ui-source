@@ -51,6 +51,9 @@ local Streaming =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Streaming);

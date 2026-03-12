@@ -16,17 +16,18 @@ local AbbreviateConfigAPI =
 
 			Returns =
 			{
-				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 		{
 			Name = "SetAbbreviateNumberData",
 			Type = "Function",
+			RequiresRestrictedAbbreviationBreakpoints = true,
 			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
-				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 	},
@@ -36,6 +37,9 @@ local AbbreviateConfigAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

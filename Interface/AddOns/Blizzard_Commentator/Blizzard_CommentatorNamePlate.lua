@@ -1,8 +1,6 @@
 local customOptions = 
 {
 	maxHealOverflowRatio = 1.0,
-	ignoreOverAbsorbGlow = true,
-	ignoreOverHealAbsorbGlow = true,
 };
 
 CommentatorNamePlateMixin = {}

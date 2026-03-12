@@ -1,19 +1,3 @@
-MICRO_BUTTONS = {
-	"CharacterMicroButton",
-	"ProfessionMicroButton",
-	"PlayerSpellsMicroButton",
-	"AchievementMicroButton",
-	"QuestLogMicroButton",
-	"HousingMicroButton",
-	"GuildMicroButton",
-	"LFDMicroButton",
-	"EJMicroButton",
-	"CollectionsMicroButton",
-	"MainMenuMicroButton",
-	"HelpMicroButton",
-	"StoreMicroButton",
-}
-
 DISPLAYED_COMMUNITIES_INVITATIONS = {};
 local PERFORMANCE_BAR_UPDATE_INTERVAL = 1;
 local EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
@@ -364,6 +348,9 @@ end
 
 --Mixins (In order of placement)
 MainMenuBarMicroButtonMixin = {};
+
+function MainMenuBarMicroButtonMixin:PostAddButtonCallback()
+end
 
 function MainMenuBarMicroButtonMixin:ShouldShowTooltip()
 	if KeybindFrames_InQuickKeybindMode() then

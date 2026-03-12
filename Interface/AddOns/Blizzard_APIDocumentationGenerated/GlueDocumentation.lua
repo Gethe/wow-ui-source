@@ -40,6 +40,9 @@ local Glue =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Glue);

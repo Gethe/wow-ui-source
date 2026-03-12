@@ -355,7 +355,7 @@ HouseFinderBNetFriendSearchBoxMixin = {};
 
 function HouseFinderBNetFriendSearchBoxMixin:OnLoad()
 	local template = AUTOCOMPLETE_LIST.HOUSE_FINDER;
-	AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, template.include, template.exclude);
+	AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, template.include, template.exclude);
 
 	local function HouseFinderAutoComplete(_editBox, fullText, nameInfo, _ambiguatedName)
 		self.autoCompleteBnetID = nameInfo.bnetID;
@@ -465,8 +465,8 @@ local HouseFinderPlotInfoShownEvents =
 function HouseFinderPlotInfoFrameMixin:OnLoad()
 	self.BackButton:UpdateSize();
 	self.VisitHouseButton:SetScript("OnClick", GenerateClosure(self.OnVisitClicked, self));
-	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
-	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
+	SmallMoneyFrame_OnLoad(self.PlotInfoLayout.PriceContainer.PriceMoneyFrame);
+	MoneyFrame_SetType(self.PlotInfoLayout.PriceContainer.PriceMoneyFrame, "STATIC");
 end
 
 function HouseFinderPlotInfoFrameMixin:OnEvent(event, ...)
@@ -476,7 +476,11 @@ function HouseFinderPlotInfoFrameMixin:OnEvent(event, ...)
 		if result == Enum.HousingResult.Success then
 			self.VisitHouseButton:Enable();
 			HideUIPanel(HouseFinderFrame);
+		elseif result == Enum.HousingResult.BoundToStartingArea then
+			self.ReservationError:SetText(SPELL_FAILED_NOT_HERE);
+			self.ReservationError:Show();
 		else
+			self.ReservationError:SetText(HOUSEFINDER_RESERVATION_ERROR);
 			self.ReservationError:Show();
 		end
 	end
@@ -488,6 +492,12 @@ function HouseFinderPlotInfoFrameMixin:OnShow()
 
 	local visible = true;
 	EventRegistry:TriggerEvent("HouseFinder.PlotInfoFrameVisibilityUpdated", visible);
+
+	self.PlotInfoLayout.NeighborhoodContainer:SetHeight(self.PlotInfoLayout.NeighborhoodContainer.NeighborhoodText:GetHeight());
+	self.PlotInfoLayout.LocationContainer:SetHeight(self.PlotInfoLayout.LocationContainer.LocationText:GetHeight());
+	self.PlotInfoLayout.TypeContainer:SetHeight(self.PlotInfoLayout.TypeContainer.TypeText:GetHeight());
+	self.PlotInfoLayout.OwnerContainer:SetHeight(self.PlotInfoLayout.OwnerContainer.OwnerText:GetHeight());
+	self.PlotInfoLayout:Layout();
 end
 
 function HouseFinderPlotInfoFrameMixin:OnHide()
@@ -506,20 +516,19 @@ function HouseFinderPlotInfoFrameMixin:Init(plotInfo, neighborhoodInfo)
 		self.Background:SetAtlas(bgAtlasPrefix .. bgAtlasSuffix);
 	end
 	self.PlotLabel:SetText(string.format(HOUSING_PLOT_NUMBER, plotInfo.plotID));
-	MoneyFrame_Update(self.PriceMoneyFrame, plotInfo.plotCost);
+	MoneyFrame_Update(self.PlotInfoLayout.PriceContainer.PriceMoneyFrame, plotInfo.plotCost);
 	self.VisitHouseButton:Enable();
 	self.ReservationError:Hide();
-	self.NeighborhoodText:SetText(neighborhoodInfo.neighborhoodName);
-	self.TypeText:SetText(NeighborhoodTypeStrings[neighborhoodInfo.neighborhoodOwnerType]);
+	self.PlotInfoLayout.NeighborhoodContainer.NeighborhoodText:SetText(neighborhoodInfo.neighborhoodName);
+	self.PlotInfoLayout.TypeContainer.TypeText:SetText(NeighborhoodTypeStrings[neighborhoodInfo.neighborhoodOwnerType]);
 	if neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None then
-		self.OwnerText:Hide();
-		self.OwnerLabel:Hide();
+		self.PlotInfoLayout.OwnerContainer:Hide();
 	else
-		self.OwnerText:SetText(neighborhoodInfo.ownerName);
-		self.OwnerText:Show();
-		self.OwnerLabel:Show();
+		self.PlotInfoLayout.OwnerContainer.OwnerText:SetText(neighborhoodInfo.ownerName);
+		self.PlotInfoLayout.OwnerContainer:Show();
 	end
-	self.LocationText:SetText(neighborhoodInfo.locationName);
+	self.PlotInfoLayout.LocationContainer.LocationText:SetText(neighborhoodInfo.locationName);
+	self.PlotInfoLayout:Layout();
 end
 
 function HouseFinderPlotInfoFrameMixin:OnVisitClicked()

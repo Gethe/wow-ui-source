@@ -155,6 +155,9 @@ local TradeInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TradeInfo);

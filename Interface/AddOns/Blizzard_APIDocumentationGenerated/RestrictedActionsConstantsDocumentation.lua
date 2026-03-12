@@ -31,6 +31,9 @@ local RestrictedActionsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RestrictedActionsConstants);

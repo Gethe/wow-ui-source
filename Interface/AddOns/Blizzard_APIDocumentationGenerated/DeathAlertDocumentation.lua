@@ -26,6 +26,9 @@ local DeathAlert =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DeathAlert);

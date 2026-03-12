@@ -324,6 +324,9 @@ local TraitConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TraitConstants);

@@ -1,3 +1,6 @@
+
+local SCROLL_BOX_EDGE_FADE_LENGTH = 50;
+
 local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeRemainingFormatter:Init(
 	SecondsFormatterConstants.ZeroApproximationThreshold,
@@ -458,31 +461,33 @@ function ServicesContainerFrameMixin:OnHide()
 	animContainer:SetShown(false);
 end
 
-
 ----------------------------------------------------------------------------------
--- CrossGameContainerFrameMixin
+-- PMTImageContainerFrameMixin
 ----------------------------------------------------------------------------------
-CrossGameContainerFrameMixin = {};
-function CrossGameContainerFrameMixin:OnLoad()
+PMTImageContainerFrameMixin = {};
+function PMTImageContainerFrameMixin:OnLoad()
+	EventRegistry:RegisterCallback("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.OnCarouselSelectionSet, self);
 end
 
-function CrossGameContainerFrameMixin:OnShow()
+function PMTImageContainerFrameMixin:OnShow()
+	self.currentCarouselImageIndex = 1;
+	self.ImageCarousel.LeftButton:SetEnabled(false);
 end
 
-function CrossGameContainerFrameMixin:OnHide()
+function PMTImageContainerFrameMixin:OnHide()
+	self.carouselImageURLs = {};
 end
 
-local function SetAlternateProductURLImage(displayInfo)
-	local texture = CatalogShopFrame.CrossGameContainerFrame.PMTImageForNoModel;
+local function SetMissingModelProductURLImage(productPMTURL)
+	local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
 
-	if displayInfo and displayInfo.otherProductPMTURL then
-		C_Texture.SetURLTexture(texture, displayInfo.otherProductPMTURL);
+	if productPMTURL then
+		C_Texture.SetURLTexture(texture, productPMTURL);
 	end
 end
 
--- TODO: Add support for correct localized flavor based on PMT attribute [WOW11-145789]
 local function SetMissingLicenseCaptionText(displayInfo)
-	local text = CatalogShopFrame.CrossGameContainerFrame.OtherProductWarningText;
+	local text = CatalogShopFrame.PMTImageContainerFrame.OtherProductWarningText;
 
 	if not displayInfo then
 		text:SetText("");
@@ -517,9 +522,89 @@ local function SetMissingLicenseCaptionText(displayInfo)
 	end
 end
 
-function CrossGameContainerFrameMixin:SetDisplayInfo(displayInfo)
+function PMTImageContainerFrameMixin:OnCarouselSelectionSet(newSelectionInfo)
+	if not newSelectionInfo or not newSelectionInfo.url then
+		return;
+	end
+	SetMissingModelProductURLImage(newSelectionInfo.url);
+	self.ImageCarousel.ScrollBox:ScrollToElementData(newSelectionInfo, ScrollBoxConstants.AlignCenter);
+
+	local isFirstButtonSelected = newSelectionInfo.isFirstButton or false;
+	local isLastButtonSelected = newSelectionInfo.isLastButton or false;
+	self.ImageCarousel.LeftButton:SetEnabled(not isFirstButtonSelected);
+	self.ImageCarousel.RightButton:SetEnabled(not isLastButtonSelected);
+end
+
+function PMTImageContainerFrameMixin:SetDetailsShown(detailsShown)
+	if detailsShown then
+		self.ImageCarousel:SetImages(self.carouselImageURLs);
+		self.ImageCarousel:SetShown(#self.carouselImageURLs > 1);
+	else
+		self:ResetCarouselSelection();
+		self.ImageCarousel:Hide();
+	end
+end
+
+function PMTImageContainerFrameMixin:ResetCarouselSelection()
+	self:SetCarouselSelection(1);
+end
+
+function PMTImageContainerFrameMixin:SetCarouselSelection(index)
+	if not self.carouselImageURLs then
+		return;
+	end
+	local numURLs = #self.carouselImageURLs;
+	if numURLs > 0 and index <= numURLs then
+		self.currentCarouselImageIndex = index;
+		SetMissingModelProductURLImage(self.carouselImageURLs[self.currentCarouselImageIndex]);
+	end
+end
+
+function PMTImageContainerFrameMixin:SetupCarouselImages(displayInfo)
+	if not displayInfo then
+		return
+	end
+
+	-- Build list of images
+	self.carouselImageURLs = {};
+
+	-- RNM : Leaving the below commented, rather than deleted.
+	-- Shop team asked to not use the Checkout image (aka productPMTURL) for
+	-- PMTImageContainerFrame, they will always supply at least 1 AdditionAsset in Catalog
+	--if displayInfo.productPMTURL then
+	--	table.insert(self.carouselImageURLs, displayInfo.productPMTURL);
+	--end
+
+	for _, url in ipairs(displayInfo.additionalProductPMTURLs) do
+		table.insert(self.carouselImageURLs, url);
+	end
+
+	local numURLs = #self.carouselImageURLs;
+	if numURLs > 0 then
+		SetMissingModelProductURLImage(self.carouselImageURLs[1]);
+	end
+	-- Show the carousel if there are enough images to need it
+	--self.ImageCarousel:SetShown(numURLs > 1);
+end
+
+function PMTImageContainerFrameMixin:SetForHousingRoom(displayInfo)
+	self.WatermarkLogoTexture:Hide();
+	self:SetupCarouselImages(displayInfo);
+	self.ImageCarousel:SetShown(false);	-- Always hide the carousel when displaying the room preview (not details)
+end
+
+function PMTImageContainerFrameMixin:SetForFailedModelScene(displayInfo)
+	self.WatermarkLogoTexture:Hide();
+	SetMissingModelProductURLImage(displayInfo.fallbackPMTImageURL);
+	SetMissingLicenseCaptionText(nil);
+end
+
+function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo)
 	CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
-	SetAlternateProductURLImage(displayInfo);
+	self:SetupCarouselImages(displayInfo)
+	-- SetDisplayInfo is used for child products, and they will want the carousel only if they have enough images.
+	local numURLs = #self.carouselImageURLs;
+	self.ImageCarousel:SetShown(numURLs > 1);
 	SetMissingLicenseCaptionText(displayInfo);
 end
 
@@ -705,6 +790,223 @@ function CarouselControlMixin:SetCarouselItems(modelScene, actor, itemModifiedAp
 	self:SetShown(showCarousel);	
 end
 
+----------------------------------------------------------------------------------
+-- ImageCarouselElementTemplateMixin
+----------------------------------------------------------------------------------
+ImageCarouselElementTemplateMixin={}
+function ImageCarouselElementTemplateMixin:Init(data, isSelected)
+
+	local function SetPMTURLImage(url)
+		local texture = self.Image;
+		if url then
+			C_Texture.SetURLTexture(texture, url);
+		end
+	end
+
+	self.data = data;
+	self:SetSelected(isSelected);
+	self:SetScript("OnClick", function(button, buttonName)
+		print("ImageCarouselElementTemplateMixin:OnClick");
+	end);
+	SetPMTURLImage(data.url);
+end
+
+function ImageCarouselElementTemplateMixin:UpdateVisuals()
+end
+
+function ImageCarouselElementTemplateMixin:SetSelected(isSelected)
+	self.Selected:SetShown(isSelected);
+	if isSelected then
+		EventRegistry:TriggerEvent("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.data);
+	end
+end
+
+----------------------------------------------------------------------------------
+-- ImageCarouselControlMixin
+----------------------------------------------------------------------------------
+local PMT_IMAGE_CAROUSEL_BUTTON_WIDTH = 133;
+
+ImageCarouselControlMixin={}
+function ImageCarouselControlMixin:OnLoad()
+	self.LeftButton:SetScript("OnClick", function(button, buttonName)
+		self:SelectPreviousImage();
+	end);
+	self.RightButton:SetScript("OnClick", function(button, buttonName)
+		self:SelectNextImage();
+	end);
+end
+
+function ImageCarouselControlMixin:OnClick()
+	print("ImageCarouselControlMixin:OnClick");
+end
+
+function ImageCarouselControlMixin:OnShow()
+	self.ScrollBox:Show();
+	self.LeftButton:Show();
+	self.RightButton:Show();
+end
+
+function ImageCarouselControlMixin:OnHide()
+	self.ScrollBox:Hide();
+	self.LeftButton:Hide();
+	self.RightButton:Hide();
+end
+
+function ImageCarouselControlMixin:SetupScrollView()
+
+	local function InitializeButton(button, sectionInfo)
+		local isSelected = self.selectionBehavior:IsElementDataSelected(sectionInfo);
+		button:Init(sectionInfo, isSelected);
+		button:SetScript("OnClick", function(button, buttonName)
+			self.selectionBehavior:ToggleSelect(button);
+		end);
+	end
+
+	local DefaultPad = 9;
+	local DefaultSpacing = 9;
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
+	view:SetHorizontal(true);	
+	view:SetElementInitializer("ImageCarouselElementTemplate", InitializeButton);
+	view:SetElementExtent(PMT_IMAGE_CAROUSEL_BUTTON_WIDTH);
+	self.ScrollBox:Init(view);
+
+	local function OnSelectionChanged(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end;
+
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
+end
+
+function ImageCarouselControlMixin:SelectNextImage()
+	local selectedElementData, index = self.selectionBehavior:SelectNextElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.ScrollBox:ScrollToNearest(index);
+	end
+end
+
+function ImageCarouselControlMixin:SelectPreviousImage()
+	local selectedElementData, index = self.selectionBehavior:SelectPreviousElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.ScrollBox:ScrollToNearest(index);
+	end
+end
+
+local function CarouselElementComparator(lhs, rhs)
+	return lhs.index < rhs.index;
+end
+
+function ImageCarouselControlMixin:SetupScrollData(buttonInfos)
+	local dataProvider = CreateDataProvider();
+
+	for i, buttonInfo in ipairs(buttonInfos) do
+		dataProvider:Insert(buttonInfo);
+	end
+
+	dataProvider:SetSortComparator(CarouselElementComparator);
+	self.ScrollBox:SetDataProvider(dataProvider);
+
+	local leftmostElement = dataProvider:Find(1);
+	if leftmostElement then
+		leftmostElement.isFirstButton = true;
+		local leftmostButton = self.ScrollBox:FindFrame(leftmostElement);
+		if leftmostButton then
+			leftmostButton:UpdateVisuals();
+		end
+	end
+
+	local numButtons = dataProvider:GetSize();
+	local rightmostElement = dataProvider:Find(numButtons);
+	if rightmostElement then
+		rightmostElement.isLastButton = true;
+		local rightmostButton = self.ScrollBox:FindFrame(rightmostElement);
+		if rightmostButton then
+			rightmostButton:UpdateVisuals();
+		end
+	end
+
+	-- Shrink the scrollbox if there are 3 or less buttons.
+	local newWidth = 555;	-- Shorter than what 4 would be calculated at so the fade shows correctly.
+	local sameHeight = 80;
+	local fadeAmount = SCROLL_BOX_EDGE_FADE_LENGTH;
+	if numButtons < 4 then
+		local buttonWidth = PMT_IMAGE_CAROUSEL_BUTTON_WIDTH;	-- BUTTON
+		local padding = 9;	-- p
+		-- [pBUTTONpBUTTONpBUTTONp]
+		newWidth = (numButtons * buttonWidth) + ((numButtons + 1) * padding);
+		fadeAmount = 0;
+	end
+	self:SetSize(newWidth, sameHeight);
+	self.ScrollBox:SetEdgeFadeLength(fadeAmount);
+end
+
+function ImageCarouselControlMixin:OnUpdate()
+	local leftEnabled = not self.selectionBehavior:IsFirstElementDataSelected();
+	local rightEnabled = not self.selectionBehavior:IsLastElementDataSelected();
+	self.LeftButton:SetEnabled(leftEnabled);
+	self.RightButton:SetEnabled(rightEnabled);
+end
+
+function ImageCarouselControlMixin:SetupScrolling()
+	local hasScrollableExtent = self.ScrollBox:HasScrollableExtent();
+	if hasScrollableExtent then
+		self:SetScript("OnUpdate", GenerateClosure(self.OnUpdate, self));
+
+		self.LeftButton:ClearAllPoints();
+		self.LeftButton:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -2);
+		self.LeftButton:SetShown(true);
+
+		self.RightButton:ClearAllPoints();
+		self.RightButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, -2);
+		self.RightButton:SetShown(true);
+
+		self.ScrollBox:ClearAllPoints();
+		self.ScrollBox:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 0, 20);
+		self.ScrollBox:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", 0, -20);
+
+	else
+		self:SetScript("OnUpdate", nil);
+		self.LeftButton:SetShown(false);
+		self.RightButton:SetShown(false);
+
+		self.ScrollBox:ClearAllPoints();
+		self.ScrollBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.ScrollBox:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	end
+end
+
+local function IsElementDataPMTCarouselImage(elementData)
+	return true;
+end
+
+function ImageCarouselControlMixin:Init(buttonInfos)
+	self:SetupScrollView();
+	self:SetupScrollData(buttonInfos);
+	self.selectionBehavior:SelectFirstElementData(IsElementDataPMTCarouselImage);
+	self:SetupScrolling();
+end
+
+function ImageCarouselControlMixin:SetImages(images)
+	-- Hide the carousel if there is 1 or less images
+	if not images or (#images < 2) then
+		self:Hide();
+		return;
+	end
+
+	self.cachedImageURLs = images;
+
+	local scrollElementInfos = {};
+	for index, url in ipairs(images) do
+		local newElement = {};
+		newElement.index = index;
+		newElement.url = url;
+		table.insert(scrollElementInfos, newElement);
+	end
+	self:Init(scrollElementInfos);
+end
 
 ----------------------------------------------------------------------------------
 -- CatalogShopPersistentRefundContainerFrameMixin
@@ -729,21 +1031,24 @@ function CatalogShopPersistentRefundContainerFrameMixin:UpdateState()
 		return;
 	end
 
-	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
-	if CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
-		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()
-		or (not categoryInfo.showPersistentRefundButton) then
+	if (CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
+		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()) then
 		return;
 	end
 
-	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors();
+	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
+	if (not categoryInfo.showPersistentRefundButton) then
+		return;
+	end
+
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors();
 	if #refundableDecorInfos <= 0 then
 		return;
 	end
 
 	self:Show();
 
-	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
 	self.RefundTextFrame.RefundText:SetText(timeLeftFormatted);
 	self.RefundCountFrame.RefundCountText:SetText(tostring(#refundableDecorInfos));
 
@@ -774,14 +1079,14 @@ function ProductRefundContainerMixin:UpdateState()
 		return;
 	end
 
-	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors(self.productID);
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors(self.productID);
 	if #refundableDecorInfos <= 0 then
 		return;
 	end
 
 	self:Show();
 
-	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
 	local refundTimeLeft = CATALOG_SHOP_REFUND_TIME_LEFT:format(timeLeftFormatted);
 	self.RefundTextFrame.RefundText:SetText(refundTimeLeft);
 

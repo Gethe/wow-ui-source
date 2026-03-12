@@ -712,7 +712,7 @@ end
 
 function ActionBarActionButtonMixin:UpdateProfessionQuality()
 	if C_ActionBar.IsItemAction(self.action) then
-		local qualityInfo = C_ActionBar.GetProfessionQualityInfo(self.action);
+		local qualityInfo = C_ActionBar.GetProfessionQualityInfo and C_ActionBar.GetProfessionQualityInfo(self.action);
 		if qualityInfo then
 			if not self.ProfessionQualityOverlayFrame then
 				self.ProfessionQualityOverlayFrame = self:CreateTextureOverlayFrame();
@@ -1721,8 +1721,6 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 1);
 
 	self.IconMask:SetSize(45, 45);
-	self.IconMask:ClearAllPoints();
-	self.IconMask:SetPoint("CENTER", 0.5, -0.5);
 
 	self.AutoCastOverlay:SetSize(31, 31);
 	self.AutoCastOverlay:ClearAllPoints();

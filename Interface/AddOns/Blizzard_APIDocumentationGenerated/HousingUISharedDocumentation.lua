@@ -168,6 +168,9 @@ local HousingUIShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingUIShared);

@@ -17,6 +17,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CanChangeAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{
@@ -39,6 +40,7 @@ local SimpleFrameAPI =
 			Name = "ClearAttribute",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "NotAllowed",
 
 			Arguments =
@@ -225,6 +227,7 @@ local SimpleFrameAPI =
 		{
 			Name = "ExecuteAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -256,6 +259,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -686,7 +690,7 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "isRegistered", Type = "bool", Nilable = false },
-				{ Name = "units", Type = "string", Nilable = true, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = true, StrideIndex = 1 },
 			},
 		},
 		{
@@ -983,7 +987,7 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "eventName", Type = "cstring", Nilable = false },
-				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =
@@ -1000,7 +1004,7 @@ local SimpleFrameAPI =
 			{
 				{ Name = "eventName", Type = "cstring", Nilable = false },
 				{ Name = "cb", Type = "FrameEventCallbackType", Nilable = false },
-				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =
@@ -1058,6 +1062,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1069,6 +1074,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttributeNoHandler",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1482,6 +1488,9 @@ local SimpleFrameAPI =
 			Name = "FrameEventCallbackType",
 			Type = "CallbackType",
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

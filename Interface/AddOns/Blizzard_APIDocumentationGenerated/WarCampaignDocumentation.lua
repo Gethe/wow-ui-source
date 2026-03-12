@@ -205,8 +205,12 @@ local WarCampaign =
 				{ Name = "usesNormalQuestIcons", Type = "bool", Nilable = false },
 				{ Name = "isContainerCampaign", Type = "bool", Nilable = false },
 				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
+				{ Name = "hideFutureChapters", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

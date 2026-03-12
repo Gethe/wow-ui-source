@@ -49,6 +49,9 @@ local SettingsUtil =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SettingsUtil);

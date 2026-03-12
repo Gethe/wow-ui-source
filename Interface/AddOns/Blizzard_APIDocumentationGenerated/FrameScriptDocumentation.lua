@@ -134,6 +134,23 @@ local FrameScript =
 			Documentation = { "Removes the ability for the immediate calling function to access secret values." },
 		},
 		{
+			Name = "dumpobject",
+			Type = "Function",
+			SecureHooksAllowed = false,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Invokes the '__dump' metamethod on any value (if present), returning its result." },
+
+			Arguments =
+			{
+				{ Name = "value", Type = "LuaValueReference", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaValueReference", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCallstackHeight",
 			Type = "Function",
 
@@ -486,6 +503,9 @@ local FrameScript =
 			Name = "EventCallbackType",
 			Type = "CallbackType",
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

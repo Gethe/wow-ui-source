@@ -21,6 +21,9 @@ local ConfigurationWarningConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ConfigurationWarningConstants);

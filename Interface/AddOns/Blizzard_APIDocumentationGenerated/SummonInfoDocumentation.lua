@@ -69,6 +69,9 @@ local SummonInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SummonInfo);

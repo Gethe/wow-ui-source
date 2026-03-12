@@ -5,9 +5,9 @@ local SecretAspectConstants =
 		{
 			Name = "SecretAspect",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 26,
 			MinValue = 1,
-			MaxValue = 262144,
+			MaxValue = 524288,
 			Fields =
 			{
 				{ Name = "ObjectDebug", Type = "SecretAspect", EnumValue = 1 },
@@ -15,6 +15,7 @@ local SecretAspectConstants =
 				{ Name = "ObjectType", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ObjectSecrets", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ObjectSecurity", Type = "SecretAspect", EnumValue = 1 },
+				{ Name = "Attributes", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "Hierarchy", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ID", Type = "SecretAspect", EnumValue = 2 },
 				{ Name = "Toplevel", Type = "SecretAspect", EnumValue = 4 },
@@ -34,8 +35,12 @@ local SecretAspectConstants =
 				{ Name = "Rotation", Type = "SecretAspect", EnumValue = 65536 },
 				{ Name = "MinimumWidth", Type = "SecretAspect", EnumValue = 131072 },
 				{ Name = "Padding", Type = "SecretAspect", EnumValue = 262144 },
+				{ Name = "CooldownStyle", Type = "SecretAspect", EnumValue = 524288 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

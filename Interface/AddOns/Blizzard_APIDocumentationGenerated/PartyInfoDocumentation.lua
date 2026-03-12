@@ -263,6 +263,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetLootMethodStyle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "methodStyle", Type = "LootMethodStyles", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -373,6 +382,21 @@ local PartyInfo =
 			Returns =
 			{
 				{ Name = "isDelveComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLootMethodAvailable",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -711,6 +735,7 @@ local PartyInfo =
 			Name = "ReadyCheck",
 			Type = "Event",
 			LiteralName = "READY_CHECK",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -781,20 +806,13 @@ local PartyInfo =
 				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
 			},
 		},
+	},
+	Predicates =
+	{
 		{
-			Name = "PartyRequestJoinRelation",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "None", Type = "PartyRequestJoinRelation", EnumValue = 0 },
-				{ Name = "Friend", Type = "PartyRequestJoinRelation", EnumValue = 1 },
-				{ Name = "Guild", Type = "PartyRequestJoinRelation", EnumValue = 2 },
-				{ Name = "Club", Type = "PartyRequestJoinRelation", EnumValue = 3 },
-				{ Name = "NumPartyRequestJoinRelations", Type = "PartyRequestJoinRelation", EnumValue = 4 },
-			},
+			Name = "RequiresValidInviteTarget",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

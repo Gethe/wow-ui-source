@@ -233,7 +233,7 @@ function ClassSpecFrameMixin:SetActivateVisualsActive(active)
 	end
 
 	if active then
-		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, { overrideBarType = "applyingtalents" });
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, { overrideBarType = CastingBarType.ApplyingTalents });
 		self.DisabledOverlay:SetShown(true);
 	else
 		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();

@@ -96,14 +96,21 @@ function NamePlateDriverMixin:UnregisterScriptNamePlate(namePlateUnitToken)
 	self.scriptNamePlates[namePlateUnitToken] = nil;
 end
 
+function NamePlateDriverMixin:IsScriptNamePlateRegistered(namePlateUnitToken)
+	return self.scriptNamePlates[namePlateUnitToken] ~= nil;
+end
+
 function NamePlateDriverMixin:GetNamePlateForUnit(namePlateUnitToken)
+	if self.scriptNamePlates then
+		local scriptNamePlate = self.scriptNamePlates[namePlateUnitToken];
+		if scriptNamePlate then
+			return scriptNamePlate;
+		end
+	end
+
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
 	if namePlateFrameBase then
 		return namePlateFrameBase;
-	end
-
-	if self.scriptNamePlates then
-		return self.scriptNamePlates[namePlateUnitToken];
 	end
 
 	return nil;

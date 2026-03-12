@@ -34,7 +34,7 @@ local NamePlateManager =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenNamePlate", Nilable = false },
 			},
 
 			Returns =
@@ -51,7 +51,7 @@ local NamePlateManager =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenNamePlate", Nilable = false },
 				{ Name = "hitTestFrame", Type = "SimpleFrame", Nilable = false },
 			},
 		},
@@ -79,7 +79,7 @@ local NamePlateManager =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenNamePlate", Nilable = false },
 				{ Name = "isSimplified", Type = "bool", Nilable = false },
 			},
 		},
@@ -104,7 +104,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -114,7 +114,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -134,7 +134,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -155,12 +155,15 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

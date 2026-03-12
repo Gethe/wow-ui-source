@@ -160,9 +160,12 @@ SLASH_COMMAND = {
 	SPECTATOR_SOLORBG_WARGAME = "SPECTATOR_SOLORBG_WARGAME",
 	GUILDFINDER = "GUILDFINDER",
 	TRANSMOG_CUSTOM_SET = "TRANSMOG_CUSTOM_SET",
+	TRANSMOG_OUTFIT = "TRANSMOG_OUTFIT",
 	COMMUNITY = "COMMUNITY",
 	RAF = "RAF",
 	EDITMODE = "EDITMODE",
+	COOLDOWN_MANAGER = "COOLDOWNMANAGER",
+	CLICK_CASTING = "CLICKCASTING",
 };
 
 SLASH_COMMAND_CATEGORY = {
@@ -1377,7 +1380,19 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 	if ( not target ) then
 		target = "target";
 	end
-	if ( tonumber(marker) ) then
+
+	-- Prefixing with an "!" will prevent toggling the marker if it's already assigned.
+	if ( string.find(marker, "^!") ) then
+		marker = tonumber(string.match(marker, "%d+"));
+
+		if ( GetRaidTargetIndex(target) == marker ) then
+			return;
+		end
+	else
+		marker = tonumber(marker);
+	end
+
+	if ( marker ) then
 		SetRaidTarget(target, tonumber(marker));	--Using /tm 0 will clear the target marker.
 	end
 end);
@@ -1522,22 +1537,41 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.VOICECHAT, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXTTOSPEECH, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	if TextToSpeechCommands:EvaluateTextToSpeechCommand(msg) then
+	local cmd, success, failureText, failureTextNarrated = TextToSpeechCommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
+	elseif success then
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	else
-		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
-		TextToSpeechCommands:ShowHelp(msg);
+		if not failureText then
+			failureText, failureTextNarrated = TextToSpeechCommands:GetCommandHelpText(cmd);
+		end
+
+		if failureText then
+			TextToSpeechCommands:SpeakConfirmation(failureText, failureTextNarrated);
+		else
+			TextToSpeechCommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+		end
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	local success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
-	if not success then
+	local cmd, success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+	elseif success then
+		if not cmd.isMainToggle and not GetCVarBool("CAAEnabled") then
+			CAACommands:SpeakConfirmation(SLASH_CAA_DISABLED_WARNING, SLASH_CAA_DISABLED_WARNING_NARRATED);
+		end
+	else
+		if not failureText then
+			failureText, failureTextNarrated = CAACommands:GetCommandHelpText(cmd);
+		end
+
 		if failureText then
 			CAACommands:SpeakConfirmation(failureText, failureTextNarrated);
 		else
 			CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
-			CAACommands:ShowHelp(msg);
 		end
 	end
 end);
@@ -1610,5 +1644,28 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CAT
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsVisible() ) then
 		ToggleRaidFrame();
+	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
+	if msg == "" then
+		-- If run with no arguments, act as a clear.
+		C_TransmogOutfitInfo.ClearOutfit();
+	else
+		-- Note if applying the same outfit that is already applied, it will be treated as a clear unless the index is prefixed by '!'.
+		local parsedIndex = SecureCmdOptionParse(msg);
+		local allowRemoveOutfit = true;
+		if string.sub(parsedIndex, 1, 1) == "!" then
+			allowRemoveOutfit = false;
+			parsedIndex = string.sub(parsedIndex, 2, #parsedIndex);
+		end
+
+		-- playerFacingOutfitIndex is slightly different from outfitID that the transmog system uses, as it's a bit more player friendly (outfitIDs may have gaps).
+		-- 0 - Trial of Style outfit (if available).
+		-- 1+ - Corresponding outfit (if unlocked).
+		local playerFacingOutfitIndex = tonumber(parsedIndex);
+		if playerFacingOutfitIndex then
+			C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
+		end
 	end
 end);

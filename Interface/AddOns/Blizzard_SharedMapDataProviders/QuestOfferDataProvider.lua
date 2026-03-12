@@ -449,7 +449,7 @@ function QuestHubPinMixin:OnAcquired(poiInfo)
 
 	self:BuildRelatedQuests(self);
 	self:SetIsQuestHubForCityMap(self.dataProvider:IsQuestHubForCityMap(self));
-	AreaPOIPinMixin.OnAcquired(self, poiInfo);	
+	AreaPOIPinMixin.OnAcquired(self, poiInfo);
 end
 
 function QuestHubPinMixin:BuildRelatedQuests()
@@ -505,7 +505,7 @@ local function DetermineHigherPriorityPin(pin1, pin2)
 	if pin1IsEvent or pin2IsEvent then
 		return pin1IsEvent and pin1 or pin2;
 	end
-	
+
 	local pin1IsWorldQuest = pin1:MatchesTag(MapPinTags.WorldQuest);
 	local pin2IsWorldQuest = pin2:MatchesTag(MapPinTags.WorldQuest);
 	if pin1IsWorldQuest or pin2IsWorldQuest then
@@ -521,7 +521,7 @@ local function DetermineHigherPriorityPin(pin1, pin2)
 	if pin1IsQuestOffer or pin2IsQuestOffer then
 		return pin1IsQuestOffer and pin1 or pin2;
 	end
-	
+
 	return pin1; -- fallback, last pin that was considered better remains better.
 end
 
@@ -536,7 +536,7 @@ function QuestHubPinMixin:UpdatePriorityQuestDisplay()
 	if not pins then
 		return;
 	end
-	
+
 	local bestPin;
 	for pin, active in pairs(pins) do
 		if active then
@@ -619,7 +619,7 @@ function QuestHubPinMixin:AddSuppressedPinsToTooltip(tooltip, allSuppressedPins,
 
 		if needsOverflowLine then
 			container:SetAdditionalItemsText(formatData.moreItemsRemainingString:format(count - formatData.maxItems));
-		end		
+		end
 
 		container:Layout();
 		GameTooltip_InsertFrame(tooltip, container, 0);
@@ -628,7 +628,7 @@ end
 
 function QuestHubPinMixin:ShouldAddSuppressedPinToTooltip(pin)
 	-- Making the assumption that if this is being called the pin is already known to be suppressed.
-	return not pin:MatchesAnyTag(MapPinTags.FlightPoint);
+	return not pin:MatchesAnyTag(MapPinTags.FlightPoint, MapPinTags.IsSuppressible);
 end
 
 function QuestHubPinMixin:AddSuppressedPinToTooltipContainer(container, pin)
@@ -643,7 +643,7 @@ function QuestHubPinMixin:CreatePinTooltipFrame(pin)
 end
 
 function QuestHubPinMixin:GetOrCreateSuppressedPinTooltipPool()
-	if not self.suppressedPinPool then 
+	if not self.suppressedPinPool then
 		self.suppressedPinPool = CreateFramePool("Frame", GetAppropriateTopLevelParent(), "SuppressedPinTooltipTemplate");
 	end
 
@@ -733,7 +733,7 @@ local function SortSuppressedPins(pin1, pin2)
 	if (pin1Type or pin2Type) and pin1Type ~= pin2Type then
 		return pin1Type;
 	end
-	
+
 	-- If the types are the same, alphabetical ordering
 	local strCmpResult = strcmputf8i(pin1:GetDisplayName(), pin2:GetDisplayName());
 	if (strCmpResult ~= 0) then
@@ -776,8 +776,8 @@ function QuestHubPinMixin:ShouldSuppressPin(pin)
 		return false;
 	end
 
-	local isSuppressionCandidate = pin:MatchesAnyTag(MapPinTags.Event, MapPinTags.WorldQuest, MapPinTags.BonusObjective, MapPinTags.FlightPoint);
-	
+	local isSuppressionCandidate = pin:MatchesAnyTag(MapPinTags.Event, MapPinTags.WorldQuest, MapPinTags.BonusObjective, MapPinTags.FlightPoint, MapPinTags.IsSuppressible);
+
 	if isSuppressionCandidate and self:Intersects(pin) then
 		return true;
 	end
@@ -915,7 +915,7 @@ end
 function SuppressedPinTooltipContainerMixin:AddLine(line)
 	local previousLine = self.lines[#self.lines];
 	table.insert(self.lines, line);
-	
+
 	line:ClearAllPoints();
 	line:SetParent(self);
 	line:Show();

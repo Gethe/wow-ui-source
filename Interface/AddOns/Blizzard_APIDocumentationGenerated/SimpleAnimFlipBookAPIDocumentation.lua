@@ -130,6 +130,9 @@ local SimpleAnimFlipBookAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimFlipBookAPI);

@@ -5,9 +5,9 @@ local HousingCatalogConstants =
 		{
 			Name = "HousingCatalogEntryModelScenePresets",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 1317,
-			MaxValue = 1339,
+			MaxValue = 1452,
 			Fields =
 			{
 				{ Name = "DecorDefault", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1317 },
@@ -19,6 +19,7 @@ local HousingCatalogConstants =
 				{ Name = "DecorCeiling", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1338 },
 				{ Name = "DecorWall", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1339 },
 				{ Name = "DecorFlat", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1318 },
+				{ Name = "DecorHorizontalSurface", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1452 },
 			},
 		},
 		{
@@ -35,20 +36,6 @@ local HousingCatalogConstants =
 				{ Name = "Medium", Type = "HousingCatalogEntrySize", EnumValue = 67 },
 				{ Name = "Large", Type = "HousingCatalogEntrySize", EnumValue = 68 },
 				{ Name = "Huge", Type = "HousingCatalogEntrySize", EnumValue = 69 },
-			},
-		},
-		{
-			Name = "HousingCatalogEntrySubtype",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Invalid", Type = "HousingCatalogEntrySubtype", EnumValue = 0 },
-				{ Name = "Unowned", Type = "HousingCatalogEntrySubtype", EnumValue = 1, Documentation = { "Unowned entry, for displaying a catalog object in a static context" } },
-				{ Name = "OwnedModifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 2, Documentation = { "Stack of owned instances that share specific modifications (ex: stack of red-dyed chairs)" } },
-				{ Name = "OwnedUnmodifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 3, Documentation = { "Stack of owned default instances of a record" } },
 			},
 		},
 		{
@@ -89,13 +76,22 @@ local HousingCatalogConstants =
 		{
 			Name = "HousingCatalogEntryID",
 			Type = "Structure",
-			Documentation = { "Compound Identifier for entry stacks in the catalog" },
+			Documentation = { "Identifier for base entries in the catalog" },
 			Fields =
 			{
 				{ Name = "recordID", Type = "number", Nilable = false },
 				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
-				{ Name = "entrySubtype", Type = "HousingCatalogEntrySubtype", Nilable = false },
-				{ Name = "subtypeIdentifier", Type = "number", Nilable = false, Documentation = { "Hashed value used to identify and differentiate stacks that are the same type and subtype, but have some other subtype-specific difference" } },
+			},
+		},
+		{
+			Name = "HousingCatalogEntryVariantID",
+			Type = "Structure",
+			Documentation = { "Compound Identifier for entry variant stacks in the catalog" },
+			Fields =
+			{
+				{ Name = "recordID", Type = "number", Nilable = false },
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "variantIdentifier", Type = "number", Nilable = false, Documentation = { "Hashed value used to identify and differentiate stacks that are the same type and record, but have some variant-specific difference (e.g. dye colors)" } },
 			},
 		},
 		{
@@ -119,6 +115,9 @@ local HousingCatalogConstants =
 				{ Name = "anyAssociatedEntries", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

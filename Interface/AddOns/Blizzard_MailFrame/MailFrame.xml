@@ -596,7 +596,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.MAIL.include, AUTOCOMPLETE_LIST.MAIL.exclude);
+								AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.MAIL.include, AUTOCOMPLETE_LIST.MAIL.exclude);
 								self.addHighlightedText = true;
 								self.autoCompleteContext = "mail";
 							</OnLoad>
@@ -879,14 +879,6 @@
 			<Anchor point="TOPLEFT" relativeTo="InboxFrame" relativePoint="TOPRIGHT"/>
 		</Anchors>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="OpenMailFrameIcon" file="Interface\MailFrame\Mail-Icon">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="OpenMailAttachmentText" inherits="GameFontHighlightSmall" text="TAKE_ATTACHMENTS">
 					<Size x="0" y="0"/>

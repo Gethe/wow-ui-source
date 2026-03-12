@@ -31,6 +31,9 @@ local RecruitAFriendShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RecruitAFriendShared);

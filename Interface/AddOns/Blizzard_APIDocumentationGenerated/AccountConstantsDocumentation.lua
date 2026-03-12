@@ -269,6 +269,9 @@ local AccountConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AccountConstants);

@@ -91,6 +91,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetStatusBarColor",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -107,6 +108,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetStatusBarDesaturation",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =
 			{
@@ -174,6 +176,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "IsStatusBarDesaturated",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =
 			{
@@ -217,7 +220,7 @@ local SimpleStatusBarAPI =
 			{
 				{ Name = "minValue", Type = "number", Nilable = false },
 				{ Name = "maxValue", Type = "number", Nilable = false },
-				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, NeverSecret = true, Default = "Immediate" },
 			},
 		},
 		{
@@ -253,7 +256,8 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -266,7 +270,8 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturated",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Desaturation },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -276,7 +281,8 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Desaturation },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -328,7 +334,7 @@ local SimpleStatusBarAPI =
 			Arguments =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
-				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, NeverSecret = true, Default = "Immediate" },
 			},
 		},
 	},
@@ -338,6 +344,9 @@ local SimpleStatusBarAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

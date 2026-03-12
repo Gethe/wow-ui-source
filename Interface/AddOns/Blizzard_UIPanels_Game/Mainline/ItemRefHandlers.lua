@@ -291,3 +291,13 @@ LinkUtil.RegisterLinkHandler(LinkTypes.EventPOI, function(link, text, linkData, 
 
 	return LinkProcessorResponse.Unhandled;
 end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.HousingDecor, function(link, text, linkData, contextData)
+	-- Housing Dash is load on demand, and we need it to link into the catalog
+	if not HousingDashboardFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingDashboard");
+	end
+
+	local decorID = string.split(":", linkData.options);
+	EventRegistry:TriggerEvent("HousingCatalogFrame.OpenToDecorID", tonumber(decorID));
+end);

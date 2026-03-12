@@ -66,6 +66,9 @@ local ZoneScript =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ZoneScript);

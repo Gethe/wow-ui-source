@@ -1,5 +1,6 @@
 ## Title: Blizzard_SharedXMLBase
 ## AllowLoad: Both
+## Dependencies: Blizzard_ScriptErrors
 Compat.lua
 ErrorUtil.lua
 Mixin.lua
@@ -38,3 +39,4 @@ RegionLayoutManager.lua
 ModelSceneUtil.lua
 AnchorUtil.lua
 CurveConstants.lua
+CombatAudioAlertConstants.lua

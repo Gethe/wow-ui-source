@@ -303,6 +303,9 @@ local HousingExpertModeUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingExpertModeUI);

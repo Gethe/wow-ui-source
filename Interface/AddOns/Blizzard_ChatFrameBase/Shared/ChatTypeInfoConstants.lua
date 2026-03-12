@@ -288,8 +288,4 @@ ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
 };
 
-ChatTypeGroup["ENCOUNTER_EVENT"] = {
-	"CHAT_MSG_ENCOUNTER_EVENT",
-};
-
 --NEW_CHAT_TYPE - Add the chat type above.

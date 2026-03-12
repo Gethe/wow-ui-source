@@ -22,6 +22,9 @@ local CombatLogShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatLogShared);

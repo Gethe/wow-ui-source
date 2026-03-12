@@ -357,6 +357,9 @@ local ContributionCollector =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ContributionCollector);

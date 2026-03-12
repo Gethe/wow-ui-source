@@ -15,6 +15,9 @@ local SplashScreenConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SplashScreenConstants);

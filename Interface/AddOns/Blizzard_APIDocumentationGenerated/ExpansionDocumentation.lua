@@ -319,6 +319,9 @@ local Expansion =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Expansion);

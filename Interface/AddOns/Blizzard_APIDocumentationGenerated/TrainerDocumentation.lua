@@ -46,6 +46,9 @@ local Trainer =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Trainer);

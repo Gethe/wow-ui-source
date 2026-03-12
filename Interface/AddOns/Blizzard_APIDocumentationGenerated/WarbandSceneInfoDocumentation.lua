@@ -138,6 +138,9 @@ local WarbandSceneInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WarbandSceneInfo);

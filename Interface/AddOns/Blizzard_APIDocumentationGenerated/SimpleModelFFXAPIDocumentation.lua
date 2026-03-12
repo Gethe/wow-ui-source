@@ -56,6 +56,9 @@ local SimpleModelFFXAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleModelFFXAPI);

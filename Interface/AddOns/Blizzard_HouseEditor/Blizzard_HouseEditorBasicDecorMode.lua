@@ -64,11 +64,16 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 		self:OnPlacementFlagsUpdate(targetType, placementFlags);
 	elseif event == "GLOBAL_MOUSE_UP" then
 		local button = ...;
-		if button == "LeftButton" and C_HousingBasicMode.IsPlacingNewDecor() then
-			if self.commitNewDecorOnMouseUp then
-				C_HousingBasicMode.FinishPlacingNewDecor();
-			else
-				self.commitNewDecorOnMouseUp = true;
+		if button == "LeftButton" then
+			if C_HousingBasicMode.IsPlacingNewDecor() then
+				if self.commitNewDecorOnMouseUp then
+					C_HousingBasicMode.FinishPlacingNewDecor();
+				else
+					self.commitNewDecorOnMouseUp = true;
+				end
+			elseif C_HousingBasicMode.IsDecorSelected() and self.draggingPreviewDecor then
+				C_HousingBasicMode.CommitDecorMovement() --if it's unsuccessful it will just revert to click-to-place.
+				self.draggingPreviewDecor = false;
 			end
 		end
 	elseif event == "HOUSING_DECOR_PLACE_FAILURE" then
@@ -225,6 +230,11 @@ function HouseEditorBasicDecorModeMixin:TryShowInvalidPlacementTooltip(placement
 	if FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.OutsidePlotBounds) then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_OUTSIDE_PLOT_ERROR_TITLE, ERROR_COLOR);
+		GameTooltip:Show();
+		return true;
+	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.InvalidLightOverlap) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_LIGHT_OVERLAP_ERROR_TITLE, ERROR_COLOR);
 		GameTooltip:Show();
 		return true;
 	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.ChildOutsideBounds) then

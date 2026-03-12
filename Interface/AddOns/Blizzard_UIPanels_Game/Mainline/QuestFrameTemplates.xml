@@ -165,7 +165,7 @@
 			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
 		</Anchors>
 	</ScrollFrame>
-	<Frame name="QuestAccountCompletedNoticeTemplate" mixin="QuestAccountCompletedNoticeMixin" virtual="true">
+	<Frame name="QuestAccountCompletedNoticeTemplate" mixin="QuestAccountCompletedNoticeMixin" virtual="true" hidden="true">
 		<Size x="50" y="14"/>
 		<Layers>
 			<Layer level="ARTWORK">

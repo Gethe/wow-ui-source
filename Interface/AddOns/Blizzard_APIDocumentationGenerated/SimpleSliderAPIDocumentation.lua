@@ -231,6 +231,9 @@ local SimpleSliderAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleSliderAPI);

@@ -9,3 +9,6 @@ Classic\QueueUpdater.lua
 Classic\PVPHelper.lua
 Classic\PVPHelper.xml
 Classic\Localization.lua
+Classic\LFGEye.lua
+Classic\LFGFrame_Minimap_Vanilla.lua
+Classic\LFGFrame_Minimap.xml

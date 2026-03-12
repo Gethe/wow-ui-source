@@ -95,8 +95,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "target", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "target", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -506,6 +506,23 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerIsSpellTarget",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit is the player. Returns false if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerVehicleHasComboPoints",
 			Type = "Function",
 
@@ -782,7 +799,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -798,7 +815,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -813,6 +830,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -823,7 +841,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -839,7 +857,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -911,7 +929,7 @@ local Unit =
 			Name = "UnitClassFromGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1030,6 +1048,7 @@ local Unit =
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitThreatValuesRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1188,7 +1207,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1203,8 +1222,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "healerUnit", Type = "UnitToken", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
 				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
 			},
 		},
@@ -1216,8 +1235,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "healerGUID", Type = "UnitToken", Nilable = true },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerGUID", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true },
 			},
 
 			Returns =
@@ -1233,7 +1252,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1249,7 +1268,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1355,7 +1374,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -1372,7 +1391,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 			},
 
@@ -1391,7 +1410,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
 			},
@@ -1409,7 +1428,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
 			},
 
@@ -1654,6 +1673,7 @@ local Unit =
 		{
 			Name = "UnitIsAFK",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1774,6 +1794,7 @@ local Unit =
 		{
 			Name = "UnitIsDND",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2199,24 +2220,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitIsSpellTarget",
-			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit matches the target param. Returns false if the unit is not casting a spell or the spell has no target." },
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "target", Type = "UnitToken", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "UnitIsTapDenied",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -2442,7 +2445,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -2474,7 +2477,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2588,7 +2591,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2657,7 +2660,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2676,7 +2679,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -2696,7 +2699,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
@@ -2715,7 +2718,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "number", Nilable = false, Default = 0 },
 			},
 
@@ -2735,7 +2738,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -3011,7 +3014,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
 			},
 
 			Returns =
@@ -3067,6 +3070,7 @@ local Unit =
 		{
 			Name = "UnitThreatLeadSituation",
 			Type = "Function",
+			SecretWhenUnitThreatStateRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a threat state (0-3; representing none, yellow, orange, red) that indicates how far the provided unit is above the secondmost threat on the provided mob. If the unit is not first on threat, will always return red. Can return nil if the provided mob does not exist." },
 
@@ -3084,6 +3088,7 @@ local Unit =
 		{
 			Name = "UnitThreatPercentageOfLead",
 			Type = "Function",
+			SecretWhenUnitThreatValuesRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3100,6 +3105,7 @@ local Unit =
 		{
 			Name = "UnitThreatSituation",
 			Type = "Function",
+			SecretWhenUnitThreatStateRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3335,15 +3341,12 @@ local Unit =
 			Type = "Event",
 			LiteralName = "ARENA_COOLDOWNS_UPDATE",
 			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
-			},
 		},
 		{
 			Name = "ArenaCrowdControlSpellUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			SecretWhenLossOfControlInfoRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3653,6 +3656,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerMountDisplayChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_MOUNT_DISPLAY_CHANGED",
@@ -3706,6 +3719,7 @@ local Unit =
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			SecretWhenUnitIdentityRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3867,6 +3881,9 @@ local Unit =
 				{ Name = "currencyTypesID", Type = "number", Nilable = false },
 				{ Name = "currencyCost", Type = "number", Nilable = false },
 				{ Name = "currentDifficulty", Type = "number", Nilable = false },
+				{ Name = "displayItemID", Type = "number", Nilable = false },
+				{ Name = "itemContext", Type = "number", Nilable = false },
+				{ Name = "treasureContextLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -3895,6 +3912,17 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_AREA_CHANGED",
 			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitArenaCooldownsUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_ARENA_COOLDOWNS_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Only signaled when the active player is a commentator or spectator." },
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4762,6 +4790,7 @@ local Unit =
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
 				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -4824,6 +4853,9 @@ local Unit =
 				{ Name = "attachTooltipToBar", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

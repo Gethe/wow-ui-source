@@ -346,6 +346,9 @@ local WeeklyRewards =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WeeklyRewards);

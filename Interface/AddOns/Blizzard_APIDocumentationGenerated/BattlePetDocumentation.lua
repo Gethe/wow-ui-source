@@ -255,6 +255,9 @@ local BattlePet =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BattlePet);

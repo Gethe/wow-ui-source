@@ -260,18 +260,20 @@ local moneyFrameFonts =
 	{
 		[MONEY_FRAME_FONT_USER_SCALED] =
 		{
+			["default"] = UserScaledFontNumberNormalRight,
 			["yellow"] = UserScaledFontNumberNormalRightYellow,
 			["red"] = UserScaledFontNumberNormalRightRed,
 			["gray"] = UserScaledFontNumberNormalRightGray,
-			["default"] = UserScaledFontNumberNormalRight,
+			["green"] = UserScaledFontNumberNormalRightGreen
 		},
 
 		[MONEY_FRAME_FONT_FIXED_SCALE] =
 		{
+			["default"] = NumberFontNormalRight,
 			["yellow"] = NumberFontNormalRightYellow,
 			["red"] = NumberFontNormalRightRed,
 			["gray"] = NumberFontNormalRightGray,
-			["default"] = NumberFontNormalRight,
+			["green"] = NumberFontNormalRightGreen
 		},
 	},
 
@@ -280,18 +282,20 @@ local moneyFrameFonts =
 		-- Not yet supported.
 		[MONEY_FRAME_FONT_USER_SCALED] =
 		{
+			["default"] = NumberFontNormalLargeRight,
 			["yellow"] = NumberFontNormalLargeRightYellow,
 			["red"] = NumberFontNormalLargeRightRed,
 			["gray"] = NumberFontNormalLargeRightGray,
-			["default"] = NumberFontNormalLargeRight,
+			["green"] = NumberFontNormalLargeRightGreen
 		},
 
 		[MONEY_FRAME_FONT_FIXED_SCALE] =
 		{
+			["default"] = NumberFontNormalLargeRight,
 			["yellow"] = NumberFontNormalLargeRightYellow,
 			["red"] = NumberFontNormalLargeRightRed,
 			["gray"] = NumberFontNormalLargeRightGray,
-			["default"] = NumberFontNormalLargeRight,
+			["green"] = NumberFontNormalLargeRightGreen
 		},
 	},
 };
@@ -311,8 +315,19 @@ function SetMoneyFrameColorByFrame(moneyFrame, color)
 	moneyFrame.CopperButton:SetNormalFontObject(fontObject);
 end
 
+function GetMoneyFrame(frameOrName)
+	local argType = type(frameOrName);
+	if argType == "table" then
+		return frameOrName;
+	elseif argType == "string" then
+		return _G[frameOrName];
+	end
+
+	return nil;
+end
+
 function SetMoneyFrameColor(frameName, color)
-	local moneyFrame = _G[frameName];
+	local moneyFrame = GetMoneyFrame(frameName);
 	if ( not moneyFrame ) then
 		return;
 	end

@@ -338,6 +338,9 @@ local SimpleHTMLAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleHTMLAPI);

@@ -96,6 +96,27 @@
 
 	<Frame name="CatalogShopLoadingScreenTemplate" mixin="CatalogShopLoadingScreenMixin" virtual="true" setAllPoints="true">
 		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="1.0" hidden="false">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="80"/>
+						</Anchors>
+						<Size x="54" y="54"/>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Shadow_Outline_Large" text="CATALOG_SHOP_LOADING">
+							<Size x="200" y="30"/>
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Spinner" relativePoint="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+			</Frame>
 			<Frame parentKey="ShopLoading">
 				<Size x="128" y="128"/>
 				<Anchors>
@@ -349,6 +370,109 @@
 		</Scripts>
 	</Frame>
 
+	
+	
+	<Button name="ImageCarouselElementTemplate" mixin="ImageCarouselElementTemplateMixin" virtual="true">
+		<Size x="138" y="78"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Image" atlas="shop-frame-carousel-small-bg">
+					<Size x="138" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="Mask" setAllPoints="true" atlas="shop-frame-carousel-small-mask" hWrapMode="CLAMPTOBLACK" vWrapMode="CLAMPTOBLACK">
+					<Size x="138" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Image" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Image"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="shop-frame-carousel-small-default">
+					<Size x="147" y="87"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Selected" atlas="shop-frame-carousel-small-selected">
+					<Size x="150" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Hover" atlas="shop-frame-carousel-small-hover">
+					<Size x="138" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>				
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Frame name="ImageCarouselControlTemplate" mixin="ImageCarouselControlMixin" virtual="true">
+		<Size x="553" y="80"/>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<!--<Size x="80" y="80"/>-->
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="LeftButton">
+				<Size x="45" y="52"/>
+				<KeyValues>
+					<KeyValue key="direction" value="-1"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollBox" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<NormalTexture atlas="shop-icon-carousel-back-up"/>
+				<PushedTexture atlas="shop-icon-carousel-back-pressed"/>
+				<DisabledTexture atlas="shop-icon-carousel-back-disabled"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Selected" atlas="shop-header-menu-selected-middle" setAllPoints="true" alphaMode="ADD" hidden="true" >
+							<Anchors>
+								<Anchor point="LEFT" x="-1"/>
+								<Anchor point="RIGHT" x="1" />
+								<Anchor point="TOP" />
+								<Anchor point="BOTTOM" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="RightButton">
+				<Size x="45" y="52"/>
+				<KeyValues>
+					<KeyValue key="direction" value="1"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ScrollBox" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<NormalTexture atlas="shop-icon-carousel-next-up"/>
+				<PushedTexture atlas="shop-icon-carousel-next-pressed"/>
+				<DisabledTexture atlas="shop-icon-carousel-next-disabled"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<!--<OnClick method="OnClick" />-->
+		</Scripts>
+	</Frame>
+	
 	<Frame name="ProductRefundContainerTemplate" mixin="ProductRefundContainerMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="RefundTextFrame">

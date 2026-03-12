@@ -17,7 +17,7 @@ local HousingCatalogSearcherAPI =
 
 			Returns =
 			{
-				{ Name = "matchingEntryIDs", Type = "table", InnerType = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "matchingEntryVariantIDs", Type = "table", InnerType = "HousingCatalogEntryVariantID", Nilable = false },
 			},
 		},
 		{
@@ -31,7 +31,7 @@ local HousingCatalogSearcherAPI =
 
 			Returns =
 			{
-				{ Name = "matchingEntryIDs", Type = "table", InnerType = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "matchingEntryVariantIDs", Type = "table", InnerType = "HousingCatalogEntryVariantID", Nilable = false },
 			},
 		},
 		{
@@ -170,6 +170,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "IsBaseVariantOnlyActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCollectedActive",
 			Type = "Function",
 
@@ -209,19 +222,6 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "IsOwnedOnlyActive",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "isActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsSearchInProgress",
 			Type = "Function",
 
@@ -232,6 +232,19 @@ local HousingCatalogSearcherAPI =
 			Returns =
 			{
 				{ Name = "isSearchInProgress", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsStoredOnlyActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -302,10 +315,21 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetBaseVariantOnly",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, only the base variant of each decor entry will be included" },
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCollected",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Search parameter; If true, includes all owned entries, including those that are in storage OR placed in an owned house or plot; See IsOwnedOnlyActive for a more exclusive toggle" },
+			Documentation = { "Search parameter; If true, includes all owned entries, including those that are in storage OR placed in an owned house or plot; See IsStoredOnlyActive for a more exclusive toggle" },
 
 			Arguments =
 			{
@@ -381,17 +405,6 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "SetOwnedOnly",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Search parameter; If true, only entries that you own, and have instances of available in storage, will be included; This does not include entries that you own but have all been placed in a house; See IsCollectedActive for param that includes placed entries" },
-
-			Arguments =
-			{
-				{ Name = "isActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetResultsUpdatedCallback",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -423,6 +436,17 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetStoredOnly",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, only entries that you have instances of available in storage will be included; This does not include entries that you own but have all been placed in a house; See IsCollectedActive for param that includes placed entries" },
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetUncollected",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -443,6 +467,14 @@ local HousingCatalogSearcherAPI =
 		},
 		{
 			Name = "ToggleAllowedOutdoors",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ToggleBaseVariantOnly",
 			Type = "Function",
 
 			Arguments =
@@ -485,7 +517,7 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "ToggleOwnedOnly",
+			Name = "ToggleStoredOnly",
 			Type = "Function",
 
 			Arguments =
@@ -512,6 +544,9 @@ local HousingCatalogSearcherAPI =
 			Name = "HousingCatalogSearchResultsUpdatedCallback",
 			Type = "CallbackType",
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

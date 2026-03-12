@@ -401,8 +401,6 @@ local function Register()
 
 		local setting = Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
 		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
-
-		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 
 	local volumeMinValue, volumeMaxValue, volumeStep = 0, 1, .05;

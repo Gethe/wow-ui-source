@@ -28,6 +28,9 @@ local Platform =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Platform);

@@ -109,6 +109,14 @@ local SpellDiminishUI =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresSpellDiminishUI",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellDiminishUI);

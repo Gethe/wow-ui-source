@@ -118,6 +118,9 @@ local PlayerInteractionManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerInteractionManager);

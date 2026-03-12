@@ -93,6 +93,9 @@ local GuildBank =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GuildBank);

@@ -984,6 +984,9 @@ local ClubFinder =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClubFinder);

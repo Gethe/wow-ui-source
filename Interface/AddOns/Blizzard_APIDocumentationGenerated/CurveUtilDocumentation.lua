@@ -88,6 +88,9 @@ local CurveUtil =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CurveUtil);

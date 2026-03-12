@@ -24,6 +24,7 @@ Keybindings.xml
 Accessibility.lua
 Accessibility.xml
 Mainline\Colorblind.xml
+CombatAudioAlertUtil.lua
 AudioAssist.lua
 AudioAssist.xml
 Mounts.lua

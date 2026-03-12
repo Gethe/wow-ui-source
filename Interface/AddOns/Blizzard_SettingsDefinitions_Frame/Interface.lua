@@ -37,7 +37,7 @@ local function Register()
 			setting:SetValue(true);
 		end;
 
-		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
+		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, nil, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
 		layout:AddInitializer(initializer);
 	end);
 
@@ -153,6 +153,9 @@ local function Register()
 
 		InterfaceOverrides.CreatePvpFrameSettings(category, layout);
 	end);
+
+	-- Housing Settings
+	InterfaceOverrides.CreateHousingSettings(category, layout);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

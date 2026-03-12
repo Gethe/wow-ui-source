@@ -81,6 +81,9 @@ local SimpleAnimPathAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimPathAPI);

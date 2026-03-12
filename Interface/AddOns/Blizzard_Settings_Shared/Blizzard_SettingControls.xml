@@ -46,7 +46,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="SettingsListElementTemplate" mixin="SettingsListElementMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -95,6 +95,15 @@
 		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 	</CheckButton>
 
+	<!-- NOTE: Original template is a Frame, but this one is a Button -->
+	<Button name="SettingsColorSwatchTemplate" inherits="ColorSwatchTemplate" mixin="SettingsColorSwatchMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="SettingsCheckboxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
@@ -108,7 +117,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="SettingsDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
@@ -122,7 +131,13 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="SettingsColorSwatchControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsColorSwatchControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="SettingsCheckboxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxWithButtonControlMixin" virtual="true">
 		<Size x="280" y="26"/>
@@ -173,7 +188,7 @@
 
 	<!-- Retained for ease of replacing all dropdown + stepper combos that are used across Settings-->
 	<Frame name="SettingsDropdownWithButtonsTemplate" inherits="Metal2DropdownWithSteppersAndLabelTemplate" virtual="true"/>
-	
+
 	<EventFrame name="SettingsExpandableSectionTemplate" mixin="SettingsExpandableSectionMixin" virtual="true">
 		<Size y="25"/>
 		<Frames>

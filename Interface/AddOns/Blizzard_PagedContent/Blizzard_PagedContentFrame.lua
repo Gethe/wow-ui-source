@@ -177,6 +177,20 @@ function PagedContentFrameBaseMixin:GetFrames()
 	return self.frames or {};
 end
 
+function PagedContentFrameBaseMixin:GetSize()
+	local size = 0;
+
+	if not self.viewDataList then
+		return size;
+	end
+
+	for _viewDataIndex, viewData in ipairs(self.viewDataList) do
+		size = size + #viewData;
+	end
+
+	return size;
+end
+
 function PagedContentFrameBaseMixin:EnumerateFrames()
 	return ipairs(self:GetFrames());
 end
@@ -254,6 +268,43 @@ function PagedContentFrameBaseMixin:GetElementFrameByPredicateAndTemplate(predic
 			return elementFrame;
 		end
 	end
+	return nil;
+end
+
+function PagedContentFrameBaseMixin:GetElementDataByIndex(targetIndex)
+	if not self.viewDataList then
+		return nil;
+	end
+
+	local index = 0;
+	for _viewDataIndex, viewData in ipairs(self.viewDataList) do
+		for _elementIndex, elementData in ipairs(viewData) do
+			index = index + 1;
+			if targetIndex == index then
+				return elementData;
+			end
+		end
+	end
+
+	return nil;
+end
+
+-- Returns the index of the the matching elementData relative to the entire data collection
+function PagedContentFrameBaseMixin:FindIndexByPredicate(predicateFunc)
+	if not self.viewDataList then
+		return nil;
+	end
+
+	local index = 0;
+	for _viewDataIndex, viewData in ipairs(self.viewDataList) do
+		for _elementIndex, elementData in ipairs(viewData) do
+			index = index + 1;
+			if predicateFunc(elementData) then
+				return index;
+			end
+		end
+	end
+
 	return nil;
 end
 
@@ -496,6 +547,21 @@ function PagedContentFrameBaseMixin:SetPagingControls(pagingControls)
 	self.PagingControls = pagingControls;
 end
 
+-- Returns the maximum columns and rows that a specific view would use if filled only with a specific template type
+function PagedContentFrameBaseMixin:TryGetMaxGridCountForTemplateInView(templateKey, viewIndex)
+	if viewIndex > self.viewsPerPage then
+		return nil, nil;
+	end
+
+	local viewFrame = self.ViewFrames[viewIndex];
+	local elementTemplateInfo = self:InternalGetTemplateInfo(templateKey);
+	if not elementTemplateInfo then
+		return nil, nil;
+	end
+
+	return self:TryGetMaxGridCountForTemplateInViewFrame(elementTemplateInfo, viewFrame);
+end
+
 --------- Layout-specific derived mixin functions ---------
 
 function PagedContentFrameBaseMixin:ProcessTemplateInfo(templateInfo)
@@ -586,4 +652,10 @@ function PagedContentFrameBaseMixin:ApplyLayout(layoutFrames, viewFrame)
 	-- Required
 	-- Apply layout settings/commands to populated View Frame
 	assert(false);
+end
+
+function PagedContentFrameBaseMixin:TryGetMaxGridCountForTemplateInViewFrame(elementTemplateInfo, viewFrame)
+	-- Optional
+	-- Only applicable/useful for gridlike layouts
+	return nil, nil;
 end

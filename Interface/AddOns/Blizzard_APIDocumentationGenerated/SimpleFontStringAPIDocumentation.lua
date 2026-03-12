@@ -60,6 +60,15 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "ClearText",
+			Type = "Function",
+			Documentation = { "Sets text to an empty string and removes the Text secret aspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -117,7 +126,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = true },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = true },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
@@ -386,6 +395,22 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetUnboundedStringWidthForText",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWrappedWidth",
 			Type = "Function",
 			SecretWhenAnchoringSecret = true,
@@ -454,9 +479,14 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = false },
-				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
-				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = false },
+				{ Name = "fontHeight", Type = "number", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -667,6 +697,9 @@ local SimpleFontStringAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -28,6 +28,7 @@ LinkTypes = {
 	GarrisonMission = "garrmission",
 	GMChat = "GMChat",
 	GroupFinderUI = "lfd",
+	HousingDecor = "housingdecor",
 	InitiativeTask = "initiativetask",
 	Item = "item",
 	LevelUpToast = "levelup",
@@ -57,7 +58,7 @@ LinkTypes = {
 	WarbandScene = "warbandScene",
 	WorldMapWaypoint = "worldmap",
 	WorldQuest = "worldquest",
-	Talent = "talent"
+	Talent = "talent",
 };
 
 LinkUtil = {};

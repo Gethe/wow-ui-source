@@ -737,6 +737,9 @@ local CurrencyInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CurrencyInfo);

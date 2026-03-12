@@ -437,6 +437,9 @@ local HousingCustomizeModeUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingCustomizeModeUI);

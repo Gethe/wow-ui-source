@@ -15,6 +15,9 @@ local SummonConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SummonConstants);

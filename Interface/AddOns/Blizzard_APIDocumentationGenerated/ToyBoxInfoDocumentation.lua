@@ -92,6 +92,9 @@ local ToyBoxInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ToyBoxInfo);

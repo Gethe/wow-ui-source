@@ -117,6 +117,9 @@ local SimpleBrowserAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleBrowserAPI);

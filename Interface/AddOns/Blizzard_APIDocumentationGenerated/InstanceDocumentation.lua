@@ -266,6 +266,9 @@ local Instance =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Instance);

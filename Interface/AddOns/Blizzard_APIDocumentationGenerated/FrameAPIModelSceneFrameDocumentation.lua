@@ -601,6 +601,9 @@ local FrameAPIModelSceneFrame =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIModelSceneFrame);

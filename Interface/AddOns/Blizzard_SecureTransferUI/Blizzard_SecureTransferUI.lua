@@ -116,7 +116,11 @@ local SECURE_TRANSFER_DIALOGS = {
 		button1 = ACCEPT,
 		text = HOUSING_MARKET_PURCHASE_CONFIRMATION,
 		onAccept = function(self)
+			PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CONFIRMATION_DIALOG_BUTTON);
 			C_SecureTransfer.CompleteHousingPurchase();
+		end,
+		onCancel = function(self)
+			PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CONFIRMATION_DIALOG_BUTTON);
 		end,
 		waitForEvent = "BULK_PURCHASE_RESULT_RECEIVED",
 		eventCallback = function(self, ...)
@@ -124,6 +128,9 @@ local SECURE_TRANSFER_DIALOGS = {
 			if result == Enum.BulkPurchaseResult.ResultOk or result == Enum.BulkPurchaseResult.ResultPartialSuccess then
 				PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CELEBRATION);
 				self:Hide();
+			elseif result == Enum.BulkPurchaseResult.ResultInsufficientFunds then
+				-- Show failure dialog before hiding
+				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS");			
 			else
 				-- Show failure dialog before hiding
 				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE");
@@ -135,14 +142,22 @@ local SECURE_TRANSFER_DIALOGS = {
 			self:Hide();
 			SecureTransferDialog_Show("SLOW_HOUSING_PURCHASE");
 		end,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		fullScreenCover = true,
 	},
 	["SLOW_HOUSING_PURCHASE"] = {
 		text = HOUSING_MARKET_PURCHASE_SLOW_DESC,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		hideButton2 = true,
 	},
 	["HOUSING_PURCHASE_FAILURE"] = {
 		text = HOUSING_MARKET_PURCHASE_FAILURE,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
+		hideButton2 = true,
+	},
+	["HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS"] = {
+		text = HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		hideButton2 = true,
 	},
 	["START_HOUSING_VC_PURCHASE"] = {
@@ -160,6 +175,10 @@ local SECURE_TRANSFER_DIALOGS = {
 		getFocusedFrame = SecureTransferOutbound.GetCatalogShopTopUpFrame,
 	},
 }
+
+-- Doing this after since everything about this is the same except for the text and formatting
+SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM"] = CopyTable(SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE"]);
+SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM"].text = HOUSING_MARKET_PURCHASE_CONFIRMATION_SINGLE_ITEM;
 
 local currentDialog;
 
@@ -266,8 +285,13 @@ function SecureTransferDialog_OnEvent(self, event, ...)
             SecureTransferDialog_Show("SEND_ITEMS_TO_STRANGER", mailInfo.target);
         end
 	elseif (event == "SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE") then
+		local numProducts = C_SecureTransfer.GetHousingPurchaseQuantity();
 		local costText = C_SecureTransfer.GetHousingPurchaseCost() .. HearthsteelAtlasMarkup;
-		SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE", costText);
+		if numProducts > 1 then
+			SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE", numProducts, costText);
+		else
+			SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM", costText);
+		end
 	elseif (event == "SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION") then
 		local productID = C_SecureTransfer.GetHousingVCPurchaseProductID();
 		local productInfo = C_CatalogShop.GetProductInfo(productID);
@@ -309,7 +333,9 @@ function SecureTransferDialog_OnShow(self)
 end
 
 function SecureTransferDialog_OnHide(self)
-    SecureTransferOutbound.UpdateSendMailButton();
+	if ( not C_Glue.IsOnGlueScreen() ) then
+		SecureTransferOutbound.UpdateSendMailButton();
+	end
 
 	-- Cleanup spinner if hiding early
 	if (self.waitingForEvents) then
