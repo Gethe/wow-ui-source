@@ -165,6 +165,11 @@ function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
 		else
 			scrollContainer.selectionBehavior:SelectElementData(foundElementData);
 		end
+
+		-- Adding an Update to the scroll box with forceLayout set to true so the child elements will refresh after a product is selected.
+		local forceLayout = true;
+		scrollBox:Update(forceLayout);
+
 		return true;
 	end
 
