@@ -36,6 +36,7 @@ NamePlateFriendlyFrameOptions = {
 	softTargetBorderColor = CreateColor(.9, 1, .9, .25),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, .8),
+	updateNameUsesGetUnitName = true,
 }
 
 -- Some values listed here can be updated from NamePlateDriverMixin:UpdateNamePlateOptions.
@@ -60,4 +61,5 @@ NamePlateEnemyFrameOptions = {
 	softTargetBorderColor = CreateColor(1, 1, 1, .4),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, 1),
+	updateNameUsesGetUnitName = true,
 }

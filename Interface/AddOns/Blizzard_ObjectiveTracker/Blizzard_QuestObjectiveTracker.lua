@@ -306,9 +306,9 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 					local forceCompletedToUseFullHeight = true;
 					block:AddObjective("QuestComplete", completionText, nil, forceCompletedToUseFullHeight, OBJECTIVE_DASH_STYLE_HIDE);
 				else
-					-- If there isn't completion text, always prefer waypoint to "Ready for turn-in".
-					local waypointText = C_QuestLog.GetNextWaypointText(questID);
-					if waypointText ~= nil then
+					-- If there isn't completion text and it's safe, always prefer waypoint to "Ready for turn-in".
+					local waypointText = shouldShowWaypoint and C_QuestLog.GetNextWaypointText(questID);
+					if waypointText then
 						block:AddObjective("Waypoint", waypointText, nil, useFullHeight);
 					else
 						block:AddObjective("QuestComplete", QUEST_WATCH_QUEST_READY, nil, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);

@@ -851,7 +851,13 @@ function CompactUnitFrame_UpdateName(frame)
 	if ( not shouldShowName ) then
 		frame.name:Hide();
 	else
-		local name = GetUnitName(frame.unit, true);
+		local name;
+		if frame.optionTable.updateNameUsesGetUnitName then
+			name = GetUnitName(frame.unit, true);
+		else
+			name = UnitName(frame.unit);
+		end
+
 		if ( C_Commentator.IsSpectating() and name ) then
 			local overrideName = C_Commentator.GetPlayerOverrideName(name);
 			if overrideName then
