@@ -233,6 +233,13 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 	end);
 
 	self.CartDataManager:SetAddToCartCallback(function(cartItem)
+		-- Send telemetry for add to cart action
+		if not cartItem.bundleCatalogShopProductID or cartItem.isBundleParent then
+			local productID = cartItem.bundleCatalogShopProductID or cartItem.productID or 0;
+			local withPreview = cartItem.decorGUID ~= nil;
+			C_HousingCatalog.HousingMarketActionAddToCart(productID, withPreview);
+		end
+
 		if cartItem.bundleCatalogShopProductID then
 			PlaySound(SOUNDKIT.HOUSING_MARKET_ADD_BUNDLE_TO_CART);
 		else
@@ -253,7 +260,14 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 	end);
 
 	self.CartDataManager:SetRemoveFromCartCallback(function(itemIndex, cartItem)
+		-- Send telemetry for remove from cart action
+		if not cartItem.bundleCatalogShopProductID or cartItem.isBundleParent then
+			local productID = cartItem.bundleCatalogShopProductID or cartItem.productID or 0;
+			C_HousingCatalog.HousingMarketActionRemoveFromCart(productID);
+		end
+		
 		PlaySound(SOUNDKIT.HOUSING_MARKET_REMOVE_SINGLE_ITEM_FROM_CART);
+		
 		self:RemoveItemFromList(itemIndex, cartItem);
 	end);
 
@@ -583,6 +597,9 @@ function HousingMarketCartDataManagerMixin:ClearCart(requiresConfirmation)
 
 	if requiresConfirmation then
 		local function ClearCartCB(_dialog, _data)
+			-- If it's coming from the confirmation it's from user input, so we want to track it
+			C_HousingCatalog.HousingMarketActionClearCart();
+
 			self:ClearCartInternal();
 		end
 

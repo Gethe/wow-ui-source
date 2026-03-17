@@ -226,9 +226,9 @@ local CombatAudioAlertShared =
 		{
 			Name = "CombatAudioAlertThrottle",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Sample", Type = "CombatAudioAlertThrottle", EnumValue = 0 },
@@ -238,6 +238,10 @@ local CombatAudioAlertShared =
 				{ Name = "TargetCast", Type = "CombatAudioAlertThrottle", EnumValue = 4 },
 				{ Name = "PlayerResource1", Type = "CombatAudioAlertThrottle", EnumValue = 5 },
 				{ Name = "PlayerResource2", Type = "CombatAudioAlertThrottle", EnumValue = 6 },
+				{ Name = "PlayerHealthSamePercent", Type = "CombatAudioAlertThrottle", EnumValue = 7 },
+				{ Name = "TargetHealthSamePercent", Type = "CombatAudioAlertThrottle", EnumValue = 8 },
+				{ Name = "PlayerResource1SamePercent", Type = "CombatAudioAlertThrottle", EnumValue = 9 },
+				{ Name = "PlayerResource2SamePercent", Type = "CombatAudioAlertThrottle", EnumValue = 10 },
 			},
 		},
 		{

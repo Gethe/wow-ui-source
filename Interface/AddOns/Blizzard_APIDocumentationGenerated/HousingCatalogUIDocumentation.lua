@@ -246,6 +246,56 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "HousingMarketActionAddToCart",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "withPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionClearCart",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "HousingMarketActionRemoveFromCart",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionViewBundle",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionViewInStore",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPreviewCartItemShown",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

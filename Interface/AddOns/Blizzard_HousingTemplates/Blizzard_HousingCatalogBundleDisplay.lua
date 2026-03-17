@@ -51,6 +51,8 @@ function HousingCatalogBundleDisplayMixin:OnClick(button)
 	if button == "RightButton" then
 		self:ShowContextMenu();
 	elseif self.elementData.canPreview then
+		C_HousingCatalog.HousingMarketActionViewBundle(self.elementData.productID);
+
 		PlaySound(SOUNDKIT.HOUSING_MARKET_SELECT_BUNDLE);
 		EventRegistry:TriggerEvent("HousingMarket.BundleSelected", self.elementData);
 	else
@@ -107,6 +109,8 @@ function HousingCatalogBundleDisplayMixin:ShowContextMenu()
 
 		if self.elementData.productID then
 			rootDescription:CreateButton(HOUSING_MARKET_VIEW_IN_SHOP, function()
+				C_HousingCatalog.HousingMarketActionViewInStore(self.elementData.productID);
+
 				Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(self.elementData.productID);
 			end);
 		end

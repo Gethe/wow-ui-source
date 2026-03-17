@@ -688,6 +688,8 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 
 				if marketInfo.productID then
 					rootDescription:CreateButton(HOUSING_MARKET_VIEW_IN_SHOP, function()
+						C_HousingCatalog.HousingMarketActionViewInStore(marketInfo.productID);
+
 						Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(marketInfo.productID);
 					end);
 				end
