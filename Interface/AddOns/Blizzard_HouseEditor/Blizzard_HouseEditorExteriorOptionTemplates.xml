@@ -14,7 +14,9 @@
 	<!-- Base choice entry for dropdown menu use -->
 	<Button name="HouseExteriorOptionDropdownElementTemplate" mixin="HouseExteriorOptionDropdownElementMixin" inherits="CustomizationElementTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="overrideDetailsWidth" value="160" type="number"/>
+			<KeyValue key="minDetailsWidth" value="160" type="number"/>
+			<KeyValue key="maxDetailsWidth" value="260" type="number"/>
+			<KeyValue key="widthPadding" value="10" type="number"/>
 		</KeyValues>
 	</Button>
 

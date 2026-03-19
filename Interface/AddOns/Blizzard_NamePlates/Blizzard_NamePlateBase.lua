@@ -18,6 +18,7 @@ function NamePlateBaseMixin:AcquireUnitFrame()
 	self.UnitFrame = self.driverFrame:AcquireUnitFrame(self);
 	self.UnitFrame:SetParent(self);
 	self.UnitFrame:SetAllPoints(self);
+	self.UnitFrame:SetNamePlateFrame(self);
 end
 
 function NamePlateBaseMixin:ReleaseUnitFrame()

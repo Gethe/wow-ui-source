@@ -87,6 +87,7 @@ CatalogShopConstants =
 		Access = "Access",
 		GameTime = "Game Time",
 		Room = "Room",
+		HousingExterior = "Housing Exteriors",
 	},
 
 	-- These names match up with names in CatalogShop_C::GetOtherFlavorGameData

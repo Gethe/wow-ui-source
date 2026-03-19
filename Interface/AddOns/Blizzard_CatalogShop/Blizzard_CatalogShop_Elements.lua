@@ -467,6 +467,7 @@ end
 PMTImageContainerFrameMixin = {};
 function PMTImageContainerFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.OnCarouselSelectionSet, self);
+	self.carouselImageURLs = {};
 end
 
 function PMTImageContainerFrameMixin:OnShow()
@@ -475,7 +476,6 @@ function PMTImageContainerFrameMixin:OnShow()
 end
 
 function PMTImageContainerFrameMixin:OnHide()
-	self.carouselImageURLs = {};
 end
 
 local function SetMissingModelProductURLImage(productPMTURL)
@@ -587,7 +587,7 @@ function PMTImageContainerFrameMixin:SetupCarouselImages(displayInfo)
 	--self.ImageCarousel:SetShown(numURLs > 1);
 end
 
-function PMTImageContainerFrameMixin:SetForHousingRoom(displayInfo)
+function PMTImageContainerFrameMixin:SetupCarouselImagesAndHide(displayInfo)
 	self.WatermarkLogoTexture:Hide();
 	self:SetupCarouselImages(displayInfo);
 	self.ImageCarousel:SetShown(false);	-- Always hide the carousel when displaying the room preview (not details)
@@ -824,7 +824,7 @@ end
 ----------------------------------------------------------------------------------
 -- ImageCarouselControlMixin
 ----------------------------------------------------------------------------------
-local PMT_IMAGE_CAROUSEL_BUTTON_WIDTH = 133;
+local PMT_IMAGE_CAROUSEL_BUTTON_WIDTH = 138;
 
 ImageCarouselControlMixin={}
 function ImageCarouselControlMixin:OnLoad()
@@ -995,8 +995,6 @@ function ImageCarouselControlMixin:SetImages(images)
 		self:Hide();
 		return;
 	end
-
-	self.cachedImageURLs = images;
 
 	local scrollElementInfos = {};
 	for index, url in ipairs(images) do

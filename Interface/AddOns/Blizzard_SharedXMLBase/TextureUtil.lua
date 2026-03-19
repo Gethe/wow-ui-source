@@ -95,6 +95,7 @@ local LFGRoleIcons = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer",
 	["DAMAGER"] = "UI-LFG-RoleIcon-DPS",
+	["NONE"] = "UI-LFG-RoleIcon-DPS",
 };
 
 local DisabledLFGRoleIcons = {
@@ -102,6 +103,7 @@ local DisabledLFGRoleIcons = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Disabled",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer-Disabled",
 	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Disabled",
+	["NONE"] = "UI-LFG-RoleIcon-DPS-Disabled",
 };
 
 function GetIconForRole(role, showDisabled)
@@ -127,6 +129,7 @@ local SmallLFGRoleIcons = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro",
 	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro",
+	["NONE"] = "UI-LFG-RoleIcon-DPS-Micro",
 };
 
 function TextureUtil.GetSmallIconForRole(role)
@@ -152,6 +155,7 @@ local MicroLFGRoleIcons = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder",
 	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder",
+	["NONE"] = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder",
 };
 
 function GetMicroIconForRole(role)
@@ -176,6 +180,7 @@ local LFGRoleBackgrounds = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Background",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer-Background",
 	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Background",
+	["NONE"] = "UI-LFG-RoleIcon-DPS-Background",
 };
 
 function GetBackgroundForRole(role)

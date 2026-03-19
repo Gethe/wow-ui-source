@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_FrameXML, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Minimap, Blizzard_MicroMenu
-## AllowLoadGameType: mists
+## AllowLoadGameType: classic
 ## AllowLoad: Game
 Shared\ActionButtonUtil.lua
 Classic\ActionButtonUtilOverrides.lua
@@ -42,8 +42,8 @@ Shared\PossessActionBar.lua
 Classic\PossessActionBar.xml
 Shared\PetActionBar.lua
 Classic\PetActionBar.xml
-Shared\MultiCastActionBarFrame.lua
-Shared\MultiCastActionBarFrame.xml
+Classic\MultiCastActionBarFrame.lua [AllowLoadGameType wrath, cata]
+Classic\MultiCastActionBarFrame.xml [AllowLoadGameType wrath, cata]
 Shared\SpellFlyout.lua
 Shared\SpellFlyout.xml
 Shared\Localization.lua

@@ -518,6 +518,7 @@ local HousingCatalogUI =
 		{
 			Name = "HousingCatalogEntryInfo",
 			Type = "Structure",
+			Documentation = { "Base information about an object in the Catalog; For info for a specific owned stack of this object, see HousingCatalogEntryVariantInfo" },
 			Fields =
 			{
 				{ Name = "recordID", Type = "number", Nilable = false },
@@ -550,6 +551,7 @@ local HousingCatalogUI =
 		{
 			Name = "HousingCatalogEntryVariantInfo",
 			Type = "Structure",
+			Documentation = { "Represents a single stack of instances of an object in the Catalog, that are all of a specific variation; For example, a stack of undyed chairs, or blue-dyed tables" },
 			Fields =
 			{
 				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },

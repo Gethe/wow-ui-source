@@ -384,7 +384,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<MaskTexture parentKey="Mask" setAllPoints="true" atlas="shop-frame-carousel-small-mask" hWrapMode="CLAMPTOBLACK" vWrapMode="CLAMPTOBLACK">
+				<MaskTexture parentKey="Mask" atlas="shop-frame-carousel-scrollview-mask" hWrapMode="CLAMPTOBLACK" vWrapMode="CLAMPTOBLACK">
 					<Size x="138" y="78"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Image" relativePoint="CENTER" x="0" y="0"/>

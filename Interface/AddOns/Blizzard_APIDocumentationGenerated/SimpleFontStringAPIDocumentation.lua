@@ -295,6 +295,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetSmoothScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpacing",
 			Type = "Function",
 
@@ -612,6 +625,16 @@ local SimpleFontStringAPI =
 			{
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSmoothScaling",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false, Documentation = { "If true, text height will not snap to nearest whole numbers for scaled font strings." } },
 			},
 		},
 		{

@@ -65,6 +65,15 @@ function GetSecureMoneyString(money, separateThousands)
 	return moneyString;
 end
 
+function GetSecureTradeWarningString()
+	if (C_SecureTransfer.ShouldShowTradeOfferWarning()) then
+		local otherPlayer = C_SecureTransfer.GetTradePartner() or PLAYER; -- Probably should never hit this fallback case, but adding it just to be safe. Would rather show PLAYER than not show the warning at all.
+		return string.format(TRADE_WARNING_CHANGED_OFFER, otherPlayer);
+	end
+
+	return nil;
+end
+
 function SecureTransferDialog_DelayedAccept(self)
     self.Button1:Disable();
     C_Timer.After(1, function()
@@ -92,7 +101,8 @@ end
 local SECURE_TRANSFER_DIALOGS = {
     ["CONFIRM_TRADE"] = {
         text = TRADE_ACCEPT_CONFIRMATION,
-		onShow = SecureTransferDialog_DelayedAccept,
+		acceptWarning = GetSecureTradeWarningString,
+		onShow = SecureTransferDialog_TimerOnAccept,
         onAccept = function()
             C_SecureTransfer.AcceptTrade();
         end,
@@ -223,6 +233,14 @@ function SecureTransferDialog_Show(which, ...)
     else
         SecureTransferDialog.MoneyLabel:Hide();
     end
+
+	if (currentDialog.acceptWarning) then
+		SecureTransferDialog.WarningText:SetText(currentDialog.acceptWarning());
+		height = height + SecureTransferDialog.WarningText:GetHeight();
+	else
+		SecureTransferDialog.WarningText:Hide();
+	end
+
     SecureTransferDialog:SetHeight(height);
 
 	local parent = SecureTransferOutbound.GetAppropriateTopLevelParent();

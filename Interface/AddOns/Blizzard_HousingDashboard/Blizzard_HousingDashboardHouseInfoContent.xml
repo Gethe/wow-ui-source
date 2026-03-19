@@ -453,17 +453,15 @@
 								<Frame parentKey="BorderArt" frameStrata="HIGH" setAllPoints="true">
 									<Layers>
 										<Layer level="BORDER">
-											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-wood-small-tl" useAtlasSize="false">
-												<Size x="23" y="23"/>
+											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-corner-TL" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="2" y="-2"/>
+													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-4" y="2"/>
 												</Anchors>
 											</Texture>
 
-											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
-												<Size x="23" y="23"/>
+											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-corner-TR" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="-2" y="-2"/>
+													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="4" y="2"/>
 												</Anchors>
 											</Texture>
 

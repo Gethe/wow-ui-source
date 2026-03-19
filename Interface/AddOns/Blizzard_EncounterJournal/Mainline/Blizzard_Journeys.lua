@@ -86,10 +86,7 @@ function JourneysFrameMixin:Refresh()
 			if C_MajorFactions.ShouldDisplayMajorFactionAsJourney(id) then
 				tinsert(self.encountersJourneyData, C_MajorFactions.GetMajorFactionData(id));
 			else
-				-- If the current season dropdown was selected, don't show reputations
-				if not self.currentSeason then
-					tinsert(self.renownJourneyData, C_MajorFactions.GetMajorFactionData(id));
-				end
+				tinsert(self.renownJourneyData, C_MajorFactions.GetMajorFactionData(id));
 			end
 		end
 	end

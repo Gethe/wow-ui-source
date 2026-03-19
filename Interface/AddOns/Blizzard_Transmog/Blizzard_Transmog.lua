@@ -55,10 +55,14 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	button3 = CANCEL,
 	selectCallbackByIndex = true,
 	OnButton1 = function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 		local useAvailableDiscount = true;
 		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 	end,
 	OnButton2 = function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 		local useAvailableDiscount = false;
 		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 	end,
@@ -471,12 +475,14 @@ function TransmogOutfitCollectionMixin:InitSaveOutfitElements()
 	self.SaveOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.SaveOutfitButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
-
 		local cost, _modifierFlags = C_TransmogOutfitInfo.GetPendingTransmogCost();
 		if C_TransmogOutfitInfo.IsUsableDiscountAvailable() and cost and cost > 0 then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+
 			StaticPopup_Show("CONFIRM_TRANSMOG_USABLE_DISCOUNT");
 		else
+			PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 			local useAvailableDiscount = false;
 			C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 		end
@@ -2997,6 +3003,17 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 					local outfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(slot, appearanceType, weaponOption);
 					if outfitInfo.transmogID ~= customSetInfo.appearanceID then
 						break;
+					end
+
+					-- Secondary slot check (if present)
+					if customSetInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID then
+						local linkedSlotInfo = C_TransmogOutfitInfo.GetLinkedSlotInfo(slot);
+						if linkedSlotInfo then
+							local secondaryOutfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(linkedSlotInfo.secondarySlotInfo.slot, linkedSlotInfo.secondarySlotInfo.type, weaponOption);
+							if secondaryOutfitInfo and secondaryOutfitInfo.transmogID ~= customSetInfo.secondaryAppearanceID then
+								break;
+							end
+						end
 					end
 
 					slotMatched = true;

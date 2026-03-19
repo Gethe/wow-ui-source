@@ -27,6 +27,7 @@ end
 
 function HousingCornerstoneFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneFrameShowingEvents);
+	C_HousingNeighborhood.OnCornerstoneClosed();
 end
 
 function HousingCornerstoneFrameMixin:UpdateTabs()
@@ -201,7 +202,7 @@ local CantPurchaseReasonStrings = {
 	[Enum.PurchaseHouseDisabledReason.GuildLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.CharterLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.MaxHouses] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
-	[Enum.PurchaseHouseDisabledReason.NoGameTimeRemaining] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
+	[Enum.PurchaseHouseDisabledReason.NoGameTimeRemaining] = HOUSING_CORNERSTONE_GAMETIME_PERMISSION,
 };
 
 function HousingCornerstonePurchaseFrameMixin:OnHide()
@@ -212,6 +213,8 @@ function HousingCornerstonePurchaseFrameMixin:OnHide()
 	if self.boughtHouse == false then
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_CLOSE);
 	end
+
+	C_HousingNeighborhood.OnCornerstoneClosed();
 
 	-- Force all of these to hidden if the cornerstone purchase frame closes
 	StaticPopupSpecial_Hide(BuyHouseConfirmationDialog);
@@ -335,6 +338,7 @@ end
 
 function HousingCornerstoneVisitorFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneVisitorFrameShowingEvents);
+	C_HousingNeighborhood.OnCornerstoneClosed();
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
 end
 

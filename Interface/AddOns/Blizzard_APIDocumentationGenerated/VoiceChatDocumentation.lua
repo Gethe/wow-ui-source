@@ -260,6 +260,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberGUID",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -276,6 +277,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberID",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -292,6 +294,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -308,6 +311,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberName",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -478,6 +482,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberMutedForAll",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -494,6 +499,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberSilenced",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -913,6 +919,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelDisplayNameChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_DISPLAY_NAME_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -938,6 +945,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberActiveStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -950,6 +958,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberAdded",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ADDED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -961,6 +970,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberEnergyChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -973,6 +983,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberGuidUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -984,6 +995,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberMuteForAllChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1008,6 +1020,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberRemoved",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_REMOVED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1019,6 +1032,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSilencedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1031,6 +1045,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSpeakingStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1043,6 +1058,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSttMessage",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_STT_MESSAGE",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1056,6 +1072,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberVolumeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_VOLUME_CHANGED",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

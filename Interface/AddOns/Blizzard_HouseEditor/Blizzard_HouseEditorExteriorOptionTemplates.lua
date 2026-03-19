@@ -3,11 +3,14 @@
 HouseExteriorOptionDropdownElementMixin = {};
 
 function HouseExteriorOptionDropdownElementMixin:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice)
-	if self.overrideDetailsWidth then
-		self.SelectionDetails:SetOverrideWidth(self.overrideDetailsWidth);
-	end
 	self.SelectionDetails:SetSkipLockedTextFormat(true);
 	CustomizationElementMixin.Init(self, choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
+
+	local prefixWidth = self.SelectionDetails.SelectionNumber:GetWidth();
+	local textWidth = self.SelectionDetails.SelectionName:GetUnboundedStringWidth();
+	local overrideWidth = Clamp(prefixWidth + textWidth + self.widthPadding, self.minDetailsWidth, self.maxDetailsWidth);
+
+	self.SelectionDetails:SetOverrideWidth(overrideWidth);
 end
 
 function HouseExteriorOptionDropdownElementMixin:GetChoiceData()

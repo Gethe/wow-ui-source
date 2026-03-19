@@ -186,6 +186,11 @@ function CatalogShopProductContainerFrameMixin:TrySelectProductByID(productID)
 		else
 			scrollContainer.selectionBehavior:SelectElementData(foundElementData);
 		end
+
+		-- Adding an Update to the scroll box with forceLayout set to true so the child elements will refresh after a product is selected.
+		local forceLayout = true;
+		scrollBox:Update(forceLayout);
+
 		return true;
 	end
 
@@ -324,9 +329,9 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		if productInfo.previewIconTexture then
 			iconFrame.Icon:SetAtlas(productInfo.previewIconTexture);
 		end
-	elseif productType == CatalogShopConstants.ProductType.Room then
+	elseif productType == CatalogShopConstants.ProductType.Room or productType == CatalogShopConstants.ProductType.HousingExterior then
 		CatalogShopFrame.PMTImageContainerFrame:Show();
-		CatalogShopFrame.PMTImageContainerFrame:SetForHousingRoom(displayInfo);
+		CatalogShopFrame.PMTImageContainerFrame:SetupCarouselImagesAndHide(displayInfo);
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end

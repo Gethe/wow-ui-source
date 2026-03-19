@@ -66,6 +66,11 @@ function TabSystemButtonArtMixin:SetTabWidth(width)
 	self:SetWidth(width);
 end
 
+function TabSystemButtonArtMixin:IsForceDisabled()
+	-- Override in your derived Mixin.
+	return false, nil;
+end
+
 TabSystemButtonMixin = {};
 
 function TabSystemButtonMixin:OnEnter()
@@ -176,6 +181,7 @@ function TabSystemButtonMixin:IsSelected()
 end
 
 function TabSystemButtonMixin:IsForceDisabled()
+	-- Note: this will intentionally override TabSystemButtonArtMixin.
 	return self.forceDisabled, self.errorReason;
 end
 

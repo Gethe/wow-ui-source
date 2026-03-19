@@ -364,7 +364,7 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
 		self.PersistentRefundContainerFrame:UpdateState();
 
-		-- TODO (WOW12-45327): Clean up this selected product logic (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+		-- TODO (WOW12-45327): Clean up this selected product logic
 		local selectedProductInfo = self:GetSelectedProductInfo();
 		if (selectedProductInfo) then
 			self.CatalogShopDetailsFrame:UpdateState();

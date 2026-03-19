@@ -1,6 +1,39 @@
 -- These are functions that were deprecated and will be removed in the future.
 -- Please upgrade to the updated APIs as soon as possible.
 
+--[[
+	== Summary of 12.0.5 Changes ==
+	
+	Previously, there was just Housing Catalog Entry, which represented one "stack" of stuff in the Catalog, with a "Subtype" to denote what kind of stack it was.
+	For example, for a "Sturdy Chair" there might be both an "OwnedModifiedStack" entry for a stack of dyed chairs, and a "OwnedUnmodifiedStack" entry for undyed chairs.
+	This had multiple problems, primarily around the idea of "Owned" because "Owned" here really only meant "has any in storage."
+	Decor that you own but have placed all instances of were technically "Unowned" which just caused a lot of confusion and fragility,
+	and it wasn't clear or consistent which "totals" or "quantities" referred to all instances of the decor versus only instances of a stack, etc.
+
+	Now, Catalog Entries are split into 2 separate concepts.
+
+	HousingCatalogEntry is now the top-level base information about a single thing that can be in the Catalog, whether you own it or not.
+	This includes static information, like name and icon, as well as top-level general info like "total num stored" which is agnostic of separated stacks.
+	HousingCatalogEntryVariants is a sublevel, that represent a specific "variant" of the entry that the player does own.
+
+	Example: Player has 2 red-dyed, 1 blue-dyed, and 2 undyed Sturdy Chairs in storage, and 1 Sturdy Chair placed in a house
+	Before:
+		[Sturdy Chair HousingCatalogEntryInfo (OwnedUnmodified, quantity: 2, numPlaced: 1)]
+		[Sturdy Chair HousingCatalogEntryInfo (OwnedModified, dyes: red, quantity: 2, numPlaced: 1)]
+		[Sturdy Chair HousingCatalogEntryInfo (OwnedModified, dyes: blue, quantity: 1, numPlaced: 1)]
+	Now:
+		[Sturdy Chair HousingCatalogEntryInfo (totalNumStored: 5, totalNumPlaced: 1)]
+			[HousingCatalogEntryVariantInfo (dyes: none, numStored: 2)]
+			[HousingCatalogEntryVariantInfo (dyes: red, numStored: 2)]
+			[HousingCatalogEntryVariantInfo (dyes: blue, numStored: 1)]
+
+	Example: Player has 6 Sturday Chairs, all of them have been placed in a house
+	Before:
+		[Sturdy Chair HousingCatalogEntryInfo (Unowned, quantity: 0, numPlaced: 6)]
+	Now:
+		[Sturdy Chair HousingCatalogEntryInfo (totalNumStored: 0, totalNumPlaced: 6)]
+]]--
+
 if not GetCVarBool("loadDeprecationFallbacks") then
 	return;
 end

@@ -46,6 +46,18 @@ local TemplateHeightAdjust = {
 -- Base Mixin
 BaseHousingCatalogMixin = {};
 
+function BaseHousingCatalogMixin:SetEntryDisplayContextGetter(entryDisplayContextGetter)
+	self.entryDisplayContextGetter = entryDisplayContextGetter;
+end
+
+function BaseHousingCatalogMixin:GetEntryDisplayContext()
+	if self.entryDisplayContextGetter then
+		return self.entryDisplayContextGetter();
+	end
+
+	return nil;
+end
+
 function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition, headerText, instructionText)
 	if not catalogEntries or #catalogEntries == 0 then
 		self:ClearCatalogData();
@@ -59,9 +71,12 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 		table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_HEADER", text = headerText });
 	end
 
+	-- We use our own in-between context getter function rather than directly pass them the one provided via SetEntryDisplayContextGetter
+	-- This ensures entries always at least have the function, and avoids the potential for entries ending up with a different context should SetEntryDisplayContextGetter be called later with a different func
+	local entryContextGetter = GenerateClosure(self.GetEntryDisplayContext, self);
+
 	for _, catalogEntry in ipairs(catalogEntries) do
 		local elementData = catalogEntry;
-
 		-- Bundle entries have a list of decor entries
 		if catalogEntry.decorEntries then
 			elementData.templateKey = "CATALOG_ENTRY_BUNDLE";
@@ -92,6 +107,7 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 		end
 
 		if elementData.templateKey then
+			elementData.displayContextGetter = entryContextGetter;
 			lastTemplate = elementData.templateKey;
 			table.insert(catalogElements, elementData);
 		end

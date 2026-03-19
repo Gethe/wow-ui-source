@@ -306,7 +306,7 @@ UI.xsd">
 	-->
 		<Frame name="SecureDialogBorderNoCenterTemplate" frameLevel="500" setAllPoints="true" useParentLevel="true" virtual="true">
 			<Layers>
-				<Layer level="BACKGROUND">
+				<Layer level="BORDER">
 					<Texture parentKey="TopLeftCorner" atlas="UI-Frame-DiamondMetal-CornerTopLeft" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>

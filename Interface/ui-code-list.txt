@@ -627,8 +627,8 @@ Interface\AddOns\Blizzard_AchievementUI\Mainline\Localization.lua
 Interface\AddOns\Blizzard_ActionBarController\ActionBarController.lua
 Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
+Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Classic.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Mainline.toc
-Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Mists.toc
 Interface\AddOns\Blizzard_ActionBar\Mainline\ActionButtonOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\ActionButtonTemplate.xml
 Interface\AddOns\Blizzard_ActionBar\Mainline\ActionButtonUtilOverrides.lua
@@ -666,8 +666,6 @@ Interface\AddOns\Blizzard_ActionBar\Shared\Localization.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\MainActionBar.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\MultiActionBars.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\MultiActionBars.xml
-Interface\AddOns\Blizzard_ActionBar\Shared\MultiCastActionBarFrame.lua
-Interface\AddOns\Blizzard_ActionBar\Shared\MultiCastActionBarFrame.xml
 Interface\AddOns\Blizzard_ActionBar\Shared\PetActionBar.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\PossessActionBar.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\ReputationBar.lua
@@ -3508,12 +3506,8 @@ Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateZoneContro
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTopCenterFrame.lua
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTopCenterFrame.xml
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_WidgetsUtil.lua
-Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Cata.toc
+Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Classic.toc
 Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Mainline.toc
-Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Mists.toc
-Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_TBC.toc
-Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Vanilla.toc
-Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Wrath.toc
 Interface\AddOns\Blizzard_UnitFrame\DemonHunterSoulFragmentsBar.lua
 Interface\AddOns\Blizzard_UnitFrame\DemonHunterSoulFragmentsBar.xml
 Interface\AddOns\Blizzard_UnitFrame\DevourerFuryBar.lua

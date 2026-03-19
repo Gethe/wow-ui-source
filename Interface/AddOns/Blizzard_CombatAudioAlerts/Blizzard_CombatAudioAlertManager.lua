@@ -14,7 +14,9 @@ CombatAudioAlertManagerMixin = {};
 
 function CombatAudioAlertManagerMixin:OnLoad()
 	self.lastUnitHealthPercent = {};
+	self.lastUnitHealthAnnouncePercent = {};
 	self.lastPlayerPowerPercent = {};
+	self.lastPlayerPowerAnnouncePercent = {};
 	self.partyHealthInfo = { unitCount = 0, unitInfo = {} };
 
 	local function CheckRefreshEvents()
@@ -132,7 +134,11 @@ function CombatAudioAlertManagerMixin:RefreshThrottles(isInit)
 	if isInit then
 		addonTable.throttles = {
 			[Enum.CombatAudioAlertThrottle.Sample] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.Sample), constant = true },
-		}
+			[Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.TargetHealthSamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetHealthSamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent), constant = true },
+		};
 	else
 		for _, throttleInfo in pairs(addonTable.throttles) do
 			if not throttleInfo.constant and throttleInfo.timer then
@@ -497,10 +503,37 @@ function CombatAudioAlertManagerMixin:IsWatchingUnitCastState(unit, castState)
 end
 
 local sampleTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.Sample, text = CAA_SAMPLE_TEXT};
+local playerHealthSamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent};
+local targetHealthSamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.TargetHealthSamePercent};
+local playerResource1SamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent};
+local playerResource2SamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent};
 
 function CombatAudioAlertManagerMixin:PlaySample(categoryType)
 	sampleTextInfo.categoryType = categoryType or Enum.CombatAudioAlertCategory.General;
 	addonTable:TrySpeakText(sampleTextInfo, CombatAudioAlertConstants.ALLOW_OVERLAP_NO);
+end
+
+function CombatAudioAlertManagerMixin:GetUnitHeathSamePercentTextInfo(unit)
+	if unit == "player" then
+		return playerHealthSamePercentTextInfo;
+	elseif unit == "target" then
+		return targetHealthSamePercentTextInfo;
+	else
+		error("Invalid unit passed to GetUnitHeathSamePercentTextInfo")
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetPlayerPowerSamePercentTextInfo(powerType)
+	local isPercentYes = true;
+	local settingEnum = CombatAudioAlertUtil.ConvertToResourceSettingEnum(powerType, isPercentYes);
+
+	if settingEnum == Enum.CombatAudioAlertSpecSetting.Resource1Percent then
+		return playerResource1SamePercentTextInfo;
+	elseif settingEnum == Enum.CombatAudioAlertSpecSetting.Resource1Percent then
+		return playerResource2SamePercentTextInfo;
+	else
+		error("Invalid powerType passed to GetPlayerPowerSamePercentTextInfo")
+	end
 end
 
 function CombatAudioAlertManagerMixin:GetPercentageBand(percent, threshold)
@@ -512,26 +545,32 @@ function CombatAudioAlertManagerMixin:GetPercentageBand(percent, threshold)
 		return 0;
 	end
 
-	return math.floor(percent / threshold) * threshold;
+	-- Bands should go down from 100, not up from 0 (e.g. 40% threshold results in 100/60/20 not 40/80/100)
+	local percentFrom100 = 100 - percent;
+	local bandFrom100 = math.floor(percentFrom100 / threshold) * threshold;
+	return 100 - bandFrom100;
 end
 
-function CombatAudioAlertManagerMixin:GetAnnouncePercentage(percent, currentBand, lastBand)
-	local sameBand = (currentBand == lastBand);						-- Don't announce if the band remained the same
-	local fullTo90Band = (lastBand == 100 and currentBand == 90);	-- Or if it went from 100 to 90-something
-	local shouldAnnounce = not sameBand and not fullTo90Band;
+function CombatAudioAlertManagerMixin:GetAnnouncePercentage(percent, currentBand, lastBand, threshold)
+	--print("GetAnnouncePercentage percent = "..percent.." currentBand = "..(currentBand or "none").." lastBand = "..(lastBand or "none"));
 
-	if shouldAnnounce then
+	if currentBand ~= lastBand then
 		if not lastBand or not currentBand then
 			-- Initial call, announce the actual percent
 			return percent;
 		end
 
 		if currentBand < lastBand then
-			-- Percent went down, announce the band above current (90% -> 65%, announce 70%)
-			return currentBand + 10;
+			-- Percent went down, announce the current band (75% -> 65%, announce 70%)
+			return currentBand; 
 		else
-			-- Percent went up, announce the current band (20% -> 57%, announce 50%)
-			return currentBand;
+			-- Percent went up, as long as percent isn't 100 announce the band below current (43% -> 57%, announce 50%)
+			if percent < 100 then
+				return currentBand - threshold;
+			else
+				-- But if percent is 100 then announce 100
+				return 100;
+			end
 		end
 	end
 
@@ -546,11 +585,6 @@ function CombatAudioAlertManagerMixin:GetUnitHealthThreshold(unit)
 	else
 		error("Invalid unit passed to GetUnitHealthThreshold")
 	end
-end
-
-function CombatAudioAlertManagerMixin:GetUnitHealthBand(unit, healthPercent)
-	local threshold = self:GetUnitHealthThreshold(unit);
-	return self:GetPercentageBand(healthPercent, threshold);
 end
 
 function CombatAudioAlertManagerMixin:GetUnitFormattedHealthString(unit, healthPercent)
@@ -589,6 +623,52 @@ function CombatAudioAlertManagerMixin:ShouldConsiderUnitDead(unit)
 	return UnitIsDead(unit) or UnitIsGhost(unit);
 end
 
+function CombatAudioAlertManagerMixin:CheckShouldAnnouncePercent(unitOrPowerType, announcePercentage)
+	local samePercentTextInfo;
+	local lastAnnouncePercent;
+	local isUnit = (type(unitOrPowerType) == "string");
+	if isUnit then
+		-- This is a unit
+		lastAnnouncePercent = self.lastUnitHealthAnnouncePercent[unitOrPowerType];
+		samePercentTextInfo = self:GetUnitHeathSamePercentTextInfo(unitOrPowerType);
+	else
+		-- This is a powerType
+		lastAnnouncePercent = self.lastPlayerPowerAnnouncePercent[unitOrPowerType];
+		samePercentTextInfo = self:GetPlayerPowerSamePercentTextInfo(unitOrPowerType);
+	end
+
+	--print("CheckShouldAnnouncePercent announcePercentage = "..announcePercentage.." lastAnnouncePercent = "..(lastAnnouncePercent or "none"));
+
+	local shouldAnnounce = false;
+	if announcePercentage ~= lastAnnouncePercent then
+		-- announcePercentage is not the same, always announce and start the throttle timer
+		addonTable:StartThrottleTimer(samePercentTextInfo.throttleType);
+		shouldAnnounce = true;
+		--print("Different percent, always announce");
+	elseif addonTable:CheckThrottle(samePercentTextInfo) then
+		-- announcePercentage is the same, but it's been enough time so we want to announce
+		shouldAnnounce = true;
+		--print("Same percent, but throttle is finished");
+	else
+		--print("Same percent and throttled");
+	end
+
+	if shouldAnnounce then
+		if isUnit then
+			self.lastUnitHealthAnnouncePercent[unitOrPowerType] = announcePercentage;
+		else
+			self.lastPlayerPowerAnnouncePercent[unitOrPowerType] = announcePercentage;
+		end
+	end
+
+	return shouldAnnounce;
+end
+
+function CombatAudioAlertManagerMixin:ResetLastHealthAnnouncePercent(unitOrPowerType, announcePercentage)
+	self.lastUnitHealthAnnouncePercent[unitOrPowerType] = nil;
+	self:CheckShouldAnnouncePercent(unitOrPowerType, announcePercentage);	-- Ignoring the return because we just wanted to reset
+end
+
 function CombatAudioAlertManagerMixin:ProcessUnitHealthChange(unit)
 	if not self:IsWatchingUnitHealth(unit) or not self:ShouldConsiderUnitHealth(unit) then
 		return;
@@ -601,12 +681,20 @@ function CombatAudioAlertManagerMixin:ProcessUnitHealthChange(unit)
 
 	local healthPercent = self:GetUnitHealthPercent(unit);
 
-	local currentBand = self:GetUnitHealthBand(unit, healthPercent);
-	local lastBand = self:GetUnitHealthBand(unit, self.lastUnitHealthPercent[unit]);
+	--print("ProcessUnitHealthChange healthPercent = "..healthPercent);
 
-	local announcePercentage = self:GetAnnouncePercentage(healthPercent, currentBand, lastBand);
+	local threshold = self:GetUnitHealthThreshold(unit);
+
+	local currentBand = self:GetPercentageBand(healthPercent, threshold);
+	local lastBand = self:GetPercentageBand(self.lastUnitHealthPercent[unit], threshold);
+
+	local announcePercentage = self:GetAnnouncePercentage(healthPercent, currentBand, lastBand, threshold);
 	if announcePercentage then
-		addonTable:TrySpeakText(self:GetUnitHealthTextInfo(unit, announcePercentage));
+		local shouldAnnounce = self:CheckShouldAnnouncePercent(unit, announcePercentage);
+		if shouldAnnounce then
+			--print("ANNOUNCING healthPercent = "..healthPercent.." accouncing = "..announcePercentage);
+			addonTable:TrySpeakText(self:GetUnitHealthTextInfo(unit, announcePercentage));
+		end
 	end
 
 	self.lastUnitHealthPercent[unit] = healthPercent;
@@ -617,6 +705,11 @@ function CombatAudioAlertManagerMixin:ProcessTargetChange()
 		return;
 	end
 
+	--print("ProcessTargetChange");
+
+	-- Target just changed, so cancel the existing target health throttle timer (if one exists)
+	addonTable:CancelThrottleTimer(Enum.CombatAudioAlertThrottle.TargetHealth);
+
 	local finalText, categoryType;
 
 	if self:IsSayTargetNameEnabled() then
@@ -625,6 +718,9 @@ function CombatAudioAlertManagerMixin:ProcessTargetChange()
 	end
 
 	if self:ShouldSayTargetHealthOnTargetUpdate() then
+		-- Target just changed and we are about to announce their health, so reset last health announce percent (this also starts the same-percent throttle timer)
+		self:ResetLastHealthAnnouncePercent("target", self:GetUnitHealthPercent("target"));
+
 		local healthText = self:GetCurrentHealthText("target");
 		finalText = (finalText or "")..healthText;
 		categoryType = Enum.CombatAudioAlertCategory.TargetHealth;
@@ -655,7 +751,7 @@ function CombatAudioAlertManagerMixin:ProcessCombatStateChanged(isInCombat)
 end
 
 function CombatAudioAlertManagerMixin:GetPartyHealthFrequencyMinAndMax()
-	-- Get scaling value, based off the player's current relateive frequency setting (0.5 to 1.5)
+	-- Get scaling value, based off the player's current relative frequency setting (0.5 to 1.5)
 	local scaleValue = self:GetPartyHealthRelativeFrequencyScalingValue();
 
 	-- Apply scaling to both min and max values
@@ -753,11 +849,6 @@ function CombatAudioAlertManagerMixin:GetPlayerPowerThreshold(powerType)
 	return CombatAudioAlertUtil.GetResourcePercentCVarVal(powerType) * 10;
 end
 
-function CombatAudioAlertManagerMixin:GetPlayerPowerBand(powerType, powerPercent)
-	local threshold = self:GetPlayerPowerThreshold(powerType);
-	return self:GetPercentageBand(powerPercent, threshold);
-end
-
 function CombatAudioAlertManagerMixin:GetFormattedResourceString(powerToken, powerPercent)
 	return CombatAudioAlertUtil.GetPlayerResourceFormattedString(powerToken, _G[powerToken], powerPercent);
 end
@@ -785,12 +876,20 @@ function CombatAudioAlertManagerMixin:ProcessPlayerPowerUpdate(powerToken)
 	local powerType = self.watchedPowerTokens[powerToken];
 	local powerPercent = self:GetPlayerPowerPercent(powerType);
 
-	local currentBand = self:GetPlayerPowerBand(powerType, powerPercent);
-	local lastBand = self:GetPlayerPowerBand(powerType, self.lastPlayerPowerPercent[powerType]);
+	--print("ProcessPlayerPowerUpdate powerPercent = "..powerPercent);
 
-	local announcePercentage = self:GetAnnouncePercentage(powerPercent, currentBand, lastBand);
+	local threshold = self:GetPlayerPowerThreshold(powerType);
+
+	local currentBand = self:GetPercentageBand(powerPercent, threshold);
+	local lastBand = self:GetPercentageBand(self.lastPlayerPowerPercent[powerType], threshold);
+
+	local announcePercentage = self:GetAnnouncePercentage(powerPercent, currentBand, lastBand, threshold);
 	if announcePercentage then
-		addonTable:TrySpeakText(self:GetPlayerResourceTextInfo(powerToken, announcePercentage));
+		local shouldAnnounce = self:CheckShouldAnnouncePercent(powerType, announcePercentage);
+		if shouldAnnounce then
+			--print("ANNOUNCING powerPercent = "..powerPercent.." accouncing = "..announcePercentage);
+			addonTable:TrySpeakText(self:GetPlayerResourceTextInfo(powerToken, announcePercentage));
+		end
 	end
 
 	self.lastPlayerPowerPercent[powerType] = powerPercent;
@@ -1033,7 +1132,7 @@ function addonTable:OnThrottleTimerComplete(throttleType)
 end
 
 function addonTable:CheckThrottle(textInfo)
-	--print("check throttle "..textInfo.throttleType.." text = "..textInfo.text);
+	--print("check throttle "..textInfo.throttleType.." text = "..(textInfo.text or ""));
 	local throttleInfo = self.throttles[textInfo.throttleType];
 	if throttleInfo then
 		if throttleInfo.timer then
@@ -1056,6 +1155,8 @@ end
 
 function addonTable:StartThrottleTimer(throttleType)
 	--print("start throttle timer "..throttleType);
+	self:CancelThrottleTimer(throttleType);
+
 	local throttleInfo = self.throttles[throttleType];
 	if throttleInfo then
 		if throttleInfo.duration > 0 then
@@ -1067,12 +1168,23 @@ function addonTable:StartThrottleTimer(throttleType)
 	end
 end
 
+function addonTable:CancelThrottleTimer(throttleType)
+	--print("cancel throttle timer "..throttleType);
+	local throttleInfo = self.throttles[throttleType];
+	if throttleInfo and throttleInfo.timer then
+		throttleInfo.timer:Cancel();
+		throttleInfo.timer = nil;
+	end
+end
+
 function addonTable:TrySpeakText(textInfo, allowOverlap)
 	if not self.IsEnabled() then
 		return;
 	end
 
+	--print("TrySpeakText textInfo.text = "..textInfo.text.." textInfo.categoryType = "..textInfo.categoryType.." allowOverlap = "..(allowOverlap and "1" or "0"));
 	if self:CheckThrottle(textInfo) then
+		--print("SpeakText called");
 		self.SpeakText(textInfo.text, textInfo.categoryType, allowOverlap);
 	end
 end

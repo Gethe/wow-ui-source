@@ -485,7 +485,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	if self.classNamePlateAlternatePowerBar then
 		self.classNamePlateAlternatePowerBar:OnOptionsUpdated();
 	end
-	
+
 	self:SetupClassNameplateBars();
 end
 
@@ -551,4 +551,26 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
 		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end
+end
+
+NamePlateScriptBaseMixin = {};
+
+function NamePlateScriptBaseMixin:CanChangeHitTestPoints()
+	return true;
+end
+
+function NamePlateScriptBaseMixin:ClearAllHitTestPoints()
+end
+
+function NamePlateScriptBaseMixin:GetHitTestPoints()
+	return {};
+end
+
+function NamePlateScriptBaseMixin:SetHitTestPoints(_points)
+end
+
+function NamePlateScriptBaseMixin:SetAllHitTestPoints(_relativeTo)
+end
+
+function NamePlateScriptBaseMixin:SetStackingBoundsFrame(_frame)
 end

@@ -36,6 +36,15 @@ local TradeInfo =
 				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldShowTradeOfferWarning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -148,6 +157,12 @@ local TradeInfo =
 			Name = "TradeUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "TradeUpdateWarnings",
+			Type = "Event",
+			LiteralName = "TRADE_UPDATE_WARNINGS",
 			SynchronousEvent = true,
 		},
 	},

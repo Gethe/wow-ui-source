@@ -68,9 +68,29 @@ local SecureTransfer =
 			},
 		},
 		{
+			Name = "GetTradePartner",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "SendMail",
 			Type = "Function",
 			HasRestrictions = true,
+		},
+		{
+			Name = "ShouldShowTradeOfferWarning",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

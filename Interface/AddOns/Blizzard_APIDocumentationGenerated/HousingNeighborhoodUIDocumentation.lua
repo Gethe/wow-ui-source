@@ -214,6 +214,10 @@ local HousingNeighborhoodUI =
 			Type = "Function",
 		},
 		{
+			Name = "OnCornerstoneClosed",
+			Type = "Function",
+		},
+		{
 			Name = "PromoteToManager",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

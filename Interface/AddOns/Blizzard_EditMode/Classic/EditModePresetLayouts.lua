@@ -421,7 +421,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			point = "BOTTOMLEFT",
 			relativeTo = "MainMenuBarArtFrame",
 			relativePoint = "BOTTOM",
-			offsetX = MICROMENU_OFFSET_X,
+			offsetX = MICRO_MENU_ANCHOR_OFFSET_X,
 			offsetY = 2,
 		},
 	},
@@ -431,7 +431,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
 			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
 			[Enum.EditModeBagsSetting.Size] = 5,
-			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_BAR_SLOT_PADDING,
+			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_SETTINGS_SLOT_PADDING,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
@@ -914,7 +914,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
 			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
 			[Enum.EditModeBagsSetting.Size] = 5,
-			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_BAR_SLOT_PADDING,
+			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_SETTINGS_SLOT_PADDING,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",

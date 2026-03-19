@@ -2350,8 +2350,6 @@ function ToggleGameMenu()
 		Social_SetShown(false);
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerFrameCloseButton:Click();
-	elseif ( MultiCastFlyoutFrame:IsShown() ) then
-		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 	elseif (not DISALLOW_SPELL_FLYOUTS and SpellFlyout:IsShown() ) then
 		SpellFlyout:Hide();
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then

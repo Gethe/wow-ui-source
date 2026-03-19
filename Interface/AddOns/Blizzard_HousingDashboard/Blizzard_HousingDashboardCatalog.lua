@@ -26,6 +26,15 @@ function HousingCatalogFrameMixin:OneTimeInit()
 	-- TODO: A better way to filter out rooms category
 	local displayContext = Enum.HouseEditorMode.BasicDecor;
 
+	self.OptionsContainer:SetEntryDisplayContextGetter(function()
+		return {
+			showMarketInfo = false,
+			showVariantStacks = false,
+			showDestroyOptions = false,
+			showTrackingOptions = true
+		};
+	end);
+
 	self.catalogSearcher = C_HousingCatalog.CreateCatalogSearcher();
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);

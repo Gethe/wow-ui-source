@@ -210,6 +210,7 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 	end
 	
 	local valid = self:GetIsValid();
+	local displayContext = self:GetDisplayContext();
 
 	if self.entryInfo.iconTexture or self.entryInfo.iconAtlas then
 		self.ModelScene:Hide();
@@ -262,7 +263,7 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 
 	local dyeSlots = self.variantInfo and self.variantInfo.dyeSlots or {};
 	local anyDyes = false;
-	if not self:IsInMarketView() then
+	if not displayContext.showMarketInfo then
 		anyDyes = self.DyeDisplay:UpdateDyeSlots(dyeSlots);
 	else
 		self.DyeDisplay:SetNumDyeIconsShown(0);
@@ -281,7 +282,7 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		if quantity <= 0 then
 			self.InfoText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		end
-	elseif self:IsInMarketView() then
+	elseif displayContext.showMarketInfo then
 		local marketInfo = GetMarketInfoIfDecor(self.entryVariantID);
 		local price = marketInfo and marketInfo.price or 0;
 		self.InfoText:SetText(Blizzard_HousingCatalogUtil.FormatPrice(price));
@@ -291,8 +292,8 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.InfoText:Hide();
 		self.InfoIcon:Show();
 	else
-		-- We only use variant quantities in storage view.
-		local variantInfoForQuantity = self:IsInStorageView() and self.variantInfo or nil;
+		-- We only use variant quantities if we're showing split up individual stacks
+		local variantInfoForQuantity = displayContext.showVariantStacks and self.variantInfo or nil;
 		local quantity = Blizzard_HousingCatalogUtil.GetEntryQuantity(self.entryInfo, variantInfoForQuantity);
 		self.InfoText:SetText(quantity);
 		local showQuantity = quantity > 0 and self.entryVariantID.entryType ~= Enum.HousingCatalogEntryType.Room;
@@ -323,6 +324,27 @@ end
 
 function HousingCatalogEntryMixin:GetElementData()
 	return self.elementData;
+end
+
+function HousingCatalogEntryMixin:GetDisplayContext()
+	local displayContext = nil;
+	if self.elementData then
+		displayContext = self.elementData.displayContextGetter();
+	end
+
+	if not displayContext then
+		-- Rather than nil, just use all-false values of each expected field
+		-- This makes things easier than scattering nil checks everywhere, and majority of logic is already gated by HasValidData anyway
+		displayContext = {
+			isDefault = true, -- For debugging sources of context values if needed
+			showMarketInfo = false,
+			showVariantStacks = false,
+			showDestroyOptions = false,
+			showTrackingOptions = false,
+		};
+	end
+	
+	return displayContext;
 end
 
 function HousingCatalogEntryMixin:OnEnter()
@@ -446,11 +468,6 @@ function HousingCatalogEntryMixin:AddTooltipTrackingLines(tooltip)
 	-- Optional override
 end
 
-function HousingCatalogEntryMixin:IsInMarketView()
-	-- Optional override. Rooms do not have a market view.
-	return false;
-end
-
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
 function HousingCatalogDecorEntryMixin:GetEntryData()
@@ -475,6 +492,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	-- Overrides HousingCatalogEntryMixin.
 
 	local entryInfo = self.entryInfo;
+	local displayContext = self:GetDisplayContext();
 
 	if entryInfo.isUniqueTrophy then
 		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP);
@@ -483,7 +501,8 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local stored = Blizzard_HousingCatalogUtil.GetEntryNumStored(entryInfo);
 	local total = Blizzard_HousingCatalogUtil.GetEntryTotalOwned(entryInfo);
 	if total ~= 0 then
-		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.totalNumPlaced, stored));
+		local wrapTotal = false;
+		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.totalNumPlaced, stored), wrapTotal);
 	end
 
 	if entryInfo.firstAcquisitionBonus > 0 then
@@ -499,9 +518,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 		else
 			GameTooltip_AddInstructionLine(tooltip, HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR);
 		end
-
-	-- We only show market info in the market view.
-	elseif self:IsInMarketView() then
+	elseif displayContext.showMarketInfo then
 		local marketInfo = GetMarketInfoIfDecor(self.entryVariantID);
 		if marketInfo and marketInfo.price then
 			local priceText = Blizzard_HousingCatalogUtil.FormatPrice(marketInfo.price);
@@ -531,8 +548,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipTrackingLines(tooltip)
-	if self:IsInStorageView() then
-		-- No tracking in storage view
+	if not self:GetDisplayContext().showTrackingOptions then
 		return;
 	end
 
@@ -558,23 +574,6 @@ StaticPopupDialogs["HOUSING_MAX_DECOR_REACHED"] = {
 	button1 = OKAY,
 	button2 = nil
 };
-
-function HousingCatalogDecorEntryMixin:IsInStorageView()
-	-- TODO:: Replace this global access hack.
-	return HouseEditorFrame and HouseEditorFrame.StoragePanel and DoesAncestryInclude(HouseEditorFrame.StoragePanel, self);
-end
-
-function HousingCatalogDecorEntryMixin:IsInMarketView()
-	-- Overrides HousingCatalogEntryMixin.
-
-	-- TODO:: Replace this hack. For now I'm not sure how preview placement will work so I'm disabling it.
-	local storagePanel = HouseEditorFrame and HouseEditorFrame.StoragePanel or nil;
-	if storagePanel and storagePanel:IsVisible() and storagePanel:IsInMarketTab() then
-		return true;
-	end
-
-	return false;
-end
 
 function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	if not C_HouseEditor.IsHouseEditorActive() then
@@ -704,6 +703,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_CATALOG_ENTRY");
+		local displayContext = self:GetDisplayContext();
 
 		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryVariantID.recordID);
 		if timeStamp then
@@ -712,7 +712,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 			end);
 		end
 
-		if self:IsInMarketView() then
+		if displayContext.showMarketInfo then
 			local marketInfo = GetMarketInfoIfDecor(self.entryVariantID);
 			if marketInfo then
 				rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
@@ -738,7 +738,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 					end);
 				end
 			end
-		elseif self:IsInStorageView() then
+		elseif displayContext.showDestroyOptions then
 			local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 				local popupData = {
 					destroyAll = false,

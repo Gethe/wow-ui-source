@@ -263,8 +263,10 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 
 	if C_ScenarioInfo.IsTieredEntranceScenario() then
 		local spells = C_ScenarioInfo.GetTieredEntranceActiveSpells();
-		self.TieredEntranceTraitsBlock.Container:SetSpells(spells);
-		self:LayoutBlock(self.TieredEntranceTraitsBlock);
+		if spells then
+			self.TieredEntranceTraitsBlock.Container:SetSpells(spells);
+			self:LayoutBlock(self.TieredEntranceTraitsBlock);
+		end
 	end
 
 	if isInScenario then

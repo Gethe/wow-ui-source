@@ -13,7 +13,7 @@ local CombatText =
 
 			Returns =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = true },
+				{ Name = "unitTarget", Type = "string", Nilable = true, ConditionalSecret = true },
 			},
 		},
 		{

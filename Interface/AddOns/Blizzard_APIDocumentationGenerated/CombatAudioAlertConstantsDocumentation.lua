@@ -46,6 +46,7 @@ local CombatAudioAlertConstants =
 				{ Name = "CAAFrequencyMax", Type = "number", Value = 10 },
 				{ Name = "CAAFrequencyDefault", Type = "number", Value = 0 },
 				{ Name = "CAASampleTextThrottleTime", Type = "number", Value = 1 },
+				{ Name = "CAASamePercentThrottleTime", Type = "number", Value = 10 },
 			},
 		},
 	},

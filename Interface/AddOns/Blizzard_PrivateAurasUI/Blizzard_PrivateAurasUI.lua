@@ -150,6 +150,7 @@ function PrivateAuraUnitWatcher:Init(unit)
 	self.unit = unit;
 	self.anchors = {};
 	self.debuffFramePool = CreateFramePool("FRAME", nil, "PrivateAuraTemplate");
+	self.auras = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 	self.callback = C_FunctionContainers.CreateCallback(function(updateInfo)
 		if self:HandleUpdateInfo(updateInfo) then
 			local skipParse = true;
@@ -173,12 +174,7 @@ function PrivateAuraUnitWatcher:AddAuras(auras)
 end
 
 function PrivateAuraUnitWatcher:ParseAllAuras()
-	if not self.auras then
-		self.auras = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-	else
-		self.auras:Clear();
-	end
-
+	self.auras:Clear();
 	self:AddAuras(C_UnitAurasPrivate.GetAllPrivateAuras(self.unit));
 end
 

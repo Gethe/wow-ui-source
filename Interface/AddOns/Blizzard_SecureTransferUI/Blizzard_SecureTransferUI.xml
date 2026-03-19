@@ -91,6 +91,12 @@
 							<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-8"/>
 						</Anchors>
 					</FontString>
+					<FontString parentKey="WarningText" inherits="GameFontRed">
+						<Size x="320" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.MoneyLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+						</Anchors>
+					</FontString>
 				</Layer>
 			</Layers>
 			<Frames>

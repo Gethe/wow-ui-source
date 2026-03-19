@@ -72,6 +72,15 @@ function HouseEditorStorageFrameMixin:OnLoad()
 		self.CollapseButton.OverlayIcon:Hide();
 	end);
 
+	self.OptionsContainer:SetEntryDisplayContextGetter(function()
+		return {
+			showMarketInfo = self:IsInMarketTab(),
+			showVariantStacks = true,
+			showDestroyOptions = true,
+			showTrackingOptions = false
+		};
+	end);
+
 	self.OptionsContainer.CategoryTotal:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.OptionsContainer.CategoryTotal, "ANCHOR_RIGHT", 0, 0);
 

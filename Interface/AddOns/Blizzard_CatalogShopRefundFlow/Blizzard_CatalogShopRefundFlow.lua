@@ -213,7 +213,7 @@ function CatalogShopRefundFrameMixin:GetSortAscending()
 	return self.sortAscending;
 end
 
--- TODO (WOW12-45327): Table would be a little cleaner here mapping a SortFields to a default (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+-- TODO (WOW12-45327): Table would be a little cleaner here mapping a SortFields to a default
 function CatalogShopRefundFrameMixin:GetDefaultSortAscending(sortField)
 	if (sortField == SortFields.DecorGUID) then
 		return true;

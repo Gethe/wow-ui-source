@@ -20,7 +20,7 @@ function CatalogShopRefundButtonMixin:OnLoad()
 	self:FitToText();
 end
 
--- TODO (WOW12-45327): Cleaner and easier to use :SetScript("OnClick", function () ... end); in the parent's OnLoad (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+-- TODO (WOW12-45327): Cleaner and easier to use :SetScript("OnClick", function () ... end); in the parent's OnLoad
 function CatalogShopRefundButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
 	if (self.catalogShopRefundOnClickMethod) then
