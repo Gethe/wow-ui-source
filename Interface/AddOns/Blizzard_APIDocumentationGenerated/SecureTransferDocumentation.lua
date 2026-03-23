@@ -6,6 +6,26 @@ local SecureTransfer =
 
 	Functions =
 	{
+		{
+			Name = "GetTradePartner",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "ShouldShowTradeOfferWarning",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

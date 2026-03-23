@@ -60,12 +60,12 @@
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
