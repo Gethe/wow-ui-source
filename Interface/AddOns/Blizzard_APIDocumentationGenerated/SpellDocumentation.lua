@@ -384,25 +384,6 @@ local Spell =
 			},
 		},
 		{
-			Name = "GetSpellLossOfControlCooldown",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretWhenSpellCooldownRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
-			Documentation = { "Returns nil if spell is not found" },
-
-			Arguments =
-			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "startTime", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSpellLossOfControlCooldownDuration",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -417,6 +398,24 @@ local Spell =
 			Returns =
 			{
 				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLossOfControlCooldownInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
 			},
 		},
 		{

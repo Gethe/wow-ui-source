@@ -10,6 +10,7 @@ local UnitAura =
 		{
 			Name = "AddPrivateAuraAnchor",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -25,6 +26,7 @@ local UnitAura =
 		{
 			Name = "AddPrivateAuraAppliedSound",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -420,6 +422,7 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAnchor",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -430,6 +433,7 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAppliedSound",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -440,6 +444,7 @@ local UnitAura =
 		{
 			Name = "SetPrivateWarningTextAnchor",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

@@ -5,6 +5,8 @@ if not GetCVarBool("loadDeprecationFallbacks") then
 	return;
 end
 
+-- Deprecated in 12.0.0:
+
 function GetActionAutocast(actionID)
 	return C_ActionBar.GetActionAutocast(actionID);
 end
@@ -145,4 +147,14 @@ end
 
 function GetActionBarPage()
 	return C_ActionBar.GetActionBarPage();
+end
+
+-- Deprecated in 12.0.1:
+
+function C_ActionBar.GetActionLossOfControlCooldown(actionID)
+	local lossOfControlInfo = C_ActionBar.GetActionLossOfControlCooldownInfo(actionID);
+
+	if lossOfControlInfo then
+		return lossOfControlInfo.startTime, lossOfControlInfo.duration;
+	end
 end

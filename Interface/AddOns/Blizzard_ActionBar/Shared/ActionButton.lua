@@ -692,8 +692,8 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 	end
 
 	local isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
-	if not icon:IsDesaturated() then
-		icon:SetDesaturated(isLevelLinkLocked);
+	if isLevelLinkLocked then
+		icon:SetDesaturated(true);
 	end
 
 	if self.LevelLinkLockIcon then
@@ -815,69 +815,24 @@ function ActionButton_UpdateCooldownNumberHidden(actionButton)
 	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
 end
 
-local defaultCooldownInfo = { startTime = 0; duration = 0; isEnabled = false; modRate = 0 };
-local defaultChargeInfo = { currentCharges = 0; maxCharges = 0; cooldownStartTime = 0; cooldownDuration = 0; chargeModRate = 0 };
-local defaultLossOfControlInfo = { startTime = 0; duration = 0; modRate = 0 };
+local defaultCooldownInfo = { startTime = 0; duration = 0; isEnabled = false; isActive = false; modRate = 0, };
+local defaultChargeInfo = { currentCharges = 0; maxCharges = 0; cooldownStartTime = 0; cooldownDuration = 0; chargeModRate = 0; isActive = false; };
+local defaultLossOfControlInfo = { startTime = 0; duration = 0; modRate = 0; isActive = false; shouldReplaceNormalCooldown = false; };
 
 -- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
 	local chargeInfo;
 	local cooldownInfo;
 	local lossOfControlInfo = {};
-	local actionType, actionID = nil, nil;
-	if (self.action) then
-		actionType, actionID = GetActionInfo(self.action);
-	end
-	local auraData = nil;
-	local passiveCooldownSpellID = nil;
-	local onEquipPassiveSpellID = nil;
 
-	if(actionID) then
-		onEquipPassiveSpellID = C_ActionBar.GetItemActionOnEquipSpellID(self.action);
-	end
-
-	if (onEquipPassiveSpellID) then
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(onEquipPassiveSpellID);
-	elseif ((actionType and actionType == "spell") and actionID ) then
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(actionID);
-	elseif(self.spellID) then
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(self.spellID);
-	end
-
-	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then
-		auraData = C_UnitAuras.GetPlayerAuraBySpellID(passiveCooldownSpellID);
-	end
-
-	if(auraData) then
-		local currentTime = GetTime();
-		local timeUntilExpire = auraData.expirationTime - currentTime;
-		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire;
-
-		lossOfControlInfo.startTime =  currentTime - howMuchTimeHasPassed;
-		lossOfControlInfo.duration = auraData.expirationTime - currentTime;
-		lossOfControlInfo.modRate = auraData.timeMod;
-		cooldownInfo = {};
-		cooldownInfo.startTime = currentTime - howMuchTimeHasPassed;
-		cooldownInfo.duration =  auraData.duration
-		cooldownInfo.modRate = auraData.timeMod;
-		cooldownInfo.isEnabled = 1;
-		chargeInfo = defaultChargeInfo; -- auraData does not contain charge counts
-	elseif (self.spellID) then
+	if (self.spellID) then
 		cooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or defaultCooldownInfo;
 		chargeInfo = C_Spell.GetSpellCharges(self.spellID) or defaultChargeInfo;
-
-		local locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(self.spellID);
-		lossOfControlInfo.startTime = locStart;
-		lossOfControlInfo.duration = locDuration;
-		lossOfControlInfo.modRate = cooldownInfo.modRate;
+		lossOfControlInfo = C_Spell.GetSpellLossOfControlCooldownInfo(self.spellID) or defaultLossOfControlInfo;
 	else
 		cooldownInfo = C_ActionBar.GetActionCooldown(self.action);
 		chargeInfo = C_ActionBar.GetActionCharges(self.action);
-
-		local locStart, locDuration = C_ActionBar.GetActionLossOfControlCooldown(self.action);
-		lossOfControlInfo.startTime = locStart;
-		lossOfControlInfo.duration = locDuration;
-		lossOfControlInfo.modRate = cooldownInfo.modRate;
+		lossOfControlInfo = C_ActionBar.GetActionLossOfControlCooldownInfo(self.action);
 	end
 
 	if not self.enableLOCCooldown then
@@ -887,77 +842,35 @@ function ActionButton_UpdateCooldown(self)
 	ActionButton_ApplyCooldown(self.cooldown, cooldownInfo, self.chargeCooldown, chargeInfo, self.lossOfControlCooldown, lossOfControlInfo);
 end
 
--- Create a pristine instance of Cooldown frame to mitigate potential secret leaks through overwriting methods.
-local CooldownPrototype = CreateFrame("Cooldown");
-
--- Secure version of CooldownFrame_Set - manually call methods passing in cooldown as self
-local function SecureCooldown_SetOrClear(cooldown, start, duration, enable, modRate)
-	if enable and enable ~= 0 and start > 0 and duration > 0 then
-		CooldownPrototype.SetCooldown(cooldown, start, duration, modRate);
+local function ActionButton_SetOrClearCooldown(cooldown, start, duration, enable, modRate)
+	if enable then
+		cooldown:SetCooldown(start, duration, modRate);
 	else
-		CooldownPrototype.Clear(cooldown);
+		cooldown:Clear();
 	end
 end
-
--- This excessive argument list is required because SecureDelegates will not (and should not) clear taint off values inside of tables.
-local function SecureCooldown_ApplyCooldown(
-	lossOfControlCooldown,
-	lossOfControlStartTime,
-	lossOfControlDuration,
-	lossOfControlModRate,
-	normalCooldown,
-	cooldownStartTime,
-	cooldownDuration,
-	cooldownIsEnabled,
-	cooldownModRate,
-	chargeCooldown,
-	chargeMaxCharges,
-	chargeCurrentCharges,
-	chargeCooldownStartTime,
-	chargeCooldownDuration,
-	chargeModRate
-)
-	local showLossOfControlCooldown = (lossOfControlStartTime + lossOfControlDuration) > (cooldownStartTime + cooldownDuration);
-	local showChargeCooldown = not showLossOfControlCooldown and chargeMaxCharges > 1 and chargeCurrentCharges < chargeMaxCharges;
-	local showNormalCooldown = not showLossOfControlCooldown and cooldownDuration > 0 and cooldownIsEnabled;
-
-	if lossOfControlCooldown then
-		SecureCooldown_SetOrClear(lossOfControlCooldown, lossOfControlStartTime, lossOfControlDuration, showLossOfControlCooldown, lossOfControlModRate);
-	end
-	SecureCooldown_SetOrClear(chargeCooldown, chargeCooldownStartTime, chargeCooldownDuration, showChargeCooldown, chargeModRate);
-	SecureCooldown_SetOrClear(normalCooldown, cooldownStartTime, cooldownDuration, showNormalCooldown, cooldownModRate);
-end
-local SecureCooldown_ApplyCooldownDelegate = CreateSecureDelegate(SecureCooldown_ApplyCooldown);
 
 function ActionButton_ApplyCooldown(normalCooldown, cooldownInfo, chargeCooldown, chargeInfo, lossOfControlCooldown, lossOfControlInfo)
 	cooldownInfo = cooldownInfo or defaultCooldownInfo;
 	chargeInfo = chargeInfo or defaultChargeInfo;
 	lossOfControlInfo = lossOfControlInfo or defaultLossOfControlInfo;
 
-	SecureCooldown_ApplyCooldownDelegate(
-		lossOfControlCooldown,
-		lossOfControlInfo.startTime,
-		lossOfControlInfo.duration,
-		lossOfControlInfo.modRate,
-		normalCooldown,
-		cooldownInfo.startTime,
-		cooldownInfo.duration,
-		cooldownInfo.isEnabled,
-		cooldownInfo.modRate,
-		chargeCooldown,
-		chargeInfo.maxCharges,
-		chargeInfo.currentCharges,
-		chargeInfo.cooldownStartTime,
-		chargeInfo.cooldownDuration,
-		chargeInfo.chargeModRate
-	);
+	local showLossOfControlCooldown = lossOfControlInfo.isActive;
+	local showChargeCooldown = not lossOfControlInfo.shouldReplaceNormalCooldown and chargeInfo.isActive;
+	local showNormalCooldown = not lossOfControlInfo.shouldReplaceNormalCooldown and cooldownInfo.isActive;
+
+	if lossOfControlCooldown then
+		ActionButton_SetOrClearCooldown(lossOfControlCooldown, lossOfControlInfo.startTime, lossOfControlInfo.duration, showLossOfControlCooldown, lossOfControlInfo.modRate);
+	end
+	ActionButton_SetOrClearCooldown(chargeCooldown, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, showChargeCooldown, chargeInfo.chargeModRate);
+	ActionButton_SetOrClearCooldown(normalCooldown, cooldownInfo.startTime, cooldownInfo.duration, showNormalCooldown, cooldownInfo.modRate);
 end
 
 function ClearActionButtonCooldowns(normalCooldown, chargeCooldown, lossOfControlCooldown)
-	CooldownPrototype.Clear(normalCooldown);
-	CooldownPrototype.Clear(chargeCooldown);
+	normalCooldown:Clear();
+	chargeCooldown:Clear();
 	if lossOfControlCooldown then
-		CooldownPrototype.Clear(lossOfControlCooldown);
+		lossOfControlCooldown:Clear();
 	end
 end
 

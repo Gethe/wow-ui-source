@@ -147,7 +147,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "chargeInfo", Type = "ActionBarChargeInfo", Nilable = false },
+				{ Name = "chargeInfo", Type = "SpellChargeInfo", Nilable = false },
 			},
 		},
 		{
@@ -164,7 +164,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "cooldownInfo", Type = "ActionBarCooldownInfo", Nilable = false },
+				{ Name = "cooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
 			},
 		},
 		{
@@ -205,24 +205,6 @@ local ActionBarFrame =
 			},
 		},
 		{
-			Name = "GetActionLossOfControlCooldown",
-			Type = "Function",
-			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "actionID", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "startTime", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetActionLossOfControlCooldownDuration",
 			Type = "Function",
 			RequiresValidActionSlot = true,
@@ -237,6 +219,23 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionLossOfControlCooldownInfo",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
 			},
 		},
 		{

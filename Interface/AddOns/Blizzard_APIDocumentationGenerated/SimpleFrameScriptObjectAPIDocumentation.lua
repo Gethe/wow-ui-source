@@ -133,17 +133,6 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
-			Name = "SetPreventSecretValues",
-			Type = "Function",
-			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "preventSecretValues", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetToDefaults",
 			Type = "Function",
 			IsProtectedFunction = true,

@@ -32,3 +32,13 @@ do
 		return C_Spell.GetVisibilityInfo(spellID, visiblityType);
 	end
 end
+
+-- Deprecated in 12.0.1:
+
+function C_Spell.GetSpellLossOfControlCooldown(spellIdentifier)
+	local lossOfControlInfo = C_Spell.GetSpellLossOfControlCooldownInfo(spellIdentifier);
+
+	if lossOfControlInfo then
+		return lossOfControlInfo.startTime, lossOfControlInfo.duration;
+	end
+end

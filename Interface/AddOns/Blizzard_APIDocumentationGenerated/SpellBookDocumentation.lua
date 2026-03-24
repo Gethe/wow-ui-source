@@ -318,26 +318,6 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "GetSpellBookItemLossOfControlCooldown",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretWhenSpellCooldownRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
-
-			Arguments =
-			{
-				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
-				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "startTime", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSpellBookItemLossOfControlCooldownDuration",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -353,6 +333,25 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemLossOfControlCooldownInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
 			},
 		},
 		{

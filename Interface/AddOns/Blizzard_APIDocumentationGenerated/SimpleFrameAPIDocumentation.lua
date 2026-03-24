@@ -335,6 +335,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetEffectiveAlpha",
 			Type = "Function",
+			RequiresScriptObjectAlphaAccess = true,
 			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
