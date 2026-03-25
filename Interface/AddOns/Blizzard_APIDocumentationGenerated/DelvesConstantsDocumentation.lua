@@ -43,14 +43,15 @@ local DelvesConstants =
 		{
 			Name = "TieredEntranceType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
 				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
+				{ Name = "Reserved", Type = "TieredEntranceType", EnumValue = 3 },
 			},
 		},
 		{

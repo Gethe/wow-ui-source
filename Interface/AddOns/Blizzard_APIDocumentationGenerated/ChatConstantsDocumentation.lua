@@ -254,6 +254,11 @@ local ChatConstants =
 	},
 	Predicates =
 	{
+		{
+			Name = "RestrictedForMacroChatMessages",
+			Type = "Precondition",
+			Documentation = { "Restricts sending chat messages on chat types that can be observed by external players. Only applies during instance encounters for messages initiated from macros." },
+		},
 	},
 };
 

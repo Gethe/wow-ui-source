@@ -12,6 +12,27 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs reject access for tainted callers if the object has the secret Text aspect assigned." },
 		},
 		{
+			Name = "RequiresScriptObjectAlphaAccess",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresScriptObjectDesaturationAccess",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresStatusBarDesaturationAccess",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresUnitIdentityAccess",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+			Documentation = { "Guarded APIs and events require that callers have access to unit identity values. This does not raise a blocked action error - instead, protected APIs will return no values." },
+		},
+		{
 			Name = "SecretInActivePvPMatch",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when PvP match addon restrictions are in effect." },

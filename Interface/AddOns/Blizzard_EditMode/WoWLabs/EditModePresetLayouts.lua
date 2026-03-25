@@ -544,6 +544,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",

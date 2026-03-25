@@ -1,0 +1,137 @@
+## Title: Blizzard_UIPanels_Game
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Shared\CastingBarFrame.lua
+Classic\CastingBarFrame.lua
+Classic\CastingBarFrame.xml
+Shared\ExtraAbilityContainer.lua
+Shared\ExtraAbilityContainer.xml
+Classic\SpellBookFrame.lua
+Cata\SpellBookProfessions.lua [AllowLoadGameType cata, mists]
+Vanilla\SpellBookFrame.lua [AllowLoadGameType vanilla, tbc, wrath]
+[Game]\SpellBookFrame.lua [AllowLoadGameType cata, mists]
+Vanilla\SpellBookFrame.xml [AllowLoadGameType vanilla, tbc, wrath]
+[Game]\SpellBookFrame.xml [AllowLoadGameType cata, mists]
+Classic\SkillFrame.lua
+Classic\SkillFrame.xml
+Classic\ReputationFrame.lua [AllowLoadGameType wrath, cata, mists]
+Vanilla\ReputationFrame.lua [AllowLoadGameType vanilla, tbc]
+Wrath\ReputationFrame.lua [AllowLoadGameType wrath]
+Cata\ReputationFrame.lua [AllowLoadGameType cata, mists]
+Vanilla\ReputationFrame.xml [AllowLoadGameType vanilla, tbc]
+Wrath\ReputationFrame.xml [AllowLoadGameType wrath]
+Cata\ReputationFrame.xml [AllowLoadGameType cata, mists]
+Classic\FriendshipStatusBar.lua
+Classic\FriendshipStatusBar.xml
+Vanilla\HonorFrame.lua [AllowLoadGameType vanilla, tbc, wrath]
+Cata\HonorFrame.lua [AllowLoadGameType cata, mists]
+Classic\HonorFrame_Shared.lua
+Classic\HonorFrameTemplates.xml
+Vanilla\HonorFrame.xml [AllowLoadGameType vanilla, tbc, wrath]
+Cata\HonorFrame.xml [AllowLoadGameType cata, mists]
+TBC\QuestScrollFrameAndPanelTemplates.xml [AllowLoadGameType tbc, wrath, cata]
+Mists\QuestScrollFrameAndPanelTemplates.xml [AllowLoadGameType mists]
+Vanilla\QuestFrameTemplates.xml [AllowLoadGameType vanilla]
+TBC\QuestFrameTemplates.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\QuestFrame.lua
+Vanilla\QuestFrame.lua [AllowLoadGameType vanilla]
+TBC\QuestFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Vanilla\QuestFrame.xml [AllowLoadGameType vanilla]
+TBC\QuestFrame.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Wrath\QuestPOI.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\QuestPOI.xml [AllowLoadGameType wrath, cata, mists]
+[Game]\QuestLogFrame.lua [AllowLoadGameType vanilla, tbc, wrath]
+Cata\QuestLogFrame.lua [AllowLoadGameType cata, mists]
+[Game]\QuestLogFrame.xml [AllowLoadGameType vanilla, tbc, wrath]
+Cata\QuestLogFrame.xml [AllowLoadGameType cata, mists]
+[Game]\QuestInfo.lua [AllowLoadGameType vanilla, tbc]
+Wrath\QuestInfo.lua [AllowLoadGameType wrath, cata, mists]
+[Game]\QuestInfo.xml [AllowLoadGameType vanilla, tbc]
+Wrath\QuestInfo.xml [AllowLoadGameType wrath, cata, mists]
+Wrath\WatchFrame.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\WatchFrame.xml [AllowLoadGameType wrath, cata, mists]
+Mists\WatchFrameScenario.xml [AllowLoadGameType mists]
+Vanilla\MerchantFrame.lua [AllowLoadGameType vanilla]
+TBC\MerchantFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Vanilla\MerchantFrame.xml [AllowLoadGameType vanilla]
+TBC\MerchantFrame.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\TradeFrame.lua
+Classic\TradeFrame.xml
+Vanilla\ContainerFrame.lua [AllowLoadGameType vanilla, tbc]
+Wrath\ContainerFrame.lua [AllowLoadGameType wrath, cata]
+Mists\ContainerFrame.lua [AllowLoadGameType mists]
+Classic\ContainerFrame_Shared.lua
+Classic\ContainerFrame.xml
+Classic\LootFrame.lua
+Classic\LootFrame.xml
+Classic\ItemTextFrame.lua
+Classic\ItemTextFrame.xml
+Classic\TaxiFrame.lua [AllowLoadGameType vanilla, tbc, wrath]
+Shared\TaxiFrame.lua [AllowLoadGameType cata, mists]
+Classic\TaxiFrame.xml [AllowLoadGameType vanilla, tbc, wrath]
+Shared\TaxiFrame.xml [AllowLoadGameType cata, mists]
+Classic\ItemRef.lua
+Classic\ItemRef.xml
+Classic\ItemRefHandlers.lua
+Shared\ItemRefHandlersShared.lua
+Classic\ProductChoice.lua
+Classic\ProductChoice.xml
+Classic\FriendsFrame.lua
+Classic\FriendsFrame.xml
+Classic\UnitPositionFrameTemplates.lua
+Classic\UnitPositionFrameTemplates.xml
+Shared\WorldMapPOIQuantizer.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\QuestMapFrame.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\QuestMapFrame.xml [AllowLoadGameType wrath, cata, mists]
+Classic\TabardFrame.lua
+Classic\TabardFrame.xml
+Classic\PetStable.lua [AllowLoadGameType vanilla, tbc]
+Wrath\PetStable.lua [AllowLoadGameType wrath]
+Cata\PetStable.lua [AllowLoadGameType cata, mists]
+Classic\PetStable.xml [AllowLoadGameType vanilla, tbc]
+Wrath\PetStable.xml [AllowLoadGameType wrath]
+Cata\PetStable.xml [AllowLoadGameType cata, mists]
+Vanilla\BankFrame.lua [AllowLoadGameType vanilla]
+TBC\BankFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Vanilla\BankFrame.xml [AllowLoadGameType vanilla]
+TBC\BankFrame.xml [AllowLoadGameType tbc, wrath, cata]
+Mists\BankFrame.xml [AllowLoadGameType mists]
+Shared\SocialQueue.lua
+Classic\GuildRegistrarFrame.lua
+Classic\GuildRegistrarFrame.xml
+Classic\PetitionFrame.lua
+Classic\PetitionFrame.xml
+Shared\GossipFrameShared.lua
+Shared\GossipFrameShared.xml
+Classic\GossipFrame.lua
+Classic\GossipFrame.xml
+Classic\MailFrame.lua
+Classic\MailFrame.xml
+Shared\VehicleSeatIndicator.lua [AllowLoadGameType wrath, cata, mists]
+Shared\VehicleSeatIndicator.xml [AllowLoadGameType wrath, cata, mists]
+Classic\RatingMenuFrame.xml
+Classic\PVPFrameBase.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\PVPFrame.lua [AllowLoadGameType tbc]
+Wrath\PVPFrame.lua [AllowLoadGameType wrath]
+Cata\PVPFrame.lua [AllowLoadGameType cata, mists]
+[Game]\PVPFrameHelpers.lua [AllowLoadGameType wrath, cata, mists]
+Classic\PVPFrameTemplates.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\PVPFrame.xml [AllowLoadGameType tbc]
+Wrath\PVPFrame.xml [AllowLoadGameType wrath]
+Cata\PVPFrame.xml [AllowLoadGameType cata, mists]
+Classic\BattlefieldFrame.lua [AllowLoadGameType vanilla, tbc]
+Wrath\BattlefieldFrame.lua [AllowLoadGameType wrath]
+Classic\BattlefieldFrame.xml [AllowLoadGameType vanilla, tbc]
+Wrath\BattlefieldFrame.xml [AllowLoadGameType wrath]
+Classic\ArenaFrame.lua [AllowLoadGameType tbc, wrath]
+Classic\ArenaFrame.xml [AllowLoadGameType tbc, wrath]
+Classic\ArenaRegistrarFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\ArenaRegistrarFrame.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Shared\PlayerInteractionFrameManager.lua
+Shared\PlayerInteractionFrameManager.xml
+Classic\Localization.lua
+Vanilla\Localization.lua [AllowLoadGameType vanilla, tbc]

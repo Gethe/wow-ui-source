@@ -1382,7 +1382,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 	end
 
 	-- Prefixing with an "!" will prevent toggling the marker if it's already assigned.
-	if ( string.find(marker, "^!") ) then
+	if ( marker and string.find(marker, "^!") ) then
 		marker = tonumber(string.match(marker, "%d+"));
 
 		if ( GetRaidTargetIndex(target) == marker ) then

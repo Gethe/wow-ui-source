@@ -180,7 +180,7 @@ end
 function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
 	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) then
 		if entryID then
-			self:ShowPurchaseVisuals(nodeID);
+			self:ShowPurchaseVisuals(nodeID, entryID);
 			self:PlaySelectSoundForNode(nodeID);
 		else
 			self:PlayDeselectSoundForNode(nodeID);
@@ -250,7 +250,8 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 			confirmationString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE;
 		end
 
-		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
+		local fromConfirmation = true;
+		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID, fromConfirmation);
 		local customData = {
 			text = confirmationString,
 			callback = purchaseRankCallback,
@@ -259,12 +260,18 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 
 		StaticPopup_ShowCustomGenericConfirmation(customData);
 	else
-		self:PurchaseRankCallback(nodeID);
+		local fromConfirmation = false;
+		self:PurchaseRankCallback(nodeID, fromConfirmation);
 	end
 end
 
-function GenericTraitFrameMixin:PurchaseRankCallback(nodeID)
+function GenericTraitFrameMixin:PurchaseRankCallback(nodeID, fromConfirmation)
 	if TalentFrameBaseMixin.PurchaseRank(self, nodeID) then
+		-- If we're playing not coming from a confirmation, we should've already played the sound
+		if fromConfirmation then
+			self:PlaySelectSoundForNode(nodeID);
+		end
+
 		self:ShowPurchaseVisuals(nodeID);
 	end
 end
@@ -284,12 +291,29 @@ function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 	end
 end
 
-function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
+function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID, entryID)
 	if not self.buttonPurchaseFXIDs then
 		return;
 	end
 
 	local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+	if buttonWithPurchase and entryID then
+		local nodeInfo = buttonWithPurchase:GetNodeInfo();
+
+		-- For expanded choice nodes, we want to find the specific selection node that was chosen to play the effect on instead of the parent node.
+		local isSelection = nodeInfo.type == Enum.TraitNodeType.Selection or nodeInfo.type == Enum.TraitNodeType.SubTreeSelection;
+		local isExpanded = FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowExpandedSelection);
+		if isSelection and isExpanded then
+			local selectionFrames = buttonWithPurchase.SelectionFrame.selectionFrameArray;
+			for _i, selectionNode in ipairs(selectionFrames) do
+				if selectionNode:GetEntryID() == entryID then
+					buttonWithPurchase = selectionNode;
+					break;
+				end
+			end
+		end
+	end
+
 	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseCompleteEffect then
 		buttonWithPurchase:PlayPurchaseCompleteEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
 	end

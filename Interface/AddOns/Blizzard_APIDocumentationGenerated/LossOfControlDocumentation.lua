@@ -63,6 +63,22 @@ local LossOfControl =
 				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetActiveLossOfControlDuration",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = true },
+			},
+		},
 	},
 
 	Events =

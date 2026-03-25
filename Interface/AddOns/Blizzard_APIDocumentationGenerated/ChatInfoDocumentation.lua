@@ -8,6 +8,16 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "AreOutgoingAddonChatMessagesRestricted",
+			Type = "Function",
+			Documentation = { "Returns false if addons are allowed to send outgoing chat messages. This is controlled on a realm-by-realm basis (tournament realms allow it), and the ability for addons to receive comms is controlled separately." },
+
+			Returns =
+			{
+				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerSpeakLanguage",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -2765,12 +2775,6 @@ local ChatInfo =
 	},
 	Predicates =
 	{
-		{
-			Name = "RestrictedForMacroChatMessages",
-			Type = "Precondition",
-			FailureMode = "ReturnNothing",
-			Documentation = { "Restricts sending chat messages on chat types that can be observed by external players. Only applies during instance encounters for messages initiated from macros." },
-		},
 	},
 };
 

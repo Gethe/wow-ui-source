@@ -1217,13 +1217,13 @@ local TooltipInfo =
 			Name = "GetUnitAuraByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretWhenUnitAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Obtains aura info like other functions with the caveat that the filters will always at least include the typically mutually exclusive HELPFUL|HARMFUL regardless of what the argument value is set to" },
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1261,7 +1261,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1299,7 +1299,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},

@@ -267,7 +267,7 @@ local FrameAPICooldown =
 			Name = "SetCooldown",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,7 +280,7 @@ local FrameAPICooldown =
 			Name = "SetCooldownDuration",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,7 +303,7 @@ local FrameAPICooldown =
 			Name = "SetCooldownFromExpirationTime",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -316,7 +316,7 @@ local FrameAPICooldown =
 			Name = "SetCooldownUNIX",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

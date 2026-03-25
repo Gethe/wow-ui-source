@@ -520,6 +520,9 @@ function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
 
+function CooldownBroadcaster_LoadUI()
+	UIParentLoadAddOn("Blizzard_CooldownBroadcaster");
+end
 
 function WeeklyRewards_ShowUI()
 	if not WeeklyRewardsFrame then
@@ -1294,6 +1297,10 @@ function UIParent_OnEvent(self, event, ...)
 
 		if ( not BattlefieldMapFrame and GetCVar("showBattlefieldMinimap") == "1" ) then
 			BattlefieldMap_LoadUI();
+		end
+
+		if ( not CooldownBroadcasterFrame and not C_ChatInfo.AreOutgoingAddonChatMessagesRestricted()) then
+			CooldownBroadcaster_LoadUI();
 		end
 
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");

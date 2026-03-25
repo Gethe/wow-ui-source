@@ -757,6 +757,25 @@ function ProfessionsRecipeTransactionMixin:FailsQuantityRequirements()
 	return false;
 end
 
+function ProfessionsRecipeTransactionMixin:FindReagentSlotSchematicByPredicate(predicate)
+	for slotIndex, reagentTbl in self:Enumerate() do
+		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
+		if predicate(reagentSlotSchematic) then
+			return reagentSlotSchematic;
+		end
+	end
+end
+
+function ProfessionsRecipeTransactionMixin:FindReagentSlotSchematicSupportingReagent(reagent)
+	return self:FindReagentSlotSchematicByPredicate(function(reagentSlotSchematic)
+		for index, schematicReagent in ipairs(reagentSlotSchematic.reagents) do
+			if ProfessionsUtil.CraftingReagentMatches(schematicReagent, reagent) then
+				return true;
+			end
+		end
+	end);
+end
+
 function ProfessionsRecipeTransactionMixin:HasMissingDependentReagents()
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local allocations = self:GetAllocations(slotIndex);

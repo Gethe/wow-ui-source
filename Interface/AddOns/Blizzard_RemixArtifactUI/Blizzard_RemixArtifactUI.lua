@@ -216,7 +216,7 @@ end
 function RemixArtifactFrameMixin:SetSelectionCallback(nodeID, entryID)
 	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) then
 		if entryID then
-			self:ShowPurchaseVisuals(nodeID);
+			self:ShowPurchaseVisuals(nodeID, entryID);
 			self:PlaySelectSoundForNode(nodeID);
 		else
 			self:PlayDeselectSoundForNode(nodeID);
@@ -260,8 +260,8 @@ function RemixArtifactFrameMixin:PurchaseRank(nodeID)
 		local costStrings = self:GetCostStrings(cost);
 		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
 
-
-		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
+		local fromConfirmation = true;
+		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID, fromConfirmation);
 		local customData = {
 			text = costString,
 			callback = purchaseRankCallback,
@@ -270,12 +270,18 @@ function RemixArtifactFrameMixin:PurchaseRank(nodeID)
 
 		StaticPopup_ShowCustomGenericConfirmation(customData);
 	else
-		self:PurchaseRankCallback(nodeID);
+		local fromConfirmation = false;
+		self:PurchaseRankCallback(nodeID, fromConfirmation);
 	end
 end
 
-function RemixArtifactFrameMixin:PurchaseRankCallback(nodeID)
+function RemixArtifactFrameMixin:PurchaseRankCallback(nodeID, fromConfirmation)
 	if TalentFrameBaseMixin.PurchaseRank(self, nodeID) then
+		-- If we're not coming from the confirmation then we should've already played the sound
+		if fromConfirmation then
+			self:PlaySelectSoundForNode(nodeID);
+		end
+
 		self:ShowPurchaseVisuals(nodeID);
 	end
 end

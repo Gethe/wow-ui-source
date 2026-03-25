@@ -241,6 +241,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "IsDesaturated",
 			Type = "Function",
+			RequiresScriptObjectDesaturationAccess = true,
 			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =

@@ -400,19 +400,6 @@ local HousingDecorUI =
 	Tables =
 	{
 		{
-			Name = "LightRadiusIndicatorType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Always", Type = "LightRadiusIndicatorType", EnumValue = 0 },
-				{ Name = "Overlap", Type = "LightRadiusIndicatorType", EnumValue = 1 },
-				{ Name = "Never", Type = "LightRadiusIndicatorType", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "HousingDecorInstanceListEntry",
 			Type = "Structure",
 			Documentation = { "Smaller structs with the minimum fields from HousingDecorInstanceInfo needed to identify/display a slim list of placed decor" },

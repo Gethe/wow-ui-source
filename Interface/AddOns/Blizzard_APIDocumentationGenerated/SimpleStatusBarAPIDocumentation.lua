@@ -162,6 +162,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "IsInterpolating",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
 			Documentation = { "Returns true if the status bar is currently interpolating toward a target value." },
 
 			Arguments =
@@ -176,6 +177,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "IsStatusBarDesaturated",
 			Type = "Function",
+			RequiresStatusBarDesaturationAccess = true,
 			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =

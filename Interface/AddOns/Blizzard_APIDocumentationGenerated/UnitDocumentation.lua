@@ -994,6 +994,7 @@ local Unit =
 			Name = "UnitCreatureID",
 			Type = "Function",
 			SecretWhenUnitIdentityRestricted = true,
+			RequiresUnitIdentityAccess = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

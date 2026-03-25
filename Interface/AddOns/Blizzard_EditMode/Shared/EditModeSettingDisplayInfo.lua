@@ -709,7 +709,17 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.StatusTrackingBar] =
 	{
-
+		-- Size
+		{
+			setting = Enum.EditModeStatusTrackingBarSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_STATUS_TACKING_BAR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 130,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 
 	[Enum.EditModeSystem.DurabilityFrame] =

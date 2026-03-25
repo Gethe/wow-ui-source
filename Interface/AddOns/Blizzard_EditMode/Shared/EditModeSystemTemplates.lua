@@ -2507,6 +2507,21 @@ function EditModeStatusTrackingBarSystemMixin:ApplySystemAnchor()
 	StatusTrackingBarManager:UpdateBarVisuals(true);
 end
 
+function EditModeStatusTrackingBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeStatusTrackingBarSetting.Size and self:HasSetting(Enum.EditModeStatusTrackingBarSetting.Size) then
+		self:SetScale(self:GetSettingValue(Enum.EditModeStatusTrackingBarSetting.Size) / 100);
+	end
+	
+	self:ClearDirtySetting(setting);
+end
+
 EditModeStatusTrackingBar1SystemMixin = {};
 
 function EditModeStatusTrackingBar1SystemMixin:OnEditModeEnter()

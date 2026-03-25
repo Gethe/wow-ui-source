@@ -766,6 +766,8 @@ local CatalogShop =
 				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
 				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
+				{ Name = "previewBGOverrideProductURL", Type = "string", Nilable = true },
+				{ Name = "previewSmallBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "decorQuantity", Type = "DecorQuantity", Nilable = true },
 				{ Name = "isVCProduct", Type = "bool", Nilable = false },
 				{ Name = "containsHousingItem", Type = "bool", Nilable = false },

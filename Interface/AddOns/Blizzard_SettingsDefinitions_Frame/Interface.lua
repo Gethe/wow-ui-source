@@ -154,9 +154,6 @@ local function Register()
 		InterfaceOverrides.CreatePvpFrameSettings(category, layout);
 	end);
 
-	-- Housing Settings
-	InterfaceOverrides.CreateHousingSettings(category, layout);
-
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

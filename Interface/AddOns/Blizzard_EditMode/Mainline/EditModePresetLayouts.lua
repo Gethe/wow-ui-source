@@ -574,6 +574,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -585,6 +586,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -1427,6 +1429,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -1438,6 +1441,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 		},
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",

@@ -569,14 +569,15 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeStatusTrackingBarSetting",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Height", Type = "EditModeStatusTrackingBarSetting", EnumValue = 0 },
 				{ Name = "Width", Type = "EditModeStatusTrackingBarSetting", EnumValue = 1 },
 				{ Name = "TextSize", Type = "EditModeStatusTrackingBarSetting", EnumValue = 2 },
+				{ Name = "Size", Type = "EditModeStatusTrackingBarSetting", EnumValue = 3 },
 			},
 		},
 		{

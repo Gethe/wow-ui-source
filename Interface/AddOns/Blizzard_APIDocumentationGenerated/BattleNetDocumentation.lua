@@ -151,6 +151,7 @@ local BattleNet =
 			Name = "SendWhisper",
 			Type = "Function",
 			HasRestrictions = true,
+			RestrictedForMacroChatMessages = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

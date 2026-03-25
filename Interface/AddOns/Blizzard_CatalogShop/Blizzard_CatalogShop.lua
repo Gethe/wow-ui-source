@@ -661,11 +661,30 @@ end
 
 function CatalogShopMixin:OnProductSelected(data)
 	-- Background texture fills the whole window and is behind everything
-	local backgroundTexture = data and data.backgroundTexture or nil;
-	if backgroundTexture and backgroundTexture ~= "" then
-		self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+		
+	local overrideURL = data and data.previewBGOverrideProductURL;
+	if overrideURL then
+		-- is there a full screen URL specified in PMT?
+		self.BackgroundContainer:SetBackgroundTextureFromPMT(overrideURL);
 	else
-		self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
+		-- if not, use the texture set in PMT attributes or the default
+		local backgroundTexture = data and data.backgroundTexture or nil;
+		if backgroundTexture and backgroundTexture ~= "" then
+			self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+		else
+			self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
+		end
+	end
+
+	local smallOverrideURL = data and data.previewSmallBGOverrideProductURL;
+	if smallOverrideURL then
+		-- do we want to show the small PMT image frame?
+		local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
+		C_Texture.SetURLTexture(texture, smallOverrideURL);
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+	else
+		-- by default we hide it
+		CatalogShopFrame.PMTImageContainerFrame:Hide();
 	end
 
 	-- Foreground texture fills the whole window and is in front of the background texture
@@ -1046,6 +1065,15 @@ function BackgroundContainerMixin:SetBackgroundTexture(backgroundAtlas)
 		self.currentBackground:SetDrawLayer("BACKGROUND", 1);
 		self.nextBackground:SetDrawLayer("BACKGROUND", 2);
 		self.nextBackground:SetAtlas(backgroundAtlas);
+		self.nextFadeIn:Play();
+	end
+end
+
+function BackgroundContainerMixin:SetBackgroundTextureFromPMT(imageURL)
+	if imageURL then
+		self.currentBackground:SetDrawLayer("BACKGROUND", 1);
+		self.nextBackground:SetDrawLayer("BACKGROUND", 2);
+		C_Texture.SetURLTexture(self.nextBackground, imageURL);
 		self.nextFadeIn:Play();
 	end
 end

@@ -436,7 +436,7 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 		animEffectControllers = nil;
 	end
 
-	if fxIDs and self:ShouldBeVisible() then
+	if fxIDs and ((not self.ShouldBeVisible and self:IsVisible()) or self:ShouldBeVisible()) then
 		-- If no custom multiplier specified, fall back on the difference between the node and scene's scale,
 		-- so if node is in a differently scaled parent the effects will visually scale accordingly
 		local scaleMultiplier = self.animEffectScaleMultiplier or (self:GetEffectiveScale() / fxModelScene:GetEffectiveScale());
