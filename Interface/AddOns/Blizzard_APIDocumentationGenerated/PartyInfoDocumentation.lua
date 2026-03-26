@@ -62,6 +62,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmConvertToRaid",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions." },
 		},
 		{
@@ -116,10 +117,12 @@ local PartyInfo =
 		{
 			Name = "ConvertToParty",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "ConvertToRaid",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Usually this will convert to raid immediately. In some cases (e.g. PartySync) the user will be prompted to confirm converting to raid, because it's potentially destructive." },
 		},
 		{
@@ -129,6 +132,7 @@ local PartyInfo =
 		{
 			Name = "DoCountdown",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -449,6 +453,7 @@ local PartyInfo =
 		{
 			Name = "SetLootMethod",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -465,6 +470,7 @@ local PartyInfo =
 		{
 			Name = "SetRestrictPings",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
