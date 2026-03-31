@@ -27,6 +27,15 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "GetAvailableHouseXP",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "availabeXP", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInitiativeActivityLogInfo",
 			Type = "Function",
 

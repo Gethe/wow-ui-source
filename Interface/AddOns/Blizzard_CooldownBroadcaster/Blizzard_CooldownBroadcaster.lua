@@ -50,7 +50,7 @@ end
 function CooldownSyncRelayMixin:SendComm(...)
 	local channel = self:GetChannel()
 	if not channel then return end
-	C_ChatInfo.SendAddonMessage(ADDON_PREFIX, strjoin(",", ...), channel)
+	C_Commentator.SendAddonMessage(ADDON_PREFIX, strjoin(",", ...), channel)
 end
 
 function CooldownSyncRelayMixin:SendINF()

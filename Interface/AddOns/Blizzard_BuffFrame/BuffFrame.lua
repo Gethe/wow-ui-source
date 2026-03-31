@@ -1278,19 +1278,21 @@ function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
 			offsetY = 0,
 		};
 
-		local privateAnchorArgs = {};
-		privateAnchorArgs.unitToken = unit;
-		privateAnchorArgs.auraIndex = self.auraIndex;
-		privateAnchorArgs.parent = self;
-		privateAnchorArgs.showCountdownFrame = false;
-		privateAnchorArgs.showCountdownNumbers = false;
-		privateAnchorArgs.iconInfo =
-		{
-			iconAnchor = iconAnchor,
-			iconWidth = self.Icon:GetWidth(),
-			iconHeight = self.Icon:GetHeight(),
+		local privateAnchorArgs = {
+			unitToken = unit,
+			auraIndex = self.auraIndex,
+			parent = self,
+			showCountdownFrame = false,
+			showCountdownNumbers = false,
+			isContainer = false,
+			iconInfo =
+			{
+				iconAnchor = iconAnchor,
+				iconWidth = self.Icon:GetWidth(),
+				iconHeight = self.Icon:GetHeight(),
+			},
+			durationAnchor = durationAnchor;
 		};
-		privateAnchorArgs.durationAnchor = durationAnchor;
 
 		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
 	end

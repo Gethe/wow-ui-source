@@ -243,14 +243,9 @@ function MinimapMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
-		self.ZoomIn:Enable();
-		self.ZoomOut:Enable();
 		local zoom = Minimap:GetZoom();
-		if ( zoom == (Minimap:GetZoomLevels() - 1) ) then
-			self.ZoomIn:Disable();
-		elseif ( zoom == 0 ) then
-			self.ZoomOut:Disable();
-		end
+		self.ZoomIn:SetEnabled(zoom ~= (Minimap:GetZoomLevels() - 1));
+		self.ZoomOut:SetEnabled(zoom ~= 0);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if C_Minimap.ShouldUseHybridMinimap() then
 			if not HybridMinimap then
@@ -305,8 +300,11 @@ MinimapZoomInButtonMixin = { };
 function MinimapZoomInButtonMixin:OnClick()
 	Minimap.ZoomOut:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_IN);
-	Minimap:SetZoom(Minimap:GetZoom() + 1);
-	if(Minimap:GetZoom() == (Minimap:GetZoomLevels() - 1)) then
+
+	local maxZoomLevel = Minimap:GetZoomLevels() - 1;
+	local currentZoomLevel = math.min(Minimap:GetZoom(), maxZoomLevel - 1);
+	Minimap:SetZoom(currentZoomLevel + 1);
+	if(Minimap:GetZoom() == maxZoomLevel) then
 		Minimap.ZoomIn:Disable();
 	end
 end
@@ -327,7 +325,9 @@ MinimapZoomOutButtonMixin = { };
 function MinimapZoomOutButtonMixin:OnClick()
 	Minimap.ZoomIn:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_OUT);
-	Minimap:SetZoom(Minimap:GetZoom() - 1);
+
+	local currentZoom = math.max(1, Minimap:GetZoom());
+	Minimap:SetZoom(currentZoom - 1);
 	if(Minimap:GetZoom() == 0) then
 		Minimap.ZoomOut:Disable();
 	end

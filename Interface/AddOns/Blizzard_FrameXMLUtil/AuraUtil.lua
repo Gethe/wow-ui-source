@@ -499,3 +499,15 @@ function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelT
 		borderRegion:Hide();
 	end
 end
+
+local function OnSwitchAuraDataProvider(...)
+	local whatAreTheArgs = { ... };
+	local realData = select(2, ...);
+	if realData then
+		AuraUtil.ClearDataProvider();
+	else
+		AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
+	end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("AURA_DATA_PROVIDER_SWITCH", OnSwitchAuraDataProvider, {});

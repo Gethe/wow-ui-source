@@ -2880,7 +2880,7 @@ StaticPopupDialogs["SAVED_VARIABLES_TOO_LARGE"] = {
 };
 
 StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
-	text = PRODUCT_CLAIMING_FAILED,
+	text = "",
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,

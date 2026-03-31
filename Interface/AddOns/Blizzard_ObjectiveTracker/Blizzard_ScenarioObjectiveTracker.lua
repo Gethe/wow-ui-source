@@ -43,7 +43,7 @@ end
 local settings = {
 	hasDisplayPriority = true,
 	headerText = TRACKER_HEADER_SCENARIO,
-	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN" },
+	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN", "ACTIVE_DELVE_DATA_UPDATE" },
 	fromHeaderOffsetY = 0,
 	blockOffsetX = 20,
 	lineSpacing = 12,
@@ -123,7 +123,13 @@ function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
 		local rewardQuestID, xp, money = ...;
 		if (xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel()) or (money and money > 0) then
 			ScenarioRewardsFrame:DisplayRewards(xp, money);
-		end		
+		end
+	elseif event == "ACTIVE_DELVE_DATA_UPDATE" then
+		local _scenarioName, _currentStage, numStages = C_Scenario.GetInfo();
+		local isInScenario = numStages > 0;
+		if isInScenario then
+			self:MarkDirty();
+		end
 	end
 end
 

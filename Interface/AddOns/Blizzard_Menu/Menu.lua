@@ -584,6 +584,12 @@ do
 	RootMenuDescriptionProxyMixin.SetTag = SetTag;
 	MenuElementDescriptionProxyMixin.SetTag = SetTag;
 
+	local function ToDebugString(descriptionProxy)
+		return descriptionProxy:GetTag();
+	end
+	RootMenuDescriptionProxyMixin.ToDebugString = ToDebugString;
+	MenuElementDescriptionProxyMixin.ToDebugString = ToDebugString;
+
 	local function ClearQueuedDescriptions(descriptionProxy)
 		descriptionProxy.queuedProxies = nil;
 	end
@@ -1189,6 +1195,12 @@ function MenuMixin:SetMenuDescription(menuDescription)
 
 	--After all initializers have been called, continue with layout.
 	self:PerformLayout();
+end
+
+function MenuMixin:ToDebugString()
+	if self.menuDescription then
+		return self.menuDescription.proxy:GetTag();
+	end
 end
 
 function MenuMixin:Open(menuDescription, onElementMouseDown, onElementEnter, onElementLeave)

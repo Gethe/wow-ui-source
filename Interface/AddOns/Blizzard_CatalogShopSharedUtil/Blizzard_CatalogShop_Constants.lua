@@ -37,6 +37,7 @@ CatalogShopConstants =
 		SmallAccess = "SmallCatalogShopAccessCardTemplate",
 		SmallDecor = "SmallCatalogShopDecorCardTemplate",
 		SmallRoom = "SmallCatalogShopRoomCardTemplate",
+		SmallExteriorType = "SmallCatalogShopExteriorTypeCardTemplate",
 
 		Details = "DetailsCatalogShopProductCardTemplate",
 		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
@@ -47,6 +48,7 @@ CatalogShopConstants =
 		DetailsAccess = "DetailsCatalogShopAccessCardTemplate",
 		DetailsDecor = "DetailsCatalogShopDecorCardTemplate",
 		DetailsRoom = "DetailsCatalogShopRoomCardTemplate",
+		DetailsExteriorType = "DetailsCatalogShopExteriorTypeCardTemplate"
 	},
 
 	ModelSceneContext =
@@ -87,7 +89,7 @@ CatalogShopConstants =
 		Access = "Access",
 		GameTime = "Game Time",
 		Room = "Room",
-		HousingExterior = "Housing Exteriors",
+		HousingExteriorType = "Housing Exteriors",
 	},
 
 	-- These names match up with names in CatalogShop_C::GetOtherFlavorGameData

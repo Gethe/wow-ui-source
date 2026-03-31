@@ -284,6 +284,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -306,6 +307,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -341,6 +343,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -1141,6 +1144,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1163,6 +1167,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1198,6 +1203,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
 				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",

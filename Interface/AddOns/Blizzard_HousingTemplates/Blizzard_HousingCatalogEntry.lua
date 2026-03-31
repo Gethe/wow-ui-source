@@ -255,21 +255,12 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:SetTexture(nil);
 		self.Icon:Hide();
 	else
-		-- HOUSING_TODO: Remove or update placeholder replacement
 		self.ModelScene:Hide();
 		self.Icon:SetTexture(QuestionMarkIconFileDataID);
 		self.Icon:Show();
 	end
 
-	local dyeSlots = self.variantInfo and self.variantInfo.dyeSlots or {};
-	local anyDyes = false;
-	if not displayContext.showMarketInfo then
-		anyDyes = self.DyeDisplay:UpdateDyeSlots(dyeSlots);
-	else
-		self.DyeDisplay:SetNumDyeIconsShown(0);
-	end
-
-	self.CustomizeIcon:SetShown(not anyDyes and self.entryInfo.canCustomize);
+	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
 
 	self.InfoIcon:Hide();
 
@@ -299,6 +290,8 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		local showQuantity = quantity > 0 and self.entryVariantID.entryType ~= Enum.HousingCatalogEntryType.Room;
 		self.InfoText:SetShown(showQuantity);
 	end
+
+	self:UpdateTypeSpecificVisuals();
 
 	-- If already being hovered, make sure to refresh the tooltip
 	if self:IsMouseMotionFocus() then
@@ -436,6 +429,10 @@ function HousingCatalogEntryMixin:GetTypeSpecificIsValid()
 	return true, nil, nil;
 end
 
+function HousingCatalogEntryMixin:UpdateTypeSpecificVisuals()
+	-- Optional override
+end
+
 function HousingCatalogEntryMixin:UpdateTypeSpecificData()
 	-- Optional override
 end
@@ -566,6 +563,21 @@ function HousingCatalogDecorEntryMixin:AddTooltipTrackingLines(tooltip)
 	else
 		GameTooltip_AddDisabledLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 	end
+end
+
+function HousingCatalogDecorEntryMixin:UpdateTypeSpecificVisuals()
+	local displayContext = self:GetDisplayContext();
+
+	local anyDyes = false;
+	if not displayContext.showMarketInfo then
+		local dyeSlots = self.variantInfo and self.variantInfo.dyeSlots or {};
+		anyDyes = self.DyeDisplay:UpdateDyeSlots(dyeSlots);
+	else
+		self.DyeDisplay:SetNumDyeIconsShown(0);
+	end
+
+	-- Make sure to hide the customizable icon for already-dyed decor
+	self.CustomizeIcon:SetShown(not anyDyes and self.entryInfo.canCustomize);
 end
 
 
@@ -835,6 +847,11 @@ function HousingCatalogRoomEntryMixin:HasValidData()
 
 	-- For now, we don't support bundleItemInfo-based room entries.
 	return self.elementData and self.entryInfo;
+end
+
+function HousingCatalogRoomEntryMixin:UpdateTypeSpecificVisuals()
+	self.SpecialRoomFrame:SetShown(self.entryInfo.isPrefab);
+	self.SpecialRoomIcon:SetShown(self.entryInfo.isPrefab);
 end
 
 function HousingCatalogRoomEntryMixin:UpdateTypeSpecificData()

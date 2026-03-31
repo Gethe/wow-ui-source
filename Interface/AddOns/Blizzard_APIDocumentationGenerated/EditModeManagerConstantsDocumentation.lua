@@ -200,9 +200,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 33,
+			NumValues = 34,
 			MinValue = 0,
-			MaxValue = 32,
+			MaxValue = 33,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -238,6 +238,7 @@ local EditModeManagerConstants =
 				{ Name = "ShowEncounterEvents", Type = "EditModeAccountSetting", EnumValue = 30 },
 				{ Name = "ShowDamageMeter", Type = "EditModeAccountSetting", EnumValue = 31 },
 				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
+				{ Name = "ShowTotemActionBar", Type = "EditModeAccountSetting", EnumValue = 33 },
 			},
 		},
 		{
@@ -595,9 +596,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 23,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -624,6 +625,7 @@ local EditModeManagerConstants =
 				{ Name = "PersonalResourceDisplay", Type = "EditModeSystem", EnumValue = 21 },
 				{ Name = "EncounterEvents", Type = "EditModeSystem", EnumValue = 22 },
 				{ Name = "DamageMeter", Type = "EditModeSystem", EnumValue = 23 },
+				{ Name = "TotemActionBar", Type = "EditModeSystem", EnumValue = 24 },
 			},
 		},
 		{
@@ -640,9 +642,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 21,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -666,6 +668,7 @@ local EditModeManagerConstants =
 				{ Name = "AuraOrganizationType", Type = "EditModeUnitFrameSetting", EnumValue = 18 },
 				{ Name = "IconSize", Type = "EditModeUnitFrameSetting", EnumValue = 19 },
 				{ Name = "Opacity", Type = "EditModeUnitFrameSetting", EnumValue = 20 },
+				{ Name = "BigDefensiveIconSize", Type = "EditModeUnitFrameSetting", EnumValue = 21 },
 			},
 		},
 		{

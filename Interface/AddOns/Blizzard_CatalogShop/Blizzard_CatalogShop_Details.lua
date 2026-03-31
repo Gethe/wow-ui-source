@@ -124,6 +124,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
 			-- Access
 			factory(CatalogShopConstants.CardTemplate.DetailsAccess, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.HousingExteriorType then
+			-- House exterior type
+			factory(CatalogShopConstants.CardTemplate.DetailsExteriorType, InitializeButton);
 		else
 			factory(CatalogShopConstants.CardTemplate.Details, InitializeButton);
 		end

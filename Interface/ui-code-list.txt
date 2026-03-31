@@ -65,6 +65,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\CharacterServicesConstantsDo
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ChatBubblesDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ChatConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ChatInfoDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\ChatSharedDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ChromieTimeUIDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\CinematicConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\CinematicDocumentation.lua
@@ -489,6 +490,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\SystemDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\SystemTimeDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\TTSSettingsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\TalentAndGlyphConstantsDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\TalentConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\TalkingHeadDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\TargetScriptDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\TaxiMapDocumentation.lua
@@ -1064,7 +1066,6 @@ Interface\AddOns\Blizzard_CombatLogProcessor\Blizzard_CombatLogProcessor.toc
 Interface\AddOns\Blizzard_CombatLogProcessor\Blizzard_CombatLogProcessorInbound.lua
 Interface\AddOns\Blizzard_CombatLogProcessor\Blizzard_CombatLogProcessorOutbound.lua
 Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Mainline.toc
-Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Mists.toc
 Interface\AddOns\Blizzard_CombatLog\Mainline\Blizzard_CombatLog.lua
 Interface\AddOns\Blizzard_CombatLog\Mainline\Blizzard_CombatLog.xml
 Interface\AddOns\Blizzard_CombatText\Blizzard_CombatText.toc
@@ -1318,6 +1319,7 @@ Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Sta
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_TBC.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Vanilla.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Wrath.lua
+Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_TalentConsts.lua
 Interface\AddOns\Blizzard_DeprecatedSpellBook\Blizzard_DeprecatedSpellBook.toc
 Interface\AddOns\Blizzard_DeprecatedSpellBook\Deprecated_SpellBook.lua
 Interface\AddOns\Blizzard_DeprecatedSpellScript\Blizzard_DeprecatedSpellScript.toc
@@ -1347,7 +1349,6 @@ Interface\AddOns\Blizzard_EditMode\Classic\EditModePresetLayouts.lua
 Interface\AddOns\Blizzard_EditMode\Mainline\EditModeManagerOverrides.lua
 Interface\AddOns\Blizzard_EditMode\Mainline\EditModePresetLayouts.lua
 Interface\AddOns\Blizzard_EditMode\Mists\EditModePresetLayoutConstants.lua
-Interface\AddOns\Blizzard_EditMode\Shared\EditModeAuraDataProvider.lua
 Interface\AddOns\Blizzard_EditMode\Shared\EditModeDialogs.lua
 Interface\AddOns\Blizzard_EditMode\Shared\EditModeDialogs.xml
 Interface\AddOns\Blizzard_EditMode\Shared\EditModeLayoutManagerUtil.lua
@@ -1492,7 +1493,7 @@ Interface\AddOns\Blizzard_FrameXMLUtil\ArenaUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\AuraUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\AzeriteEssenceUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\AzeriteUtil.lua
-Interface\AddOns\Blizzard_FrameXMLUtil\Blizzard_FrameXMLUtil_Mainline.toc
+Interface\AddOns\Blizzard_FrameXMLUtil\Blizzard_FrameXMLUtil.toc
 Interface\AddOns\Blizzard_FrameXMLUtil\CalendarUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\CampaignUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\CollectionsUtil.lua
@@ -1502,6 +1503,7 @@ Interface\AddOns\Blizzard_FrameXMLUtil\CurrencyContainer.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\CurrencyUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\DifficultyUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\DragonridingUtil.lua
+Interface\AddOns\Blizzard_FrameXMLUtil\EditModeAuraDataProvider.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\FadingFrame.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\ItemUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\Localization.lua
@@ -2480,6 +2482,7 @@ Interface\AddOns\Blizzard_PrintHandler\Blizzard_PrintHandler.toc
 Interface\AddOns\Blizzard_PrivateAurasUI\Blizzard_PrivateAurasUI.lua
 Interface\AddOns\Blizzard_PrivateAurasUI\Blizzard_PrivateAurasUI.toc
 Interface\AddOns\Blizzard_PrivateAurasUI\Blizzard_PrivateAurasUI.xml
+Interface\AddOns\Blizzard_PrivateAurasUI\PrivateAuraInit.lua
 Interface\AddOns\Blizzard_ProfessionsBook\Blizzard_ProfessionsBook.lua
 Interface\AddOns\Blizzard_ProfessionsBook\Blizzard_ProfessionsBook.toc
 Interface\AddOns\Blizzard_ProfessionsBook\Blizzard_ProfessionsBook.xml
@@ -2888,7 +2891,8 @@ Interface\AddOns\Blizzard_SharedXMLBase\TaggableObject.lua
 Interface\AddOns\Blizzard_SharedXMLBase\TemplateInfoCache.lua
 Interface\AddOns\Blizzard_SharedXMLBase\TextureUtil.lua
 Interface\AddOns\Blizzard_SharedXMLBase\TimedCallback.lua
-Interface\AddOns\Blizzard_SharedXMLGame\Blizzard_SharedXMLGame_Mainline.toc
+Interface\AddOns\Blizzard_SharedXMLGame\Blizzard_SharedXMLGame.toc
+Interface\AddOns\Blizzard_SharedXMLGame\CompactUnitFramesConstants.lua
 Interface\AddOns\Blizzard_SharedXMLGame\DressUpModelFrameMixin.lua
 Interface\AddOns\Blizzard_SharedXMLGame\Mainline\ListTemplates.lua
 Interface\AddOns\Blizzard_SharedXMLGame\Mainline\ListTemplates.xml

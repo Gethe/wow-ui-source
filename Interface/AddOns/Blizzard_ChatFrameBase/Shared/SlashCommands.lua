@@ -807,7 +807,10 @@ end);
 SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.EQUIP_SET, SLASH_COMMAND_CATEGORY.EQUIPMENT, function(msg)
 	local set = SecureCmdOptionParse(msg);
 	if ( set and set ~= "" ) then
-		C_EquipmentSet.UseEquipmentSet(C_EquipmentSet.GetEquipmentSetID(set));
+		local equipmentSetID = C_EquipmentSet.GetEquipmentSetID(set);
+		if equipmentSetID ~= nil then
+			C_EquipmentSet.UseEquipmentSet(equipmentSetID);
+		end
 	end
 end);
 
@@ -1648,12 +1651,12 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
-	if msg == "" then
+	local parsedIndex = SecureCmdOptionParse(msg);
+	if parsedIndex == "" then
 		-- If run with no arguments, act as a clear.
 		C_TransmogOutfitInfo.ClearOutfit();
-	else
+	elseif parsedIndex ~= nil then
 		-- Note if applying the same outfit that is already applied, it will be treated as a clear unless the index is prefixed by '!'.
-		local parsedIndex = SecureCmdOptionParse(msg);
 		local allowRemoveOutfit = true;
 		if string.sub(parsedIndex, 1, 1) == "!" then
 			allowRemoveOutfit = false;

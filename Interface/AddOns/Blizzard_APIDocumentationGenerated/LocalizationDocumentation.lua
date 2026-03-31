@@ -46,7 +46,7 @@ local Localization =
 			Arguments =
 			{
 				{ Name = "largeNumber", Type = "number", Nilable = false },
-				{ Name = "natural", Type = "bool", Nilable = false, Default = false },
+				{ Name = "natural", Type = "bool", Nilable = false, NeverSecret = true, Default = false },
 			},
 
 			Returns =

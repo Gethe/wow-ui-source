@@ -61,6 +61,7 @@
 		</Scripts>
 	</Frame>
 
+	<!-- A frame used for an individual button in a secure aura header template. Provided as a convenience for user addon authors. -->
 	<Button name="SecureAuraButtonTemplate" inherits="SecureActionButtonTemplate" registerForClicks="RightButtonDown" virtual="true">
 		<Attributes>
 			<Attribute name="type2" value="cancelaura"/>

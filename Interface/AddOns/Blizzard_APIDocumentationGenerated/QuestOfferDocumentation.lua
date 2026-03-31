@@ -70,6 +70,7 @@ local QuestOffer =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "questTitle", Type = "cstring", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 		{

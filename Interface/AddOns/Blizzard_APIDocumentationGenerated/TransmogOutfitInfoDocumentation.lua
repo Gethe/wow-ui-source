@@ -289,7 +289,39 @@ local TransmogOutfitInfo =
 
 			Returns =
 			{
-				{ Name = "outfitsInfo", Type = "TransmogOutfitEntryInfo", Nilable = false },
+				{ Name = "outfitInfo", Type = "TransmogOutfitEntryInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitInfoByName",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false, Documentation = { "Case-insensitive outfit name to search for. If multiple exist with the same name, it is unspecified which outfit will be returned." } },
+			},
+
+			Returns =
+			{
+				{ Name = "outfitInfo", Type = "TransmogOutfitEntryInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitInfoByPlayerFacingIndex",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "playerFacingOutfitIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "outfitInfo", Type = "TransmogOutfitEntryInfo", Nilable = false },
 			},
 		},
 		{

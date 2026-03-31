@@ -1139,9 +1139,6 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 					for _, requirement in ipairs(requirements) do
 						self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
 					end
-
-					local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
-					self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 				end
 			end
 		end

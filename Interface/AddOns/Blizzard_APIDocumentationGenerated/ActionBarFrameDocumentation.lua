@@ -71,7 +71,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
 			},
 
 			Returns =
@@ -177,6 +177,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -572,7 +573,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -827,7 +828,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -946,6 +947,22 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "checkboxFrame", Type = "SimpleCheckbox", Nilable = false },
+			},
+		},
+		{
+			Name = "UsesActionText",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "usesActionText", Type = "bool", Nilable = false },
 			},
 		},
 	},

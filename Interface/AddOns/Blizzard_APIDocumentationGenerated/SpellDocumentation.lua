@@ -70,7 +70,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "spec", Type = "number", Nilable = false, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
+				{ Name = "spec", Type = "number", Nilable = false, NeverSecret = true, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
 			},
 
 			Returns =
@@ -117,7 +117,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -133,7 +133,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -272,6 +272,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -375,7 +376,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "glyphID", Type = "number", Nilable = true },
+				{ Name = "glyphID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -426,7 +427,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =

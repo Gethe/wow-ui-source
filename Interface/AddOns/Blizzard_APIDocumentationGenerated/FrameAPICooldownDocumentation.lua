@@ -87,6 +87,19 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "GetCountdownFormatter",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "NumericFormatter", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCountdownMillisecondsThreshold",
 			Type = "Function",
 			Documentation = { "Returns the threshold below which cooldown numbers are displayed as a decimal value with one place for milliseconds (eg. '8.7')." },
@@ -344,6 +357,16 @@ local FrameAPICooldown =
 			Arguments =
 			{
 				{ Name = "fontName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCountdownFormatter",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "formatter", Type = "NumericFormatter", Nilable = true },
 			},
 		},
 		{

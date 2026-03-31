@@ -1,7 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<ScopedModifier forbidden="true" hideFromGlobalEnv="true">
-		<Frame name="PrivateAuraTemplate" inherits="AuraButtonArtTemplate" propagateMouseInput="Clicks" mixin="PrivateAuraMixin" hidden="true" virtual="true">
+
+		<Frame name="PrivateAuraUnitWatcherTemplate" hidden="true" virtual="true"/>
+
+		<Frame name="PrivateAuraTemplate" inherits="AuraButtonArtTemplate" mixin="PrivateAuraMixin" hidden="true" virtual="true">
 			<Scripts>
 				<OnEnter method="OnEnter"/>
 				<OnLeave method="OnLeave"/>
@@ -9,13 +12,38 @@
 				<OnUpdate method="OnUpdate"/>
 			</Scripts>
 			<Frames>
-				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" reverse="true" inherits="CooldownFrameTemplate" useParentLevel="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="-1"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 					</Anchors>
 				</Cooldown>
 			</Frames>
+		</Frame>
+
+		<Texture name="CompactDispelDebuffTemplate" parentArray="dispelDebuffFrames" mixin="CompactDispelDebuffMixin" virtual="true">
+			<Size x="14" y="14"/>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+			</Scripts>
+		</Texture>
+
+		<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" useParentLevel="true" frameLevel="200" virtual="true">
+			<Layers>
+				<Layer level="ARTWORK" textureSubLevel="-6">
+					<Texture parentKey="Background" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="-5">
+					<Texture parentKey="Gradient" setAllPoints="true"/>
+					<Texture parentKey="Border" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="-4">
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+				</Layer>
+			</Layers>
 		</Frame>
 
 		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidBossEmoteFrameTemplate" frameStrata="HIGH"/>

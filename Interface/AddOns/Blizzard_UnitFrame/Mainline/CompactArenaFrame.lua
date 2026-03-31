@@ -497,6 +497,8 @@ function ArenaUnitFrameDebuffMixin:SetUnit(unitToken)
 	self:Update();
 end
 
+-- TODO: I don't think this will work any more and it needs to be rewritten so that the loss of control stuff is managed in the secure env
+-- There's a chance that this could still work in the interim...needs investigation.
 function ArenaUnitFrameDebuffMixin:Update()
 	local lossOfControlData;
 	if ArenaUtil.UnitExists(self.unitToken) then
@@ -515,10 +517,10 @@ function ArenaUnitFrameDebuffMixin:Update()
 	end
 
 	local unitFrame = self:GetParent();
-	CompactUnitFrame_ClearBlockedAuraInstanceIDs(unitFrame, self);
+	C_UnitAuras.ClearBlockedAuras(self.unitToken);
 
 	if self.auraData then
-		CompactUnitFrame_AddBlockedAuraInstanceID(unitFrame, self, self.auraData.auraInstanceID);
+		C_UnitAuras.AddBlockedAura(self.unitToken, self.auraData.auraInstanceID);
 
 		self.Icon:SetTexture(self.auraData.icon);
 
@@ -529,7 +531,9 @@ function ArenaUnitFrameDebuffMixin:Update()
 		self.Icon:SetTexture(QUESTION_MARK_ICON);
 	end
 
-	CompactUnitFrame_UpdateAuras(unitFrame);
+	-- TODO: Previous code here was to call ComactUnitFrame_UpdateAuras which I think served the purpose of filtering out the loss-of-control debuff from the CUF display.
+	local forceUpdatePrivateAuras = true;
+	unitFrame:UpdatePrivateAuras(forceUpdatePrivateAuras);
 
 	self:UpdateShownState();
 	self:UpdateTooltip();

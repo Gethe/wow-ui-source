@@ -106,17 +106,17 @@ local FrameAPITooltip =
 		{
 			Name = "SetText",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text, Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "alpha", Type = "number", Nilable = true },
-				{ Name = "wrap", Type = "bool", Nilable = true },
+				{ Name = "alpha", Type = "number", Nilable = false, ConditionalSecret = true, Default = 1 },
+				{ Name = "wrap", Type = "bool", Nilable = false, ConditionalSecret = true, Default = false },
 			},
 		},
 	},

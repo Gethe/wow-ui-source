@@ -465,7 +465,10 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.specIconID = combatSource.specIconID;
 	self.deathRecapID = combatSource.deathRecapID;
 	self.deathTimeSeconds = combatSource.deathTimeSeconds;
-	self.isCreature = combatSource.sourceCreatureID ~= nil;
+
+	 -- Creatures, but not those treated as players for display (who will have classFilename like players)
+	self.isCreature = (combatSource.sourceCreatureID ~= nil) and (self.classFilename == '');
+
 	self.classification = combatSource.classification;
 	self.suppressValuePerSecond = combatSource.suppressValuePerSecond;
 	self:SetSuppressIcon(combatSource.suppressIcon);

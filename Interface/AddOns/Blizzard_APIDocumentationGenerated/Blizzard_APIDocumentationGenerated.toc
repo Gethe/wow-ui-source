@@ -411,6 +411,7 @@ CharacterCustomizationSharedDocumentation.lua
 CharacterSelectionConstantsDocumentation.lua
 CharacterServicesConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
+ChatSharedDocumentation.lua
 CinematicConstantsDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 ClientSettingsDocumentation.lua
@@ -549,6 +550,7 @@ SplashScreenConstantsDocumentation.lua
 SummonConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TalentAndGlyphConstantsDocumentation.lua
+TalentConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TimerConstantsDocumentation.lua

@@ -494,6 +494,18 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.TotemActionBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = -240,
+			offsetY = 46,
+		},
+	},
 };
 
 EDIT_MODE_CLASSIC_SYSTEM_MAP =
@@ -979,4 +991,17 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.TotemActionBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = -240,
+			offsetY = 46,
+		},
+	},
+
 };

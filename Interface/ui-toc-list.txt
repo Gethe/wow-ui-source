@@ -66,7 +66,6 @@ Interface\AddOns\Blizzard_CombatAudioAlerts\Blizzard_CombatAudioAlerts.toc
 Interface\AddOns\Blizzard_CombatLogBase\Blizzard_CombatLogBase.toc
 Interface\AddOns\Blizzard_CombatLogProcessor\Blizzard_CombatLogProcessor.toc
 Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Mainline.toc
-Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Mists.toc
 Interface\AddOns\Blizzard_CombatText\Blizzard_CombatText.toc
 Interface\AddOns\Blizzard_CommandLineUtil\Blizzard_CommandLineUtil.toc
 Interface\AddOns\Blizzard_Commentator\Blizzard_Commentator.toc
@@ -136,7 +135,7 @@ Interface\AddOns\Blizzard_FrameEffects\Blizzard_FrameEffects.toc
 Interface\AddOns\Blizzard_FrameStack\Blizzard_FrameStack.toc
 Interface\AddOns\Blizzard_FrameXMLBase\Blizzard_FrameXMLBase_Mainline.toc
 Interface\AddOns\Blizzard_FrameXMLBase\Blizzard_FrameXMLBase_Mists.toc
-Interface\AddOns\Blizzard_FrameXMLUtil\Blizzard_FrameXMLUtil_Mainline.toc
+Interface\AddOns\Blizzard_FrameXMLUtil\Blizzard_FrameXMLUtil.toc
 Interface\AddOns\Blizzard_FrameXML\Blizzard_FrameXML_Mainline.toc
 Interface\AddOns\Blizzard_FrameXML\Blizzard_FrameXML_Mists.toc
 Interface\AddOns\Blizzard_FramerateFrame\Blizzard_FramerateFrame.toc
@@ -288,7 +287,7 @@ Interface\AddOns\Blizzard_SharedMapDataProviders\Blizzard_SharedMapDataProviders
 Interface\AddOns\Blizzard_SharedTalentUI\Blizzard_SharedTalentUI.toc
 Interface\AddOns\Blizzard_SharedWidgetFrames\Blizzard_SharedWidgetFrames.toc
 Interface\AddOns\Blizzard_SharedXMLBase\Blizzard_SharedXMLBase.toc
-Interface\AddOns\Blizzard_SharedXMLGame\Blizzard_SharedXMLGame_Mainline.toc
+Interface\AddOns\Blizzard_SharedXMLGame\Blizzard_SharedXMLGame.toc
 Interface\AddOns\Blizzard_SharedXML\Blizzard_SharedXML_Mainline.toc
 Interface\AddOns\Blizzard_SharedXML\Blizzard_SharedXML_Mists.toc
 Interface\AddOns\Blizzard_SimpleCheckout\Blizzard_SimpleCheckout.toc

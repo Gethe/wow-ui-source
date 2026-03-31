@@ -252,7 +252,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =

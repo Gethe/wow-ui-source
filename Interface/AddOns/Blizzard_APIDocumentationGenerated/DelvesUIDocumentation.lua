@@ -49,8 +49,8 @@ local DelvesUI =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false, NeverSecret = true },
 			},
 
 			Returns =

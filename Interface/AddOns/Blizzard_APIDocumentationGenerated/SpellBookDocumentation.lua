@@ -241,6 +241,7 @@ local SpellBook =
 			{
 				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

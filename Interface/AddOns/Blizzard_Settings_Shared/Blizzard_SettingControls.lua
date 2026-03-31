@@ -1174,6 +1174,12 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 
+	local function OnCheckboxSettingValueChanged(o, setting, value)
+		self.Checkbox:SetValue(value);
+		self:EvaluateState();
+	end
+	self.cbrHandles:SetOnValueChangedCallback(cbSetting:GetVariable(), OnCheckboxSettingValueChanged);
+
 	local function OnDropdownSettingChanged()
 		self:EvaluateState();
 	end

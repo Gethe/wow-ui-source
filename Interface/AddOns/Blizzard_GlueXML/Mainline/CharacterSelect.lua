@@ -1985,7 +1985,10 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
             StaticPopup_Show("BOOST_FACTION_CHANGE_IN_PROGRESS");
             return;
         end
-        StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+
+		local errorCode = ...;
+		local errorText = VASAssignErrorData_GetMessage(errorCode);
+		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", errorText);
     end
 end
 

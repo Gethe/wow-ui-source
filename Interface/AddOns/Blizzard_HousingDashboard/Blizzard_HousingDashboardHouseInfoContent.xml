@@ -502,16 +502,30 @@
 							<Layers>
 								<Layer level="ARTWORK">
 									<FontString parentKey="InitiativeName" inherits="GameFontHighlightLarge2" justifyH="LEFT">
-										<Size x="580" y="30"/>
+										<Size y="30"/>
+										<KeyValues>
+											<KeyValue key="maxWidth" value="560" type="number"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="25" y="-15"/>
 										</Anchors>
 									</FontString>
 
+									<Texture parentKey="InitiativesXPIcon" atlas="housing-dashboard-icon-xp" mixin="HouseXPCapIconMixin">
+										<Size x="24" y="24"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.InitiativeName" relativePoint="RIGHT" x="7" y="1"/>
+										</Anchors>
+										<Scripts>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+									</Texture>
+
 									<FontString parentKey="InitiativeDescription" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
 										<Size x="600" y="40"/>
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.InitiativeName" relativePoint="BOTTOM" x="13" y="-2"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.InitiativeName" relativePoint="BOTTOMLEFT" x="13" y="-2"/>
 										</Anchors>
 									</FontString>
 

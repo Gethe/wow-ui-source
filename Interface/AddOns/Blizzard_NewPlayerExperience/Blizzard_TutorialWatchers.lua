@@ -911,7 +911,21 @@ function Class_TabTargetingWatcher:StartWatching()
 		local objectiveIndex = 1;
 		local displayComplete = false;
 		local _objectiveText, _objectiveType, _finished, numFulfilled, numRequired = GetQuestObjectiveInfo(TutorialData.TabTargetingQuestID, objectiveIndex, displayComplete);
-		if numRequired - numFulfilled <= 1 then
+		-- These values being nil indicates the quest hasn't been loaded yet.
+		if not numFulfilled or not numRequired then
+			-- If they're still nil after the callback something is unexpectedly wrong so just terminate the watcher.
+			if self.waitingForQuestReady then
+				self:Complete();
+				return;
+			else
+				self.waitingForQuestReady = true;
+				QuestEventListener:AddCallback(TutorialData.TabTargetingQuestID, function()
+					self:StartWatching();
+					self.waitingForQuestReady = false;
+				end);
+				return;
+			end
+		elseif numRequired - numFulfilled <= 1 then
 			-- Not enough left to transition from one kill to another
 			self:Complete();
 			return;
@@ -962,4 +976,7 @@ end
 
 function Class_TabTargetingWatcher:OnComplete()
 	self:StopWatching();
+	if self.waitingForQuestReady then
+		QuestEventListener:ClearCallbacks(TutorialData.TabTargetingQuestID);
+	end
 end

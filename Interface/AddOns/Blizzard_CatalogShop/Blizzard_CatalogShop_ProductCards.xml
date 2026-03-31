@@ -90,6 +90,9 @@
 	<!-- Room Small Card Template -->
 	<Button name="SmallCatalogShopRoomCardTemplate" mixin="SmallCatalogShopRoomCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
+	<!-- Room Small Card Template -->
+	<Button name="SmallCatalogShopExteriorTypeCardTemplate" mixin="SmallCatalogShopExteriorTypeCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
 	<!-- Access Small Card Template -->
 	<Button name="SmallCatalogShopAccessCardTemplate" mixin="SmallCatalogShopAccessCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
@@ -120,6 +123,9 @@
 
 	<!-- Room Details Card Template -->
 	<Button name="DetailsCatalogShopRoomCardTemplate" mixin="DetailsCatalogShopRoomCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Exterior Type Details Card Template -->
+	<Button name="DetailsCatalogShopExteriorTypeCardTemplate" mixin="DetailsCatalogShopExteriorTypeCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
 	<!-- Access Details Card Template -->
 	<Button name="DetailsCatalogShopAccessCardTemplate" mixin="DetailsCatalogShopAccessCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />

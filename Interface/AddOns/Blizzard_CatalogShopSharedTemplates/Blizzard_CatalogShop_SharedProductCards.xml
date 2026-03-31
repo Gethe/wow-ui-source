@@ -195,6 +195,309 @@
 		</KeyValues>
 	</Button>
 
+	<Frame name="HearthsteelVFX_L_Template" mixin="HearthsteelVFX_L_Mixin" virtual="true" >
+		<Frames>
+			<Frame parentKey="Glows" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Rays1" alphaMode="ADD" atlas="hearthsteel-icon-lg-fx-rays01">
+							<Size x="150" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-10" y="112"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Rays2" alphaMode="ADD" atlas="hearthsteel-icon-lg-fx-rays02">
+							<Size x="150" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="112"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="BOUNCE" setToFinalAlpha="true">
+						<Alpha childKey="Rays1" duration="2" order="1" smoothing="IN_OUT" fromAlpha="0.5" toAlpha="1"/>
+						<Alpha childKey="Rays1" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.5"/>
+						<Alpha childKey="Rays2" duration="2" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.6"/>
+						<Alpha childKey="Rays2" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="0.6" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="IconGlow" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="IconGlow" alphaMode="ADD" atlas="hearthsteel-icon-lg-fx-iconglows" useAtlasSize="false">
+							<Size x="61" y="53"/>
+							<Anchors>
+								<Anchor point="CENTER" x="22" y="70"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="IconGlow" duration="1" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.4"/>
+						<Alpha childKey="IconGlow" duration="1" order="1" startDelay="1" smoothing="IN_OUT" fromAlpha="0.4" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Flipbook" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="flipbook" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-flipbook">
+							<Size x="120" y="120"/>
+							<Anchors>
+								<Anchor point="CENTER" x="20" y="120"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook childKey="flipbook" duration="1.5" order="1" flipBookRows="10" flipBookColumns="6" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="HearthsteelVFX_XL_Template" mixin="HearthsteelVFX_XL_Mixin" virtual="true" >
+		<Frames>
+			<Frame parentKey="Rays" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Rays1" alphaMode="ADD" atlas="hearthsteel-icon-xl-fx-rays01">
+							<Size x="200" y="170"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-10" y="90"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Rays2" alphaMode="ADD" atlas="hearthsteel-icon-xl-fx-rays02">
+							<Size x="220" y="170"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-10" y="90"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="BOUNCE" setToFinalAlpha="true">
+						<Alpha childKey="Rays1" duration="2" order="1" smoothing="IN_OUT" fromAlpha="0.5" toAlpha="1"/>
+						<Alpha childKey="Rays1" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.5"/>
+						<Alpha childKey="Rays2" duration="2" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.6"/>
+						<Alpha childKey="Rays2" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="0.6" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Flipbook" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-flipbook">
+							<Size x="120" y="120"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="120"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook childKey="Flipbook" duration="1.5" order="1" flipBookRows="10" flipBookColumns="6" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Shine01" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Glow1" alpha="1" alphaMode="ADD" atlas="hearthsteel-icon-xl-potbaseglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="150" y="0"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="mask02" atlas="hearthsteel-icon-xl-fx-mask02" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="220" y="220"/>
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="-15"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Glow1"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" setToFinalAlpha="true">
+						<Translation childKey="Glow1" duration="0.75" order="1" smoothing="OUT" offsetX="-350" offsetY="0"/>
+						<Alpha childKey="Glow1" duration="0.75" order="1" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Shine02" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RimShine" alpha="0.6" alphaMode="ADD" atlas="hearthsteel-icon-xl-potedgeglow">
+							<Size x="75" y="75"/>
+							<Anchors>
+								<Anchor point="CENTER" x="160" y="50"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Mask" atlas="hearthsteel-icon-xl-fx-mask03" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="190" y="210"/>
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="41"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="RimShine"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" setToFinalAlpha="true">
+						<Translation childKey="RimShine" duration="0.75" order="1" startDelay="0.15" smoothing="OUT" offsetX="-350" offsetY="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="CoinShine" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CoinShine" alpha="0.3" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-coinsheen" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="-50"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Mask" atlas="hearthsteel-icon-xl-fx-mask01" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="110" y="110"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="60"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="CoinShine"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" setToFinalAlpha="true">
+						<Translation childKey="CoinShine" duration="1" order="1" startDelay="0.25" smoothing="IN_OUT" offsetX="0" offsetY="300"/>
+						<Alpha childKey="CoinShine" duration="1" order="1" startDelay="0.25" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="HearthsteelVFX_XXL_Template" mixin="HearthsteelVFX_XXL_Mixin" virtual="true" >
+		<Frames>
+			<Frame parentKey="Rays" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="rays1" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-rays01" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-70" y="70"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="rays2" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-rays02" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-65" y="65"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="BOUNCE" setToFinalAlpha="true">
+						<Alpha childKey="rays1" duration="2" order="1" smoothing="IN_OUT" fromAlpha="0.25" toAlpha="1"/>
+						<Alpha childKey="rays1" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.25"/>
+						<Alpha childKey="rays2" duration="2" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.5"/>
+						<Alpha childKey="rays2" duration="2" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="0.5" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Flipbook" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" alpha="0.8" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-flipbook">
+							<Size x="120" y="120"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-45" y="55"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook childKey="Flipbook" duration="1.5" order="1" flipBookRows="10" flipBookColumns="6" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="MetalShine" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Shine" alpha="0.5" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-chestsheen" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="25" y="-150"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="ChestMask" atlas="hearthsteel-icon-xxl-fx-mask01" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="384" y="384"/>
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="33"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Shine"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" setToFinalAlpha="true">
+						<Translation childKey="Shine" duration="1" order="1" smoothing="IN_OUT" offsetX="0" offsetY="350"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="CoinShine" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Shine" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-coinsheen" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-125"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Mask" atlas="hearthsteel-icon-xxl-fx-mask02" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="120" y="120"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-19" y="20"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Shine"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="animation" setToFinalAlpha="true">
+						<Translation childKey="Shine" duration="1" order="1" startDelay="0.25" smoothing="OUT" offsetX="0" offsetY="300"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
 	<!-- Small Card w/Buy Button Template -->
 	<Button name="SmallCatalogShopHousingCurrencyCardTemplate" mixin="SmallCatalogShopHousingCurrencyCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" >
 		<KeyValues>
@@ -215,6 +518,26 @@
 					</Frame>
 				</Frames>
 			</Button>
+
+			<Frame parentKey="HeathSteel_L_VFX" inherits="HearthsteelVFX_L_Template" frameLevel="1100" hidden="true" >
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ForegroundContainer.RectIcon" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="HeathSteel_XL_VFX" inherits="HearthsteelVFX_XL_Template" frameLevel="1100" hidden="true" >
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ForegroundContainer.RectIcon" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="HeathSteel_XXL_VFX" inherits="HearthsteelVFX_XXL_Template" frameLevel="1100" hidden="true" >
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ForegroundContainer.RectIcon" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
 		</Frames>
 	</Button>
 

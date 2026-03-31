@@ -362,10 +362,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{value = Enum.RaidAuraOrganizationType.Legacy, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_LEGACY },
 				{value = Enum.RaidAuraOrganizationType.BuffsTopDebuffsBottom, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_TOP },
 				{value = Enum.RaidAuraOrganizationType.BuffsRightDebuffsLeft, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_RIGHT },
-
-		Legacy,
-	BuffsTopDebuffsBottom,
-	BuffsRightDebuffsLeft,
 			},
 			hideSystemSelectionOnInteract = true,
 		},
@@ -391,6 +387,19 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 50,
 			maxValue = 200,
 			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- BigDefensiveIconSize (controls the scale of the larger centered defensive aura icon)
+		{
+			setting = Enum.EditModeUnitFrameSetting.BigDefensiveIconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BIGDEFENSIVE_AURA_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 			hideSystemSelectionOnInteract = true,
@@ -1230,6 +1239,11 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_SHOW_CLASS_COLOR,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+	},
+
+	[Enum.EditModeSystem.TotemActionBar] =
+	{
+
 	},
 };
 

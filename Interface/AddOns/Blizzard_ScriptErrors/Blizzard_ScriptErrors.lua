@@ -1,23 +1,41 @@
+local errorHandlers = {};
 
 ScriptErrorsMixin = {};
 
 function ScriptErrorsMixin:Init()
 	self.unhandledErrors = {};
-end
-
-function ScriptErrorsMixin:GetUnhandledErrors()
-	return self.unhandledErrors;
+	self.isErrorHandlingDeferred = false;
 end
 
 function ScriptErrorsMixin:AddUnhandledError(errorMessage, stack, locals)
 	table.insert(self.unhandledErrors, { errorMessage = errorMessage, stack = stack, locals = locals });
+
+	if not self.isErrorHandlingDeferred then
+		self.isErrorHandlingDeferred = true;
+
+		local processUnhandledErrors = nil;
+		processUnhandledErrors = function()
+			if #errorHandlers > 0 then
+				self.isErrorHandlingDeferred = false;
+
+				for _i, handler in ipairs(errorHandlers) do
+					for _j, error in pairs(self.unhandledErrors) do
+						pcall(handler, error.errorMessage, error.stack, error.locals);
+					end
+				end
+
+				self.unhandledErrors = {};
+			else
+				-- Try again. This else is not expected to be entered unless error
+				-- handler registration became deferred. If that ever happens it is
+				-- important we don't drop the errors on the floor.
+				RunNextFrame(processUnhandledErrors);
+			end
+		end
+		RunNextFrame(processUnhandledErrors);
+	end
 end
 
-function ScriptErrorsMixin:ClearUnhandledErrors()
-	self.unhandledErrors = {};
-end
-
--- This should be the very first addon to load, so CreateAndInitFromMixin is not defined yet
 ScriptErrors = CreateFromMixins(ScriptErrorsMixin);
 ScriptErrors:Init();
 
@@ -38,8 +56,6 @@ local function GetErrorData()
 
 	return stack, locals;
 end
-
-local errorHandlers = {};
 
 function AddLuaErrorHandler(handler)
 	assert(issecure());

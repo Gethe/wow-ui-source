@@ -132,7 +132,7 @@
 				<KeyValues>
 					<KeyValue key="syncKey" value="HousingSubModeActiveAnims" type="string"/>
 				</KeyValues>
-				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="-360">
+				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="0">
 					<Origin point="CENTER"/>
 				</Rotation>
 			</AnimationGroup>

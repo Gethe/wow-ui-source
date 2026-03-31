@@ -262,7 +262,7 @@ function NamePlateUnitFrameMixin:UpdateIsPlayer()
 	if self.explicitIsPlayer ~= nil then
 		isPlayer = self.explicitIsPlayer;
 	elseif self.unit ~= nil then
-		isPlayer = UnitIsPlayer(self.unit);
+		isPlayer = UnitIsPlayer(self.unit) or UnitTreatAsPlayerForDisplay(self.unit);
 	end
 
 	if self.isPlayer == isPlayer then
@@ -808,4 +808,8 @@ end
 
 function NamePlateUnitFrameMixin:SetNamePlateFrame(namePlateFrame)
 	self.namePlateFrame = namePlateFrame;
+end
+
+function NamePlateUnitFrameMixin:UpdatePrivateAuras()
+	-- nop
 end

@@ -168,13 +168,14 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 		self.GuildSubdivisionDropdown:Hide();
 	end
 
-	if button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
-		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_CHARTER_INVITE);
-		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
-		self.HouseFinderNotificationBanner:Show();
-	elseif button.neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None and not C_Housing.DoesFactionMatchNeighborhood(button.neighborhoodInfo.neighborhoodGUID) then
+	
+	if button.neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None and not C_Housing.DoesFactionMatchNeighborhood(button.neighborhoodInfo.neighborhoodGUID) then
 		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_WRONG_FACTION);
 		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-red");
+		self.HouseFinderNotificationBanner:Show();
+	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_CHARTER_INVITE);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
 		self.HouseFinderNotificationBanner:Show();
 	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.PartySync then
 		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_PARTY_LEADER);

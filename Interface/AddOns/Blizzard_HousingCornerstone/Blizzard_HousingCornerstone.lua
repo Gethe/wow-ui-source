@@ -107,13 +107,8 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 
 	self.PlotText:SetText(string.format(HOUSING_PLOT_NUMBER, self.houseInfo.plotID));
 
-	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
-	if self.houseInfo.plotCost == 0 then
-		MoneyFrame_SetType(self.CostTextFrame.PriceMoneyFrame, "GUILD_REPAIR");
-	else
-		MoneyFrame_SetType(self.CostTextFrame.PriceMoneyFrame, "STATIC");
-	end
-	MoneyFrame_Update("HousingCornerstonePriceMoneyFrame", self.houseInfo.plotCost);
+	local forceShow = true;
+	MoneyFrame_Update("HousingCornerstonePriceMoneyFrame", self.houseInfo.plotCost, forceShow);
 
 	local offset = (self.CostTextFrame.PriceMoneyFrame:GetWidth() - 10) / 2; --the 10 is due to some negative space that is in money frames.
 	self.CostTextFrame:SetPoint("CENTER", -offset, 0);
@@ -133,14 +128,14 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 	self.purchaseMode = C_HousingNeighborhood.GetCornerstonePurchaseMode();
 	if self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
 		-- Hide the money frame because moves are always free. If HousingMoveHouseJob is updated to deduct a cost, we need to update this
-		self.CostTextFrame.PriceMoneyFrame:Hide();
+		self.CostTextFrame:Hide();
 
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_MOVE_BUTTON);
 		self.BuyButton:Enable();
 		self.ErrorText:Hide();
 		self:CheckPurchaseEligibility(true);
 	else
-		self.CostTextFrame.PriceMoneyFrame:Show();
+		self.CostTextFrame:Show();
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_BUY);
 		self:CheckPurchaseEligibility(false);
 	end
@@ -486,23 +481,18 @@ end
 function MoveHouseConfirmationDialogMixin:OnShow()
 	local discountPrice = C_HousingNeighborhood.GetDiscountedMovePrice();
 
-	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
-	if discountPrice == 0 then
-		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "GUILD_REPAIR");
-	else
-		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "STATIC");
-	end
-
 	--Handle negative values in case the refund from old house is more than the cost of the new house
 	if discountPrice < 0 then
 		discountPrice = math.abs(discountPrice);
-		MoneyFrame_Update(self.PriceMoneyFrameOriginal, discountPrice);
+		local forceShow = true;
+		MoneyFrame_Update(self.PriceMoneyFrameOriginal, discountPrice, forceShow);
 		self.PriceMoneyFrameDiscount:Hide();
 		self.PriceLabel:SetText(HOUSING_CORNERSTONE_REFUND);
 		self.OriginalStrikethrough:Hide();
 	else
-		MoneyFrame_Update(self.PriceMoneyFrameOriginal, HousingCornerstonePurchaseFrame.houseInfo.plotCost);
-		MoneyFrame_Update(self.PriceMoneyFrameDiscount, discountPrice);
+		local forceShow = true;
+		MoneyFrame_Update(self.PriceMoneyFrameOriginal, HousingCornerstonePurchaseFrame.houseInfo.plotCost, forceShow);
+		MoneyFrame_Update(self.PriceMoneyFrameDiscount, discountPrice, forceShow);
 		self.PriceMoneyFrameDiscount:Show();
 		self.PriceLabel:SetText(HOUSING_CORNERSTONE_PRICE);
 		self.OriginalStrikethrough:Show();

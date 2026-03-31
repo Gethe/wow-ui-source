@@ -297,7 +297,6 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
-				{ Name = "lockdownReason", Type = "ChatMessagingLockdownReason", Nilable = true, Documentation = { "Optionally specified reason for the chat lockdown. Always nil if isRestricted is false, but should also be treated as potentially nil if true." } },
 			},
 		},
 		{
@@ -490,8 +489,8 @@ local ChatInfo =
 			Arguments =
 			{
 				{ Name = "input", Type = "string", Nilable = false },
-				{ Name = "noIconReplacement", Type = "bool", Nilable = true },
-				{ Name = "noGroupReplacement", Type = "bool", Nilable = true },
+				{ Name = "noIconReplacement", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "noGroupReplacement", Type = "bool", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -2726,17 +2725,6 @@ local ChatInfo =
 
 	Tables =
 	{
-		{
-			Name = "AddonMessageParams",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "prefix", Type = "cstring", Nilable = false },
-				{ Name = "message", Type = "cstring", Nilable = false },
-				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
-				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
-			},
-		},
 		{
 			Name = "ChatMessageEventParams",
 			Type = "Structure",

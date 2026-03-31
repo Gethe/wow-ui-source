@@ -329,9 +329,13 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		if productInfo.previewIconTexture then
 			iconFrame.Icon:SetAtlas(productInfo.previewIconTexture);
 		end
-	elseif productType == CatalogShopConstants.ProductType.Room or productType == CatalogShopConstants.ProductType.HousingExterior then
+	elseif productType == CatalogShopConstants.ProductType.Room then
 		CatalogShopFrame.PMTImageContainerFrame:Show();
 		CatalogShopFrame.PMTImageContainerFrame:SetupCarouselImagesAndHide(displayInfo);
+	elseif productType == CatalogShopConstants.ProductType.HousingExteriorType then
+	--SetupCarouselImages
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end

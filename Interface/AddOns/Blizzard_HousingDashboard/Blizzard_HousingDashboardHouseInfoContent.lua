@@ -314,6 +314,32 @@ function HouseFinderButtonMixin:OnClick()
 	
 	PlaySound(SOUNDKIT.HOUSING_DASHBOARD_BUTTON_CLICK);
 end
+
+---------------------House XP Cap Icon-------------------------------
+HouseXPCapIconMixin = {};
+
+function HouseXPCapIconMixin:OnEnter()
+	local avilableXP = C_NeighborhoodInitiative.GetAvailableHouseXP();
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, ENDEAVOR_XP_TOOLTIP_TITLE);
+
+	GameTooltip_AddNormalLine(GameTooltip, ENDEAVOR_XP_TOOLTIP_DESCRIPTION);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	local formattedNumber = WHITE_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(avilableXP));
+	GameTooltip_AddNormalLine(GameTooltip, ENDEAVOR_XP_TOOLTIP_AVAILABLE:format(formattedNumber));
+	GameTooltip:Show();
+end
+
+function HouseXPCapIconMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function HouseXPCapIconMixin:UpdateVisibility()
+	local avilableXP = C_NeighborhoodInitiative.GetAvailableHouseXP();
+	self:SetShown(avilableXP > 0);
+end
+
 ---------------------Initiatives Tab-------------------------------
 InitiativesTabMixin = {};
 
@@ -373,6 +399,7 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 
 				self:SetProgressBarThresholds();
 
+				self.InitiativeSetFrame.InitiativesXPIcon:UpdateVisibility();
 				self.InitiativeSetFrame.InitiativeName:SetText(self.currentInitiative.title);
 				self.InitiativeSetFrame.InitiativeDescription:SetText(self.currentInitiative.description);
 

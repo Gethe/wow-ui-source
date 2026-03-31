@@ -393,6 +393,13 @@
 									<KeyValue key="allowAutoEnableCVar" value="true" type="boolean"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="TotemActionBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_TOTEM_ACTION_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="13" type="number"/>
+								</KeyValues>
+							</Frame>
 
 							<!-- Misc Settings -->
 							<Frame parentKey="TalkingHeadFrame" inherits="EditModeManagerSettingCheckButtonTemplate">

@@ -109,7 +109,7 @@ local StringUtil =
 			Arguments =
 			{
 				{ Name = "text", Type = "stringView", Nilable = false },
-				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
+				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, NeverSecret = true, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
 			},
 
 			Returns =

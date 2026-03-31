@@ -6,6 +6,12 @@ local SecretPredicates =
 	Predicates =
 	{
 		{
+			Name = "RequiresComparableUnitTokens",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+			Documentation = { "Guarded APIs only accept unit token pairs that can be compared with one another. For example, comparisons where either unit is 'player' or 'target' are permitted, but comparisons between 'nameplate3' and 'boss1' are not." },
+		},
+		{
 			Name = "RequiresFontStringTextAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnNothing",
@@ -106,6 +112,11 @@ local SecretPredicates =
 			Name = "SecretWhenUnitPowerRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values for power types not explicitly flagged as being never secret, unless the subject unit does not have a power of this type." },
+		},
+		{
+			Name = "SecretWhenUnitStatsRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values when access to unit auras would generally produce secret values." },
 		},
 		{
 			Name = "SecretWhenUnitThreatStateRestricted",

@@ -32,7 +32,7 @@
 						<Anchor point="TOPLEFT" x="12" y="-30"/>
 					</Anchors>
 					<ScrollChild>
-						<EditBox parentKey="Text" multiLine="true" letters="4000" autoFocus="false">
+						<EditBox parentKey="Text" multiLine="true" autoFocus="false">
 							<Size x="743" y="194"/>
 							<Scripts>
 								<OnLoad function="ScrollingEdit_OnLoad"/>

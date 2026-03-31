@@ -682,6 +682,9 @@ function CatalogShopMixin:OnProductSelected(data)
 		local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
 		C_Texture.SetURLTexture(texture, smallOverrideURL);
 		CatalogShopFrame.PMTImageContainerFrame:Show();
+
+	elseif data.sceneDisplayData.productType == CatalogShopConstants.ProductType.HousingExteriorType then
+		CatalogShopFrame.PMTImageContainerFrame:Show();
 	else
 		-- by default we hide it
 		CatalogShopFrame.PMTImageContainerFrame:Hide();

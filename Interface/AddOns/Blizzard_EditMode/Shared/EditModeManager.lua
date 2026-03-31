@@ -81,7 +81,7 @@ end
 
 function EditModeManagerFrameMixin:EnterEditMode()
 	self.editModeActive = true;
-	AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
+	C_UnitAuras.SwitchAuraDataProvider();
 	self:ClearActiveChangesFlags();
 	self:UpdateDropdownOptions();
 	self:ShowSystemSelections();
@@ -99,7 +99,7 @@ end
 
 function EditModeManagerFrameMixin:ExitEditMode()
 	self.editModeActive = false;
-	AuraUtil.ClearDataProvider();
+	C_UnitAuras.ResetAuraDataProvider();
 	self:RevertAllChanges();
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();
@@ -534,10 +534,10 @@ function EditModeManagerFrameMixin:GetRaidFrameAuraOrganizationType(systemIndex)
 	return (auraOrganizationType and auraOrganizationType > 0) and auraOrganizationType or Enum.RaidAuraOrganizationType.Legacy;
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameIconScale(systemIndex, default)
+function EditModeManagerFrameMixin:GetRaidFrameIconScale(systemIndex, default, settingEnum)
 	-- The iconSize setting is not a percentage even though it represents one; convert it here, note that default is expected to be in percentage form
 	-- Because the min/max are setup in EditModeSettingDisplayInfo they're not checked here and the caller needs to verify ranges.
-	local iconSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.IconSize);
+	local iconSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, settingEnum);
 	return (iconSize and iconSize > 0) and (iconSize / 100) or default;
 end
 
@@ -691,9 +691,19 @@ local function clearSelectedSystem(index, systemFrame)
 	end
 end
 
-function EditModeManagerFrameMixin:ClearSelectedSystem()
+local function ClearSelectedSystems(self)
 	secureexecuterange(self.registeredSystemFrames, clearSelectedSystem);
 	EditModeSystemSettingsDialog:Hide();
+end
+
+local ClearSelectedSystemsDelegate = CreateSecureDelegate(ClearSelectedSystems);
+
+function EditModeManagerFrameMixin:ClearSelectedSystem()
+	if issecure() or not InCombatLockdown() then
+		ClearSelectedSystemsDelegate(self);
+	else
+		ClearSelectedSystems(self);
+	end
 end
 
 function EditModeManagerFrameMixin:NotifyChatOfLayoutChange()
@@ -1787,6 +1797,7 @@ local checkBoxSetupData =
 	StanceBar = { callbackName = "SetStanceBarShown", mouseoverName = "SetStanceBarMouseOver", },
 	PetActionBar = { callbackName = "SetPetActionBarShown", mouseoverName = "SetPetActionBarMouseOver", },
 	PossessActionBar = { callbackName = "SetPossessActionBarShown", mouseoverName = "SetPossessActionBarMouseOver", },
+	TotemActionBar = { callbackName = "SetTotemActionBarShown", mouseoverName = "SetTotemActionBarMouseOver", },
 };
 
 EditModeAccountSettingsMixin = {};
@@ -2065,6 +2076,10 @@ end
 
 function EditModeAccountSettingsMixin:SetVehicleSeatIndicatorMouseOver(...)
 	VehicleSeatIndicator:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetTotemActionBarMouseOver(...)
+	MultiCastActionBarFrame:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:SetArchaeologyBarMouseOver(...)
@@ -2540,6 +2555,32 @@ function EditModeAccountSettingsMixin:RefreshVehicleSeatIndicator()
 		VehicleSeatIndicator:HighlightSystem();
 	else
 		VehicleSeatIndicator:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupTotemActionBar()
+	-- If the frame is already showing then set control checked
+	if MultiCastActionBarFrame:IsShown() then
+		self.settingsCheckButtons.TotemActionBar:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetTotemActionBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowTotemActionBar, shown);
+		self:RefreshTotemActionBar();
+	else
+		self.settingsCheckButtons.TotemActionBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshTotemActionBar()
+	local showTotemActionBar = self.settingsCheckButtons.TotemActionBar:IsControlChecked();
+	MultiCastActionBarFrame:SetIsInEditMode(showTotemActionBar);
+	if showTotemActionBar then
+		MultiCastActionBarFrame:HighlightSystem();
+	else
+		MultiCastActionBarFrame:ClearHighlight();
 	end
 end
 

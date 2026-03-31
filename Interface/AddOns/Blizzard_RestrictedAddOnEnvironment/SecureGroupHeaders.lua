@@ -1057,6 +1057,9 @@ function SecureAuraHeader_Update(self)
 			aura.name = auraData.name;
 			duration = auraData.duration;
 			aura.expires = auraData.expirationTime;
+			if aura.expires == 0 then
+				aura.expires = math.huge;  -- Permanent auras should sort after auras with long durations.
+			end
 			aura.caster = auraData.caster;
 			aura.filter = fullFilter;
 			aura.index = index;

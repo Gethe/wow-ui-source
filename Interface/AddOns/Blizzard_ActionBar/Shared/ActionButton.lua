@@ -606,7 +606,7 @@ function ActionBarActionButtonMixin:Update()
 	-- Update Action Text
 	local actionName = self.Name;
 	if actionName then
-		if ( not C_ActionBar.IsConsumableAction(action) and not C_ActionBar.IsStackableAction(action) and (C_ActionBar.IsItemAction(action) or C_ActionBar.GetActionUseCount(action) == 0) ) then
+		if C_ActionBar.UsesActionText(action) then
 			actionName:SetText(C_ActionBar.GetActionText(action));
 		else
 			actionName:SetText("");

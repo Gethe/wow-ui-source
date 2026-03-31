@@ -1,10 +1,11 @@
 local _, addonTable = ...; -- Used to store secure functions (and associated data) that need to be called by other addons (to prevent hooking)
 
 do
-	addonTable.knownTargetingList = {};
 	addonTable.SpeakText = C_CombatAudioAlert.SpeakText;
 	addonTable.IsEnabled = C_CombatAudioAlert.IsEnabled;
 	addonTable.GetSpecSetting = C_CombatAudioAlert.GetSpecSetting;
+	addonTable.AddToKnownTargetingList = C_CombatAudioAlert.AddToKnownTargetingList;
+	addonTable.RemoveFromKnownTargetingList = C_CombatAudioAlert.RemoveFromKnownTargetingList;
 	addonTable.GetCAACVarValueNumber = CombatAudioAlertUtil.GetCAACVarValueNumber;
 	addonTable.GetCAACVarValueBool = CombatAudioAlertUtil.GetCAACVarValueBool;
 	addonTable.GetPlayerDebuffFormattedString = CombatAudioAlertUtil.GetPlayerDebuffFormattedString;
@@ -562,7 +563,7 @@ function CombatAudioAlertManagerMixin:GetAnnouncePercentage(percent, currentBand
 
 		if currentBand < lastBand then
 			-- Percent went down, announce the current band (75% -> 65%, announce 70%)
-			return currentBand; 
+			return currentBand;
 		else
 			-- Percent went up, as long as percent isn't 100 announce the band below current (43% -> 57%, announce 50%)
 			if percent < 100 then
@@ -1024,45 +1025,17 @@ function CombatAudioAlertManagerMixin:ProcessUnitTargetChanged(unit)
 	local unitTarget = unit.."target";
 	if UnitIsUnit(unitTarget, "player") then
 		-- This unit is targeting the player. Check if they are already on the known targeting list
-		if addonTable:AddToKnownTargetingList(unit) then
+		if addonTable.AddToKnownTargetingList(unit) then
 			-- Nope they just started targeting the player, announce it
 			addonTable.SpeakText(addonTable:GetUnitFormattedTargetingString(unit), Enum.CombatAudioAlertCategory.General);
 		end
 	else
 		-- This unit is not targeting the player. Check if they are on the known targeting list
-		addonTable:RemoveFromKnownTargetingList(unit);
+		addonTable.RemoveFromKnownTargetingList(unit);
 	end
 end
 
 -- Functions below here are added to addonTable to prevent hooking
-
-function addonTable:AddToKnownTargetingList(unit)
-	--print("AddToKnownTargetingList : "..unit);
-	for knownTargetingUnit in pairs(self.knownTargetingList) do
-		if UnitIsUnit(knownTargetingUnit, unit) then
-			--print("dupe : "..knownTargetingUnit);
-			return false;
-		end
-	end
-
-	--print("added to knownTargetingList");
-	self.knownTargetingList[unit] = true;
-	return true;
-end
-
-function addonTable:RemoveFromKnownTargetingList(unit)
-	--print("RemoveFromKnownTargetingList : "..unit);
-	for knownTargetingUnit in pairs(self.knownTargetingList) do
-		if UnitIsUnit(knownTargetingUnit, unit) then
-			--print("found matching unit : "..knownTargetingUnit);
-			self.knownTargetingList[knownTargetingUnit] = nil;
-			return true;
-		end
-	end
-
-	--print("didn't find matching unit : "..unit);
-	return false;
-end
 
 function addonTable:GetSayIfTargetedMode()
 	return self.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
