@@ -2268,6 +2268,7 @@ local Unit =
 		{
 			Name = "UnitIsUnit",
 			Type = "Function",
+			RequiresComparableUnitTokens = true,
 			SecretWhenUnitComparisonRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 

@@ -28,6 +28,7 @@ local InGameNavigation =
 		{
 			Name = "GetNearestPartyMemberToken",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Returns =
 			{
