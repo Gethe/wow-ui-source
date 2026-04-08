@@ -21,7 +21,6 @@ function RuneButton_OnUpdate (self, elapsed, ...)
 	if ( displayCooldown and start and start > 0 and duration and duration > 0) then
 		CooldownFrame_Set(cooldown, start, duration, displayCooldown, true);
 	end
-;
 
 	if ( runeReady ) then
 		self:SetScript("OnUpdate", nil);

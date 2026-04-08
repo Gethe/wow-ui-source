@@ -96,22 +96,8 @@ function EclipseBarFrameMixin:OnShow()
 		self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS[direction]));
 	end
 	
-	local hasLunarEclipse = false;
-	local hasSolarEclipse = false;
-	
-	local unit = PlayerFrame.unit;
-	local j = 1;
-	local name, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	
-	while name do 
-		if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
-			hasSolarEclipse = true;
-		elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
-			hasLunarEclipse = true;
-		end
-		j=j+1;
-		name, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	end
+	local hasLunarEclipse = C_UnitAuras.GetPlayerAuraBySpellID(ECLIPSE_BAR_LUNAR_BUFF_ID);
+	local hasSolarEclipse = C_UnitAuras.GetPlayerAuraBySpellID(ECLIPSE_BAR_SOLAR_BUFF_ID);
 	
 	if hasLunarEclipse then
 		self.glow:ClearAllPoints();
@@ -158,22 +144,8 @@ function EclipseBarFrameMixin:CheckBuffs()
 		return;
 	end
 
-	local hasLunarEclipse = false;
-	local hasSolarEclipse = false;
-	
-	local unit = PlayerFrame.unit;
-	local j = 1;
-	local name, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	
-	while name do 
-		if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
-			hasSolarEclipse = true;
-		elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
-			hasLunarEclipse = true;
-		end
-		j=j+1;
-		name, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	end
+	local hasLunarEclipse = C_UnitAuras.GetPlayerAuraBySpellID(ECLIPSE_BAR_LUNAR_BUFF_ID);
+	local hasSolarEclipse = C_UnitAuras.GetPlayerAuraBySpellID(ECLIPSE_BAR_SOLAR_BUFF_ID);
 	
 	if hasLunarEclipse then
 		self.glow:ClearAllPoints();

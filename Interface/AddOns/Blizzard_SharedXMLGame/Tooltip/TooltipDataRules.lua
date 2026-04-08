@@ -167,7 +167,7 @@ function TooltipDataRules.FinalizeItemTooltip(tooltip, tooltipData)
 	
 	if tooltip.supportsItemComparison then
 		local tooltipInfo = tooltip:GetProcessingTooltipInfo();
-		if tooltipInfo.compareItem or TooltipUtil.ShouldDoItemComparison() then
+		if tooltipInfo.compareItem or TooltipUtil.ShouldDoItemComparison(tooltip) then
 			GameTooltip_ShowCompareItem(tooltip);
 		else
 			TooltipComparisonManager:Clear(tooltip);

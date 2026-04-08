@@ -407,18 +407,21 @@
 							</OnLeave>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleDropDown" parentKey="RoleDropDown" inherits="LFGDropDownTemplate">
+					<DropdownButton name="$parentRoleDropdown" parentKey="RoleDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentInitiateRolePoll" relativePoint="BOTTOM" x="0" y="-8"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 102);
-								UIDropDownMenu_Initialize(self, LFGListingRoleDropDown_Initialize);
-								UIDropDownMenu_SetAnchor(self, -15, 10, "TOPRIGHT", self, "BOTTOMRIGHT");
-							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+								GameTooltip:SetText(SELECT_YOUR_ROLE);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
-					</Button>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Button name="$parentNewPlayerFriendlyButton" parentKey="NewPlayerFriendlyButton" motionScriptsWhileDisabled="true">

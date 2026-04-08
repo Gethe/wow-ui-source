@@ -31,7 +31,7 @@
 		<TexCoords left="0.31250000" right="0.96484375" top="0.37109375" bottom="0.52343750" />
 	</Texture>
 	
-	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
+	<Frame name="SpellBookShineTemplate" inherits="AutoCastOverlayTemplate" virtual="true">
 		<Size  x="30" y="30"/>
 	</Frame>
 	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
@@ -155,16 +155,6 @@
 						<Anchor point="TOPLEFT" x="-35" y="35" />
 					</Anchors>
 				</Texture>
-				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
@@ -184,6 +174,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentAutoCastOverlay" parentKey="AutoCastOverlay" inherits="SpellBookShineTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true"/>
 			<Frame name="$textureTrainBook" hidden="true" parentKey="TrainBook" setAllPoints="true">
 				<Layers>

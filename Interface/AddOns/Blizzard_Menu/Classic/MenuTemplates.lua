@@ -19,7 +19,7 @@ function WowStyle1DropdownMixin:GetArrowAtlas()
 end
 
 function WowStyle1DropdownMixin:OnSizeChanged(width, height)
-	if width <= 60 then
+	if width <= 100 then
 		self.Background:SetAtlas("common-dropdown-classic-textholder-small", TextureKitConstants.UseAtlasSize);
 	else
 		self.Background:SetAtlas("common-dropdown-classic-textholder", TextureKitConstants.UseAtlasSize);
@@ -57,6 +57,23 @@ do
 	};
 
 	function MenuStyle1Mixin:GetInset()
+		return inset;
+	end
+end
+
+MenuStyle1ThinMixin = CreateFromMixins(MenuStyle1Mixin);
+
+do
+	-- For thin menus (e.g., TimeManager frame with 2-character dropdown options), use tighter insets.
+	local inset = 
+	{
+		left = 8, 
+		top = 10, 
+		right = 8,
+		bottom = 10,
+	};
+
+	function MenuStyle1ThinMixin:GetInset()
 		return inset;
 	end
 end

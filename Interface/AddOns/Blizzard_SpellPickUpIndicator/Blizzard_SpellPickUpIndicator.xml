@@ -17,7 +17,7 @@
 						<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="10" y="0" />
 					</Anchors>
 				</FontString>
-				<Texture parentKey="KeyIcon" atlas="plunderstorm-pickup-mouseclick-left" useAtlasSize="false">
+				<Texture parentKey="KeyIcon" atlas="housing-hotkey-icon-leftclick" useAtlasSize="false">
 					<Size x="30" y="30"/>
 					<KeyValues>
 						<KeyValue key="layoutIndex" value="1" type="number"/>

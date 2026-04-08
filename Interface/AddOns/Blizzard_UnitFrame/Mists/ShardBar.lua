@@ -258,21 +258,12 @@ function DemonicFuryBarMixin:SetPower(power)
 		texData = WARLOCK_POWER_FILLBAR["Demonology"];
 	end
 	WarlockPowerFrame:UpdateFill(self.fill, texData, power, self.maxPower);
-	TextStatusBar_UpdateTextStringWithValues(self, self.powerText, math.floor(power), 1, self.maxPower);
+	self:UpdateTextStringWithValues(self.powerText, math.floor(power), 1, self.maxPower);
 end
 
 function DemonicFuryBarMixin:CheckAndSetState()
-	local activated = false;
-	local index = 1;
-	local name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index);
-	while spellId do
-		if ( spellId == WARLOCK_METAMORPHOSIS ) then
-			activated = true;
-			break;
-		end
-		name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index);
-		index = index + 1
-	end
+	local activated = C_UnitAuras.GetPlayerAuraBySpellID(WARLOCK_METAMORPHOSIS);
+
 	if ( activated and not self.activated ) then
 		self.activated = true;
 		self.bar:SetTexCoord(0.03906250, 0.69921875, 0.30859375, 0.51171875);

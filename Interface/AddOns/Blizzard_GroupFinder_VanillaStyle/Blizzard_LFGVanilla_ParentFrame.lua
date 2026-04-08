@@ -149,7 +149,7 @@ function LFGUtil_GetActivityGroupForActivity(activityID)
 			ACTIVITY_ACTIVITYGROUP_CACHE[activityID] = activityInfo.groupFinderActivityGroupID;
 		end
 	end
-		
+
 	return ACTIVITY_ACTIVITYGROUP_CACHE[activityID];
 end
 
@@ -199,22 +199,6 @@ end
 function LFGUtil_GetActivityInfoName(activityInfo)
 	-- For consistency, prefer the short name.
 	return activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
-end
-
--------------------------------------------------------
-----------Drop-Down QoL
--------------------------------------------------------
-function LFGDropDown_OnEnter(self)
-	self.Button:LockHighlight();
-end
-
-function LFGDropDown_OnLeave(self)
-	self.Button:UnlockHighlight();
-end
-
-function LFGDropDown_OnClick(self)
-	ToggleDropDownMenu(nil, nil, self);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -------------------------------------------------------

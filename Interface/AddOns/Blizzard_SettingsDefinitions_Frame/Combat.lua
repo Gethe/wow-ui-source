@@ -12,7 +12,7 @@ local function Register()
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[COMBAT_LABEL]);
 
 	-- Personal Resource Display
-	if C_CVar.GetCVar("nameplateShowSelf") then
+	if not C_GameRules.IsGameRuleActive(Enum.GameRule.PersonalResourceDisplayDisabled) and C_CVar.GetCVar("nameplateShowSelf") then
 		local nameplateSetting, nameplateInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
 
 		local function IsModifiable()

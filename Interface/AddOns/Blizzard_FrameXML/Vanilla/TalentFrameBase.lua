@@ -14,6 +14,8 @@ MAX_NUM_ARROW_TEXTURES = 30;
 INITIAL_TALENT_OFFSET_X = 35;
 INITIAL_TALENT_OFFSET_Y = 20;
 
+TALENT_HYBRID_ICON = "Interface\\Icons\\Ability_DualWieldSpecialization";
+
 function TalentFrame_Update(TalentFrame)
 	if ( not TalentFrame ) then
 		return;

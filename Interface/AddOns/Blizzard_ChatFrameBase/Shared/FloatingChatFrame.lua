@@ -13,7 +13,7 @@ function FCF_IsChatWindowIndexActive(chatWindowIndex)
 end
 
 function FCF_IterateActiveChatWindows(callback)
-	for i = 1, NUM_CHAT_WINDOWS do
+	for i = 1, Constants.ChatFrameConstants.MaxChatWindows do
 		if ( FCF_IsChatWindowIndexActive(i) ) then
 			local chatFrame = FCF_GetChatFrameByID(i);
 			if callback(chatFrame, i) then
@@ -24,7 +24,7 @@ function FCF_IterateActiveChatWindows(callback)
 end
 
 function FCF_GetNextOpenChatWindowIndex()
-	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
+	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, Constants.ChatFrameConstants.MaxChatWindows do
 		if ( not FCF_IsChatWindowIndexActive(i) ) then
 			return i;
 		end

@@ -10,15 +10,13 @@ local _, addonTbl = ...;
 -- is directly accessing these tables to enable dynamic unregistration of
 -- commands or to invoke commands by name.
 
-local function CreateCommandListProxyTable()
-	return setmetatable({}, { __index = {} });
-end
-
 addonTbl.hash_SecureCmdList = {};
-addonTbl.SecureCmdList = CreateCommandListProxyTable();
+addonTbl.SecureCmdList = {};
 
-_G.SlashCmdList = CreateCommandListProxyTable();
+_G.SlashCmdList = {};
 _G.hash_SlashCmdList = {};
+_G.hash_EmoteTokenList = {};
+_G.hash_ChatTypeInfoList = {};  --[localizedCommand] -> identifier (Stores all slash commands)
 
 function IsSecureCmd(command)
 	command = strupper(command);

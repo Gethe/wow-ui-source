@@ -25,7 +25,11 @@ function CatalogShopAlteredFormButtonMixin:GetAppropriateTooltip()
 end
 
 function CatalogShopAlteredFormButtonMixin:OnClick()
-	SelectableButtonMixin.OnClick(self);
+	-- Clicking a button after it has already been clicked should have no effect.
+	-- The only way to deselect a button is to click the other button in the group.
+	self:SetChecked(true);
+	SelectableButtonMixin.SetSelected(self, true);
+
 	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
 end	
 

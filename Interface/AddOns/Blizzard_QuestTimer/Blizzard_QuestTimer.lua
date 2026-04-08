@@ -47,14 +47,6 @@ function QuestTimerMixin:OnUpdate()
 	end
 end
 
-function QuestTimerMixin:OnShow()
-	UIParent_ManageFramePositions();
-end
-
-function QuestTimerMixin:OnHide()
-	UIParent_ManageFramePositions();
-end
-
 QuestTimerButtonMixin = {};
 
 function QuestTimerButtonMixin:OnClick()

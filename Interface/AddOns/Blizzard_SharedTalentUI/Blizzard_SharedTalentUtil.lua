@@ -3,11 +3,15 @@ local TemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "TalentButtonSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonCircleTemplate",
 	[Enum.TraitNodeEntryType.SpendSmallCircle] = "TalentButtonSmallCircleTemplate",
+	[Enum.TraitNodeEntryType.RedButton] = "TalentRedButtonTemplate",
+	[Enum.TraitNodeEntryType.ArmorSet] = "TalentArmorSetTemplate",
 };
 
 local LargeTemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "TalentButtonLargeSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonLargeCircleTemplate",
+	[Enum.TraitNodeEntryType.RedButton] = "TalentRedButtonTemplate",
+	[Enum.TraitNodeEntryType.ArmorSet] = "TalentArmorSetTemplate",
 };
 
 local EntryTypeUsesArtMixin = {
@@ -209,6 +213,28 @@ function TalentFrameUtil.GetNormalizedSubTreeNodePosition(talentFrame, nodeInfo)
 	return tPosX, tPosY;
 end
 
+function TalentFrameUtil.GenerateTreeCurrencyDisplayCallback(defaultWidth, defaultHeight)
+	defaultWidth = defaultWidth or 24;
+	defaultHeight = defaultHeight or 24;
+
+	return function (treeCurrency, width, height)
+		width = width or defaultWidth;
+		height = height or defaultHeight;
+
+		local currencyTypesID, overrideIcon = select(3, C_Traits.GetTraitCurrencyInfo(treeCurrency.traitCurrencyID));
+		if overrideIcon then
+			return CreateSimpleTextureMarkup(overrideIcon, width, height);
+		elseif currencyTypesID then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyTypesID);
+			if currencyInfo and currencyInfo.iconFileID then
+				return CreateSimpleTextureMarkup(currencyInfo.iconFileID, width, height);
+			end
+		end
+
+		return CreateSimpleTextureMarkup([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]], width, height);
+	end
+end
+
 
 TalentButtonUtil = {};
 
@@ -346,11 +372,35 @@ function TalentButtonUtil.GetSpecializedChoiceMixin(_entryInfo, talentType)
 		return TalentSelectionChoiceArtMixin;
 	end
 
-	return TalentSelecTalentSelectionChoiceMixintionChoiceArtMixin;
+	return TalentSelectionChoiceMixin;
 end
 
 function TalentButtonUtil.GetTemplateForEdgeVisualStyle(visualStyle)
 	return TemplatesByEdgeVisualStyle[visualStyle];
+end
+
+-- Force all square templates.
+function TalentButtonUtil.GetSquareTemplateForTalentType(_nodeInfo, _talentType, useLarge)
+	if useLarge then
+		return "TalentButtonLargeSquareTemplate";
+	end
+
+	return "TalentButtonSquareTemplate";
+end
+
+-- Force all spend templates. Note: this should only be used with display-only frames since
+-- otherwise the appropriate button behavior may not be supported properly.
+function TalentButtonUtil.GetSpendSpecializedMixin(_nodeInfo, _talentType)
+	return TalentButtonSpendMixin;
+end
+
+-- Not used yet but available for future use.
+function TalentButtonUtil.GetDescriptionCardTemplate(_nodeInfo, _talentType)
+	return "TalentDescriptionCardTemplate";
+end
+
+function TalentButtonUtil.GetNameCardTemplate(_nodeInfo, _talentType)
+	return "TalentNameCardTemplate";
 end
 
 function TalentButtonUtil.ApplyPosition(button, talentFrame, posX, posY)

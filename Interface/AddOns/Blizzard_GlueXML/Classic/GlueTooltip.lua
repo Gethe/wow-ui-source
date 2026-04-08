@@ -7,6 +7,7 @@ function GlueTooltip_OnLoad(self)
 	self.ClearLines = GlueTooltip_Clear;
 	self.SetFont = GlueTooltip_SetFont;
 	self.AddLine = GlueTooltip_AddLine;
+	self.AddDoubleLine = GlueTooltip_AddDoubleLine;
 	self.SetText = GlueTooltip_SetText;
 	self.SetOwner = GlueTooltip_SetOwner;
 	self.GetOwner = GlueTooltip_GetOwner;
@@ -114,6 +115,57 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	else
 		self:SetWidth(max(self:GetWidth(), freeLine:GetWidth()+GLUETOOLTIP_HPADDING));
 	end
+
+	-- Compute height and update width of text lines
+	local height = 18;
+	for i = 1, GLUETOOLTIP_NUM_LINES do
+		-- Update width of all lines
+		local line = _G[self:GetName().."TextLeft"..i];
+		local rightLine = _G[self:GetName().."TextRight"..i];
+		if (not rightLine:IsShown()) then
+			line:SetWidth(self:GetWidth()-GLUETOOLTIP_HPADDING);
+		end
+
+		-- Update the height of the frame
+		if ( line:IsShown() ) then
+			height = height + line:GetHeight() + 2;
+		end
+	end
+	self:SetHeight(height);
+end
+
+function GlueTooltip_AddDoubleLine(self, textL, textR, r, g, b, wrap)
+	r = r or self.defaultColor.r;
+	g = g or self.defaultColor.g;
+	b = b or self.defaultColor.b;
+	local a = 1;
+	-- find a free line
+	local freeLineIndex = -1;
+	for i = 1, GLUETOOLTIP_NUM_LINES do
+		local lineL = _G[self:GetName().."TextLeft"..i];
+		local lineR = _G[self:GetName().."TextRight"..i];
+		if ( not lineL:IsShown() ) then
+			freeLineIndex = i;
+			break;
+		end
+	end
+
+	if (freeLineIndex < 0) then return; end
+
+	local freeLineL = _G[self:GetName().."TextLeft"..freeLineIndex];
+	local freeLineR = _G[self:GetName().."TextRight"..freeLineIndex];
+	freeLineL:SetTextColor(r, g, b, a);
+	freeLineL:SetText(textL);
+	freeLineL:Show();
+	freeLineL:SetWidth(0);
+	freeLineR:SetTextColor(r, g, b, a);
+	freeLineR:SetText(textR);
+	freeLineR:Show();
+	freeLineR:SetWidth(0);
+
+	-- NOTE: not bothering to support wrapping for this version of this function.
+	-- (If we ever need wrapping, we should probably just convert Classic's GlueTooltip into a proper GameTooltip frame...)
+	self:SetWidth(max(self:GetWidth(), freeLineL:GetWidth()+freeLineR:GetWidth()+GLUETOOLTIP_HPADDING));
 
 	-- Compute height and update width of text lines
 	local height = 18;

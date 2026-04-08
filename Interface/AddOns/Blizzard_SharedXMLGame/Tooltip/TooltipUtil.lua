@@ -1,8 +1,9 @@
 
 TooltipUtil = {};
 
-function TooltipUtil.ShouldDoItemComparison()
-	return IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems");
+function TooltipUtil.ShouldDoItemComparison(tooltip)
+	local alwaysCompare = not tooltip.suppressAutomaticCompareItem and GetCVarBool("alwaysCompareItems");
+	return alwaysCompare or IsModifiedClick("COMPAREITEMS");
 end
 
 function TooltipUtil.GetDisplayedItem(tooltip)

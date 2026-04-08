@@ -51,7 +51,8 @@ function CharacterCreateEnumerateRaces()
 
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
-		button.tooltip = nil;
+		button.tooltip = raceData.name; -- May be overwritten later.
+		button.raceName = raceData.name;
 
 		local disable = true;
 		if CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
@@ -106,7 +107,6 @@ function CharacterCreateEnumerateRaces()
 				texture:SetDesaturated(false);
 			end
 		end
-		button.tooltip = raceData.name;
 
 		button.raceID = raceData.raceID;
 	end
@@ -513,14 +513,15 @@ function CharacterCreate_Back()
 	local stateIndex = CharacterCreate_GetCurrentStateIndex();
 
 	if stateIndex <= 1 then
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
+		
 		if( IsKioskGlueEnabled() ) then
-			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
-			GlueParent_SetScreen("kioskmodesplash");
-		else
-			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
-			CHARACTER_SELECT_BACK_FROM_CREATE = true;
-			GlueParent_SetScreen("charselect");
+			KioskFrame:HandleReturnToCharacterSelect();
+			return;
 		end
+
+		CHARACTER_SELECT_BACK_FROM_CREATE = true;
+		GlueParent_SetScreen("charselect");
 		return;
 	end
 
@@ -604,10 +605,8 @@ function CreateCharacter()
 	elseif C_Reincarnation.IsReincarnating() then
 		CharacterReincarnatePopUpDialog:ShowWarning();
 	else
-		if( Kiosk.IsEnabled() ) then
-			KioskModeSplash:SetAutoEnterWorld(true);
-		else
-			KioskModeSplash:SetAutoEnterWorld(false)
+		if KioskFrame then
+			KioskFrame:HandleCreateCharacter();
 		end
 
 		local isPvP = select(2, GetServerName()); -- Grabbing whether we're a PvP realm from GetServerName()

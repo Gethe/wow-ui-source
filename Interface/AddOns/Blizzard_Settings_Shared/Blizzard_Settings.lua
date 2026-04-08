@@ -30,7 +30,8 @@ Settings.CommitFlag = FlagsUtil.MakeFlags(
 	"SaveBindings", 
 	"Revertable", 
 	"Apply",
-	"IgnoreApply"
+	"IgnoreApply",
+	"KioskProtected"
 );
 Settings.CommitFlag.None = 0;
 
@@ -440,81 +441,16 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 	return InitTooltip;
 end
 
-function Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected)
-	local truncated = false;
-
-	local function OnEnter(button)
-		button.HighlightBGTex:SetAlpha(0.15);
-
-		local description = button:GetElementDescription();
-		if description:IsEnabled() and not description:IsSelected() then
-			button.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		end
-
-		if truncated then
-			MenuUtil.ShowTooltip(button, function(tooltip)
-				GameTooltip_SetTitle(tooltip, optionData.label);
-			end);
-		end
-
-		if optionData.onEnter then
-			optionData.onEnter(optionData);
-		end
-	end
-
-	local function OnLeave(button)
-		button.HighlightBGTex:SetAlpha(0);
-
-		local description = button:GetElementDescription();
-		if description:IsEnabled() and not description:IsSelected() then
-			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
-		end
-
-		MenuUtil.HideTooltip(button);
-	end
-
-	optionDescription:AddInitializer(function(button, description, menu)
-		button:SetScript("OnClick", function(button, buttonName)
-			description:Pick(MenuInputContext.MouseButton, buttonName);
-		end);
-
-		-- This button template is modified in Languages.lua to hide the text and display
-		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
-		-- about that texture here because it is managed by the compositor.
-		button.Text:Show();
-		button.Text:SetTextToFit(optionData.label);
-		button.Text:SetWidth(button.Text:GetWidth() + 10);
-
-		button.HighlightBGTex:SetAlpha(0);
-
-		local fontColor = nil;
-		if description:IsSelected() then
-			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
-		elseif description:IsEnabled() then
-			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
-		else
-			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		end
-
-		truncated = button.Text:IsTruncated();
-
-		button:Layout();
-	end);
-
+function Settings.CreateDropdownButton(rootDescription, optionData, isSelected, setSelected)
+	local optionDescription = rootDescription:CreateHighlightRadio(optionData.label, isSelected, setSelected, optionData, optionData.onEnter);
 	MenuUtil.SetElementText(optionDescription, optionData.text);
-	optionDescription:SetIsSelected(isSelected);
-	optionDescription:SetResponder(setSelected);
-	optionDescription:SetOnEnter(OnEnter); 
-	optionDescription:SetOnLeave(OnLeave);
-	optionDescription:SetRadio(true);
-	optionDescription:SetData(optionData);
+	return optionDescription;
 end
 
 function Settings.CreateDropdownOptionInserter(options)
 	local function Inserter(rootDescription, isSelected, setSelected)
 		for index, optionData in ipairs(options()) do
-			local optionDescription = rootDescription:CreateTemplate("SettingsDropdownButtonTemplate");
-			Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected);
+			Settings.CreateDropdownButton(rootDescription, optionData, isSelected, setSelected);
 		end
 	end
 	return Inserter;

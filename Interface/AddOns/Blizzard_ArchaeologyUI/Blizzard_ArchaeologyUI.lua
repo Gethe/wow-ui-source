@@ -116,6 +116,7 @@ function ArchaeologyFrame_OnLoad(self)
 	self.currentFrame.currentPage = 1;
 
 	self.RaceFilterDropdown:SetWidth(95);
+	self.RaceFilterDropdown.Text:SetJustifyH("LEFT");
 	self.RaceFilterDropdown:SetSelectionTranslator(function(selection)
 		if selection.data > RaceFilterAllIndex then
 			local name = GetArchaeologyRaceInfo(selection.data);

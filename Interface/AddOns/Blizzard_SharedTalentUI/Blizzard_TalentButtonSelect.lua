@@ -75,7 +75,7 @@ function TalentButtonSelectMixin:OnClick(button)
 			local spellID = self:GetSpellID();
 			if spellID then
 				local spellLink = C_Spell.GetSpellLink(spellID);
-				ChatEdit_InsertLink(spellLink);
+				ChatFrameUtil.InsertLink(spellLink);
 			end
 		end
 	end

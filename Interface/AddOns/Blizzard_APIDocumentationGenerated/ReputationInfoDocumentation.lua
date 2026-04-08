@@ -35,6 +35,57 @@ local ReputationInfo =
 			},
 		},
 		{
+			Name = "GetWatchedFactionData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "watchedFactionData", Type = "FactionData", Nilable = true },
+			},
+		},
+		{
+			Name = "IsAccountWideReputation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAccountWide", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFactionParagon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasParagon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMajorFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMajorFaction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestFactionParagonPreloadRewardData",
 			Type = "Function",
 

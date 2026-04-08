@@ -5,11 +5,11 @@ function PetBattleFrame_OnHide(self)
 end
 
 function PetBattleXPBar_OnLoad(self)
-	SetTextStatusBarTextPrefix(XP);
+	self:SetBarTextPrefix(XP);
 end
 
 function PetBattleXPBar_OnEnter(self)
-	ShowTextStatusBarText(self);
+	self:ShowStatusBarText();
 	if ( self.tooltip ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.tooltip);
@@ -17,12 +17,12 @@ function PetBattleXPBar_OnEnter(self)
 end
 
 function PetBattleXPBar_OnLeave(self)
-	HideTextStatusBarText(self);
+	self:HideStatusBarText();
 	GameTooltip:Hide();
 end
 
 MicroButtonFrameMixin = {};
 
 function MicroButtonFrameMixin:OnShow()
-	OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -10, 27, true);
+	MicroMenu:OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -10, 27, true);
 end

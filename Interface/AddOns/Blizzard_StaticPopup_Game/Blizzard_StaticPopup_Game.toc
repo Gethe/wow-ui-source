@@ -11,9 +11,7 @@ GameDialog.xml
 
 [Family]\StaticPopupSpecial.xml [AllowLoadGameType mainline]
 
-Wrath\StaticPopupGlyphs.lua  [AllowLoadGameType wrath]
-Cata\StaticPopupGlyphs.lua  [AllowLoadGameType cata]
-Mists\StaticPopupGlyphs.lua  [AllowLoadGameType mists]
+[Game]\StaticPopupGlyphs.lua  [AllowLoadGameType wrath, cata, mists]
 
 [Family]\StaticPopupSpecial.lua [AllowLoadGameType classic]
 [Family]\StaticPopupSpecial.xml [AllowLoadGameType classic]

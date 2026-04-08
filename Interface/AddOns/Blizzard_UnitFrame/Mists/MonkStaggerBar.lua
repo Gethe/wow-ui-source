@@ -31,8 +31,8 @@ function MonkStaggerBarMixin:OnLoad()
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	end
 	self:UpdatePowerType();
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
-	TextStatusBar_Initialize(self);
+	self:SetBarText(_G[self:GetName().."Text"])
+	self:InitializeTextStatusBar();
 end
 
 function MonkStaggerBarMixin:OnEvent(event, arg1)
@@ -90,7 +90,7 @@ end
 function MonkStaggerBarMixin:UpdateMaxValues()
 	local maxhealth = UnitHealthMax(self:GetParent().unit);
 	self:SetMinMaxValues(0, maxhealth);
-	TextStatusBar_UpdateTextString(self);
+	self:UpdateTextString();
 end
 
 function MonkStaggerBarMixin:UpdatePowerType()

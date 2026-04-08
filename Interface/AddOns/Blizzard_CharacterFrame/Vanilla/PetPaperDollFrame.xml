@@ -153,23 +153,23 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
-						SetTextStatusBarText(self, PetPaperDollFrameExpBarText);
+						self:InitializeTextStatusBar();
+						self:SetBarText(PetPaperDollFrameExpBarText);
 
-						SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
+						PetPaperDollFrameExpBar:SetBarTextPrefix(XP);
 						self.alwaysShow = true;
 						self.alwaysPrefix = true;
 					</OnLoad>
 					<OnEvent>
 						PetExpBar_Update();
-						TextStatusBar_OnEvent(self, event, ...);
+						self:TextStatusBarOnEvent(event, ...);
 					</OnEvent>
 					<OnEnter>
-						TextStatusBar_UpdateTextString(self);
-						ShowTextStatusBarText(self);
+						self:UpdateTextString();
+						self:ShowStatusBarText();
 					</OnEnter>
 					<OnLeave>
-						HideTextStatusBarText(self);
+						self:HideStatusBarText();
 					</OnLeave>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

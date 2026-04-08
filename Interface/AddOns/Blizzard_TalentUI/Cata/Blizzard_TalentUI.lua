@@ -330,7 +330,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
@@ -446,7 +446,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 					PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 				end
 			end
-		elseif (event == "LEARNED_SPELL_IN_TAB") then
+		elseif (event == "LEARNED_SPELL_IN_SKILL_LINE") then
 			-- Must update the Mastery bonus if you just learned Mastery
 			if (PlayerTalentFramePanel1Summary:IsVisible()) then
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
@@ -1091,7 +1091,7 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 		local link = GetTalentLink(self:GetParent().talentTree, self:GetID(),
 			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif ( TalentUIUtil.IsActiveSpecSelected() ) then
 		-- only allow functionality if an active spec is selected

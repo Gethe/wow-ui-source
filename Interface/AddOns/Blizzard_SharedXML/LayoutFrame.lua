@@ -601,7 +601,7 @@ function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
     end
 
     for index, child in ipairs(layoutChildren) do
-        if self.oldGridSettings.layoutChildren[index] ~= child then
+        if self.oldGridSettings.layoutChildren[index] ~= child or child:GetNumPoints() == 0 then
             return true;
         end
     end

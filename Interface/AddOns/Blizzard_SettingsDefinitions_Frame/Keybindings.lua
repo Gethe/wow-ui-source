@@ -18,6 +18,17 @@ do
 	end
 end
 
+local function ForEachBinding(func)
+	local kioskEnabled = Kiosk.IsEnabled();
+
+	for bindingIndex = 1, GetNumBindings() do
+		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
+		if not (kioskEnabled and (cat == "BINDING_HEADER_DEBUG" or cat == "BINDING_HEADER_HOUSING_SYSTEM")) then
+			func(bindingIndex, action, cat, binding1, binding2);
+		end
+	end
+end
+
 local KeybindingSpacer = {};
 
 SettingsKeybindingSectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
@@ -27,6 +38,7 @@ function SettingsKeybindingSectionMixin:OnLoad()
 
 	self.bindingsPool = CreateFramePool("Frame", nil, "KeyBindingFrameBindingTemplate");
 	self.spacerPool = CreateFramePool("Frame", nil, "SettingsKeybindingSpacerTemplate");
+	self.prefacePool = CreateFramePool("Frame", nil, "SettingsKeybindingPrefaceTemplate");
 end
 
 function SettingsKeybindingSectionMixin:Init(initializer)
@@ -39,6 +51,10 @@ function SettingsKeybindingSectionMixin:Init(initializer)
 	for _, categoryData in ipairs(bindingsCategories) do
 		if categoryData == KeybindingSpacer then
 			local frame = self.spacerPool:Acquire();
+			table.insert(self.Controls, frame);
+		elseif categoryData.prefaceText then
+			local frame = self.prefacePool:Acquire();
+			frame:Init(categoryData.prefaceText);
 			table.insert(self.Controls, frame);
 		else
 			local frame = self.bindingsPool:Acquire();
@@ -77,6 +93,7 @@ function SettingsKeybindingSectionMixin:Release(initializer)
 
 	self.bindingsPool:ReleaseAll();
 	self.spacerPool:ReleaseAll();
+	self.prefacePool:ReleaseAll();
 end
 
 function SettingsKeybindingSectionMixin:CalculateHeight()
@@ -135,9 +152,7 @@ local function CreateSearchableSettings(redirectCategory)
 		[BINDING_HEADER_OTHER] = {},
 	};
 
-	for bindingIndex = 1, GetNumBindings() do
-		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
-		
+	ForEachBinding(function(bindingIndex, action, cat, binding1, binding2)
 		if not cat then
 			tinsert(bindingsCategories[BINDING_HEADER_OTHER], {bindingIndex, action});
 		else
@@ -145,11 +160,11 @@ local function CreateSearchableSettings(redirectCategory)
 				bindingsCategories[cat] = {};
 			end
 
-			if strsub(action, 1, 6) ~= "HEADER" then
+			if strsub(action, 1, 6) ~= "HEADER" and strsub(action, 1, 7) ~= "PREFACE" then
 				tinsert(bindingsCategories[cat], {bindingIndex, action});
 			end
 		end
-	end
+	end);
 
 	for categoryName, bindingCategory in pairs(bindingsCategories) do
 		for _, bindingData in ipairs(bindingCategory) do
@@ -157,6 +172,12 @@ local function CreateSearchableSettings(redirectCategory)
 			local initializer = CreateKeybindingEntryInitializer(bindingIndex, true);
 			local bindingName = securecallfunction(GetBindingName, action);
 			initializer:AddSearchTags(bindingName);
+
+			local extraSearchTags = C_KeyBindings.GetSearchTagsForAction(action);
+			if extraSearchTags and #extraSearchTags > 0 then
+				initializer:AddSearchTags(unpack(extraSearchTags));
+			end
+
 			layout:AddInitializer(initializer);
 		end
 	end
@@ -189,8 +210,7 @@ local function CreateKeybindingInitializers(category, layout)
 
 	KeybindingsOverrides.AddBindingCategories(AddBindingCategory);
 
-	for bindingIndex = 1, GetNumBindings() do
-		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
+	ForEachBinding(function(bindingIndex, action, cat, binding1, binding2)
 		if not cat then
 			tinsert(bindingsCategories[BINDING_HEADER_OTHER].bindings, {bindingIndex, action});
 		else
@@ -199,11 +219,13 @@ local function CreateKeybindingInitializers(category, layout)
 
 			if strsub(action, 1, 6) == "HEADER" then
 				tinsert(bindingsCategories[cat].bindings, KeybindingSpacer);
+			elseif strsub(action, 1, 7) == "PREFACE" then
+				tinsert(bindingsCategories[cat].bindings, {prefaceText = action});
 			else
 				tinsert(bindingsCategories[cat].bindings, {bindingIndex, action});
 			end
 		end
-	end
+	end);
 
 	local sortedCategories = {};
 
@@ -299,3 +321,10 @@ EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(o, ...)
 	-- Create new bindings.
 	CreateKeybindingInitializers(retained.category, retained.layout);
 end);
+
+
+SettingsKeybindingPrefaceMixin = {};
+
+function SettingsKeybindingPrefaceMixin:Init(prefaceText)
+	self.text:SetText(_G[prefaceText]);
+end

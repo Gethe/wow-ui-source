@@ -1,11 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="PetFrame_Shared.lua"/>
-	<Button name="PetFrame" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
+
+	<Frame name="PetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="80" y="-60"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="48" type="number"/>
+		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
 		</HitRectInsets>
@@ -97,14 +103,29 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-22"/>
 				</Anchors>
+				<Frames>
+					<Frame name="PetFrameMyHealPredictionBar" inherits="PetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="PetFrameOtherHealPredictionBar" inherits="PetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame name="PetFrameHealAbsorbBar" inherits="PetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame name="PetFrameTotalAbsorbBar" inherits="PetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="PetFrameOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture name="PetFrameOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -115,7 +136,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PET";
@@ -124,50 +145,14 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentBuff1" inherits="PartyBuffFrameTemplate" id="1">
+			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
-			</Button>
-			<Button name="$parentBuff2" inherits="PartyBuffFrameTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
-			</Button>
-			<Button name="$parentBuff3" inherits="PartyBuffFrameTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
-			</Button>
-			<Button name="$parentBuff4" inherits="PartyBuffFrameTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
-			</Button>
+			</Frame>
 			<Frame name="PetFrameHappiness" enableMouse="true" hidden="false">
 				<Size>
 					<AbsDimension x="24" y="23"/>
@@ -210,36 +195,23 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PetFrame_OnLoad"/>
-			<OnEvent function="PetFrame_OnEvent"/>
-			<OnShow>
-				UnitFrame_Update(self);
-				PetFrame_Update(self);
-				PlayerFrame_AdjustAttachments();
-			</OnShow>
-			<OnHide>
-				PlayerFrame_AdjustAttachments();
-			</OnHide>
-			<OnUpdate function="PetFrame_OnUpdate"/>
-			<OnEnter>
-				UnitFrame_OnEnter(self);
-				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
-				PartyMemberBuffTooltip_Update(self);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self);
-				PartyMemberBuffTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<StatusBar name="PetCastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
+	<StatusBar name="PetCastingBarFrame" mixin="PetCastingBarMixin" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
 		<Size x="195" y="13"/>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
+			<Anchor point="BOTTOM" relativeTo="PlayerCastingBarFrame" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="PetCastingBarFrame_OnLoad"/>
-			<OnEvent function="PetCastingBarFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

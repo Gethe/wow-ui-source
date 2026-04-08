@@ -478,9 +478,9 @@ function PTR_IssueReporter.Reminder(enable, ...)
     if (not Blizzard_PTRIssueReporter_Saved.sawHighlight) then
         for k,v in pairs({...}) do
             if (enable) then
-                ActionButton_ShowOverlayGlow(v)
+                ActionButtonSpellAlertManager:ShowAlert(v)
             else
-                ActionButton_HideOverlayGlow(v)
+                ActionButtonSpellAlertManager:HideAlert(v)
             end
         end
         if (not enable) then
@@ -535,7 +535,9 @@ function PTR_IssueReporter.SetBugButtonContext(context, buttonTooltip, bugIcon)
                 GameTooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
                 GameTooltip:SetMinimumWidth(100);
                 GameTooltip:Show()
-                ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
+				if not(C_Glue.IsOnGlueScreen()) then
+					ActionButtonSpellAlertManager:HideAlert(PTR_IssueReporter.ReportBug)
+				end
             end)
             
             if (context ~= PTR_IssueReporter.Data.DefaultBugButtonContext) then

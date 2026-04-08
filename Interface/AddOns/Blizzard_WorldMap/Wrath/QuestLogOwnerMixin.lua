@@ -20,7 +20,6 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 			end
 		end
 	else
-		self.wasShowingQuestLog = nil;
 		if self:ShouldBeMaximized() then
 			if self:ShouldShowQuestLogPanel() then
 				displayState = DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG; 
@@ -52,7 +51,6 @@ end
 
 function QuestLogOwnerMixin:HandleUserActionMinimizeSelf()
 	SetCVar("miniWorldMap", 1);
-	self.wasShowingQuestLog = self.QuestLog:IsShown();
 	local displayState = DISPLAY_STATE_OPEN_MINIMIZED;
 	self:SetDisplayState(displayState);
 end
@@ -60,7 +58,7 @@ end
 function QuestLogOwnerMixin:HandleUserActionMaximizeSelf()
 	local displayState;
 	SetCVar("miniWorldMap", 0);
-	if self:ShouldShowQuestLogPanel() or self.wasShowingQuestLog then
+	if self:ShouldShowQuestLogPanel() then
 		displayState = DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG;
 	else
 		displayState = DISPLAY_STATE_OPEN_MAXIMIZED_NO_LOG;

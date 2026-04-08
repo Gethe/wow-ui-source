@@ -281,7 +281,7 @@ function GuildRenameFrameMixin:BeginInteraction()
 	if C_GuildInfo.RequestRenameStatus() then
 		self:BeginInteractionMode(); -- there won't be a mode yet, but the UI needs to show immediately and enter the waiting state
 	else
-		ChatFrame_DisplaySystemMessageInPrimary(GUILD_RENAME_ERROR_MUST_BE_IN_A_GUILD);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(GUILD_RENAME_ERROR_MUST_BE_IN_A_GUILD);
 		HideUIPanel(self);
 	end
 end

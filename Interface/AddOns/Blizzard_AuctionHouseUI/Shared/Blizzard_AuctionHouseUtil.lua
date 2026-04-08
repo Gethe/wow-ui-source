@@ -543,7 +543,7 @@ function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selection
 		elseif rowData and IsModifiedClick("CHATLINK") then
 			local itemLink = AuctionHouseUtil.GetItemLinkFromRowData(rowData);
 			if itemLink ~= nil then
-				ChatEdit_InsertLink(itemLink);
+				ChatFrameUtil.InsertLink(itemLink);
 				return false;
 			end
 		end
@@ -558,7 +558,7 @@ end
 function AuctionHouseUtil.GenerateRowSelectedCallbackWithLink(self, selectionCallback)
 	local function RowSelectedCallback(rowData)
 		if rowData and IsModifiedClick("CHATLINK") then
-			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
+			ChatFrameUtil.InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
 			return false;
 		end
 

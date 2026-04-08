@@ -250,7 +250,7 @@ function CommunitiesGuildNewsButton_OnClick(self, button)
 			elseif IsLootNews(newsType) then
 				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
 					-- whatText has the hyperlink text
-					ChatEdit_LinkItem(self.newsInfo.newsDataID, self.newsInfo.whatText);
+					ChatFrameUtil.LinkItem(self.newsInfo.newsDataID, self.newsInfo.whatText);
 				end);
 			end
 

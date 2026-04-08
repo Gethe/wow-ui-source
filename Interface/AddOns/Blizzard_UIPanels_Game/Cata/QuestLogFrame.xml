@@ -113,7 +113,7 @@
 			<OnClick>
 				if ( self.rewardType == "spell" ) then
 					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetSpellLink(self:GetID()));
+						ChatFrameUtil.InsertLink(GetSpellLink(self:GetID()));
 					end
 				else
 					HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));

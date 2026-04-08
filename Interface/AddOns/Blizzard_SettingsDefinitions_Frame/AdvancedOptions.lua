@@ -1,4 +1,9 @@
 local function Register()
+	-- Advanced settings do not apply to non-standard game modes for now.
+	if not C_GameRules.IsStandard() then
+		return;
+	end
+
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ADVANCED_OPTIONS_LABEL);
 	Settings.ADVANCED_OPTIONS_CATEGORY_ID = category:GetID();
 
@@ -22,7 +27,7 @@ local function Register()
 		end
 
 		local function OnButtonClick()
-			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL, false);
+			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell, false);
 			local skipTransitionBackToOpeningPanel = true;
 			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
 			PlayerSpellsUtil.ToggleSpellBookFrame();
@@ -31,6 +36,7 @@ local function Register()
 		local addSearchTags = false;
 		local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
 		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+		initializer:SetKioskProtected();
 		layout:AddInitializer(initializer);
 	end);
 

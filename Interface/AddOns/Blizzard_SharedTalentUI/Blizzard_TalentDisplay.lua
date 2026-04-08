@@ -78,6 +78,7 @@ function TalentDisplayMixin:OnRelease()
 	self.matchType = nil;
 	self.shouldGlow = nil;
 	self.isGhosted = nil;
+	self.entryInfo = nil;
 
 	if self.updateMouseInfoTimer then
 		self.updateMouseInfoTimer:Cancel();
@@ -341,7 +342,7 @@ function TalentDisplayMixin:GetTooltipEntryInfo()
 	return tooltipEntryInfo;
 end
 
-function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
+function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored, skipNextRank)
 	local blankLineAdded = tooltipInfoIgnored or false;
 	if self:ShouldShowSubText() then
 		local talentSubtext = self:GetSubtext();
@@ -363,7 +364,7 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
 		tooltip:AppendInfo("GetTraitEntry", tooltipEntryInfo.currEntryInfo.entryID, tooltipEntryInfo.currEntryInfo.rank);
 	end
 
-	if tooltipEntryInfo.nextEntryInfo and tooltipEntryInfo.ranksPurchased > 0 then
+	if not skipNextRank and tooltipEntryInfo.nextEntryInfo and tooltipEntryInfo.ranksPurchased > 0 then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
 		tooltip:AppendInfo("GetTraitEntry", tooltipEntryInfo.nextEntryInfo.entryID, tooltipEntryInfo.nextEntryInfo.rank);

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
+	<Frame name="SpellBookShineTemplate" inherits="AutoCastOverlayTemplate" virtual="true">
 		<Size x="30" y="30"/>
 	</Frame>
 	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
@@ -115,20 +115,13 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentAutoCastOverlay" parentKey="AutoCastOverlay" inherits="SpellBookShineTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>

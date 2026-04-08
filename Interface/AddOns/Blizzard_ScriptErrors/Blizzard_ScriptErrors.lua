@@ -1,7 +1,3 @@
-if not IsInGlobalEnvironment() then
-	return;
-end
-
 local function GetErrorData()
 	-- Example of how debug stack level is calculated
 	-- Current stack: [1, 2, 3, 4, 5] (current function is at 1, total current height is 5)
@@ -16,7 +12,7 @@ local function GetErrorData()
 	local stack = debugstack(debugStackLevel);
 	local locals = debuglocals(debugStackLevel, skipFunctionsAndUserdata);
 	locals = string.gsub(locals, "|([kK])", "%1");
-	
+
 	return stack, locals;
 end
 
@@ -31,7 +27,7 @@ local function HandleLuaError(errorMessage)
 	local stack, locals = GetErrorData();
 	local formattedMessage = string.format("Lua Error: %s\n%s", errorMessage, stack);
 	addframetext(formattedMessage);
-	
+
 	-- Eventually remove this from Lua. Stack information should be obtainable from
 	-- the native error handler.
 	C_Log.LogErrorMessage(formattedMessage);

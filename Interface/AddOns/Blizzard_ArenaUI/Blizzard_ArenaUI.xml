@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<StatusBar name="ArenaCastingBarFrameTemplate" drawLayer="BORDER" virtual="true" hidden="true">
+	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -45,10 +45,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="CastingBarFrame_OnLoad" />
-			<OnEvent function="CastingBarFrame_OnEvent" />
-			<OnUpdate function="CastingBarFrame_OnUpdate" />
-			<OnShow function="CastingBarFrame_OnShow" />
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnShow method="OnShow" />
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
@@ -246,7 +246,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
@@ -269,7 +269,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
@@ -396,7 +396,7 @@
 					</OnEvent>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
-							PartyMemberBackground_ToggleOpacity(self);
+							PartyMemberBackgroundMixin.ToggleOpacity(self);
 						end
 					</OnMouseUp>
 				</Scripts>
@@ -471,7 +471,7 @@
 					</OnEvent>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
-							PartyMemberBackground_ToggleOpacity(self);
+							PartyMemberBackgroundMixin.ToggleOpacity(self);
 						end
 					</OnMouseUp>
 				</Scripts>

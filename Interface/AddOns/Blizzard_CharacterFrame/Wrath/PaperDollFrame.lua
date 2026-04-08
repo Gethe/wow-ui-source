@@ -150,6 +150,10 @@ function PaperDollFrame_OnLoad(self)
 
 	self.TitleDropdown:SetWidth(160);
 	self.TitleDropdown:SetDefaultText(PAPERDOLL_SELECT_TITLE);
+
+	self.TitleDropdown.Text:SetJustifyH("LEFT");
+	self.Attributes.LeftPlayerStatDropdown.Text:SetJustifyH("LEFT");
+	self.Attributes.RightPlayerStatDropdown.Text:SetJustifyH("LEFT");
 end
 
 local function IsTitleSelected(value)

@@ -196,6 +196,7 @@ end
 function RaidFinderQueueFrame_OnShow(self)
 	self.SelectionDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_RAID_FINDER_QUEUE_FRAME");
+		rootDescription:SetScrollMode(600);
 
 		local sortedDungeons = { };
 		local function InsertDungeonData(id, name, mapName, isAvailable, mapID)

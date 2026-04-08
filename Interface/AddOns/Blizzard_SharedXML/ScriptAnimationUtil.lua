@@ -1,4 +1,8 @@
 
+local function NoEasing(progress)
+	return progress;
+end
+
 ScriptAnimationUtil = {};
 
 function ScriptAnimationUtil.GetScriptAnimationLock(region)
@@ -16,6 +20,23 @@ end
 
 function ScriptAnimationUtil.IsScriptAnimationLockActive(region)
 	return region.scriptedAnimatedAnchorLock ~= nil;
+end
+
+-- Returns a callback to cancel the animation.
+function ScriptAnimationUtil.StartFadeAnimation(region, duration, onFinish, easingFunction)
+	easingFunction = easingFunction or NoEasing;
+
+	local distanceX = 0;
+	local distanceY = 0;
+	local alphaVariation = -region:GetAlpha();
+	local scaleVariation = 0;
+	local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY, alphaVariation, scaleVariation);
+	return ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, duration, function()
+		region:SetAlpha(0);
+		if onFinish then
+			onFinish();
+		end
+	end);
 end
 
 function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequency)
@@ -67,10 +88,6 @@ function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequenc
 	end);
 
 	return CancelShake;
-end
-
-local function NoEasing(progress)
-	return progress;
 end
 
 function ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY, alpha, scale)

@@ -72,4 +72,4 @@ SlashCmdList["TALENT_SPEC_BY_INDEX"] = function(msg)
 	end
 end
 
-ChatFrame_ImportAllListsToHash();
+ChatFrameUtil.ImportAllListsToHash();

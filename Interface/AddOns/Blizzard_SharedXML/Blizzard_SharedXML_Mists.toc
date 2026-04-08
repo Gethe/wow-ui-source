@@ -53,6 +53,7 @@ SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml
 
+Shared\Button\CheckButtonTemplates.xml
 Shared\Button\UIButtonTemplate.lua
 Shared\Button\UIButtonTemplate.xml
 Shared\Button\ThreeSliceButtonTemplate.lua
@@ -109,7 +110,7 @@ Shared\Scroll\ScrollTemplates.xml
 Shared\ButtonTray\ButtonTrayUtil.lua
 Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
-Dump.lua
+Dump.lua [AllowLoadEnvironment Global]
 
 Shared\Selector\Blizzard_SelectorUI.lua
 Shared\Selector\Blizzard_SelectorUI.xml
@@ -145,7 +146,19 @@ Classic\SliderTemplates.xml
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
 ScriptAnimationUtil.lua
-SharedBasicControls.lua
+
+Shared\Button\UIPanelButtonTemplates.lua
+Shared\Button\UIPanelButtonTemplates.xml
+
+Shared\Dialog\DialogTemplates.lua
+Shared\Dialog\DialogTemplates.xml
+Classic\Dialog\DialogTemplates.xml
+DialogUtil.lua
+
+Shared\InputBox\InputBoxTemplates.lua
+Shared\InputBox\InputBoxTemplates.xml
+
+SharedBasicControls.lua [AllowLoadEnvironment Global]
 SharedBasicControls.xml
 Classic\UIDropDownMenu.lua
 Classic\UIDropDownMenuTemplates.lua
@@ -176,7 +189,7 @@ BulletPoint.lua
 BulletPoint.xml
 Classic\GameTooltipTemplate.xml
 MixinUtil.lua
-DebugBarManager.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
 
 PropertyBindingMixin.lua
 PropertyButton.lua
@@ -192,7 +205,8 @@ ModelPreviewFrame.lua
 ModelPreviewFrame.xml
 CharacterModelFrameMixin.lua
 
-DialogUtil.lua
+Shared\Frame\MainMenuFrameTemplates.lua
+Classic\Frame\MainMenuFrameTemplates.xml
 
 Classic\Sound.lua
 

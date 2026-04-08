@@ -1,3 +1,19 @@
+
+local customOptions = 
+{
+	ignoreBarPoints = true,
+	ignoreNamePoint = true,
+	ignoreOverAbsorbGlow = true,
+	ignoreOverHealAbsorbGlow = true,
+};
+
+BaseNamePlateUnitFrameTemplateMixin = {};
+
+function BaseNamePlateUnitFrameTemplateMixin:OnLoad()
+	self.customOptions = customOptions;
+	CompactUnitFrame_OnLoad(self);
+end
+
 NamePlateDriverMixin = {};
 
 function NamePlateDriverMixin:OnLoad()
@@ -137,6 +153,10 @@ function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUni
 	local unitFrame = namePlateFrameBase.UnitFrame;
 	if setupFn then
 		CompactUnitFrame_SetUpFrame(unitFrame, setupFn);
+	end
+
+	if unitFrame.SetupOverride then
+		unitFrame:SetupOverride();
 	end
 
 	namePlateFrameBase:OnOptionsUpdated();
@@ -330,7 +350,7 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	self.driverFrame = driverFrame;
 
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
-	CastingBarFrame_SetUnit(self.UnitFrame.CastBar, namePlateUnitToken, false, false);
+	self.UnitFrame.castBar:SetUnit(namePlateUnitToken, false, false);
 
 	self:ApplyOffsets();
 end
@@ -380,8 +400,8 @@ end
 
 function NamePlateBaseMixin:GetPreferredInsets()
 	local frame = self.UnitFrame;
-	local health = frame.healthBar;
-	local border = health.border;
+	local health = frame.HealthBarsContainer.healthBar;
+	local border = frame.HealthBarsContainer.border;
 
 	local healthLeft = min(health:GetLeft(), border:GetLeft());
 	local healthRight = max(health:GetRight(), border:GetRight());
@@ -425,16 +445,16 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 end
 
 function Nameplate_CastBar_AdjustPosition(self)
-	CastingBarFrame_OnShow(self);
+	self:OnShow();
 
 	self.Border:ClearAllPoints();
-	self.Border:SetPoint("TOPLEFT", -22, 20);
+	self.Border:SetPoint("TOPLEFT", -21, 18);
 	self.Border:SetTexture("Interface/Tooltips/Nameplate-Border-Castbar");
 	self.Border:SetSize(128, 32);
 	self.Border:SetTexCoord(0, 1, 0, 1);
 
 	self.Icon:SetSize(14, 14);
-	self.Icon:SetPoint("RIGHT", self, "LEFT", -3, 1);
+	self.Icon:SetPoint("RIGHT", self, "LEFT", -2, 1);
 
 	self.Flash:SetTexCoord(0,0,0,0);
 	self.Text:Hide();
@@ -443,9 +463,9 @@ function Nameplate_CastBar_AdjustPosition(self)
 		self.Icon:SetPoint("RIGHT", self, "LEFT", -5, 2);
 
 		self.BorderShield:ClearAllPoints();
-		self.BorderShield:SetWidth(25);
-		self.BorderShield:SetHeight(45);
-		self.BorderShield:SetPoint("TOPLEFT", -23, 18);
-		self.BorderShield:SetPoint("TOPRIGHT", 17, 17);
+		self.BorderShield:SetWidth(48);
+		self.BorderShield:SetHeight(43);
+		self.BorderShield:SetPoint("TOPLEFT", -23, 16);
+		self.BorderShield:SetPoint("TOPRIGHT", 15, 16);
 	end
 end

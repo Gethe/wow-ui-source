@@ -3,10 +3,6 @@ REPUTATIONFRAME_FACTIONHEIGHT = 26;
 MAX_PLAYER_LEVEL = 0;
 MAX_REPUTATION_REACTION = 8;
 
-function ReputationFrame_OnLoad(self)
-	ReputationWatchBar_UpdateMaxLevel();
-end
-
 function ReputationFrame_OnShow(self)
 	ReputationFrame_Update();
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -21,8 +17,6 @@ end
 function ReputationFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_FACTION" or event == "QUEST_LOG_UPDATE" ) then
 		ReputationFrame_Update();
-	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
-		ReputationWatchBar_UpdateMaxLevel();
 	end
 end
 
@@ -147,13 +141,16 @@ function ReputationBar_OnClick(self)
 	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == self.index) ) then
 		ReputationDetailFrame:Hide();
 	else
-			SetSelectedFaction(self.index);
-			ReputationDetailFrame:Show();
-			ReputationFrame_Update();
-		end
+		SetSelectedFaction(self.index);
+		ReputationDetailFrame:Show();
+		ReputationFrame_Update();
+	end
 end
 
-function ReputationWatchBar_UpdateMaxLevel()
-	-- Initialize max player level
-	MAX_PLAYER_LEVEL = GetMaxPlayerLevel();
+function ReputationParagonWatchBar_OnEnter(self)
+	-- No Paragon reputations for Classic! This is just a stub.
+end
+
+function ReputationParagonWatchBar_OnLeave(self)
+	-- No Paragon reputations for Classic! This is just a stub.
 end

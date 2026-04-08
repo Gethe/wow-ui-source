@@ -14,6 +14,6 @@ end
 function GuildRegistrar_PurchaseCharter(hasConfirmed)
 	BuyGuildCharter(GuildRegistrarFrameEditBox:GetText());
 	HideUIPanel(GuildRegistrarFrame);
-	ChatEdit_FocusActiveWindow();
+	ChatFrameUtil.FocusActiveWindow();
 	GuildRegistrarFrameEditBox:SetText("");
 end

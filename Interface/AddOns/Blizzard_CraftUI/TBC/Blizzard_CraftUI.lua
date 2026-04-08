@@ -40,7 +40,7 @@ function CraftFrame_OnShow(self)
 	CraftListScrollFrameScrollBar:SetValue(0);
 	CraftFrame_Update();
 
-	self.Dropdown:SetWidth(150);
+	self.Dropdown:SetWidth(120);
 end
 
 function CraftFrame_OnHide(self)
@@ -54,13 +54,11 @@ function CraftFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PET_TRAINING_POINTS");
 	FauxScrollFrame_SetOffset(CraftListScrollFrame, 0);
 
-	CraftFrame_SetupDropdown(GetCraftSlots());
+	CraftFrame_SetupDropdown(self);
 end
 
-function CraftFrame_SetupDropdown(...)
+function CraftFrame_SetupDropdown(self)
 	SetCraftFilter(0);
-	
-	local slots = {...};
 
 	local function IsSelected(index)
 		return GetCraftFilter(index);
@@ -75,7 +73,7 @@ function CraftFrame_SetupDropdown(...)
 
 		rootDescription:CreateRadio(ALL_INVENTORY_SLOTS, IsSelected, SetSelected, 0);
 
-		for index, slot in ipairs(slots) do
+		for index, slot in ipairs({GetCraftSlots()}) do -- Dropdown table can change, so ensure we do not cache this.
 			rootDescription:CreateRadio(getglobal(slot), IsSelected, SetSelected, index);
 		end
 	end);

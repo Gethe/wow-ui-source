@@ -5,3 +5,4 @@
 ## LoadOnDemand: 0
 
 Deprecated_ChatInfo.lua
+Deprecated_ChatFrame.lua

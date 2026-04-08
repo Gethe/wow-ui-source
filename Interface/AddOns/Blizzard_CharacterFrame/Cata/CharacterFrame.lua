@@ -1,6 +1,8 @@
+
+UIPanelWindows["CharacterFrame"] = { area = "left", pushable = 3, whileDead = 1 };
+
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "TokenFrame" };
 CHARACTERFRAME_EXPANDED_WIDTH = 540;
-
 
 local characterFrameDisplayInfo = {
 	["Default"] = {
@@ -207,16 +209,16 @@ function CharacterFrameMixin:OnShow()
 	MainMenuExpBar.showNumeric = true;
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
-	ShowTextStatusBarText(PlayerFrameHealthBar);
-	ShowTextStatusBarText(PlayerFrameManaBar);
-	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
-	ShowTextStatusBarText(MainMenuExpBar);
-	ShowTextStatusBarText(PetFrameHealthBar);
-	ShowTextStatusBarText(PetFrameManaBar);
+	PlayerFrameHealthBar:ShowStatusBarText();
+	PlayerFrameManaBar:ShowStatusBarText();
+	PlayerFrameAlternateManaBar:ShowStatusBarText();
+	MainMenuExpBar:ShowStatusBarText();
+	PetFrameHealthBar:ShowStatusBarText();
+	PetFrameManaBar:ShowStatusBarText();
 
 	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
 		MonkStaggerBar.showNumeric = true;
-		ShowTextStatusBarText(MonkStaggerBar);
+		MonkStaggerBar:ShowStatusBarText();
 	end
 
 	ShowWatchedReputationBarText();
@@ -237,16 +239,16 @@ function CharacterFrameMixin:OnHide()
 	MainMenuExpBar.showNumeric =nil;
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
-	HideTextStatusBarText(PlayerFrameHealthBar);
-	HideTextStatusBarText(PlayerFrameManaBar);
-	HideTextStatusBarText(PlayerFrameAlternateManaBar);
-	HideTextStatusBarText(MainMenuExpBar);
-	HideTextStatusBarText(PetFrameHealthBar);
-	HideTextStatusBarText(PetFrameManaBar);
+	PlayerFrameHealthBar:HideStatusBarText();
+	PlayerFrameManaBar:HideStatusBarText();
+	PlayerFrameAlternateManaBar:HideStatusBarText();
+	MainMenuExpBar:HideStatusBarText();
+	PetFrameHealthBar:HideStatusBarText();
+	PetFrameManaBar:HideStatusBarText();
 
 	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
 		MonkStaggerBar.showNumeric = nil;
-		HideTextStatusBarText(MonkStaggerBar);
+		MonkStaggerBar:HideStatusBarText();
 	end
 
 	HideWatchedReputationBarText();
@@ -286,22 +288,4 @@ function CharacterFrameMixin:Expand()
 	self.InsetRight:Show();
 	PaperDollFrame_SetLevel();
 	self:RefreshDisplay();
-end
-
-CharacterFrameTabButtonMixin = {};
-
-function CharacterFrameTabButtonMixin:OnClick(button)
-	PanelTemplates_Tab_OnClick(self, CharacterFrame);
-	
-	local name = self:GetName();
-	if ( name == "CharacterFrameTab1" ) then
-		ToggleCharacter("PaperDollFrame");
-	elseif ( name == "CharacterFrameTab2" ) then
-		ToggleCharacter("PetPaperDollFrame");
-	elseif ( name == "CharacterFrameTab3" ) then
-		ToggleCharacter("ReputationFrame");
-	elseif ( name == "CharacterFrameTab4" ) then
-		ToggleCharacter("TokenFrame");
-	end
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end

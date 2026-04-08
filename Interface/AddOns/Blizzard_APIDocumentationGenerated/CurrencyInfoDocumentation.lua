@@ -217,6 +217,16 @@ local CurrencyInfo =
 				{ Name = "rechargingAmountPerCycle", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "PlayerCurrencyCategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "categoryName", Type = "cstring", Nilable = false },
+				{ Name = "currencyTypes", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "childCategories", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
 	},
 };
 

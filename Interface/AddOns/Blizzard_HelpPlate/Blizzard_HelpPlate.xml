@@ -547,4 +547,21 @@
 	<Button name="HelpPlateCanvas" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Size x="1" y="1"/>
 	</Button>
+
+	<Button name="RinglessHelpPlateButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<NormalTexture parentKey="LetterI" file="Interface\common\help-i">
+			<Size x="30" y="30"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+			<Size x="30" y="30"/>
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent.LetterI"/>
+			</Anchors>
+			<Color r="1" g="1" b="1" a=".2"/>
+		</HighlightTexture>
+	</Button>
 </Ui>

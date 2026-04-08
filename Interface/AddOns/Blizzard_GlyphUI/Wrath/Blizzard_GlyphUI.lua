@@ -236,10 +236,10 @@ function GlyphFrameGlyph_OnClick (self, button)
 	local glyphSlotIndex = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 		local link = C_GlyphInfo.GetGlyphLink(glyphSlotIndex, self.glyphID);
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif ( button == "RightButton" ) then
 		if ( IsShiftKeyDown() and talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then

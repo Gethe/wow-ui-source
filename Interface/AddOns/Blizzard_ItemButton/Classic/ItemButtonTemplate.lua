@@ -146,7 +146,7 @@ function HandleModifiedItemClick(link)
 				return true;
 			end
 		end
-		if ( ChatEdit_InsertLink(link) ) then
+		if ( ChatFrameUtil.InsertLink(link) ) then
 			return true;
 		elseif ( SocialPostFrame and Social_IsShown() and Social_InsertLink(link) ) then
 			return true;

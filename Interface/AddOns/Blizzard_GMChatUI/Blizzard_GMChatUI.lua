@@ -47,7 +47,7 @@ function GMChatFrame_OnLoad(self)
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
 	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -43, -2);
 	self.editBox.isGM = true;
-	ChatEdit_DeactivateChat(self.editBox);
+	ChatFrameUtil.DeactivateChat(self.editBox);
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -86,7 +86,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
 		else
-			ChatEdit_SetLastTellTarget(arg2, "WHISPER");
+			ChatFrameUtil.SetLastTellTarget(arg2, "WHISPER");
 		end
 	elseif ( event == "CHAT_MSG_WHISPER_INFORM" and GMChatFrame_IsGM(arg2) ) then
 		local info = ChatTypeInfo["WHISPER_INFORM"];
@@ -112,7 +112,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			info.r = arg2;
 			info.g = arg3;
 			info.b = arg4;
-			ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
+			self:UpdateColorByID(info.id, info.r, info.g, info.b);
 
 			if ( strupper(arg1) == "WHISPER" ) then
 				info = ChatTypeInfo["REPLY"];
@@ -120,7 +120,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 					info.r = arg2;
 					info.g = arg3;
 					info.b = arg4;
-					ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
+					self:UpdateColorByID(info.id, info.r, info.g, info.b);
 				end
 			end
 		end
@@ -136,7 +136,7 @@ end
 function GMChatFrame_OnShow(self)
 	GMChatStatusFrame:Hide();
 	for _,gmName in ipairs(self.lastGM) do
-		ChatEdit_SetLastTellTarget(gmName, "WHISPER");
+		ChatFrameUtil.SetLastTellTarget(gmName, "WHISPER");
 	end
 	table.wipe(self.lastGM);
 	if ( self.lastGMForCVar ) then
@@ -158,8 +158,8 @@ function GMChatFrame_OnHide(self)
 	SetCVar("lastTalkedToGM", "");
 	self.editBox:Hide();
 
-	if ( ChatEdit_GetLastActiveWindow() == self.editBox ) then
-		ChatEdit_SetLastActiveWindow(nil);
+	if ( ChatFrameUtil.GetLastActiveWindow() == self.editBox ) then
+		ChatFrameUtil.SetLastActiveWindow(nil);
 	end
 end
 

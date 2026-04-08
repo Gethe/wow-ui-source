@@ -24,6 +24,40 @@ function ColorMixin:GetRGB()
 	return self.r, self.g, self.b;
 end
 
+
+
+function ColorMixin:GetHSL()
+	local r, g, b, a = self.r, self.g, self.b, self.a;
+	local max, min = math.max(r, g, b), math.min(r, g, b);
+	local h, s, l;
+	
+	l = (max + min) / 2;
+	
+	if max == min then
+		h, s = 0, 0; -- achromatic
+	else
+		local d = max - min
+		if l > 0.5 then 
+			s = d / (2 - max - min);
+		else 
+			s = d / (max + min); 
+		end
+		if max == r then
+			h = (g - b) / d;
+			if g < b then 
+				h = h + 6 ;
+			end
+		elseif max == g then 
+			h = (b - r) / d + 2;
+		elseif max == b then 
+			h = (r - g) / d + 4;
+		end
+		h = h / 6;
+	end
+	
+	return h, s, l, a or 1;
+end
+
 function ColorMixin:GetRGBAsBytes()
 	return Round(self.r * 255), Round(self.g * 255), Round(self.b * 255);
 end

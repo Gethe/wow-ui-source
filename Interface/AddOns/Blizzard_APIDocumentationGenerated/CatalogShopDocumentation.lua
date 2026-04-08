@@ -204,6 +204,11 @@ local CatalogShop =
 			Name = "OpenCatalogShopInteraction",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "shouldAllowMovement", Type = "bool", Nilable = false, Default = false },
+			},
+
 			Returns =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
@@ -298,15 +303,6 @@ local CatalogShop =
 			Payload =
 			{
 				{ Name = "checkoutID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "CatalogShopPmtImageDownloaded",
-			Type = "Event",
-			LiteralName = "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED",
-			Payload =
-			{
-				{ Name = "catalogProductID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -459,6 +455,9 @@ local CatalogShop =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
+				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
+				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
+				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 			},
 		},
 		{

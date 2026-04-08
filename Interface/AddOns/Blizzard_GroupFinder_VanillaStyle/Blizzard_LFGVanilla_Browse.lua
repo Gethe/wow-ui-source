@@ -55,9 +55,6 @@ function LFGBrowseMixin:OnLoad()
 	self.searching = false;
 	self.totalResults = 0;
 
-	UIDropDownMenu_Initialize(self.CategoryDropDown, LFGBrowseCategoryDropDown_Initialize);
-	UIDropDownMenu_Initialize(self.ActivityDropDown, LFGBrowseActivityDropDown_Initialize);
-
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementFactory(function(factory, elementData)
 		factory("LFGBrowseSearchEntryTemplate", function(frame, elementData)
@@ -101,7 +98,7 @@ function LFGBrowseMixin:OnEvent(event, ...)
 			self:ActivityFiltersChanged();
 		end
 	elseif ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
-		self:RefreshDropDowns();
+		self:RefreshDropdowns();
 	elseif ( event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" ) then
 		self.searching = false;
 		self.searchFailed = false;
@@ -119,7 +116,7 @@ function LFGBrowseMixin:OnEvent(event, ...)
 end
 
 function LFGBrowseMixin:OnShow()
-	self:RefreshDropDowns();
+	self:RefreshDropdowns();
 	self:UpdateResultList();
 
 	-- Baby hack... the selected tab texture doesn't blend well with the LFG texture, so move it down a hair when it's selected.
@@ -141,13 +138,13 @@ function LFGBrowseMixin:UpdateResults()
 		self.SearchingSpinner:Show();
 	else
 		self.SearchingSpinner:Hide();
-		
+
 		if(self.totalResults == 0 or self.searchFailed) then
 			self.NoResultsFound:Show();
 			self.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
 		else
 			self.NoResultsFound:Hide();
-			
+
 			local dataProvider = CreateDataProvider();
 			local results = self.results;
 			for index = 1, #results do
@@ -161,14 +158,14 @@ function LFGBrowseMixin:UpdateResults()
 end
 
 function LFGBrowseMixin:SearchActiveEntry()
-	if (not self.CategoryDropDown or not self.ActivityDropDown) then
+	if (not self.CategoryDropdown or not self.ActivityDropdown) then
 		return;
 	end
 
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local firstCategoryID = 0;
 	if (activeEntryInfo) then
-		LFGBrowseActivityDropDown_ValueReset(self.ActivityDropDown);
+		self.ActivityDropdown:ValueReset();
 		for i=1, #activeEntryInfo.activityIDs do
 			local activityID = activeEntryInfo.activityIDs[i];
 			if (activityID ~= 0) then
@@ -176,11 +173,10 @@ function LFGBrowseMixin:SearchActiveEntry()
 				local categoryID = activityInfo.categoryID;
 				if (firstCategoryID == 0) then
 					firstCategoryID = categoryID;
-					UIDropDownMenu_Initialize(self.CategoryDropDown, LFGBrowseCategoryDropDown_Initialize);
-					UIDropDownMenu_SetSelectedValue(self.CategoryDropDown, categoryID);
+					self.CategoryDropdown:SetValue(categoryID);
 				end
 				if (categoryID == firstCategoryID) then
-					LFGBrowseActivityDropDown_ValueSetSelected(self.ActivityDropDown, activityID, true)
+					self.ActivityDropdown:ValueSetSelected(activityID, true)
 				end
 			end
 		end
@@ -199,14 +195,14 @@ function LFGBrowseMixin:ValidateSelection()
 	end
 end
 
-function LFGBrowseMixin:RefreshDropDowns()
-	UIDropDownMenu_Initialize(self.CategoryDropDown, LFGBrowseCategoryDropDown_Initialize);
-	UIDropDownMenu_Initialize(self.ActivityDropDown, LFGBrowseActivityDropDown_Initialize);
+function LFGBrowseMixin:RefreshDropdowns()
+	self.CategoryDropdown:SetupDropdown();
+	self.ActivityDropdown:SetupDropdown();
 end
 
-function LFGBrowseMixin:ResetDropDowns()
-	LFGBrowseCategoryDropDown_Reset(self.CategoryDropDown);
-	LFGBrowseActivityDropDown_Reset(self.ActivityDropDown);
+function LFGBrowseMixin:ResetDropdowns()
+	self.CategoryDropdown:Reset();
+	self.ActivityDropdown:Reset();
 end
 
 function LFGBrowseMixin:UpdateButtonState()
@@ -218,12 +214,12 @@ function LFGBrowseMixin:UpdateButtonState()
 
 	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection());
 	self.GroupInviteButton:SetEnabled(self.selectionBehavior:HasSelection() and self.GroupInviteButton.inviteFunc);
-	
+
 	self.RefreshButton:SetEnabled(not self.searching);
 end
 
 function LFGBrowseMixin:ActivityFiltersChanged()
-	self:ResetDropDowns();
+	self:ResetDropdowns();
 end
 
 -------------------------------------------------------
@@ -235,9 +231,9 @@ end
 
 function LFGBrowse_DoSearch()
 	if (not LFGBrowseFrame.searching) then
-		local categoryID = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
+		local categoryID = LFGBrowseFrame.CategoryDropdown:GetValue();
 		if (categoryID > 0) then
-			local activityIDs = LFGBrowseFrame.ActivityDropDown.selectedValues;
+			local activityIDs = LFGBrowseFrame.ActivityDropdown.selectedValues;
 			if (#activityIDs == 0) then -- If we have no activities selected in the filter, search for everything in this category.
 				activityIDs = LFGUtil_GetFilteredActivities(categoryID);
 			end
@@ -248,7 +244,7 @@ function LFGBrowse_DoSearch()
 			local searchCrossFactionListings = false;
 			local advancedFilter = nil;
 			C_LFGList.Search(categoryID, filter, preferredFilters, languageFilter, searchCrossFactionListings, advancedFilter, activityIDs);
-			
+
 			LFGBrowseFrame.searching = true;
 			LFGBrowseFrame.searchFailed = false;
 			LFGBrowseFrame:UpdateResults();
@@ -323,11 +319,11 @@ function LFGBrowseSearchEntry_Update(self)
 		activityText = string.format(activityString, #activitiesToDisplay);
 	end
 
-	local matchesFilters = true;	
-	if( #LFGBrowseFrame.ActivityDropDown.selectedValues > 0) then
+	local matchesFilters = true;
+	if( #LFGBrowseFrame.ActivityDropdown.selectedValues > 0) then
 		matchesFilters = false;
 		for i=1, #searchResultInfo.activityIDs do
-			if (LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, searchResultInfo.activityIDs[i])) then
+			if (LFGBrowseFrame.ActivityDropdown:ValueIsSelected(searchResultInfo.activityIDs[i])) then
 				matchesFilters = true;
 				break;
 			end
@@ -374,7 +370,7 @@ function LFGBrowseSearchEntry_Update(self)
 	LFGBrowseGroupDataDisplay_Update(self.DataDisplay, displayType, maxNumPlayers, displayData, searchResultInfo.isDelisted, isSolo, soloRoles, searchResultInfo.comment);
 
 	local mouseFoci = GetMouseFoci();
-	for _, mouseFocus in ipairs(mouseFoci) do 
+	for _, mouseFocus in ipairs(mouseFoci) do
 		if ( mouseFocus == self ) then
 			LFGBrowseSearchEntry_OnEnter(self);
 			break;
@@ -439,6 +435,7 @@ end
 function LFGBrowseSearchEntryTooltip_Load(self)
 	self.memberPool = CreateFramePool("FRAME", self, "LFGBrowseSearchEntryTooltipGroupMember");
 	self.activityPool = CreateFontStringPool(self, "ARTWORK", 0, "LFGBrowseSearchEntryTooltipActivityNameTemplate")
+	self.completedEncounterPool = CreateFontStringPool(self, "ARTWORK", 0, "LFGBrowseSearchEntryTooltipCompletedEncounterTemplate")
 end
 
 function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
@@ -652,6 +649,33 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 		end
 	end
 
+	-- Completed Encounters
+	local lastCompletedEncounterString = nil
+	self.completedEncounterPool:ReleaseAll();
+
+	self.CompletedEncounterHeader:Hide(); -- Hide by default; show below if conditions are appropriate.
+	if (numActivities == 1 and lastActivityString) then
+		local completedEncounters = C_LFGList.GetSearchResultEncounterInfo(resultID);
+		if (completedEncounters and #completedEncounters > 0) then
+			self.CompletedEncounterHeader:Show();
+			self.CompletedEncounterHeader:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, -8);
+
+			for i=1, #completedEncounters do
+				local fontString = self.completedEncounterPool:Acquire();
+				fontString:SetText(completedEncounters[i]);
+				fontString:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				fontString:Show();
+
+				if (lastCompletedEncounterString) then
+					fontString:SetPoint("TOPLEFT", lastCompletedEncounterString, "BOTTOMLEFT", 0, 0);
+				else
+					fontString:SetPoint("TOPLEFT", self.CompletedEncounterHeader, "BOTTOMLEFT", 0, 0);
+				end
+				lastCompletedEncounterString = fontString;
+			end
+		end
+	end
+
 	-- Show
 	self:Show();
 
@@ -680,6 +704,13 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 		contentHeight = contentHeight + fontString:GetHeight();
 	end
 	contentHeight = contentHeight + ACTIVITY_GROUP_SPACER_HEIGHT * (numActivityGroups - 1); -- Gaps between activity groups.
+	if ( self.CompletedEncounterHeader:IsShown() ) then
+		contentHeight = contentHeight + self.CompletedEncounterHeader:GetHeight();
+		contentHeight = contentHeight + 8;
+	end
+	for fontString in self.completedEncounterPool:EnumerateActive() do
+		contentHeight = contentHeight + fontString:GetHeight();
+	end
 	self:SetHeight(contentHeight);
 end
 
@@ -687,7 +718,7 @@ end
 ----------Group Data Display
 -------------------------------------------------------
 function LFGBrowseGroupDataDisplay_Update(self, displayType, maxNumPlayers, displayData, disabled, isSolo, soloRoles, comment)
-	if(not displayType) then 
+	if(not displayType) then
 		return;
 	end
 
@@ -696,7 +727,7 @@ function LFGBrowseGroupDataDisplay_Update(self, displayType, maxNumPlayers, disp
 	self.Enumerate:Hide();
 	self.PlayerCount:Hide();
 	self.Comment:Hide();
-	
+
 	if ( displayType == Enum.LFGListDisplayType.Comment ) then
 		self.Comment:Show();
 		LFGBrowseGroupDataDisplayComment_Update(self.Comment, comment, disabled);
@@ -821,7 +852,7 @@ function LFGBrowseMixin:CreateSearchEntryMenu(searchEntry)
 
 		-- Send Message
 		local sendMessageButton = rootDescription:CreateButton(SEND_MESSAGE, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 		sendMessageButton:SetEnabled(searchResultInfo.leaderName ~= nil);
 
@@ -844,209 +875,178 @@ function LFGBrowseMixin:CreateSearchEntryMenu(searchEntry)
 end
 
 -------------------------------------------------------
-----------Category DropDown
+----------LFGBrowseCategoryDropdownMixin
 -------------------------------------------------------
-function LFGBrowseCategoryDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	local hasActiveEntry = C_LFGList.HasActiveEntryInfo();
-	local categories = C_LFGList.GetAvailableCategories();
-	if (#categories == 0 and not hasActiveEntry) then
-		-- None button
-		info.text = LFG_TYPE_NONE;
-		info.value = 0;
-		info.func = LFGBrowseCategoryButton_OnClick;
-		info.owner = self;
-		info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-		info.classicChecks = true;
-		UIDropDownMenu_AddButton(info);
-	else
-		if (hasActiveEntry) then
-			info.text = LFG_SELF_LISTING;
-			info.value = 0;
-			info.func = function() LFGBrowseFrame:SearchActiveEntry(); end
-			info.owner = self;
-			info.checked = false;
-			info.classicChecks = true;
-			UIDropDownMenu_AddButton(info);
+LFGBrowseCategoryDropdownMixin = {};
+
+function LFGBrowseCategoryDropdownMixin:OnLoad()
+	self:SetWidth(118);
+	self:SetDefaultText(CATEGORY);
+	self:SetSelectionTranslator(function(selection)
+		return selection.text;
+	end);
+	self:Reset();
+end
+
+function LFGBrowseCategoryDropdownMixin:SetupDropdown()
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFG_BROWSE_CATEGORY");
+
+		local function IsSelected(value)
+			return self:GetValue() == value;
+		end
+		local function SetSelected(value)
+			self:SetValue(value);
+			LFGBrowseCategoryButton_OnClick();
 		end
 
-		local currentSelectedValue = UIDropDownMenu_GetSelectedValue(self) or 0;
-		local foundChecked = false;
-		for i=1, #categories do
-			local activities = LFGUtil_GetFilteredActivities(categories[i]);
-			if (#activities ~= 0) then
-				local categoryInfo = C_LFGList.GetLfgCategoryInfo(categories[i]);
+		local hasActiveEntry = C_LFGList.HasActiveEntryInfo();
+		local categories = C_LFGList.GetAvailableCategories();
 
-				info.text = categoryInfo.name;
-				info.value = categories[i];
-				info.func = LFGBrowseCategoryButton_OnClick;
-				info.owner = self;
-				info.checked = currentSelectedValue == info.value;
-				info.classicChecks = true;
-				UIDropDownMenu_AddButton(info);
-				if (info.checked) then
-					UIDropDownMenu_SetSelectedValue(self, info.value);
-					foundChecked = true;
+		if (#categories == 0 and not hasActiveEntry) then
+			rootDescription:CreateRadio(LFG_TYPE_NONE);
+		else
+			if (hasActiveEntry) then
+				rootDescription:CreateRadio(LFG_SELF_LISTING, function() return false; end, function() LFGBrowseFrame:SearchActiveEntry(); end);
+			end
+
+			for i=1, #categories do
+				local activities = LFGUtil_GetFilteredActivities(categories[i]);
+				if (#activities ~= 0) then
+					local categoryInfo = C_LFGList.GetLfgCategoryInfo(categories[i]);
+					rootDescription:CreateRadio(categoryInfo.name, IsSelected, SetSelected, categories[i]);
 				end
 			end
 		end
-
-		if (not foundChecked) then
-			UIDropDownMenu_SetText(self, CATEGORY);
-		end
-	end
+	end);
 end
 
-function LFGBrowseCategoryDropDown_Reset(self)
-	UIDropDownMenu_ClearAll(self);
-	UIDropDownMenu_Initialize(self, LFGBrowseCategoryDropDown_Initialize);
+function LFGBrowseCategoryDropdownMixin:GetValue()
+	return self.selectedCategoryID;
 end
 
-function LFGBrowseCategoryButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
-	LFGBrowseActivityDropDown_ValueReset(LFGBrowseFrame.ActivityDropDown);
-	UIDropDownMenu_ClearAll(LFGBrowseFrame.ActivityDropDown);
-	UIDropDownMenu_Initialize(LFGBrowseFrame.ActivityDropDown, LFGBrowseActivityDropDown_Initialize);
+function LFGBrowseCategoryDropdownMixin:SetValue(value)
+	self.selectedCategoryID = value;
+	self:SetupDropdown();
+end
+
+function LFGBrowseCategoryDropdownMixin:Reset()
+	self:SetValue(0);
+end
+
+function LFGBrowseCategoryButton_OnClick()
+	LFGBrowseFrame.ActivityDropdown:Reset();
 	LFGBrowse_DoSearch();
 end
 
 -------------------------------------------------------
-----------Activity DropDown
+----------LFGBrowseActivityDropdownMixin
 -------------------------------------------------------
-function LFGBrowseActivityDropDown_Initialize(self, level, menuList)
-	-- If we're a submenu, just display that.
-	if (menuList) then
-		for _, buttonInfo in pairs(menuList) do
-			UIDropDownMenu_AddButton(buttonInfo, level);
+LFGBrowseActivityDropdownMixin = {};
+
+function LFGBrowseActivityDropdownMixin:OnLoad()
+	self.selectedValues = {};
+	self:SetWidth(167);
+	self:SetDefaultText(LFGBROWSE_ACTIVITY_HEADER_DEFAULT);
+	self:UpdateHeader();
+	self:Reset();
+end
+
+function LFGBrowseActivityDropdownMixin:SetupDropdown()
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFG_BROWSE_ACTIVITY");
+
+		local function IsActivitySelected(value)
+			return self:ValueIsSelected(value);
 		end
-		return;
-	end
+		local function IsActivityGroupSelected(value)
+			return self:IsAnyValueSelectedForActivityGroup(value);
+		end
+		local function SelectActivity(value)
+			self:ValueToggleSelected(value);
+		end
+		local function SelectActivityGroup(value)
+			self:SetAllValuesForActivityGroup(value, not self:IsAnyValueSelectedForActivityGroup(value));
+			LFGBrowse_DoSearch();
+		end
 
-	-- If we're not a submenu, we need to generate the full menu from the top.
-	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
+		local selectedType = LFGBrowseFrame.CategoryDropdown:GetValue();
+		if ( selectedType > 0 ) then
+			self:SetEnabled(true);
 
-	if ( selectedType > 0 ) then
-		UIDropDownMenu_EnableDropDown(self);
-		local activities = LFGUtil_GetFilteredActivities(selectedType);
+			local activities = LFGUtil_GetFilteredActivities(selectedType);
 
-		if (#activities > 0) then
-			local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activities);
-			local activityGroupIDs = GetKeysArray(organizedActivities);
-			LFGUtil_SortActivityGroupIDs(activityGroupIDs);
+			if (#activities > 0) then
+				local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activities);
+				local activityGroupIDs = GetKeysArray(organizedActivities);
+				LFGUtil_SortActivityGroupIDs(activityGroupIDs);
 
-			for _, activityGroupID in ipairs(activityGroupIDs) do
-				local activityIDs = organizedActivities[activityGroupID];
-				if (activityGroupID == 0) then
-					-- Free-floating activities (no group)
-					local buttonInfo = UIDropDownMenu_CreateInfo();
-					buttonInfo.func = LFGBrowseActivityButton_OnClick;
-					buttonInfo.owner = self;
-					buttonInfo.keepShownOnClick = true;
-					buttonInfo.classicChecks = true;
+				for _, activityGroupID in ipairs(activityGroupIDs) do
+					local activityIDs = organizedActivities[activityGroupID];
+					if (activityGroupID == 0) then
+						-- Free-floating activities (no group)
+						for _, activityID in pairs(activityIDs) do
+							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+							local activityText = LFGUtil_GetActivityInfoName(activityInfo);
 
-					for _, activityID in pairs(activityIDs) do
-						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+							rootDescription:CreateCheckbox(activityText, IsActivitySelected, SelectActivity, activityID);
+						end
+					else
+						-- Grouped activities.
+						local activityGroupText = C_LFGList.GetActivityGroupInfo(activityGroupID);
+						local activityGroupCheckbox = rootDescription:CreateCheckbox(activityGroupText, IsActivityGroupSelected, SelectActivityGroup, activityGroupID);
 
-						buttonInfo.text = LFGUtil_GetActivityInfoName(activityInfo);
-						buttonInfo.value = activityID;
-						buttonInfo.checked = function(self)
-							return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
-						end;
-						UIDropDownMenu_AddButton(buttonInfo, level);
-					end
-				else
-					-- Grouped activities.
-					local groupButtonInfo = UIDropDownMenu_CreateInfo();
-					groupButtonInfo.func = LFGBrowseActivityGroupButton_OnClick;
-					groupButtonInfo.owner = self;
-					groupButtonInfo.keepShownOnClick = true;
-					groupButtonInfo.classicChecks = true;
-					groupButtonInfo.text = C_LFGList.GetActivityGroupInfo(activityGroupID);
-					groupButtonInfo.value = activityGroupID;
-					groupButtonInfo.checked = function(self)
-						return LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(LFGBrowseFrame.ActivityDropDown, self.value);
-					end;
-
-					if (#activityGroupIDs == 1) then -- If we only have one activityGroup, do everything in one menu.
-						UIDropDownMenu_AddButton(groupButtonInfo, level);
+						-- Determine the menu formatting based on how many groups we have.
+						local parentMenu = rootDescription; -- If we only have one activityGroup, do everything in one menu (rootDescription) with indents for the individual activities.
+						local textIndent = LFG_LIST_INDENT;
+						if (#activityGroupIDs > 1) then
+							parentMenu = activityGroupCheckbox; -- If we have more than one activityGroup, then group the activities into sub-menus based on the groups.
+							textIndent = "%s";
+						end
 
 						for _, activityID in pairs(activityIDs) do
 							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-							local buttonInfo = UIDropDownMenu_CreateInfo();
-							buttonInfo.func = LFGBrowseActivityButton_OnClick;
-							buttonInfo.owner = self;
-							buttonInfo.keepShownOnClick = true;
-							buttonInfo.classicChecks = true;
+							local activityText = string.format(textIndent, LFGUtil_GetActivityInfoName(activityInfo));
 
-							buttonInfo.text = string.format(LFG_LIST_INDENT, LFGUtil_GetActivityInfoName(activityInfo)); -- Extra spacing to "indent" this from the group title.
-							buttonInfo.value = activityID;
-							buttonInfo.checked = function(self)
-								return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
-							end;
-
-							UIDropDownMenu_AddButton(buttonInfo, level);
+							parentMenu:CreateCheckbox(activityText, IsActivitySelected, SelectActivity, activityID);
 						end
-					else -- If we have more than one group, do submenus.
-						groupButtonInfo.hasArrow = true;
-						groupButtonInfo.menuList = {};
-
-						for _, activityID in pairs(activityIDs) do
-							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-							local buttonInfo = UIDropDownMenu_CreateInfo();
-							buttonInfo.func = LFGBrowseActivityButton_OnClick;
-							buttonInfo.owner = self;
-							buttonInfo.keepShownOnClick = true;
-							buttonInfo.classicChecks = true;
-
-							buttonInfo.text = LFGUtil_GetActivityInfoName(activityInfo);
-							buttonInfo.value = activityID;
-							buttonInfo.checked = function(self)
-								return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
-							end;
-							tinsert(groupButtonInfo.menuList, buttonInfo);
-						end
-
-						UIDropDownMenu_AddButton(groupButtonInfo, level);
 					end
 				end
 			end
+		else
+			-- If we have no category selected, disable this dropdown.
+			self:SetEnabled(false);
+			self:ValueReset();
 		end
-	else
-		LFGBrowseActivityDropDown_ValueReset(self);
-		UIDropDownMenu_DisableDropDown(self);
-		UIDropDownMenu_ClearAll(self);
-	end
-
-	LFGBrowseActivityDropDown_UpdateHeader(self);
+	end);
 end
 
-function LFGBrowseActivityDropDown_Reset(self)
-	LFGBrowseActivityDropDown_ValueReset(self);
-	UIDropDownMenu_ClearAll(self);
-	UIDropDownMenu_Initialize(self, LFGBrowseActivityDropDown_Initialize);
+function LFGBrowseActivityDropdownMixin:Reset()
+	self:ValueReset();
+	self:SetupDropdown();
 end
 
-function LFGBrowseActivityDropDown_SetAllValuesForActivityGroup(self, activityGroupID, selected)
-	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
+function LFGBrowseActivityDropdownMixin:SetAllValuesForActivityGroup(activityGroupID, selected)
+	local selectedType = LFGBrowseFrame.CategoryDropdown:GetValue();
 
 	if ( selectedType > 0 ) then
 		local activities = LFGUtil_GetFilteredActivities(selectedType);
 		for i=1, #activities do
 			if (LFGUtil_GetActivityGroupForActivity(activities[i]) == activityGroupID) then
-				LFGBrowseActivityDropDown_ValueSetSelected(self, activities[i], selected);
+				self:ValueSetSelected(activities[i], selected);
 			end
 		end
 	end
 end
 
-function LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(self, activityGroupID)
-	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
+function LFGBrowseActivityDropdownMixin:IsAnyValueSelectedForActivityGroup(activityGroupID)
+	local selectedType = LFGBrowseFrame.CategoryDropdown:GetValue();
 
 	if ( selectedType > 0 ) then
 		local activities = LFGUtil_GetFilteredActivities(selectedType);
 		for i=1, #activities do
 			if (LFGUtil_GetActivityGroupForActivity(activities[i]) == activityGroupID) then
-				if (LFGBrowseActivityDropDown_ValueIsSelected(self, activities[i])) then
+				if (self:ValueIsSelected(activities[i])) then
 					return true;
 				end
 			end
@@ -1056,15 +1056,16 @@ function LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(self, acti
 	return false;
 end
 
-function LFGBrowseActivityDropDown_ValueReset(self)
+function LFGBrowseActivityDropdownMixin:ValueReset()
 	wipe(self.selectedValues);
+	self:UpdateHeader();
 end
 
-function LFGBrowseActivityDropDown_ValueIsSelected(self, value)
+function LFGBrowseActivityDropdownMixin:ValueIsSelected(value)
 	return tContains(self.selectedValues, value);
 end
 
-function LFGBrowseActivityDropDown_ValueSetSelected(self, value, selected)
+function LFGBrowseActivityDropdownMixin:ValueSetSelected(value, selected)
 	if (selected) then
 		if (not tContains(self.selectedValues, value)) then
 			tinsert(self.selectedValues, value);
@@ -1072,45 +1073,30 @@ function LFGBrowseActivityDropDown_ValueSetSelected(self, value, selected)
 	else
 		tDeleteItem(self.selectedValues, value);
 	end
-	LFGBrowseActivityDropDown_UpdateHeader(self);
+	self:UpdateHeader();
 end
 
-function LFGBrowseActivityDropDown_ValueToggleSelected(self, value)
-	LFGBrowseActivityDropDown_ValueSetSelected(self, value, not LFGBrowseActivityDropDown_ValueIsSelected(self, value));
+function LFGBrowseActivityDropdownMixin:ValueToggleSelected(value)
+	self:ValueSetSelected(value, not self:ValueIsSelected(value));
 end
 
-function LFGBrowseActivityDropDown_UpdateHeader(self)
+function LFGBrowseActivityDropdownMixin:UpdateHeader()
 	if #self.selectedValues == 0 then
-		UIDropDownMenu_SetText(self, LFGBROWSE_ACTIVITY_HEADER_DEFAULT);
+		self:OverrideText(LFGBROWSE_ACTIVITY_HEADER_DEFAULT);
 		self.ResetButton:Hide();
 	elseif #self.selectedValues == 1 then
 		local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedValues[1]);
-		UIDropDownMenu_SetText(self, LFGUtil_GetActivityInfoName(activityInfo));
+		self:OverrideText(LFGUtil_GetActivityInfoName(activityInfo));
 		self.ResetButton:Show();
 	else
-		UIDropDownMenu_SetText(self, string.format(LFGBROWSE_ACTIVITY_HEADER, #self.selectedValues));
+		self:OverrideText(string.format(LFGBROWSE_ACTIVITY_HEADER, #self.selectedValues));
 		self.ResetButton:Show();
 	end
 end
 
 function LFGBrowseActivityDropDownResetButton_OnClick(self)
-	CloseDropDownMenus();
-	LFGBrowseActivityDropDown_ValueReset(self:GetParent());
-	LFGBrowseActivityDropDown_UpdateHeader(self:GetParent());
+	self:GetParent():ValueReset();
 	LFGBrowse_DoSearch();
-end
-
-function LFGBrowseActivityGroupButton_OnClick(self)
-	LFGBrowseActivityDropDown_SetAllValuesForActivityGroup(self.owner, self.value, not LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(self.owner, self.value));
-	UIDropDownMenu_Refresh(self.owner, true);
-	LFGBrowseActivityDropDown_UpdateHeader(self.owner);
-	LFGBrowse_DoSearch();
-end
-
-function LFGBrowseActivityButton_OnClick(self)
-	LFGBrowseActivityDropDown_ValueToggleSelected(self.owner, self.value);
-	UIDropDownMenu_RefreshAll(self.owner, true);
-	LFGBrowseActivityDropDown_UpdateHeader(self.owner);
 end
 
 -------------------------------------------------------
@@ -1148,7 +1134,7 @@ function LFGBrowseSendMessageButton_OnClick(self, button)
 	if (selectedElement) then
 		local searchResultInfo = C_LFGList.GetSearchResultInfo(selectedElement.resultID);
 		if (searchResultInfo) then
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end
 	end
 end
@@ -1252,7 +1238,7 @@ function LFGBrowseUtil_SortSearchResults(results)
 			end
 		else
 			-- For groups, hasSlotForRole > groupSize > canTank > canHeal > timeInQueue.
-			
+
 			-- Groups with one of your current roles available are preferred.
 			local hasSlotForRole1, canTank1, canHeal1, canDPS1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
 			local hasSlotForRole2, canTank2, canHeal2, canDPS2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
@@ -1328,7 +1314,7 @@ end
 function LFGBrowseUtil_ReportListing(searchResultID, leaderName)
 	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
 	reportInfo:SetGroupFinderSearchResultID(searchResultID);
-	ReportFrame:InitiateReport(reportInfo, leaderName); 
+	ReportFrame:InitiateReport(reportInfo, leaderName);
 end
 
 function LFGBrowseUtil_ReportAdvertisement(searchResultID, leaderName)
@@ -1337,8 +1323,8 @@ function LFGBrowseUtil_ReportAdvertisement(searchResultID, leaderName)
 	reportInfo:SetGroupFinderSearchResultID(searchResultID);
 	ReportFrame:SetMinorCategoryFlag(Enum.ReportMinorCategory.Advertisement, true);
 	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
-	local sendReportWithoutDialog = true; 
-	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog); 
+	local sendReportWithoutDialog = true;
+	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog);
 end
 
 function LFGBrowseUtil_GetBestDisplayTypeForActivityIDs(activityIDs)

@@ -3,3 +3,4 @@
 ## AllowLoad: Both
 StaticPopup.lua
 SharedTemplates.lua
+SharedDialogDefs.lua

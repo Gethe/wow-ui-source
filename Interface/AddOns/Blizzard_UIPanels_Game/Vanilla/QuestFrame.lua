@@ -1,3 +1,6 @@
+
+UIPanelWindows["QuestFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 12, bottomClampOverride = 140+12, width = 353, height = 424, whileDead = 1 };
+
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
 	QuestNPCModel:SetParent(parentFrame);
 	QuestNPCModel:ClearAllPoints();

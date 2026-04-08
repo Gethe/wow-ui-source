@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="AutoCastOverlayManager" mixin="AutoCastOverlayManagerMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="AutoCastOverlayTemplate" mixin="AutoCastOverlayMixin" virtual="true">
+		<Size x="28" y="28"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="7" y="7"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="4" y="4"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="7" y="7"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="4" y="4"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="7" y="7"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="4" y="4"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="7" y="7"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+				<Texture parentArray="sparkles" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+					<Size x="4" y="4"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Corners" file="Interface\Buttons\UI-AutoCastableOverlay">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

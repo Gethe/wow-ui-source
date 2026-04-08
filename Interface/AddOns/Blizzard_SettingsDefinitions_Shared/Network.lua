@@ -6,13 +6,16 @@ local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(NETWORK_LABEL);
 
 	-- Optimize Net for Speed
-	Settings.SetupCVarCheckbox(category, "disableServerNagle", OPTIMIZE_NETWORK_SPEED, OPTION_TOOLTIP_OPTIMIZE_NETWORK_SPEED);
+	local setting = Settings.SetupCVarCheckbox(category, "disableServerNagle", OPTIMIZE_NETWORK_SPEED, OPTION_TOOLTIP_OPTIMIZE_NETWORK_SPEED);
+	setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 	-- Enable IPV6
-	Settings.SetupCVarCheckbox(category, "useIPv6", USEIPV6, OPTION_TOOLTIP_USEIPV6);
+	setting = Settings.SetupCVarCheckbox(category, "useIPv6", USEIPV6, OPTION_TOOLTIP_USEIPV6);
+	setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 	-- Advanced Combat Logging
-	Settings.SetupCVarCheckbox(category, "advancedCombatLogging", ADVANCED_COMBAT_LOGGING, OPTION_TOOLTIP_ADVANCED_COMBAT_LOGGING);
+	setting = Settings.SetupCVarCheckbox(category, "advancedCombatLogging", ADVANCED_COMBAT_LOGGING, OPTION_TOOLTIP_ADVANCED_COMBAT_LOGGING);
+	setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end

@@ -426,7 +426,7 @@ end
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
 	if errorString then
-		ChatFrame_DisplayUsageError(errorString);
+		ChatFrameUtil.DisplayUsageError(errorString);
 		self.lastError = statusCode;
 	end
 
@@ -438,7 +438,7 @@ end
 
 function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
 	if self.lastError then
-		ChatFrame_DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
+		ChatFrameUtil.DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
 		self.lastError = nil;
 	end
 end
@@ -479,13 +479,7 @@ local function CountActiveChannelMembers(channel)
 		end
 	end
 
-	-- TODO FIX: bug work-around, member active status not updated for local player when channel is initially activated.
-	-- If the channel is marked active, then the local player must be active in it:
-	if channel.isActive then
-		return count + 1;
-	else
-		return count;
-	end
+	return count;
 end
 
 function ChannelFrameMixin:ShowChannelAnnounce(channelID)
@@ -497,7 +491,7 @@ function ChannelFrameMixin:ShowChannelAnnounce(channelID)
 			local announce = Voice_FormatChannelNotification(channel, notification)
 			local communicationMode = Voice_GetCommunicationModeNotification(channel);
 			local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
-			ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
 		end
 	end
 end
@@ -511,7 +505,7 @@ function ChannelFrameMixin:ShowChannelManagementTip(channelID)
 		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
 		if bindingText and bindingText ~= "" then
 			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
-			ChatFrame_DisplaySystemMessageInPrimary(announceText);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(announceText);
 		end
 	end
 end
@@ -523,7 +517,7 @@ function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
 end
 
 function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
-	ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
 	self:SetVoiceChannelActiveState(voiceChannelID, false);
 	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
 	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
@@ -597,10 +591,10 @@ function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isAct
 		if channel and channel.isActive then
 			local memberName = C_VoiceChat.GetMemberName(memberID, channelID) or "";
 			if isActive then
-				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
 			else
-				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
 			end
 		end

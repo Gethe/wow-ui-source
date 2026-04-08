@@ -27,7 +27,7 @@
 			<Frame parentKey="PagingControls" inherits="PagingControlsTemplate" />
 		-->
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnPagedContentFrameLoad"/>
 			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Frame>

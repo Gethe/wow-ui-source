@@ -88,7 +88,7 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 		return;
 	end
 
-	local productInfo = CatalogShopFrame:GetProductInfo(productID);
+	local productInfo = CatalogShopUtil.GetProductInfo(productID);
 	if not productInfo then
 		-- Return early since nothing else can be done at this point.
 		-- Not worth asserting here because the next time all products are refreshed the data will be correct.
@@ -165,6 +165,11 @@ function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
 		else
 			scrollContainer.selectionBehavior:SelectElementData(foundElementData);
 		end
+
+		-- Adding an Update to the scroll box with forceLayout set to true so the child elements will refresh after a product is selected.
+		local forceLayout = true;
+		scrollBox:Update(forceLayout);
+
 		return true;
 	end
 
@@ -315,7 +320,6 @@ end
 function CatalogShopProductContainerFrameMixin:OnLeave()
 end
 
-CatalogShopProductContainerFrameMixin.INTERVAL_UPDATE_SECONDS_TIME = 15.0;
 local currentInterval = 0.0;
 function CatalogShopProductContainerFrameMixin:OnUpdate(deltaTime)
 	local usesScrollBox = self.usesScrollBox or false;
@@ -324,7 +328,7 @@ function CatalogShopProductContainerFrameMixin:OnUpdate(deltaTime)
 	end
 	-- Scrollbox updates below this point
 	currentInterval = currentInterval + deltaTime;
-	if currentInterval >= CatalogShopProductContainerFrameMixin.INTERVAL_UPDATE_SECONDS_TIME then
+	if currentInterval >= CatalogShopUtil.INTERVAL_UPDATE_SECONDS_TIME then
 		self.ProductsScrollBoxContainer.ScrollBox:ForEachFrame(function(frame)
 			frame:UpdateTimeRemaining();
 		end);
@@ -367,6 +371,10 @@ end
 
 function ProductContainerFrameMixin:InitProductContainer()
 	local function sectionProductSortComparator(lhs, rhs)
+		-- If both elements are the same, just return false (not less-than)
+		if lhs == rhs then
+			return false;
+		end
 		-- If the section IDs aren't the same, then use that as sort orderInPage
 		if lhs.sectionID ~= rhs.sectionID then
 			return lhs.sectionID < rhs.sectionID;
@@ -375,6 +383,12 @@ function ProductContainerFrameMixin:InitProductContainer()
 		if lhs.elementType ~= rhs.elementType then
 			return lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header;
 		end
+		
+		-- If both are headers they are equal. (by this point they are the same section)
+		if lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header and rhs.elementType == CatalogShopConstants.ScrollViewElementType.Header then
+			return false;
+		end
+
 		-- (We have 2 products) Look for the collection sort order
 		local lhsOrder = C_CatalogShop.GetProductSortOrder(lhs.categoryID, lhs.sectionID, lhs.catalogShopProductID) or 999;
 		local rhsOrder = C_CatalogShop.GetProductSortOrder(rhs.categoryID, rhs.sectionID, rhs.catalogShopProductID) or 999;
@@ -391,7 +405,7 @@ function ProductContainerFrameMixin:InitProductContainer()
 	end
 
 	local function addProductToDataProvider(dataProvider, categoryID, sectionID, productID)
-		local productInfo = CatalogShopFrame:GetProductInfo(productID);
+		local productInfo = CatalogShopUtil.GetProductInfo(productID);
 		if not productInfo then
 			return false;
 		end
@@ -469,6 +483,8 @@ function ProductContainerFrameMixin:InitProductContainer()
 		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 		end);
+
+		EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", frame.OnProductInfoChanged, frame);
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)

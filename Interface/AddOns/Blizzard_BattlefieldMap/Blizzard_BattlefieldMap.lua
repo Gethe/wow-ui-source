@@ -79,7 +79,7 @@ function BattlefieldMapTabMixin:OnClick(button)
 				rootDescription:CreateButton(BATTLEFIELDMINIMAP_OPACITY_LABEL, function()
 					self:ShowOpacity();
 				end);
-		end
+			end
 		end);
 
 		return;
@@ -195,18 +195,13 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 				self:SetSpectatorMode(true);
 			end
 
-			BattlefieldMapTab:ClearAllPoints();
-			if ( BattlefieldMapOptions.position ) then
-				if (BattlefieldMapOptions.position.x == 0 and BattlefieldMapOptions.position.y == 0) then
-					-- If our saved data is suspiciously bad... let's just drop it.
-					UIParent_ManageFramePositions();
-				else
-					BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
-					BattlefieldMapTab:SetUserPlaced(true);
-				end
-			else
-				UIParent_ManageFramePositions();
+			-- Apply user position. But if the position is (0,0)... that seems suspicious, so skip it.
+			if ( BattlefieldMapOptions.position and not (BattlefieldMapOptions.position.x == 0 and BattlefieldMapOptions.position.y == 0) ) then
+				BattlefieldMapTab:ClearAllPoints();
+				BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
+				BattlefieldMapTab:SetUserPlaced(true);
 			end
+
 			self:RefreshAlpha();
 			self:UpdateUnitsVisibility();
 			self:UnregisterEvent("ADDON_LOADED");

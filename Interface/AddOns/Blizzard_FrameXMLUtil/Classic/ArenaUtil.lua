@@ -1,4 +1,3 @@
-ArenaUtil = {};
 
 function ArenaUtil.GetArenaBannerInfo(rating, rank)
 	local emblem, emblemColor, border, borderColor, banner, bannerColor, rankColor;

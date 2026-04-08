@@ -41,12 +41,23 @@ SecureCmdList["PET_AUTOCASTTOGGLE"] = function(msg)
 	end
 end
 
+local function ArenaTeam_GetTeamSizeID(teamsizearg)
+	local teamname, teamsize, id;
+	for i=1, MAX_ARENA_TEAMS do
+		teamname, teamsize = GetArenaTeam(i)
+		if ( teamsizearg == teamsize ) then
+			id = i;
+		end
+	end
+	return id;
+end
+
 SecureCmdList["TEAM_INVITE"] = function(msg)
 	if ( msg ~= "" and GetCurrentArenaSeasonUsesTeams() ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
-			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
-				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			if ( strlen(name) > Constants.ChatFrameConstants.MaxCharacterNameBytes ) then
+				ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 				return;
 			end
 			team = tonumber(team);
@@ -59,7 +70,7 @@ SecureCmdList["TEAM_INVITE"] = function(msg)
 			end
 		end
 	end
-	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
+	ChatFrameUtil.DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
 end
 
 SecureCmdList["TEAM_QUIT"] = function(msg)
@@ -76,15 +87,15 @@ SecureCmdList["TEAM_QUIT"] = function(msg)
 			end
 		end
 	end
-	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
+	ChatFrameUtil.DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
 end
 
 SecureCmdList["TEAM_UNINVITE"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
-			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
-				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			if ( strlen(name) > Constants.ChatFrameConstants.MaxCharacterNameBytes ) then
+				ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 				return;
 			end
 			team = tonumber(team);
@@ -97,15 +108,15 @@ SecureCmdList["TEAM_UNINVITE"] = function(msg)
 			end
 		end
 	end
-	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
+	ChatFrameUtil.DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
 end
 
 SecureCmdList["TEAM_CAPTAIN"] = function(msg)
 	if ( msg ~= "" ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
-			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
-				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+			if ( strlen(name) > Constants.ChatFrameConstants.MaxCharacterNameBytes ) then
+				ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 				return;
 			end
 			team = tonumber(team);
@@ -118,7 +129,7 @@ SecureCmdList["TEAM_CAPTAIN"] = function(msg)
 			end
 		end
 	end
-	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
+	ChatFrameUtil.DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
 end
 
 SecureCmdList["TEAM_DISBAND"] = function(msg)
@@ -144,19 +155,19 @@ SecureCmdList["TEAM_DISBAND"] = function(msg)
 			end
 		end
 	end
-	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);
+	ChatFrameUtil.DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);
 end
 
 SlashCmdList["INVITE"] = function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true)
 	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+	if( msg and (strlen(msg) > Constants.ChatFrameConstants.MaxCharacterNameBytes) ) then
+		ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
 	if(msg == nil) then
-		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
 	InviteToGroup(msg);
@@ -166,12 +177,12 @@ SlashCmdList["REQUEST_INVITE"] = function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true)
 	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+	if( msg and (strlen(msg) > Constants.ChatFrameConstants.MaxCharacterNameBytes) ) then
+		ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
 	if(msg == nil) then
-		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
 	RequestInviteFromUnit(msg);

@@ -21,45 +21,42 @@
 		</Anchors>
 	</Frame>
 
-	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
+	<Button name="BaseNamePlateUnitFrameTemplate" mixin="BaseNamePlateUnitFrameTemplateMixin" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="disableMouse" value="true" type="boolean"/>
 			<KeyValue key="ignoreCUFNameRequirement" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Frames>
-			<StatusBar parentKey="healthBar" frameLevel="-1">
+			<Frame parentKey="HealthBarsContainer">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="4"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-21" y="4"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="border" inherits="NamePlateFullBorderTemplate" />
+					<Frame parentKey="border" inherits="NamePlateFullBorderTemplate" frameStrata="HIGH"/>
+					<StatusBar parentKey="healthBar" frameLevel="-1">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="background">
+									<Color r=".2" g=".2" b=".2" a=".85"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+					</StatusBar>
 				</Frames>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a=".85"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" />
-								<Anchor point="BOTTOMRIGHT" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
-				<Scripts>
-					<OnLoad>
-						self:GetStatusBarTexture():SetDrawLayer("BORDER");
-					</OnLoad>
-				</Scripts>
-			</StatusBar>
+			</Frame>
 
-			<StatusBar parentKey="CastBar" inherits="SmallCastingBarFrameTemplate" hidden="true">
+			<StatusBar parentKey="castBar" inherits="SmallCastingBarFrameTemplate" hidden="true">
 				<Size x="102" y="10"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.healthBar" relativePoint="BOTTOM" x="17" y="-9"/>
-									</Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HealthBarsContainer.healthBar" relativePoint="BOTTOM" x="17" y="-9"/>
+				</Anchors>
 				<Scripts>
 					<OnShow function="Nameplate_CastBar_AdjustPosition"/>
 				</Scripts>
@@ -98,30 +95,33 @@
 						<Texture parentKey="highLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull" />
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>
 			</Frame>
 		</Frames>
-		<Layers>
 
+		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER" ignoreParentScale="false">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.healthBar.border" relativePoint="TOP" x="0" y="2" />
+						<Anchor point="BOTTOM" relativeKey="$parent.HealthBarsContainer.border" relativePoint="TOP" x="0" y="2" />
 					</Anchors>
 				</FontString>
 				<FontString parentKey="statusText" inherits="GameFontDisable" />
 			</Layer>
-
 			<Layer level="OVERLAY">
 				<Texture parentKey="selectionHighlight" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha=".25" ignoreParentAlpha="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar.barTexture" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar.barTexture" />
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer.healthBar.barTexture" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer.healthBar.barTexture" />
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+
 		<Scripts>
-			<OnLoad function="CompactUnitFrame_OnLoad"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Button>
 

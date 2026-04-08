@@ -64,6 +64,9 @@ function ClassTrainerFrame_OnShow(self)
 	SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE_BOOL);
 	SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED_BOOL);
 
+	self.FilterDropdown:SetSelectionText(function(selections)
+		return FILTER;
+	end);
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TRAINER_FILTER");
 

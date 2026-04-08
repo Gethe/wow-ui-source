@@ -1,1 +1,1 @@
--- Overriden by the locale-specific versions
+-- Overridden by the locale-specific versions

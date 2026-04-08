@@ -257,4 +257,4 @@ end
 function UnitPopupSharedUtil.HasLFGRestrictions()
 	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
-end	 
+end

@@ -6,7 +6,7 @@ local Expansion =
 	Functions =
 	{
 		{
-			Name = "CanUpgradeExpansion",
+			Name = "CanUpgradeToCurrentExpansion",
 			Type = "Function",
 
 			Returns =
@@ -99,6 +99,24 @@ local Expansion =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxLevelForLatestExpansion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxLevelForPlayerExpansion",
+			Type = "Function",
 
 			Returns =
 			{

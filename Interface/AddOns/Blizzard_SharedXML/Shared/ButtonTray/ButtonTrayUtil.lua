@@ -23,8 +23,17 @@ function ButtonTrayUtil.TestCheckboxTraySetup(button, labelText, callback, custo
 end
 
 
-function ButtonTrayUtil.TestDropdownTraySetup(dropdown, label, callback, isSet, enum, nameTranslation, ordering)
-	-- Setup your dropdown at the return
+function ButtonTrayUtil.TestDropdownTraySetup(dropdownControl, label, enum, nameTranslation, isSet, setSelected)
+	if not label then
+		return;
+	end
+
+	dropdownControl:SetLabelText(label);
+	MenuUtil.CreateEnumRadioMenu(dropdownControl:GetDropdownButton(),
+		enum,
+		nameTranslation,
+		isSet,
+		setSelected);
 end
 
 function ButtonTrayUtil.TestSliderTraySetup(slider, label, callback, min, max, currentValue, increment)

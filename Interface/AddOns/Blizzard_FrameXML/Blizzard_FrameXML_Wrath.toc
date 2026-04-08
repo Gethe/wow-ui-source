@@ -10,12 +10,11 @@ Wrath\SparkleFrame.lua
 Wrath\SparkleFrame.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
-Classic\SecureTemplatesBase.xml
-Classic\SecureTemplates.lua
-Classic\SecureTemplates_Shared.lua
+SecureTemplatesBase.xml
+SecureTemplates.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
-Classic\SecureTemplates.xml
+SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 WardrobeOutfits.xml		   
@@ -50,7 +49,7 @@ Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua
 TBC\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
-Wrath\TalentFrameBase.lua
+Vanilla\TalentFrameBase.lua
 Classic\Blizzard_TalentUITemplates.xml
 MovieFrame.lua
 MovieFrame.xml

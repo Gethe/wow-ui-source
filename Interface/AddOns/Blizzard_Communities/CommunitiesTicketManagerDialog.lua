@@ -453,8 +453,8 @@ function CommunitiesTicketManagerDialogMixin:SendLinkToChat()
 
 	if ticketInfo and clubInfo then
 		local link = GetClubTicketLink(ticketInfo.ticketId, clubInfo.name, clubInfo.clubType);
-		if not ChatEdit_InsertLink(link) then
-			ChatFrame_OpenChat(link);
+		if not ChatFrameUtil.InsertLink(link) then
+			ChatFrameUtil.OpenChat(link);
 		end
 	end
 end

@@ -9,7 +9,7 @@
 			<OnLoad function="TextToSpeechButtonFrame_OnLoad"/>
 		</Scripts>
 		<Frames>
-			<Button name="TextToSpeechButton" parentKey="Button" inherits="VoiceToggleButtonTemplate" mixin="TextToSpeechButtonMixin" setAllPoints="true" hidden="false">
+			<Button name="TextToSpeechButton" parentKey="Button" inherits="VoiceToggleButtonTemplate" mixin="TextToSpeechButtonMixin" setAllPoints="true" hidden="false" motionScriptsWhileDisabled="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="0"/>
 				</Anchors>

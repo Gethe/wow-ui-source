@@ -117,7 +117,8 @@ function UnitPopupTeamDisbandButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupLootThresholdButtonMixin:GetColor()
-	return ITEM_QUALITY_COLORS[GetLootThreshold()].color; 
+	local color = ITEM_QUALITY_COLORS[GetLootThreshold()].color;
+	return color.r, color.g, color.b;
 end 
 
 -- Overrides
@@ -195,7 +196,7 @@ function UnitPopupDungeonDifficultyButtonMixin:CanShow(contextData)
 		return false;
 	end
 
-	return (UnitLevel("player") >= 70) and (GetDungeonDifficultyID() == 1); 
+	return (UnitLevel("player") >= 70) or (GetDungeonDifficultyID() ~= 1); 
 end
 
 function UnitPopupAchievementButtonMixin:CanShow(contextData)

@@ -9,7 +9,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent>
 				self:OnEvent(event, ...);
-				TextStatusBar_OnEvent(self, event, ...);
+				self:TextStatusBarOnEvent(event, ...);
 			</OnEvent>
 			<OnUpdate>
 				self:OnUpdate(elapsed);

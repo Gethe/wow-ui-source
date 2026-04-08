@@ -342,7 +342,7 @@
 					<OnEnter>
 						self.lockShow = 1;
 						local power = UnitPower("player", Enum.PowerType.DemonicFury);
-						TextStatusBar_UpdateTextStringWithValues(self, self.powerText, power, 1, self.maxPower);
+						self:UpdateTextStringWithValues(self.powerText, power, 1, self.maxPower);
 						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(DEMONIC_FURY, 1, 1, 1);
 						GameTooltip:AddLine(DEMONIC_FURY_TOOLTIP, nil, nil, nil, true);

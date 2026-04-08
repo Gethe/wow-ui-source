@@ -54,7 +54,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
@@ -69,9 +69,9 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -85,7 +85,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -100,9 +100,9 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "spellName", Type = "cstring", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -116,8 +116,8 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 				{ Name = "maxSlots", Type = "number", Nilable = true },
 				{ Name = "continuationToken", Type = "number", Nilable = true },
 			},
@@ -134,9 +134,9 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -164,9 +164,9 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -205,14 +205,31 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetUnitAuras",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = false },
+				{ Name = "maxCount", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAuraFilteredOutByInstanceID",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filterFlags", Type = "cstring", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 			},
 
 			Returns =
@@ -254,7 +271,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =

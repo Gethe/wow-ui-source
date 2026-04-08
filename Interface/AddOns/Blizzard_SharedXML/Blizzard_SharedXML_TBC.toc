@@ -18,6 +18,7 @@ TBC\ClassColors.lua
 
 LinkUtil.lua
 InterfaceUtil.lua
+UnitUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
 GameRulesUtil.lua
@@ -47,9 +48,11 @@ CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
 TypeUtil.lua
+SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml
 
+Shared\Button\CheckButtonTemplates.xml
 Shared\Button\UIButtonTemplate.lua
 Shared\Button\UIButtonTemplate.xml
 Shared\Button\ThreeSliceButtonTemplate.lua
@@ -74,7 +77,9 @@ ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ScriptedAnimations\ScriptAnimatedEffectController.lua
 ScriptedAnimations\ScriptAnimatedModelScene.lua
 ScriptedAnimations\ScriptAnimatedModelScene.xml
-DataProviders.xml
+DataProvider.lua
+IndexRangeDataProvider.lua
+TreeListDataProvider.lua
 Interpolator.lua
 Shared\Slider\MinimalSlider.lua
 Shared\Slider\MinimalSlider.xml
@@ -82,10 +87,13 @@ Shared\Scroll\ScrollUtil.lua
 Shared\Scroll\ScrollController.lua
 Shared\Scroll\ScrollBoxPadding.lua
 Shared\Scroll\ScrollBoxViewUtil.lua
+Shared\Scroll\ScrollBoxStride.lua
 Shared\Scroll\ScrollBoxView.lua
 Shared\Scroll\ScrollBoxListView.lua
 Shared\Scroll\ScrollBoxLinearView.lua
+Shared\Scroll\ScrollBoxBiaxalView.lua
 Shared\Scroll\ScrollBoxTreeView.lua
+Shared\Scroll\ScrollBoxSequenceView.lua
 Shared\Scroll\ScrollBoxGridView.lua
 Shared\Scroll\ScrollBox.lua
 Shared\Scroll\ScrollBox.xml
@@ -101,7 +109,7 @@ Shared\Scroll\ScrollTemplates.xml
 Shared\ButtonTray\ButtonTrayUtil.lua
 Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
-Dump.lua
+Dump.lua [AllowLoadEnvironment Global]
 
 Shared\Selector\Blizzard_SelectorUI.lua
 Shared\Selector\Blizzard_SelectorUI.xml
@@ -110,16 +118,25 @@ Shared\Selector\Blizzard_GridSelectorUI.xml
 Shared\Selector\Blizzard_ScrollBoxSelector.lua
 Classic\Selector\Blizzard_ScrollBoxSelector.xml
 
+ScrollingMessageFrame.lua
 ScrollingMessageFrame.xml
+DropDownToggleButton.lua
 DropDownToggleButton.xml
+AnimationTemplates.lua
 AnimationTemplates.xml
 Classic\ScrollDefine.lua
 Classic\ScrollDefine.xml
+SecureScrollTemplates.lua
 SecureScrollTemplates.xml
 
 Backdrop.xml
+Shared\LoadSystem\LoadSystemTemplates.lua
+Shared\LoadSystem\LoadSystemTemplates.xml
+LayoutFrame.lua
 LayoutFrame.xml
+SharedTooltipTemplates.lua
 SharedTooltipTemplates.xml
+SecureUIPanelTemplates.lua
 SecureUIPanelTemplates.xml
 Spinner.lua
 Spinner.xml
@@ -130,6 +147,19 @@ Classic\SliderTemplates.xml
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
 ScriptAnimationUtil.lua
+
+Shared\Button\UIPanelButtonTemplates.lua
+Shared\Button\UIPanelButtonTemplates.xml
+
+Shared\Dialog\DialogTemplates.lua
+Shared\Dialog\DialogTemplates.xml
+Classic\Dialog\DialogTemplates.xml
+DialogUtil.lua
+
+Shared\InputBox\InputBoxTemplates.lua
+Shared\InputBox\InputBoxTemplates.xml
+
+SharedBasicControls.lua [AllowLoadEnvironment Global]
 SharedBasicControls.xml
 Classic\UIDropDownMenu.lua
 Classic\UIDropDownMenuTemplates.lua
@@ -153,15 +183,20 @@ ModelSceneMixin.lua
 ModelSceneMixin.xml
 ModelSceneActorMixin.lua
 ModelSceneActorMixin.xml
+ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
+BulletPoint.lua
 BulletPoint.xml
 Classic\GameTooltipTemplate.xml
 MixinUtil.lua
-DebugBarManager.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
 
 PropertyBindingMixin.lua
+PropertyButton.lua
 PropertyButton.xml
+PropertyFontString.lua
 PropertyFontString.xml
+PropertySlider.lua
 PropertySlider.xml
 
 Classic\ModelFrames.lua
@@ -169,11 +204,14 @@ Classic\ModelFrames.xml
 ModelPreviewFrame.lua
 ModelPreviewFrame.xml
 
-DialogUtil.lua
+Shared\Frame\MainMenuFrameTemplates.lua
+Classic\Frame\MainMenuFrameTemplates.xml
 
 Classic\Sound.lua
 
 Classic\SharedUtils.lua
 ToolWindowOwnerMixin.lua
+AlertFrameIntrinsic.lua
+AlertFrameIntrinsic.xml
 
 Shared\VASErrorLookup.lua

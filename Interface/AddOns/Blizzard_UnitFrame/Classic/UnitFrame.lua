@@ -50,6 +50,9 @@ local ManaBarFrequentUpdateUnitTypes = {
 -- Threat Display
 MAX_DISPLAYED_THREAT_PERCENT = 999;
 
+CVarCallbackRegistry:SetCVarCachable("threatShowNumeric");
+CVarCallbackRegistry:SetCVarCachable("unitFramesDisplayIncomingHeals");
+
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
 end
@@ -106,11 +109,9 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
 	if (self.healthbar) then
-		self.healthbar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.healthbar.capNumericDisplay = true;
 	end
 	if (self.manabar) then
-		self.manabar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
@@ -257,35 +258,19 @@ function UnitFrameHealPredictionBars_Update(frame)
 		return;
 	end
 
-	if (not UnitFrame_IsHealPredictionEnabled()) then
-		if (frame.myHealPredictionBar) then
-			frame.myHealPredictionBar:Hide();
-		end
-
-		if (frame.otherHealPredictionBar) then
-			frame.otherHealPredictionBar:Hide();
-		end
-
-		if (frame.healAbsorbBar) then
-			frame.healAbsorbBar:Hide();
-		end
-
-		if (frame.totalAbsorbBar) then
-			frame.totalAbsorbBar:Hide();
-		end
-
-		return;
-	end
-
 	local _, maxHealth = frame.healthbar:GetMinMaxValues();
 	local health = frame.healthbar:GetValue();
 	if ( maxHealth <= 0 ) then
 		return;
 	end
-
-	local myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
-	local allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
+	local myIncomingHeal = 0;
+	local allIncomingHeal = 0;
 	local totalAbsorb = 0;
+
+	if (CVarCallbackRegistry:GetCVarValueBool("unitFramesDisplayIncomingHeals")) then
+		myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
+		allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
+	end
 
 	local myCurrentHealAbsorb = 0;
 	if ( frame.healAbsorbBar ) then
@@ -529,9 +514,9 @@ function UnitFrameManaBar_UpdateType (manaBar)
 
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then
-		SetTextStatusBarTextPrefix(manaBar, prefix);
+		manaBar:SetBarTextPrefix(prefix);
 	end
-	TextStatusBar_UpdateTextString(manaBar);
+	manaBar:UpdateTextString();
 
 	-- Setup newbie tooltip
 	if ( manaBar.unit ~= "pet") then
@@ -551,7 +536,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	end
 
 	statusbar.unit = unit;
-	SetTextStatusBarText(statusbar, statustext);
+	statusbar:SetBarText(statustext);
 
 	statusbar.frequentUpdates = frequentUpdates;
 	if ( frequentUpdates ) then
@@ -577,7 +562,7 @@ end
 
 function UnitFrameHealthBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
-		TextStatusBar_OnEvent(self, event, ...);
+		self:TextStatusBarOnEvent(event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		if ( self.frequentUpdates ) then
@@ -721,7 +706,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 
 				self:SetValue(currValue);
 				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
+				self:UpdateTextString();
 				UnitFrameHealPredictionBars_Update(self:GetParent());
 			end
 		end
@@ -776,11 +761,11 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 			statusbar.currValue = currValue;
 		end
 	end
-	TextStatusBar_UpdateTextString(statusbar);
+	statusbar:UpdateTextString();
 end
 
 function UnitFrameHealthBar_OnValueChanged(self, value)
-	TextStatusBar_OnValueChanged(self, value);
+	self:OnStatusBarValueChanged(value);
 	HealthBar_OnValueChanged(self, value);
 end
 
@@ -798,7 +783,7 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	end
 	statusbar.unit = unit;
 	statusbar.texture = statusbar:GetStatusBarTexture();
-	SetTextStatusBarText(statusbar, statustext);
+	statusbar:SetBarText(statustext);
 
 	statusbar.frequentUpdates = frequentUpdates;
 	if ( frequentUpdates ) then
@@ -821,7 +806,7 @@ end
 
 function UnitFrameManaBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
-		TextStatusBar_OnEvent(self, event, ...);
+		self:TextStatusBarOnEvent(event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		if ( self.frequentUpdates ) then
@@ -862,7 +847,7 @@ function UnitFrameManaBar_OnUpdate(self)
 				end
 				self:SetValue(currValue);
 				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
+				self:UpdateTextString();
 			end
 		end
 	end
@@ -902,7 +887,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 			statusbar.forceUpdate = true;
 		end
 	end
-	TextStatusBar_UpdateTextString(statusbar);
+	statusbar:UpdateTextString();
 end
 
 function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)
@@ -999,7 +984,7 @@ function GetUnitName(unit, showServerName)
 end
 
 function ShowNumericThreat()
-	if ( GetCVar("threatShowNumeric") == "1" ) then
+	if (CVarCallbackRegistry:GetCVarValueBool("threatShowNumeric")) then
 		return true;
 	else
 		return false;

@@ -824,7 +824,6 @@
 									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									SetWatchedFactionIndex(0);
 								end
-								MainMenuBar_UpdateExperienceBars();
 							</OnClick>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -833,64 +832,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ReputationFrame_OnLoad"/>
 			<OnShow function="ReputationFrame_OnShow"/>
 			<OnHide function="ReputationFrame_OnHide"/>
 			<OnEvent function="ReputationFrame_OnEvent"/>
 			<OnMouseWheel function=""/>
-		</Scripts>
-	</Frame>
-	<Frame name="ReputationWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true" inherits="MainMenuBarWatchBarTemplate">
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("UPDATE_FACTION");
-				self:RegisterEvent("PLAYER_LEVEL_UP");
-				self:RegisterEvent("ENABLE_XP_GAIN");
-				self:RegisterEvent("DISABLE_XP_GAIN");
-				self:RegisterEvent("CVAR_UPDATE");
-				self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
-				self:RegisterEvent("PLAYER_MAX_LEVEL_UPDATE");
-			</OnLoad>
-			<OnEvent>
-				local arg1, arg2 = ...;
-				if( event == "UPDATE_FACTION" ) then
-					if ( self:IsShown() ) then
-						ReputationFrame_Update();
-					end
-					MainMenuBar_UpdateExperienceBars();
-				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" or event == "PLAYER_MAX_LEVEL_UPDATE" ) then
-					ReputationWatchBar_UpdateMaxLevel();
-
-					if event == "PLAYER_LEVEL_UP" then
-						MainMenuBar_UpdateExperienceBars(arg1);
-					else
-						MainMenuBar_UpdateExperienceBars();
-					end
-
-					UIParent_ManageFramePositions();
-				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
-					if( arg2 == "1" ) then
-						ShowWatchBarText(ReputationWatchBar, "lock");
-					else
-						HideWatchBarText(ReputationWatchBar, "unlock");
-					end
-				end
-			</OnEvent>
-			<OnShow>
-				if ( GetCVarBool("xpBarText") ) then
-					ShowWatchBarText(ReputationWatchBar, "lock");
-				end
-				UIParent_ManageFramePositions();
-			</OnShow>
-			<OnHide function="UIParent_ManageFramePositions"/>
-			<OnEnter>
-				self.OverlayFrame.Text:Show();
-			</OnEnter>
-			<OnLeave>
-				if(not ReputationWatchBar.textLocked) then
-					self.OverlayFrame.Text:Hide();
-				end
-			</OnLeave>
 		</Scripts>
 	</Frame>
 </Ui>

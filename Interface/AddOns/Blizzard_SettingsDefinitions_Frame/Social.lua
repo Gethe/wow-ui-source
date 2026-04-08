@@ -85,6 +85,9 @@ local function Register()
 			Settings.VarType.Boolean, BLOCK_GUILD_INVITES, defaultValue, GetAutoDeclineGuildInvites, SetAutoDeclineGuildInvites);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
+
+	-- Block Neighborhood Invites
+	SocialOverrides.CreateBlockNeighborhoodInvitesSetting(category);
 	
 	-- Block Calendar Invites
 	Settings.SetupCVarCheckbox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);

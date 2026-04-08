@@ -1,3 +1,6 @@
+
+UIPanelWindows["CharacterFrame"] = { area = "left", pushable = 3, xoffset = -16, yoffset = 12, bottomClampOverride = 140+12, width = 353, height = 424, whileDead = 1 };
+
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame", "TokenFrame" };
 local NUM_CHARACTERFRAME_TABS = 5;
 
@@ -67,11 +70,6 @@ function CharacterFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
 
-	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
-	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
-	SetTextStatusBarTextPrefix(MainMenuExpBar, XP);
-	ExpBar_UpdateTextString();
-
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
@@ -108,16 +106,11 @@ function CharacterFrame_OnShow(self)
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
 	PlayerFrameAlternateManaBar.showNumeric = true;
-	ShowTextStatusBarText(PlayerFrameHealthBar);
-	ShowTextStatusBarText(PlayerFrameManaBar);
-	ShowTextStatusBarText(PetFrameHealthBar);
-	ShowTextStatusBarText(PetFrameManaBar);
-	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
-
-	-- This condition mimics the behavior in Classic.
-	if ( UnitLevel("player") == GetMaxPlayerLevel() ) then
-		ShowWatchBarText(ReputationWatchBar);
-	end
+	PlayerFrameHealthBar:ShowStatusBarText();
+	PlayerFrameManaBar:ShowStatusBarText();
+	PetFrameHealthBar:ShowStatusBarText();
+	PetFrameManaBar:ShowStatusBarText();
+	PlayerFrameAlternateManaBar:ShowStatusBarText();
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 	-- Show Currency tab?
@@ -137,11 +130,11 @@ function CharacterFrame_OnHide(self)
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
 	PlayerFrameAlternateManaBar.showNumeric = nil;
-	HideTextStatusBarText(PlayerFrameHealthBar);
-	HideTextStatusBarText(PlayerFrameManaBar);
-	HideTextStatusBarText(PetFrameHealthBar);
-	HideTextStatusBarText(PetFrameManaBar);
-	HideTextStatusBarText(PlayerFrameAlternateManaBar);
+	PlayerFrameHealthBar:HideStatusBarText();
+	PlayerFrameManaBar:HideStatusBarText();
+	PetFrameHealthBar:HideStatusBarText();
+	PetFrameManaBar:HideStatusBarText();
+	PlayerFrameAlternateManaBar:HideStatusBarText();
 	PaperDollFrame.currentSideBar = nil;
 end
 

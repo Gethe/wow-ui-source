@@ -51,7 +51,7 @@ function GenerateBuildString(buildNumber)
 end
 
 function CharacterSelectLockedButtonMixin:OnEnter()
-	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
+	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeToCurrentExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
 
     local tooltipFooter = nil;
 
@@ -92,7 +92,7 @@ end
 function CharacterSelectLockedButtonMixin:OnClick()
     local isAccountLocked = self.characterSelectButton.isAccountLocked;
 
-	if not isAccountLocked and IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() then
+	if not isAccountLocked and IsExpansionTrialCharacter(self.guid) and CanUpgradeToCurrentExpansion() then
 		ToggleStoreUI();
 		StoreFrame_SetGamesCategory();
 		return;
@@ -274,9 +274,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 				return;
 			end
 
-            if (IsKioskGlueEnabled()) then
-                GlueParent_SetScreen("kioskmodesplash");
-            elseif not IsWowTokenLimitedModeEnabled() then
+			if KioskFrame and KioskFrame:HandleCharacterListUpdate() then
+				return;
+			end
+
+            if not IsWowTokenLimitedModeEnabled() then
                 GlueParent_SetScreen("charcreate");
             end
             return;
@@ -559,7 +561,7 @@ function CharacterSelect_OnShow(self)
 	AccountUpgradePanel_Update();
 
     if( IsKioskGlueEnabled() ) then
-        CharacterSelectUI:Hide();
+		KioskFrame:HandleCharacterSelectShown();
     end
 
     -- character templates
@@ -677,9 +679,7 @@ function CharacterSelect_UpdateState(fromLoginState)
     if (fromLoginState == REALM_CHANGE_IS_AUTO) then
         if ( connected ) then
             if (fromLoginState) then
-                if (IsKioskGlueEnabled()) then
-                    GlueParent_SetScreen("kioskmodesplash");
-                else
+				if not (KioskFrame and KioskFrame:HandleAutoLoginToRealm()) then
                     CharacterSelectUI:Hide();
                     CharacterSelectUI:Show();
                 end
@@ -841,7 +841,7 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
         padlock.tooltipText = CHARACTER_SELECT_ACCOUNT_LOCKED;
         padlock.tooltipTextColor = RED_FONT_COLOR;
 	elseif isExpansionTrialCharacter then
-		if IsExpansionTrial() or CanUpgradeExpansion() then
+		if IsExpansionTrial() or CanUpgradeToCurrentExpansion() then
 			-- Player has to upgrade to unlock this character
 			padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
 			padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
@@ -1096,7 +1096,7 @@ function UpdateCharacterList(skipSelect)
 						else
 							locationText:SetText(nil);
 						end
-					elseif CanUpgradeExpansion() then
+					elseif CanUpgradeToCurrentExpansion() then
 						locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 					else
 						locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
@@ -1528,6 +1528,7 @@ function CharacterSelect_Exit()
     CharacterSelect_SaveCharacterOrder();
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
     C_Login.DisconnectFromServer();
+	ClearOutage();
 end
 
 function CharacterSelect_AccountOptions()
@@ -2024,13 +2025,12 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI()
+	if not CharacterSelect_IsStoreAvailable() then
+		return;
+	end
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
-		if ( not wasShown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			securecall("CloseAllWindows");
-		end
 		local contextKey = nil;	-- contextKey is for Mainline only
 		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
 	else
@@ -2152,7 +2152,7 @@ function CharacterSelect_UpdateButtonState()
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
-    local inCompetitiveMode = IsCompetitiveModeEnabled();
+    local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
 	local canCreateCharacter = CanCreateCharacter();
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
@@ -2290,22 +2290,9 @@ function KioskMode_IsWaitingOnTrial()
 end
 
 function KioskMode_CheckEnterWorld()
-    if (not Kiosk.IsEnabled()) then
-        return;
-    end
-
-	if (not KioskMode_IsWaitingOnTrial()) then
-        if (KioskModeSplash:GetAutoEnterWorld()) then
-            EnterWorld();
-        else
-			if (not IsGMClient()) then
-            KioskDeleteAllCharacters();
-			end
-            if (IsKioskGlueEnabled()) then
-                GlueParent_SetScreen("kioskmodesplash");
-            end
-        end
-    end
+   if KioskFrame then
+		KioskFrame:HandleCheckEnterWorld();
+	end
 end
 
 local function GetCharacterServiceDisplayOrder()
@@ -2494,6 +2481,8 @@ local function GetVASDistributions()
 					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
 				elseif vasType == Enum.ValueAddedServiceType.PaidNameChange then
 					usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
+					usable = DoesClientThinkTheCharacterIsEligibleForFCM(charID);
 				end
 				if usable then
 					break;
@@ -2727,6 +2716,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginFlow(PaidRaceChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange and PaidNameChangeFlowClassic then
 		BeginFlow(PaidNameChangeFlowClassic, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
+		BeginFlow(FreeCharacterTransferFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

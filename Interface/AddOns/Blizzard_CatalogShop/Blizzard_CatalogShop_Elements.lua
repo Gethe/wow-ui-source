@@ -259,17 +259,6 @@ end
 
 
 ----------------------------------------------------------------------------------
--- InvisibleMouseOverFrameMixin
-----------------------------------------------------------------------------------
-InvisibleMouseOverFrameMixin = {};
-function InvisibleMouseOverFrameMixin:OnEnter()
-end
-
-function InvisibleMouseOverFrameMixin:OnLeave()
-end
-
-
-----------------------------------------------------------------------------------
 -- CatalogShopButtonMixin
 ----------------------------------------------------------------------------------
 CatalogShopButtonMixin = {};

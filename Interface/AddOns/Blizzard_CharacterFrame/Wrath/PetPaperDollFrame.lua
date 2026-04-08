@@ -35,7 +35,7 @@ function PetPaperDollFrame_OnLoad (self)
 	PetDamageFrameLabel:SetText(format(STAT_FORMAT, DAMAGE));
 	PetAttackPowerFrameLabel:SetText(format(STAT_FORMAT, ATTACK_POWER));
 	PetArmorFrameLabel:SetText(format(STAT_FORMAT, ARMOR));
-	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
+	PetPaperDollFrameExpBar:SetBarTextPrefix(XP);
 	PetSpellDamageFrameLabel:SetText(format(STAT_FORMAT, SPELL_BONUS));
 end
 
@@ -223,10 +223,10 @@ function CompanionButton_OnModifiedClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = GetSpellInfo(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local spellLink = GetSpellLink(id)
-			ChatEdit_InsertLink(spellLink);
+			ChatFrameUtil.InsertLink(spellLink);
 		end
 	elseif ( IsModifiedClick("PICKUPACTION") ) then
 		CompanionButton_OnDrag(self);

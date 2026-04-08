@@ -140,7 +140,7 @@ function QuestPOIDisplayLayerMixin:SetNumber(value)
 	local poiButton = self:GetParent();
 	local color = poiButton.selected and QUEST_POI_COLOR_BLACK or QUEST_POI_COLOR_YELLOW;
 	QuestPOI_SetTexture(self.Icon, 32, 32, "Interface/WorldMap/UI-QuestPoi-NumberIcons", QuestPOI_CalculateNumericTexCoords(value, color));
-	self:SetOffset(0, 0);
+	self:SetOffset(poiButton.offsetX, 0);
 end
 
 function QuestPOIDisplayLayerMixin:SetTextureSize(width, height)
@@ -422,7 +422,7 @@ function QuestPOIButton_OnClick(self)
 	local mapID = GetQuestUiMapID(questID);
 	local questLogIndex = GetQuestLogIndexByID(questID);
 
-	if ( ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
+	if ( ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) ) then
 		return;
 	end
 

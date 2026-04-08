@@ -10,25 +10,24 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to change the equivalent data in PlayerFrame.lua, function PlayerFrame_ToPlayerArt
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent">
 		<Size x="232" y="100"/>
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<HitRectInsets>
-			<AbsInset left="6" right="0" top="4" bottom="9"/>
+			<AbsInset left="21" right="19" top="12" bottom="15"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
 					<Size x="242" y="93"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="13" y="0"/>
+						<Anchor point="TOPLEFT" x="-3" y="-4"/>
 					</Anchors>
 					<TexCoords left="0.9453125" right="0" top="0" bottom="0.181640625"/>
 				</Texture>
 				<Texture name="PlayerFrameBackground">
 					<Size x="119" y="41"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="106" y="-22"/>
+						<Anchor point="TOPLEFT" x="89.5" y="-26"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
@@ -37,7 +36,7 @@
 				<Texture name="PlayerPortrait">
 					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="42" y="-12"/>
+						<Anchor point="TOPLEFT" x="24" y="-16"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -53,59 +52,64 @@
 							</Layer>
 							<Layer level="BORDER">
 								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
-									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
+									<Size x="193" y="77"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<TexCoords left="0.85546875" right="0.1015625" top="0.0625" bottom="0.6640625"/>
 								</Texture>
 								<Texture name="PlayerFrameVehicleTexture" file="Interface\Vehicles\UI-Vehicle-Frame" hidden="true">
 									<Size x="240" y="120"/>
 									<Anchors>
-										<Anchor point="CENTER" x="20" y="0"/>
+										<Anchor point="CENTER" x="4" y="-4"/>
 									</Anchors>
 								</Texture>
 								<FontString name="PlayerName" inherits="GameFontNormalSmall">
 									<Size x="100" y="12"/>
 									<Anchors>
-										<Anchor point="CENTER" x="50" y="19"/>
+										<!--WARNING:: This is re-anchored in code.-->
+										<Anchor point="CENTER" x="34" y="15"/>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
-									<!--WARNING:: This is re-anchored in code.-->
+								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="RIGHT" justifyV="MIDDLE">
 									<Anchors>
-										<Anchor point="CENTER" x="-63" y="-16"/>
+										<!--WARNING:: This is re-anchored in code.-->
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="35.25" y="30"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="38" y="-8"/>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="22" y="-12"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER" x="50" y="3"/>
+										<Anchor point="CENTER" x="34" y="-1"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="LEFT" x="110" y="3"/>
+										<Anchor point="LEFT" x="94" y="-1"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="RIGHT" x="-8" y="3"/>
+										<Anchor point="RIGHT" x="-24" y="-1"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER" x="50" y="-8"/>
+										<Anchor point="CENTER" x="34" y="-12"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="LEFT" x="110" y="-8"/>
+										<Anchor point="LEFT" x="94" y="-12"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="RIGHT" x="-8" y="-8"/>
+										<Anchor point="RIGHT" x="-24" y="-12"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -113,73 +117,52 @@
 								<Texture name="PlayerStatusTexture" file="Interface\CharacterFrame\UI-Player-Status" alphaMode="ADD" hidden="true">
 									<Size x="190" y="66"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="35" y="-8"/>
+										<Anchor point="TOPLEFT" x="19" y="-12"/>
 									</Anchors>
 									<TexCoords left="0" right="0.74609375" top="0" bottom="0.53125"/>
 								</Texture>
 								<Texture name="PlayerAttackBackground" file="Interface\TargetingFrame\UI-TargetingFrame-AttackBackground" hidden="true">
 									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="37" y="-50"/>
+										<Anchor point="TOPLEFT" x="19" y="-54"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerPVPIcon" hidden="true">
 									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="18" y="-20"/>
-									</Anchors>
-								</Texture>
-								<Texture name="PlayerPrestigePortrait" hidden="true">
-									<Size x="50" y="52"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="15" y="-13"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture name="PlayerPrestigeBadge" hidden="true">
-									<Size x="30" y="30"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeTo="PlayerPrestigePortrait" relativePoint="CENTER"/>
+										<Anchor point="TOPLEFT" x="2" y="-24"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="73" y="-42"/>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="57" y="-46"/>
 									</Anchors>
 								</FontString>
 								<Texture name="PlayerLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
 									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="44" y="-10"/>
+										<Anchor point="TOPLEFT" x="28" y="-14"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
 									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="80" y="-10"/>
+										<Anchor point="TOPLEFT" x="64" y="-14"/>
 									</Anchors>
-								</Texture>
-								<Texture name="PlayerGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size x="19" y="19"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="40" y="-12"/>
-									</Anchors>
-									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
 								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
 									<Size x="31" y="33"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="37" y="-49"/>
+										<Anchor point="TOPLEFT" x="19.5" y="-52"/>
 									</Anchors>
 									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
 								</Texture>
 								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
 									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="1"/>
+										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="0"/>
 									</Anchors>
 									<TexCoords left="0.5" right="1.0" top="0" bottom="0.484375"/>
 								</Texture>
@@ -224,7 +207,7 @@
 								<Texture name="PlayerAttackGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
 									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="1"/>
+										<Anchor point="TOPLEFT" x="1" y="0"/>
 									</Anchors>
 									<Color r="1.0" g="0" b="0"/>
 									<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
@@ -240,7 +223,7 @@
 					<Frame name="PlayerPlayTime" enableMouse="true" hidden="true">
 						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="-17"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-21"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -258,7 +241,7 @@
 					<Button parentKey="MultiGroupFrame" hidden="true">
 						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-1"/>
+							<Anchor point="TOPLEFT" x="36" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="0">
@@ -297,7 +280,7 @@
 			<StatusBar name="PlayerFrameHealthBar" parentKey="HealthBar" inherits="TextStatusBar">
 				<Size x="119" y="12"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="106" y="-41"/>
+					<Anchor point="TOPLEFT" x="90" y="-45"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="MyHealPredictionBar" inherits="PlayerFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
@@ -307,7 +290,8 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
+						self:SetBarTextPrefix(HEALTH);
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
@@ -322,11 +306,12 @@
 			<StatusBar name="PlayerFrameManaBar" parentKey="ManaBar" inherits="TextStatusBar">
 				<Size x="119" y="12"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="106" y="-52"/>
+					<Anchor point="TOPLEFT" x="90" y="-56"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
+						self:SetBarTextPrefix(MANA);
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
@@ -338,7 +323,7 @@
 			<Frame name="PlayerFrameGroupIndicator" hidden="true">
 				<Size x="10" y="16"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="97" y="-20"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="81" y="-24"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -382,7 +367,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PlayerFrame_OnLoad"/>
+			<OnLoad function="PlayerFrame_OnLoad" inherit="append"/>
 			<OnEvent function="PlayerFrame_OnEvent"/>
 			<OnUpdate function="PlayerFrame_OnUpdate"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
@@ -392,4 +377,13 @@
 			<OnDragStop function="PlayerFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate" mixin="PlayerFrameBottomManagedFramesContainerMixin">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="160" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="10" y="36"/>
+		</Anchors>
+	</Frame>
 </Ui>

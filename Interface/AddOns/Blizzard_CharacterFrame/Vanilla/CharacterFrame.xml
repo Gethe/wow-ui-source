@@ -139,15 +139,9 @@
 	</Frame>
 
     <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
+		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
@@ -155,37 +149,23 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="CharacterFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="CharacterNameFrame">
-				<Size>
-					<AbsDimension x="109" y="12"/>
-				</Size>
+				<Size x="109" y="12"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="6" y="232"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="7" y="-19"/>
 				</Anchors>
 				<Layers>
 					<Layer>
 						<FontString name="CharacterNameText" inherits="GameFontNormal" text="NAME">
-							<Size>
-								<AbsDimension x="300" y="12"/>
-							</Size>
+							<Size x="300" y="12"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -201,11 +181,7 @@
 			</Frame>
 			<Button name="CharacterFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-44" y="-25"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT" x="-44" y="-25"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -215,11 +191,7 @@
 			</Button>
             <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER" motionScriptsWhileDisabled="false">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="60" y="62"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="60" y="62"/>
 				</Anchors>
                 <Scripts>
 					<OnEnter>
@@ -231,11 +203,7 @@
             </Button>
 			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET" motionScriptsWhileDisabled="false">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -247,11 +215,7 @@
 			</Button>
 			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION" motionScriptsWhileDisabled="false">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -263,11 +227,7 @@
 			</Button>
 			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS" motionScriptsWhileDisabled="false">
                 <Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="0"/>
-                        </Offset>
-                    </Anchor>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT" x="-16" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
@@ -279,11 +239,7 @@
             </Button>
 			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="HONOR">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>

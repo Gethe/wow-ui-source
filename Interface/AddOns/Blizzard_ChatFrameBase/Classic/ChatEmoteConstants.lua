@@ -307,30 +307,29 @@ EMOTE522_TOKEN = "BOOP"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
 MAXEMOTEINDEX = 522;
 
-local function TextEmoteSort(token1, token2)
-	local i = 1;
-	local string1, string2;
-	local token = _G["EMOTE"..i.."_TOKEN"];
-	while ( i <= MAXEMOTEINDEX ) do
-		if ( token == token1 ) then
-			string1 = _G["EMOTE"..i.."_CMD1"];
-			if ( string2 ) then
-				break;
-			end
-		end
-		if ( token == token2 ) then
-			string2 = _G["EMOTE"..i.."_CMD1"];
-			if ( string1 ) then
-				break;
-			end
-		end
-		i = i + 1;
-		token = _G["EMOTE"..i.."_TOKEN"];
-	end
-	return string1 < string2;
-end
-
 if not C_Glue.IsOnGlueScreen() then
+	local emoteTokenSortMap = {};
+
+	local function TextEmoteSort(sortKey1, sortKey2)
+		local sortValue1 = emoteTokenSortMap[sortKey1];
+		local sortValue2 = emoteTokenSortMap[sortKey2];
+
+		if sortValue1 and sortValue2 then
+			return sortValue1 < sortValue2;
+		else
+			return sortValue1 ~= nil;
+		end
+	end
+
+	for i = 1, MAXEMOTEINDEX do
+		local sortKey = _G["EMOTE" .. i .. "_TOKEN"];
+		local sortValue = _G["EMOTE" .. i .. "_CMD1"];
+
+		if sortKey and sortValue then
+			emoteTokenSortMap[sortKey] = sortValue;
+		end
+	end
+
 	table.sort(EmoteList, TextEmoteSort);
 	table.sort(TextEmoteSpeechList, TextEmoteSort);
 end

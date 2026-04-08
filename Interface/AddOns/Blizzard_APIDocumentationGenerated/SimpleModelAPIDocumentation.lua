@@ -532,6 +532,18 @@ local SimpleModelAPI =
 			},
 		},
 		{
+			Name = "SetGradientMask",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "grad0", Type = "number", Nilable = false },
+				{ Name = "grad1", Type = "number", Nilable = false },
+				{ Name = "grad2", Type = "number", Nilable = false },
+				{ Name = "grad3", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetLight",
 			Type = "Function",
 

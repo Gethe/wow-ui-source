@@ -152,6 +152,14 @@ function SettingsListElementInitializer:Indent()
 	self.data.indent = indentSize;
 end
 
+function SettingsListElementInitializer:SetKioskProtected()
+	self.data.kioskProtected = true;
+end
+
+function SettingsListElementInitializer:IsKioskProtected()
+	return self.data.kioskProtected;
+end
+
 function SettingsListElementInitializer:IsParentInitializerInLayout()
 	local parentInitializer = self:GetParentInitializer();
 	if not parentInitializer then
@@ -292,6 +300,29 @@ function SettingsListElementMixin:OnParentSettingValueChanged(setting, value)
 	self:EvaluateState();
 end
 
+function SettingsListElementMixin:GetSettings()
+	return nil;
+end
+
+function SettingsListElementMixin:IsEnabled()
+	if Kiosk.IsEnabled() then
+		local initializer = self:GetElementData();
+		if initializer:IsKioskProtected() then
+			return false;
+		end
+
+		local settings = self:GetSettings();
+		if settings then
+			for index, setting in pairs(settings) do
+				if setting:HasCommitFlag(Settings.CommitFlag.KioskProtected) then
+					return false;
+				end
+			end
+		end
+	end
+	return true;
+end
+
 function SettingsListElementMixin:EvaluateState()
 	local initializer = self:GetElementData();
 	self:SetShown(initializer:ShouldShow());
@@ -319,6 +350,18 @@ function SettingsControlMixin:Release()
 	SettingsListElementMixin.Release(self);
 end
 
+-- Some custom control types have their own settings definitions that may need to be
+-- exposed for determining if they have the KioskProtected flag set, so this may be
+-- overwritten. However for most control types, this is will only refer a singular
+-- setting in the data table.
+function SettingsControlMixin:GetSettings()
+	local setting = self:GetSetting();
+	if setting then
+		return {setting};
+	end
+	return nil;
+end
+
 function SettingsControlMixin:GetSetting()
 	return self.data.setting;
 end
@@ -332,6 +375,11 @@ function SettingsControlMixin:OnSettingValueChanged(setting, value)
 end
 
 function SettingsControlMixin:IsEnabled()
+	local enabled = SettingsListElementMixin.IsEnabled(self);
+	if not enabled then
+		return false;
+	end
+
 	local initializer = self:GetElementData();
 	local prereqs = initializer:GetModifyPredicates();
 	if prereqs then
@@ -439,7 +487,7 @@ end
 
 function SettingsCheckboxControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
 
 	local initializer = self:GetElementData();
 	local options = initializer:GetOptions();
@@ -514,7 +562,7 @@ end
 
 function SettingsSliderControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
 	self.SliderWithSteppers:SetEnabled(enabled);
 	self:DisplayEnabled(enabled);
 end
@@ -588,7 +636,7 @@ end
 
 function SettingsDropdownControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
 	self.Control:SetEnabled(enabled);
 
 	self:DisplayEnabled(enabled);
@@ -664,7 +712,7 @@ end
 
 function SettingsButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
 
 	self:SetButtonState(enabled);
 	self:DisplayEnabled(enabled);
@@ -758,7 +806,7 @@ end
 
 function SettingsCheckboxWithButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
 	
 	local clickEnabled = enabled;
 	if self.data.clickRequiresSet and not self:GetSetting():GetValue() then
@@ -839,6 +887,13 @@ function SettingsCheckboxSliderControlMixin:Init(initializer)
 	self:EvaluateState();
 end
 
+function SettingsCheckboxSliderControlMixin:GetSettings()
+	local initializer = self:GetElementData();
+	local cbSetting = initializer.data.cbSetting;
+	local sliderSetting = initializer.data.sliderSetting;
+	return {cbSetting, sliderSetting};
+end
+
 function SettingsCheckboxSliderControlMixin:OnCheckboxValueChanged(value)
 	local initializer = self:GetElementData();
 	local cbSetting = initializer.data.cbSetting;
@@ -860,7 +915,8 @@ end
 
 function SettingsCheckboxSliderControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = SettingsControlMixin.IsEnabled(self);
+	local enabled = self:IsEnabled();
+
 	self.Checkbox:SetEnabled(enabled);
 	self.SliderWithSteppers:SetEnabled(enabled and self.Checkbox:GetChecked());
 	self:DisplayEnabled(enabled);
@@ -934,6 +990,13 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 
 	self.Control:SetEnabled(cbSetting:GetValue());
+end
+
+function SettingsCheckboxDropdownControlMixin:GetSettings()
+	local initializer = self:GetElementData();
+	local cbSetting = initializer.data.cbSetting;
+	local dropdownSetting = initializer.data.dropdownSetting;
+	return {cbSetting, dropdownSetting};
 end
 
 function SettingsCheckboxDropdownControlMixin:OnCheckboxValueChanged(value)

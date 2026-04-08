@@ -76,7 +76,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			text = TRANSMOG_SETS_TAB_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB,
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSetsTab,
 			targetPoint = HelpTip.Point.BottomEdgeCenter,
 		};
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);

@@ -64,11 +64,11 @@ function KeybindListener:IsListening()
 	return self.pending ~= nil;
 end
 
-local function ClearBindingsForKeys(...)
+local function ClearBindingsForKeys(bindingContext, ...)
 	for i = 1, select("#", ...) do
 		local key = select(i, ...);
 		if key then
-			SetBinding(key, nil);
+			SetBinding(key, nil, bindingContext);
 		end
 	end
 end
@@ -98,10 +98,12 @@ function KeybindListener:ProcessInput(input)
 
 	self:StopListening();
 
+	local bindingContext = C_KeyBindings.GetBindingContextForAction(action);
+
 	-- Unbind the current action
 	local slotIndex = pending.slotIndex;
-	local key1, key2 = GetBindingKey(action);
-	ClearBindingsForKeys(key1, key2);
+	local key1, key2 = GetBindingKey(action, nil, bindingContext);
+	ClearBindingsForKeys(bindingContext, key1, key2);
 
 	local newKey = CreateKeyChordStringUsingMetaKeyState(key);
 	local unbindUnconflicted, unbindSlotIndex, unbindAction = self:UnbindKey(newKey, action);
@@ -119,10 +121,12 @@ function KeybindListener:ProcessInput(input)
 end
 
 function KeybindListener:UnbindKey(newKey, action)
+	local bindingContext = C_KeyBindings.GetBindingContextForAction(action);
+
 	local conflicted, conflictedSlotIndex;
-	local oldAction = GetBindingAction(newKey);
+	local oldAction = GetBindingAction(newKey, nil, bindingContext);
 	if oldAction ~= "" and oldAction ~= action then
-		local key1, key2 = GetBindingKey(oldAction);
+		local key1, key2 = GetBindingKey(oldAction, nil, bindingContext);
 		if key1 == newKey and key2 then
 			conflicted = true;
 			conflictedSlotIndex = 1;
@@ -131,7 +135,7 @@ function KeybindListener:UnbindKey(newKey, action)
 			conflictedSlotIndex = 2;
 		end
 	end
-	SetBinding(newKey, nil);
+	SetBinding(newKey, nil, bindingContext);
 
 	return not conflicted, conflictedSlotIndex, oldAction;
 end
@@ -146,21 +150,23 @@ function KeybindListener:ClearActionPrimaryBinding()
 	end
 
 	local action = self.pending.action;
-	local key1, key2 = GetBindingKey(action);
+	local bindingContext = C_KeyBindings.GetBindingContextForAction(action);
+	local key1, key2 = GetBindingKey(action, nil, bindingContext);
 	if key1 then
-		SetBinding(key1, nil);
+		SetBinding(key1, nil, bindingContext);
 	end
 
 	if key2 then
-		SetBinding(key2, action);
+		SetBinding(key2, action, bindingContext);
 	end
 end
 
 function KeybindListener:SetBinding(newKey, action, oldKey)
+	local bindingContext = C_KeyBindings.GetBindingContextForAction(action);
 	local failed = nil;
-	if not SetBinding(newKey, action) then
+	if not SetBinding(newKey, action, bindingContext) then
 		if oldKey then
-			SetBinding(oldKey, action);
+			SetBinding(oldKey, action, bindingContext);
 		end
 		failed = true;
 	end
@@ -425,7 +431,7 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 			elseif buttonName == "RightButton" then
 				local unbindKey = select(index, GetBindingKey(action));
 				if unbindKey then
-					SetBinding(unbindKey, nil);
+					SetBinding(unbindKey, nil, C_KeyBindings.GetBindingContextForAction(action));
 					SettingsTooltip:Hide();
 					SettingsPanel:ClearOutputText();
 				end

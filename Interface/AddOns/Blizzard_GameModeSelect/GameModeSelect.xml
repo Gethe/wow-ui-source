@@ -11,7 +11,7 @@
 		<Size x="244" y="122"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectionArrow" atlas="glues-gamemode-selectarrow" useAtlasSize="true" hidden="true" >
+				<Texture parentKey="SelectionArrow" atlas="glues-gamemode-selectarrow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="TOP" x="0" y="6"/>
 					</Anchors>

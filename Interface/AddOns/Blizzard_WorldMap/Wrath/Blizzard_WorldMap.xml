@@ -26,18 +26,14 @@
 		</Anchors>
 	</Frame>
 	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" ignoreParentScale="true" frameBuffer="true">
-		<Size>
-			<AbsDimension x="1024" y="768" />
-		</Size>
+		<Size x="1024" y="768" />
 		<Anchors>
 			<Anchor point="CENTER" relativePoint="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0" />
-				</Offset>
+				<Offset x="0" y="0" />
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="BlackoutFrame" frameStrata="LOW" enableMouse="true">
+			<Frame parentKey="BlackoutFrame" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
@@ -49,8 +45,13 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
+				</Scripts>
 			</Frame>
-			<Frame parentKey="MiniBorderFrame" frameStrata="LOW" setAllPoints="true" hidden="true">
+			<Frame parentKey="MiniBorderFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="MiniBorderLeft" file="Interface\WorldMap\UI-WorldMapSmall-Left.tga">
@@ -88,6 +89,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<Button name="WorldMapTitleButton" parent="WorldMapFrame">
 				<Size>
@@ -107,7 +113,7 @@
 					<OnDragStop function="WorldMapTitleButton_OnDragStop" />
 				</Scripts>
 			</Button>
-			<Frame parentKey="BorderFrame" frameStrata="LOW" setAllPoints="true">
+			<Frame parentKey="BorderFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\WorldMap\UI-WorldMap-Top1">
@@ -265,6 +271,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<DropdownButton name="WorldMapContinentDropdown" parentKey="ContinentDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 				<Anchors>
@@ -500,7 +511,6 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-		
-	</Frames>
+		</Frames>
 	</Frame>
 </Ui>

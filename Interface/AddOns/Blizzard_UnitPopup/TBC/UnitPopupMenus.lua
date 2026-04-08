@@ -17,8 +17,6 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupResetInstancesButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupPartyInstanceLeaveButtonMixin,
 		UnitPopupPartyLeaveButtonMixin,
 		UnitPopupCancelButtonMixin,
@@ -36,8 +34,6 @@ function UnitPopupMenuParty:GetEntries()
 		UnitPopupMenuFriendlyPlayerInteract, --This is a submenu
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,
 		UnitPopupPvpReportGroupMemberButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
@@ -52,8 +48,6 @@ function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupInspectButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportInWorldButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupCancelButtonMixin,
@@ -71,9 +65,7 @@ function UnitPopupMenuRaidPlayer:GetEntries()
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupMenuFriendlyPlayerInteract, --This is a subMenu
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupVoiceChatButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupVoiceChatButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,
 		UnitPopupPvpReportGroupMemberButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,

@@ -57,7 +57,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CustomizationDropdownElementDetailsTemplate" mixin="CustomizationDropdownElementDetailsMixin" virtual="true">
+	<Frame name="CustomizationElementDetailsTemplate" mixin="CustomizationElementDetailsMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="selectable" value="true" type="boolean"/>
 		</KeyValues>
@@ -138,12 +138,12 @@
 		</Layers>
 	</Frame>
 
-	<Button name="CustomizationDropdownElementTemplate" mixin="CustomizationDropdownElementMixin" inherits="DarkMenuElementTemplate" virtual="true">
+	<Button name="CustomizationElementTemplate" mixin="CustomizationElementMixin" inherits="DarkMenuElementTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="ignoreAllChildren" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="CustomizationDropdownElementDetailsTemplate">
+			<Frame parentKey="SelectionDetails" inherits="CustomizationElementDetailsTemplate">
 				<KeyValues>
 					<KeyValue key="includeInLayout" value="true" type="boolean"/>
 				</KeyValues>
@@ -156,6 +156,9 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
+	</Button>
+
+	<Button name="CustomizationDropdownElementTemplate" mixin="CustomizationDropdownElementMixin" inherits="CustomizationElementTemplate" virtual="true">
 	</Button>
 
 	<Frame name="CustomizationDropdownWithSteppersAndLabelTemplate" mixin="CustomizationDropdownWithSteppersAndLabelMixin" inherits="DropdownWithSteppersAndLabelTemplate, CustomizationFrameWithTooltipTemplate" virtual="true">
@@ -173,7 +176,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="SelectionDetails" inherits="CustomizationDropdownElementDetailsTemplate, ResizeLayoutFrame">
+					<Frame parentKey="SelectionDetails" inherits="CustomizationElementDetailsTemplate, ResizeLayoutFrame">
 						<KeyValues>
 							<KeyValue key="selectable" value="false" type="boolean"/>
 						</KeyValues>

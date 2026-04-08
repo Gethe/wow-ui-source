@@ -54,7 +54,7 @@ local function UpdateButtonStatesForCollections(enabledState)
 
 	if not enabledState then
 		-- Use saved state when going back, do not assume player wants list expanded.
-		local isExpanded = GetCVarBool("expandWarbandCharacterList");
+		local isExpanded = CharacterSelectUtil.ShouldExpandCharacterList();
 		CharacterSelectUI:ExpandCharacterList(isExpanded);
 	else
 		CharacterSelectUI:ExpandCharacterList(false);
@@ -66,19 +66,12 @@ local function ToggleCollections()
 	local collections = CharacterSelectUI.CollectionsFrame;
 	local enabledState = not collections:IsShown();
 
-	-- Clear helptip if not yet closed.
-	if enabledState and not GetCVarBool("seenCharacterSelectNavBarCampsHelpTip") then
-		SetCVar("seenCharacterSelectNavBarCampsHelpTip", 1);
-		HelpTip:Hide(CharacterSelectUI.VisibilityFramesContainer.NavBar.CampsButton, CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP);
-	end
-
 	collections:SetShown(enabledState);
 	UpdateButtonStatesForCollections(enabledState);
 end
 
 local CharacterSelectNavBarEvents = {
 	"GLOBAL_MOUSE_DOWN",
-	"ACCOUNT_CVARS_LOADED",
 	"EVENT_REALM_QUEUES_UPDATED",
 };
 
@@ -133,8 +126,6 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 			not self.GameModeButton.SelectionDrawer:IsMouseOver() then
 			self:ToggleGameModeDrawer();
 		end
-	elseif event == "ACCOUNT_CVARS_LOADED" then
-		self:EvaluateHelptips();
 	elseif event == "STORE_FRONT_STATE_UPDATED" then
 		if self.PlunderstoreButton then
 			self.PlunderstoreButton:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
@@ -393,16 +384,4 @@ function CharacterSelectNavBarMixin:SetCampsButtonEnabled(enabled)
 
 	self:UpdateButtonDividerState(self.RealmsButton);
 	self:UpdateButtonDividerState(self.CampsButton);
-end
-
-function CharacterSelectNavBarMixin:EvaluateHelptips()
-	local campsHelpTipInfo = {
-		text = CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.BottomEdgeCenter,
-		cvar = "seenCharacterSelectNavBarCampsHelpTip",
-		cvarValue = "1",
-		checkCVars = true
-	};
-	HelpTip:Show(self.CampsButton, campsHelpTipInfo);
 end

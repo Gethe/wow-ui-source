@@ -1,3 +1,34 @@
+function UIParent_OnShow(self)
+	if ( self.firstTimeLoaded ~= 1 ) then
+		CloseAllWindows();
+		self.firstTimeLoaded = nil;
+	end
+
+	if ( LowHealthFrame ) then
+		LowHealthFrame:EvaluateVisibleState();
+	end
+
+	if ( UIParentBottomManagedFrameContainer ) then
+		UIParentBottomManagedFrameContainer:UpdateManagedFrames();
+	end
+	if ( UIParentRightManagedFrameContainer ) then
+		UIParentRightManagedFrameContainer:UpdateManagedFrames();
+	end
+end
+
+function UIParent_OnHide(self)
+	if ( LowHealthFrame ) then
+		LowHealthFrame:EvaluateVisibleState();
+	end
+
+	if ( UIParentBottomManagedFrameContainer ) then
+		UIParentBottomManagedFrameContainer:ClearManagedFrames();
+	end
+	if ( UIParentRightManagedFrameContainer ) then
+		UIParentRightManagedFrameContainer:ClearManagedFrames();
+	end
+end
+
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing() 
 	return false;
 end
@@ -49,4 +80,9 @@ function SetStoreUIShown(shown)
 		end
 		StoreFrame_SetShown(shown);
 	end
+end
+
+function AllowChatFramesToShow(chatFrame)
+	-- this is InGame - and we always show while InGame.  chatFrame is not referenced, only Glues
+	return true;
 end

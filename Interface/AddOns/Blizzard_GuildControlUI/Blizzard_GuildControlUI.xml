@@ -119,7 +119,7 @@
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" parentKey="text">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="text">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="1"/>
 					</Anchors>
@@ -455,7 +455,7 @@
 							<Color r="0.95" g="0.95" b="1" a="0.09"/>
 						</Texture>
 						<Texture name="$parentRosterBg" >
-							<Size x="290" y="60"/>
+							<Size x="290" y="65"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="$parentOfficerBg" relativePoint="BOTTOM" x="0" y="-6"/>
 							</Anchors>
@@ -500,7 +500,7 @@
 						</Layers>
 					</DropdownButton>
 
-					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckboxTemplate" id="21">
+					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckboxTemplate" id="22">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="-3"/>
 						</Anchors>
@@ -513,7 +513,7 @@
 					</CheckButton>
 					<CheckButton name="$parentCheckbox7" inherits="GuildPermissionCheckboxTemplate" id="7">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox5" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox5" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="$parentCheckbox6" inherits="GuildPermissionCheckboxTemplate" id="6">
@@ -523,12 +523,17 @@
 					</CheckButton>
 					<CheckButton name="$parentCheckbox8" inherits="GuildPermissionCheckboxTemplate" id="8">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox6" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox6" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="$parentCheckbox2" inherits="GuildPermissionCheckboxTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox7" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox7" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						</Anchors>
+					</CheckButton>
+                    <CheckButton name="$parentCheckbox21" inherits="GuildPermissionCheckboxTemplate" id="21">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentCheckbox2" relativePoint="RIGHT" x="128" y="0"/>
 						</Anchors>
 					</CheckButton>
 

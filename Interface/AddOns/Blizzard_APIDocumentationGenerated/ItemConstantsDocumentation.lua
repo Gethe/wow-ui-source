@@ -198,9 +198,9 @@ local ItemConstants =
 		{
 			Name = "ItemClass",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Consumable", Type = "ItemClass", EnumValue = 0 },
@@ -223,6 +223,7 @@ local ItemConstants =
 				{ Name = "Battlepet", Type = "ItemClass", EnumValue = 17 },
 				{ Name = "WoWToken", Type = "ItemClass", EnumValue = 18 },
 				{ Name = "Profession", Type = "ItemClass", EnumValue = 19 },
+				{ Name = "Housing", Type = "ItemClass", EnumValue = 20 },
 			},
 		},
 		{
@@ -287,6 +288,22 @@ local ItemConstants =
 				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
 				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
 				{ Name = "Fiber", Type = "ItemGemColor", EnumValue = 1073741824 },
+			},
+		},
+		{
+			Name = "ItemHousingSubclass",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Decor", Type = "ItemHousingSubclass", EnumValue = 0 },
+				{ Name = "Dye", Type = "ItemHousingSubclass", EnumValue = 1 },
+				{ Name = "Room", Type = "ItemHousingSubclass", EnumValue = 2 },
+				{ Name = "RoomCustomization", Type = "ItemHousingSubclass", EnumValue = 3 },
+				{ Name = "ExteriorCustomization", Type = "ItemHousingSubclass", EnumValue = 4 },
+				{ Name = "ServiceItem", Type = "ItemHousingSubclass", EnumValue = 5 },
 			},
 		},
 		{

@@ -56,17 +56,25 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 	local function bundleChildSortComparator(lhs, rhs)
 		local lhsChild = lhs.displayOrder or 999;
 		local rhsChild = rhs.displayOrder or 999;
+		-- Unknown licenses get a 100 element penalty to force them to show below those with known licenses
+		if lhs.displayInfo and lhs.displayInfo.hasUnknownLicense then
+			lhsChild = lhsChild + 100;
+		end
+		if rhs.displayInfo and rhs.displayInfo.hasUnknownLicense then
+			rhsChild = rhsChild + 100;
+		end
 		return lhsChild < rhsChild;
 	end
 
 	local function GetDetailContainerDataProvider()
 		local dataProvider = CreateDataProvider();
 		for _, childInfo in ipairs(self.bundleChildInfo) do
-			local productInfo = CatalogShopFrame:GetProductInfo(childInfo.childProductID);
+			local productInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
 			if productInfo and (not productInfo.isHidden) then
 				productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
 				productInfo.isBundleChild = true;
 				productInfo.displayOrder = childInfo.displayOrder;
+				productInfo.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childInfo.childProductID);
 				dataProvider:Insert(productInfo);
 			end
 		end

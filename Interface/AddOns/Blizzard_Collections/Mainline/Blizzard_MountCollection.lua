@@ -76,7 +76,7 @@ function MountEquipmentButtonMixin:OnClick()
 			local item = itemID and Item:CreateFromItemID(itemID);
 			if item then
 				item:ContinueOnItemLoad(function()
-					ChatEdit_InsertLink(item:GetItemLink())
+					ChatFrameUtil.InsertLink(item:GetItemLink())
 				end);
 			end
 		end
@@ -919,10 +919,10 @@ function MountListDragButton_OnClick(self, button)
 		local id = parent.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = C_Spell.GetSpellName(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	else
 		C_MountJournal.Pickup(parent.index);
@@ -939,10 +939,10 @@ function MountListItem_OnClick(self, button)
 		local id = self.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = C_Spell.GetSpellName(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);
@@ -1073,7 +1073,7 @@ function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnClick()
 
 	GenericTraitUI_LoadUI();
 
-	GenericTraitFrame:SetSystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetConfigIDBySystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
 	GenericTraitFrame:SetTreeID(Constants.MountDynamicFlightConsts.TREE_ID);
 	ToggleFrame(GenericTraitFrame);
 end

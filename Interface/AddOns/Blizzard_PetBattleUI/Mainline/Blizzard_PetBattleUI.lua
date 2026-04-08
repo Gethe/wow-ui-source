@@ -26,5 +26,5 @@ end
 MicroButtonFrameMixin = {};
 
 function MicroButtonFrameMixin:OnShow()
-	OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -3, 4, true);
+	MicroMenu:OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -3, 4, true);
 end

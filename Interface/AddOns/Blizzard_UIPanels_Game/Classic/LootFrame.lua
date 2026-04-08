@@ -442,6 +442,7 @@ function GroupLootContainer_Update(self)
 	if ( lastIdx ) then
 		self:SetHeight(self.reservedSize * lastIdx);
 		self:Show();
+		self.layoutParent:Layout();
 	else
 		self:Hide();
 	end

@@ -1028,7 +1028,7 @@ TRAVEL PASS
 					</Frame>
 					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-27"/>
+							<Anchor point="TOPLEFT" x="56" y="-27"/>
 						</Anchors>
 					</DropdownButton>
 					<EditBox name="FriendsFrameBroadcastInput" letters="127" countInvisibleLetters="true" autoFocus="false" hidden="true">

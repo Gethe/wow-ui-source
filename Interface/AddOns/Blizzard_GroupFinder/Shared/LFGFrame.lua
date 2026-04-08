@@ -229,10 +229,10 @@ function LFGEventFrame_OnEvent(self, event, ...)
 			end
 		end
 		assert(roleList);
-		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	elseif ( event == "LFG_READY_CHECK_PLAYER_IS_READY" ) then
 		local player = ...;
-		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_READY_CHECK_PLAYER_IS_READY, player));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(LFG_READY_CHECK_PLAYER_IS_READY, player));
 	elseif ( event == "VARIABLES_LOADED" ) then
 		LFG_UpdateAllRoleCheckboxes();
 	elseif ( event == "LFG_ROLE_UPDATE" ) then
@@ -779,12 +779,17 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.instanceInfo.underline:Show();
 			end
 
-			if ( numMembers > 1 ) then
+			local overrideLabelText = GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.OverrideLFGLabelText);
+			if ( overrideLabelText ) then
+				LFGDungeonReadyDialog.label:SetText(overrideLabelText);
+			elseif ( numMembers > 1 ) then
 				LFGDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
 			else
 				LFGDungeonReadyDialog.label:SetText(SPECIFIC_INSTANCE_IS_READY);
 			end
-			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
+
+			local overrideNumEncounters = GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.OverrideLFGNumEncounters);
+			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, overrideNumEncounters or totalEncounters);
 			LFGDungeonReadyDialog.instanceInfo:Show();
 		end
 		if ( not LFGDungeonReadyDialog.background:SetTexture(backgroundTexture) ) then	--We haven't added this texture yet. Default to the Deadmines.

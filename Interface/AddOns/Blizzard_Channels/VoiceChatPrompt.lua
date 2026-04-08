@@ -29,7 +29,7 @@ end
 
 function Voice_GetChannelActivatedNotification(channel)
 	if channel.channelType == Enum.ChatChannelType.Communities then
-		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrame_GetCommunityAndStreamName(channel.clubId, channel.streamId));
+		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrameUtil.GetCommunityAndStreamName(channel.clubId, channel.streamId));
 	else
 		local isRaid = IsChatChannelRaid(channel.channelType);
 		return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];

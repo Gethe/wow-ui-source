@@ -1063,6 +1063,6 @@ end
 
 function QuestInfoRewardSpellCodeMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
-		ChatEdit_InsertLink(GetSpellLink(self.rewardSpellID));
+		ChatFrameUtil.InsertLink(GetSpellLink(self.rewardSpellID));
 	end
 end

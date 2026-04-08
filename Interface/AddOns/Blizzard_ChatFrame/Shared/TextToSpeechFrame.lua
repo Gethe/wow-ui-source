@@ -115,7 +115,9 @@ end
 function TextToSpeech_StartPlayNextQueuedMessageTimer()
 	if not queuedMessageTimer then
 		queuedMessageTimer = C_Timer.NewTicker(1, function()
-			if UIParent:IsShown() then
+			-- Try to get current parent frame if this is an environment that supports alternate ones, otherwise default to UIParent
+			local currentChatParent = FCF_GetCurrentFullScreenFrame and FCF_GetCurrentFullScreenFrame() or UIParent;
+			if currentChatParent and currentChatParent:IsShown() then
 				TextToSpeech_PlayNextQueuedMessage();
 			end
 		end);
@@ -145,7 +147,9 @@ end
 
 function TextToSpeech_Speak(text, voice)
 	-- Queue messages
-	local uiHidden = not UIParent:IsShown();
+	-- Try to get current parent frame if this is an environment that supports alternate ones, otherwise default to UIParent
+	local currentChatParent = FCF_GetCurrentFullScreenFrame and FCF_GetCurrentFullScreenFrame() or UIParent;
+	local uiHidden = not currentChatParent or not currentChatParent:IsShown();
 	local shouldQueue = playbackActive or uiHidden;
 	if shouldQueue then
 		table.insert(queuedMessages, {text=text, voice=voice});
@@ -870,7 +874,7 @@ end
 function TextToSpeechFrame_DisplaySilentSystemMessage(text)
 	local wasEnabled = TextToSpeechFrame_GetChatTypeEnabled("SYSTEM");
 	TextToSpeechFrame_SetChatTypeEnabled("SYSTEM", false);
-	ChatFrame_DisplaySystemMessageInPrimary(text);
+	ChatFrameUtil.DisplaySystemMessageInPrimary(text);
 	TextToSpeechFrame_SetChatTypeEnabled("SYSTEM", wasEnabled);
 end
 
@@ -878,8 +882,8 @@ function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
 
 	local chatType = strsub(event, 10);
-	local chatGroup = Chat_GetChatCategory(chatType);
-	local chatTarget = FCFManager_GetChatTarget and FCFManager_GetChatTarget(chatGroup, arg2, arg8) or false;
+	local chatGroup = ChatFrameUtil.GetChatCategory(chatType);
+	local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
 
 	if ( chatTarget and FCFManager_ShouldSuppressMessage(frame, chatGroup, chatTarget) ) then
 		return false;
@@ -966,6 +970,17 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 				end
 				message = _G["CHAT_" .. formatType .. "_GET"]:format(name) .. message;
 			end
+		end
+
+		-- Ensure group expressions are replaced on viable chat channels. We
+		-- don't allow expansion of icon expressions however, as these generate
+		-- texture markup that won't be read out by the narrator.
+		local chatGroup = ChatFrameUtil.GetChatCategory(type);
+
+		if ChatFrameUtil.CanChatGroupPerformExpressionExpansion(chatGroup) then
+			local disableIconReplacement = true;
+			local disableGroupReplacement = false;
+			message = C_ChatInfo.ReplaceIconAndGroupExpressions(message, disableIconReplacement, disableGroupReplacement);
 		end
 
 		-- Check for chat text from the local player and skip it, unless the player wants their messages narrated

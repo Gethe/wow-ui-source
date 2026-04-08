@@ -52,7 +52,7 @@ end
 function CommunitiesGuildPerksButton_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local spellLink = C_Spell.GetSpellLink(self.spellID);
-		ChatEdit_LinkItem(nil, spellLink);
+		ChatFrameUtil.LinkItem(nil, spellLink);
 	end
 end
 

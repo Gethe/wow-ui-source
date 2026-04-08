@@ -11,11 +11,6 @@
 -- Globals: DEVTOOLS_USE_USERDATA_CACHE
 ---------------------------------------------------------------------------
 
-if not IsInGlobalEnvironment() then
-	-- Don't want to load this file into the secure environment
-	return;
-end
-
 local forceinsecure = forceinsecure;
 
 local DT = {};

@@ -406,7 +406,7 @@ end
 
 function WorldQuestPinMixin:OnClick(button)
 	if not self.dataProvider:HandleClick(self) then
-		if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
+		if ( not ChatFrameUtil.TryInsertQuestLinkForQuestID(self.questID) ) then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 			if IsShiftKeyDown() then

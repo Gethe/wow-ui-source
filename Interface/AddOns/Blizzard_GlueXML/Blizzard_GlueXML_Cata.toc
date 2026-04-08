@@ -19,6 +19,7 @@ Classic\AccountLogin.xml
 TBC\RealmList.lua
 Cata\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
+Shared\CharacterSelect\CharacterSelectUtil.lua
 Vanilla\CharacterSelectConstants.lua
 Classic\CharacterSelect\CharacterSelectUI.lua
 Classic\CharacterSelect\CharacterSelectUI.xml
@@ -26,8 +27,6 @@ Classic\CharacterSelect.lua
 Classic\CharacterSelect.xml
 Shared\AccountReactivate.lua
 Shared\AccountReactivate.xml
-Classic\KioskModeSplash.lua
-Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
 Classic\CharacterServicesTemplatesUtil.lua
 Shared\CharacterServicesTemplates.lua
@@ -40,6 +39,8 @@ Classic\CharacterServicesPaidNameChange.lua
 Classic\CharacterServicesPaidNameChange.xml
 Classic\CharacterServicesPaidCharacterTransfer.lua
 Classic\CharacterServicesPaidCharacterTransfer.xml
+Classic\CharacterServicesFreeCharacterTransfer.lua
+Classic\CharacterServicesFreeCharacterTransfer.xml
 Classic\CharacterServicesPaidFactionChange.lua
 Classic\CharacterServicesPaidFactionChange.xml
 Classic\CharacterServicesPaidRaceChange.lua
