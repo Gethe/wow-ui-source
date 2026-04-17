@@ -502,6 +502,7 @@ function UnitPopupLootMethodButtonMixin:GetEntries()
 		UnitPopupMasterLooterButtonMixin,
 		UnitPopupGroupLootButtonMixin,
 		UnitPopupNeedBeforeGreedButtonMixin,
+		UnitPopupPersonalLootButtonMixin,
 		UnitPopupCancelButtonMixin,
 	}
 end 
@@ -561,7 +562,7 @@ end
 UnitPopupMasterLooterButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
 
 function UnitPopupMasterLooterButtonMixin:GetText(contextData)
-	return LOOT_MASTER_LOOTER;
+	return MASTER_LOOTER;
 end
 
 function UnitPopupMasterLooterButtonMixin:GetTooltipText(contextData)
@@ -602,4 +603,54 @@ end
 
 function UnitPopupNeedBeforeGreedButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_NEED_BEFORE_GREED;
+end
+
+UnitPopupPersonalLootButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupPersonalLootButtonMixin:GetText(contextData)
+	return DEFAULT;
+end
+
+function UnitPopupPersonalLootButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_GROUP_LOOT;
+end
+
+function UnitPopupPersonalLootButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Personal;
+end
+
+UnitPopupLootThresholdButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupLootThresholdButtonMixin:GetText(contextData)
+	return _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
+end
+
+function UnitPopupLootThresholdButtonMixin:GetColor()
+	local color = ITEM_QUALITY_COLORS[GetLootThreshold()].color;
+	return color.r, color.g, color.b;
+end
+
+function UnitPopupLootThresholdButtonMixin:CanShow(contextData)
+	if not IsInGroup() then
+		return false;
+	end
+
+	local lootMethod = C_PartyInfo.GetLootMethod();
+	if not C_PartyInfo.IsLootMethodAvailable(lootMethod) then
+		return false;
+	end
+
+	return lootMethod ~= Enum.LootMethod.Personal;
+end
+
+function UnitPopupLootThresholdButtonMixin:GetEntries()
+	if UnitIsGroupLeader("player") then
+		return {
+			UnitPopupItemQuality2DescButtonMixin,
+			UnitPopupItemQuality3DescButtonMixin,
+			UnitPopupItemQuality4DescButtonMixin,
+			UnitPopupCancelButtonMixin,
+		}
+	end
+	return nil;
 end

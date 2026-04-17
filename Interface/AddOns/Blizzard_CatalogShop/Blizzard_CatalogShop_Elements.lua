@@ -605,6 +605,9 @@ function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo)
 	-- SetDisplayInfo is used for child products, and they will want the carousel only if they have enough images.
 	local numURLs = #self.carouselImageURLs;
 	self.ImageCarousel:SetShown(numURLs > 1);
+
+	self:SetDetailsShown(CatalogShopFrame.showDetails);
+
 	SetMissingLicenseCaptionText(displayInfo);
 end
 

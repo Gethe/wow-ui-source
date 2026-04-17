@@ -1578,6 +1578,11 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 end
 
 function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+	if not unitAuraUpdateInfo or unitAuraUpdateInfo.isFullUpdate then
+		self:RefreshLayout();
+		return;
+	end
+
 	-- Called first so that item frames still have the right aura instanceIDs set.
 	self:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo);
 

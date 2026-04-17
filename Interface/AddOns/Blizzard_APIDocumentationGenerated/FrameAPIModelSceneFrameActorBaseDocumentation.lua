@@ -444,6 +444,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

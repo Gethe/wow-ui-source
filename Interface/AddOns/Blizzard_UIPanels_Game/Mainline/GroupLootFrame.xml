@@ -607,7 +607,7 @@
 			<OnClick function="MasterLooterPlayerFrame_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true" frameStrata="DIALOG">
+	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true">
 		<Size x="10" y="10"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -616,7 +616,7 @@
 			<Frame parentKey="Item">
 				<Size x="0" y="28"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-9" y="-13"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TitleContainer" relativePoint="BOTTOMLEFT" x="-9" y="-8"/>
 					<Anchor point="RIGHT" x="-30" y="0"/>
 				</Anchors>
 				<Layers>
@@ -671,7 +671,7 @@
 			</Frame>
 			<Button inherits="MasterLooterPlayerTemplate" parentKey="player1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-53"/>
+					<Anchor point="TOPLEFT" x="8" y="-62"/>
 				</Anchors>
 			</Button>
 			<Button inherits="UIPanelCloseButton">

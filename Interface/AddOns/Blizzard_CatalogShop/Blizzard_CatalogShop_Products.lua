@@ -264,6 +264,7 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseUp", nil);
 	end
 
+	CatalogShopFrame.PMTImageContainerFrame:Hide();-- by default we hide it
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 	if displayInfo.hasUnknownLicense then

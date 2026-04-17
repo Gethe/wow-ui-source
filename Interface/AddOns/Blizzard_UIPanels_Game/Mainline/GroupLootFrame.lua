@@ -646,6 +646,8 @@ local function MasterLooterPlayerSort(pInfo1, pInfo2)
 end
 
 function MasterLooterFrame_OnLoad(self)
+	self.TitleContainer.TitleText:SetText(ASSIGN_LOOT);
+
 	self:SetScript("OnEvent", function(self, event, ...)
 		if event == "UPDATE_MASTER_LOOT_LIST" then
 			MasterLooterFrame_UpdatePlayers();
@@ -685,6 +687,7 @@ function MasterLooterFrame_Show()
 	MasterLooterFrame_UpdatePlayers();
 
 	-- Requires retest if/when this feature is renabled
+	MasterLooterFrame:ClearAllPoints();
 	MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, 0, 0);
 end
 

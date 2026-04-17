@@ -771,6 +771,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
 			end
 
+			-- The bulk destroy amount should be driven from a PlayerHousingConstants.tag update in 12.0.7
 			local bulkDestroyAmount = 5
 			local canDestroyMultiple = self.entryInfo.destroyableInstanceCount >= bulkDestroyAmount
 			if canDestroyMultiple then
@@ -780,7 +781,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 						owner = self,
 						confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
 					};
-					local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.totalNumStored, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
+					local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, bulkDestroyAmount, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 					StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 				end);
 				destroyAllButtonDesc:SetEnabled(canDestroyMultiple);

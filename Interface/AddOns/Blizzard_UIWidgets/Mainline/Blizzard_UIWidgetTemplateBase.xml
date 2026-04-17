@@ -383,6 +383,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="ThemeOverlay" atlas="themed-scenario-trackerheader-add" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Frame" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="HeaderText" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">
 					<Size x="172" y="36"/>

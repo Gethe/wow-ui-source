@@ -102,6 +102,25 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "GetUnitCriteriaProgressValues",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "actualValue", Type = "number", Nilable = false },
+				{ Name = "percentValue", Type = "number", Nilable = false },
+				{ Name = "percentValueString", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTieredEntranceScenario",
 			Type = "Function",
 

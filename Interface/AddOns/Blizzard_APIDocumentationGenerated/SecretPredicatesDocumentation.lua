@@ -12,6 +12,12 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs only accept unit token pairs that can be compared with one another. For example, comparisons where either unit is 'player' or 'target' are permitted, but comparisons between 'nameplate3' and 'boss1' are not." },
 		},
 		{
+			Name = "RequiresDeclassifiedUnitIdentity",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+			Documentation = { "Guarded APIs and events require that callers have access to the identity of a supplied unit token." },
+		},
+		{
 			Name = "RequiresFontStringTextAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnNothing",
@@ -96,17 +102,17 @@ local SecretPredicates =
 		{
 			Name = "SecretWhenUnitHealthMaxRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when the subject unit is attackable." },
+			Documentation = { "Guarded APIs and events produce secret values when the subject unit isn't player-controlled or in the party/raid." },
 		},
 		{
 			Name = "SecretWhenUnitIdentityRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when the subject unit is attackable, or if a compound unit token (eg. 'boss1target') was specified where any unit in the chain is attackable." },
+			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled or in the party/raid. For compound tokens (eg. 'boss1target'), results are secret if any unit in the chain fails this." },
 		},
 		{
 			Name = "SecretWhenUnitPowerMaxRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when the subject unit is attackable. Individual power types may be flagged as never or always secret, which takes priority." },
+			Documentation = { "Guarded APIs and events produce secret values when the subject unit isn't player-controlled or in the party/raid. Individual power types may be flagged as never or always secret, which takes priority." },
 		},
 		{
 			Name = "SecretWhenUnitPowerRestricted",

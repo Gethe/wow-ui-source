@@ -620,8 +620,8 @@ function CatalogShopMixin:HideProductDetails()
 	-- clear the product we had selected for the details frame
 	self.ProductDetailsContainerFrame.DetailsProductContainerFrame:SetSelectedProductInfo(nil);
 	local productInfo = self.ProductContainerFrame:GetSelectedProductInfo();
-	local showDetails = false;
-	self:ToggleProductDetails(showDetails, productInfo);
+	self.showDetails = false;
+	self:ToggleProductDetails(self.showDetails, productInfo);
 end
 
 function CatalogShopMixin:ShowProductDetails()
@@ -630,8 +630,8 @@ function CatalogShopMixin:ShowProductDetails()
 	if not productInfo then
 		return;
 	end
-	local showDetails = true;
-	self:ToggleProductDetails(showDetails, productInfo);
+	self.showDetails = true;
+	self:ToggleProductDetails(self.showDetails, productInfo);
 end
 
 function CatalogShopMixin:ShowAllRefundableDecor()
@@ -682,12 +682,6 @@ function CatalogShopMixin:OnProductSelected(data)
 		local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
 		C_Texture.SetURLTexture(texture, smallOverrideURL);
 		CatalogShopFrame.PMTImageContainerFrame:Show();
-
-	elseif data.sceneDisplayData.productType == CatalogShopConstants.ProductType.HousingExteriorType then
-		CatalogShopFrame.PMTImageContainerFrame:Show();
-	else
-		-- by default we hide it
-		CatalogShopFrame.PMTImageContainerFrame:Hide();
 	end
 
 	-- Foreground texture fills the whole window and is in front of the background texture
