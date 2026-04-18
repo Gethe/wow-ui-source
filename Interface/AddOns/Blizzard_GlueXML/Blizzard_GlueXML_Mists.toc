@@ -20,14 +20,13 @@ TBC\RealmList.lua
 Cata\RealmList.xml
 Mists\CharacterSelectConstants.lua
 Classic\CharacterServicesPatchwerk.xml
+Shared\CharacterSelect\CharacterSelectUtil.lua
 Classic\CharacterSelect\CharacterSelectUI.lua
 Classic\CharacterSelect\CharacterSelectUI.xml
 Classic\CharacterSelect.lua
 Classic\CharacterSelect.xml
 Shared\AccountReactivate.lua
 Shared\AccountReactivate.xml
-Classic\KioskModeSplash.lua
-Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
 Classic\CharacterServicesTemplatesUtil.lua
 Shared\CharacterServicesTemplates.lua

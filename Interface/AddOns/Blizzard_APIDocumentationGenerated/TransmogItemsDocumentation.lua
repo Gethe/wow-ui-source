@@ -3,12 +3,14 @@ local TransmogItems =
 	Name = "TransmogrifyCollection",
 	Type = "System",
 	Namespace = "C_TransmogCollection",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AccountCanCollectSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,8 +42,24 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "CanAppearanceHaveIllusion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canHaveIllusion", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearNewAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +69,7 @@ local TransmogItems =
 		{
 			Name = "ClearSearch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,12 +82,13 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "DeleteOutfit",
+			Name = "DeleteCustomSet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "customSetID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -78,6 +98,7 @@ local TransmogItems =
 		{
 			Name = "GetAllAppearanceSources",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,8 +111,27 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetAllFactionsShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllRacesShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAppearanceCameraID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,6 +147,7 @@ local TransmogItems =
 		{
 			Name = "GetAppearanceCameraIDBySource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,6 +164,7 @@ local TransmogItems =
 			Name = "GetAppearanceInfoBySource",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +180,7 @@ local TransmogItems =
 			Name = "GetAppearanceSourceDrops",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,6 +196,7 @@ local TransmogItems =
 			Name = "GetAppearanceSourceInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,21 +205,14 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
-				{ Name = "canHaveIllusion", Type = "bool", Nilable = false },
-				{ Name = "icon", Type = "fileID", Nilable = false },
-				{ Name = "isCollected", Type = "bool", Nilable = false },
-				{ Name = "itemLink", Type = "string", Nilable = false },
-				{ Name = "transmoglink", Type = "string", Nilable = false },
-				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
-				{ Name = "itemSubClass", Type = "number", Nilable = false },
+				{ Name = "info", Type = "TransmogAppearanceSourceInfoData", Nilable = false },
 			},
 		},
 		{
 			Name = "GetAppearanceSources",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -190,9 +227,27 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetArtifactAppearanceStrings",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCategoryAppearances",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,6 +263,7 @@ local TransmogItems =
 		{
 			Name = "GetCategoryCollectedCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +279,7 @@ local TransmogItems =
 			Name = "GetCategoryForItem",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +295,7 @@ local TransmogItems =
 			Name = "GetCategoryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +315,7 @@ local TransmogItems =
 		{
 			Name = "GetCategoryTotal",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -269,6 +328,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetClassFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCollectedShown",
 			Type = "Function",
 
@@ -278,8 +346,165 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetCustomSetHyperlinkFromItemTransmogInfoList",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCustomSetInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "customSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCustomSetItemTransmogInfoList",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "customSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCustomSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "customSetID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFallbackWeaponAppearance",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFilteredCategoryCollectedCount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFilteredCategoryTotal",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "total", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIllusionInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "illusionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "TransmogIllusionInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIllusionStrings",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "illusionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "sourceText", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetIllusions",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "illusions", Type = "table", InnerType = "TransmogIllusionInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInspectItemTransmogInfoList",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetIsAppearanceFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,6 +520,7 @@ local TransmogItems =
 			Name = "GetItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,9 +534,10 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "GetItemTransmogInfoListFromOutfitHyperlink",
+			Name = "GetItemTransmogInfoListFromCustomSetHyperlink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -334,12 +561,12 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "GetNumMaxOutfits",
+			Name = "GetNumMaxCustomSets",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "maxOutfits", Type = "number", Nilable = false },
+				{ Name = "maxCustomSets", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -352,49 +579,10 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "GetOutfitInfo",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "icon", Type = "fileID", Nilable = false },
-			},
-		},
-		{
-			Name = "GetOutfitItemTransmogInfoList",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetOutfits",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "outfitID", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetPairedArtifactAppearance",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -410,6 +598,7 @@ local TransmogItems =
 			Name = "GetSourceIcon",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -425,6 +614,7 @@ local TransmogItems =
 			Name = "GetSourceInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -440,6 +630,7 @@ local TransmogItems =
 			Name = "GetSourceItemID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -455,6 +646,7 @@ local TransmogItems =
 			Name = "GetSourceRequiredHoliday",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -476,6 +668,25 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetValidAppearanceSourcesForClass",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFavorites",
 			Type = "Function",
 
@@ -487,6 +698,7 @@ local TransmogItems =
 		{
 			Name = "IsAppearanceHiddenVisual",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -501,6 +713,7 @@ local TransmogItems =
 		{
 			Name = "IsCategoryValidForItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -516,6 +729,7 @@ local TransmogItems =
 		{
 			Name = "IsNewAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -539,6 +753,7 @@ local TransmogItems =
 		{
 			Name = "IsSearchInProgress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -553,6 +768,7 @@ local TransmogItems =
 		{
 			Name = "IsSourceTypeFilterChecked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -565,6 +781,21 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "IsSpellItemEnchantmentHiddenVisual",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellItemEnchantmentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHiddenVisual", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsingDefaultFilters",
 			Type = "Function",
 
@@ -574,18 +805,50 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "ModifyOutfit",
+			Name = "IsValidCustomSetName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidTransmogSource",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "TransmogSource", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ModifyCustomSet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "customSetID", Type = "number", Nilable = false },
 				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
-			Name = "NewOutfit",
+			Name = "NewCustomSet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -596,12 +859,13 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "outfitID", Type = "number", Nilable = true },
+				{ Name = "customSetID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "PlayerCanCollectSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -617,6 +881,7 @@ local TransmogItems =
 		{
 			Name = "PlayerHasTransmog",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -630,8 +895,24 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "PlayerHasTransmogByItemInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasTransmog", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerHasTransmogItemModifiedAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -646,6 +927,7 @@ local TransmogItems =
 		{
 			Name = "PlayerKnowsSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -658,18 +940,20 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "RenameOutfit",
+			Name = "RenameCustomSet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "customSetID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
 			Name = "SearchProgress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -684,6 +968,7 @@ local TransmogItems =
 		{
 			Name = "SearchSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -698,15 +983,37 @@ local TransmogItems =
 		{
 			Name = "SetAllCollectionTypeFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllFactionsShown",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllRacesShown",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "SetAllSourceTypeFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -714,8 +1021,19 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "SetClassFilter",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCollectedShown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -729,6 +1047,7 @@ local TransmogItems =
 		{
 			Name = "SetIsAppearanceFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -739,6 +1058,7 @@ local TransmogItems =
 		{
 			Name = "SetSearch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -754,6 +1074,7 @@ local TransmogItems =
 		{
 			Name = "SetSearchAndFilterCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -763,6 +1084,7 @@ local TransmogItems =
 		{
 			Name = "SetSourceTypeFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -773,6 +1095,7 @@ local TransmogItems =
 		{
 			Name = "SetUncollectedShown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -849,7 +1172,8 @@ local TransmogItems =
 				{ Name = "itemLink", Type = "string", Nilable = false },
 				{ Name = "transmoglink", Type = "string", Nilable = false },
 				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
-				{ Name = "itemSubClass", Type = "number", Nilable = false },
+				{ Name = "itemSubclass", Type = "number", Nilable = false },
+				{ Name = "ignoreModelAttachmentChecksForIllusion", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -884,6 +1208,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "TransmogCustomSetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+			},
+		},
+		{
 			Name = "TransmogIllusionInfo",
 			Type = "Structure",
 			Fields =
@@ -896,15 +1229,9 @@ local TransmogItems =
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "TransmogOutfitInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "icon", Type = "fileID", Nilable = false },
-			},
-		},
+	},
+	Predicates =
+	{
 	},
 };
 

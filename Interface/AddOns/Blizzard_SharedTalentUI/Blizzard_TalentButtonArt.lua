@@ -34,6 +34,34 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "talents-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
+	ScenarioChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "themed-scenario-challenge-gold-circle",
+		disabled = "talents-node-circle-gray",
+		selectable = "talents-node-circle-green",
+		maxed = "themed-scenario-challenge-gold-circle",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "talents-node-circle-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
+
+	DelveChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "ritual-sites-frame-default",
+		disabled = "ritual-sites-frame-locked",
+		selectable = "ritual-sites-frame-default",
+		maxed = "ritual-sites-frame-selected",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "ritual-sites-frame-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
 
 	Choice = {
 		iconMask = "talents-node-choice-mask",
@@ -154,6 +182,58 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "lemixartifact-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
+	CapstoneCircle = {
+		iconMask = "talents-node-circle-mask",
+		shadow = "talents-node-circle-shadow",
+		normal = "talents-node-apex-large-yellow",
+		disabled = "talents-node-apex-large-gray",
+		selectable = "talents-node-apex-large-green",
+		maxed = "talents-node-apex-large-yellow",
+		refundInvalid = "talents-node-apex-large-red",
+		displayError = "talents-node-apex-large-red",
+		locked = "talents-node-apex-large-locked",
+		glow = "talents-node-apex-large-glow",
+		ghost = "talents-node-choiceflyout-circle-ghost",
+		spendFont = "SystemFont22_Shadow_ThickOutline",
+		progressBarBase = "talents-node-apex-bar-base",
+		progressBarHalf = "talents-node-apex-bar-half",
+		progressBarFull = "talents-node-apex-bar-full",
+	},
+
+	CapstoneSquare = {
+		iconMask = nil,
+		shadow = "talents-node-square-shadow",
+		normal = "talents-node-apex-active-large-yellow",
+		disabled = "talents-node-apex-active-large-gray",
+		selectable = "talents-node-apex-active-large-green",
+		maxed = "talents-node-apex-active-large-yellow",
+		refundInvalid = "talents-node-apex-active-large-red",
+		displayError = "talents-node-apex-active-large-red",
+		locked = "talents-node-apex-active-large-locked",
+		glow = "talents-node-apex-active-large-glow",
+		ghost = "talents-node-choiceflyout-square-ghost",
+		spendFont = "SystemFont22_Shadow_ThickOutline",
+		progressBarBase = "talents-node-apex-active-bar-base",
+		progressBarHalf = "talents-node-apex-active-bar-half",
+		progressBarFull = "talents-node-apex-active-bar-full",
+	},
+
+	CapstonePipCircle = {
+		iconMask = "talents-node-circle-mask",
+		shadow = "talents-node-circle-shadow",
+		normal = "talents-node-apex-small-gray",
+		disabled = "talents-node-apex-small-gray",
+		selectable = "talents-node-apex-small-gray",
+		maxed = "talents-node-apex-small-gray",
+		refundInvalid = "talents-node-apex-small-gray",
+		displayError = "talents-node-apex-small-gray",
+		locked = "talents-node-apex-small-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
+
 };
 
 function TalentButtonArtMixin:OnLoad()
@@ -356,7 +436,7 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 		animEffectControllers = nil;
 	end
 
-	if fxIDs and self:ShouldBeVisible() then
+	if fxIDs and ((not self.ShouldBeVisible and self:IsVisible()) or self:ShouldBeVisible()) then
 		-- If no custom multiplier specified, fall back on the difference between the node and scene's scale,
 		-- so if node is in a differently scaled parent the effects will visually scale accordingly
 		local scaleMultiplier = self.animEffectScaleMultiplier or (self:GetEffectiveScale() / fxModelScene:GetEffectiveScale());

@@ -3,9 +3,55 @@ local SpellBook =
 	Name = "SpellBook",
 	Type = "System",
 	Namespace = "C_SpellBook",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "FindBaseSpellByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "FindFlyoutSlotBySpellID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "flyoutSlot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "FindSpellOverrideByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "overrideSpellID", Type = "number", Nilable = true },
+			},
+		},
 		{
 			Name = "HasPetSpells",
 			Type = "Function",
@@ -21,6 +67,7 @@ local SpellBook =
 		{
 			Name = "IsSpellInSpellBook",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell should be found in the spellbook. This function can also return true for spells that aren't known, such as override spells granted by an aura linked to class talents" },
 
 			Arguments =
@@ -38,6 +85,7 @@ local SpellBook =
 		{
 			Name = "IsSpellKnown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a player knows a spell. This function can also return true for spells that aren't in the spellbook, such as temporarily-granted abilities" },
 
 			Arguments =
@@ -54,6 +102,7 @@ local SpellBook =
 		{
 			Name = "IsSpellKnownOrInSpellBook",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell is considered to be known or present in the spellbook" },
 
 			Arguments =
@@ -76,19 +125,21 @@ local SpellBook =
 			Name = "CurrentSpellCastChanged",
 			Type = "Event",
 			LiteralName = "CURRENT_SPELL_CAST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cancelledCast", Type = "bool", Nilable = false },
 			},
 		},
 		{
-			Name = "LearnedSpellInTab",
+			Name = "LearnedSpellInSkillLine",
 			Type = "Event",
-			LiteralName = "LEARNED_SPELL_IN_TAB",
+			LiteralName = "LEARNED_SPELL_IN_SKILL_LINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "skillInfoIndex", Type = "number", Nilable = false },
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isGuildPerkSpell", Type = "bool", Nilable = false },
 			},
 		},
@@ -96,6 +147,7 @@ local SpellBook =
 			Name = "MaxSpellStartRecoveryOffsetChanged",
 			Type = "Event",
 			LiteralName = "MAX_SPELL_START_RECOVERY_OFFSET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clampedNewQueueWindowMs", Type = "number", Nilable = false },
@@ -105,6 +157,7 @@ local SpellBook =
 			Name = "PlayerTotemUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TOTEM_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
@@ -114,6 +167,8 @@ local SpellBook =
 			Name = "SpellFlyoutUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_FLYOUT_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = true },
@@ -125,6 +180,7 @@ local SpellBook =
 			Name = "SpellPushedToActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -136,6 +192,7 @@ local SpellBook =
 			Name = "SpellPushedToFlyoutOnActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -147,11 +204,14 @@ local SpellBook =
 			Name = "SpellUpdateCharges",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_CHARGES",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
@@ -164,6 +224,7 @@ local SpellBook =
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
@@ -173,11 +234,13 @@ local SpellBook =
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateUses",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USES",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
@@ -188,52 +251,50 @@ local SpellBook =
 			Name = "SpellsChanged",
 			Type = "Event",
 			LiteralName = "SPELLS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "StartAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "START_AUTOREPEAT_SPELL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StopAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "STOP_AUTOREPEAT_SPELL",
-		},
-		{
-			Name = "UnitSpellcastSent",
-			Type = "Event",
-			LiteralName = "UNIT_SPELLCAST_SENT",
-			Payload =
-			{
-				{ Name = "unit", Type = "cstring", Nilable = false },
-				{ Name = "target", Type = "cstring", Nilable = false },
-				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftCooldown",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_COOLDOWN",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForm",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForms",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORMS",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftUsable",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_USABLE",
+			UniqueEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

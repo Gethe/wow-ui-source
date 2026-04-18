@@ -201,7 +201,7 @@ function ChallengesFrameBestTimes_Update(self, mapID)
 end
 
 function ChallengesFrame_OnShow(self)
-	SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\achievement_bg_wineos_underxminutes");
+	PVEFrame.portrait:SetTexture("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	local mapID = self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
 	RequestChallengeModeLeaders(mapID);

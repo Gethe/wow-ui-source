@@ -1,9 +1,4 @@
 
-if not IsInGlobalEnvironment() then
-	-- Don't want to load this file into the secure environment
-	return;
-end
-
 BaseTextTimerMixin = {};
 
 function BaseTextTimerMixin:StartTimer(timeInSeconds, updateFrequency, hideOnFinish, notAbbreviated, formatString)

@@ -45,13 +45,14 @@ local TransmogShared =
 		{
 			Name = "TransmogIllusionFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "HideUntilCollected", Type = "TransmogIllusionFlags", EnumValue = 1 },
 				{ Name = "PlayerConditionGrantsOnLogin", Type = "TransmogIllusionFlags", EnumValue = 2 },
+				{ Name = "AllowedRangedShieldsHoldables", Type = "TransmogIllusionFlags", EnumValue = 4 },
 			},
 		},
 		{
@@ -133,6 +134,9 @@ local TransmogShared =
 				{ Name = "ItemProficiency", Type = "TransmogUseErrorType", EnumValue = 10 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

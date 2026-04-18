@@ -1,8 +1,5 @@
 REQUIRED_REST_HOURS = 5;
 
-PLAYER_FRAME_UNLOCKED = PLAYER_FRAME_UNLOCKED or nil;
-PLAYER_FRAME_CASTBARS_SHOWN = PLAYER_FRAME_CASTBARS_SHOWN or nil;
-
 function PlayerFrame_OnLoad(self)
 	PlayerFrameHealthBar.LeftText = PlayerFrameHealthBarTextLeft;
 	PlayerFrameHealthBar.RightText = PlayerFrameHealthBarTextRight;
@@ -52,7 +49,6 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -72,7 +68,7 @@ function PlayerFrame_OnLoad(self)
 			fromPlayerFrame = true;
 		};
 
-		if self.unit == "vehicle" then
+		if unit == "vehicle" then
 			which = "VEHICLE";
 			contextData.unit = "vehicle";
 		else
@@ -97,26 +93,16 @@ function PlayerFrame_GetManaBar()
 	return PlayerFrame.ManaBar;
 end
 
-
---This is overwritten in LocalizationPost for different languages.
-function PlayerFrame_UpdateLevelTextAnchor(level)
-	if ( level >= 100 ) then
-		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -64, -16);
-	else
-		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -16);
-	end
-end
-
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
 		PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
-		PlayerFrame_UpdateLevelTextAnchor(level);
 		PlayerLevelText:SetText(level);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
 		PlayerFrame_UpdatePlaytime();
+		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdateLayout();
 	end
 end
@@ -124,10 +110,8 @@ end
 function PlayerFrame_UpdatePartyLeader()
 	if ( UnitIsGroupLeader("player") ) then
 		PlayerLeaderIcon:Show()
-		PlayerGuideIcon:Hide();
 	else
 		PlayerLeaderIcon:Hide();
-		PlayerGuideIcon:Hide();
 	end
 
 	local lootMethod, lootMaster = C_PartyInfo.GetLootMethod();
@@ -144,12 +128,9 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
-		PlayerPrestigePortrait:Hide();
-		PlayerPrestigeBadge:Hide();
 		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
 		PlayerPVPIcon:Show();
 		
-
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
 		PlayerPVPIconHitArea.tooltipText = NEWBIE_TOOLTIP_PVPFFA;
@@ -163,8 +144,6 @@ function PlayerFrame_UpdatePvPStatus()
 		end
 
 		
-		PlayerPrestigePortrait:Hide();
-		PlayerPrestigeBadge:Hide();
 		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 
 		PlayerPVPIcon:Show();
@@ -174,8 +153,6 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPIconHitArea.tooltipText = _G["NEWBIE_TOOLTIP_"..strupper(factionGroup)];
 		PlayerPVPIconHitArea:Show();
 	else
-		PlayerPrestigePortrait:Hide();
-		PlayerPrestigeBadge:Hide();
 		PlayerPVPIcon:Hide();
 		PlayerPVPIconHitArea:Hide();
 
@@ -279,16 +256,24 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		PlayerFrame_UpdatePVPTimer();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
-		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
-			PlayerFrame_AttachCastBar();
-		end
 	end
 end
 
+local function PlayerFrame_SetTargetAnimationTargetPosition(self)
+	self.animationTargetPosition = {};
+	self.animationTargetPosition.point,
+	self.animationTargetPosition.relativeTo,
+	self.animationTargetPosition.relativePoint,
+	self.animationTargetPosition.xOfs,
+	self.animationTargetPosition.yOfs = self:GetPoint(1);
+end
+
 local function PlayerFrame_AnimPos(self, fraction)
-	return "TOPLEFT", UIParent, "TOPLEFT", -19, fraction*140-4;
+	return self.animationTargetPosition.point,
+	self.animationTargetPosition.relativeTo,
+	self.animationTargetPosition.relativePoint,
+	self.animationTargetPosition.xOfs,
+	fraction * 140 + self.animationTargetPosition.yOfs;
 end
 
 function PlayerFrame_ResetPosition(self)
@@ -296,7 +281,7 @@ function PlayerFrame_ResetPosition(self)
 	self.isAnimatedOut = false;
 	UIParent_UpdateTopFramePositions();
 	self.inSequence = false;
-	PetFrame_Update(PetFrame);
+	PetFrame:Update();
 end
 
 local PlayerFrameAnimTable = {
@@ -312,6 +297,7 @@ function PlayerFrame_AnimateOut(self)
 	if ( self:IsUserPlaced() ) then
 		PlayerFrame_AnimFinished(PlayerFrame);
 	else
+		PlayerFrame_SetTargetAnimationTargetPosition(self);
 		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
 	end
 end
@@ -340,14 +326,15 @@ function PlayerFrame_UpdateArt(self)
 	elseif ( self.updatePetFrame ) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
-		PetFrame_Update(PetFrame);
+		PetFrame:Update();
 	end
 end
 
 function PlayerFrame_SequenceFinished(self)
 	self.isAnimatedOut = false;
 	self.inSequence = false;
-	PetFrame_Update(PetFrame);
+	self.animationTargetPosition = nil;
+	PetFrame:Update();
 end
 
 function PlayerFrame_ToVehicleArt(self, vehicleType)
@@ -357,9 +344,9 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame_Update(PetFrame);
+	PetFrame:Update();
 	PlayerFrame_Update();
-	BuffFrame_Update();
+	BuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Hide();
@@ -368,23 +355,22 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic-Flash");
 		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(103);
-		PlayerFrameHealthBar:SetPoint("TOPLEFT",116,-41);
+		PlayerFrameHealthBar:SetPoint("TOPLEFT",100,-45);
 		PlayerFrameManaBar:SetWidth(103);
-		PlayerFrameManaBar:SetPoint("TOPLEFT",116,-52);
+		PlayerFrameManaBar:SetPoint("TOPLEFT",100,-56);
 	else
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
 		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Flash");
 		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(100);
-		PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
+		PlayerFrameHealthBar:SetPoint("TOPLEFT",103,-45);
 		PlayerFrameManaBar:SetWidth(100);
-		PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
+		PlayerFrameManaBar:SetPoint("TOPLEFT",103,-56);
 	end
 	PlayerFrame_ShowVehicleTexture();
 
-	PlayerName:SetPoint("CENTER",50,23);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
-	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
+	PlayerName:SetPoint("CENTER",34,19);
+	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 81, -17);
 
 	PlayerFrameBackground:SetWidth(114);
 	PlayerLevelText:Hide();
@@ -397,20 +383,19 @@ function PlayerFrame_ToPlayerArt(self)
 
 	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame_Update(PetFrame);
+	PetFrame:Update();
 	PlayerFrame_Update();
-	BuffFrame_Update();
+	BuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Show();
 	PlayerFrame_HideVehicleTexture();
-	PlayerName:SetPoint("CENTER",50,19);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",44,-10);
-	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
+	PlayerName:SetPoint("CENTER",34,15);
+	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 81, -24);
 	PlayerFrameHealthBar:SetWidth(119);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-41);
+	PlayerFrameHealthBar:SetPoint("TOPLEFT",90,-45);
 	PlayerFrameManaBar:SetWidth(119);
-	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
+	PlayerFrameManaBar:SetPoint("TOPLEFT",90,-56);
 	PlayerFrameBackground:SetWidth(119);
 	PlayerLevelText:Show();
 end
@@ -735,89 +720,4 @@ end
 
 function PlayerFrame_OnDragStop(self)
 	self:StopMovingOrSizing();
-end
-
-function PlayerFrame_SetLocked(locked)
-	PLAYER_FRAME_UNLOCKED = not locked;
-	if ( locked ) then
-		PlayerFrame:RegisterForDrag();	--Unregister all buttons.
-	else
-		PlayerFrame:RegisterForDrag("LeftButton");
-	end
-end
-
-function PlayerFrame_ResetUserPlacedPosition()
-	PlayerFrame:ClearAllPoints();
-	PlayerFrame:SetUserPlaced(false);
-	PlayerFrame:SetClampedToScreen(false);
-	PlayerFrame_SetLocked(true);
-	UIParent_UpdateTopFramePositions();
-end
-
---
--- Functions for having the cast bar underneath the player frame
---
-
-function PlayerFrame_AttachCastBar()
-	local castBar = CastingBarFrame;
-	local petCastBar = PetCastingBarFrame;
-	-- player
-	castBar.ignoreFramePositionManager = true;
-	castBar:SetAttribute("ignoreFramePositionManager", true);
-	CastingBarFrame_SetLook(castBar, "UNITFRAME");
-	castBar:ClearAllPoints();
-	castBar:SetPoint("LEFT", PlayerFrame, 78, 0);
-	-- pet
-	CastingBarFrame_SetLook(petCastBar, "UNITFRAME");
-	petCastBar:SetWidth(150);
-	petCastBar:SetHeight(10);
-	petCastBar:ClearAllPoints();
-	petCastBar:SetPoint("TOP", castBar, "TOP", 0, 0);
-
-	PlayerFrame_AdjustAttachments();
-	UIParent_ManageFramePositions();
-end
-
-function PlayerFrame_DetachCastBar()
-	local castBar = CastingBarFrame;
-	local petCastBar = PetCastingBarFrame;
-	-- player
-	castBar.ignoreFramePositionManager = nil;
-	castBar:SetAttribute("ignoreFramePositionManager", false);
-	CastingBarFrame_SetLook(castBar, "CLASSIC");
-	castBar:ClearAllPoints();
-	-- pet
-	CastingBarFrame_SetLook(petCastBar, "CLASSIC");
-	petCastBar:SetWidth(195);
-	petCastBar:SetHeight(13);
-	petCastBar:ClearAllPoints();
-	petCastBar:SetPoint("BOTTOM", castBar, "TOP", 0, 12);
-
-	UIParent_ManageFramePositions();
-end
-
-function PlayerFrame_AdjustAttachments()
-	if ( not PLAYER_FRAME_CASTBARS_SHOWN ) then
-		return;
-	end
-	if ( PetFrame and PetFrame:IsShown() ) then
-		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
-	elseif ( TotemFrame and TotemFrame:IsShown() ) then
-		CastingBarFrame:SetPoint("TOP", TotemFrame, "BOTTOM", 0, 2);
-	else
-		local _, class = UnitClass("player");
-		if ( class == "PALADIN" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
-		elseif ( class == "DRUID" ) then
-		CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		elseif ( class == "PRIEST" and PriestBarFrame and PriestBarFrame:IsShown() ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
-		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
-		elseif ( class == "MONK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -1);
-		else
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		end
-	end
 end

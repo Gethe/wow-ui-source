@@ -37,7 +37,7 @@ function DressUpTransmogLink(link)
 		return false;
 	end
 
-	local linkType = LinkUtil.ExtractLink(link);
+	local linkType = LinkUtil.SplitLinkData(link);
 	if linkType ~= LinkTypes.TransmogIllusion and linkType ~= LinkTypes.TransmogAppearance then
 		return false;
 	end

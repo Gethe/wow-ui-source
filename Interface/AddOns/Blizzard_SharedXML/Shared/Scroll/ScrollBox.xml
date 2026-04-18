@@ -30,7 +30,9 @@
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="DragDelegate"/>
-			<EventFrame parentKey="ScrollTarget" useParentLevel="true"/>
+			<EventFrame parentKey="ScrollTarget" useParentLevel="true">
+				<Size x="1" y="1"/> <!-- For reliability reasons, always ensure this has a valid rect. -->
+			</EventFrame>
 			<Frame parentKey="Shadows" setAllPoints="true">
 				<Layers>
 					<Layer>

@@ -50,6 +50,9 @@ local LogicConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LogicConstants);

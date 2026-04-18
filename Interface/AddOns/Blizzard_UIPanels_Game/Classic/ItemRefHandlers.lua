@@ -44,8 +44,8 @@ local function HandlePlayerLink(link, text, linkData, contextData)
 				_G[staticPopup.."EditBox"]:SetText(name);
 				return;
 			end
-			if ( ChatEdit_GetActiveWindow() ) then
-				ChatEdit_InsertLink(name);
+			if ( ChatFrameUtil.GetActiveWindow() ) then
+				ChatFrameUtil.InsertLink(name);
 			else
 				C_FriendList.SendWho(WHO_TAG_EXACT..name, Enum.SocialWhoOrigin.Item);
 			end
@@ -53,7 +53,7 @@ local function HandlePlayerLink(link, text, linkData, contextData)
 		elseif ( contextData.button == "RightButton" and (linkData.type ~= LinkTypes.PlayerGM) and FriendsFrame_ShowDropdown) then
 			FriendsFrame_ShowDropdown(name, 1, lineID, chatType, contextData.frame, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 		else
-			ChatFrame_SendTell(name, contextData.frame);
+			ChatFrameUtil.SendTell(name, contextData.frame);
 		end
 	end
 end
@@ -77,7 +77,7 @@ end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.Talent, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") and contextData.button == "LeftButton" ) then
-		ChatEdit_InsertLink(text);
+		ChatFrameUtil.InsertLink(text);
 		return;
 	end
 
@@ -119,8 +119,10 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local sourceID = string.split(":", linkData.options);
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		HandleModifiedItemClick(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);
+		end
 	else
 		if ( not CollectionsJournal ) then
 			CollectionsJournal_LoadUI();

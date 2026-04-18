@@ -3,6 +3,7 @@ local QuestLog =
 	Name = "QuestLog",
 	Type = "System",
 	Namespace = "C_QuestLog",
+	Environment = "All",
 
 	Functions =
 	{
@@ -39,6 +40,7 @@ local QuestLog =
 			Name = "GetQuestInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +56,7 @@ local QuestLog =
 			Name = "GetQuestObjectives",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +72,7 @@ local QuestLog =
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +87,7 @@ local QuestLog =
 		{
 			Name = "IsOnQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +102,7 @@ local QuestLog =
 		{
 			Name = "IsQuestFlaggedCompleted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,6 +117,7 @@ local QuestLog =
 		{
 			Name = "IsQuestFromContentPush",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +132,7 @@ local QuestLog =
 		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,6 +142,7 @@ local QuestLog =
 		{
 			Name = "ShouldShowQuestRewards",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,6 +162,7 @@ local QuestLog =
 			Name = "QuestAccepted",
 			Type = "Event",
 			LiteralName = "QUEST_ACCEPTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questIndex", Type = "number", Nilable = false },
@@ -163,6 +173,7 @@ local QuestLog =
 			Name = "QuestAutocomplete",
 			Type = "Event",
 			LiteralName = "QUEST_AUTOCOMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questId", Type = "number", Nilable = false },
@@ -172,11 +183,13 @@ local QuestLog =
 			Name = "QuestComplete",
 			Type = "Event",
 			LiteralName = "QUEST_COMPLETE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestDetail",
 			Type = "Event",
 			LiteralName = "QUEST_DETAIL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questStartItemID", Type = "number", Nilable = true },
@@ -186,6 +199,7 @@ local QuestLog =
 			Name = "QuestLogCriteriaUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_LOG_CRITERIA_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -199,16 +213,19 @@ local QuestLog =
 			Name = "QuestLogUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_LOG_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestPoiUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_POI_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestRemoved",
 			Type = "Event",
 			LiteralName = "QUEST_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -218,6 +235,7 @@ local QuestLog =
 			Name = "QuestTurnedIn",
 			Type = "Event",
 			LiteralName = "QUEST_TURNED_IN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -229,6 +247,8 @@ local QuestLog =
 			Name = "QuestWatchListChanged",
 			Type = "Event",
 			LiteralName = "QUEST_WATCH_LIST_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
@@ -239,6 +259,7 @@ local QuestLog =
 			Name = "QuestWatchUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_WATCH_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -248,6 +269,7 @@ local QuestLog =
 			Name = "SuperTrackedQuestChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKED_QUEST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "superTrackedQuestID", Type = "number", Nilable = false },
@@ -257,6 +279,7 @@ local QuestLog =
 			Name = "TaskProgressUpdate",
 			Type = "Event",
 			LiteralName = "TASK_PROGRESS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -310,6 +333,9 @@ local QuestLog =
 				{ Name = "objectiveType", Type = "QuestObjectiveType", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

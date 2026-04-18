@@ -4,7 +4,7 @@
 [Family]\Fonts.xml
 Shared\Fonts.xml
 Shared\GlueFonts.xml			[AllowLoad Glue]
-[Family]\GlueFonts.xml			[AllowLoad Glue][AllowLoadGameType Classic] 
+[Family]\GlueFonts.xml			[AllowLoad Glue][AllowLoadGameType classic] 
 Shared\GameFonts.xml			[AllowLoad Game]
 [Family]\GameFonts.xml			[AllowLoad Game]
 Shared\FontStyles.xml

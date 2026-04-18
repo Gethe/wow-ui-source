@@ -42,7 +42,6 @@ local CVAR_ALARM_ENABLED = "timeMgrAlarmEnabled";
 -- public data
 MAX_TIMER_SEC = 99*3600 + 59*60 + 59;	-- 99:59:59
 
-
 local function _TimeManager_GetCurrentMinutes(localTime)
 	local currTime;
 	if ( localTime ) then
@@ -142,8 +141,9 @@ function TimeManagerFrame_SetupHourDropdown(self)
 		hourMin, hourMax = 1, 12;
 	end
 
-	local width = 61;
+	local width = 50;
 	self.AlarmTimeFrame.HourDropdown:SetWidth(width);
+	self.AlarmTimeFrame.HourDropdown.Text:SetJustifyH("LEFT");
 	self.AlarmTimeFrame.HourDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_HOUR");
 
@@ -169,8 +169,9 @@ function TimeManagerFrame_SetupMinuteDropdown(self)
 		_TimeManager_Setting_SetTime();
 	end
 
-	local width = 61;
+	local width = 50;
 	self.AlarmTimeFrame.MinuteDropdown:SetWidth(width);
+	self.AlarmTimeFrame.MinuteDropdown.Text:SetJustifyH("LEFT");
 	self.AlarmTimeFrame.MinuteDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_MINUTE");
 
@@ -191,8 +192,9 @@ function TimeManagerFrame_SetupAMPMDropdown(self)
 		TimeManager_StartCheckingAlarm();
 	end
 
-	local width = 65;
+	local width = 60;
 	self.AlarmTimeFrame.AMPMDropdown:SetWidth(width);
+	self.AlarmTimeFrame.AMPMDropdown.Text:SetJustifyH("CENTER");
 	self.AlarmTimeFrame.AMPMDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_AMPM");
 

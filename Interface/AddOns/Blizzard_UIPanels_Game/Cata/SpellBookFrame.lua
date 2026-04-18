@@ -1,3 +1,6 @@
+
+UIPanelWindows["SpellBookFrame"] = { area = "left", pushable = 0, whileDead = 1, width = 575, height = 545 };
+
 local MaxSpellBookTypes = 3;
 SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame", "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame" };
 
@@ -8,7 +11,7 @@ local tremove = tremove;
 
 function SpellBookFrameMixin:OnLoad()
 	self:RegisterEvent("SPELLS_CHANGED");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 
@@ -31,7 +34,7 @@ function SpellBookFrameMixin:OnLoad()
 	SpellBookFrame.flashTabs = nil;
 
 	-- Initialize portrait texture
-	SetPortraitToTexture(self.portrait, "Interface\\Spellbook\\Spellbook-Icon");
+	self.portrait:SetTexture("Interface\\Spellbook\\Spellbook-Icon");
 
 	ButtonFrameTemplate_HideButtonBar(SpellBookFrame);
 	ButtonFrameTemplate_HideAttic(SpellBookFrame);
@@ -46,7 +49,7 @@ function SpellBookFrameMixin:OnEvent(event, ...)
 			end
 			self:Update();
 		end
-	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+	elseif ( event == "LEARNED_SPELL_IN_SKILL_LINE" ) then
 		self:Update();
 		local spellID, tabNum, isGuildSpell = ...;
 		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
@@ -198,7 +201,7 @@ function SpellButtonMixin:OnIconClick(button)
 	end
 
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
-			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
+		ToggleSpellAutocast(slot, SpellBookFrame.bookType);
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if (slotType == "FLYOUT") then
@@ -249,7 +252,7 @@ function SpellButtonMixin:UpdateButton()
 	local spellString = _G[name.."SpellName"];
 	local subSpellString = _G[name.."SubSpellName"];
 	local cooldown = _G[name.."Cooldown"];
-	local autoCastableTexture = _G[name.."AutoCastable"];
+	local autoCastOverlay = _G[name.."AutoCastOverlay"];
 	local slotFrame = _G[name.."SlotFrame"];
 	local normalTexture = _G[name.."NormalTexture"];
 	local highlightTexture = _G[name.."Highlight"];
@@ -271,9 +274,7 @@ function SpellButtonMixin:UpdateButton()
 		spellString:Hide();
 		subSpellString:Hide();
 		cooldown:Hide();
-		autoCastableTexture:Hide();
-		SpellBook_ReleaseAutoCastShine(self.shine);
-		self.shine = nil;
+		autoCastOverlay:Hide();
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self:SetChecked(false);
 		slotFrame:Hide();
@@ -294,26 +295,8 @@ function SpellButtonMixin:UpdateButton()
 	self:UpdateCooldown();
 
 	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(slot, SpellBookFrame.bookType);
-	if ( autoCastAllowed ) then
-		autoCastableTexture:Show();
-	else
-		autoCastableTexture:Hide();
-	end
-	if ( autoCastEnabled and not self.shine ) then
-		self.shine = SpellBook_GetAutoCastShine();
-		self.shine:Show();
-		self.shine:SetParent(self);
-		self.shine:SetPoint("CENTER", self, "CENTER");
-		AutoCastShine_AutoCastStart(self.shine);
-	elseif ( autoCastEnabled ) then
-		self.shine:Show();
-		self.shine:SetParent(self);
-		self.shine:SetPoint("CENTER", self, "CENTER");
-		AutoCastShine_AutoCastStart(self.shine);
-	elseif ( not autoCastEnabled ) then
-		SpellBook_ReleaseAutoCastShine(self.shine);
-		self.shine = nil;
-	end
+	autoCastOverlay:SetShown(autoCastAllowed);
+	autoCastOverlay:ShowAutoCastEnabled(autoCastEnabled);
 
 	local spellName, _, spellID = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);

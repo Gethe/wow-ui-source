@@ -23,7 +23,6 @@ function DoesClientThinkTheCharacterIsEligibleForFCM(characterID)
 	local errors = {};
 	
 	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbCharLocked, not hasVasRevoked)
-	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq, level >= 10);
 	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasMail, #mailSenders == 0);
 	CheckAddVASErrorString(errors, CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE, not IsCharacterVASLocked(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.FreeCharacterTransfer));

@@ -3,12 +3,14 @@ local DeathInfo =
 	Name = "DeathInfo",
 	Type = "System",
 	Namespace = "C_DeathInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetCorpseMapPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local DeathInfo =
 		{
 			Name = "GetDeathReleasePosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local DeathInfo =
 		{
 			Name = "GetGraveyardsForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +65,7 @@ local DeathInfo =
 		{
 			Name = "UseSelfResurrectOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,56 +81,67 @@ local DeathInfo =
 			Name = "AreaSpiritHealerInRange",
 			Type = "Event",
 			LiteralName = "AREA_SPIRIT_HEALER_IN_RANGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AreaSpiritHealerOutOfRange",
 			Type = "Event",
 			LiteralName = "AREA_SPIRIT_HEALER_OUT_OF_RANGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CemeteryPreferenceUpdated",
 			Type = "Event",
 			LiteralName = "CEMETERY_PREFERENCE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ConfirmXpLoss",
 			Type = "Event",
 			LiteralName = "CONFIRM_XP_LOSS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CorpseInInstance",
 			Type = "Event",
 			LiteralName = "CORPSE_IN_INSTANCE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CorpseInRange",
 			Type = "Event",
 			LiteralName = "CORPSE_IN_RANGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CorpseOutOfRange",
 			Type = "Event",
 			LiteralName = "CORPSE_OUT_OF_RANGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CorpsePositionUpdate",
 			Type = "Event",
 			LiteralName = "CORPSE_POSITION_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerAlive",
 			Type = "Event",
 			LiteralName = "PLAYER_ALIVE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerDead",
 			Type = "Event",
 			LiteralName = "PLAYER_DEAD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSkinned",
 			Type = "Event",
 			LiteralName = "PLAYER_SKINNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasFreeRepop", Type = "number", Nilable = false },
@@ -135,11 +151,13 @@ local DeathInfo =
 			Name = "PlayerUnghost",
 			Type = "Event",
 			LiteralName = "PLAYER_UNGHOST",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RequestCemeteryListResponse",
 			Type = "Event",
 			LiteralName = "REQUEST_CEMETERY_LIST_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isGossipTriggered", Type = "bool", Nilable = false },
@@ -149,6 +167,7 @@ local DeathInfo =
 			Name = "ResurrectRequest",
 			Type = "Event",
 			LiteralName = "RESURRECT_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inviter", Type = "cstring", Nilable = false },
@@ -158,6 +177,7 @@ local DeathInfo =
 			Name = "SelfResSpellChanged",
 			Type = "Event",
 			LiteralName = "SELF_RES_SPELL_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -201,6 +221,9 @@ local DeathInfo =
 				{ Name = "priority", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

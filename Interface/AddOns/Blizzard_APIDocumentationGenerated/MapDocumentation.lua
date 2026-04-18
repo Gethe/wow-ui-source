@@ -3,12 +3,14 @@ local Map =
 	Name = "MapUI",
 	Type = "System",
 	Namespace = "C_Map",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAreaInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local Map =
 		{
 			Name = "GetBestMapForUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only works for the player and party members." },
 
 			Arguments =
@@ -38,6 +41,7 @@ local Map =
 		{
 			Name = "GetBountySetIDForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +65,7 @@ local Map =
 		{
 			Name = "GetMapArtBackgroundAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +80,7 @@ local Map =
 		{
 			Name = "GetMapArtHelpTextPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +96,7 @@ local Map =
 			Name = "GetMapArtID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,6 +112,7 @@ local Map =
 			Name = "GetMapArtLayerTextures",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,6 +129,7 @@ local Map =
 			Name = "GetMapArtLayers",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -135,6 +144,7 @@ local Map =
 		{
 			Name = "GetMapBannersForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -150,6 +160,7 @@ local Map =
 			Name = "GetMapChildrenInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -167,6 +178,7 @@ local Map =
 			Name = "GetMapDisplayInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +194,7 @@ local Map =
 			Name = "GetMapGroupID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -197,6 +210,7 @@ local Map =
 			Name = "GetMapGroupMembersInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +226,7 @@ local Map =
 			Name = "GetMapHighlightInfoAtPosition",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -236,6 +251,7 @@ local Map =
 			Name = "GetMapInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,6 +267,7 @@ local Map =
 			Name = "GetMapInfoAtPosition",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -269,6 +286,7 @@ local Map =
 			Name = "GetMapLevels",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -286,6 +304,7 @@ local Map =
 		{
 			Name = "GetMapLinksForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -301,6 +320,7 @@ local Map =
 			Name = "GetMapPosFromWorldPos",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -319,6 +339,7 @@ local Map =
 			Name = "GetMapRectOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -337,6 +358,7 @@ local Map =
 		{
 			Name = "GetPlayerMapPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only works for the player and party members." },
 
 			Arguments =
@@ -354,6 +376,7 @@ local Map =
 			Name = "GetWorldPosFromMapPos",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -370,6 +393,7 @@ local Map =
 		{
 			Name = "MapHasArt",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,6 +408,7 @@ local Map =
 		{
 			Name = "RequestPreloadMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -398,21 +423,25 @@ local Map =
 			Name = "NewWmoChunk",
 			Type = "Event",
 			LiteralName = "NEW_WMO_CHUNK",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChanged",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedIndoors",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_INDOORS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedNewArea",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_NEW_AREA",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -490,6 +519,9 @@ local Map =
 				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

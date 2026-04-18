@@ -725,8 +725,9 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 		if not clubInfo then
 			return;
 		end
+
+        local memberInfo = entry:GetMemberInfo();
 		
-		local memberInfo = entry:GetMemberInfo();
 		if memberInfo and memberInfo.name then
 			local clubPrivileges = self:GetCommunitiesFrame():GetPrivilegesForClub(clubInfo.clubId);
 			local contextData =
@@ -739,6 +740,7 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 				isSelf = memberInfo.isSelf,
 				guid = memberInfo.guid,
 				isMobile = memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile,
+                isGuildMember = clubInfo.clubType == Enum.ClubType.Guild,
 			};
 			
 			local which = clubTypeToUnitPopup[clubInfo.clubType];

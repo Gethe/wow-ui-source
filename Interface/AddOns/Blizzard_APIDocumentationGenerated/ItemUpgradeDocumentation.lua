@@ -3,12 +3,14 @@ local ItemUpgrade =
 	Name = "ItemUpgrade",
 	Type = "System",
 	Namespace = "C_ItemUpgrade",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanUpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +44,7 @@ local ItemUpgrade =
 			Name = "GetItemUpgradeEffect",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +84,7 @@ local ItemUpgrade =
 		{
 			Name = "UpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,16 +99,19 @@ local ItemUpgrade =
 			Name = "ItemUpgradeFailed",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterUpdate",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -172,6 +179,7 @@ local ItemUpgrade =
 				{ Name = "levelStats", Type = "table", InnerType = "ItemUpgradeStat", Nilable = false },
 				{ Name = "currencyCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
 				{ Name = "itemCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeItemCost", Nilable = false },
+				{ Name = "moneyCost", Type = "WOWMONEY", Nilable = true },
 				{ Name = "failureMessage", Type = "string", Nilable = true },
 			},
 		},
@@ -197,6 +205,9 @@ local ItemUpgrade =
 				{ Name = "active", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

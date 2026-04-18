@@ -69,12 +69,12 @@ function InspectGlyphMixin:OnShow()
 end
 
 function InspectGlyphMixin:OnClick()
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.glyphID then
 			local glyphSlotIndex = self:GetID();
 			local link = C_GlyphInfo.GetGlyphLink(glyphSlotIndex, self.glyphID);
 			if link then
-				ChatEdit_InsertLink(link);
+				ChatFrameUtil.InsertLink(link);
 			end
 		end
 	end
@@ -123,7 +123,7 @@ function InspectGlyphMixin:UpdateSlot(clear)
 	else
 		self.glyphID = glyphID;
 		if ( iconFilename ) then
-			SetPortraitToTexture(self.glyph, iconFilename);
+			self.glyph:SetTexture(iconFilename);
 		else
 			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
 		end
@@ -165,7 +165,7 @@ function InspectSpecMixin:OnShow()
 		if(role1 ~= nil) then
 			local id, name, description, icon, background = GetSpecializationInfoByID(spec);
 			self.specIcon:Show();
-			SetPortraitToTexture(self.specIcon, icon);
+			self.specIcon:SetTexture(icon);
 			self.specName:SetText(name);
 			self.roleIcon:Show();
 			self.roleName:SetText(_G[role1]);
@@ -224,7 +224,7 @@ function InspectTalentButtonMixin:OnClick()
 		local _, _, classID = UnitClass(INSPECTED_UNIT);
 		local link = GetTalentLink(self:GetID(), InspectTalentFrame.InspectTalents.inspect, classID);
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	end
 end

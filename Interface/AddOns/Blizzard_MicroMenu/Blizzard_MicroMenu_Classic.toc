@@ -1,0 +1,15 @@
+## Title: Blizzard_MicroMenu
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: classic
+## AllowLoad: Game
+
+Shared\MicroMenuUtil.lua
+
+Classic\MainMenuBarMicroButtons.lua
+Classic\MainMenuBarMicroButtons.xml
+
+Shared\MicroMenuContainer.lua
+Vanilla\MicroMenuContainerOverrides.lua [AllowLoadGameType vanilla, tbc]
+[Game]\MicroMenuContainerOverrides.lua [AllowLoadGameType wrath, cata, mists]
+Classic\MicroMenuContainer.xml

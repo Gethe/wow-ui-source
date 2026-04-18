@@ -3,12 +3,14 @@ local BarberShopInternal =
 	Name = "BarberShop",
 	Type = "System",
 	Namespace = "C_BarberShopInternal",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "SetQAMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,9 @@ local BarberShopInternal =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

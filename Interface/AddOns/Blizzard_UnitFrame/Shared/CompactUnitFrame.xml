@@ -1,0 +1,103 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" mixin="BasePrivateAuraBehaviorMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxPrivateAuras" value="5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="background" atlas="raidframe-hp-bg-white" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture name="$parentMyHealPrediction" parentKey="myHealPrediction"/>
+				<Texture name="$parentOtherHealPrediction" parentKey="otherHealPrediction"/>
+				<Texture name="$parentTotalAbsorb" parentKey="totalAbsorb"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture name="$parentTotalAbsorbOverlay" parentKey="totalAbsorbOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.totalAbsorb"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.totalAbsorb"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TotalAbsorbLeftShadow" atlas="!raidframe-absorb-edge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.totalAbsorb"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.totalAbsorb"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name" wordwrap="false"/>
+				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
+				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon">
+					<Size x="17" y="17"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentMyHealAbsorb" parentKey="myHealAbsorb"/>
+				<Texture name="$parentMyHealAbsorbOverlay" parentKey="myHealAbsorbOverlay" alpha="0.2"/>
+				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" atlas="!raidframe-absorb-edge" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
+				<Texture name="$parentOverHealAbsorbGlow" parentKey="overHealAbsorbGlow"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight" atlas="RaidFrame-AgroFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" atlas="RaidFrame-TargetFrame" ignoreParentAlpha="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHealthBar" parentKey="healthBar" useParentLevel="true">
+				<BarTexture atlas="RaidFrame-Hp-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" horizTile="true" vertTile="true"/>
+			</StatusBar>
+			<StatusBar name="$parentTempMaxHealthLoss" parentKey="TempMaxHealthLoss" hidden="true" drawLayer="ARTWORK" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+				<BarTexture atlas="_RaidFrame-Resource-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" horizTile="true" vertTile="true" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentPowerBar" parentKey="powerBar" frameLevel="5">
+				<Size x="0" y="16"/>
+				<BarTexture atlas="_RaidFrame-Resource-Fill" hWrapMode="REPEAT" vWrapMode="CLAMP"/>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture name="$parentBackground" parentKey="background" atlas="_RaidFrame-Resource-Background" hWrapMode="REPEAT" vWrapMode="CLAMP" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<Button name="$parentCenterStatusIcon" parentKey="centerStatusIcon" frameLevel="110" registerForClicks="LeftButtonDown,RightButtonUp" propagateMouseInputMask="Motion" mixin="CompactUnitFrameCenterStatusIconMixin">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentReadyCheckIcon" parentKey="readyCheckIcon" ignoreParentAlpha="true" mixin="CompactUnitFrameReadyCheckMixin" frameLevel="120">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" ignoreParentAlpha="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CompactUnitFrame_OnLoad"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnShow function="CompactUnitFrame_OnShow"/>
+			<OnHide function="CompactUnitFrame_OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

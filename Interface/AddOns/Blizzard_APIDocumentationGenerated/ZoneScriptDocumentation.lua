@@ -2,6 +2,7 @@ local ZoneScript =
 {
 	Name = "ZoneScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -26,6 +27,7 @@ local ZoneScript =
 		{
 			Name = "GetRealZoneText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +64,9 @@ local ZoneScript =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -1,6 +1,5 @@
 
 -- globals
-MULTICASTACTIONBAR_SLIDETIME = 0.09;
 MULTICASTACTIONBAR_YPOS = 0;
 MULTICASTACTIONBAR_XPOS = 30;
 NUM_MULTI_CAST_PAGES = 3;
@@ -218,18 +217,13 @@ function MultiCastActionBarFrame_OnLoad(self)
 	MultiCastSummonSpellButton:SetID(self.currentPage);
 
 	self.numActiveSlots = 0;
+	self:OnSystemLoad();
+	EventRegistry:RegisterCallback("MainActionBarMixin.UpdateEndCaps", self.OnUpdateEndCaps, self);
 end
 
 function MultiCastActionBarFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_MULTI_CAST_ACTIONBAR" ) then
 		MultiCastActionBarFrame_Update(self);
-		if ( HasMultiCastActionBar() ) then
-			ShowMultiCastActionBar();
-			LockMultiCastActionBar();
-		else
-			UnlockMultiCastActionBar();
-			HideMultiCastActionBar();
-		end
 	end
 end
 
@@ -262,39 +256,6 @@ function MultiCastActionBarFrame_OnUpdate(self, elapsed)
 		end
 		self.mode = "none";
 	end
-end
-
-function ShowMultiCastActionBar(doNotSlide)
-	if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI
-		if ( (MultiCastActionBarFrame.mode ~= "show" and MultiCastActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
-			MultiCastActionBarFrame:Show();
-			if ( MultiCastActionBarFrame.completed ) then
-				MultiCastActionBarFrame.slideTimer = 0;
-			end
-			MultiCastActionBarFrame.timeToSlide = MULTICASTACTIONBAR_SLIDETIME;
-			MultiCastActionBarFrame.mode = "show";
-		end
-	end
-end
-
-function HideMultiCastActionBar()
-	if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI
-		if ( (MultiCastActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
-			if ( MultiCastActionBarFrame.completed ) then
-				MultiCastActionBarFrame.slideTimer = 0;
-			end
-			MultiCastActionBarFrame.timeToSlide = MULTICASTACTIONBAR_SLIDETIME;
-			MultiCastActionBarFrame.mode = "hide";
-		end
-	end
-end
-
-function LockMultiCastActionBar()
-	MultiCastActionBarFrame.locked = true;
-end
-
-function UnlockMultiCastActionBar()
-	MultiCastActionBarFrame.locked = false;
 end
 
 function MultiCastActionBarFrame_Update(self)
@@ -347,15 +308,29 @@ function MultiCastActionBarFrame_Update(self)
 	end
 
 	self.numActiveSlots = slotIndex - 1;
-	if ( self.numActiveSlots == 0 ) then
-		self:Hide();
-		return;
-	end
-	self:Show();
+	self:UpdateShownState();
 
-	-- update the multi cast spells
-	MultiCastSummonSpellButton_Update(MultiCastSummonSpellButton);
-	MultiCastRecallSpellButton_Update(MultiCastRecallSpellButton);
+	if self:IsShown() then
+		-- update the multi cast spells
+		MultiCastSummonSpellButton_Update(MultiCastSummonSpellButton);
+		MultiCastRecallSpellButton_Update(MultiCastRecallSpellButton);
+	end
+end
+
+TotemActionBarMixin = { }
+
+function TotemActionBarMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function TotemActionBarMixin:UpdateShownState()
+	self:SetShown((self.isInEditMode or self.numActiveSlots > 0) and self.mainBarIsShown);
+end
+
+function TotemActionBarMixin:OnUpdateEndCaps(show)
+	self.mainBarIsShown = show;
+	self:UpdateShownState();
 end
 
 function HasMultiCastActionBar()
@@ -433,17 +408,18 @@ function MultiCastActionButton_OnLoad(self)
 	-- fixup textures
 	local name = self:GetName();
 	local normalTexture = _G[name.."NormalTexture"];
-	normalTexture:SetWidth(50);
-	normalTexture:SetHeight(50);
+	normalTexture:SetWidth(30);
+	normalTexture:SetHeight(30);
+	self.Arrow:Hide();
 
 	-- setup action button stuff
 	self.buttonType = "MULTICASTACTIONBUTTON";
 	self.buttonIndex = self:GetID();
-	ActionButton_OnLoad(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnLoad(self);
 end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
-	ActionButton_OnEvent(self, event, ...);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnEvent(self, event, ...);
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastActionButton_OnEnter(self);
@@ -459,7 +435,7 @@ end
 
 function MultiCastActionButton_OnEnter(self)
 	MultiCastSlotButton_OnEnter(self.slotButton);
-	ActionButton_SetTooltip(self);
+	self:SetTooltip();
 end
 
 function MultiCastActionButton_OnLeave(self)
@@ -468,7 +444,7 @@ function MultiCastActionButton_OnLeave(self)
 end
 
 function MultiCastActionButton_OnPostClick(self, button, down)
-	ActionButton_UpdateState(self, button, down);
+	self:UpdateState();
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 end
 
@@ -478,9 +454,9 @@ function MultiCastActionButton_Update(self, id, index, slot)
 	if ( slot == 0 ) then
 		self:Hide();
 	else
-		ActionButton_UpdateAction(self);
-		ActionButton_Update(self);
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateAction();
+		ActionBarActionButtonDerivedMixin.Update(self);
+		self:UpdateHotkeys(self.buttonType);
 
 		-- fixup textures
 		local tcoords;
@@ -495,20 +471,14 @@ function MultiCastActionButtonDown(id)
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
-	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
-	end
+	TryUseActionButton(button, true);
 end
 
 function MultiCastActionButtonUp(id)
 	local button = _G["MultiCastActionButton"..id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		if (not GetCVarBool("ActionButtonUseKeyDown")) then
-			SecureActionButton_OnClick(button, "LeftButton");
-			ActionButton_UpdateState(button);
-		end
+		TryUseActionButton(button, false);
 	end
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 end
@@ -533,7 +503,7 @@ function MultiCastFlyoutButton_OnClick(self)
 		if ( type == "page" ) then
 			ChangeMultiCastActionPage(self.page);
 		elseif ( type == "slot" ) then
-			SetMultiCastSpell(ActionButton_CalculateAction(parent.parent.actionButton), self.spellId);
+			SetMultiCastSpell(parent.parent.actionButton:CalculateAction(), self.spellId);
 		end
 	end
 
@@ -707,7 +677,7 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 			-- setup the button
 			button.page = i;
 			button.spellId = spellId;
-			name, _, icon = GetSpellInfo(spellId);
+			icon = C_Spell.GetSpellTexture(spellId);
 			button.icon:SetTexture(icon);
 			button.icon:SetTexCoord(0.0, 1.0, 0.0, 1.0);
 
@@ -777,7 +747,7 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, slot, ...)
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = tcoords.left, tcoords.right, tcoords.top, tcoords.bottom;
 		else
 			spellId = select(i - 1, ...);
-			name, _, icon = GetSpellInfo(spellId);
+			icon = C_Spell.GetSpellTexture(spellId);
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = 0.0, 1.0, 0.0, 1.0;
 		end
 		button.spellId = spellId;
@@ -853,13 +823,14 @@ function MultiCastSpellButton_OnLoad(self)
 
 	local name = self:GetName();
 	local normalTexture = _G[name.."NormalTexture"];
-	normalTexture:SetWidth(50);
-	normalTexture:SetHeight(50);
+	normalTexture:SetWidth(30);
+	normalTexture:SetHeight(30);
+	self.Arrow:Hide();
 end
 
 function MultiCastSpellButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		MultiCastSpellButton_UpdateCooldown(self);
 	elseif ( event == "ACTIONBAR_UPDATE_STATE" ) then
@@ -890,8 +861,12 @@ end
 
 function MultiCastSpellButton_UpdateCooldown(self)
 	local cooldown = _G[self:GetName().."Cooldown"];
-	local start, duration, enable = GetSpellCooldown(self.spellId);
-	CooldownFrame_Set(cooldown, start, duration, enable);
+	local cooldownInfo = C_Spell.GetSpellCooldown(self.spellId);
+	if ( cooldownInfo ) then
+		CooldownFrame_Set(cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+	else
+		CooldownFrame_Clear(cooldown);
+	end
 end
 
 function MultiCastSpellButton_UpdateState(self)
@@ -958,7 +933,7 @@ function MultiCastSummonSpellButton_Update(self)
 	local spellId = knownMultiCastSummonSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local icon = C_Spell.GetSpellTexture(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 
@@ -969,7 +944,7 @@ function MultiCastSummonSpellButton_Update(self)
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self.eventsRegistered = true;
 		end
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 		MultiCastSpellButton_UpdateCooldown(self);
 
 		if ( GameTooltip:GetOwner() == self ) then
@@ -1039,7 +1014,7 @@ function MultiCastRecallSpellButton_Update(self)
 	local spellId = knownMultiCastRecallSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local icon = C_Spell.GetSpellTexture(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 
@@ -1050,7 +1025,7 @@ function MultiCastRecallSpellButton_Update(self)
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self.eventsRegistered = true;
 		end
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 		MultiCastSpellButton_UpdateCooldown(self);
 
 		if ( GameTooltip:GetOwner() == self ) then

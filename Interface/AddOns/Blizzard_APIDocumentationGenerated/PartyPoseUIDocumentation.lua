@@ -3,6 +3,7 @@ local PartyPoseUI =
 	Name = "PartyPose",
 	Type = "System",
 	Namespace = "C_PartyPose",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local PartyPoseUI =
 			Name = "ShowPartyPoseUI",
 			Type = "Event",
 			LiteralName = "SHOW_PARTY_POSE_UI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -42,6 +44,9 @@ local PartyPoseUI =
 				{ Name = "flags", Type = "PartyPoseFlags", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

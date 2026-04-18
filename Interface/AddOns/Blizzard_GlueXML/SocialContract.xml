@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="SocialContractFrame" mixin="SocialContractFrameMixin" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
+	<Frame name="SocialContractFrame" inherits="DefaultScaleFrame" mixin="SocialContractFrameMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
 		<Size x="510" y="632"/>
 		<Anchors>
 			<Anchor point="TOP" x="6" y="-110"/>
@@ -102,7 +102,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown function="nop"/>

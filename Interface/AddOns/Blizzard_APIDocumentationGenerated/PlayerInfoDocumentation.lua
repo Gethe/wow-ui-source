@@ -3,12 +3,14 @@ local PlayerInfo =
 	Name = "PlayerInfo",
 	Type = "System",
 	Namespace = "C_PlayerInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanUseItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +53,7 @@ local PlayerInfo =
 		{
 			Name = "GetPetStableCreatureDisplayInfoID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +78,7 @@ local PlayerInfo =
 		{
 			Name = "HasVisibleInvSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +106,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isMirrorImage", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPlayerInRPE",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInRPE", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -138,6 +151,9 @@ local PlayerInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -3,12 +3,14 @@ local QuestTaskInfo =
 	Name = "QuestTaskInfo",
 	Type = "System",
 	Namespace = "C_TaskQuest",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "DoesMapShowTaskQuestObjectives",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local QuestTaskInfo =
 			Name = "GetQuestInfoByQuestID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +45,7 @@ local QuestTaskInfo =
 			Name = "GetQuestLocation",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +63,7 @@ local QuestTaskInfo =
 			Name = "GetQuestProgressBarInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local QuestTaskInfo =
 			Name = "GetQuestTimeLeftMinutes",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +95,7 @@ local QuestTaskInfo =
 			Name = "GetQuestTimeLeftSeconds",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +111,7 @@ local QuestTaskInfo =
 			Name = "GetQuestZoneID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +127,7 @@ local QuestTaskInfo =
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,6 +151,7 @@ local QuestTaskInfo =
 		{
 			Name = "IsActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +166,7 @@ local QuestTaskInfo =
 		{
 			Name = "RequestPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -169,6 +180,9 @@ local QuestTaskInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

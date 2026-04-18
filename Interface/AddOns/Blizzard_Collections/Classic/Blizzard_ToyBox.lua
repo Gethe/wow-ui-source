@@ -94,7 +94,7 @@ function ToyBox_OnShow(self)
 	end
 
 	--CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\ICONS\\inv_misc_toy_10");
+	self:GetParent().portrait:SetTexture("Interface\\ICONS\\inv_misc_toy_10");
 
 
 	C_ToyBox.ForceToyRefilter();
@@ -210,7 +210,7 @@ function ToySpellButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local itemLink = C_ToyBox.GetToyLink(self.itemID);
 		if ( itemLink ) then
-			ChatEdit_InsertLink(itemLink);
+			ChatFrameUtil.InsertLink(itemLink);
 		end
 	end
 end

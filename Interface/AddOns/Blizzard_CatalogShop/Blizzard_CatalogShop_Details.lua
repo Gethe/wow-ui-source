@@ -69,12 +69,13 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 	local function GetDetailContainerDataProvider()
 		local dataProvider = CreateDataProvider();
 		for _, childInfo in ipairs(self.bundleChildInfo) do
-			local productInfo = CatalogShopFrame:GetProductInfo(childInfo.childProductID);
+			local productInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
 			if productInfo and (not productInfo.isHidden) then
 				productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
 				productInfo.isBundleChild = true;
 				productInfo.displayOrder = childInfo.displayOrder;
 				productInfo.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childInfo.childProductID);
+				productInfo.quantityInBundle = childInfo.quantityInBundle;
 				dataProvider:Insert(productInfo);
 			end
 		end
@@ -94,6 +95,8 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 			EventRegistry:TriggerEvent("CatalogShop.OnBundleChildSelected", productInfo);
 		end);
+
+		EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", frame.OnProductInfoChanged, frame);
 	end
 
 	local function GetDetailContainerElementFactory(factory, elementData)		
@@ -106,6 +109,12 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
 			-- Toy
 			factory(CatalogShopConstants.CardTemplate.DetailsToys, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+			-- Decor
+			factory(CatalogShopConstants.CardTemplate.DetailsDecor, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Room then
+			-- Room
+			factory(CatalogShopConstants.CardTemplate.DetailsRoom, InitializeButton);
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.TradersTenders then
 			-- Trader's Tender
 			factory(CatalogShopConstants.CardTemplate.DetailsTender, InitializeButton);
@@ -115,6 +124,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
 			-- Access
 			factory(CatalogShopConstants.CardTemplate.DetailsAccess, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.HousingExteriorType then
+			-- House exterior type
+			factory(CatalogShopConstants.CardTemplate.DetailsExteriorType, InitializeButton);
 		else
 			factory(CatalogShopConstants.CardTemplate.Details, InitializeButton);
 		end

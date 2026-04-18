@@ -1,0 +1,1 @@
+Kiosk.AllowedMapIDs = {};

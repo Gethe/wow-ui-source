@@ -3,6 +3,7 @@ local Minimap =
 	Name = "Minimap",
 	Type = "System",
 	Namespace = "C_Minimap",
+	Environment = "All",
 
 	Functions =
 	{
@@ -20,25 +21,9 @@ local Minimap =
 			},
 		},
 		{
-			Name = "GetObjectIconTextureCoords",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "index", Type = "number", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "textureCoordsX", Type = "number", Nilable = false },
-				{ Name = "textureCoordsY", Type = "number", Nilable = false },
-				{ Name = "textureCoordsZ", Type = "number", Nilable = false },
-				{ Name = "textureCoordsW", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetPOITextureCoords",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +41,7 @@ local Minimap =
 		{
 			Name = "GetTrackingInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +56,7 @@ local Minimap =
 		{
 			Name = "SetTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,9 +72,12 @@ local Minimap =
 			Name = "MinimapPing",
 			Type = "Event",
 			LiteralName = "MINIMAP_PING",
+			SecretPayloads = true,
+			HasRestrictions = true,
+			CallbackEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 			},
@@ -96,16 +86,19 @@ local Minimap =
 			Name = "MinimapUpdateTracking",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_TRACKING",
+			UniqueEvent = true,
 		},
 		{
 			Name = "MinimapUpdateZoom",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PlayerInsideQuestBlobStateChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -138,6 +131,9 @@ local Minimap =
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

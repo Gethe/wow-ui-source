@@ -878,7 +878,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 	end
 	if ( InRepairMode() and repairCost and (repairCost > 0) ) then
 		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
+		GameTooltip_AddMoneyLine(GameTooltip, repairCost);
 		GameTooltip:Show();
 	else
 		CursorUpdate(self);

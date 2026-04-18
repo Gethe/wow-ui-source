@@ -28,17 +28,6 @@ AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
 INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
 INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
 
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
-
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
 FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
 FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
@@ -121,7 +110,6 @@ MAX_GOLD_WITHDRAW_DIGITS = 9;
 MAX_ITEM_WITHDRAW_DIGITS = 6;
 
 -- Quest
-
 MAX_QUESTS = 25;
 MAX_OBJECTIVES = 20;
 MAX_QUESTLOG_QUESTS = 25;
@@ -136,7 +124,6 @@ WOW_PROJECT_MISTS_CLASSIC = 19;
 WOW_PROJECT_ID = WOW_PROJECT_WRATH_CLASSIC;
 
 -- Transmog
-ENCHANT_EMPTY_SLOT_FILEDATAID = 134941;
 WARDROBE_TOOLTIP_CYCLE_ARROW_ICON = "|TInterface\\Transmogrify\\transmog-tooltip-arrow:12:11:-1:-1|t";
 WARDROBE_TOOLTIP_CYCLE_SPACER_ICON = "|TInterface\\Common\\spacer:12:11:-1:-1|t";
 WARDROBE_CYCLE_KEY = "TAB";
@@ -145,24 +132,7 @@ WARDROBE_NEXT_VISUAL_KEY = "RIGHT";
 WARDROBE_UP_VISUAL_KEY = "UP";
 WARDROBE_DOWN_VISUAL_KEY = "DOWN";
 
-TRANSMOG_INVALID_CODES = {
-	"NO_ITEM",
-	"NOT_SOULBOUND",
-	"LEGENDARY",
-	"ITEM_TYPE",
-	"DESTINATION",
-	"MISMATCH",
-	"",		-- same item
-	"",		-- invalid source
-	"",		-- invalid source quality
-	"CANNOT_USE",
-	"SLOT_FOR_RACE",
-	"",		-- no illusion
-	"SLOT_FOR_FORM",
-}
-
 TRANSMOG_SOURCE_BOSS_DROP = 1;
 FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand;
 LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues - 1;
 NO_TRANSMOG_VISUAL_ID = 0;
-REMOVE_TRANSMOG_ID = 0;

@@ -3,19 +3,19 @@
 	RegisterSetting(..., nil, "boolean", true);
 	RegisterSetting(..., Settings.VarType.Bool, Settings.Defaults.True)
 --]]
-Settings = 
+Settings =
 {
 	CannotDefault = nil,
 };
 
-Settings.VarType = 
+Settings.VarType =
 {
 	Boolean = "boolean",
 	String = "string",
 	Number = "number",
 };
 
-Settings.Default = 
+Settings.Default =
 {
 	True = true,
 	False = false,
@@ -23,14 +23,18 @@ Settings.Default =
 
 Settings.CategorySet = EnumUtil.MakeEnum("Game", "AddOns");
 
+-- Used for adding different types of controls to SettingsControlTextContainerMixin.
+Settings.ControlType = EnumUtil.MakeEnum("Radio", "Checkbox");
+
 Settings.CommitFlag = FlagsUtil.MakeFlags(
-	"ClientRestart", 
-	"GxRestart", 
-	"UpdateWindow", 
-	"SaveBindings", 
-	"Revertable", 
+	"ClientRestart",
+	"GxRestart",
+	"UpdateWindow",
+	"SaveBindings",
+	"Revertable",
 	"Apply",
-	"IgnoreApply"
+	"IgnoreApply",
+	"KioskProtected"
 );
 Settings.CommitFlag.None = 0;
 
@@ -137,7 +141,7 @@ function Settings.SetKeybindingsCategory(category)
 end
 
 function Settings.OpenToCategory(categoryID, scrollToElementName)
-	return SettingsInbound.OpenToCategory(categoryID, scrollToElementName);
+	C_SettingsUtil.OpenSettingsPanel(categoryID, scrollToElementName);
 end
 
 function Settings.SafeLoadBindings(bindingSet)
@@ -237,8 +241,18 @@ function SettingsControlTextContainerMixin:GetData()
 	return self.data;
 end
 
+local function CreateTextContainerData(value, label, tooltip, controlType)
+	return {text = label, label = label, tooltip = tooltip, value = value, controlType = controlType };
+end
+
 function SettingsControlTextContainerMixin:Add(value, label, tooltip)
-	local data = {text = label, label = label, tooltip = tooltip, value = value};
+	local data = CreateTextContainerData(value, label, tooltip, Settings.ControlType.Radio);
+	table.insert(self.data, data);
+	return data;
+end
+
+function SettingsControlTextContainerMixin:AddCheckbox(value, label, tooltip)
+	local data = CreateTextContainerData(value, label, tooltip, Settings.ControlType.Checkbox);
 	table.insert(self.data, data);
 	return data;
 end
@@ -247,6 +261,17 @@ function Settings.CreateControlTextContainer()
 	local container = CreateFromMixins(SettingsControlTextContainerMixin);
 	container:Init();
 	return container;
+end
+
+function Settings.GetCVarMask(cvar, enumGroup, enumValueOffset)
+	local bitOffset = enumValueOffset or 1;
+	local mask = 0;
+	for _, enumValue in pairs(enumGroup) do
+		if enumValue > 0 and GetCVarBitfield(cvar, enumValue) then
+			mask = bit.bor(mask, bit.lshift(1, enumValue - bitOffset));
+		end
+	end
+	return mask;
 end
 
 function Settings.WrapTooltipWithBinding(tooltipString, action)
@@ -273,7 +298,7 @@ end
 
 SettingsSliderOptionsMixin = {};
 
-function SettingsSliderOptionsMixin:SetLabelFormatter(labelType, value)	
+function SettingsSliderOptionsMixin:SetLabelFormatter(labelType, value)
 	if not self.formatters then
 		self.formatters = {};
 	end
@@ -303,7 +328,7 @@ function Settings.CreateModifiedClickOptions(tooltips, mustChooseKey)
 end
 
 function Settings.CreateSettingInitializerData(setting, options, tooltip)
-	local data = 
+	local data =
 	{
 		setting = setting,
 		name = setting:GetName(),
@@ -345,6 +370,10 @@ function Settings.CreateDropdownInitializer(setting, options, tooltip)
 	return Settings.CreateControlInitializer("SettingsDropdownControlTemplate", setting, options, tooltip);
 end
 
+function Settings.CreateColorSwatchInitializer(setting, options, tooltip)
+	return Settings.CreateControlInitializer("SettingsColorSwatchControlTemplate", setting, options, tooltip);
+end
+
 local function AddInitializerToLayout(category, initializer)
 	local layout = SettingsPanel:GetLayout(category);
 	layout:AddInitializer(initializer);
@@ -356,6 +385,12 @@ end
 
 function Settings.CreateCheckboxWithOptions(category, setting, options, tooltip)
 	local initializer = Settings.CreateCheckboxInitializer(setting, options, tooltip);
+	AddInitializerToLayout(category, initializer);
+	return initializer;
+end
+
+function Settings.CreateColorSwatch(category, setting, tooltip, options)
+	local initializer = Settings.CreateColorSwatchInitializer(setting, options, tooltip);
 	AddInitializerToLayout(category, initializer);
 	return initializer;
 end
@@ -385,7 +420,7 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 			if isDefault then
 				defaultOption = option;
 			end
-			
+
 			if option.warning then
 				warningOption = option;
 			end
@@ -426,12 +461,12 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 			local coloredLabel =  GREEN_FONT_COLOR:WrapTextInColorCode(defaultOption.label);
 			GameTooltip_AddHighlightLine(SettingsTooltip, string.format("%s: %s", VIDEO_OPTIONS_RECOMMENDED, coloredLabel));
 		end
-		
+
 		if warningOption and warningOption.value == setting:GetValue() then
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddNormalLine(SettingsTooltip, WARNING_FONT_COLOR:WrapTextInColorCode(warningOption.warning));
 		end
-		
+
 		if setting:HasCommitFlag(Settings.CommitFlag.ClientRestart) then
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddErrorLine(SettingsTooltip, VIDEO_OPTIONS_NEED_CLIENTRESTART);
@@ -440,81 +475,55 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 	return InitTooltip;
 end
 
-function Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected)
-	local truncated = false;
-
-	local function OnEnter(button)
-		button.HighlightBGTex:SetAlpha(0.15);
-
-		local description = button:GetElementDescription();
-		if description:IsEnabled() and not description:IsSelected() then
-			button.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		end
-
-		if truncated then
-			MenuUtil.ShowTooltip(button, function(tooltip)
-				GameTooltip_SetTitle(tooltip, optionData.label);
-			end);
-		end
-
-		if optionData.onEnter then
-			optionData.onEnter(optionData);
-		end
-	end
-
-	local function OnLeave(button)
-		button.HighlightBGTex:SetAlpha(0);
-
-		local description = button:GetElementDescription();
-		if description:IsEnabled() and not description:IsSelected() then
-			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
-		end
-
-		MenuUtil.HideTooltip(button);
-	end
-
-	optionDescription:AddInitializer(function(button, description, menu)
-		button:SetScript("OnClick", function(button, buttonName)
-			description:Pick(MenuInputContext.MouseButton, buttonName);
-		end);
-
-		-- This button template is modified in Languages.lua to hide the text and display
-		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
-		-- about that texture here because it is managed by the compositor.
-		button.Text:Show();
-		button.Text:SetTextToFit(optionData.label);
-		button.Text:SetWidth(button.Text:GetWidth() + 10);
-
-		button.HighlightBGTex:SetAlpha(0);
-
-		local fontColor = nil;
-		if description:IsSelected() then
-			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
-		elseif description:IsEnabled() then
-			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
-		else
-			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		end
-
-		truncated = button.Text:IsTruncated();
-
-		button:Layout();
-	end);
-
+function Settings.CreateDropdownButton(rootDescription, optionData, isSelected, setSelected)
+	local optionDescription = rootDescription:CreateHighlightRadio(optionData.label, isSelected, setSelected, optionData, optionData.onEnter);
 	MenuUtil.SetElementText(optionDescription, optionData.text);
-	optionDescription:SetIsSelected(isSelected);
-	optionDescription:SetResponder(setSelected);
-	optionDescription:SetOnEnter(OnEnter); 
-	optionDescription:SetOnLeave(OnLeave);
-	optionDescription:SetRadio(true);
-	optionDescription:SetData(optionData);
+	return optionDescription;
 end
 
-function Settings.CreateDropdownOptionInserter(options)
-	local function Inserter(rootDescription, isSelected, setSelected)
-		for index, optionData in ipairs(options()) do
-			local optionDescription = rootDescription:CreateTemplate("SettingsDropdownButtonTemplate");
-			Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected);
+function Settings.CreateDropdownCheckbox(rootDescription, optionData, isSelected, setSelected)
+	local optionsDescription = rootDescription:CreateCheckbox(optionData.label, isSelected, setSelected, optionData);
+	MenuUtil.SetElementText(optionsDescription, optionData.text);
+
+	-- Move checkboxes in options dropdowns a bit further from the left side of the dropdown than normal.
+	local function CheckBoxInitializer(frame, description, menu)
+		frame.leftTexture1:SetPoint("LEFT", frame, "LEFT", 4, 0);
+	end
+	optionsDescription:AddInitializer(CheckBoxInitializer);
+
+	return optionDescription;
+end
+
+function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
+	local function Inserter(setting, rootDescription)
+		for index, optionData in ipairs(optionsFunc()) do
+			if optionData.controlType == Settings.ControlType.Radio then
+				local function IsSelected(optionData)
+					return setting:GetValue() == optionData.value;
+				end
+
+				local function SetSelected(optionData)
+					return setting:SetValue(optionData.value);
+				end
+				Settings.CreateDropdownButton(rootDescription, optionData, IsSelected, SetSelected);
+			elseif optionData.controlType == Settings.ControlType.Checkbox then
+				local function IsSelected(optionData)
+					local settingMask = setting:GetValue();
+					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
+					return bit.band(settingMask, optionMask) ~= 0;
+				end
+
+				local function SetSelected(optionData)
+					local settingMask = setting:GetValue();
+					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
+					local newMask = bit.bxor(settingMask, optionMask);
+					setting:SetValue(newMask);
+				end
+
+				Settings.CreateDropdownCheckbox(rootDescription, optionData, IsSelected, SetSelected);
+			else
+				assertsafe(false, "Unhandled control type %s for optionData.", tostring(optionData.controlType));
+			end
 		end
 	end
 	return Inserter;
@@ -528,31 +537,21 @@ function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
 		settingValue = setting:GetValue();
 	end
 	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
-	
-	local function IsSelected(optionData)
-		return setting:GetValue() == optionData.value;
-	end
-	
-	local function OnSelect(optionData)
-		return setting:SetValue(optionData.value);
-	end
 
 	dropdown:SetDefaultText(CUSTOM);
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
-
-		-- Settings.CreateDropdownOptionInserter
-		elementInserter(rootDescription, IsSelected, OnSelect);
+		elementInserter(setting, rootDescription);
 	end);
-	
+
 	dropdown:SetTooltipFunc(initTooltip);
 	dropdown:SetDefaultTooltipAnchors();
-	
+
 	dropdown:SetScript("OnEnter", function()
 		ButtonStateBehaviorMixin.OnEnter(dropdown);
 		DefaultTooltipMixin.OnEnter(dropdown);
 	end);
-	
+
 	dropdown:SetScript("OnLeave", function()
 		ButtonStateBehaviorMixin.OnLeave(dropdown);
 		DefaultTooltipMixin.OnLeave(dropdown);
@@ -581,6 +580,12 @@ function Settings.SetupModifiedClickDropdown(category, variable, defaultKey, lab
 	local options = Settings.CreateModifiedClickOptions(tooltips, mustChooseKey);
 	local setting = Settings.RegisterModifiedClickSetting(category, variable, label, defaultKey);
 	local initializer = Settings.CreateDropdown(category, setting, options, tooltip);
+	return setting, initializer;
+end
+
+function Settings.SetupCVarColorSwatch(category, variable, label, tooltip)
+	local setting = Settings.RegisterCVarSetting(category, variable, "string", label);
+	local initializer = Settings.CreateColorSwatch(category, setting, tooltip);
 	return setting, initializer;
 end
 
@@ -628,7 +633,10 @@ function Settings.LoadAddOnCVarWatcher(cvar, addOn)
 		UIParentLoadAddOn(addOn);
 	else
 		local function OnValueChanged(o, setting, value)
-			UIParentLoadAddOn(addOn);
+			-- Only load addons for CVars that are being turned on, not off, to avoid unnecessary loading.
+			if value then
+				UIParentLoadAddOn(addOn);
+			end
 		end
 		Settings.SetOnValueChangedCallback(cvar, OnValueChanged);
 	end

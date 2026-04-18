@@ -19,6 +19,9 @@ local SeasonsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SeasonsConstants);

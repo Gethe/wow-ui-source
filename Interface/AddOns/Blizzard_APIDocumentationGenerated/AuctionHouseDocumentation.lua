@@ -3,12 +3,14 @@ local AuctionHouse =
 	Name = "AuctionHouse",
 	Type = "System",
 	Namespace = "C_AuctionHouse",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CalculateCommodityDeposit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +27,7 @@ local AuctionHouse =
 		{
 			Name = "CalculateItemDeposit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,7 @@ local AuctionHouse =
 		{
 			Name = "CanCancelAuction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +60,7 @@ local AuctionHouse =
 			Name = "CancelAuction",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +82,7 @@ local AuctionHouse =
 		{
 			Name = "ConfirmCommoditiesPurchase",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +94,7 @@ local AuctionHouse =
 			Name = "ConfirmPostCommodity",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +108,7 @@ local AuctionHouse =
 			Name = "ConfirmPostItem",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,6 +131,7 @@ local AuctionHouse =
 		{
 			Name = "GetAuctionInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -137,6 +146,7 @@ local AuctionHouse =
 		{
 			Name = "GetAuctionItemSubClasses",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,6 +161,7 @@ local AuctionHouse =
 		{
 			Name = "GetAvailablePostCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -165,6 +176,7 @@ local AuctionHouse =
 		{
 			Name = "GetBidInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,6 +191,7 @@ local AuctionHouse =
 		{
 			Name = "GetBidType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -211,6 +224,7 @@ local AuctionHouse =
 		{
 			Name = "GetCancelCost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +239,7 @@ local AuctionHouse =
 		{
 			Name = "GetCommoditySearchResultInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -240,6 +255,7 @@ local AuctionHouse =
 		{
 			Name = "GetCommoditySearchResultsQuantity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -255,6 +271,7 @@ local AuctionHouse =
 			Name = "GetExtraBrowseInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -278,6 +295,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemCommodityStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -292,6 +310,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemKeyFromItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -306,6 +325,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemKeyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,6 +342,7 @@ local AuctionHouse =
 			Name = "GetItemKeyRequiredLevel",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -336,6 +357,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemSearchResultInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -351,6 +373,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemSearchResultsQuantity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -383,6 +406,7 @@ local AuctionHouse =
 		{
 			Name = "GetMaxCommoditySearchResultPrice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -397,6 +421,7 @@ local AuctionHouse =
 		{
 			Name = "GetMaxItemSearchResultBid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -411,6 +436,7 @@ local AuctionHouse =
 		{
 			Name = "GetMaxItemSearchResultBuyout",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -461,6 +487,7 @@ local AuctionHouse =
 		{
 			Name = "GetNumCommoditySearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -475,6 +502,7 @@ local AuctionHouse =
 		{
 			Name = "GetNumItemSearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -516,6 +544,7 @@ local AuctionHouse =
 		{
 			Name = "GetOwnedAuctionInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -530,6 +559,7 @@ local AuctionHouse =
 		{
 			Name = "GetOwnedAuctionType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -563,6 +593,7 @@ local AuctionHouse =
 			Name = "GetReplicateItemBattlePetInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -578,6 +609,7 @@ local AuctionHouse =
 		{
 			Name = "GetReplicateItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -609,6 +641,7 @@ local AuctionHouse =
 		{
 			Name = "GetReplicateItemLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -623,6 +656,7 @@ local AuctionHouse =
 		{
 			Name = "GetReplicateItemTimeLeft",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -637,6 +671,7 @@ local AuctionHouse =
 		{
 			Name = "GetTimeLeftBandInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -679,6 +714,7 @@ local AuctionHouse =
 		{
 			Name = "HasFullCommoditySearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -693,6 +729,7 @@ local AuctionHouse =
 		{
 			Name = "HasFullItemSearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -725,6 +762,7 @@ local AuctionHouse =
 		{
 			Name = "HasSearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -739,6 +777,7 @@ local AuctionHouse =
 		{
 			Name = "IsFavoriteItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -753,6 +792,7 @@ local AuctionHouse =
 		{
 			Name = "IsSellItemValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -777,6 +817,7 @@ local AuctionHouse =
 		{
 			Name = "MakeItemKey",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -795,6 +836,7 @@ local AuctionHouse =
 			Name = "PlaceBid",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -806,6 +848,7 @@ local AuctionHouse =
 			Name = "PostCommodity",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -824,6 +867,7 @@ local AuctionHouse =
 			Name = "PostItem",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -842,6 +886,7 @@ local AuctionHouse =
 		{
 			Name = "QueryBids",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -852,6 +897,7 @@ local AuctionHouse =
 		{
 			Name = "QueryOwnedAuctions",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -861,6 +907,7 @@ local AuctionHouse =
 		{
 			Name = "RefreshCommoditySearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -870,6 +917,7 @@ local AuctionHouse =
 		{
 			Name = "RefreshItemSearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -890,6 +938,7 @@ local AuctionHouse =
 		{
 			Name = "RequestMoreCommoditySearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -904,6 +953,7 @@ local AuctionHouse =
 		{
 			Name = "RequestMoreItemSearchResults",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -918,6 +968,7 @@ local AuctionHouse =
 		{
 			Name = "RequestOwnedAuctionBidderInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -932,6 +983,7 @@ local AuctionHouse =
 		{
 			Name = "SearchForFavorites",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -941,6 +993,7 @@ local AuctionHouse =
 		{
 			Name = "SearchForItemKeys",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -951,6 +1004,7 @@ local AuctionHouse =
 		{
 			Name = "SendBrowseQuery",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -960,6 +1014,7 @@ local AuctionHouse =
 		{
 			Name = "SendSearchQuery",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems" },
 
 			Arguments =
@@ -974,6 +1029,7 @@ local AuctionHouse =
 		{
 			Name = "SendSellSearchQuery",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems. ItemKey should have its iLVL and suffix cleared before calling." },
 
 			Arguments =
@@ -986,6 +1042,7 @@ local AuctionHouse =
 		{
 			Name = "SetFavoriteItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1006,6 +1063,7 @@ local AuctionHouse =
 			Name = "StartCommoditiesPurchase",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1030,11 +1088,13 @@ local AuctionHouse =
 			Name = "AuctionBidderListUpdate",
 			Type = "Event",
 			LiteralName = "AUCTION_BIDDER_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionCanceled",
 			Type = "Event",
 			LiteralName = "AUCTION_CANCELED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1044,6 +1104,7 @@ local AuctionHouse =
 			Name = "AuctionHouseAuctionCreated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_AUCTION_CREATED",
+			SynchronousEvent = true,
 			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 			Payload =
 			{
@@ -1054,6 +1115,7 @@ local AuctionHouse =
 			Name = "AuctionHouseAuctionsExpired",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_AUCTIONS_EXPIRED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1063,11 +1125,13 @@ local AuctionHouse =
 			Name = "AuctionHouseBrowseFailure",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_BROWSE_FAILURE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseBrowseResultsAdded",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_BROWSE_RESULTS_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "addedBrowseResults", Type = "table", InnerType = "BrowseResultInfo", Nilable = false },
@@ -1077,26 +1141,31 @@ local AuctionHouse =
 			Name = "AuctionHouseBrowseResultsUpdated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseClosed",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseDisabled",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseFavoritesUpdated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_FAVORITES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseItemDeliveryDelayUpdate",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_ITEM_DELIVERY_DELAY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "purchasedItemDeliveryDelay", Type = "number", Nilable = false },
@@ -1107,6 +1176,7 @@ local AuctionHouse =
 			Name = "AuctionHouseNewBidReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_NEW_BID_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1116,6 +1186,7 @@ local AuctionHouse =
 			Name = "AuctionHouseNewResultsReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_NEW_RESULTS_RECEIVED",
+			SynchronousEvent = true,
 			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use. Payload is nil for browse queries." },
 			Payload =
 			{
@@ -1126,16 +1197,19 @@ local AuctionHouse =
 			Name = "AuctionHousePostError",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_POST_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHousePostWarning",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_POST_WARNING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHousePurchaseCompleted",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_PURCHASE_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1145,16 +1219,19 @@ local AuctionHouse =
 			Name = "AuctionHouseScriptDeprecated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SCRIPT_DEPRECATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseShow",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseShowCommodityWonNotification",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "commodityName", Type = "string", Nilable = false },
@@ -1165,6 +1242,7 @@ local AuctionHouse =
 			Name = "AuctionHouseShowError",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "error", Type = "AuctionHouseError", Nilable = false },
@@ -1174,6 +1252,7 @@ local AuctionHouse =
 			Name = "AuctionHouseShowFormattedNotification",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
@@ -1185,6 +1264,7 @@ local AuctionHouse =
 			Name = "AuctionHouseShowNotification",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
@@ -1194,41 +1274,49 @@ local AuctionHouse =
 			Name = "AuctionHouseThrottledMessageDropped",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseThrottledMessageQueued",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseThrottledMessageResponseReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseThrottledMessageSent",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionHouseThrottledSystemReady",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionItemListUpdate",
 			Type = "Event",
 			LiteralName = "AUCTION_ITEM_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionMultisellFailure",
 			Type = "Event",
 			LiteralName = "AUCTION_MULTISELL_FAILURE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AuctionMultisellStart",
 			Type = "Event",
 			LiteralName = "AUCTION_MULTISELL_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "numRepetitions", Type = "number", Nilable = false },
@@ -1238,6 +1326,7 @@ local AuctionHouse =
 			Name = "AuctionMultisellUpdate",
 			Type = "Event",
 			LiteralName = "AUCTION_MULTISELL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "createdCount", Type = "number", Nilable = false },
@@ -1248,11 +1337,13 @@ local AuctionHouse =
 			Name = "AuctionOwnedListUpdate",
 			Type = "Event",
 			LiteralName = "AUCTION_OWNED_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BidAdded",
 			Type = "Event",
 			LiteralName = "BID_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bidID", Type = "number", Nilable = false },
@@ -1262,16 +1353,19 @@ local AuctionHouse =
 			Name = "BidsUpdated",
 			Type = "Event",
 			LiteralName = "BIDS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommodityPriceUnavailable",
 			Type = "Event",
 			LiteralName = "COMMODITY_PRICE_UNAVAILABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommodityPriceUpdated",
 			Type = "Event",
 			LiteralName = "COMMODITY_PRICE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "updatedUnitPrice", Type = "BigUInteger", Nilable = false },
@@ -1282,16 +1376,19 @@ local AuctionHouse =
 			Name = "CommodityPurchaseFailed",
 			Type = "Event",
 			LiteralName = "COMMODITY_PURCHASE_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommodityPurchaseSucceeded",
 			Type = "Event",
 			LiteralName = "COMMODITY_PURCHASE_SUCCEEDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommodityPurchased",
 			Type = "Event",
 			LiteralName = "COMMODITY_PURCHASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1302,6 +1399,7 @@ local AuctionHouse =
 			Name = "CommoditySearchResultsAdded",
 			Type = "Event",
 			LiteralName = "COMMODITY_SEARCH_RESULTS_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1311,11 +1409,13 @@ local AuctionHouse =
 			Name = "CommoditySearchResultsReceived",
 			Type = "Event",
 			LiteralName = "COMMODITY_SEARCH_RESULTS_RECEIVED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "CommoditySearchResultsUpdated",
 			Type = "Event",
 			LiteralName = "COMMODITY_SEARCH_RESULTS_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1325,6 +1425,7 @@ local AuctionHouse =
 			Name = "ExtraBrowseInfoReceived",
 			Type = "Event",
 			LiteralName = "EXTRA_BROWSE_INFO_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1334,6 +1435,7 @@ local AuctionHouse =
 			Name = "ItemKeyItemInfoReceived",
 			Type = "Event",
 			LiteralName = "ITEM_KEY_ITEM_INFO_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1343,6 +1445,7 @@ local AuctionHouse =
 			Name = "ItemPurchased",
 			Type = "Event",
 			LiteralName = "ITEM_PURCHASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1352,6 +1455,7 @@ local AuctionHouse =
 			Name = "ItemSearchResultsAdded",
 			Type = "Event",
 			LiteralName = "ITEM_SEARCH_RESULTS_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
@@ -1361,6 +1465,7 @@ local AuctionHouse =
 			Name = "ItemSearchResultsUpdated",
 			Type = "Event",
 			LiteralName = "ITEM_SEARCH_RESULTS_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
@@ -1371,11 +1476,13 @@ local AuctionHouse =
 			Name = "NewAuctionUpdate",
 			Type = "Event",
 			LiteralName = "NEW_AUCTION_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "OwnedAuctionBidderInfoReceived",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTION_BIDDER_INFO_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1386,11 +1493,13 @@ local AuctionHouse =
 			Name = "OwnedAuctionsUpdated",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTIONS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ReplicateItemListUpdate",
 			Type = "Event",
 			LiteralName = "REPLICATE_ITEM_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -1624,6 +1733,9 @@ local AuctionHouse =
 				{ Name = "hasAllInfo", Type = "bool", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

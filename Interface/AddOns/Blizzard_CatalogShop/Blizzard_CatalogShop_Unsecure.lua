@@ -8,3 +8,7 @@ function CatalogShopSetItemTooltip(itemID, left, top, point)
 	GameTooltip:SetItemByID(itemID);
 	GameTooltip:Show();
 end
+
+function CatalogShopVisibilityUpdated(shown)
+	EventRegistry:TriggerEvent("CatalogShopFrame.VisibilityUpdated", shown);
+end

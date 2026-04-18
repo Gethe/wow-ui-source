@@ -68,6 +68,18 @@ function TalentButtonBaseMixin:UpdateNodeInfo(skipUpdate)
 	self:GetTalentFrame():OnButtonUpdateNodeInfo(self.nodeID);
 end
 
+function TalentButtonBaseMixin:SetAttachedCard(card)
+	self.attachedCard = card;
+
+	if card then
+		card:Attach(self);
+	end
+end
+
+function TalentButtonBaseMixin:GetAttachedCard()
+	return self.attachedCard;
+end
+
 function TalentButtonBaseMixin:MarkEdgesDirty()
 	-- If talentFrame is nil we're being released and the edges will be cleaned up anyway.
 	local talentFrame = self:GetTalentFrame();
@@ -147,6 +159,10 @@ function TalentButtonBaseMixin:FullUpdate()
 	end
 
 	self:UpdateMouseOverInfo();
+
+	if self.attachedCard then
+		self.attachedCard:Update();
+	end
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -204,8 +220,10 @@ end
 
 function TalentButtonBaseMixin:GetTraitCurrenciesCost()
 	local nodeCost = self:GetTalentFrame():GetNodeCost(self.nodeID);
-	if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
-		return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+	if self:GetEntryInfo() ~= nil then
+		if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
+			return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+		end
 	end
 
 	return nodeCost;
@@ -384,7 +402,8 @@ function TalentButtonBaseMixin:StartGlow()
 		self.circularGlowTexture:Show();
 		GlowEmitterFactory:Hide(self);
 	else
-		GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow, 26, 0, self:GetWidth() + 64, self:GetHeight() + 52);
+		local width = nil;
+		GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow, 26, 0, width, self:GetHeight() + 52);
 
 		if self.circularGlowTexture then
 			self.circularGlowTexture:Hide();

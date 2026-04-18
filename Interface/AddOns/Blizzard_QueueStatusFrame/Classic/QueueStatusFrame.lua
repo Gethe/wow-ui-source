@@ -32,7 +32,7 @@ function QueueStatusFrameMixin:OnEvent(event, ...)
 end
 
 function QueueStatusFrameMixin:OnShow()
-	self:SetPoint("TOPRIGHT", MiniMapLFGFrame, "BOTTOMLEFT", 0, 6);
+	self:Update();
 end
 
 function QueueStatusFrameMixin:GetEntry(entryIndex)
@@ -150,16 +150,20 @@ function QueueStatusFrameMixin:Update()
 		nextEntry = nextEntry + 1;
 	end
 
-	--Try all PvP queues
-	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
-		if ( status and status ~= "none" ) then
-			local entry = self:GetEntry(nextEntry);
-			QueueStatusEntry_SetUpBattlefield(entry, i);
-			entry:Show();
-			totalHeight = totalHeight + entry:GetHeight();
-			nextEntry = nextEntry + 1;
+	if not MiniMap_BattleGroundQueueSeparateButton() then
+
+		--Try all PvP queues
+		for i=1, GetMaxBattlefieldID() do
+			local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
+			if ( status and status ~= "none" ) then
+				local entry = self:GetEntry(nextEntry);
+				QueueStatusEntry_SetUpBattlefield(entry, i);
+				entry:Show();
+				totalHeight = totalHeight + entry:GetHeight();
+				nextEntry = nextEntry + 1;
+			end
 		end
+
 	end
 
 	-- NOTICE: Keep this as the last possible entry
@@ -176,6 +180,7 @@ function QueueStatusFrameMixin:Update()
 
 	--Update the size of this frame to fit everything
 	self:SetHeight(totalHeight);
+	self:SetPoint("TOPRIGHT", LFGMinimapFrame, "BOTTOMLEFT", 0, -totalHeight + 20);
 end
 
 function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
@@ -204,7 +209,7 @@ function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizonta
 	end
 
 	self:ClearAllPoints();
-	self:SetPoint(point, MiniMapLFGFrame, relativePoint, offsetX, offsetY);
+	self:SetPoint(point, LFGMinimapFrame, relativePoint, offsetX, offsetY);
 end
 
 ----------------------------------------------
@@ -372,7 +377,7 @@ function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
-	local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, longDescription = GetBattlefieldStatus(idx);
+	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, registeredMatch, suspend, _, _, _, _, _, longDescription = GetBattlefieldStatus(idx);
 	if ( status == "queued" ) then
 		if ( suspend ) then
 			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_SUSPENDED);
@@ -380,8 +385,7 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 			local queuedTime = GetTime() - GetBattlefieldTimeWaited(idx) / 1000;
 			local estimatedTime = GetBattlefieldEstimatedWaitTime(idx) / 1000;
 			local isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil;
-			local assignedSpec = C_PvP.GetAssignedSpecForBattlefieldQueue(idx);
-			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText, assignedSpec);
+			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
 		end
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
@@ -477,7 +481,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
-		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
 	else
 		--Update your role icons
 		if ( isDPS ) then
@@ -605,16 +609,18 @@ function QueueStatusDropdown_Show(source)
 		end
 	end
 
-	--PvP
-	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
-	if ( inProgress and isBattleground ) then
-			QueueStatusDropdown_AddPVPRoleCheckButtons(rootDescription);
-	end
+	if not MiniMap_BattleGroundQueueSeparateButton() then
+		--PvP
+		local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
+		if ( inProgress and isBattleground ) then
+				QueueStatusDropdown_AddPVPRoleCheckButtons(rootDescription);
+		end
 
-	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
-		if ( status and status ~= "none" ) then
-				QueueStatusDropdown_AddBattlefieldButtons(rootDescription, i);
+		for i=1, GetMaxBattlefieldID() do
+			local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
+			if ( status and status ~= "none" ) then
+					QueueStatusDropdown_AddBattlefieldButtons(rootDescription, i);
+			end
 		end
 	end
 

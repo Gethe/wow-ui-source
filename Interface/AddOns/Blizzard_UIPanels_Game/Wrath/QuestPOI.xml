@@ -7,7 +7,7 @@
 				<Texture parentKey="Icon">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -16,6 +16,9 @@
 
 	<Button name="QuestPOINumericTemplate" hidden="true" virtual="true">
 		<Size x="20" y="20"/>
+		<KeyValues>
+			<KeyValue key="offsetX" value="1" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Glow" file="Interface\WorldMap\UI-QuestPoi-IconGlow" alphaMode="ADD" hidden="true">

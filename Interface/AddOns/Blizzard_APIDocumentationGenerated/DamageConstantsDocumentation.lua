@@ -133,6 +133,9 @@ local DamageConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DamageConstants);

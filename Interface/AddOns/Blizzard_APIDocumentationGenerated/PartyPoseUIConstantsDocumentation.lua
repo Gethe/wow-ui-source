@@ -14,6 +14,9 @@ local PartyPoseUIConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PartyPoseUIConstants);

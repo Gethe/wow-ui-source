@@ -91,6 +91,7 @@ function SettingsPanelMixin:OnLoad()
 
 	CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(self.OnCVarChanged, self);
 
+	self:RegisterEvent("SETTINGS_PANEL_OPEN");
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
 
@@ -127,7 +128,15 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 end
 
 function SettingsPanelMixin:OnEvent(event, ...)
-	if event == "UPDATE_BINDINGS" then
+	if event == "SETTINGS_PANEL_OPEN" then
+		local openToCategoryID, scrollToElementName = ...;
+
+		if openToCategoryID ~= nil then
+			self:OpenToCategory(openToCategoryID, scrollToElementName);
+		else
+			self:Open();
+		end
+	elseif event == "UPDATE_BINDINGS" then
 		self:RenewKeybinds();
 	end
 end
@@ -397,25 +406,39 @@ function SettingsPanelMixin:CancelPendingRevertTimer()
 	end
 end
 
+function SettingsPanelMixin:SetIsSettingDefaults(isSettingDefaults)
+	self.isSettingDefaults = isSettingDefaults;
+end
+
+function SettingsPanelMixin:CheckIsSettingDefaults()
+	return self.isSettingDefaults;
+end
+
 function SettingsPanelMixin:SetAllSettingsToDefaults()
+	self:SetIsSettingDefaults(true);
+
 	local keys = {GetCVarDefault("VoicePushToTalkKeybind")}
 	C_VoiceChat.SetPushToTalkBinding(keys);
 
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
-
 	local settings = {};
+
 	for setting, category in pairs(self.settings) do
 		table.insert(settings, setting);
 	end
+
 	SortTableByCommitOrder(settings);
 
+	local isKioskEnabled = Kiosk.IsEnabled();
 	for index, setting in ipairs(settings) do
-		if securecallfunction(setting.SetValueToDefault, setting) then
-			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		if not isKioskEnabled or not setting:HasCommitFlag(Settings.CommitFlag.KioskProtected) then
+			if securecallfunction(setting.SetValueToDefault, setting) then
+				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			end
 		end
 	end
 
@@ -427,29 +450,36 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
 
 	EventRegistry:TriggerEvent("Settings.Defaulted");
+	self:SetIsSettingDefaults(false);
 end
 
 function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
+	self:SetIsSettingDefaults(true);
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
 
 	local settings = {};
 	local currentCategory = self:GetCurrentCategory();
+
 	for setting, category in pairs(self.settings) do
 		if category == currentCategory then
 			table.insert(settings, setting);
 		end
 	end
+	
 	SortTableByCommitOrder(settings);
 
+	local isKioskEnabled = Kiosk.IsEnabled();
 	for index, setting in ipairs(settings) do
-		if securecallfunction(setting.SetValueToDefault, setting) then
-			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		if not isKioskEnabled or not setting:HasCommitFlag(Settings.CommitFlag.KioskProtected) then
+			if securecallfunction(setting.SetValueToDefault, setting) then
+				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			end
+			self.modified[setting] = nil;
 		end
-		self.modified[setting] = nil;
 	end
 
 	for _, category in ipairs(self:GetAllCategories()) do
@@ -472,6 +502,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	end
 
 	EventRegistry:TriggerEvent("Settings.CategoryDefaulted", currentCategory);
+	self:SetIsSettingDefaults(false);
 end
 
 function SettingsPanelMixin:HasUnappliedSettings()

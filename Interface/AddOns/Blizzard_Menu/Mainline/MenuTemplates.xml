@@ -67,11 +67,17 @@
 		<Size x="135" y="18"/>
 		<KeyValues>
 			<KeyValue key="text" type="global" value="FILTER"/>
+			<KeyValue key="disableFontObject" type="string" value="GameFontDisable"/>
 			<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
 			<KeyValue key="menuPointX" type="number" value="6"/>
 			<KeyValue key="menuPointY" type="number" value="2"/>
 			<KeyValue key="resizeToText" type="boolean" value="true"/>
 			<KeyValue key="resizeToTextPadding" type="number" value="60"/>
+
+			<!--
+			baseFontObject: you can set an override for the font to use for "Text" when not disabled.
+			<KeyValue key="baseFontObject" type="string" value="GameFontNormal"/>
+			-->
 		</KeyValues>
 		<Frames>
 			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate" hidden="true">

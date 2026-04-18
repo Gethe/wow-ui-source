@@ -2,12 +2,14 @@ local SimpleAnimatableObjectAPI =
 {
 	Name = "SimpleAnimatableObjectAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CreateAnimationGroup",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -48,6 +50,9 @@ local SimpleAnimatableObjectAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

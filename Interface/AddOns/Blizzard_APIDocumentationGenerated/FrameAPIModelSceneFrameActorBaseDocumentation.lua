@@ -2,6 +2,7 @@ local FrameAPIModelSceneFrameActorBase =
 {
 	Name = "FrameAPIModelSceneFrameActorBase",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -260,6 +261,19 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "IsPreferringModelCollisionBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "preferringCollisionBounds", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsShown",
 			Type = "Function",
 
@@ -303,6 +317,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "PlayAnimationKit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -313,6 +328,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,6 +338,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetAnimation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -334,6 +351,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetAnimationBlendOperation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -343,6 +361,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetDesaturation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -350,8 +369,34 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetGradientMask",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "gradientIndex0", Type = "number", Nilable = false },
+				{ Name = "gradientIndex1", Type = "number", Nilable = false },
+				{ Name = "gradientIndex2", Type = "number", Nilable = false },
+				{ Name = "gradientIndex3", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetGradientMaskWithDyes",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "grad0DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad1DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad2DyeColorID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetModelByCreatureDisplayID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -367,6 +412,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByFileID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -382,6 +428,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -397,6 +444,8 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -417,6 +466,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetParticleOverrideScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -426,6 +476,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetPitch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -435,6 +486,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetPlayerModelFromGlues",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -454,6 +506,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -463,8 +516,20 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetPreferModelCollisionBounds",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If true, will try to use the collision bounds of models for sizing and centering. Will fall back to default model bounds if set to False, or if collision bounds are unavailable." },
+
+			Arguments =
+			{
+				{ Name = "preferCollisionBounds", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRoll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -474,6 +539,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -483,6 +549,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetShown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -492,6 +559,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetSpellVisualKit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -502,6 +570,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetUseCenterForOrigin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -513,6 +582,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetYaw",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -538,6 +608,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "TryOn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -558,6 +629,9 @@ local FrameAPIModelSceneFrameActorBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

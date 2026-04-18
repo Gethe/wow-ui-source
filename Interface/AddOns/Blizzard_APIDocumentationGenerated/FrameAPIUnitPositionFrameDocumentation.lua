@@ -2,12 +2,14 @@ local FrameAPIUnitPositionFrame =
 {
 	Name = "FrameAPIUnitPositionFrame",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AddUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,7 +51,7 @@ local FrameAPIUnitPositionFrame =
 
 			Returns =
 			{
-				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -81,6 +83,7 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetPlayerPingScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +93,7 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetPlayerPingTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +106,7 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetUiMapID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,10 +116,11 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetUnitColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenType", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -124,6 +130,7 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "StartPlayerPing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,6 +153,9 @@ local FrameAPIUnitPositionFrame =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

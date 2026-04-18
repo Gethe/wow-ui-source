@@ -2,12 +2,14 @@ local Font =
 {
 	Name = "Font",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CreateFontFamily",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +64,9 @@ local Font =
 				{ Name = "y", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

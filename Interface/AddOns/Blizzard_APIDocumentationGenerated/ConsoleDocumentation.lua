@@ -2,12 +2,14 @@ local Console =
 {
 	Name = "Console",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ConsoleEcho",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local Console =
 		{
 			Name = "ConsoleExec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +51,7 @@ local Console =
 		{
 			Name = "ConsoleGetColorFromType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,6 +75,7 @@ local Console =
 		{
 			Name = "ConsolePrintAllMatchingCommands",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +85,7 @@ local Console =
 		{
 			Name = "ConsoleSetFontHeight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +95,7 @@ local Console =
 		{
 			Name = "SetConsoleKey",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,21 +110,25 @@ local Console =
 			Name = "ConsoleClear",
 			Type = "Event",
 			LiteralName = "CONSOLE_CLEAR",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ConsoleColorsChanged",
 			Type = "Event",
 			LiteralName = "CONSOLE_COLORS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ConsoleFontSizeChanged",
 			Type = "Event",
 			LiteralName = "CONSOLE_FONT_SIZE_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ConsoleLog",
 			Type = "Event",
 			LiteralName = "CONSOLE_LOG",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "message", Type = "cstring", Nilable = false },
@@ -127,6 +138,7 @@ local Console =
 			Name = "ConsoleMessage",
 			Type = "Event",
 			LiteralName = "CONSOLE_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "message", Type = "cstring", Nilable = false },
@@ -137,6 +149,7 @@ local Console =
 			Name = "CvarUpdate",
 			Type = "Event",
 			LiteralName = "CVAR_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "eventName", Type = "cstring", Nilable = false },
@@ -147,6 +160,7 @@ local Console =
 			Name = "ToggleConsole",
 			Type = "Event",
 			LiteralName = "TOGGLE_CONSOLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "showConsole", Type = "bool", Nilable = true },
@@ -226,6 +240,9 @@ local Console =
 				{ Name = "scriptParameters", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

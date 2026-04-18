@@ -3,6 +3,7 @@ local ScriptedAnimations =
 	Name = "ScriptedAnimations",
 	Type = "System",
 	Namespace = "C_ScriptedAnimations",
+	Environment = "All",
 
 	Functions =
 	{
@@ -101,6 +102,9 @@ local ScriptedAnimations =
 				{ Name = "particleOverrideScale", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

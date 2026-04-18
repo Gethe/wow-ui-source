@@ -3,12 +3,14 @@ local UISystemVisibilityManager =
 	Name = "UISystemVisibilityManager",
 	Type = "System",
 	Namespace = "C_SystemVisibilityManager",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "IsSystemVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +30,7 @@ local UISystemVisibilityManager =
 			Name = "SystemVisibilityChanged",
 			Type = "Event",
 			LiteralName = "SYSTEM_VISIBILITY_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 
@@ -44,6 +47,9 @@ local UISystemVisibilityManager =
 				{ Name = "InGameNavigation", Type = "UISystemType", EnumValue = 0 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

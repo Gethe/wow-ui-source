@@ -2,6 +2,7 @@ local URL =
 {
 	Name = "URL",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -9,6 +10,7 @@ local URL =
 			Name = "LaunchURL",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,9 @@ local URL =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

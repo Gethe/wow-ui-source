@@ -2,12 +2,14 @@ local Totem =
 {
 	Name = "Totem",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "DestroyTotem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -15,8 +17,18 @@ local Totem =
 			},
 		},
 		{
+			Name = "GetNumTotemSlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numSlots", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotemCannotDismiss",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -29,9 +41,26 @@ local Totem =
 			},
 		},
 		{
+			Name = "GetTotemDuration",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenTotemSlotSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,6 +81,8 @@ local Totem =
 		{
 			Name = "GetTotemTimeLeft",
 			Type = "Function",
+			SecretWhenTotemSlotSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -66,6 +97,7 @@ local Totem =
 		{
 			Name = "TargetTotem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +126,9 @@ local Totem =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

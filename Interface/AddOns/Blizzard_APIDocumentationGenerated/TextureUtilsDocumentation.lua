@@ -3,12 +3,14 @@ local TextureUtils =
 	Name = "TextureUtils",
 	Type = "System",
 	Namespace = "C_Texture",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ClearTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasElementID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,8 +42,24 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasExists",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "atlasExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +75,7 @@ local TextureUtils =
 			Name = "GetAtlasInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +90,7 @@ local TextureUtils =
 		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -84,6 +105,7 @@ local TextureUtils =
 		{
 			Name = "GetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +117,7 @@ local TextureUtils =
 		{
 			Name = "IsTitleIconTextureReady",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,6 +133,7 @@ local TextureUtils =
 		{
 			Name = "SetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +146,7 @@ local TextureUtils =
 			Name = "SetURLTexture",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,6 +158,17 @@ local TextureUtils =
 
 	Events =
 	{
+		{
+			Name = "UrlTextureRequestResult",
+			Type = "Event",
+			LiteralName = "URL_TEXTURE_REQUEST_RESULT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "result", Type = "UrlTextureResult", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -148,6 +184,20 @@ local TextureUtils =
 				{ Name = "Small", Type = "TitleIconVersion", EnumValue = 0 },
 				{ Name = "Medium", Type = "TitleIconVersion", EnumValue = 1 },
 				{ Name = "Large", Type = "TitleIconVersion", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UrlTextureResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Found", Type = "UrlTextureResult", EnumValue = 1 },
+				{ Name = "NotFound", Type = "UrlTextureResult", EnumValue = 2 },
+				{ Name = "Requested", Type = "UrlTextureResult", EnumValue = 3 },
+				{ Name = "NotAllowed", Type = "UrlTextureResult", EnumValue = 4 },
 			},
 		},
 		{
@@ -180,6 +230,9 @@ local TextureUtils =
 				{ Name = "texture", Type = "fileID", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

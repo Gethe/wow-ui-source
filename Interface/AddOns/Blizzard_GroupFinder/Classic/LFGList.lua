@@ -7,6 +7,8 @@ LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
 GROUP_FINDER_CATEGORY_ID_DUNGEONS = 2;
 
+local unusedGeneralPlaystyle = Enum.LFGEntryGeneralPlaystyle.None; -- Not applicable to classic
+
 ACTIVITY_RETURN_VALUES = {
 	fullName = 1,
 	shortName = 2,
@@ -207,7 +209,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local searchResultID, newStatus, oldStatus, kstringGroupName = ...;
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
-			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -741,13 +743,13 @@ function LFGListEntryCreation_SetupPlayStyleDropdown(self)
 		LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle);
 		local previousPlaystyle = self.selectedPlaystyle;
 		self.selectedPlaystyle = playstyle;
-		if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then
+		if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle, unusedGeneralPlaystyle)) then
 			LFGListEntryCreation_SetTitleFromActivityInfo(self);
 		end
 	end
 
 	local function CreateRadio(rootDescription, activityInfo, playstyle)
-		local text = C_LFGList.GetPlaystyleString(playstyle, activityInfo);
+		local text = C_LFGList.GetPlaystyleString(playstyle, unusedGeneralPlaystyle, activityInfo);
 		rootDescription:CreateRadio(text, IsSelected, SetSelected, playstyle);
 	end
 
@@ -809,6 +811,7 @@ function LFGListEntryCreation_Clear(self)
 	self.selectedFilters = nil;
 	self.selectedCategory = nil;
 	self.selectedPlaystyle = nil;
+	self.generalPlaystyle = Enum.LFGEntryGeneralPlaystyle.None;
 
 	--Reset widgets
 	C_LFGList.ClearCreationTextFields();
@@ -958,7 +961,7 @@ function LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle)
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
 	local previousPlaystyle = self.selectedPlaystyle
 	self.selectedPlaystyle = playstyle;
-	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then
+	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle, unusedGeneralPlaystyle)) then
 		LFGListEntryCreation_SetTitleFromActivityInfo(self);
 	end
 end
@@ -981,6 +984,7 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 		isCrossFactionListing = isCrossFaction,
 		isPrivateGroup = privateGroup,
 		playstyle = selectedPlaystyle,
+		generalPlaystyle = Enum.LFGEntryGeneralPlaystyle.None,
 		requiredDungeonScore = mythicPlusRating,
 		requiredItemLevel = itemLevel,
 		requiredPvpRating = pvpRating,
@@ -1119,7 +1123,7 @@ function LFGListEntryCreation_SetTitleFromActivityInfo(self)
 	local activityID = activeEntryInfo and activeEntryInfo.activityIDs[1] or (self.selectedActivity or 0);
 	local activityInfo =  C_LFGList.GetActivityInfoTable(activityID);
 	if((activityInfo and activityInfo.isMythicPlusActivity) or not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedCategory)) then
-		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
+		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle, unusedGeneralPlaystyle);
 	end
 end
 
@@ -1814,7 +1818,7 @@ function LFGListApplicantMember_OnMouseDown(self)
 		rootDescription:CreateTitle(name or "");
 
 		local whisperButton = rootDescription:CreateButton(WHISPER, function()
-			ChatFrame_SendTell(name);
+			ChatFrameUtil.SendTell(name);
 		end);
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_PLAYER, function()
@@ -2613,7 +2617,7 @@ function LFGListSearchEntry_CreateContextMenu(self)
 		rootDescription:CreateTitle(searchResultInfo.name);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 
 		if not searchResultInfo.leaderName then
@@ -3456,6 +3460,7 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 			isCrossFactionListing = activeEntryInfo.isCrossFaction,
 			isPrivateGroup = activeEntryInfo.privateGroup,
 			playstyle = activeEntryInfo.playstyle,
+			generalPlaystyle = Enum.LFGEntryGeneralPlaystyle.None,
 			requiredDungeonScore = activeEntryInfo.requiredDungeonScore,
 			requiredItemLevel = activeEntryInfo.requiredItemLevel,
 			requiredPvpRating = activeEntryInfo.requiredPvpRating,
@@ -3477,7 +3482,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	tooltip:AddLine(activityInfo.fullName);
 
 	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then
-		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
+		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, unusedGeneralPlaystyle, activityInfo);
 		if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 		else
@@ -3707,6 +3712,9 @@ function LFGEditBoxMixin:AddToTabCategory(tabCategory, editBox)
 end
 
 function LFGEditBoxMixin:OnLoad()
+	-- Replace the inherited indentation
+	self.Instructions:SetAllPoints();
+
 	if ( self.tabCategory ) then
 		self:AddToTabCategory(self.tabCategory);
 	end

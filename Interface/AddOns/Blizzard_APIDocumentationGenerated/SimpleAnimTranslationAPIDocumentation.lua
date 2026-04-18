@@ -2,6 +2,7 @@ local SimpleAnimTranslationAPI =
 {
 	Name = "SimpleAnimTranslationAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,7 @@ local SimpleAnimTranslationAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +38,9 @@ local SimpleAnimTranslationAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

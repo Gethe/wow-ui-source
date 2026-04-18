@@ -3,12 +3,14 @@ local AreaPoiInfo =
 	Name = "AreaPoiInfo",
 	Type = "System",
 	Namespace = "C_AreaPoiInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAreaPOIForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local AreaPoiInfo =
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +43,7 @@ local AreaPoiInfo =
 			Name = "GetAreaPOITimeLeft",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of minutes until the POI expires." },
 
 			Arguments =
@@ -55,6 +59,7 @@ local AreaPoiInfo =
 		{
 			Name = "IsAreaPOITimed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This statically determines if the POI is timed, GetAreaPOITimeLeft retrieves the value from the server and may return nothing for long intervals" },
 
 			Arguments =
@@ -75,6 +80,7 @@ local AreaPoiInfo =
 			Name = "AreaPoisUpdated",
 			Type = "Event",
 			LiteralName = "AREA_POIS_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 
@@ -102,8 +108,13 @@ local AreaPoiInfo =
 				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
 				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
 				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
+				{ Name = "isSuppressible", Type = "bool", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

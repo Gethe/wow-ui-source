@@ -157,21 +157,9 @@ function ScrollBoxBaseMixin:FullUpdateInternal()
 	]]--
 	local oldScrollOffset = self:GetDerivedScrollOffset();
 
-	--[[
-	When identical element extents are not used, this will require iterating through every element
-	in the data provider and calling a calculation function to obtain the total extent. While it would
-	be more efficient to correct the extent based on the elements added or removed from the data provider,
-	it is a difficult optimization to implement because ScrollBox utilizes multiple different data
-	providers with different data structures.
-
-	An optimization to start with might be to have each data provider implement a counter that is updated
-	on any insertion, replacement, or removal. While this wouldn't provide full context about the change,
-	it would serve as an indicator that the data provider was unmodified since the last update, making an
-	extent calculation unnecessary. Note however that this would be a view dependent optimization as Biaxal
-	views can have their extents changed as a result of width changes, regardless of the data provider
-	remaining unchanged.
-	]]--
-	self:RecalculateDerivedExtent();
+	-- Recalculate extents, if necessary.
+	local view = self:GetView();
+	view:RecalculateExtent(self);
 
 	-- After the extent is calculated, correct the scroll position to undo the displacement.
 	local scrollRange = self:GetDerivedScrollRange();

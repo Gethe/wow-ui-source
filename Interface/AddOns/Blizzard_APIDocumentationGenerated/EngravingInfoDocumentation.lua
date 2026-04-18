@@ -3,12 +3,14 @@ local EngravingInfo =
 	Name = "EngravingInfo",
 	Type = "System",
 	Namespace = "C_Engraving",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AddCategoryFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local EngravingInfo =
 		{
 			Name = "AddExclusiveCategoryFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +30,7 @@ local EngravingInfo =
 		{
 			Name = "CastRune",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +44,7 @@ local EngravingInfo =
 		{
 			Name = "ClearCategoryFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +58,7 @@ local EngravingInfo =
 		{
 			Name = "EnableEquippedFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +95,7 @@ local EngravingInfo =
 		{
 			Name = "GetNumRunesKnown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +111,7 @@ local EngravingInfo =
 		{
 			Name = "GetRuneCategories",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +127,7 @@ local EngravingInfo =
 		{
 			Name = "GetRuneForEquipmentSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,6 +142,7 @@ local EngravingInfo =
 		{
 			Name = "GetRuneForInventorySlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,6 +158,7 @@ local EngravingInfo =
 		{
 			Name = "GetRunesForCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,6 +174,7 @@ local EngravingInfo =
 		{
 			Name = "HasCategoryFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,6 +198,7 @@ local EngravingInfo =
 		{
 			Name = "IsEquipmentSlotEngravable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -209,6 +222,7 @@ local EngravingInfo =
 		{
 			Name = "IsInventorySlotEngravable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -224,6 +238,7 @@ local EngravingInfo =
 		{
 			Name = "IsInventorySlotEngravableByCurrentRuneCast",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -239,6 +254,7 @@ local EngravingInfo =
 		{
 			Name = "IsKnownRuneSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -253,6 +269,7 @@ local EngravingInfo =
 		{
 			Name = "IsRuneEquipped",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,6 +288,7 @@ local EngravingInfo =
 		{
 			Name = "SetEngravingModeEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +298,7 @@ local EngravingInfo =
 		{
 			Name = "SetSearchFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +313,7 @@ local EngravingInfo =
 			Name = "EngravingModeChanged",
 			Type = "Event",
 			LiteralName = "ENGRAVING_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -303,6 +323,7 @@ local EngravingInfo =
 			Name = "EngravingTargetingModeChanged",
 			Type = "Event",
 			LiteralName = "ENGRAVING_TARGETING_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -312,6 +333,7 @@ local EngravingInfo =
 			Name = "RuneUpdated",
 			Type = "Event",
 			LiteralName = "RUNE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rune", Type = "EngravingData", Nilable = true },
@@ -335,6 +357,9 @@ local EngravingInfo =
 				{ Name = "learnedAbilitySpellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

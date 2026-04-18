@@ -2,12 +2,14 @@ local FrameAPIModelSceneFrameActor =
 {
 	Name = "FrameAPIModelSceneFrameActor",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AttachToMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "CalculateMountScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +41,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "DetachFromMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +62,16 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "DressPlayerSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "invSlot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAutoDress",
 			Type = "Function",
 
@@ -71,6 +85,35 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "GetItemTransmogInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemTransmogInfoList",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "infoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetObeyHideInTransmogFlag",
 			Type = "Function",
 
@@ -81,6 +124,20 @@ local FrameAPIModelSceneFrameActor =
 			Returns =
 			{
 				{ Name = "obey", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPaused",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "paused", Type = "bool", Nilable = false },
+				{ Name = "globalPaused", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -136,6 +193,36 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "IsSlotAllowed",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSlotVisible",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "visible", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ResetNextHandSlot",
 			Type = "Function",
 
@@ -146,6 +233,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetAutoDress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,8 +241,26 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "SetItemTransmogInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "transmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
+				{ Name = "inventorySlots", Type = "number", Nilable = true },
+				{ Name = "ignoreChildItems", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "ItemTryOnReason", Nilable = false },
+			},
+		},
+		{
 			Name = "SetObeyHideInTransmogFlag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -162,8 +268,20 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "SetPaused",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "paused", Type = "bool", Nilable = false },
+				{ Name = "affectsGlobalPause", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
 			Name = "SetSheathed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,8 +290,20 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "SetSheathedCategory",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TransmogOutfitSlotOptionSheatheCategory", Nilable = false },
+			},
+		},
+		{
 			Name = "SetUseTransmogChoices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -183,6 +313,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetUseTransmogSkin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -192,10 +323,31 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "Undress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "includeWeapons", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
+			Name = "UndressSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UseUnitSheatheCategory",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "useCategory", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -205,6 +357,9 @@ local FrameAPIModelSceneFrameActor =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

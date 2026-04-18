@@ -25,7 +25,11 @@ function CatalogShopAlteredFormButtonMixin:GetAppropriateTooltip()
 end
 
 function CatalogShopAlteredFormButtonMixin:OnClick()
-	SelectableButtonMixin.OnClick(self);
+	-- Clicking a button after it has already been clicked should have no effect.
+	-- The only way to deselect a button is to click the other button in the group.
+	self:SetChecked(true);
+	SelectableButtonMixin.SetSelected(self, true);
+
 	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
 end	
 
@@ -112,13 +116,13 @@ function CatalogShopModelSceneContainerFrameMixin:OnCelebratePurchase(catalogSho
 		self.CelebrateTimer:Cancel();
 		self.CelebrateTimer = nil;
 	end
-	local fanfareActor = self.MainModelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Celebrate);
 
+	local fanfareActor = self.MainModelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Celebrate);
 	if fanfareActor then
 		local camera = self.MainModelScene:GetActiveCamera();
 		if camera then
 			local x, y, z = camera:GetTarget();
-			fanfareActor:SetPosition(x, y, -1);
+			fanfareActor:SetPosition(x, y, 0);
 		end
 
 		fanfareActor:SetModelByCreatureDisplayID(CatalogShopConstants.Celebrate.CreatureID);
@@ -130,6 +134,26 @@ function CatalogShopModelSceneContainerFrameMixin:OnCelebratePurchase(catalogSho
 			fanfareActor:SetSpellVisualKit(nil);
 			self.CelebrateTimer = nil;
 		end);
+	else
+		local startOffset = 0.0;
+		PlaySound(SOUNDKIT.CATALOG_SHOP_UI_PURCHASE_BUNDLE_FANFARE_START);
+		for tag, taggedActor in pairs(self.MainModelScene.tagToActor) do
+			if taggedActor and taggedActor:IsLoaded() then
+				taggedActor.CelebrateTimerStart = C_Timer.NewTimer(startOffset,
+				function()
+					taggedActor:SetSpellVisualKit(CatalogShopConstants.Celebrate.SpellVisualID, true);
+					PlaySound(SOUNDKIT.CATALOG_SHOP_UI_PURCHASE_BUNDLE_FANFARE_OFFSET);
+					taggedActor.CelebrateTimerStart = nil;
+				end);
+				startOffset = startOffset + 0.25;
+
+				taggedActor.CelebrateTimerEnd = C_Timer.NewTimer(5 + startOffset,
+				function()
+					taggedActor:SetSpellVisualKit(nil);
+					taggedActor.CelebrateTimerEnd = nil;
+				end);
+			end
+		end
 	end
 end
 
@@ -191,6 +215,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 
 		CatalogShopUtil.ClearSpecialActors(modelScene)
 
+		displayData.fallbackPMTImageURL = displayInfo.productPMTURL;
 		displayData.modelSceneContext = CatalogShopConstants.ModelSceneContext.PreviewScene;
 		if productType == CatalogShopConstants.ProductType.Bundle then
 			forceHideFormButtons = true;

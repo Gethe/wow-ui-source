@@ -41,6 +41,9 @@ local PvpInfoConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PvpInfoConstants);

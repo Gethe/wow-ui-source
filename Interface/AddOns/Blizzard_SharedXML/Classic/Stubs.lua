@@ -1,17 +1,5 @@
 --These are interfaces that are called in shared code and need to be defined, but don't need a real implementation in Classic.
 
---EditModeManagerFrame
-
-EditModeManagerFrame = {}
-
-function EditModeManagerFrame:IsEditModeActive()
-	return false;
-end
-
-function EditModeManagerFrame:ShowIfActive()
-	return false;
-end
-
 --HelpTip
 
 HelpTip = {}
@@ -26,6 +14,10 @@ function HelpTip:HideAll(parent)
 end
 
 function HelpTip:IsShowing( p1, p2 )
+	return false;
+end
+
+function HelpTip:AreHelpTipsEnabled()
 	return false;
 end
 

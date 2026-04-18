@@ -11,13 +11,9 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 	local guildFactionData = C_Reputation.GetGuildFactionData();
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(index);
 
-	-- Only set the name if there's no itemID or it's different.
-	-- This prevents a flicker if the reward items got evicted from sparse.
-	if self.itemID ~= itemID and not self.Name:GetText() then
-		self.Name:SetText(itemName);
-	end
 	self.itemID = itemID;
 
+	self.Name:SetText(itemName);
 	self.Icon:SetTexture(iconTexture);
 
 	if ( moneyCost and moneyCost > 0 ) then
@@ -143,7 +139,7 @@ end
 function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementID, itemID = GetGuildRewardInfo(self.index);
-		ChatEdit_LinkItem(itemID);
+		ChatFrameUtil.LinkItem(itemID);
 	elseif (button == "LeftButton" and IsControlKeyDown()) then
 		local achievementID = GetGuildRewardInfo(self.index);
 		if(achievementID and achievementID > 0) then
@@ -157,7 +153,7 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 			rootDescription:CreateTitle(itemName);
 
 			rootDescription:CreateButton(GUILD_NEWS_LINK_ITEM, function()
-				ChatEdit_LinkItem(itemID);
+				ChatFrameUtil.LinkItem(itemID);
 			end);
 
 			if achievementID and achievementID > 0 then

@@ -2,6 +2,7 @@ local SimpleAnimTextureCoordTranslationAPI =
 {
 	Name = "SimpleAnimTextureCoordTranslationAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,7 @@ local SimpleAnimTextureCoordTranslationAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +38,9 @@ local SimpleAnimTextureCoordTranslationAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

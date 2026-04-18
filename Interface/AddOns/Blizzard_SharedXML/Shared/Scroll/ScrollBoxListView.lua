@@ -261,8 +261,7 @@ end
 function ScrollBoxListViewMixin:RemoveDataProviderInternal()
 	local dataProvider = self:GetDataProvider();
 	if dataProvider then
-		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
-		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
+		self:DetachDataProviderCallbacks();
 	end
 
 	self.dataProvider = nil;
@@ -296,12 +295,21 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 
 	self.dataProvider = dataProvider;
 	if dataProvider then
-		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnDataProviderSizeChanged, self);
-		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
+		self:AttachDataProviderCallbacks();
 	end
 	
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataProviderReassigned);
 	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
+end
+
+function ScrollBoxListViewMixin:AttachDataProviderCallbacks()
+	self.dataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnDataProviderSizeChanged, self);
+	self.dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
+end
+
+function ScrollBoxListViewMixin:DetachDataProviderCallbacks()
+	self.dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
+	self.dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
 end
 
 function ScrollBoxListViewMixin:OnDataProviderSizeChanged(pendingSort)
@@ -535,7 +543,7 @@ end
 -- An optimization to avoid unnecessarily fetching the template and template info
 -- is planned in a future version. In the meantime, this must occur before calculating
 -- the extent.
-function ScrollBoxListViewMixin:PrepareRecalculateExtent()
+function ScrollBoxListViewMixin:RebuildTemplateInfoCache()
 	local dataProvider = self:GetDataProvider();
 	if not dataProvider then
 		return;
@@ -545,6 +553,11 @@ function ScrollBoxListViewMixin:PrepareRecalculateExtent()
 	if size == 0 then
 		return;
 	end
+
+	-- We have to flush the template info cache so that info contained is only representive
+	-- of the contents of the data provider. Otherwise, lingering info with different extents
+	-- would prevent equal template extent optimizations from occurring.
+	self.templateInfoCache:FlushTemplateInfos();
 
 	-- IndexRangeDataProvider is virtual and can represent thousands
 	-- of elements whom are only ever represented by a single template.

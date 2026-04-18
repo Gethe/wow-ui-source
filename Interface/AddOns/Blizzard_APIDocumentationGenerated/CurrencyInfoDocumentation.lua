@@ -3,6 +3,7 @@ local CurrencyInfo =
 	Name = "CurrencySystem",
 	Type = "System",
 	Namespace = "C_CurrencyInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local CurrencyInfo =
 			Name = "GetBasicCurrencyInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +27,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +42,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +58,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinTextureString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +75,7 @@ local CurrencyInfo =
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +92,7 @@ local CurrencyInfo =
 			Name = "GetCurrencyInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +108,7 @@ local CurrencyInfo =
 			Name = "GetCurrencyInfoFromLink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,6 +123,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyListLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,6 +138,7 @@ local CurrencyInfo =
 		{
 			Name = "IsCurrencyContainer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,11 +159,13 @@ local CurrencyInfo =
 			Name = "AccountCharacterCurrencyDataReceived",
 			Type = "Event",
 			LiteralName = "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CurrencyDisplayUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_DISPLAY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currencyType", Type = "number", Nilable = true },
@@ -167,6 +179,7 @@ local CurrencyInfo =
 			Name = "PlayerMoney",
 			Type = "Event",
 			LiteralName = "PLAYER_MONEY",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -217,6 +230,19 @@ local CurrencyInfo =
 				{ Name = "rechargingAmountPerCycle", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "PlayerCurrencyCategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "categoryName", Type = "cstring", Nilable = false },
+				{ Name = "currencyTypes", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "childCategories", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

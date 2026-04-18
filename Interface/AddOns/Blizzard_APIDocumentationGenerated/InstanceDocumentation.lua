@@ -2,6 +2,7 @@ local Instance =
 {
 	Name = "Instance",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -19,6 +20,7 @@ local Instance =
 		{
 			Name = "CanMapChangeDifficulty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,8 +42,24 @@ local Instance =
 			},
 		},
 		{
+			Name = "GetBaseDifficultyID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDifficultyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +115,7 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -114,6 +133,7 @@ local Instance =
 		{
 			Name = "GetInstanceLockTimeRemainingEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +179,7 @@ local Instance =
 		{
 			Name = "IsLegacyDifficulty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -177,6 +198,7 @@ local Instance =
 		{
 			Name = "SetDungeonDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,6 +208,7 @@ local Instance =
 		{
 			Name = "SetLegacyRaidDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +219,7 @@ local Instance =
 		{
 			Name = "SetRaidDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -255,8 +279,12 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

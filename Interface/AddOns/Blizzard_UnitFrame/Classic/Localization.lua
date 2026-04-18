@@ -27,45 +27,17 @@ local l10nTable = {
 	},
 	zhCN = {
 		localize = function()
-			PlayerFrame_UpdateLevelTextAnchor = function(level)
-				if ( level >= 100 ) then
-					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -15);
-				else
-					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -15);
-				end
-			end
-
-			TargetFrame_UpdateLevelTextAnchor = function(self, targetLevel)
-				if ( targetLevel >= 100 ) then
-					self.levelText:SetPoint("CENTER", 61, -15);
-				else
-					self.levelText:SetPoint("CENTER", 62, -15);
-				end
-			end
-
-			BossTargetFrame_UpdateLevelTextAnchor = function(self, targetLevel)
-				self.levelText:SetPoint("CENTER", 11, -16);
-			end
+			PlayerLevelText:SetPoint("CENTER", PlayerFrame, "BOTTOMLEFT", 35.5, 31);
+			TargetFrame.levelText:SetPoint("CENTER", TargetFrame, "BOTTOMRIGHT", -35.25, 31);
+			FocusFrame.levelText:SetPoint("CENTER", FocusFrame, "BOTTOMRIGHT", -35.25, 31);
 		end,
 	},
 
 	zhTW = {
 		localize = function()
-			PlayerFrame_UpdateLevelTextAnchor = function(level)
-				PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -15);
-			end
-
-			TargetFrame_UpdateLevelTextAnchor = function(self, targetLevel)
-				if ( targetLevel >= 100 ) then
-					self.levelText:SetPoint("CENTER", 61, -15);
-				else
-					self.levelText:SetPoint("CENTER", 62, -15);
-				end
-			end
-
-			BossTargetFrame_UpdateLevelTextAnchor = function(self, targetLevel)
-				self.levelText:SetPoint("CENTER", 11, -16);
-			end
+			PlayerLevelText:SetPoint("CENTER", PlayerFrame, "BOTTOMLEFT", 35.5, 31);
+			TargetFrame.levelText:SetPoint("CENTER", TargetFrame, "BOTTOMRIGHT", -35.25, 31);
+			FocusFrame.levelText:SetPoint("CENTER", FocusFrame, "BOTTOMRIGHT", -35.25, 31);
 		end,
 	},
 };

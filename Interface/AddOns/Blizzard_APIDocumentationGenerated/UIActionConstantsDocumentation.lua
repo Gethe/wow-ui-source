@@ -15,6 +15,9 @@ local UIActionConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIActionConstants);

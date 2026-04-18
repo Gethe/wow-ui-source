@@ -12,13 +12,13 @@ CommentatorUnitFrameMixin = {};
 
 local CommentatorUnitFrameEvents =
 {
-	"COMBAT_LOG_EVENT_UNFILTERED",
-	"ARENA_COOLDOWNS_UPDATE",
+	"COMMENTATOR_COMBAT_EVENT",
 	"ARENA_CROWD_CONTROL_SPELL_UPDATE",
 	"COMMENTATOR_PLAYER_UPDATE",
 	"COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE",
 	"LOSS_OF_CONTROL_COMMENTATOR_ADDED",
 	"LOSS_OF_CONTROL_COMMENTATOR_UPDATE",
+	"UNIT_ARENA_COOLDOWNS_UPDATE",
 };
 
 local LifeState = 
@@ -110,7 +110,7 @@ function CommentatorUnitFrameMixin:Init(isAlignedLeft, playerData, teamIndex)
 	self:SetAlignment(isAlignedLeft and "LEFT" or "RIGHT");
 end
 
-function CommentatorUnitFrameMixin:OnUnfilteredCombatLogEvent(...)
+function CommentatorUnitFrameMixin:OnCommentatorCombatEvent(...)
 	--Dump({...)};
 	local event = select(2, ...);
 	local isActive = event == "SPELL_AURA_APPLIED";
@@ -127,11 +127,11 @@ function CommentatorUnitFrameMixin:OnUnfilteredCombatLogEvent(...)
 end
 
 function CommentatorUnitFrameMixin:OnEvent(event, ...)	
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		self:OnUnfilteredCombatLogEvent(CombatLogGetCurrentEventInfo());
+	if event == "COMMENTATOR_COMBAT_EVENT" then
+		self:OnCommentatorCombatEvent(C_Commentator.GetCombatEventInfo());
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
 		self:InitSpells();
-	elseif event == "ARENA_COOLDOWNS_UPDATE" then
+	elseif event == "UNIT_ARENA_COOLDOWNS_UPDATE" then
 		local unitToken = ...;
 		if unitToken == self.unitToken then
 			self:UpdateCCRemover();

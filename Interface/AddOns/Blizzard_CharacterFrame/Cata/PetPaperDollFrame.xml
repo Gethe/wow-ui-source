@@ -105,15 +105,13 @@
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-						TextStatusBar_Initialize(self);
-						SetTextStatusBarText(self, PetPaperDollFrameExpBarText);
+						self:InitializeTextStatusBar();
+						self:SetBarText(PetPaperDollFrameExpBarText);
 					</OnLoad>
 					<OnEnter>
-						TextStatusBar_UpdateTextString(self);
-						ShowTextStatusBarText(self);
+						self:UpdateTextString();
+						self:ShowStatusBarText();
 					</OnEnter>
-					<OnMinMaxChanged function="TextStatusBar_OnValueChanged"/>
-					<OnLeave function="HideTextStatusBarText"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>

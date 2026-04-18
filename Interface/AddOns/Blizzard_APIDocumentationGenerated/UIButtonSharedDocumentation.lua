@@ -15,6 +15,9 @@ local UIButtonShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIButtonShared);

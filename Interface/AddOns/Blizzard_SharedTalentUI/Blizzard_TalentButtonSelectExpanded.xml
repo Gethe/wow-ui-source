@@ -6,6 +6,7 @@
 			<Frame parentKey="SelectionFrame" inherits="TalentSelectionChoiceFrameTemplate">
 				<KeyValues>
 					<KeyValue key="dialogStyle" value="false" type="boolean"/>
+					<KeyValue key="childXPadding" value="72" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER"/>

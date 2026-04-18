@@ -54,7 +54,7 @@ local function UpdateButtonStatesForCollections(enabledState)
 
 	if not enabledState then
 		-- Use saved state when going back, do not assume player wants list expanded.
-		local isExpanded = GetCVarBool("expandWarbandCharacterList");
+		local isExpanded = CharacterSelectUtil.ShouldExpandCharacterList();
 		CharacterSelectUI:ExpandCharacterList(isExpanded);
 	else
 		CharacterSelectUI:ExpandCharacterList(false);
@@ -66,20 +66,14 @@ local function ToggleCollections()
 	local collections = CharacterSelectUI.CollectionsFrame;
 	local enabledState = not collections:IsShown();
 
-	-- Clear helptip if not yet closed.
-	if enabledState and not GetCVarBool("seenCharacterSelectNavBarCampsHelpTip") then
-		SetCVar("seenCharacterSelectNavBarCampsHelpTip", 1);
-		HelpTip:Hide(CharacterSelectUI.VisibilityFramesContainer.NavBar.CampsButton, CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP);
-	end
-
 	collections:SetShown(enabledState);
 	UpdateButtonStatesForCollections(enabledState);
 end
 
 local CharacterSelectNavBarEvents = {
 	"GLOBAL_MOUSE_DOWN",
-	"ACCOUNT_CVARS_LOADED",
 	"EVENT_REALM_QUEUES_UPDATED",
+	"SHOW_NEW_PRODUCT_NOTIFICATION"
 };
 
 function CharacterSelectNavBarMixin:OnLoad()
@@ -133,8 +127,6 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 			not self.GameModeButton.SelectionDrawer:IsMouseOver() then
 			self:ToggleGameModeDrawer();
 		end
-	elseif event == "ACCOUNT_CVARS_LOADED" then
-		self:EvaluateHelptips();
 	elseif event == "STORE_FRONT_STATE_UPDATED" then
 		if self.PlunderstoreButton then
 			self.PlunderstoreButton:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
@@ -145,6 +137,12 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 		self.tryForceShowModes = not g_newGameModeAvailableAcknowledged and eventRealmQueues ~= Enum.EventRealmQueues.None;
 
 		self:UpdateGameModeSelectionTutorial();
+	elseif event == "SHOW_NEW_PRODUCT_NOTIFICATION" then
+		if self.StoreButton and C_CatalogShop.HasNewProducts() then
+			self.StoreButton.TutorialBadge:Show();
+		elseif self.StoreButton then
+			self.StoreButton.TutorialBadge:Hide();
+		end
 	end
 end
 
@@ -243,6 +241,9 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		local highlight = false;
 		self.StoreButton:formatButtonTextCallback(enabled, highlight);
 		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+		
+		self.StoreButton.TutorialBadge:ClearAllPoints();
+		self.StoreButton.TutorialBadge:SetPoint("CENTER", self.StoreButton:GetFontString(), "LEFT", -10, 0);
 	end
 end
 
@@ -393,16 +394,4 @@ function CharacterSelectNavBarMixin:SetCampsButtonEnabled(enabled)
 
 	self:UpdateButtonDividerState(self.RealmsButton);
 	self:UpdateButtonDividerState(self.CampsButton);
-end
-
-function CharacterSelectNavBarMixin:EvaluateHelptips()
-	local campsHelpTipInfo = {
-		text = CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.BottomEdgeCenter,
-		cvar = "seenCharacterSelectNavBarCampsHelpTip",
-		cvarValue = "1",
-		checkCVars = true
-	};
-	HelpTip:Show(self.CampsButton, campsHelpTipInfo);
 end

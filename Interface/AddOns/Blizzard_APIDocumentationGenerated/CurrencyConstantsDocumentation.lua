@@ -24,6 +24,19 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "CurrencyConversionResult",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "NoConversion", Type = "CurrencyConversionResult", EnumValue = 0 },
+				{ Name = "Conversion", Type = "CurrencyConversionResult", EnumValue = 1 },
+				{ Name = "SkippedAccountCurrency", Type = "CurrencyConversionResult", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "CurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 32,
@@ -68,9 +81,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 1,
-			MaxValue = 1024,
+			MaxValue = 2048,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -84,6 +97,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyBForceMaxQuantityOnConversion", Type = "CurrencyFlagsB", EnumValue = 256 },
 				{ Name = "CurrencyBUnearnableBeforeMaxQuantityStart", Type = "CurrencyFlagsB", EnumValue = 512 },
 				{ Name = "CurrencyBAllowReductionByResourcefulness", Type = "CurrencyFlagsB", EnumValue = 1024 },
+				{ Name = "CurrencyBNoBonusXP", Type = "CurrencyFlagsB", EnumValue = 2048 },
 			},
 		},
 		{
@@ -195,8 +209,12 @@ local CurrencyConstants =
 				{ Name = "CURRENCY_ID_WILLING_SOUL", Type = "number", Value = 1810 },
 				{ Name = "CURRENCY_ID_RESERVOIR_ANIMA", Type = "number", Value = 1813 },
 				{ Name = "CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO", Type = "number", Value = 2032 },
+				{ Name = "CURRENCY_WALLET_TYPE_WOWMONEY", Type = "number", Value = 0 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

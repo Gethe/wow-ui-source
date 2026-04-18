@@ -6,6 +6,8 @@ function MovePadMixin:OnLoad()
 	end
 
 	if Settings then
+		self:SetShown(Settings.GetValue("enableMovePad"));
+
 		Settings.SetOnValueChangedCallback("enableMovePad", OnValueChanged);
 	end
 
@@ -25,6 +27,8 @@ function MovePadMixin:OnLoad()
 
 	MovePadStrafeLeft.opposingMoveButton = MovePadStrafeRight;
 	MovePadStrafeRight.opposingMoveButton = MovePadStrafeLeft;
+
+	FrameUtil.RegisterForTopLevelParentChanged(self);
 end
 
 function MovePadMixin:SetLockedMode(locked)

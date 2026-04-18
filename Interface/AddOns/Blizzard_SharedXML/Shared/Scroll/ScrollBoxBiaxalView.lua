@@ -142,7 +142,7 @@ do
 		return true;
 	end
 
-	local function CalculateSizes(view, tbl, size)
+	local function CalculateSizes(scrollBox, view, tbl, size)
 		for dataIndex, elementData in view:EnumerateDataProvider() do
 			local frameWidth, frameHeight = view:CalculateFrameSize(dataIndex, elementData);
 			table.insert(tbl, {frameWidth, frameHeight});
@@ -150,9 +150,12 @@ do
 		
 		return view:GetExtentTo(scrollBox, size);
 	end
-
+	
 	function ScrollBoxListBiaxalViewMixin:RecalculateExtent(scrollBox)
-		self:PrepareRecalculateExtent();
+		-- Extents need to be recalculated when the data provider contents change or the
+		-- view width changes. We can skip rebuilding the entire cache once we're tracking
+		-- add, remove, or replacements in the data provider.
+		self:RebuildTemplateInfoCache();
 
 		local infos = self.templateInfoCache:GetTemplateInfos();
 		self.hasIdenticalTemplateSize = HasIdenticalTemplateSize(self, infos);
@@ -162,12 +165,12 @@ do
 		if size > 0 then
 			if self.elementSizeCalculator then
 				self.calculatedElementSizes = {};
-				extent = CalculateSizes(self, self.calculatedElementSizes, size);
+				extent = CalculateSizes(scrollBox, self, self.calculatedElementSizes, size);
 			elseif self:HasIdenticalElementSize() then 
 				extent = self:GetExtentTo(scrollBox, size);
 			else
 				self.templateSizes = {};
-				extent = CalculateSizes(self, self.templateSizes, size);
+				extent = CalculateSizes(scrollBox, self, self.templateSizes, size);
 			end
 		end
 	

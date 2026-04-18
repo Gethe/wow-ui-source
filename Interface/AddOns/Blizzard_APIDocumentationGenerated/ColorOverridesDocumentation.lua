@@ -3,6 +3,7 @@ local ColorOverrides =
 	Name = "ColorOverrides",
 	Type = "System",
 	Namespace = "C_ColorOverrides",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local ColorOverrides =
 			Name = "ColorOverrideUpdated",
 			Type = "Event",
 			LiteralName = "COLOR_OVERRIDE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "overrideType", Type = "ColorOverride", Nilable = false },
@@ -23,6 +25,7 @@ local ColorOverrides =
 			Name = "ColorOverridesReset",
 			Type = "Event",
 			LiteralName = "COLOR_OVERRIDES_RESET",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -38,6 +41,9 @@ local ColorOverrides =
 				{ Name = "overrideColorString", Type = "string", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

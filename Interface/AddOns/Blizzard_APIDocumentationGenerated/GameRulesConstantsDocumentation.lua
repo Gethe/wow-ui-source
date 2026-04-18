@@ -44,6 +44,9 @@ local GameRulesConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GameRulesConstants);

@@ -3,12 +3,14 @@ local StorePublicUI =
 	Name = "StorePublic",
 	Type = "System",
 	Namespace = "C_StorePublic",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "DoesGroupHavePurchaseableProducts",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local StorePublicUI =
 		{
 			Name = "EventStoreUISetShown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,15 +40,6 @@ local StorePublicUI =
 			Returns =
 			{
 				{ Name = "hasPurchaseableProducts", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsDisabledByParentalControls",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "disabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -64,6 +58,9 @@ local StorePublicUI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -1,46 +1,62 @@
 
-MOVIE_CAPTION_FADE_TIME = 1.0;
+MovieFrameMixin = {}
 
-function MovieFrame_OnLoad(self)
+function MovieFrameMixin:OnLoad()
 	self:RegisterEvent("PLAY_MOVIE");
 	self:RegisterEvent("STOP_MOVIE");
-end
 
-function MovieFrame_OnEvent(self, event, ...)
-	if ( event == "PLAY_MOVIE" ) then
-		local movieID = ...;
-		if ( movieID ) then
-			MovieFrame_PlayMovie(self, movieID);
-		end
-	elseif (event == "STOP_MOVIE") then
-		MovieFrame_StopMovie(self);
+	self.CloseDialog.Buttons.ConfirmButton:SetScript("OnClick", function()
+		self:FinishMovie();
+	end);
+	self.CloseDialog.Buttons.ResumeButton:SetScript("OnClick", function()
+		self.CloseDialog:Hide();
+	end);
+
+	local backgroundAtlas = "collections-background-tile";
+	local exists = C_Texture.GetAtlasExists(backgroundAtlas);
+	self.CloseDialog.BackgroundTile:SetShown(exists);
+	if exists then
+		self.CloseDialog.BackgroundTile:SetAtlas(backgroundAtlas, true);
 	end
 end
 
-function MovieFrame_PlayMovie(self, movieID)
+function MovieFrameMixin:OnEvent(event, ...)
+	if event == "PLAY_MOVIE" then
+		local movieID = ...;
+		if ( movieID ) then
+			self:PlayMovie(movieID);
+		end
+	elseif event == "STOP_MOVIE" then
+		self:FinishMovie();
+	end
+end
+
+function MovieFrameMixin:PlayMovie(movieID)
 	self:Show();
 	self.CloseDialog:Hide();
 	local playSuccess, errorCode = self:StartMovie(movieID);
-	if ( not playSuccess ) then
+	if not playSuccess then
 		StaticPopup_Show("ERROR_CINEMATIC");
 		self:Hide();
 		local userCanceled = false;
 		local didError = true;
 		CinematicFinished(Enum.CinematicType.GameMovie, userCanceled, didError);
+		self.movieID = nil;
 	else
 		CinematicStarted(Enum.CinematicType.GameMovie, movieID);
 		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
+		self.movieID = movieID;
 	end
 end
 
-function MovieFrame_StopMovie(self)
+function MovieFrameMixin:FinishMovie()
 	self:StopMovie(movieID);
 	self:Hide();
 	CinematicFinished(Enum.CinematicType.GameMovie);
 	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 end
 
-function MovieFrame_OnShow(self)
+function MovieFrameMixin:OnShow()
 	WorldFrame:Hide();
 	self.uiParentShown = UIParent:IsShown();
 	UIParent:Hide();
@@ -48,8 +64,9 @@ function MovieFrame_OnShow(self)
 	SpellStopTargeting();
 end
 
-function MovieFrame_OnHide(self)
+function MovieFrameMixin:OnHide()
 	self:StopMovie();
+	self.movieID = nil;
 	WorldFrame:Show();
 	if ( self.uiParentShown ) then
 		UIParent:Show();
@@ -57,7 +74,7 @@ function MovieFrame_OnHide(self)
 	end
 end
 
-function MovieFrame_OnCinematicStopped()
+function MovieFrameMixin:OnCinematicStopped()
 	-- It's possible that both frames are trying to play around the same time, but the cinematic stop comes after we've already started a movie
 	-- In that case just make sure the UI stays hidden
 	if MovieFrame:IsShown() and UIParent:IsShown() then
@@ -66,29 +83,34 @@ function MovieFrame_OnCinematicStopped()
 	end
 end
 
-function MovieFrame_OnUpdate(self, elapsed)
-	if ( self.fadingAlpha ) then
-		self.fadingAlpha = self.fadingAlpha + ((elapsed / self.fadeSpeed) * self.fadeDirection);
-		if ( self.fadingAlpha > 1.0 ) then
-			self.fadingAlpha = nil;
-		elseif ( self.fadingAlpha < 0.0 ) then
-			self.fadingAlpha = nil;
-		end
-	end
-end
-
-function MovieFrame_OnKeyUp(self, key)
+function MovieFrameMixin:OnKeyUp(key)
 	local keybind = GetBindingFromClick(key);
-	if ( keybind == "TOGGLEGAMEMENU" or key == "SPACE" or key == "ENTER" ) then
-		self.CloseDialog:Show();
-	elseif ( keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then
+	if keybind == "TOGGLEGAMEMENU" or key == "SPACE" or key == "ENTER" then
+		self:ShowCloseDialog();
+	elseif keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" then
 		RunBinding(keybind);
 	end
 end
 
-function MovieFrame_OnMovieFinished(self, userCanceled)
+function MovieFrameMixin:OnMovieFinished(userCanceled)
 	CinematicFinished(Enum.CinematicType.GameMovie, userCanceled);
-	if ( self:IsShown() ) then
-		self:Hide();
+	self:Hide();
+end
+
+function MovieFrameMixin:ShowCloseDialog()
+	local summary = GetCurrentCinematicSummary();
+
+	if summary then
+		self.CloseDialog.Summary:SetText(summary);
+		self.CloseDialog.Summary:Show();
+	else
+		self.CloseDialog.Summary:Hide();
 	end
+
+	self.CloseDialog:Layout();
+	self.CloseDialog:Show();
+end
+
+function MovieFrame_PlayMovie(movieFrame, movieID)
+	movieFrame:PlayMovie(movieID);
 end

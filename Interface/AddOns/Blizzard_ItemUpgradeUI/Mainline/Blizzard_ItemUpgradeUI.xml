@@ -389,6 +389,7 @@
 				<KeyValues>
 					<KeyValue key="quantityFontObject" value="ItemUpgradeCostQuantityTemplate" type="string"/>
 					<KeyValue key="iconFrameObject" value="ItemUpgradeCostIconTemplate" type="string"/>
+					<KeyValue key="expand" value="false" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.UpgradeButton" relativePoint="TOP" y="12"/>
@@ -402,6 +403,20 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="MoneyCostFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="leftPadding" value="20" type="number"/>
+							<KeyValue key="topPadding" value="2" type="number"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 
 			<Frame name="$parentPlayerCurrenciesBorder" parentKey="PlayerCurrenciesBorder" inherits="ThinGoldEdgeTemplate">
@@ -414,11 +429,25 @@
 			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="12" type="number"/>
+					<KeyValue key="expand" value="false" type="boolean"/>
 					<KeyValue key="iconFrameObject" value="ItemUpgradeCostIconTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="MoneyCostFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="leftPadding" value="20" type="number"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "PLAYER");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 
 			<Frame parentKey="AnimationHolder">

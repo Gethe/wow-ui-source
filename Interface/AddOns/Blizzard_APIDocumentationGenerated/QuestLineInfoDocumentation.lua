@@ -3,6 +3,7 @@ local QuestLineInfo =
 	Name = "QuestLineUI",
 	Type = "System",
 	Namespace = "C_QuestLine",
+	Environment = "All",
 
 	Functions =
 	{
@@ -44,6 +45,9 @@ local QuestLineInfo =
 				{ Name = "startMapID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

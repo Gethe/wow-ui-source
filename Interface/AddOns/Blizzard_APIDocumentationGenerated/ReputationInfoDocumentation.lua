@@ -3,6 +3,7 @@ local ReputationInfo =
 	Name = "ReputationInfo",
 	Type = "System",
 	Namespace = "C_Reputation",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local ReputationInfo =
 			Name = "GetFactionParagonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local ReputationInfo =
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "hasRewardPending", Type = "bool", Nilable = false },
 				{ Name = "tooLowLevelForParagon", Type = "bool", Nilable = false },
+				{ Name = "paragonStorageLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -35,8 +38,78 @@ local ReputationInfo =
 			},
 		},
 		{
+			Name = "GetWatchedFactionData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "watchedFactionData", Type = "FactionData", Nilable = true },
+			},
+		},
+		{
+			Name = "IsAccountWideReputation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAccountWide", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFactionParagon",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionIsParagon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFactionParagonForCurrentPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currentPlayerHasParagon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMajorFaction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMajorFaction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestFactionParagonPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +120,17 @@ local ReputationInfo =
 
 	Events =
 	{
+		{
+			Name = "FactionStandingChanged",
+			Type = "Event",
+			LiteralName = "FACTION_STANDING_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "updatedStanding", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -75,6 +159,9 @@ local ReputationInfo =
 				{ Name = "isAccountWide", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

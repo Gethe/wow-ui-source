@@ -3,6 +3,7 @@ local SocialQueue =
 	Name = "SocialQueue",
 	Type = "System",
 	Namespace = "C_SocialQueue",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,11 +15,13 @@ local SocialQueue =
 			Name = "SocialQueueConfigUpdated",
 			Type = "Event",
 			LiteralName = "SOCIAL_QUEUE_CONFIG_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocialQueueUpdate",
 			Type = "Event",
 			LiteralName = "SOCIAL_QUEUE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
@@ -97,6 +100,9 @@ local SocialQueue =
 				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

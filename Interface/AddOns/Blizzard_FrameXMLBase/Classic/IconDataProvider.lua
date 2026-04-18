@@ -48,9 +48,10 @@ IconDataProviderIconType = EnumUtil.MakeEnum(
 );
 
 IconDataProviderExtraType = {
-	Spellbook = 1,
-	Equipment = 2,
-	None = 3,
+	None = 1,
+	Spellbook = 2,
+	Equipment = 3,
+	Transmog = 4
 };
 
 local function FillOutExtraIconsMapWithSpells(extraIconsMap)
@@ -88,8 +89,8 @@ end
 local function FillOutExtraIconsMapWithTalents(extraIconsMap)
 	local isInspect = false;
 	for specIndex = 1, GetNumSpecGroups(isInspect) do
-		for tier = 1, MAX_TALENT_TIERS do
-			for column = 1, NUM_TALENT_COLUMNS do
+		for tier = 1, Constants.TalentTierConstants.MAX_TALENT_TIERS do
+			for column = 1, Constants.TalentConsts.NumTalentColumns do
 				local talentInfoQuery = {};
 				talentInfoQuery.tier = tier;
 				talentInfoQuery.column = column;
@@ -124,6 +125,16 @@ local function FillOutExtraIconsMapWithEquipment(extraIconsMap)
 	end
 end
 
+local function FillOutExtraIconsMapWithTransmog(extraIconsMap)
+	-- Only populate if transmog frame is open. Reference the currently viewed outfit.
+	if TransmogFrame and TransmogFrame:IsShown() then
+		local outfitIcons = TransmogFrame:GetViewedOutfitIcons();
+		for _index, outfitIcon in ipairs(outfitIcons) do
+			extraIconsMap[outfitIcon] = true;
+		end
+	end
+end
+
 function IconDataProviderMixin:Init(type, extraIconsOnly, requestedIconTypes)
 	self.extraIcons = {};
 	self.extraIconType = type;
@@ -136,6 +147,10 @@ function IconDataProviderMixin:Init(type, extraIconsOnly, requestedIconTypes)
 	elseif type == IconDataProviderExtraType.Equipment then
 		local extraIconsMap = {};
 		FillOutExtraIconsMapWithEquipment(extraIconsMap);
+		self.extraIcons = GetKeysArray(extraIconsMap);
+	elseif type == IconDataProviderExtraType.Transmog then
+		local extraIconsMap = {};
+		FillOutExtraIconsMapWithTransmog(extraIconsMap);
 		self.extraIcons = GetKeysArray(extraIconsMap);
 	end
 
@@ -219,7 +234,17 @@ function IconDataProviderMixin:GetIndexOfIcon(icon)
 end
 
 function IconDataProviderMixin:ShouldShowExtraIcons()
-	return (self.extraIconType == IconDataProviderExtraType.Spellbook and tContains(self.requestedIconTypes, IconDataProviderIconType.Spell)) or (self.extraIconType == IconDataProviderExtraType.Equipment and tContains(self.requestedIconTypes, IconDataProviderIconType.Item))
+	local showExtraIcons = false;
+
+	if self.extraIconType == IconDataProviderExtraType.Spellbook then
+		showExtraIcons = tContains(self.requestedIconTypes, IconDataProviderIconType.Spell);
+	elseif self.extraIconType == IconDataProviderExtraType.Equipment then
+		showExtraIcons = tContains(self.requestedIconTypes, IconDataProviderIconType.Item);
+	elseif self.extraIconType == IconDataProviderExtraType.Transmog then
+		showExtraIcons = tContains(self.requestedIconTypes, IconDataProviderIconType.Item);
+	end
+
+	return showExtraIcons;
 end
 
 function IconDataProviderMixin:Release()

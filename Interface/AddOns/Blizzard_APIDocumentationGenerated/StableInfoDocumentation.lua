@@ -3,6 +3,7 @@ local StableInfo =
 	Name = "StableInfo",
 	Type = "System",
 	Namespace = "C_StableInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -32,25 +33,32 @@ local StableInfo =
 			Name = "PetStableClosed",
 			Type = "Event",
 			LiteralName = "PET_STABLE_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableShow",
 			Type = "Event",
 			LiteralName = "PET_STABLE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableUpdate",
 			Type = "Event",
 			LiteralName = "PET_STABLE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableUpdatePaperdoll",
 			Type = "Event",
 			LiteralName = "PET_STABLE_UPDATE_PAPERDOLL",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

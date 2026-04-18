@@ -3,12 +3,14 @@ local CVar =
 	Name = "CVarScripts",
 	Type = "System",
 	Namespace = "C_CVar",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetCVar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local CVar =
 		{
 			Name = "GetCVarBitfield",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +41,7 @@ local CVar =
 		{
 			Name = "GetCVarBool",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +57,7 @@ local CVar =
 			Name = "GetCVarDefault",
 			Type = "Function",
 			IsValidAndPublic = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +72,7 @@ local CVar =
 		{
 			Name = "GetCVarInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +93,7 @@ local CVar =
 		{
 			Name = "RegisterCVar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +111,7 @@ local CVar =
 			IsValidAndPublic = true,
 			IsNotReadOnly = true,
 			IsNotSecure = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,6 +132,7 @@ local CVar =
 			IsNotReadOnly = true,
 			IsNotSecure = true,
 			IsIndexInRange = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +168,29 @@ local CVar =
 				{ Name = "isSecure", Type = "bool", Nilable = false },
 				{ Name = "isReadOnly", Type = "bool", Nilable = false },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "IsIndexInRange",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsNotReadOnly",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsNotSecure",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsValidAndPublic",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

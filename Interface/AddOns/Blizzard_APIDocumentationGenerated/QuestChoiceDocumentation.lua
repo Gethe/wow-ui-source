@@ -3,6 +3,7 @@ local QuestChoice =
 	Name = "QuestChoice",
 	Type = "System",
 	Namespace = "C_QuestChoice",
+	Environment = "All",
 
 	Functions =
 	{
@@ -25,6 +26,7 @@ local QuestChoice =
 			Name = "GetQuestChoiceOptionInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,6 +45,7 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +64,7 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardFaction",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,6 +82,7 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +106,7 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardItem",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +125,7 @@ local QuestChoice =
 		{
 			Name = "SendQuestChoiceResponse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,20 +140,26 @@ local QuestChoice =
 			Name = "QuestChoiceClose",
 			Type = "Event",
 			LiteralName = "QUEST_CHOICE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestChoiceUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_CHOICE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UniqueQuestChoiceUpdate",
 			Type = "Event",
 			LiteralName = "UNIQUE_QUEST_CHOICE_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

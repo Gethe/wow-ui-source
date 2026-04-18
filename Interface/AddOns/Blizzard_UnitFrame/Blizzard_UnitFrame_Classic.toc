@@ -1,0 +1,58 @@
+## Title: Blizzard_UnitFrame
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UIParentPanelManager
+## AllowLoad: Game
+## AllowLoadGameType: classic
+Classic\UnitPowerBarAlt.xml
+Shared\StatusBarOverlaySegment.lua
+Shared\StatusBarOverlaySegment.xml
+Shared\UnitFrame.lua
+Classic\UnitFrame.lua
+Shared\UnitFrame.xml
+Shared\PlayerFrameTemplates.xml
+Shared\PlayerFrame.lua
+Classic\PlayerFrame.lua
+Classic\PlayerFrame.xml
+Wrath\AlternatePowerBar.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\AlternatePowerBar.xml [AllowLoadGameType wrath, cata]
+Mists\AlternatePowerBar.xml [AllowLoadGameType mists]
+Shared\PartyMemberFrame.lua
+Classic\PartyMemberFrame.lua
+Shared\PartyFrameTemplates.xml
+Classic\PartyFrameTemplates.xml
+Shared\PartyFrame.xml
+Shared\TargetFrame.lua
+Classic\TargetFrame.lua
+Vanilla\TargetFrameOverrides.lua [AllowLoadGameType vanilla]
+Classic\TargetFrame.xml
+Classic\TotemFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\TotemFrame.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\PetFrame.lua
+Classic\PetFrame.xml
+Classic\ComboFrame.lua
+Classic\ComboFrame.xml
+[Family]\CompactUnitFrameOptions.lua
+Shared\CompactUnitFrame.lua
+Shared\CompactUnitFrame.xml
+Shared\CompactRaidGroup.lua
+Shared\CompactRaidGroup.xml
+Shared\CompactPartyFrame.lua
+Shared\CompactPartyFrame.xml
+Classic\RuneFrame_Shared.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\RuneFrame.lua [AllowLoadGameType wrath]
+Wrath\RuneFrame.xml [AllowLoadGameType wrath]
+Cata\RuneFrame.lua [AllowLoadGameType cata, mists]
+Cata\RuneFrame.xml [AllowLoadGameType cata, mists]
+[Game]\ShardBar.lua [AllowLoadGameType cata, mists]
+[Game]\ShardBar.xml [AllowLoadGameType cata, mists]
+Cata\EclipseBarFrame.lua [AllowLoadGameType cata, mists]
+Cata\EclipseBarFrame.xml [AllowLoadGameType cata, mists]
+[Game]\PaladinPowerBar.lua [AllowLoadGameType cata, mists]
+[Game]\PaladinPowerBar.xml [AllowLoadGameType cata, mists]
+[Game]\MonkHarmonyBar.lua [AllowLoadGameType mists]
+[Game]\MonkHarmonyBar.xml [AllowLoadGameType mists]
+[Game]\MonkStaggerBar.lua [AllowLoadGameType mists]
+[Game]\MonkStaggerBar.xml [AllowLoadGameType mists]
+[Game]\PriestBar.lua [AllowLoadGameType mists]
+[Game]\PriestBar.xml [AllowLoadGameType mists]
+Classic\Localization.lua

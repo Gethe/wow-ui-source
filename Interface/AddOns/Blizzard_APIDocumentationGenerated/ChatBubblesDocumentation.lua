@@ -3,12 +3,14 @@ local ChatBubbles =
 	Name = "ChatBubbles",
 	Type = "System",
 	Namespace = "C_ChatBubbles",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAllChatBubbles",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +29,9 @@ local ChatBubbles =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

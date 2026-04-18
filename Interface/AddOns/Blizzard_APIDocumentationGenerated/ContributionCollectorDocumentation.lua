@@ -3,6 +3,7 @@ local ContributionCollector =
 	Name = "ContributionCollector",
 	Type = "System",
 	Namespace = "C_ContributionCollector",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,17 +15,6 @@ local ContributionCollector =
 
 	Tables =
 	{
-		{
-			Name = "ContributionAppearanceFlags",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "TooltipUseTimeRemaining", Type = "ContributionAppearanceFlags", EnumValue = 0 },
-			},
-		},
 		{
 			Name = "ContributionResult",
 			Type = "Enumeration",
@@ -69,6 +59,9 @@ local ContributionCollector =
 				{ Name = "collectorCreatureID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

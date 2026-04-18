@@ -24,6 +24,12 @@ function ColorMixin:GetRGB()
 	return self.r, self.g, self.b;
 end
 
+function ColorMixin:GetHSL()
+	local r, g, b, a = self.r, self.g, self.b, self.a;
+	local h, s, l = C_ColorUtil.ConvertHSVToHSL(C_ColorUtil.ConvertRGBToHSV(r, g, b));
+	return h, s, l, a or 1;
+end
+
 function ColorMixin:GetRGBAsBytes()
 	return Round(self.r * 255), Round(self.g * 255), Round(self.b * 255);
 end
@@ -48,7 +54,7 @@ function ColorMixin:SetRGB(r, g, b)
 end
 
 function ColorMixin:GenerateHexColor()
-	return ("ff%.2x%.2x%.2x"):format(self:GetRGBAsBytes());
+	return C_ColorUtil.GenerateTextColorCode(self);
 end
 
 function ColorMixin:GenerateHexColorNoAlpha()
@@ -60,15 +66,15 @@ function ColorMixin:GenerateHexColorMarkup()
 end
 
 function ColorMixin:WrapTextInColorCode(text)
-	return WrapTextInColorCode(text, self:GenerateHexColor());
+	return C_ColorUtil.WrapTextInColor(text, self);
 end
 
 function WrapTextInColorCode(text, colorHexString)
-	return ("|c%s%s|r"):format(colorHexString, text);
+	return C_ColorUtil.WrapTextInColorCode(text, colorHexString);
 end
 
 function WrapTextInColor(text, color)
-	return WrapTextInColorCode(text, color:GenerateHexColor());
+	return C_ColorUtil.WrapTextInColor(text, color);
 end
 
 do
