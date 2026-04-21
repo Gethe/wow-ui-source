@@ -34,6 +34,34 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "talents-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
+	ScenarioChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "themed-scenario-challenge-gold-circle",
+		disabled = "talents-node-circle-gray",
+		selectable = "talents-node-circle-green",
+		maxed = "themed-scenario-challenge-gold-circle",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "talents-node-circle-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
+
+	DelveChallengeCircle = {
+		iconMask = "talents-node-circle-mask",
+		normal = "ritual-sites-frame-default",
+		disabled = "ritual-sites-frame-locked",
+		selectable = "ritual-sites-frame-default",
+		maxed = "ritual-sites-frame-selected",
+		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
+		locked = "ritual-sites-frame-locked",
+		glow = "talents-node-circle-greenglow",
+		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
 
 	Choice = {
 		iconMask = "talents-node-choice-mask",
@@ -408,7 +436,7 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 		animEffectControllers = nil;
 	end
 
-	if fxIDs and self:ShouldBeVisible() then
+	if fxIDs and ((not self.ShouldBeVisible and self:IsVisible()) or self:ShouldBeVisible()) then
 		-- If no custom multiplier specified, fall back on the difference between the node and scene's scale,
 		-- so if node is in a differently scaled parent the effects will visually scale accordingly
 		local scaleMultiplier = self.animEffectScaleMultiplier or (self:GetEffectiveScale() / fxModelScene:GetEffectiveScale());

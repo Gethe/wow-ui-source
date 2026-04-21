@@ -100,6 +100,9 @@ local TooltipComparison =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TooltipComparison);

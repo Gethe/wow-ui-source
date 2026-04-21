@@ -77,6 +77,9 @@ local SpellActivationOverlay =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellActivationOverlay);

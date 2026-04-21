@@ -148,6 +148,9 @@ local VignetteInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(VignetteInfo);

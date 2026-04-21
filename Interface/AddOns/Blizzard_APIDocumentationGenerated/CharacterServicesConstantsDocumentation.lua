@@ -15,6 +15,9 @@ local CharacterServicesConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CharacterServicesConstants);

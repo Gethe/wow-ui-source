@@ -155,6 +155,9 @@ local FrameAPIBlob =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIBlob);

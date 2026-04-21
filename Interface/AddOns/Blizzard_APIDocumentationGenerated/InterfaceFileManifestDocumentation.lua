@@ -26,6 +26,9 @@ local InterfaceFileManifest =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InterfaceFileManifest);

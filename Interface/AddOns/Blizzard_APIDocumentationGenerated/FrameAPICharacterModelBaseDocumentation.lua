@@ -239,6 +239,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -276,6 +277,9 @@ local FrameAPICharacterModelBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

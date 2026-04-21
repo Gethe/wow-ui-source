@@ -95,12 +95,12 @@
 				</Anchors>
 				<Frames>
 					<CheckButton parentKey="AlternateFormButton" inherits="RingedMaskedButtonTemplate" mixin="CatalogShopAlteredFormButtonMixin"  frameLevel="1000">
-						<Size x="70" y="70"/>
+						<Size x="52" y="52"/>
 						<KeyValues>
 							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
-							<KeyValue key="ringWidth" value="139" type="number"/>
-							<KeyValue key="ringHeight" value="140" type="number"/>
-							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="ringWidth" value="99" type="number"/>
+							<KeyValue key="ringHeight" value="90" type="number"/>
+							<KeyValue key="checkedTextureSize" value="78" type="number"/>
 							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
 							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
@@ -112,12 +112,12 @@
 						</Anchors>
 					</CheckButton>
 					<CheckButton parentKey="NormalFormButton" inherits="RingedMaskedButtonTemplate" mixin="CatalogShopAlteredFormButtonMixin" frameLevel="1000">
-						<Size x="70" y="70"/>
+						<Size x="52" y="52"/>
 						<KeyValues>
 							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
-							<KeyValue key="ringWidth" value="139" type="number"/>
-							<KeyValue key="ringHeight" value="140" type="number"/>
-							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="ringWidth" value="99" type="number"/>
+							<KeyValue key="ringHeight" value="90" type="number"/>
+							<KeyValue key="checkedTextureSize" value="78" type="number"/>
 							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
 							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
@@ -125,7 +125,7 @@
 							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.AlternateFormButton" relativePoint="LEFT" x="-20" y="0" />
+							<Anchor point="RIGHT" relativeKey="$parent.AlternateFormButton" relativePoint="LEFT" x="-10" y="0" />
 						</Anchors>
 					</CheckButton>
 					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
@@ -336,6 +336,8 @@
 								<MaskedTexture childKey="PMTImageForNoModel"/>
 							</MaskedTextures>
 						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
 						<FontString parentKey="OtherProductWarningText" inherits="GameFontHighlightLarge" justifyH="CENTER">
 							<Size x="700" y="0" />
 							<Anchors>
@@ -343,8 +345,6 @@
 							</Anchors>
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
 						<Texture parentKey="PMTImageForNoModelBorder" setAllPoints="true" atlas="shop-card-wide-frame-default">
 							<Size x="650" y="376"/>
 							<Anchors>
@@ -353,6 +353,14 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="ImageCarousel" inherits="ImageCarouselControlTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.OtherProductWarningText" relativePoint="BOTTOM" x="0" y="-20" />
+							<Anchor point="CENTER" relativeKey="$parent.OtherProductWarningText" relativePoint="CENTER" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />
 					<OnShow method="OnShow" />

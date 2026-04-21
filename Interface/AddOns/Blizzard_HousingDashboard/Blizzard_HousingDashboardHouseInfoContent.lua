@@ -9,6 +9,7 @@ local HouseInfoLifetimeEvents =
 	"PLAYER_LEVEL_CHANGED",
 };
 
+local LAST_POINTS_CVAR = "endeavorInitiativesLastPointsMap";
 local HOUSE_DROPDOWN_WIDTH = 200;
 local HOUSE_DROPDOWN_MAX_HOUSES_SHOWN = 8;
 local HOUSE_DROPDOWN_EXTENT = 20;
@@ -313,6 +314,32 @@ function HouseFinderButtonMixin:OnClick()
 	
 	PlaySound(SOUNDKIT.HOUSING_DASHBOARD_BUTTON_CLICK);
 end
+
+---------------------House XP Cap Icon-------------------------------
+HouseXPCapIconMixin = {};
+
+function HouseXPCapIconMixin:OnEnter()
+	local avilableXP = C_NeighborhoodInitiative.GetAvailableHouseXP();
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, ENDEAVOR_XP_TOOLTIP_TITLE);
+
+	GameTooltip_AddNormalLine(GameTooltip, ENDEAVOR_XP_TOOLTIP_DESCRIPTION);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	local formattedNumber = WHITE_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(avilableXP));
+	GameTooltip_AddNormalLine(GameTooltip, ENDEAVOR_XP_TOOLTIP_AVAILABLE:format(formattedNumber));
+	GameTooltip:Show();
+end
+
+function HouseXPCapIconMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function HouseXPCapIconMixin:UpdateVisibility()
+	local avilableXP = C_NeighborhoodInitiative.GetAvailableHouseXP();
+	self:SetShown(avilableXP > 0);
+end
+
 ---------------------Initiatives Tab-------------------------------
 InitiativesTabMixin = {};
 
@@ -335,7 +362,7 @@ function InitiativesTabMixin:OnHide()
 		spinner:Hide();
 	end
 	if self.targetValue then
-		self:SetCurrentPoints(self.targetValue);
+		self:SetCurrentPoints(self.targetValue, false);
 	end
 	if self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
@@ -372,6 +399,7 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 
 				self:SetProgressBarThresholds();
 
+				self.InitiativeSetFrame.InitiativesXPIcon:UpdateVisibility();
 				self.InitiativeSetFrame.InitiativeName:SetText(self.currentInitiative.title);
 				self.InitiativeSetFrame.InitiativeDescription:SetText(self.currentInitiative.description);
 
@@ -412,11 +440,22 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 		self.InitiativeSetFrame:Hide();
 	end
 
-	local lastPoints = GetCVarNumberOrDefault("endeavorInitiativesLastPoints");
-	self:SetCurrentPoints(lastPoints);
-	if self.currentInitiative.currentProgress ~= lastPoints then
+	local lastPoints = GetCVarTableValue(LAST_POINTS_CVAR, self.currentInitiative.neighborhoodGUID, 0);
+	self:SetCurrentPoints(lastPoints, false);
+	if not ApproximatelyEqual(self.currentInitiative.currentProgress, lastPoints) then
 		self.targetValue = self.currentInitiative.currentProgress;
 	end
+
+	local helpTipInfo = {
+		text = ENDEAVOR_SWITCHING_HELPTIP,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = Enum.FrameTutorialAccount.HousingEndeavorsTabSeen,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		checkCVars = true,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		alignment = HelpTip.Alignment.Left
+	};
+	HelpTip:Show(HousingDashboardFrame.HouseInfoContent.HouseDropdown, helpTipInfo);
 end
 
 function InitiativesTabMixin:RefreshTrackedTasks()
@@ -714,14 +753,14 @@ function InitiativesTabMixin:OnUpdate()
 		end
 	end
 
-	self:SetCurrentPoints(barValue);
+	self:SetCurrentPoints(barValue, true);
 end
 
-function InitiativesTabMixin:SetCurrentPoints(barValue)
+function InitiativesTabMixin:SetCurrentPoints(barValue, playSound)
 	self.InitiativeSetFrame.ProgressBar:SetValue(barValue);
 
 	for _, thresholdFrame in pairs(self.thresholdFrames) do
-		thresholdFrame:SetCurrentPoints(barValue);
+		thresholdFrame:SetCurrentPoints(barValue, playSound);
 	end
 
 	local barMax = self.thresholdMax;
@@ -729,11 +768,13 @@ function InitiativesTabMixin:SetCurrentPoints(barValue)
 		barMax = 1000
 	end
 
-	self.InitiativeSetFrame.ProgressBar.TextContainer.ProgressText:SetFormattedText(ENDEAVOR_INITIATIVES_PROGRESS_TEXT, (barValue / barMax) * 100.0);
+	local barPercent = math.min(100.0, (barValue / barMax) * 100.0);
+
+	self.InitiativeSetFrame.ProgressBar.TextContainer.ProgressText:SetFormattedText(ENDEAVOR_INITIATIVES_PROGRESS_TEXT, barPercent);
 	self.InitiativeSetFrame.ProgressBar.BarEnd:SetShown(barValue > 0);
 
 	if self.targetValue and barValue >= self.targetValue then
-		SetCVar("endeavorInitiativesLastPoints", self.targetValue);
+		SetCVarTableValue(LAST_POINTS_CVAR, self.currentInitiative.neighborhoodGUID, self.targetValue);
 		self.targetValue = nil;
 	end
 end
@@ -898,10 +939,32 @@ function ProgressThresholdMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, self.Reward.name);
 	GameTooltip_AddNormalLine(GameTooltip, self.Reward.description);
-	if ( self.Reward.currencyID ) then
-		GameTooltip:SetCurrencyByID(self.Reward.currencyID);
+	if ( self.isFinalReward ) then
+		self:ShowTooltip();
 	end
 	GameTooltip:Show();
+end
+
+function ProgressThresholdMixin:ShowTooltip()
+	if ( self.Reward.rewardQuestID ) then
+		QuestEventListener:AddCallback(self.Reward.rewardQuestID, function()
+			local favor = C_QuestInfoSystem.GetQuestLogRewardFavor(self.Reward.rewardQuestID, true);
+			if ( favor > 0 ) then
+				GameTooltip_AddColoredLine(GameTooltip, BONUS_OBJECTIVE_HOUSING_FAVOR_FORMAT:format(favor, HOUSING_DASHBOARD_REWARD_ESTATE_XP), HIGHLIGHT_FONT_COLOR);
+			end
+
+			local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(self.Reward.rewardQuestID);
+			for _, currencyReward in ipairs(currencyRewards) do
+				local text = ENDEAVOR_FINAL_MILESTONE_TOOLTIP_CURRENCY:format(currencyReward.texture, currencyReward.totalRewardAmount, currencyReward.name);
+				local currencyColor = GetColorForCurrencyReward(currencyReward.currencyID, currencyReward.totalRewardAmount);
+				GameTooltip_AddColoredLine(GameTooltip, text, currencyColor);
+				local info = C_CurrencyInfo.GetCurrencyInfo(currencyReward.currencyID);
+				GameTooltip_AddNormalLine(GameTooltip, info.description);
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+				GameTooltip_AddColoredLine(GameTooltip, ENDEAVOR_TOOLTIP_CURRENCY_TOTAL:format(info.quantity, info.maxQuantity), currencyColor);
+			end
+		end);
+	end
 end
 
 function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, isFinalReward)
@@ -910,13 +973,16 @@ function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, i
 
 	local rewardQuestID = thresholdInfo.rewards[1].rewardQuestID;
 	if ( rewardQuestID > 0 ) then
-		local currencyInfo = C_QuestLog.GetQuestRewardCurrencyInfo(rewardQuestID, 1, false);
-		if ( currencyInfo ) then
-			self.Reward.currencyID = currencyInfo.currencyID;
-			if (currencyInfo.texture ) then
-				self.Reward.Icon:SetTexture(currencyInfo.texture);
+		self.Reward.rewardQuestID = rewardQuestID;
+		QuestEventListener:AddCallback(rewardQuestID, function()
+			local currencyInfo = C_QuestLog.GetQuestRewardCurrencyInfo(rewardQuestID, 1, false);
+			if ( currencyInfo ) then
+				self.Reward.currencyID = currencyInfo.currencyID;
+				if (currencyInfo.texture ) then
+					self.Reward.Icon:SetTexture(currencyInfo.texture);
+				end
 			end
-		end
+		end);
 	end
 
 	self.thresholdInfo = thresholdInfo
@@ -925,7 +991,7 @@ function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, i
 	self.Reward.CheckmarkFlipbook:SetAlpha(0);
 end
 
-function ProgressThresholdMixin:SetCurrentPoints(points)
+function ProgressThresholdMixin:SetCurrentPoints(points, playSound)
 
 	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
 
@@ -939,14 +1005,13 @@ function ProgressThresholdMixin:SetCurrentPoints(points)
 		end
 	end
 
-	local initialSet = self.aboveThreshold == nil;
 	if self.aboveThreshold == aboveThreshold then
 		return;
 	end
 
 	self.aboveThreshold = aboveThreshold;
 
-	if not initialSet and aboveThreshold then
+	if playSound and aboveThreshold then
 		self.Reward.ThresholdReached:Play();
 		if not self.isFinalReward then
 			PlaySound(SOUNDKIT.HOUSING_ENDEAVORS_REWARD_TIER_COMPLETE);

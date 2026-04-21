@@ -96,6 +96,9 @@ local EncounterInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterInfo);

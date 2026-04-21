@@ -101,6 +101,9 @@ local ProfessionSpecConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ProfessionSpecConstants);

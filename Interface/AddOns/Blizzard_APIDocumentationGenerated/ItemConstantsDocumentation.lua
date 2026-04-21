@@ -690,8 +690,25 @@ local ItemConstants =
 			Values =
 			{
 				{ Name = "ITEM_WEAPON_SUBCLASS_NONE", Type = "ItemWeaponSubclass", Value = -1 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_IS2HWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_USES2HANDS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTWOHANDEDRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISMAINHANDWEAPON_NONRANGED_MASK", Type = "number", Value = 0 },
 			},
 		},
+		{
+			Name = "ITEM_WEAPON_SUBCLASSConstants_PostMists",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTITANSGRIPWEAPON_MASK", Type = "number", Value = 0 },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

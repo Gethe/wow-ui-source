@@ -29,6 +29,9 @@ local PlayerMentorshipConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerMentorshipConstants);

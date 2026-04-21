@@ -47,7 +47,7 @@
 			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.08">
 				<FogColor r="0.25" g="0.06" b="0.015"/>
 			</ModelFFX>
-			<Frame parentKey="UI" setAllPoints="true">
+			<Frame name="AccountLoginUI" parentKey="UI" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">

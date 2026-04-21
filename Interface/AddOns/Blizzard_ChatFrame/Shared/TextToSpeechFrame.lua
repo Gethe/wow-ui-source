@@ -115,7 +115,8 @@ end
 function TextToSpeech_StartPlayNextQueuedMessageTimer()
 	if not queuedMessageTimer then
 		queuedMessageTimer = C_Timer.NewTicker(1, function()
-			local currentChatParent = FCF_GetCurrentFullScreenFrame();
+			-- Try to get current parent frame if this is an environment that supports alternate ones, otherwise default to UIParent
+			local currentChatParent = FCF_GetCurrentFullScreenFrame and FCF_GetCurrentFullScreenFrame() or UIParent;
 			if currentChatParent and currentChatParent:IsShown() then
 				TextToSpeech_PlayNextQueuedMessage();
 			end
@@ -146,7 +147,8 @@ end
 
 function TextToSpeech_Speak(text, voice, neverQueue, allowOverlappedSpeech)
 	-- Queue messages
-	local currentChatParent = FCF_GetCurrentFullScreenFrame();
+	-- Try to get current parent frame if this is an environment that supports alternate ones, otherwise default to UIParent
+	local currentChatParent = FCF_GetCurrentFullScreenFrame and FCF_GetCurrentFullScreenFrame() or UIParent;
 	local uiHidden = not currentChatParent or not currentChatParent:IsShown();
 	local shouldQueue = (playbackActive or uiHidden) and not neverQueue;
 	if shouldQueue then

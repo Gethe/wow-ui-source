@@ -81,9 +81,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 1,
-			MaxValue = 1024,
+			MaxValue = 2048,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -97,6 +97,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyBForceMaxQuantityOnConversion", Type = "CurrencyFlagsB", EnumValue = 256 },
 				{ Name = "CurrencyBUnearnableBeforeMaxQuantityStart", Type = "CurrencyFlagsB", EnumValue = 512 },
 				{ Name = "CurrencyBAllowReductionByResourcefulness", Type = "CurrencyFlagsB", EnumValue = 1024 },
+				{ Name = "CurrencyBNoBonusXP", Type = "CurrencyFlagsB", EnumValue = 2048 },
 			},
 		},
 		{
@@ -207,6 +208,9 @@ local CurrencyConstants =
 				{ Name = "CURRENCY_WALLET_TYPE_WOWMONEY", Type = "number", Value = 0 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

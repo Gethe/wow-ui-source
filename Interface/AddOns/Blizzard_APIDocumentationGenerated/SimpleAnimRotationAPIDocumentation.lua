@@ -88,6 +88,9 @@ local SimpleAnimRotationAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimRotationAPI);

@@ -642,6 +642,21 @@ SECURE_ACTIONS.visithouse =
 		end
     end;
 
+SECURE_ACTIONS.outfit =
+	function (self, _unit, button)
+		local action = SecureButton_GetModifiedAttribute(self, "action", button) or "toggle";
+		local playerFacingOutfitIndex = tonumber(SecureButton_GetModifiedAttribute(self, "outfit-index", button));
+
+		if action == "clear" then
+			C_TransmogOutfitInfo.ClearOutfit();
+		elseif action == "change" or action == "toggle" then
+			if playerFacingOutfitIndex ~= nil then
+				local allowRemoveOutfit = (action == "toggle");
+				C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
+			end
+		end
+	end;
+
  SecureActionButtonMixin = {};
 
 function SecureActionButtonMixin:CalculateAction(button)

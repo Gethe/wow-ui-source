@@ -149,6 +149,9 @@ local LFGConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LFGConstants);

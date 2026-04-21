@@ -3,6 +3,13 @@
 -- GridView.
 ScrollBoxListSequenceViewMixin = CreateFromMixins(ScrollBoxListBiaxalViewMixin);
 
+-- Note: we often end up needing this function in OnSizeChanged handler call stacks to set things up properly
+-- after frame sizes have changed so we're avoiding ScrollTarget because calculating its width in an OnSizeChanged
+-- handler callstack is not reliable and we can end up getting bad values.
+function ScrollBoxListSequenceViewMixin:GetVisibleWidth(scrollBox)
+	return scrollBox:GetWidth() - (scrollBox:GetLeftPadding() + scrollBox:GetRightPadding());
+end
+
 function ScrollBoxListSequenceViewMixin:Layout(scrollBox)
 	local frames = self:GetFrames();
 	local frameCount = frames and #frames or 0;
@@ -14,7 +21,7 @@ function ScrollBoxListSequenceViewMixin:Layout(scrollBox)
 	local frameLevelCounter = ScrollBoxViewUtil.CreateFrameLevelCounter(self:GetFrameLevelPolicy(), 
 		scrollTarget:GetFrameLevel(), frameCount);
 	
-	local visibleWidth = scrollTarget:GetWidth();
+	local visibleWidth = self:GetVisibleWidth(scrollBox);
 	local verticalSpacing = self:GetVerticalSpacing();
 	local horizontalSpacing = self:GetHorizontalSpacing();
 	local dataIndexBegin, dataIndexEnd = self:GetDataRange();
@@ -56,8 +63,8 @@ end
 
 function ScrollBoxListSequenceViewMixin:CalculateNumElementsInRow(startDataIndex)
 	local size = self:GetDataProviderSize();
-	local scrollTarget = self:GetScrollTarget();
-	local visibleWidth = scrollTarget:GetWidth();
+	local scrollBox = self:GetScrollBox();
+	local visibleWidth = self:GetVisibleWidth(scrollBox);
 	local horizontalSpacing = self:GetHorizontalSpacing();
 
 	local currentWidth = 0;
@@ -103,8 +110,7 @@ function ScrollBoxListSequenceViewMixin:CalculateDataIndices(scrollBox)
 		return 0, 0;
 	end
 
-	local scrollTarget = self:GetScrollTarget();
-	local visibleWidth = scrollTarget:GetWidth();
+	local visibleWidth = self:GetVisibleWidth(scrollBox);
 	if visibleWidth == 0 then
 		return 0, 0;
 	end
@@ -171,11 +177,7 @@ function ScrollBoxListSequenceViewMixin:GetExtentTo(scrollBox, dataIndexEnd)
 		return 0;
 	end
 
-	-- Note: we often end up needing this function in OnSizeChanged handler call stacks to set things up properly
-	-- after frame sizes have changed so we're avoiding ScrollTarget because calculating its width in an OnSizeChanged
-	-- handler callstack is not reliable and we can end up getting bad values.
-
-	local visibleWidth = scrollBox:GetWidth() - (scrollBox:GetLeftPadding() + scrollBox:GetRightPadding());
+	local visibleWidth = self:GetVisibleWidth(scrollBox);
 	local verticalSpacing = self:GetVerticalSpacing();
 	local horizontalSpacing = self:GetHorizontalSpacing();
 
@@ -216,8 +218,7 @@ function ScrollBoxListSequenceViewMixin:GetExtentUntil(scrollBox, dataIndexEnd)
 		return 0;
 	end
 
-	local scrollTarget = self:GetScrollTarget();
-	local visibleWidth = scrollTarget:GetWidth();
+	local visibleWidth = self:GetVisibleWidth(scrollBox);
 	local verticalSpacing = self:GetVerticalSpacing();
 	local horizontalSpacing = self:GetHorizontalSpacing();
 	

@@ -100,6 +100,9 @@ local Connection =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Connection);

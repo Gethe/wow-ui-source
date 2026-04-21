@@ -39,6 +39,9 @@ local SpellConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellConstants);

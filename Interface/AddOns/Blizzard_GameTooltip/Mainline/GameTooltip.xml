@@ -310,7 +310,7 @@
 		</Scripts>
 	</GameTooltip>
 
-	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate">
+	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate" parent="UIParent">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>

@@ -58,7 +58,7 @@
 	</Frame>
 
 	<Frame name="HousingCornerstonePurchaseFrame" mixin="HousingCornerstonePurchaseFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="340" y="340"/>
+		<Size x="340" y="320"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -81,7 +81,7 @@
 				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-85"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-65"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Footer" atlas="housing-basic-panel-footer">
@@ -112,7 +112,7 @@
 				</FontString>
 				<FontString parentKey="NeighborhoodLocationLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_NEIGHBORHOOD_LOCATION">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="BOTTOMLEFT" x="10" y="-8"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="BOTTOMLEFT" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="NeighborhoodLocationText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood map here">
@@ -156,7 +156,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ForSaleSign">
+			<Frame parentKey="ForSaleSign" frameLevel="1000">
 				<Size x="150" y="25"/>
 				<Anchors>
 					<Anchor point="TOP" y="11"/>
@@ -175,19 +175,35 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="PriceMoneyFrame" name="HousingCornerstonePriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Header" x="6" y="8"/>
-				</Anchors>
-			</Frame>
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+			
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors" frameLevel="750">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
 			</Button>
 
+			<Frame parentKey="CostTextFrame">
+				<Size x="40" y="10"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="90"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CostsText" inherits="Game13FontShadow" text="COSTS_LABEL">
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PriceMoneyFrame" name="HousingCornerstonePriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CostsText" relativePoint="RIGHT" x="3"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
 			<Button parentKey="BuyButton" inherits="UIPanelButtonTemplate" text="HOUSING_CORNERSTONE_BUY" motionScriptsWhileDisabled="true">
-				<Size x="116" y="32"/>
+				<Size x="116" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="60"/>
 				</Anchors>
@@ -196,6 +212,7 @@
 				<DisabledFont style="GameFontHighlightMedium"/>
 				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
+			
 			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="MoneyFrameTemplate" enableMouse="false">
 				<Anchors>
 					<Anchor point="BOTTOM" y="8"/>
@@ -206,6 +223,20 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.MoneyFrame"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MoneyFrame"/>
 				</Anchors>
+			</Frame>
+
+			<Frame parentKey="InputMask" setAllPoints="true" hidden="true" frameLevel="500">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.7"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown function="nop"/>
+					<OnMouseUp function="nop"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>
@@ -317,6 +348,43 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="BuyHouseConfirmationDialog" parent="UIParent" frameStrata="DIALOG" mixin="BuyHouseConfirmationDialogMixin" inherits="TranslucentFrameTemplate" hidden="true">
+		<Size x="400" y="145"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="Game15Font_Shadow" text ="HOUSING_PURCHASE_PLOT_CONFIRMATION_TEXT">
+					<Size x="350"/>
+					<Anchors>
+						<Anchor point="TOP" y="-24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="HOUSING_PURCHASE_PLOT_BUY">
+				<Size x="128" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" x="-5" y="32"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="HOUSING_PURCHASE_PLOT_CANCEL">
+				<Size x="128" y="21"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" x="5" y="32"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="MoveHouseConfirmationDialog" mixin="MoveHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
 		<Size x="400" y="230"/>
 		<Anchors>
@@ -325,6 +393,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -376,13 +445,13 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="28"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="28"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
 				</Anchors>
@@ -398,6 +467,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -422,13 +492,13 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="28"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="28"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
 				</Anchors>

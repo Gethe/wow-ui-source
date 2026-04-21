@@ -249,7 +249,7 @@
 					</Anchors>
 				</FontString>
 				
-				<FontString parentKey="ErrorText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+				<FontString parentKey="ErrorText" inherits="Game13FontShadow, TruncatedTooltipFontStringTemplate" justifyH="LEFT" text="">
 					<Size x="280" y="20"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SearchLabel" relativePoint="BOTTOMLEFT" y="-55"/>

@@ -531,6 +531,9 @@ local ChallengeModeInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ChallengeModeInfo);

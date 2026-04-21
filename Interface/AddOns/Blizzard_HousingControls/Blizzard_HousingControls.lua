@@ -25,7 +25,7 @@ function HousingControlsMixin:OnEvent(event, ...)
 		self:UpdateControlVisibility(true);
 	elseif event == "HOUSE_PLOT_EXITED" then
 		self:UpdateControlVisibility(false);
-	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" or "CURRENT_HOUSE_INFO_RECIEVED" then
+	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" or event == "CURRENT_HOUSE_INFO_RECIEVED" then
 		self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
 	elseif event == "UPDATE_BINDINGS" or event == "HOUSE_EDITOR_MODE_CHANGED" then
 		self:UpdateButtons();
@@ -47,10 +47,16 @@ end
 function HousingControlsMixin:OnShow()
 	self:UpdateButtons();
 	FrameUtil.RegisterFrameForEvents(self, HousingControlsShownEvents);
+
+	EventRegistry:RegisterCallback("HousingInspectMode.Activated", self.UpdateButtons, self);
+	EventRegistry:RegisterCallback("HousingInspectMode.Deactivated", self.UpdateButtons, self);
 end
 
 function HousingControlsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HousingControlsShownEvents);
+
+	EventRegistry:UnregisterCallback("HousingInspectMode.Activated", self);
+	EventRegistry:UnregisterCallback("HousingInspectMode.Deactivated", self);
 end
 
 function HousingControlsMixin:UpdateActiveFrame()

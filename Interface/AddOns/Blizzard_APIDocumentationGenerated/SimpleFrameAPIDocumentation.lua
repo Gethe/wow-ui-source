@@ -1490,6 +1490,9 @@ local SimpleFrameAPI =
 			Type = "CallbackType",
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleFrameAPI);

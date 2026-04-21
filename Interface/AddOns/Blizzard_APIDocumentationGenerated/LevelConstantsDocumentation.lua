@@ -12,6 +12,9 @@ local LevelConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LevelConstants);

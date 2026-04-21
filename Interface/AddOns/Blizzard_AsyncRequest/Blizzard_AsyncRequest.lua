@@ -94,7 +94,7 @@ function AsyncRequests:CreateAsyncRequest(asyncRequestInput)
 	assertsafe((asyncRequestInput.timeoutSeconds ~= nil and asyncRequestInput.timeoutCallback ~= nil)
 				or (asyncRequestInput.timeoutSeconds == nil and asyncRequestInput.timeoutCallback == nil));
 
-	-- TODO (WOW12-45327): See if this can be done without a Frame (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+	-- TODO (WOW12-45327): See if this can be done without a Frame
 	local asyncRequest = Mixin(CreateFrame("Frame"), AsyncRequestMixin);
 	asyncRequest:Init(asyncRequestInput);
 	return asyncRequest;

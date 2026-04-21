@@ -678,6 +678,9 @@ local SimpleScriptRegionAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleScriptRegionAPI);

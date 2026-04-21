@@ -199,6 +199,9 @@ local QuestTaskInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestTaskInfo);

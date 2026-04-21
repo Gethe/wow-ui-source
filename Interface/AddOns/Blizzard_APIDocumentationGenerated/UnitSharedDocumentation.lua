@@ -383,6 +383,9 @@ local UnitShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitShared);

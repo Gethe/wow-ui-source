@@ -381,7 +381,7 @@ function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 	local frame = CompactRaidFrameReservation_GetFrame(self.frameReservations[frameType], mapping);
 	if ( not frame ) then
 		unitFramesCreated = unitFramesCreated + 1;
-		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
+		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactRaidGroupUnitFrameTemplate");
 		frame.applyFunc = applyFunc;
 		CompactUnitFrame_SetUpdateAllEvent(frame, "GROUP_ROSTER_UPDATE");
 		frame.unusedFunc = self.unitFrameUnusedFunc;

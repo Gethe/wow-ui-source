@@ -36,6 +36,9 @@ local SuperTrackManagerShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SuperTrackManagerShared);

@@ -16,6 +16,9 @@ local CovenantsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CovenantsConstants);

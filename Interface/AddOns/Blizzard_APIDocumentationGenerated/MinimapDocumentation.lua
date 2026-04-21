@@ -336,6 +336,9 @@ local Minimap =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Minimap);

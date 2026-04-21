@@ -1455,6 +1455,9 @@ local GarrisonInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GarrisonInfo);

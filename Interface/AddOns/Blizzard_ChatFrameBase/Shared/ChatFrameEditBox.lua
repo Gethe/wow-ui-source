@@ -90,7 +90,7 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 		return false;
 	end
 
-	if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
+	if ( #C_AutoComplete.GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
@@ -99,7 +99,7 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 	while ( strfind(target, "%s") ) do
 		--Pull off everything after the last space.
 		target = strmatch(target, "(.+)%s+[^%s]*");
-		if ( #GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
+		if ( #C_AutoComplete.GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
 			break;
 		end
 	end
@@ -135,7 +135,7 @@ end
 function ChatFrameEditBoxBaseMixin:ProcessChatType(msg, index, send)
 	local autoCompleteInfo = AUTOCOMPLETE_LIST[index];
 	if ( autoCompleteInfo ) then
-		AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, autoCompleteInfo.include, autoCompleteInfo.exclude);
+		AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, autoCompleteInfo.include, autoCompleteInfo.exclude);
 	else
 		AutoCompleteEditBox_SetAutoCompleteSource(self, nil);
 	end

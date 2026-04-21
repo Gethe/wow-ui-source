@@ -167,6 +167,9 @@ local UIWidgetManagerShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIWidgetManagerShared);

@@ -3208,7 +3208,6 @@ end
 
 function UnitPopupItemQuality2DescButtonMixin:OnClick(contextData)
 	SetLootThreshold(self:GetID());
-	return MenuResponse.Close;
 end
 
 function UnitPopupItemQuality2DescButtonMixin:IsChecked(contextData)

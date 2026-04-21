@@ -152,6 +152,9 @@ local QuestConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestConstants);

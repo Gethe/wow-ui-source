@@ -51,8 +51,6 @@ WoWLabs\CustomActionBarOverlays.lua [AllowLoadGameType plunderstorm]
 WoWLabs\CustomActionBarOverlays.xml [AllowLoadGameType plunderstorm]
 Shared\PetActionBar.lua
 Mainline\PetActionBar.xml
-Shared\MultiCastActionBarFrame.lua
-Shared\MultiCastActionBarFrame.xml
 Shared\SpellFlyout.lua
 Shared\SpellFlyout.xml
 WoWLabs\KeybindReminder.lua [AllowLoadGameType plunderstorm]

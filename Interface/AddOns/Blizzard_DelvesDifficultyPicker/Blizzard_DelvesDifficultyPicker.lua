@@ -1,14 +1,10 @@
 --[[ LOCALS ]]
 local DELVES_DIFFICULTY_PICKER_EVENTS = {
-	"PARTY_LEADER_CHANGED",
-	"GOSSIP_OPTIONS_REFRESHED",
-	"GROUP_ROSTER_UPDATE",
-	"UNIT_AREA_CHANGED",
-	"UNIT_PHASE", 
-	"GROUP_FORMED",
 	"WALK_IN_DATA_UPDATE",
 	"ACTIVE_DELVE_DATA_UPDATE",
 	"PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
+	"PARTY_LEADER_CHANGED",
+	"GROUP_LEFT",
 };
 
 -- Max number of rewards shown on the right side of the UI
@@ -28,10 +24,17 @@ local HIGHEST_TIER_UNLOCKED_CVAR = "highestUnlockedTieredEntranceTier";
 
 local TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH = 110;
 local TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH = 130;
+local TIER_SELECT_DROPDOWN_MAX_WIDTH = 280;
+local TIER_SELECT_DROPDOWN_DYNAMIC_PADDING = 34;	-- used when the dropdown resizes based on the longest option text
 
 local DelvesKeyState = EnumUtil.MakeEnum(
 	"None",
 	"Normal"
+);
+
+local DelvesDisplayMode = EnumUtil.MakeEnum(
+	"Default",
+	"Traits"
 );
 
 function GetPlayerKeyState()
@@ -60,25 +63,27 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 	};
 	RegisterUIPanel(self, panelAttributes);
 	self.Dropdown:SetWidth(TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH);
+	self.Border.Bg:Hide();
+	self.displayMode = DelvesDisplayMode.Default;
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
-	if event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" or event == "GROUP_FORMED" then 
-		C_GossipInfo.RefreshOptions();
-	elseif event == "UNIT_AREA_CHANGED" or event == "UNIT_PHASE" then 
-		C_GossipInfo.RefreshOptions(); 
-	elseif event == "GOSSIP_OPTIONS_REFRESHED" then 
-		self:SetupOptions();
-	elseif event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
+	if event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
 		self:CheckForActiveDelveAndUpdate();
 	elseif event == "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED" then
 		local playerName, maxEligibleLevel = ...;
 		self:OnPartyEligibilityChanged(playerName, maxEligibleLevel);
+	elseif event == "TRAIT_CONFIG_UPDATED" then
+		self:UpdatePortalButtonState();
+	elseif event == "PARTY_LEADER_CHANGED" or event == "GROUP_LEFT" then
+		self:UpdatePortalButtonState();
+		if self.displayMode == DelvesDisplayMode.Traits then
+			self.ChallengesContainerFrame:CheckPartyLeader();
+		end
 	end 
 end 
 
 function DelvesDifficultyPickerFrameMixin:OnShow()
-	self.Border.Bg:Hide();
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
@@ -90,26 +95,173 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 		end
 
 		if dropdown.menu.ScrollBox:HasScrollableExtent() then
-			local selectedOption = self:GetSelectedOption();
-			local index = selectedOption and selectedOption.orderIndex or 1;
+			local selectedTierInfo = self:GetSelectedTierInfo();
+			local index = selectedTierInfo and selectedTierInfo.tier or 1;
 			dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
 		end
 	end, self.Dropdown);
 
-	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function(dropdown, menu, closeReason)
 		self:TryShowHelpTip();
 		self.newTiers = {};
 	end);
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	self:SetInitialLevel();
+	self:SetInitialTier();
 	self:CheckForActiveDelveAndUpdate();
 	self:TryShowHelpTip();
 	self:CheckForNewTierUnlocks();
 	self.partyTierEligibility = {};
-	if self.gossipOptions then
-		C_DelvesUI.RequestPartyEligibilityForDelveTiers(self.gossipOptions[1].gossipOptionID);
+	C_DelvesUI.RequestPartyEligibilityForDelveTiers(C_DelvesUI.GetDelveEntranceMapID());
+end
+
+function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
+	local displayMode = DelvesDisplayMode.Default;
+	local traitTreeID = C_DelvesUI.GetTieredEntranceOptionalAffixTraitTreeID();
+	if traitTreeID then
+		displayMode = DelvesDisplayMode.Traits;
 	end
+
+	if self.displayMode == displayMode then
+		return;
+	end
+	self.displayMode = displayMode;
+
+	local enterButton = self.EnterDelveButton;
+	local modifiersContainer = self.DelveModifiersWidgetContainer;
+	local rewardsContainer = self.DelveRewardsContainerFrame;
+	local challengesContainer = self.ChallengesContainerFrame;
+	local dropdown = self.Dropdown;
+
+	if displayMode == DelvesDisplayMode.Traits then
+		self.ScenarioLabel:SetText(RITUAL_SITE_LABEL);
+		if self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing() then 
+			self.ModifiersLabel:Show();
+			self.DividingLine:Show();
+		end
+
+		local width = dropdown.Text:GetUnboundedStringWidthForText(self.longestDropdownString) + TIER_SELECT_DROPDOWN_DYNAMIC_PADDING;
+		dropdown:SetWidth(Clamp(width, TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH, TIER_SELECT_DROPDOWN_MAX_WIDTH));
+
+		modifiersContainer:ClearAllPoints();
+		modifiersContainer:SetPoint("CENTER", self.Title);
+		modifiersContainer:SetPoint("TOP", self.ModifiersLabel, "BOTTOM", 0, -10);
+
+		enterButton:ClearAllPoints();
+		enterButton:SetPoint("BOTTOMRIGHT", -49, 34);
+		enterButton:SetWidth(148);
+
+		rewardsContainer:ClearAllPoints();
+		rewardsContainer:SetPoint("BOTTOM", enterButton, "TOP", 6, 15);
+		rewardsContainer.RewardText:ClearAllPoints();
+		rewardsContainer.RewardText:SetPoint("TOP", -5, 0);
+
+		challengesContainer:Show();
+		local systemID = C_Traits.GetSystemIDByTreeID(traitTreeID);
+		challengesContainer:SetConfigIDBySystemID(systemID);
+
+		-- Because the grid anchors from top-left, but we want the icons to grow upwards,
+		-- we need to math it out and move the container to achieve that
+		local nodeIDs = C_Traits.GetTreeNodes(traitTreeID);
+		local numNodes = nodeIDs and #nodeIDs or 0;
+		local numRows = math.ceil(numNodes / challengesContainer.stride);
+		local challengesHeight = numRows * challengesContainer.buttonSize + (numRows - 1) * challengesContainer.paddingY;
+		challengesContainer:SetPoint("BOTTOM", 0, -challengesContainer:GetHeight() + challengesHeight + 48);
+		self:RegisterEvent("TRAIT_CONFIG_UPDATED");
+		challengesContainer:RegisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self.OnChallengesCommitStatusChanged, self);
+	else
+		self.ScenarioLabel:SetText(DELVE_LABEL);
+		self.ModifiersLabel:Hide();
+		self.DividingLine:Hide();
+
+		dropdown:SetWidth(TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH);
+
+		modifiersContainer:ClearAllPoints();
+		modifiersContainer:SetPoint("CENTER", self.Title);
+		modifiersContainer:SetPoint("BOTTOM", 0, 75);
+
+		enterButton:ClearAllPoints();
+		enterButton:SetPoint("CENTER", self.Title);
+		enterButton:SetPoint("BOTTOM", 0, 25);
+		enterButton:SetWidth(110);
+
+		rewardsContainer:ClearAllPoints();
+		rewardsContainer:SetPoint("RIGHT", -25, 0);
+		rewardsContainer:SetPoint("BOTTOM", self.EnterDelveButton);
+		rewardsContainer.RewardText:ClearAllPoints();
+		rewardsContainer.RewardText:SetPoint("TOPLEFT", 15, 0);
+
+		challengesContainer:Hide();
+		self:UnregisterEvent("TRAIT_CONFIG_UPDATED");
+		challengesContainer:UnregisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self);
+	end
+
+	-- this is going to be affected by displayMode
+	self:UpdatePortalButtonState();
+end
+
+function DelvesDifficultyPickerFrameMixin:OnChallengesCommitStatusChanged()
+	self:UpdatePortalButtonState();
+end
+
+DelveChallengesContainerFrameMixin = { };
+
+function DelveChallengesContainerFrameMixin:OnLoad()
+	TalentFrameBaseMixin.OnLoad(self);
+	self.ButtonsParent:SetClipsChildren(false);
+end
+
+function DelveChallengesContainerFrameMixin:OnShow()
+	TalentFrameBaseMixin.OnShow(self);
+	self:CheckPartyLeader();
+end
+
+function DelveChallengesContainerFrameMixin:CheckPartyLeader()
+	-- show blocking frame if in a group and not leader
+	local doShow = false;
+	if UnitInParty("player") then
+		if not UnitIsGroupLeader("player") then
+			doShow = true;
+		end
+	end
+	self.BlockingFrame:SetShown(doShow);
+end
+
+function DelveChallengesContainerFrameMixin:GetTemplateForTalentType(_nodeInfo, _talentType, _useLarge)
+	return "TalentButtonDelveChallengeCircleTemplate";
+end
+
+function DelveChallengesContainerFrameMixin:GetConfigCommitErrorString()
+	return TIERED_ENTRANCE_FRAME_CONFIG_OPERATION_TOO_FAST;
+end
+
+function DelveChallengesContainerFrameMixin:CheckAndReportCommitOperation()
+	if not C_Traits.IsReadyForCommit() then
+		self:ReportConfigCommitError();
+		return false;
+	end
+
+	return TalentFrameBaseMixin.CheckAndReportCommitOperation(self);
+end
+
+-- TalentFrameBaseMixin override to commit changes immediately
+function DelveChallengesContainerFrameMixin:AttemptConfigOperation(...)
+	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
+		if not self:CommitConfig() then
+			self:MarkTreeDirty();
+			return false;
+		end
+
+		return true;
+	else
+		self:MarkTreeDirty();
+	end
+
+	return false;
+end
+
+function DelveChallengesContainerFrameMixin:SetDisabledOverlayShown(_shown)
+	-- do nothing, this will keep the buttons clickable
 end
 
 function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
@@ -117,24 +269,22 @@ function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
 	-- The "NEW" label we show if *anything* new is unlocked, but inside the dropdown we want to show which tiers are new with pips
 	self.newTiers = {};
 
-	local options = self:GetOptions();
-	if options then
+	local tierInfos = self:GetTierInfos();
+	if tierInfos then
 		local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
 		local defaultTier = 0;
 		local oldHighestUnlockedTier = GetCVarTableValue(HIGHEST_TIER_UNLOCKED_CVAR, pdeID, defaultTier);
 		local newHighestUnlockedTier = nil;
-		for tier, optionInfo in ipairs(options) do
-			local tierIsUnlocked = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete;
-			local tierIsLocked = optionInfo.status == Enum.GossipOptionStatus.Unavailable or optionInfo.status == Enum.GossipOptionStatus.Locked;
+		for _, tierInfo in ipairs(tierInfos) do
 			-- Tier is unlocked and new, let the player know
-			if tierIsUnlocked and tier > oldHighestUnlockedTier then
-				self.newTiers[tier] = true;
+			if tierInfo.unlocked and tierInfo.tier > oldHighestUnlockedTier then
+				self.newTiers[tierInfo.tier] = true;
 				self.Dropdown.NewLabel:Show();
-				newHighestUnlockedTier = tier;
+				newHighestUnlockedTier = tierInfo.tier;
 			-- Tier is locked, but old highest is higher somehow or doesn't exist - we should rollback or reset 
-			elseif tierIsLocked and oldHighestUnlockedTier >= tier then
-				newHighestUnlockedTier = tier -	1;
-				if newHighestUnlockedTier < 1 or not options[newHighestUnlockedTier] then 
+			elseif not tierInfo.unlocked and oldHighestUnlockedTier >= tierInfo.tier then
+				newHighestUnlockedTier = tierInfo.tier - 1;
+				if newHighestUnlockedTier < 1 or not tierInfos[newHighestUnlockedTier] then 
 					newHighestUnlockedTier = 1;
 				end
 				break;
@@ -147,13 +297,13 @@ function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
 end
 
 function DelvesDifficultyPickerFrameMixin:TryShowHelpTip()
-	local selectedOption = self:GetSelectedOption();
+	local selectedTierInfo = self:GetSelectedTierInfo();
 	local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
 	local defaultTier = 0;
 	local lastSelectedTier = GetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, defaultTier);
 
-	-- If there's no option selected and last selected tier is 0, we're seeing the FTUE and should show the helptip
-	if not selectedOption and lastSelectedTier == 0 then
+	-- If there's no tier selected and last selected tier is 0, we're seeing the FTUE and should show the helptip
+	if not selectedTierInfo and lastSelectedTier == 0 then
 		local helpTipInfo = {
 			text = DELVES_TIER_SELECT_HELPTIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,
@@ -171,19 +321,15 @@ end
 
 function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	if C_DelvesUI.HasActiveDelve() then
-		local activeDelveGossip = C_GossipInfo.GetActiveDelveGossip();
-
-		-- Prefer active delve gossip (from walk in party)
-		if activeDelveGossip and activeDelveGossip.orderIndex and activeDelveGossip.gossipOptionID then
-			self:SetSelectedLevel(activeDelveGossip.orderIndex);
-			self:SetSelectedOption(activeDelveGossip);
-			self:UpdateWidgets(activeDelveGossip.gossipOptionID);
-		elseif self.selectedOption and self.selectedOption.orderIndex and self.selectedOption.gossipOptionID then
-			-- If active delve gossip is empty, player probably entered and then left. Fall back on the last selected tier/gossip,
-			-- which should match the active delve gossip
-			self:SetSelectedLevel(self.selectedOption.orderIndex);
-			self:SetSelectedOption(self.selectedOption);
-			self:UpdateWidgets(self.selectedOption.gossipOptionID);
+		local activeDelveTierInfo = C_DelvesUI.GetActiveDelveTier();
+		-- Prefer active delve tier (from walk in party)
+		if activeDelveTierInfo and activeDelveTierInfo.tier then
+			self:SetSelectedTierInfo(activeDelveTierInfo);
+			self:UpdateWidgets();
+		elseif self.selectedTierInfo and self.selectedTierInfo.tier then
+			-- If active delve tier is empty, player probably entered and then left. Fall back on the last selected tier,
+			-- which should match the active delv
+			self:UpdateWidgets();
 		end
 		self.DelveRewardsContainerFrame:SetRewards();
 		self.Dropdown:Update();
@@ -192,9 +338,14 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	else
 		self.Dropdown:SetEnabled(true);
 	end
+
+	self:CheckAndSetDisplayMode();
 end
 
 function DelvesDifficultyPickerFrameMixin:SetupDropdown()
+	local longestString;
+	local longestStringWidth = 0;
+
 	self.Dropdown:SetupMenu(function(owner, rootDescription)
 		rootDescription:SetTag("MENU_DELVES_DIFFICULTY");
 
@@ -203,33 +354,37 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 		rootDescription:SetScrollMode(buttonSize * maxButtons);
 		rootDescription:SetMinimumWidth(TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH);
 		
-		local options = DelvesDifficultyPickerFrame:GetOptions();
-		if not options then
+		local entranceTiers = DelvesDifficultyPickerFrame:GetTierInfos();
+		if not entranceTiers then
 			return;
 		end
 
-		local function IsSelected(option)
-			return DelvesDifficultyPickerFrame:GetSelectedLevel() == option.orderIndex;
+		local function IsSelected(tierInfo)
+			return DelvesDifficultyPickerFrame:GetSelectedTierInfo().tier == tierInfo.tier;
 		end
 
-		local function SetSelected(option)
+		local function SetSelected(tierInfo)
 			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:Hide();
-			DelvesDifficultyPickerFrame:SetSelectedLevel(option.orderIndex);
-			DelvesDifficultyPickerFrame:UpdateWidgets(option.gossipOptionID);
-			DelvesDifficultyPickerFrame:SetSelectedOption(option);
+			DelvesDifficultyPickerFrame:SetSelectedTierInfo(tierInfo);
+			DelvesDifficultyPickerFrame:UpdateWidgets();
 			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
 			DelvesDifficultyPickerFrame:UpdatePortalButtonState();
 			local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
-			SetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, option.orderIndex + 1); -- order index starts at 0, so we need to offset it.
+			SetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, tierInfo.tier);
 		end
 
-		local function SetupButton(option, isLocked)
-			local radio = rootDescription:CreateRadio(option.name, IsSelected, SetSelected, option);
+		local function SetupButton(tierInfo, isLocked)
+			local radio = rootDescription:CreateRadio(tierInfo.tierDescription, IsSelected, SetSelected, tierInfo);
+			-- These are all going to be similar strings so byte count should be enough
+			local stringWidth = #tierInfo.tierDescription;
+			if stringWidth > longestStringWidth then
+				longestString = tierInfo.tierDescription;
+				longestStringWidth = stringWidth;
+			end
 
 			-- Add the "new" tier pip for recently unlocked tiers
 			radio:AddInitializer(function(button, description, menu)
-				local optionUnlocked = option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete;
-				if optionUnlocked and self.newTiers and self.newTiers[option.orderIndex + 1] then
+				if tierInfo.unlocked and self.newTiers and self.newTiers[tierInfo.tier] then
 					local texture = button:AttachTexture();
 					texture:SetSize(13, 13);
 					texture:SetPoint("LEFT", button.fontString, "RIGHT", 3, 0);
@@ -240,91 +395,106 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			if isLocked then
 				radio:SetEnabled(false);
 			end
-
-			local spell = Spell:CreateFromSpellID(option.spellID);
-			spell:ContinueWithCancelOnSpellLoad(function()
-				radio:SetTooltip(function(tooltip, elementDescription)
-					GameTooltip_AddNormalLine(tooltip, spell:GetSpellDescription());
-					local partyTierEligibility = DelvesDifficultyPickerFrame:GetPartyTierEligibility();
-					if not isLocked and partyTierEligibility ~= nil then
-						for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
-							if maxEligibleLevel < option.orderIndex then
-								GameTooltip_AddErrorLine(tooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+			
+			local partyTierEligibility = DelvesDifficultyPickerFrame:GetPartyTierEligibility();
+			radio:SetTooltip(function(tooltip, elementDescription)
+					if isLocked then
+						-- Locked tiers get an error line stating they need to complete the prior tier. This assumes Delves, and failure conditions which are always based on tiers.
+						-- If we extend TieredEntrances to other content, this should become based on the TieredEntrance type.
+						-- If we allow override PlayerConditions for tier eligibility, this should use the PlayerCondition faillure description instead if present.
+						if tierInfo.lockedReason then
+							GameTooltip_AddErrorLine(GameTooltip, tierInfo.lockedReason);
+						else
+							GameTooltip_AddErrorLine(GameTooltip, TIERED_ENTRANCE_LOCKED_DEFAULT_TOOLTIP_DELVE:format(tierInfo.tier - 1));
+						end
+					else
+						-- Unlocked tiers get an ilvl suggestion.
+						GameTooltip_AddNormalLine(GameTooltip,TIERED_ENTRANCE_ILVL_SUGGESTION:format(tierInfo.suggestedILvl));
+						-- And a list of any party members who will be ineligible for the tier
+						if partyTierEligibility ~= nil then
+							for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
+								if maxEligibleLevel < tierInfo.tier then
+									GameTooltip_AddErrorLine(GameTooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+								end
 							end
 						end
 					end
 				end);
-			end);
 		end
 		
-		for i, option in ipairs(options) do
-			if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
-				SetupButton(option);
-			elseif (option.status == Enum.GossipOptionStatus.Unavailable or option.status == Enum.GossipOptionStatus.Locked) then
-				SetupButton(option, true);
-			end
+		for i, tierInfo in ipairs(entranceTiers) do
+			SetupButton(tierInfo, not tierInfo.unlocked);
 		end
 	end);
+	self.longestDropdownString = longestString;
+end
+
+function DelvesDifficultyPickerFrameMixin:CanEnterDelve()
+	if self.displayMode == DelvesDisplayMode.Traits then
+		if self.ChallengesContainerFrame:IsCommitInProgress() then
+			return false;
+		end
+
+		if UnitInParty("player") then
+			if not UnitIsGroupLeader("player") then
+				return false;
+			end
+		end
+	end
+
+	local selectedTierInfo = self:GetSelectedTierInfo();
+	if not selectedTierInfo or not selectedTierInfo.unlocked then
+		return false;
+	end
+
+	local minLevel = C_DelvesUI.GetDelvesMinRequiredLevel();
+	if not minLevel or UnitLevel("player") < minLevel then
+		return false;
+	end
+
+	local isEnabled, failureReason = C_DelvesUI.IsDelveEntranceTierEnabled(selectedTierInfo.tier);
+	if not isEnabled then
+		return false, failureReason;
+	end
+
+	return true;
 end
 
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
-	local optionSelected =  self:GetSelectedOption();
-	local minLevel = C_DelvesUI.GetDelvesMinRequiredLevel();
-
-	local playerAtOrAboveMinLevel = minLevel and UnitLevel("player") >= minLevel;
-	local selectedOptionValid = optionSelected ~= nil and (optionSelected.status == Enum.GossipOptionStatus.Available or optionSelected.status == Enum.GossipOptionStatus.AlreadyComplete);
-	
-	self.EnterDelveButton:SetEnabled(playerAtOrAboveMinLevel and selectedOptionValid);
+	local canEnter, failureReason = self:CanEnterDelve();
+	self.EnterDelveButton:SetEnabled(canEnter);
+	self.EntranceErrorText:SetText(failureReason);
 end
 
--- gossipOptions are the individual gossip options returned from the gossip record.
--- In the context of Delves, they represent the tiers, starting from the lowest to the highest.
--- The order should mirror exactly how it is ordered in data.
--- This data comes from CustomGossipFrameBase
-function DelvesDifficultyPickerFrameMixin:GetOptions()
-	return self.gossipOptions;
+function DelvesDifficultyPickerFrameMixin:GetTierInfos()
+	return self.tierInfos;
 end
 
-function DelvesDifficultyPickerFrameMixin:SetSelectedLevel(level)
-	self.selectedLevel = level;
+function DelvesDifficultyPickerFrameMixin:SetSelectedTierInfo(tierInfo)
+	self.selectedTierInfo = tierInfo;
+	self:UpdatePortalButtonState();
 end
 
-function DelvesDifficultyPickerFrameMixin:SetSelectedOption(option)
-	self.selectedOption = option;
-end
-
-function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
-	DelvesDifficultyPickerFrame:SetSelectedLevel(nil);
-	DelvesDifficultyPickerFrame:SetSelectedOption(nil);
-	local highestUnlockedLevel = nil;
-	local highestUnlockedLevelOptionID = nil;
+function DelvesDifficultyPickerFrameMixin:SetInitialTier()
+	DelvesDifficultyPickerFrame:SetSelectedTierInfo(nil);
 	local pdeID = C_DelvesUI.GetTieredEntrancePDEID();
 	local defaultTier = 0;
 	local lastSelectedTier = GetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, defaultTier);
 
-	if self.gossipOptions then
-		highestUnlockedLevel = self.gossipOptions[1].orderIndex;
-		highestUnlockedLevelOptionID = self.gossipOptions[1].gossipOptionID;
+	if self.tierInfos then
+		DelvesDifficultyPickerFrame:SetSelectedTierInfo(self.tierInfos[1]);
 
 		-- If last selected tier is 0, then the player is opening Delves for the first time. We'll force them to pick a tier.
 		-- Otherwise, try to use their last selected tier. Failing that, use the highest unlocked tier
 		if lastSelectedTier > 0 then
-			local lastSelectedTierOption = self.gossipOptions[lastSelectedTier];
-			local lastSelectedTierValid = lastSelectedTierOption and (lastSelectedTierOption.status == Enum.GossipOptionStatus.Available or lastSelectedTierOption.status == Enum.GossipOptionStatus.AlreadyComplete);
+			local lastSelectedTierInfo = self.tierInfos[lastSelectedTier];
 
-			if lastSelectedTierValid then
-				highestUnlockedLevel = lastSelectedTierOption.orderIndex;
-				highestUnlockedLevelOptionID = lastSelectedTierOption.gossipOptionID;
-				DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
-				DelvesDifficultyPickerFrame:SetSelectedOption(lastSelectedTierOption);
+			if lastSelectedTierInfo and lastSelectedTierInfo.unlocked then
+				DelvesDifficultyPickerFrame:SetSelectedTierInfo(lastSelectedTierInfo);
 			else
-				-- See DelvesDifficultyPickerFrameMixin:GetOptions 
-				for i, option in pairs(self.gossipOptions) do 
-					if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
-						highestUnlockedLevel = option.orderIndex;
-						highestUnlockedLevelOptionID = option.gossipOptionID;
-						DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
-						DelvesDifficultyPickerFrame:SetSelectedOption(option);
+				for _, tierInfo in pairs(self.tierInfos) do 
+					if tierInfo.unlocked and tierInfo.tier > self.selectedTierInfo.tier then
+						DelvesDifficultyPickerFrame:SetSelectedTierInfo(tierInfo);
 					else
 						break;
 					end
@@ -335,31 +505,36 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 
 	self:SetupDropdown();
 
-	if highestUnlockedLevelOptionID then
-		DelvesDifficultyPickerFrame:UpdateWidgets(highestUnlockedLevelOptionID);
+	if self.selectedTierInfo then
+		DelvesDifficultyPickerFrame:UpdateWidgets();
 		DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
 		DelvesDifficultyPickerFrame:UpdatePortalButtonState();
 	end
 end
 
-function DelvesDifficultyPickerFrameMixin:UpdateWidgets(gossipOptionID)
+function DelvesDifficultyPickerFrameMixin:UpdateWidgets()
 	self.DelveBackgroundWidgetContainer:UnregisterForWidgetSet();
 	self.DelveModifiersWidgetContainer:UnregisterForWidgetSet();
 	self.Bg:Show();
 
-	local widgetSetsForOption = C_GossipInfo.GetOptionUIWidgetSetsAndTypesByOptionID(gossipOptionID);
+	local backgroundWidgetSetID = C_DelvesUI.GetDelveEntranceBackgroundWidgetSetID();
+	if (backgroundWidgetSetID) then
+		self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(backgroundWidgetSetID);
+		self.Bg:Hide();
+	end
+	
+	-- If level selected or player eligible for tier, show modifiers
+	if self.selectedTierInfo then
+		self.DelveModifiersWidgetContainer:RegisterForWidgetSet(self.selectedTierInfo.modifierUIWidgetSetID);
+	end
 
-	for _, widgetSetInfo in pairs(widgetSetsForOption) do
-		if widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Modifiers then
-			-- If level selected or player eligible for tier, show modifiers
-			if DelvesDifficultyPickerFrame:GetSelectedLevel() then
-				self.DelveModifiersWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
-			end
-		end
-
-		if widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Background then
-			self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
-			self.Bg:Hide();
+	if self.displayMode == DelvesDisplayMode.Traits then
+		if self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing() then
+			self.DividingLine:Show();
+			self.ModifiersLabel:Show();
+		else
+			self.DividingLine:Hide();
+			self.ModifiersLabel:Hide();			
 		end
 	end
 
@@ -390,24 +565,25 @@ function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
 	end
 end
 
-function DelvesDifficultyPickerFrameMixin:GetSelectedLevel()
-	return self.selectedLevel;
+function DelvesDifficultyPickerFrameMixin:GetSelectedTierInfo()
+	return self.selectedTierInfo;
 end
 
-function DelvesDifficultyPickerFrameMixin:GetSelectedOption()
-	return self.selectedOption;
-end
+local function EntranceTierSort(leftInfo, rightInfo)
+	return leftInfo.tier < rightInfo.tier;
+end  
 
-function DelvesDifficultyPickerFrameMixin:SetupOptions()
-	self:BuildOptionList();
+function CustomGossipFrameBaseMixin:SetupTiers()
+	self.tierInfos = C_DelvesUI.GetDelveEntranceTiers();
+	table.sort(self.tierInfos, EntranceTierSort);
 	self:UpdatePortalButtonState();
-end 
+end
 
 function DelvesDifficultyPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
-	self.Title:SetText(C_GossipInfo.GetText());
-	self.Description:SetText(C_GossipInfo.GetCustomGossipDescriptionString());
-	self:SetupOptions();
+	self.Title:SetText(C_DelvesUI.GetDelveEntranceHeaderString());
+	self.Description:SetText(C_DelvesUI.GetDelveEntranceDescriptionString());
+	self:SetupTiers();
 	ShowUIPanel(self);
 end 
 
@@ -418,7 +594,7 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 	self.Dropdown:UnregisterCallback(DropdownButtonMixin.Event.OnMenuClose, self);
 	self.Dropdown:UnregisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self);
-	C_GossipInfo.CloseGossip();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TieredEntrance);
 	if self.bountifulAnimFrame then
 		self.bountifulAnimFrame:Hide();
 		self.bountifulAnimFrame = nil;
@@ -430,7 +606,7 @@ end
 DelvesDifficultyPickerEnterDelveButtonMixin = {};
 
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
-	local selectedOption = self:GetParent():GetSelectedOption();
+	local selectedTierInfo = self:GetParent():GetSelectedTierInfo();
 	local minLevel = C_DelvesUI.GetDelvesMinRequiredLevel();
 
 	if minLevel and UnitLevel("player") < minLevel then
@@ -438,12 +614,12 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(minLevel));
 		GameTooltip:Show();
-	elseif not selectedOption then
+	elseif not selectedTierInfo then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_SELECT_TIER);
 		GameTooltip:Show();
-	elseif selectedOption.status == Enum.GossipOptionStatus.Locked or selectedOption.status == Enum.GossipOptionStatus.Unavailable then
+	elseif not selectedTierInfo.unlocked then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_TIER_INELIGIBLE);
@@ -454,7 +630,7 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 50);
 			local ineligibleParty = false;
 			for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
-				if maxEligibleLevel < selectedOption.orderIndex then
+				if maxEligibleLevel < selectedTierInfo.tier then
 					GameTooltip_AddErrorLine(GameTooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
 					ineligibleParty = true;
 				end
@@ -472,12 +648,12 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnLeave()
 end 
 
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
-	local selectedLevel = DelvesDifficultyPickerFrame:GetSelectedLevel();
-	if not selectedLevel then
+	local selectedTierInfo = DelvesDifficultyPickerFrame:GetSelectedTierInfo();
+	if not selectedTierInfo then
 		return; 
 	end
 	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
-	C_GossipInfo.SelectOptionByIndex(selectedLevel);
+	C_DelvesUI.SelectDelveEntranceTier(selectedTierInfo.tier);
 end 
 
 function DelvesDifficultyPickerFrameMixin:OnPartyEligibilityChanged(playerName, maxEligibleLevel)
@@ -533,22 +709,22 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 end
 
 function DelveRewardsContainerFrameMixin:SetRewards()
-	if not DelvesDifficultyPickerFrame:GetSelectedOption() then
+	if not DelvesDifficultyPickerFrame:GetSelectedTierInfo() then
 		return;
 	end
 
 	local continuableContainer = ContinuableContainer:Create();
-	local optionRewards = DelvesDifficultyPickerFrame:GetSelectedOption().rewards;
+	local tierRewards = DelvesDifficultyPickerFrame:GetSelectedTierInfo().rewards;
 	local rewardInfo = {};
 
 	self.rewardPool:ReleaseAll();
 
-	if not optionRewards then
+	if not tierRewards then
 		return;
 	end
 	
-	for _, reward in ipairs(optionRewards) do
-		if reward.rewardType == Enum.GossipOptionRewardType.Item then 
+	for _, reward in ipairs(tierRewards) do
+		if reward.rewardType == Enum.TieredEntranceRewardType.Item then 
 			local item = Item:CreateFromItemID(reward.id);
 			continuableContainer:AddContinuable(item);
 		else
@@ -564,8 +740,8 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 	end
 
 	continuableContainer:ContinueOnLoad(function()
-		for  _, reward in ipairs(optionRewards) do
-			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
+		for  _, reward in ipairs(tierRewards) do
+			if	reward.rewardType == Enum.TieredEntranceRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
 				local contextQuality = reward.context and C_Item.GetDelvePreviewItemQuality(reward.id, reward.context) or nil;
 				table.insert(rewardInfo, {id = reward.id, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});

@@ -416,12 +416,12 @@ end
 function Class_StarterTalentWatcher:TalentFrameDropdownShow(dropdown)
 	dropdown:UnregisterCallback("OnMenuOpen", self);
 
-	local function OnMenuClose()
-		EventRegistry:UnregisterCallback("OnMenuClose", self);
+	local function OnMenuClose(dropdown, menu, closeReason)
+		EventRegistry:UnregisterCallback(DropdownButtonMixin.Event.OnMenuClose, self);
 		self:HideStarterTalentsHelp();
 	end
 
-	dropdown:RegisterCallback("OnMenuClose", OnMenuClose, self);
+	dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, OnMenuClose, self);
 	self:ShowStarterTalentsHelp(dropdown);
 end
 

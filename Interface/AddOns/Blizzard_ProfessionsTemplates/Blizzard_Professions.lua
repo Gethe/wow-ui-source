@@ -119,7 +119,9 @@ function Professions.AddTooltipInfo(reagent, tooltip, transaction)
 	local requirements = C_TradeSkillUI.GetDependentReagents(reagent);
 	for index, requiredReagent in ipairs(requirements) do
 		local name = Professions.GetReagentName(requiredReagent);
-		local line = PROFESSIONS_REQUIRES_REAGENTS:format(name);
+		local reagentSlotSchematic = transaction:FindReagentSlotSchematicSupportingReagent(requiredReagent);
+		local quantity = reagentSlotSchematic:GetQuantityRequired(requiredReagent);
+		local line = REAGENT_TOOLTIP_ALLOCATION_REQUIREMENT:format(quantity, name);
 		if transaction:HasAllocatedReagent(requiredReagent) then
 			GameTooltip_AddHighlightLine(tooltip, line);
 		else

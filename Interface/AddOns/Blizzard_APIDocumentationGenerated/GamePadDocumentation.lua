@@ -430,6 +430,9 @@ local GamePad =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GamePad);

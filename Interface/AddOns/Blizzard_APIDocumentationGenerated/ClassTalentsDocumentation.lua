@@ -340,6 +340,54 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "SwitchToLoadoutByIndex",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Loads loadout for the current specialization by dropdown index. Indices start at 1." },
+
+			Arguments =
+			{
+				{ Name = "loadoutIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SwitchToLoadoutByName",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Loads loadout for the current specialization by name. Loads the first one found in the case of duplicate names." },
+
+			Arguments =
+			{
+				{ Name = "loadoutName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SwitchToSpecializationByIndex",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Activates specialization for the current class by index in the order within the Specializations tab. Indices start at 1." },
+
+			Arguments =
+			{
+				{ Name = "specIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SwitchToSpecializationByName",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Activates specialization for the current class by spec name." },
+
+			Arguments =
+			{
+				{ Name = "specName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "UpdateLastSelectedSavedConfigID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -378,6 +426,46 @@ local ClassTalents =
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassTalentsSwitchToLoadoutByIndex",
+			Type = "Event",
+			LiteralName = "CLASS_TALENTS_SWITCH_TO_LOADOUT_BY_INDEX",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "loadoutIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassTalentsSwitchToLoadoutByName",
+			Type = "Event",
+			LiteralName = "CLASS_TALENTS_SWITCH_TO_LOADOUT_BY_NAME",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "loadoutName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassTalentsSwitchToSpecializationByIndex",
+			Type = "Event",
+			LiteralName = "CLASS_TALENTS_SWITCH_TO_SPECIALIZATION_BY_INDEX",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "specIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassTalentsSwitchToSpecializationByName",
+			Type = "Event",
+			LiteralName = "CLASS_TALENTS_SWITCH_TO_SPECIALIZATION_BY_NAME",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "specName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -427,6 +515,9 @@ local ClassTalents =
 				{ Name = "selectionEntryID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

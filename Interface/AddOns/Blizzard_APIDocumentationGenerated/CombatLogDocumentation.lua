@@ -149,6 +149,9 @@ local CombatLog =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatLog);

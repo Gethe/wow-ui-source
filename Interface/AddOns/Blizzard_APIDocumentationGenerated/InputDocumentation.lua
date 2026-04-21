@@ -295,6 +295,14 @@ local Input =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresLimitedInput",
+			Type = "Precondition",
+			FailureMode = "Error",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Input);

@@ -324,6 +324,9 @@ local BarberShop =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BarberShop);

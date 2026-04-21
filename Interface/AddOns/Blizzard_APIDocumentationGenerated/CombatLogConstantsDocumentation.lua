@@ -82,6 +82,9 @@ local CombatLogConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatLogConstants);

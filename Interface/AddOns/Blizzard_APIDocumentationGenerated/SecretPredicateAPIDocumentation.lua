@@ -385,6 +385,16 @@ local SecretPredicateAPI =
 			},
 		},
 		{
+			Name = "ShouldUnitStatsBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit statistics will produce secret values." },
+
+			Returns =
+			{
+				{ Name = "hasSecretStats", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldUnitThreatStateBeSecret",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -425,6 +435,9 @@ local SecretPredicateAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -449,7 +449,7 @@ end
 
 function LootHistoryFrameMixin:OpenToEncounterInternal(encounterID)
 	self:SetInfoShown(true);
-	
+
 	if encounterID ~= self:GetSelectedEncounterID() then
 		self.ScrollBox:ScrollToBegin();
 		self.PerfectAnimFrame:StopPerfectRollAnim();
@@ -525,7 +525,7 @@ function LootHistoryFrameMixin:DoFullRefresh()
 	self.ScrollBox:SetDataProvider(dataProvider);
 	self.ScrollBox:SetScrollPercentage(scrollPercentage);
 
-	if anyRolledOn and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LOOT_HISTORY_ROLL) then
+	if anyRolledOn and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LOOT_HISTORY_ROLL) and C_PartyInfo.GetLootMethod() ~= Enum.LootMethod.Masterlooter then
 		local rolledHelpTipInfo =
 		{
 			text = LOOT_HISTORY_ROLL_TUTORIAL,

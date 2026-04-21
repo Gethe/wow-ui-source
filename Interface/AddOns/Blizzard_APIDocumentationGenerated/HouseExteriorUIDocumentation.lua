@@ -92,8 +92,69 @@ local HouseExteriorUI =
 			},
 		},
 		{
+			Name = "IsAnyDecorAttachedToCoreFixture",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if any decor is attached to the specified core fixture type, OR any child fixtures attached to it; Will also return false if the type provided is not a core fixture type, or if not in Exterior Customization mode on an owned plot" },
+
+			Arguments =
+			{
+				{ Name = "coreFixtureType", Type = "HousingFixtureType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "anyAttachedDecor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAnyDecorAttachedToDoor",
+			Type = "Function",
+			Documentation = { "Returns true if any decor is attached to the current House Exterior's door; Will also return false if not in Exterior Customization mode on an owned plot" },
+
+			Returns =
+			{
+				{ Name = "anyAttachedDecor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAnyDecorAttachedToHouseExterior",
+			Type = "Function",
+			Documentation = { "Returns true if any decor is attached to any component of the current House Exterior; Will also return false if not in House Exterior Customization mode on an owned Plot" },
+
+			Returns =
+			{
+				{ Name = "anyAttachedDecor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAnyDecorAttachedToSelectedFixturePoint",
+			Type = "Function",
+			Documentation = { "Returns true if any decor is attached to the Fixture occupying the currently selected fixture point; Will also return false if no point is currently selected, or if there is currently no Fixture there" },
+
+			Returns =
+			{
+				{ Name = "anyAttachedDecor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsExteriorDecorHidden",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "decorHidden", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RemoveFixtureFromSelectedPoint",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "attachedDecorAction", Type = "HousingFixtureDecorAction", Nilable = false, Default = "Store", Documentation = { "What to do with any decor currently attached to the fixture" } },
+			},
 		},
 		{
 			Name = "SelectCoreFixtureOption",
@@ -103,6 +164,7 @@ local HouseExteriorUI =
 			Arguments =
 			{
 				{ Name = "fixtureID", Type = "number", Nilable = false },
+				{ Name = "attachedDecorAction", Type = "HousingFixtureDecorAction", Nilable = false, Default = "Store", Documentation = { "What to do with any decor attached to the old core fixture; If the fixture being swapped is a variant (ie recolor) of the existing one, attached decor will always be reparented directly to the new one" } },
 			},
 		},
 		{
@@ -113,6 +175,17 @@ local HouseExteriorUI =
 			Arguments =
 			{
 				{ Name = "fixtureID", Type = "number", Nilable = false },
+				{ Name = "attachedDecorAction", Type = "HousingFixtureDecorAction", Nilable = false, Default = "Store", Documentation = { "If this fixture choice is replacing an existing one that has decor attached, what to do with any decor attached to the old one" } },
+			},
+		},
+		{
+			Name = "SetExteriorDecorHidden",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorHidden", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -123,6 +196,7 @@ local HouseExteriorUI =
 			Arguments =
 			{
 				{ Name = "size", Type = "HousingFixtureSize", Nilable = false },
+				{ Name = "attachedDecorAction", Type = "HousingFixtureDecorAction", Nilable = false, Default = "Store", Documentation = { "What to do with decor attached to any of the house's existing exterior components" } },
 			},
 		},
 		{
@@ -133,12 +207,23 @@ local HouseExteriorUI =
 			Arguments =
 			{
 				{ Name = "houseExteriorTypeID", Type = "number", Nilable = false },
+				{ Name = "attachedDecorAction", Type = "HousingFixtureDecorAction", Nilable = false, Default = "Store", Documentation = { "What to do with decor attached to any of the house's existing exterior components" } },
 			},
 		},
 	},
 
 	Events =
 	{
+		{
+			Name = "HouseExteriorDecorHiddenChanged",
+			Type = "Event",
+			LiteralName = "HOUSE_EXTERIOR_DECOR_HIDDEN_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isDecorHidden", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "HouseExteriorTypeUnlocked",
 			Type = "Event",
@@ -248,6 +333,9 @@ local HouseExteriorUI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

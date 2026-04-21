@@ -453,17 +453,15 @@
 								<Frame parentKey="BorderArt" frameStrata="HIGH" setAllPoints="true">
 									<Layers>
 										<Layer level="BORDER">
-											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-wood-small-tl" useAtlasSize="false">
-												<Size x="23" y="23"/>
+											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-corner-TL" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="2" y="-2"/>
+													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-4" y="2"/>
 												</Anchors>
 											</Texture>
 
-											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
-												<Size x="23" y="23"/>
+											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-corner-TR" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="-2" y="-2"/>
+													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="4" y="2"/>
 												</Anchors>
 											</Texture>
 
@@ -504,16 +502,30 @@
 							<Layers>
 								<Layer level="ARTWORK">
 									<FontString parentKey="InitiativeName" inherits="GameFontHighlightLarge2" justifyH="LEFT">
-										<Size x="580" y="30"/>
+										<Size y="30"/>
+										<KeyValues>
+											<KeyValue key="maxWidth" value="560" type="number"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="25" y="-15"/>
 										</Anchors>
 									</FontString>
 
+									<Texture parentKey="InitiativesXPIcon" atlas="housing-dashboard-icon-xp" mixin="HouseXPCapIconMixin">
+										<Size x="24" y="24"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.InitiativeName" relativePoint="RIGHT" x="7" y="1"/>
+										</Anchors>
+										<Scripts>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+									</Texture>
+
 									<FontString parentKey="InitiativeDescription" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
 										<Size x="600" y="40"/>
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.InitiativeName" relativePoint="BOTTOM" x="13" y="-2"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.InitiativeName" relativePoint="BOTTOMLEFT" x="13" y="-2"/>
 										</Anchors>
 									</FontString>
 
@@ -653,12 +665,19 @@
 												</Anchors>
 											</Texture>
 										</Layer>
+										<Layer level="ARTWORK">
+											<FontString parentKey="ActiveEndeavorHelpText" inherits="GameFontNormalMed1" text="ENDEAVOR_SINGLE_CONTRIBUTION_LABEL">
+												<Anchors>
+													<Anchor point="TOP" relativeKey="$parent.BorderTop" relativePoint="BOTTOM" y="-120"/>
+												</Anchors>
+											</FontString>
+										</Layer>
 									</Layers>
 									<Frames>
 										<Button parentKey="SwitchActiveNeighborhoodBtn" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_SET_AS_ACTIVE_INITIATIVE_LABEL" mixin="InitiativeActiveNeighborhoodSwitcherMixin">
 											<Size x="200" y="22"/>
 											<Anchors>
-												<Anchor point="CENTER" y="65"/>
+												<Anchor point="CENTER" relativeKey="$parent.ActiveEndeavorHelpText" relativePoint="TOP" y="20"/>
 											</Anchors>
 											<Scripts>
 												<OnClick method="OnClick"/>

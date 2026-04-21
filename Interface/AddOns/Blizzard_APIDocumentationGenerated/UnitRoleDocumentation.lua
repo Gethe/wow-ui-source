@@ -118,6 +118,9 @@ local UnitRole =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitRole);

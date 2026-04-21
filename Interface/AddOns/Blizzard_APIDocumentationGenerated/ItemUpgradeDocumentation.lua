@@ -303,6 +303,9 @@ local ItemUpgrade =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ItemUpgrade);

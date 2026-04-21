@@ -29,6 +29,9 @@ local CharacterCreationConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CharacterCreationConstants);

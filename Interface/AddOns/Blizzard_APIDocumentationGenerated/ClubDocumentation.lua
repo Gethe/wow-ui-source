@@ -1967,6 +1967,14 @@ local Club =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresClubsInitialized",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Club);

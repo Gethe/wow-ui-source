@@ -432,6 +432,9 @@ local TradeSkillUITypes =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TradeSkillUITypes);

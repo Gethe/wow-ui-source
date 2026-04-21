@@ -130,6 +130,9 @@ local CharacterSelectionConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CharacterSelectionConstants);

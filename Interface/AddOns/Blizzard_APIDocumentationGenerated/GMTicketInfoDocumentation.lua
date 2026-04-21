@@ -84,6 +84,9 @@ local GMTicketInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GMTicketInfo);

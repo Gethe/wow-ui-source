@@ -1534,7 +1534,7 @@ function TalentFrameBaseMixin:SetCommitVisualsActive(active, reason, skipSpinner
 
 	self.areBaseCommitVisualsActive = active;
 
-	self.DisabledOverlay:SetShown(active);
+	self:SetDisabledOverlayShown(active);
 
 	if self.enableCommitCastBar then
 		self:SetCommitCastBarActive(active);

@@ -348,6 +348,9 @@ local SimpleStatusBarAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleStatusBarAPI);

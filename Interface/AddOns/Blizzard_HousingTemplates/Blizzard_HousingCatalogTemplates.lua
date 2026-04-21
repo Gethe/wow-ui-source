@@ -8,6 +8,15 @@ local function SetInstructionText(scrollBoxText, elementData)
 	scrollBoxText:SetElementText(elementData.text, HOUSING_HEADER_COLOR);
 end
 
+local function HousingMarketProductDisplay_Init(productDisplay, ...)
+	productDisplay:Init(...);
+end
+
+local function HousingMarketProductDisplay_Reset(framePool, productDisplay)
+	Pool_HideAndClearAnchors(framePool, productDisplay);
+	productDisplay:Reset();
+end
+
 local function BarDividerReset(pool, barDivider)
 	barDivider:SetHeaderText("");
 	Pool_HideAndClearAnchors(pool, barDivider);
@@ -16,7 +25,8 @@ end
 local Templates = {
 	["CATALOG_ENTRY_DECOR"] = { template = "HousingCatalogDecorEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
 	["CATALOG_ENTRY_ROOM"] = { template = "HousingCatalogRoomEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
-	["CATALOG_ENTRY_BUNDLE"] = { template = "HousingCatalogBundleDisplayTemplate", initFunc = HousingCatalogBundleDisplayMixin.Init, resetFunc = HousingCatalogBundleDisplayMixin.Reset },
+	["CATALOG_ENTRY_BUNDLE"] = { template = "HousingMarketBundleDisplayTemplate", initFunc = HousingMarketProductDisplay_Init, resetFunc = HousingMarketProductDisplay_Reset },
+	["CATALOG_ENTRY_SMALL_PRODUCT"] = { template = "HousingMarketSmallProductDisplayTemplate", initFunc = HousingMarketProductDisplay_Init, resetFunc = HousingMarketProductDisplay_Reset },
 	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = { template = "BarDividerTemplate", initFunc = nop, resetFunc = BarDividerReset },
 	["CATALOG_ENTRY_HEADER"] = { template = "BarDividerTemplate", initFunc = SetHeaderText, resetFunc = BarDividerReset },
 	["CATALOG_ENTRY_INSTRUCTIONS"] = { template = "ScrollBoxTextContainerTemplate", initFunc = SetInstructionText, resetFunc = Pool_HideAndClearAnchors },
@@ -36,6 +46,18 @@ local TemplateHeightAdjust = {
 -- Base Mixin
 BaseHousingCatalogMixin = {};
 
+function BaseHousingCatalogMixin:SetEntryDisplayContextGetter(entryDisplayContextGetter)
+	self.entryDisplayContextGetter = entryDisplayContextGetter;
+end
+
+function BaseHousingCatalogMixin:GetEntryDisplayContext()
+	if self.entryDisplayContextGetter then
+		return self.entryDisplayContextGetter();
+	end
+
+	return nil;
+end
+
 function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition, headerText, instructionText)
 	if not catalogEntries or #catalogEntries == 0 then
 		self:ClearCatalogData();
@@ -49,9 +71,12 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 		table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_HEADER", text = headerText });
 	end
 
+	-- We use our own in-between context getter function rather than directly pass them the one provided via SetEntryDisplayContextGetter
+	-- This ensures entries always at least have the function, and avoids the potential for entries ending up with a different context should SetEntryDisplayContextGetter be called later with a different func
+	local entryContextGetter = GenerateClosure(self.GetEntryDisplayContext, self);
+
 	for _, catalogEntry in ipairs(catalogEntries) do
 		local elementData = catalogEntry;
-
 		-- Bundle entries have a list of decor entries
 		if catalogEntry.decorEntries then
 			elementData.templateKey = "CATALOG_ENTRY_BUNDLE";
@@ -61,12 +86,14 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 				table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_BUNDLE_DIVIDER" });
 			end
 
-			if catalogEntry.decorID then
+			if catalogEntry.productID then
+				elementData.templateKey = "CATALOG_ENTRY_SMALL_PRODUCT";
+			elseif catalogEntry.decorID then
 				elementData = { bundleItemInfo = catalogEntry, };
 
 				elementData.templateKey = "CATALOG_ENTRY_DECOR";
 			else
-				elementData = { entryID = catalogEntry, };
+				elementData = { entryVariantID = catalogEntry, };
 
 				local entryType = catalogEntry.entryType;
 				if entryType == Enum.HousingCatalogEntryType.Decor then
@@ -80,6 +107,7 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 		end
 
 		if elementData.templateKey then
+			elementData.displayContextGetter = entryContextGetter;
 			lastTemplate = elementData.templateKey;
 			table.insert(catalogElements, elementData);
 		end
@@ -101,7 +129,12 @@ function BaseHousingCatalogMixin:UpdateLayout()
 	-- Optional, if any manual steps are required after parent sizing/layout changes
 end
 
-function BaseHousingCatalogMixin:TryGetElementAndFrame(entryID)
+function BaseHousingCatalogMixin:TryGetElementAndFrame(entryVariantID)
+	-- Required to implement
+	assert(false);
+end
+
+function BaseHousingCatalogMixin:TryGetElementAndFrameByPredicate(predicate)
 	-- Required to implement
 	assert(false);
 end
@@ -129,8 +162,10 @@ function PagedHousingCatalogMixin:ClearCatalogData()
 	self:RemoveDataProvider();
 end
 
-function PagedHousingCatalogMixin:TryGetElementAndFrame(entryID)
-	return self:TryGetElementAndFrameByPredicate(function(elementData) return elementData.entryID == entryID; end);
+function PagedHousingCatalogMixin:TryGetElementAndFrame(entryVariantID)
+	return self:TryGetElementAndFrameByPredicate(function(elementData)
+		return Blizzard_HousingCatalogUtil.CompareCatalogEntryVariantIDs(elementData.entryVariantID, entryVariantID);
+	end);
 end
 
 function PagedHousingCatalogMixin:UpdateLayout()
@@ -196,17 +231,37 @@ function ScrollingHousingCatalogMixin:ClearCatalogData()
 	self.ScrollBox:RemoveDataProvider();
 end
 
-function ScrollingHousingCatalogMixin:TryGetElementAndFrame(entryID)
+function ScrollingHousingCatalogMixin:TryGetElementAndFrame(entryVariantID)
 	if not self.ScrollBox:HasDataProvider() then
 		return nil, nil;
 	end
 
 	local frame = nil;
-	local focusedElementData = self.ScrollBox:FindElementDataByPredicate(function(elementData) return elementData.entryID == entryID; end);
+	local focusedElementData = self.ScrollBox:FindElementDataByPredicate(function(elementData)
+		if not elementData.entryVariantID then
+			return false;
+		end
+
+		return Blizzard_HousingCatalogUtil.CompareCatalogEntryVariantIDs(elementData.entryVariantID, entryVariantID);
+	end);
+
 	if focusedElementData then
 		frame = self.ScrollBox:FindFrame(focusedElementData);
 	end
 	return focusedElementData, frame;
+end
+
+function ScrollingHousingCatalogMixin:TryGetElementAndFrameByPredicate(predicate)
+	if not self.ScrollBox:HasDataProvider() then
+		return nil, nil;
+	end
+
+	local focusedElementData = self.ScrollBox:FindElementDataByPredicate(predicate);
+	if focusedElementData then
+		return focusedElementData, self.ScrollBox:FindFrame(focusedElementData);
+	end
+
+	return focusedElementData, nil;
 end
 
 function ScrollingHousingCatalogMixin:RefreshFrames()

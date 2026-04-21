@@ -50,6 +50,9 @@ local CombatAudioAlertConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatAudioAlertConstants);

@@ -8,6 +8,36 @@ local StringUtil =
 	Functions =
 	{
 		{
+			Name = "CreateAbbreviatedNumberFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers to abbreviated strings, eg. 123456 -> '123k'." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "AbbreviatedNumberFormatter", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateNumericRuleFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers to strings with flexible rulesets." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "NumericRuleFormatter", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateSecondsFormatter",
+			Type = "Function",
+			Documentation = { "Creates a numeric formatter that converts numbers measuring durations in seconds to strings, eg. 93 -> '1m 33s'." },
+
+			Returns =
+			{
+				{ Name = "formatter", Type = "SecondsFormatter", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaFormatString",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -79,7 +109,7 @@ local StringUtil =
 			Arguments =
 			{
 				{ Name = "text", Type = "stringView", Nilable = false },
-				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
+				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, NeverSecret = true, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
 			},
 
 			Returns =
@@ -209,6 +239,9 @@ local StringUtil =
 				{ Name = "maintainTextures", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|T' and '|t' quoted code sequences." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

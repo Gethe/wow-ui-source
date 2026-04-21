@@ -74,6 +74,9 @@ local Performance =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Performance);

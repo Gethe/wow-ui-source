@@ -443,3 +443,214 @@ end
 function UnitPopupPetRenameButtonMixin:CanShow(contextData)
 	return PetCanBeAbandoned();
 end
+
+UnitPopupLootMethodButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupLootMethodButtonMixin:GetSelectedLootMixin()
+	local lootMethod = C_PartyInfo.GetLootMethod();
+	for index, buttonMixin in ipairs(self:GetEntries()) do
+		if buttonMixin and buttonMixin:GetLootMethod() == lootMethod then
+			return buttonMixin;
+		end
+	end
+
+	return nil;
+end
+
+function UnitPopupLootMethodButtonMixin:GetText(contextData)
+	-- Display selected loot method name
+	local selectedLootMixin = self:GetSelectedLootMixin();
+	if selectedLootMixin then
+		return selectedLootMixin:GetText(contextData);
+	end
+	
+	return LOOT_METHOD;
+end
+
+function UnitPopupLootMethodButtonMixin:GetTooltipText(contextData)
+	-- Display selected loot method tooltip
+	local selectedLootMixin = self:GetSelectedLootMixin();
+	if selectedLootMixin then
+		return selectedLootMixin:GetTooltipText(contextData);
+	end
+
+	return nil;
+end 
+
+function UnitPopupLootMethodButtonMixin:CanShow(contextData)
+	local lootMethods = C_PartyInfo.GetAvailableLootMethods();
+	return (IsInGroup() and (#lootMethods > 1));
+end
+
+function UnitPopupLootMethodButtonMixin:IsEnabled(contextData)
+	return UnitIsGroupLeader("player");
+end
+
+-- Specifically providing loot tooltip for non-leader players so they can read the selected loot method rules
+-- Meanwhile the group leader gets all the rule tooltips as part of the dropdown being enabled
+function UnitPopupLootMethodButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+function UnitPopupLootMethodButtonMixin:NoTooltipWhileEnabled()
+	return true;
+end
+
+function UnitPopupLootMethodButtonMixin:GetEntries()
+	return {
+		UnitPopupLootFreeForAllButtonMixin,
+		UnitPopupLootRoundRobinButtonMixin,
+		UnitPopupMasterLooterButtonMixin,
+		UnitPopupGroupLootButtonMixin,
+		UnitPopupNeedBeforeGreedButtonMixin,
+		UnitPopupPersonalLootButtonMixin,
+		UnitPopupCancelButtonMixin,
+	}
+end 
+
+UnitPopupLootFreeForAllButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
+
+function UnitPopupLootFreeForAllButtonMixin:GetText(contextData)
+	return LOOT_FREE_FOR_ALL;
+end
+
+function UnitPopupLootFreeForAllButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL;
+end 
+
+function UnitPopupLootFreeForAllButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Freeforall;
+end	
+
+function UnitPopupLootFreeForAllButtonMixin:IsChecked(contextData)
+	return C_PartyInfo.GetLootMethod() == self:GetLootMethod();
+end
+
+function UnitPopupLootFreeForAllButtonMixin:CanShow(contextData)
+	if not C_PartyInfo.IsLootMethodAvailable(self:GetLootMethod()) then
+		return false;
+	end
+
+	if not IsInGroup() then 
+		return false; 
+	end
+
+	if not UnitIsGroupLeader("player") then
+		return false; 
+	end
+
+	return true; 
+end
+
+function UnitPopupLootFreeForAllButtonMixin:OnClick(contextData)
+	C_PartyInfo.SetLootMethod(self:GetLootMethod());
+end
+
+UnitPopupLootRoundRobinButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupLootRoundRobinButtonMixin:GetText(contextData)
+	return LOOT_ROUND_ROBIN;
+end
+
+function UnitPopupLootRoundRobinButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_ROUND_ROBIN;
+end 
+
+function UnitPopupLootRoundRobinButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Roundrobin;
+end		
+
+UnitPopupMasterLooterButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupMasterLooterButtonMixin:GetText(contextData)
+	return MASTER_LOOTER;
+end
+
+function UnitPopupMasterLooterButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER;
+end 
+
+function UnitPopupMasterLooterButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Masterlooter;
+end		
+
+function UnitPopupMasterLooterButtonMixin:OnClick(contextData)
+	C_PartyInfo.SetLootMethod(self:GetLootMethod(), UnitPopupSharedUtil.GetFullPlayerName(contextData), 2);
+end
+
+UnitPopupGroupLootButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupGroupLootButtonMixin:GetText(contextData)
+	return LOOT_GROUP_LOOT;
+end
+
+function UnitPopupGroupLootButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_GROUP_LOOT;
+end 
+
+function UnitPopupGroupLootButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Group;
+end		
+
+UnitPopupNeedBeforeGreedButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupNeedBeforeGreedButtonMixin:GetText(contextData)
+	return LOOT_NEED_BEFORE_GREED;
+end
+
+function UnitPopupNeedBeforeGreedButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Needbeforegreed;
+end		
+
+function UnitPopupNeedBeforeGreedButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_NEED_BEFORE_GREED;
+end
+
+UnitPopupPersonalLootButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
+
+function UnitPopupPersonalLootButtonMixin:GetText(contextData)
+	return DEFAULT;
+end
+
+function UnitPopupPersonalLootButtonMixin:GetTooltipText(contextData)
+	return NEWBIE_TOOLTIP_UNIT_GROUP_LOOT;
+end
+
+function UnitPopupPersonalLootButtonMixin:GetLootMethod()
+	return Enum.LootMethod.Personal;
+end
+
+UnitPopupLootThresholdButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupLootThresholdButtonMixin:GetText(contextData)
+	return _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
+end
+
+function UnitPopupLootThresholdButtonMixin:GetColor()
+	local color = ITEM_QUALITY_COLORS[GetLootThreshold()].color;
+	return color.r, color.g, color.b;
+end
+
+function UnitPopupLootThresholdButtonMixin:CanShow(contextData)
+	if not IsInGroup() then
+		return false;
+	end
+
+	local lootMethod = C_PartyInfo.GetLootMethod();
+	if not C_PartyInfo.IsLootMethodAvailable(lootMethod) then
+		return false;
+	end
+
+	return lootMethod ~= Enum.LootMethod.Personal;
+end
+
+function UnitPopupLootThresholdButtonMixin:GetEntries()
+	if UnitIsGroupLeader("player") then
+		return {
+			UnitPopupItemQuality2DescButtonMixin,
+			UnitPopupItemQuality3DescButtonMixin,
+			UnitPopupItemQuality4DescButtonMixin,
+			UnitPopupCancelButtonMixin,
+		}
+	end
+	return nil;
+end

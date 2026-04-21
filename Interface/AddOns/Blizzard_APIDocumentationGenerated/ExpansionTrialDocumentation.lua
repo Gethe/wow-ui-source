@@ -26,6 +26,9 @@ local ExpansionTrial =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ExpansionTrial);

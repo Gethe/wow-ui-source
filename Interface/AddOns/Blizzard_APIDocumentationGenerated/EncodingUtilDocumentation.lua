@@ -233,6 +233,9 @@ local EncodingUtil =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncodingUtil);

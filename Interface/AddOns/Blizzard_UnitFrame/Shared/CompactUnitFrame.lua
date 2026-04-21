@@ -1,10 +1,8 @@
 --Widget Handlers
 local OPTION_TABLE_NONE = {};
-local BOSS_DEBUFF_SCALE_INCREASE = 1.5;
 CUF_READY_CHECK_DECAY_TIME = 11;
 DISTANCE_THRESHOLD_SQUARED = 250*250;
 CUF_NAME_SECTION_SIZE = 15;
-CUF_AURA_BOTTOM_OFFSET = 2;
 
 CUF_MY_HEAL_PREDICTION_COLOR = CreateColor(11/255, 136/255, 105/255, 1);
 CUF_OTHER_HEAL_PREDICTION_COLOR = CreateColor(21/255, 89/255, 72/255, 1);
@@ -17,24 +15,8 @@ local NATIVE_UNIT_FRAME_AURA_SCALE_MIN = 0.5;
 local NATIVE_UNIT_FRAME_AURA_SCALE_MAX = 2;
 local CENTER_STATUS_ICON_SCALE = 2;
 local NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE = NATIVE_UNIT_FRAME_AURA_SIZE * CENTER_STATUS_ICON_SCALE;
-
-local DispelOverlayOrientation = EnumUtil.MakeEnum(
-	"VerticalTopToBottom",
-	"VerticalBottomToTop",
-	"HorizontalLeftToRight"
-);
-
-local function CompactUnitFrame_CreateAuraPriorityTables(frame)
-	assertsafe(frame.debuffs == nil, "CompactUnitFrame_CreateAuraPriorityTables called multiple times on the same frame");
-
-	frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
-	frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-	frame.bigDefensives = TableUtil.CreatePriorityTable(AuraUtil.BigDefensiveAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-	frame.dispels = {};
-	for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
-		frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-	end
-end
+local NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MIN = 0.5;
+local NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MAX = 1;
 
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
@@ -51,8 +33,6 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED");
 	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED");
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-	self:RegisterEvent("PLAYER_REGEN_ENABLED");
-	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -74,7 +54,6 @@ function CompactUnitFrame_OnLoad(self)
 	self.maxDispelDebuffs = 0;
 	self.powerBarUsedHeight = 0;
 	CompactUnitFrame_SetOptionTable(self, OPTION_TABLE_NONE);
-	CompactUnitFrame_CreateAuraPriorityTables(self);
 
 	if not self.disableMouse then
 		CompactUnitFrame_SetUpClicks(self);
@@ -103,8 +82,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_MOUSEOVER_UNIT" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
-	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
-		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		CompactUnitFrame_UpdateLevel(self, arg1);
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
@@ -146,11 +123,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			elseif ( event == "UNIT_NAME_UPDATE" ) then
 				CompactUnitFrame_SetHealthDirty(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
-		elseif ( event == "UNIT_LEVEL" ) then
-			CompactUnitFrame_UpdateLevel(self);
-			elseif ( event == "UNIT_AURA" ) then
-				local unitAuraUpdateInfo = arg2;
-				CompactUnitFrame_UpdateAuras(self, unitAuraUpdateInfo);
+			elseif ( event == "UNIT_LEVEL" ) then
+				CompactUnitFrame_UpdateLevel(self);
 			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
@@ -239,7 +213,9 @@ function CompactUnitFrame_OnUpdate(self, elapsed)
 	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
 
 	if self.aurasDirty then
-		CompactUnitFrame_UpdateAuras(self);
+		local forceUpdate = true;
+		local avoidAnchorChange = true;
+		self:UpdatePrivateAuras(forceUpdate, avoidAnchorChange);
 		self.aurasDirty = false;
 	end
 
@@ -294,9 +270,9 @@ function CompactUnitFrame_SetUnit(frame, unit)
 			end
 		end
 		CompactUnitFrame_UpdateAll(frame);
-		CompactUnitFrame_UpdatePrivateAuras(frame);
 
-		----NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
+		frame:UpdatePrivateAuras();
+
 		local clickArgs =
 		{
 			"AnyDown",
@@ -419,19 +395,25 @@ function CompactUnitFrame_SetUpClicks(frame)
 	end);
 end
 
+local function CompactUnitFrame_ChangePrivateAuraSetting(frame, key, count)
+	if frame[key] ~= count then
+		frame[key] = count;
+		local forceUpdatePrivateAuras = true;
+		local avoidAnchorChange = true;
+		frame:UpdatePrivateAuras(forceUpdatePrivateAuras, avoidAnchorChange);
+	end
+end
+
 function CompactUnitFrame_SetMaxBuffs(frame, numBuffs)
-	frame.maxBuffs = numBuffs;
-	CompactUnitFrame_SetAurasDirty(frame);
+	CompactUnitFrame_ChangePrivateAuraSetting(frame, "maxBuffs", numBuffs);
 end
 
 function CompactUnitFrame_SetMaxDebuffs(frame, numDebuffs)
-	frame.maxDebuffs = numDebuffs;
-	CompactUnitFrame_SetAurasDirty(frame);
+	CompactUnitFrame_ChangePrivateAuraSetting(frame, "maxDebuffs", numDebuffs);
 end
 
 function CompactUnitFrame_SetMaxDispelDebuffs(frame, numDispelDebuffs)
-	frame.maxDispelDebuffs = numDispelDebuffs;
-	CompactUnitFrame_SetAurasDirty(frame);
+	CompactUnitFrame_ChangePrivateAuraSetting(frame, "maxDispelDebuffs", numDispelDebuffs);
 end
 
 function CompactUnitFrame_SetUpdateAllEvent(frame, updateAllEvent, updateAllFilter)
@@ -446,9 +428,9 @@ end
 --Internally accessed functions
 
 --Update Functions
-function CompactUnitFrame_UpdateAll(frame)
+function CompactUnitFrame_UpdateAll(frame, ...)
 	if frame.optionTable and frame.optionTable.updateAllSetupFunc then
-		frame.optionTable.updateAllSetupFunc(frame);
+		frame.optionTable.updateAllSetupFunc(frame, ...);
 	end
 
 	CompactUnitFrame_UpdateInVehicle(frame);
@@ -474,7 +456,6 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateHealPrediction(frame);
 		CompactUnitFrame_UpdateRoleIcon(frame);
 		CompactUnitFrame_UpdateReadyCheck(frame);
-		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdatePlayerLevelDiff(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
@@ -488,6 +469,11 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateWidgetSet(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
 	end
+end
+
+function CompactUnitFrame_UpdateAllFromEditMode(frame)
+	local avoidPrivateAuraAnchorChange = true;
+	CompactUnitFrame_UpdateAll(frame, avoidPrivateAuraAnchorChange);
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
@@ -1076,7 +1062,7 @@ function CompactUnitFrame_GetRangeAlpha(frame)
 		CompactUnitFrame_UpdateInRange(frame);
 	end
 
-	return frame.outOfRange and 0.3 or 1;
+	return frame.outOfRange and 0.5 or 1;
 end
 
 function CompactUnitFrame_UpdateDistance(frame)
@@ -1651,410 +1637,21 @@ function CompactUnitFrame_ClearWidgetSet(frame)
 	end
 end
 
---Other internal functions
-do
-	local function CompactUnitFrame_ClearPriorityTables(frame)
-		assertsafe(frame.debuffs ~= nil, "Aura Priority tables not initialized for frame %s.", tostring(frame:GetDebugName()));
-
-		if frame.debuffs then
-			frame.debuffs:Clear();
-			frame.buffs:Clear();
-			frame.bigDefensives:Clear();
-			for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
-				frame.dispels[type]:Clear();
-			end
-		end
-	end
-
-	local function CompactUnitFrame_ShouldDisplayDispelIndicator(aura, dispelIndicatorOption)
-		if dispelIndicatorOption == Enum.RaidDispelDisplayType.Disabled then
-			return false;
-		elseif aura.isHarmful and aura.dispelName and aura.dispelName ~= "" then
-			if dispelIndicatorOption == Enum.RaidDispelDisplayType.DisplayAll then
-				return true;
-			elseif dispelIndicatorOption == Enum.RaidDispelDisplayType.DispellableByMe then
-				return aura.canActivePlayerDispel;
-			end
-		end
-
-		return false;
-	end
-
-	local function CompactUnitFrame_CheckAddDispel(frame, aura, dispelIndicatorOption)
-		if CompactUnitFrame_ShouldDisplayDispelIndicator(aura, dispelIndicatorOption) then
-			frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
-			frame.dispelsChanged = true;
-		end
-	end
-
-	local function CompactUnitFrame_CheckExistingDispelHasCorrectType(frame, aura, auraInstanceID)
-		-- This is the "we're updating" case...double check that if we have an existing entry that the types match
-		-- Aura could be nil, auraInstanceID must be valid.
-		for dispelName, dispelTable in pairs(frame.dispels) do
-			local existingDispel = dispelTable[auraInstanceID];
-			if existingDispel then
-				assertsafe(not aura or aura.dispelName == dispelName, "Dispel name mismatch for type %s with spell %s.", dispelName, tostring(aura and aura.spellId or 0));
-				break;
-			end
-		end
-	end
-
-	local function CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption)
-		-- Dispel indicator display types is controlled independently from debuffs now.
-		-- This means that if something is in the dispel list, it doesn't necessarily mean it's in the debuff list, but if AuraUtil.ProcessAura thinks it's a dispel
-		-- then it to preserve existing behavior it's still added to debuffs.
-		CompactUnitFrame_CheckAddDispel(frame, aura, dispelIndicatorOption);
-
-		local auraType = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
-		if (auraType == AuraUtil.AuraUpdateChangedType.Debuff) or (auraType == AuraUtil.AuraUpdateChangedType.Dispel) then
-			frame.debuffs[aura.auraInstanceID] = aura;
-			frame.debuffsChanged = true;
-		elseif auraType == AuraUtil.AuraUpdateChangedType.Buff then
-			frame.buffs[aura.auraInstanceID] = aura;
-			frame.buffsChanged = true;
-		end
-
-		if AuraUtil.IsBigDefensive(aura) then
-			frame.bigDefensives[aura.auraInstanceID] = aura;
-			frame.buffsChanged = true;
-		end
-	end
-
-	local function CompactUnitFrame_RemoveAura(frame, auraInstanceID)
-		if frame.debuffs[auraInstanceID] ~= nil then
-			frame.debuffs[auraInstanceID] = nil;
-			frame.debuffsChanged = true;
-		end
-
-		for _, dispelTable in pairs(frame.dispels) do
-			if dispelTable[auraInstanceID] ~= nil then
-				dispelTable[auraInstanceID] = nil;
-				frame.dispelsChanged = true;
-				break;
-			end
-		end
-
-		if frame.buffs[auraInstanceID] ~= nil then
-			frame.buffs[auraInstanceID] = nil;
-			frame.buffsChanged = true;
-		end
-
-		if frame.bigDefensives[auraInstanceID] ~= nil then
-			frame.bigDefensives[auraInstanceID] = nil;
-			frame.buffsChanged = true;
-		end
-	end
-
-	local function CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption)
-		frame.debuffsChanged = true;
-		frame.buffsChanged = true;
-		frame.dispelsChanged = true;
-
-		CompactUnitFrame_ClearPriorityTables(frame);
-
-		local function HandleAura(aura)
-			CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);
-		end
-
-		local batchCount = nil;
-		local usePackedAura = true;
-		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
-		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful), batchCount, HandleAura, usePackedAura);
-		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.Raid), batchCount, HandleAura, usePackedAura);
-	end
-
-	local function CompactUnitFrame_CheckUpdateDebuffFrames(frame)
-		if frame.debuffsChanged then
-			frame.debuffsChanged = false;
-
-			local frameNum = 1;
-			local maxDebuffs = frame.maxDebuffs;
-			frame.debuffs:Iterate(function(auraInstanceID, aura)
-				if frameNum > maxDebuffs then
-					return true;
-				end
-
-				if CompactUnitFrame_IsAuraInstanceIDBlocked(frame, auraInstanceID) then
-					return false;
-				end
-
-				local debuffFrame = frame.debuffFrames[frameNum];
-				CompactUnitFrame_UtilSetDebuff(frame, debuffFrame, aura);
-				frameNum = frameNum + 1;
-
-				return false;
-			end);
-
-			CompactUnitFrame_HideAllDebuffs(frame, frameNum);
-			CompactUnitFrame_UpdatePrivateAuras(frame);
-		end
-	end
-
-	local function CompactUnitFrame_CheckUpdateBuffFrames(frame)
-		if frame.buffsChanged then
-			frame.buffsChanged = false;
-
-			-- Process center "big defensives" first because if one of those shows, then that aura should be skipped in the buffs section.
-			local buffAuraInstanceIDToSkip;
-			if frame.CenterDefensiveBuff then
-				if CompactUnitFrame_GetOptionShowBigDefensive(frame) and frame.bigDefensives:Size() ~= 0 then
-					local bigDefensiveAura = frame.bigDefensives:GetTop();
-					buffAuraInstanceIDToSkip = bigDefensiveAura.auraInstanceID;
-
-					CompactUnitFrame_UtilSetBuff(frame.CenterDefensiveBuff, bigDefensiveAura);
-				else
-					frame.CenterDefensiveBuff:Hide();
-				end
-			end
-
-			local frameNum = 1;
-			local maxBuffs = frame.maxBuffs;
-			frame.buffs:Iterate(function(auraInstanceID, aura)
-				if frameNum > maxBuffs then
-					return true;
-				end
-
-				if aura.auraInstanceID ~= buffAuraInstanceIDToSkip then
-					local buffFrame = frame.buffFrames[frameNum];
-					CompactUnitFrame_UtilSetBuff(buffFrame, aura);
-					frameNum = frameNum + 1;
-				end
-
-				return false;
-			end);
-
-			CompactUnitFrame_HideAllBuffs(frame, frameNum);
-		end
-	end
-
-	local function CompactUnitFrame_CheckUpdateDispelIndicatorFrames(frame)
-		if frame.dispelsChanged then
-			frame.dispelsChanged = false;
-
-			-- Preemptively hide the dispel overlay, it will be shown if there are any dispels to worry about.
-			CompactUnitFrame_SetDispelOverlayAura(frame, nil);
-
-			local frameNum = 1;
-			local maxDispelDebuffs = frame.maxDispelDebuffs;
-			for dispelName, auraTbl in pairs(frame.dispels) do
-				if frameNum > maxDispelDebuffs then
-					break;
-				end
-
-				if auraTbl:Size() ~= 0 then
-					local aura = auraTbl:GetTop();
-					assertsafe(dispelName == aura.dispelName, "Dispel name mismatch for type %s with spell %d.", dispelName, aura.spellId);
-
-					if aura.dispelName then
-						local dispellDebuffFrame = frame.dispelDebuffFrames[frameNum];
-						CompactUnitFrame_UtilSetDispelDebuff(frame, dispellDebuffFrame, aura);
-						frameNum = frameNum + 1;
-					end
-				end
-			end
-
-			CompactUnitFrame_HideAllDispelDebuffs(frame, frameNum);
-		end
-	end
-
-	local function CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo)
-		local displayOnlyDispellableDebuffs = CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(frame);
-		local ignoreBuffs = not CompactUnitFrame_GetOptionDisplayBuffs(frame);
-		local ignoreDebuffs = not CompactUnitFrame_GetOptionDisplayDebuffs(frame);
-		local ignoreDispelDebuffs = not CompactUnitFrame_GetOptionDisplayDispelDebuffs(frame);
-		local dispelIndicatorOption = CompactUnitFrame_GetOptionDispelIndicatorType(frame);
-
-		if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
-			CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);
-		else
-			if unitAuraUpdateInfo.addedAuras ~= nil then
-				for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
-					CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);
-				end
-			end
-
-			if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
-				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
-					local updatedAura = AuraUtil.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
-					CompactUnitFrame_CheckExistingDispelHasCorrectType(frame, updatedAura, auraInstanceID);
-
-					if updatedAura then
-						CompactUnitFrame_ProcessAura(frame, updatedAura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);
-					else
-						CompactUnitFrame_RemoveAura(frame, auraInstanceID);
-					end
-				end
-			end
-
-			if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
-				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
-					CompactUnitFrame_RemoveAura(frame, auraInstanceID);
-				end
-			end
-		end
-
-		CompactUnitFrame_CheckUpdateDebuffFrames(frame);
-		CompactUnitFrame_CheckUpdateBuffFrames(frame);
-		CompactUnitFrame_CheckUpdateDispelIndicatorFrames(frame);
-	end
-
-	function CompactUnitFrame_UpdateAuras(frame, unitAuraUpdateInfo)
-		if frame.isLootObject then
-			return;
-		end
-
-		CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo);
-	end
-end
-
 --Utility Functions
-function CompactUnitFrame_HideFrameCollection(frameCollection, startingIndex)
-	if frameCollection then
-		for i = startingIndex or 1, #frameCollection do
-			frameCollection[i]:Hide();
-		end
-	end
-end
-
-function CompactUnitFrame_HideAllBuffs(frame, startingIndex)
-	CompactUnitFrame_HideFrameCollection(frame.buffFrames, startingIndex);
-end
-
-function CompactUnitFrame_HideAllDebuffs(frame, startingIndex)
-	CompactUnitFrame_HideFrameCollection(frame.debuffFrames, startingIndex);
-end
-
-function CompactUnitFrame_HideAllDispelDebuffs(frame, startingIndex)
-	CompactUnitFrame_HideFrameCollection(frame.dispelDebuffFrames, startingIndex);
-end
-
-function CompactUnitFrame_UtilSetBuff(buffFrame, aura)
-	buffFrame.icon:SetTexture(aura.icon);
-	if ( aura.applications > 1 ) then
-		local countText =  aura.applications;
-		if (  aura.applications >= 100 ) then
-			countText = BUFF_STACKS_OVERFLOW;
-		end
-		buffFrame.count:Show();
-		buffFrame.count:SetText(countText);
-	else
-		buffFrame.count:Hide();
-	end
-	buffFrame.auraInstanceID = aura.auraInstanceID;
-	local enabled = aura.expirationTime and aura.expirationTime ~= 0;
-	if enabled then
-		local startTime = aura.expirationTime - aura.duration;
-		CooldownFrame_Set(buffFrame.cooldown, startTime, aura.duration, true);
-	else
-		CooldownFrame_Clear(buffFrame.cooldown);
-	end
-	buffFrame:Show();
-end
-
-function CompactUnitFrame_GetDebuffSize(frame, debuffFrame, aura)
-	if CompactUnitFrame_GetOptionDisplayLargerRoleSpecificDebuffs(frame) and (aura.isBossAura or AuraUtil.IsRoleAura(aura)) then
-		return debuffFrame.baseSize * BOSS_DEBUFF_SCALE_INCREASE;
-	else
-		return debuffFrame.baseSize;
-	end
-end
-
-function CompactUnitFrame_UtilSetDebuff(frame, debuffFrame, aura)
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
-	debuffFrame.icon:SetTexture(aura.icon);
-	if ( aura.applications > 1 ) then
-		local countText = aura.applications;
-		if ( aura.applications >= 100 ) then
-			countText = BUFF_STACKS_OVERFLOW;
-		end
-		debuffFrame.count:Show();
-		debuffFrame.count:SetText(countText);
-	else
-		debuffFrame.count:Hide();
-	end
-	debuffFrame.auraInstanceID = aura.auraInstanceID;
-	local enabled = aura.expirationTime and aura.expirationTime ~= 0;
-	if enabled then
-		local startTime = aura.expirationTime - aura.duration;
-		CooldownFrame_Set(debuffFrame.cooldown, startTime, aura.duration, true);
-	else
-		CooldownFrame_Clear(debuffFrame.cooldown);
-	end
-
-	AuraUtil.SetAuraBorderColor(debuffFrame.border, aura.dispelName);
-	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
-
-	local size = CompactUnitFrame_GetDebuffSize(frame, debuffFrame, aura);
-	debuffFrame:SetSize(size, size);
-	debuffFrame:Show();
-end
-
-local dispelAtlases =
-{
-	["Magic"] = "RaidFrame-Icon-DebuffMagic",
-	["Curse"] = "RaidFrame-Icon-DebuffCurse",
-	["Disease"] = "RaidFrame-Icon-DebuffDisease",
-	["Poison"] = "RaidFrame-Icon-DebuffPoison",
-	["Bleed"] = "RaidFrame-Icon-DebuffBleed",
-};
-
-local function UpdateFrameSizes(container, size)
-	for _, frame in pairs(container) do
-		frame:SetSize(size, size);
-
-		-- Need to store the baseSize used because some icons may scale later
-		frame.baseSize = size;
-	end
-end
-
 local function CompactUnitFrame_GetIconScale(frame)
-	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1), NATIVE_UNIT_FRAME_AURA_SCALE_MIN, NATIVE_UNIT_FRAME_AURA_SCALE_MAX);
+	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.IconSize), NATIVE_UNIT_FRAME_AURA_SCALE_MIN, NATIVE_UNIT_FRAME_AURA_SCALE_MAX);
 end
 
-function CompactUnitFrame_UtilSetDispelDebuff(frame, dispellDebuffFrame, aura)
-	dispellDebuffFrame:Show();
-	dispellDebuffFrame.icon:SetAtlas(dispelAtlases[aura.dispelName]);
-	dispellDebuffFrame.auraInstanceID = aura.auraInstanceID;
-
-	-- The behavior is that the last one set will "win"
-	if CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(frame) then
-		CompactUnitFrame_SetDispelOverlayAura(frame, aura);
-	end
-end
-
-function CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdate)
-	if not frame.PrivateAuraAnchors then
-		return;
-	end
-
-	if frame.privateAuraSize then
-		UpdateFrameSizes(frame.PrivateAuraAnchors, frame.privateAuraSize);
-	end
-
-	for _, auraAnchor in ipairs(frame.PrivateAuraAnchors) do
-		auraAnchor:SetBorderScale(frame.privateAuraBorderScale);
-		auraAnchor:SetUnit(frame.displayedUnit, forceUpdate);
-	end
-
-	local lastShownDebuff;
-	for i = #frame.debuffFrames, 1, -1 do
-		local debuff = frame.debuffFrames[i];
-		if debuff:IsShown() then
-			lastShownDebuff = debuff;
-			break;
-		end
-	end
-
-	frame.PrivateAuraAnchor1:ClearAllPoints();
-	if lastShownDebuff then
-		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", lastShownDebuff, "BOTTOMRIGHT", 0, 0);
-	else
-		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", frame.Debuff1, "BOTTOMLEFT", 0, 0);
-	end
+local function CompactUnitFrame_GetBigDefensiveIconScale(frame)
+	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.BigDefensiveIconSize), NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MIN, NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MAX);
 end
 
 function CompactUnitFrame_IsPvpFrame(frame)
 	return frame.groupType == CompactRaidGroupTypeEnum.Arena;
+end
+
+function CompactUnitFrame_IsPartyFrame(frame)
+	return frame.groupType == CompactRaidGroupTypeEnum.Raid or frame.groupType == CompactRaidGroupTypeEnum.Party;
 end
 
 function CompactUnitFrame_GetOptionDisplayPowerBar(frame, options)
@@ -2104,26 +1701,18 @@ function CompactUnitFrame_GetOptionHealthText(frame, options)
 end
 
 function CompactUnitFrame_GetOptionDisplayBuffs(frame)
-	if CompactUnitFrame_IsPvpFrame(frame) then
-		return false;
-	else
-		return frame.buffFrames and frame.optionTable.displayBuffs and frame.maxBuffs > 0;
-	end
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.displayBuffs;
 end
 
 function CompactUnitFrame_GetOptionDisplayDebuffs(frame)
-	if CompactUnitFrame_IsPvpFrame(frame) or frame.optionTable.displayDebuffs then
-		return frame.debuffFrames and frame.maxDebuffs > 0;
-	end
-
-	return false;
+	return CompactUnitFrame_IsPvpFrame(frame) or frame.optionTable.displayDebuffs;
 end
 
 function CompactUnitFrame_GetOptionDisplayDispelDebuffs(frame)
 	if CompactUnitFrame_IsPvpFrame(frame) then
 		return false;
 	else
-		return CompactUnitFrame_GetOptionDisplayDebuffs(frame) and frame.dispelDebuffFrames and frame.optionTable.displayDispelDebuffs and frame.maxDispelDebuffs > 0;
+		return CompactUnitFrame_GetOptionDisplayDebuffs(frame) and frame.optionTable.displayDispelDebuffs;
 	end
 end
 
@@ -2152,54 +1741,11 @@ function CompactUnitFrame_GetOptionDispelIndicatorType(frame)
 end
 
 function CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(frame)
-	if CompactUnitFrame_IsPvpFrame(frame) then
-		return false;
-	else
-		return frame.DispelOverlay and frame.optionTable.showDispelIndicatorOverlay;
-	end
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.showDispelIndicatorOverlay;
 end
 
 function CompactUnitFrame_GetOptionShowBigDefensive(frame)
-	if CompactUnitFrame_IsPvpFrame(frame) then
-		return false;
-	else
-		return frame.DispelOverlay and frame.optionTable.raidFramesCenterBigDefensive;
-	end
-end
-
-function CompactUnitFrame_AddBlockedAuraInstanceID(unitFrame, blockingFrame, auraInstanceID)
-	if not auraInstanceID then
-		return;
-	end
-
-	if not unitFrame.blockedAuraInstanceIDsTable then
-		unitFrame.blockedAuraInstanceIDsTable = {};
-	end
-
-	if not unitFrame.blockedAuraInstanceIDsTable[blockingFrame] then
-		unitFrame.blockedAuraInstanceIDsTable[blockingFrame] = {};
-	end
-
-	unitFrame.blockedAuraInstanceIDsTable[blockingFrame][auraInstanceID] = true;
-end
-
-function CompactUnitFrame_ClearBlockedAuraInstanceIDs(unitFrame, blockingFrame)
-	if not unitFrame.blockedAuraInstanceIDsTable then
-		return;
-	end
-	unitFrame.blockedAuraInstanceIDsTable[blockingFrame] = nil;
-end
-
-function CompactUnitFrame_IsAuraInstanceIDBlocked(unitFrame, auraInstanceID)
-	if unitFrame.blockedAuraInstanceIDsTable then
-		for _, blockedAuraInstanceIDsTable in pairs(unitFrame.blockedAuraInstanceIDsTable) do
-			if blockedAuraInstanceIDsTable and blockedAuraInstanceIDsTable[auraInstanceID] then
-				return true;
-			end
-		end
-	end
-
-	return false;
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.raidFramesCenterBigDefensive;
 end
 
 function CompactUnitFrame_UnitExists(unitToken)
@@ -2301,30 +1847,6 @@ DefaultCompactUnitFrameSetupOptions = {
 
 local CompactUnitFrameLayoutTemplates = {
 	[Enum.RaidAuraOrganizationType.Legacy] = {
-		Buffs = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
-			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
-			end,
-		},
-
-		Debuffs = {
-			useChainLayout = true,
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomLeftToTopRight, 3),
-			Anchor = CreateAnchor("BOTTOMLEFT", "placeholder", "BOTTOMLEFT", 0, 0),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return 3 + dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
-			end,
-		},
-
-		Dispel = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.RightToLeft, 3),
-			Anchor = CreateAnchor("TOPRIGHT", "placeholder", "TOPRIGHT", -3, -2),
-		},
-
 		Name = {
 			LayoutFunction = function(frame)
 				frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
@@ -2338,44 +1860,9 @@ local CompactUnitFrameLayoutTemplates = {
 				frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
 			end,
 		},
-
-		DispelOverlay = {
-			LayoutFunction = function(frame)
-				if frame.DispelOverlay then
-					frame.DispelOverlay:SetOrientation(frame, DispelOverlayOrientation.VerticalTopToBottom, 0, 0);
-				end
-			end,
-		},
 	},
 
 	[Enum.RaidAuraOrganizationType.BuffsTopDebuffsBottom] =	{
-		Buffs = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, 6),
-			Anchor = CreateAnchor("TOPRIGHT", "placeholder", "TOPRIGHT", -3, -3),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return -3 - dispelOffset, -3 - dispelOffset;
-			end,
-		},
-
-		Debuffs = {
-			useChainLayout = true,
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
-			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
-			end,
-		},
-
-		Dispel = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomLeftToTopRight, 3),
-			Anchor = CreateAnchor("BOTTOMLEFT", "placeholder", "BOTTOMLEFT", 0, 0),
-			GetOffsets = function(frame)
-				return 3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
-			end,
-		},
-
 		Name = {
 			LayoutFunction = function(frame)
 				frame.name:SetPoint("CENTER", frame, "CENTER", 0, 0);
@@ -2388,41 +1875,9 @@ local CompactUnitFrameLayoutTemplates = {
 				frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
 			end,
 		},
-
-		DispelOverlay = {
-			LayoutFunction = function(frame)
-				if frame.DispelOverlay then
-					frame.DispelOverlay:SetOrientation(frame, DispelOverlayOrientation.VerticalBottomToTop, 0, frame.powerBarUsedHeight);
-				end
-			end,
-		},
 	},
 
 	[Enum.RaidAuraOrganizationType.BuffsRightDebuffsLeft] = {
-		Buffs = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
-			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
-			end,
-		},
-
-		Debuffs = {
-			useChainLayout = true,
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomLeftToTopRight, 3),
-			Anchor = CreateAnchor("BOTTOMLEFT", "placeholder", "BOTTOMLEFT", 0, 0),
-			GetOffsets = function(frame)
-				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
-				return 3 + dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
-			end,
-		},
-
-		Dispel = {
-			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.LeftToRight, 3),
-			Anchor = CreateAnchor("TOPLEFT", "placeholder", "TOPLEFT", 3, -2),
-		},
-
 		Name = {
 			LayoutFunction = function(frame)
 				local roleIconSize = frame.roleIcon:GetWidth();
@@ -2437,40 +1892,8 @@ local CompactUnitFrameLayoutTemplates = {
 				frame.roleIcon:SetPoint("TOPRIGHT", -3, -2);
 			end,
 		},
-
-		DispelOverlay = {
-			LayoutFunction = function(frame)
-				if frame.DispelOverlay then
-					frame.DispelOverlay:SetOrientation(frame, DispelOverlayOrientation.HorizontalLeftToRight, 0, 0);
-				end
-			end,
-		},
 	},
 };
-
-local function CompactUnitFrameLayoutTemplates_UpdateAnchor(frame, layoutData)
-	layoutData.Anchor:SetRelativeTo(frame);
-
-	if layoutData.GetOffsets then
-		layoutData.Anchor:SetOffsets(layoutData.GetOffsets(frame));
-	end
-end
-
-local function CompactUnitFrameLayoutTemplates_LayoutContainer(frame, container, templateType, containerTypeKey)
-	local layoutData = CompactUnitFrameLayoutTemplates[templateType] [containerTypeKey];
-	CompactUnitFrameLayoutTemplates_UpdateAnchor(frame, layoutData);
-
-	for _index, containedFrame in pairs(container) do
-		containedFrame:ClearAllPoints();
-	end
-
-	if layoutData.useChainLayout then
-		local resetAnchorOffsetsAfterInitialAnchor = true;
-		AnchorUtil.ChainLayout(container, layoutData.Anchor, layoutData.Layout, resetAnchorOffsetsAfterInitialAnchor);
-	else
-		AnchorUtil.GridLayout(container, layoutData.Anchor, layoutData.Layout);
-	end
-end
 
 local function CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, element, templateType, containerTypeKey)
 	if element then
@@ -2488,32 +1911,14 @@ local function CompactUnitFrameLayout_SetupAbsorbElement(element, ...)
 	end
 end
 
-local function CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType)
-	auraOrganizationType = auraOrganizationType or EditModeManagerFrame:GetRaidFrameAuraOrganizationType(frame.groupType);
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.buffFrames, auraOrganizationType, "Buffs");
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.debuffFrames, auraOrganizationType, "Debuffs");
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.dispelDebuffFrames, auraOrganizationType, "Dispel");
-end
+function DefaultCompactUnitFrameSetup(frame, avoidPrivateAuraAnchorChange)
+	-- We need to call our setup function on UpdateAll since our layout depends on the unit assigned into the frame
+	-- This is specifically for deciding whether to show the power bar due to settings like displayOnlyHealerPowerBars
+	local optionTable = DefaultCompactUnitFrameOptions;
+	optionTable.updateAllSetupFunc = DefaultCompactUnitFrameSetup;
 
-function CompactUnitFrame_SetDispelOverlayAura(frame, aura)
-	if frame.DispelOverlay then
-		local shown = aura and aura.dispelName;
-		if shown ~= frame.DispelOverlay:IsShown() then
-			if shown then
-				frame.DispelOverlay:SetDispelType(aura.dispelName);
-				frame.DispelOverlay:Show();
-				frame.DispelOverlayAuraOffset = 2;
-			else
-				frame.DispelOverlay:Hide();
-				frame.DispelOverlayAuraOffset = 0;
-			end
+	CompactUnitFrame_SetOptionTable(frame, optionTable);
 
-			CompactUnitFrame_UpdateAuraFrameLayout(frame);
-		end
-	end
-end
-
-function DefaultCompactUnitFrameSetup(frame)
 	local options = DefaultCompactUnitFrameSetupOptions;
 
 	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.groupType, NATIVE_UNIT_FRAME_WIDTH);
@@ -2593,7 +1998,6 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, frame.roleIcon, auraOrganizationType, "Role");
 	CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, frame.name, auraOrganizationType, "Name");
-	CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, nil, auraOrganizationType, "DispelOverlay");
 
 	local function ScaleFontString(fontString)
 		local _fontName, fontSize, _fontFlags = fontString:GetFont();
@@ -2616,38 +2020,28 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	local isPvPFrame = CompactUnitFrame_IsPvpFrame(frame);
 	CompactUnitFrame_SetMaxBuffs(frame, isPvPFrame and 0 or 6);
-	CompactUnitFrame_SetMaxDebuffs(frame, 3);
+	CompactUnitFrame_SetMaxDebuffs(frame, 5);
 	CompactUnitFrame_SetMaxDispelDebuffs(frame, isPvPFrame and 0 or 3);
 
-	UpdateFrameSizes(frame.buffFrames, auraSize);
-	UpdateFrameSizes(frame.debuffFrames, auraSize);
-	UpdateFrameSizes(frame.dispelDebuffFrames, 14);
+	frame:SetBorderScale(iconScale);
+	frame:SetAuraSize(auraSize);
+	frame:SetCenterDefensiveAuraSize(NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale * CompactUnitFrame_GetBigDefensiveIconScale(frame));
+	frame:SetAuraOrganizationType(auraOrganizationType);
+	frame:SetPowerBarUsedHeight(powerBarUsedHeight);
 
 	local forceUpdatePrivateAuras = true;
-	frame.privateAuraBorderScale = iconScale;
-	frame.privateAuraSize = auraSize; -- Search tag: * BOSS_DEBUFF_SCALE_INCREASE
-	CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdatePrivateAuras);
-	CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType);
+	frame:UpdatePrivateAuras(forceUpdatePrivateAuras, avoidPrivateAuraAnchorChange);
 
 	local centerStatusIconSize = NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale;
 	frame.centerStatusIcon:SetSize(centerStatusIconSize, centerStatusIconSize);
-
-	if frame.CenterDefensiveBuff then
-		frame.CenterDefensiveBuff:SetSize(centerStatusIconSize, centerStatusIconSize);
-	end
-
-	-- We need to call our setup function on UpdateAll since our layout depends on the unit assigned into the frame
-	-- This is specifically for deciding whether to show the power bar due to settings like displayOnlyHealerPowerBars
-	local optionTable = DefaultCompactUnitFrameOptions;
-	optionTable.updateAllSetupFunc = DefaultCompactUnitFrameSetup;
-
-	CompactUnitFrame_SetOptionTable(frame, optionTable);
 end
 
 local nativeMiniUnitFrameHeight = 18;
 local nativeMiniUnitFrameHeightRatio = nativeMiniUnitFrameHeight / NATIVE_UNIT_FRAME_HEIGHT;
 
 function DefaultCompactMiniFrameSetup(frame)
+	CompactUnitFrame_SetOptionTable(frame, DefaultCompactMiniFrameOptions);
+
 	frame.powerBarUsedHeight = 0;
 	frame:SetAlpha(1);
 	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.groupType, NATIVE_UNIT_FRAME_WIDTH);
@@ -2698,54 +2092,6 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
 	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
 	frame.overHealAbsorbGlow:SetWidth(16);
-
-	CompactUnitFrame_SetOptionTable(frame, DefaultCompactMiniFrameOptions);
-end
-
-CompactUnitPrivateAuraAnchorMixin = {};
-
-function CompactUnitPrivateAuraAnchorMixin:SetBorderScale(borderScale)
-	self.borderScale = borderScale;
-end
-
-function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit, force)
-	if unit == self.unit and not force then
-		return;
-	end
-	self.unit = unit;
-
-	if self.anchorID then
-		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
-		self.anchorID = nil;
-	end
-
-	if unit then
-		local iconAnchor =
-		{
-			point = "CENTER",
-			relativeTo = self,
-			relativePoint = "CENTER",
-			offsetX = 0,
-			offsetY = 0,
-		};
-
-		local privateAnchorArgs = {};
-		privateAnchorArgs.unitToken = unit;
-		privateAnchorArgs.auraIndex = self.auraIndex;
-		privateAnchorArgs.parent = self;
-		privateAnchorArgs.showCountdownFrame = true;
-		privateAnchorArgs.showCountdownNumbers = false;
-		privateAnchorArgs.iconInfo =
-		{
-			iconAnchor = iconAnchor,
-			iconWidth = self:GetWidth(),
-			iconHeight = self:GetHeight(),
-			borderScale = self.borderScale,
-		};
-		privateAnchorArgs.durationAnchor = nil;
-
-		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
-	end
 end
 
 CompactAuraTooltipMixin = {};
@@ -2787,12 +2133,6 @@ function CompactBuffMixin:UpdateTooltip()
 	GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 end
 
-CompactDispelDebuffMixin = CreateFromMixins(CompactAuraTooltipMixin);
-
-function CompactDispelDebuffMixin:UpdateTooltip()
-	GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
-end
-
 CompactUnitFrameCenterStatusIconMixin = {};
 
 function CompactUnitFrameCenterStatusIconMixin:OnEnter()
@@ -2814,38 +2154,6 @@ function CompactUnitFrameCenterStatusIconMixin:OnLeave()
 	return true; -- propagate to parent
 end
 
-CompactUnitFrameDispelOverlayMixin = {};
-
-function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType)
-	AuraUtil.SetAuraBorderColor(self.Gradient, dispelType);
-	AuraUtil.SetAuraBorderColor(self.Border, dispelType);
-end
-
-local dispelOverlayAtlasLookup =
-{
-	[DispelOverlayOrientation.VerticalTopToBottom] = {
-		atlas = "_RaidFrame-Dispel-Highlight-Horizontal", uWrap = TextureKitConstants.AddressModeWrap, vWrap = TextureKitConstants.AddressModeClamp, left = 0, right = 1, bottom = 0, top = 1,
-	},
-	[DispelOverlayOrientation.VerticalBottomToTop] = {
-		atlas = "_RaidFrame-Dispel-Highlight-Horizontal", uWrap = TextureKitConstants.AddressModeWrap, vWrap = TextureKitConstants.AddressModeClamp, left = 0, right = 1, bottom = 1, top = 0,
-	},
-	[DispelOverlayOrientation.HorizontalLeftToRight] = {
-		atlas = "!RaidFrame-Dispel-Vertical", uWrap = TextureKitConstants.AddressModeClamp, vWrap = TextureKitConstants.AddressModeWrap, left = 0, right = 1, bottom = 0, top = 1,
-	},
-};
-
-function CompactUnitFrameDispelOverlayMixin:SetOrientation(frame, orientation, additionalXOffset, additionalYOffset)
-	local setupData = dispelOverlayAtlasLookup[orientation];
-	assertsafe(setupData ~= nil, "Unsupported orientation value %s", tostring(orientation));
-
-	self.Gradient:SetTexCoord(setupData.left, setupData.right, setupData.bottom, setupData.top);
-	SetTextureWithAddressModeOptions(self.Gradient, setupData.atlas, TextureKitConstants.IgnoreAtlasSize, setupData.uWrap, setupData.vWrap);
-
-	self.Border:ClearAllPoints();
-	self.Border:SetPoint("TOPLEFT");
-	self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -frame.powerBarUsedHeight);
-end
-
 CompactUnitFrameReadyCheckMixin = {};
 
 function CompactUnitFrameReadyCheckMixin:SetStatus(status)
@@ -2861,4 +2169,188 @@ function CompactUnitFrameReadyCheckMixin:SetStatus(status)
 	else
 		self:Hide();
 	end
+end
+
+PrivateAuraAnchorSettingsContainerMixin = {};
+
+function PrivateAuraAnchorSettingsContainerMixin:SetBorderScale(borderScale)
+	self.borderScale = borderScale;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetBorderScale()
+	return self.borderScale;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetAuraSize(auraSize)
+	self.auraSize = auraSize;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetCenterDefensiveAuraSize(size)
+	self.centerDefensiveAuraSize = size;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetCenterDefensiveAuraSize()
+	return self.centerDefensiveAuraSize or NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetAuraSize()
+	return self.auraSize or NATIVE_UNIT_FRAME_AURA_SIZE;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetAuraOrganizationType(auraOrganizationType)
+	self.auraOrganizationType = auraOrganizationType;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetAuraOrganizationType()
+	return self.auraOrganizationType or Enum.RaidAuraOrganizationType.Legacy;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetPowerBarUsedHeight(powerBarUsedHeight)
+	self.powerBarUsedHeight = powerBarUsedHeight;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetPowerBarUsedHeight()
+	return self.powerBarUsedHeight or 0;
+end
+
+CompactUnitIndividualPrivateAuraAnchorMixin = CreateFromMixins(PrivateAuraAnchorSettingsContainerMixin);
+
+function CompactUnitIndividualPrivateAuraAnchorMixin:RemovePrivateAuraAnchor()
+	if self.anchorID then
+		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
+		self.anchorID = nil;
+	end
+end
+
+do
+	local standardIconAnchor =
+	{
+		point = "CENTER",
+		-- relativeTo = self,
+		relativePoint = "CENTER",
+		offsetX = 0,
+		offsetY = 0,
+	};
+
+	function CompactUnitIndividualPrivateAuraAnchorMixin:GetIconAnchor()
+		standardIconAnchor.relativeTo = self;
+		return standardIconAnchor;
+	end
+end
+
+function CompactUnitIndividualPrivateAuraAnchorMixin:GetPrivateAuraIndex()
+	return self.auraIndex or 1;
+end
+
+function CompactUnitIndividualPrivateAuraAnchorMixin:IsContainer()
+	return false;
+end
+
+function CompactUnitIndividualPrivateAuraAnchorMixin:AddPrivateAuraAnchor(unit)
+	if unit then
+		local privateAnchorArgs = {
+			unitToken = unit,
+			auraIndex = self:GetPrivateAuraIndex(),
+			parent = self,
+			showCountdownFrame = true,
+			showCountdownNumbers = false,
+			isContainer = self:IsContainer(),
+			iconInfo =
+			{
+				iconAnchor = self:GetIconAnchor(),
+				iconWidth = self:GetAuraSize(),
+				iconHeight = self:GetAuraSize(),
+				borderScale = self:GetBorderScale(),
+			},
+			durationAnchor = nil,
+		};
+
+		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
+	end
+end
+
+function CompactUnitIndividualPrivateAuraAnchorMixin:SetPrivateAuraAnchorUnit(unit, force, avoidAnchorChange)
+	if unit == self.privateAuraUnit and not force then
+		return;
+	end
+
+	self.privateAuraUnit = unit;
+
+	if avoidAnchorChange and self.anchorID then
+		self:TriggerPrivateAuraSettingsUpdate();
+	else
+		self:RemovePrivateAuraAnchor();
+		self:AddPrivateAuraAnchor(unit);
+	end
+end
+
+BasePrivateAuraBehaviorMixin = CreateFromMixins(PrivateAuraAnchorSettingsContainerMixin);
+
+function BasePrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate, avoidAnchorChange)
+	-- nop, override as needed
+end
+
+-- NOTE: This functions both as a PrivateAura behavior mixin because it overrides UpdatePrivateAuras, and ALSO as a PrivateAura anchor
+-- mixin because it actually creates a custom anchor to pass to the PrivateAura addon.
+ContainerPrivateAuraBehaviorMixin = CreateFromMixins(BasePrivateAuraBehaviorMixin, CompactUnitIndividualPrivateAuraAnchorMixin);
+
+do
+	-- NOTE: While container types have completely custom anchors, there must be some kind of valid data to avoid errors.
+	-- This data is never actually used.
+	local containerIconAnchor =
+	{
+		point = "BOTTOMLEFT",
+		relativePoint = "BOTTOMLEFT",
+		offsetX = 0,
+		offsetY = 0,
+	};
+
+	function ContainerPrivateAuraBehaviorMixin:GetIconAnchor()
+		containerIconAnchor.relativeTo = self;
+		return containerIconAnchor;
+	end
+end
+
+function ContainerPrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate, avoidAnchorChange)
+	self:SetPrivateAuraAnchorUnit(self.displayedUnit, forceUpdate, avoidAnchorChange);
+end
+
+function ContainerPrivateAuraBehaviorMixin:IsContainer()
+	return true;
+end
+
+function ContainerPrivateAuraBehaviorMixin:SetPrivateAuraAnchorSettings()
+	-- Marshal the data that Blizzard_PrivateAurasUI needs as attributes, keep these as scalars; no tables, no functions.
+	self:SetAttribute("max-buffs", self.maxBuffs);
+	self:SetAttribute("max-debuffs", self.maxDebuffs);
+	self:SetAttribute("max-dispel-debuffs", self.maxDispelDebuffs);
+	self:SetAttribute("aura-organization-type", self:GetAuraOrganizationType());
+
+	self:SetAttribute("display-only-dispellable-debuffs", CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(self));
+	self:SetAttribute("ignore-buffs", not CompactUnitFrame_GetOptionDisplayBuffs(self));
+	self:SetAttribute("ignore-debuffs", not CompactUnitFrame_GetOptionDisplayDebuffs(self));
+	self:SetAttribute("ignore-dispel-debuffs", not CompactUnitFrame_GetOptionDisplayDispelDebuffs(self));
+	self:SetAttribute("dispel-indicator-option", CompactUnitFrame_GetOptionDispelIndicatorType(self));
+	self:SetAttribute("display-larger-role-specific-debuffs", CompactUnitFrame_GetOptionDisplayLargerRoleSpecificDebuffs(self));
+	self:SetAttribute("show-dispel-indicator-overlay", CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(self));
+	self:SetAttribute("show-big-defensive", CompactUnitFrame_GetOptionShowBigDefensive(self));
+	self:SetAttribute("big-defensive-size", self:GetCenterDefensiveAuraSize());
+	self:SetAttribute("icon-size", self:GetAuraSize());
+	self:SetAttribute("always-hide-duration", true);
+	self:SetAttribute("set-aura-size-to-icon-size", true);
+	self:SetAttribute("power-bar-used-height", self:GetPowerBarUsedHeight());
+	self:SetAttribute("group-type", self.groupType);
+	self:SetAttribute("suppress-dispel-border-icons", true);
+end
+
+function ContainerPrivateAuraBehaviorMixin:AddPrivateAuraAnchor(unit)
+	if unit then
+		self:SetPrivateAuraAnchorSettings();
+		CompactUnitIndividualPrivateAuraAnchorMixin.AddPrivateAuraAnchor(self, unit);
+	end
+end
+
+function ContainerPrivateAuraBehaviorMixin:TriggerPrivateAuraSettingsUpdate()
+	self:SetPrivateAuraAnchorSettings();
+	self:SetAttribute("update-settings", true);
 end

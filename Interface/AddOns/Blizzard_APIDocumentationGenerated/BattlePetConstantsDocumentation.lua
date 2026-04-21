@@ -393,6 +393,9 @@ local BattlePetConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BattlePetConstants);

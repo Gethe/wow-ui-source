@@ -16,6 +16,9 @@ local UICovenantDisplayInfoConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UICovenantDisplayInfoConstants);

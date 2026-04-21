@@ -61,6 +61,9 @@ local SimpleAnimVertexColorAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimVertexColorAPI);

@@ -40,6 +40,9 @@ local SimpleAnimTranslationAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimTranslationAPI);

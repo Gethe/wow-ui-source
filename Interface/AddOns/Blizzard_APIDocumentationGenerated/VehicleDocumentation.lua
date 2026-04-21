@@ -121,6 +121,9 @@ local Vehicle =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Vehicle);

@@ -1010,6 +1010,9 @@ local ArtifactUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ArtifactUI);

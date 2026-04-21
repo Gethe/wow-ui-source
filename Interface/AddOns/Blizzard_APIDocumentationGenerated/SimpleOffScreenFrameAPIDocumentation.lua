@@ -120,6 +120,9 @@ local SimpleOffScreenFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleOffScreenFrameAPI);

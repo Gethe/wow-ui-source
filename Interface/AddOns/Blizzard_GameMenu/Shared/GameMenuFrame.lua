@@ -27,6 +27,8 @@ function GameMenuFrameMixin:OnShow()
 	end
 
 	self:InitButtons();
+
+	EventRegistry:TriggerEvent("GameMenuFrame.Shown");
 end
 
 function GameMenuFrameMixin:OnHide()

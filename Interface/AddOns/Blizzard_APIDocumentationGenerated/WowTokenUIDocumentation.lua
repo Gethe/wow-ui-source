@@ -145,6 +145,9 @@ local WowTokenUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WowTokenUI);

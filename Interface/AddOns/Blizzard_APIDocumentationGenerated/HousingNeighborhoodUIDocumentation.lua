@@ -214,6 +214,10 @@ local HousingNeighborhoodUI =
 			Type = "Function",
 		},
 		{
+			Name = "OnCornerstoneClosed",
+			Type = "Function",
+		},
+		{
 			Name = "PromoteToManager",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -410,6 +414,9 @@ local HousingNeighborhoodUI =
 				{ Name = "Move", Type = "CornerstonePurchaseMode", EnumValue = 2 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

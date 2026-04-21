@@ -1,3 +1,9 @@
+local SetPropagateMouseMotion = function(frame, propagate)
+	frame:SetPropagateMouseMotion(propagate);
+end;
+
+local SetPropagateMouseMotionDelegate = CreateSecureDelegate(SetPropagateMouseMotion);
+
 MenuTemplates = {};
 
 --[[
@@ -412,7 +418,7 @@ do
 		button:Hide();
 
 		-- SetToDefaults wipes propagateMouseInput on pooled frames even though it was set by the template, so it needs to be set here every time.
-		button:SetPropagateMouseMotion(true);
+		SetPropagateMouseMotionDelegate(button, true);
 
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
 
@@ -441,7 +447,9 @@ function MenuTemplates.AttachBasicButton(parent, width, height)
 
 	-- SetToDefaults wipes button state, desired states must be explicitly set now.
 	button:Show();
-	button:SetPropagateMouseMotion(true);
+
+	SetPropagateMouseMotionDelegate(button, true);
+
 	button:SetMouseClickEnabled(true);
 	button:SetMouseMotionEnabled(true);
 	button:SetSize(width or 16, height or 16);
@@ -883,8 +891,8 @@ function WowStyle2DropdownMixin:OnMenuOpened(menu)
 	self:OnButtonStateChanged();
 end
 
-function WowStyle2DropdownMixin:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function WowStyle2DropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:OnButtonStateChanged();
 end

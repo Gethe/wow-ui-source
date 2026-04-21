@@ -181,6 +181,9 @@ local EventSchedulerUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EventSchedulerUI);

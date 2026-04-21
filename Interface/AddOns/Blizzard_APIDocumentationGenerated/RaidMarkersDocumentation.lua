@@ -111,6 +111,9 @@ local RaidMarkers =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RaidMarkers);

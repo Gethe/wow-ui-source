@@ -24,6 +24,9 @@ local ParentalControls =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ParentalControls);

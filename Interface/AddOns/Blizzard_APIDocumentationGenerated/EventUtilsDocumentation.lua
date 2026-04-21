@@ -46,6 +46,9 @@ local EventUtils =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EventUtils);

@@ -168,6 +168,9 @@ local EncounterWarnings =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterWarnings);

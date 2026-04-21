@@ -93,6 +93,9 @@ local PlayerInteractionManagerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerInteractionManagerConstants);

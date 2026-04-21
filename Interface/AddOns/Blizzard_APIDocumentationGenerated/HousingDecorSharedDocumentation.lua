@@ -5,9 +5,9 @@ local HousingDecorShared =
 		{
 			Name = "HousingDecorPlacementRestriction",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 32,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "TooFarAway", Type = "HousingDecorPlacementRestriction", EnumValue = 1 },
@@ -16,6 +16,7 @@ local HousingDecorShared =
 				{ Name = "ChildOutsideBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 8 },
 				{ Name = "InvalidTarget", Type = "HousingDecorPlacementRestriction", EnumValue = 16 },
 				{ Name = "InvalidCollision", Type = "HousingDecorPlacementRestriction", EnumValue = 32 },
+				{ Name = "InvalidLightOverlap", Type = "HousingDecorPlacementRestriction", EnumValue = 64 },
 			},
 		},
 		{
@@ -28,6 +29,7 @@ local HousingDecorShared =
 				{ Name = "orderIndex", Type = "number", Nilable = false, Documentation = { "Display sort order" } },
 				{ Name = "channel", Type = "number", Nilable = false, Documentation = { "The specific shader channel that this slot affects when a dye color is applied" } },
 				{ Name = "dyeColorID", Type = "number", Nilable = true, Documentation = { "What dye color (if any) is currently applied to this slot" } },
+				{ Name = "dyeColorName", Type = "cstring", Nilable = true, Documentation = { "The name of the dye color (if any) that is currently applied to this slot" } },
 			},
 		},
 		{
@@ -50,6 +52,9 @@ local HousingDecorShared =
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -47,6 +47,9 @@ local UserFeedback =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UserFeedback);

@@ -70,7 +70,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "spec", Type = "number", Nilable = false, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
+				{ Name = "spec", Type = "number", Nilable = false, NeverSecret = true, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
 			},
 
 			Returns =
@@ -117,7 +117,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -133,7 +133,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -195,7 +195,7 @@ local Spell =
 		{
 			Name = "GetSpellCastCount",
 			Type = "Function",
-			SecretWhenSpellCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns number of times a spell can be cast, typically based on availability of things like required reagent items; Returns 0 if spell is not found" },
 
@@ -230,7 +230,7 @@ local Spell =
 			Name = "GetSpellCharges",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating spell; May return nil if spell is not found or is not charge-based" },
 
@@ -248,7 +248,7 @@ local Spell =
 			Name = "GetSpellCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
@@ -272,6 +272,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -299,7 +300,7 @@ local Spell =
 		{
 			Name = "GetSpellDisplayCount",
 			Type = "Function",
-			SecretWhenSpellCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Depending on the spell, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
 
@@ -375,7 +376,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "glyphID", Type = "number", Nilable = true },
+				{ Name = "glyphID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -404,7 +405,7 @@ local Spell =
 			Name = "GetSpellLossOfControlCooldownInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
@@ -421,12 +422,12 @@ local Spell =
 		{
 			Name = "GetSpellMaxCumulativeAuraApplications",
 			Type = "Function",
-			SecretWhenSpellAuraRestricted = true,
+			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -1070,6 +1071,9 @@ local Spell =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

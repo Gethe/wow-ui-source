@@ -39,20 +39,6 @@ local HousingCatalogConstants =
 			},
 		},
 		{
-			Name = "HousingCatalogEntrySubtype",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Invalid", Type = "HousingCatalogEntrySubtype", EnumValue = 0 },
-				{ Name = "Unowned", Type = "HousingCatalogEntrySubtype", EnumValue = 1, Documentation = { "Unowned entry, for displaying a catalog object in a static context" } },
-				{ Name = "OwnedModifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 2, Documentation = { "Stack of owned instances that share specific modifications (ex: stack of red-dyed chairs)" } },
-				{ Name = "OwnedUnmodifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 3, Documentation = { "Stack of owned default instances of a record" } },
-			},
-		},
-		{
 			Name = "HousingCatalogEntryType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -90,13 +76,22 @@ local HousingCatalogConstants =
 		{
 			Name = "HousingCatalogEntryID",
 			Type = "Structure",
-			Documentation = { "Compound Identifier for entry stacks in the catalog" },
+			Documentation = { "Identifier for base entries in the catalog" },
 			Fields =
 			{
 				{ Name = "recordID", Type = "number", Nilable = false },
 				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
-				{ Name = "entrySubtype", Type = "HousingCatalogEntrySubtype", Nilable = false },
-				{ Name = "subtypeIdentifier", Type = "number", Nilable = false, Documentation = { "Hashed value used to identify and differentiate stacks that are the same type and subtype, but have some other subtype-specific difference" } },
+			},
+		},
+		{
+			Name = "HousingCatalogEntryVariantID",
+			Type = "Structure",
+			Documentation = { "Compound Identifier for entry variant stacks in the catalog" },
+			Fields =
+			{
+				{ Name = "recordID", Type = "number", Nilable = false },
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "variantIdentifier", Type = "number", Nilable = false, Documentation = { "Hashed value used to identify and differentiate stacks that are the same type and record, but have some variant-specific difference (e.g. dye colors)" } },
 			},
 		},
 		{
@@ -120,6 +115,9 @@ local HousingCatalogConstants =
 				{ Name = "anyAssociatedEntries", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

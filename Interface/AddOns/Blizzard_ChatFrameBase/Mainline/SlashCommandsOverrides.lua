@@ -301,3 +301,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.EDITMODE, SLASH_COMMAND_CATE
 		ChatFrameUtil.DisplaySystemMessageInPrimary(ERROR_SLASH_EDITMODE_CANNOT_ENTER);
 	end
 end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.CLICK_CASTING, SLASH_COMMAND_CATEGORY.EDIT_MODE, function(msg)
+	ToggleClickBindingFrame();
+end);

@@ -15,6 +15,7 @@ function BagsBarMixin:OnLoad()
 
 	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.Layout, self));
 	EventRegistry:RegisterCallback("MainMenuBarManager.OnExpandChanged", self.Layout, self);
+	EventRegistry:RegisterCallback("MainActionBarMixin.UpdateEndCaps", self.OnUpdateEndCaps, self);
 end
 
 function BagsBarMixin:GetBagButtonAnchorPoints()
@@ -127,4 +128,8 @@ end
 
 function BagsBarMixin:IsDirectionUp()
 	return not self:IsHorizontal() and self.direction == Enum.BagsDirection.Up;
+end
+
+function BagsBarMixin:OnUpdateEndCaps(show)
+	self:SetShown(show);
 end

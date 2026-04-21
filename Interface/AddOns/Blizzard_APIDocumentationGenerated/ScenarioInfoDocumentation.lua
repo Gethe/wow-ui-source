@@ -41,6 +41,16 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "GetDisplayInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "info", Type = "ScenarioDisplayInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetJailersTowerTypeString",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -79,6 +89,44 @@ local ScenarioInfo =
 			Returns =
 			{
 				{ Name = "scenarioStepInfo", Type = "ScenarioStepInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTieredEntranceActiveSpells",
+			Type = "Function",
+			Documentation = { "Returns list of active challenge spells if inside a tiered entrance scenario" },
+
+			Returns =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitCriteriaProgressValues",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "actualValue", Type = "number", Nilable = false },
+				{ Name = "percentValue", Type = "number", Nilable = false },
+				{ Name = "percentValueString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTieredEntranceScenario",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isTieredEntrance", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -217,6 +265,14 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "ScenarioDisplayInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "themeColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "ScenarioInformation",
 			Type = "Structure",
 			Fields =
@@ -263,6 +319,9 @@ local ScenarioInfo =
 				{ Name = "icon", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

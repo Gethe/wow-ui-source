@@ -3019,13 +3019,7 @@ function AchievementComparisonPlayerButton_Saturate (self)
 			self.saturatedStyle = "normal";
 		end
 	end
-	if ( self.isSummary ) then
-		if ( self.accountWide ) then
-			self.TitleBar:SetAlpha(1);
-		else
-			self.TitleBar:SetAlpha(0.5);
-		end
-	end
+
 	self.Glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.Icon:Saturate();
 	self.Shield:Saturate();
@@ -3051,13 +3045,7 @@ function AchievementComparisonPlayerButton_Desaturate (self)
 			self.TitleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
 		end
 	end
-	if ( self.isSummary ) then
-		if ( self.accountWide ) then
-			self.TitleBar:SetAlpha(1);
-		else
-			self.TitleBar:SetAlpha(0.5);
-		end
-	end
+
 	self.Glow:SetVertexColor(.22, .17, .13);
 	self.Icon:Desaturate();
 	self.Shield:Desaturate();

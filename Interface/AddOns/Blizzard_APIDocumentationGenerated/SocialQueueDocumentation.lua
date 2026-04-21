@@ -228,6 +228,9 @@ local SocialQueue =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SocialQueue);

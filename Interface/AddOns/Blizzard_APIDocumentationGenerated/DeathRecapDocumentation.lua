@@ -84,6 +84,9 @@ local DeathRecap =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DeathRecap);

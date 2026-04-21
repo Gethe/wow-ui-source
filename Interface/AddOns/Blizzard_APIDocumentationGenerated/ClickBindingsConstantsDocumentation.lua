@@ -41,6 +41,9 @@ local ClickBindingsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClickBindingsConstants);

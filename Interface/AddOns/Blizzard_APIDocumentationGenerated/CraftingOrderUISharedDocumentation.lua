@@ -239,6 +239,9 @@ local CraftingOrderUIShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CraftingOrderUIShared);

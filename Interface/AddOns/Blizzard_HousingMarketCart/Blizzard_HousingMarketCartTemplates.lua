@@ -389,8 +389,11 @@ function HousingMarketCartDataManagerMixin:Init(eventNamespace)
 	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_UPDATED", self);
 	Dispatcher:RegisterEvent("HOUSING_DECOR_ADD_TO_PREVIEW_LIST", self);
 	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD", self);
+	Dispatcher:RegisterEvent("HOUSING_STORAGE_ENTRY_UPDATED", self);
 
 	self:AddServiceEvents(HousingMarketCartDataServiceEvents);
+
+	self.pendingDecorPromotions = {};
 end
 
 function HousingMarketCartDataManagerMixin:GetNumItemsInCart()
@@ -485,8 +488,7 @@ function HousingMarketCartDataManagerMixin:AddToCart(item)
 
 			for _i, decorEntry in ipairs(bundleInfo.decorEntries) do
 				local decorID = decorEntry.decorID;
-				local tryGetOwnedInfo = false;
-				local decorInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID, tryGetOwnedInfo);
+				local decorInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID);
 				if decorInfo then
 					local itemID = decorInfo.itemID;
 
@@ -587,6 +589,8 @@ function HousingMarketCartDataManagerMixin:ClearCartInternal()
 		end
 	end
 
+	self.pendingDecorPromotions = {};
+
 	ShoppingCartDataManagerMixin.ClearCart(self);
 end
 
@@ -617,26 +621,41 @@ StaticPopupDialogs["HOUSING_MARKET_PURCHASE_FAILURE"] = {
 	fullScreenCover = true,
 };
 
+function HousingMarketCartDataManagerMixin:PromoteHelper(decorID, decorGUID, name)
+	local message = HOUSING_MARKET_PREVIEW_DECOR_ADDED_TO_CHEST;
+
+	if C_HousingCatalog.PromotePreviewDecor(decorID, decorGUID) then
+		message = HOUSING_MARKET_PREVIEW_DECOR_ADDED_TO_WORLD;
+	else
+		--if the promotion fails for any reason, delete the preview decor.
+		C_HousingCatalog.DeletePreviewCartDecor(decorGUID);
+	end
+
+	ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(message, name));
+end
+
+function HousingMarketCartDataManagerMixin:Promote(cartItem)
+	if cartItem.decorGUID then
+		local entryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, cartItem.decorID);
+		if entryInfo.totalNumStored > 0 then
+			self:PromoteHelper(cartItem.decorID, cartItem.decorGUID, cartItem.name);
+		else
+			table.insert(self.pendingDecorPromotions,
+			{
+				decorID = cartItem.decorID,
+				decorGUID = cartItem.decorGUID,
+				name = cartItem.name,
+			});
+		end
+	end
+end
+
 function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 	C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
 
 	if self.timeoutTimer then
 		self.timeoutTimer:Cancel();
 		self.timeoutTimer = nil;
-	end
-
-	local function Promote(cartItem)
-		local message = HOUSING_MARKET_PREVIEW_DECOR_ADDED_TO_CHEST;
-		if cartItem.decorGUID then
-			if C_HousingCatalog.PromotePreviewDecor(cartItem.decorID, cartItem.decorGUID) then
-				message = HOUSING_MARKET_PREVIEW_DECOR_ADDED_TO_WORLD;
-			else
-				--if the promotion fails for any reason, delete the preview decor.
-				C_HousingCatalog.DeletePreviewCartDecor(cartItem.decorGUID);
-			end
-		end
-
-		ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(message, cartItem.name));
 	end
 
 	local result, individualResults = ...;
@@ -649,15 +668,23 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 					local isBundleChild = cartItem.isBundleChild;
 					local isBundleParent = cartItem.isBundleParent;
 					local hasMatchingBundleParent = individualResult.parentProductId == cartItem.bundleCatalogShopProductID;
+					local isAlreadyPending = false;
+					for _, pending in ipairs(self.pendingDecorPromotions) do
+						if cartItem.decorGUID == pending.decorGUID then
+							isAlreadyPending = true;
+							break;
+						end
+					end
 
-					if isMatchingDecor and hasMatchingBundleParent and not cartItem.markedForRemoval and not isBundleParent then
-						Promote(cartItem);
+					if not isAlreadyPending and isMatchingDecor and hasMatchingBundleParent and not cartItem.markedForRemoval and not isBundleParent then
+						self:Promote(cartItem);
 
 						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCart call
 
 						if isBundleChild then
 							bundlesToRemove[cartItem.bundleCatalogShopProductID] = true;
 							cartItem.markedForRemoval = true;
+							
 						else
 							self:RemoveFromCart(cartItem);
 						end
@@ -681,6 +708,28 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 		self:UpdateCart();
 	end
 	-- Note: Failure handling is now in SecureTransferUI
+end
+
+function HousingMarketCartDataManagerMixin:PromotePendingHelper(entryInfo)
+	local removePendingAt = nil;
+	for i, pending in ipairs(self.pendingDecorPromotions) do
+		if entryInfo.recordID == pending.decorID then
+			self:PromoteHelper(pending.decorID, pending.decorGUID, pending.name);
+			removePendingAt = i; --remove regardless of success/failure
+			break;
+		end
+	end
+
+	if removePendingAt then
+		table.remove(self.pendingDecorPromotions, removePendingAt);
+		return true;
+	end
+	return false;
+end
+
+function HousingMarketCartDataManagerMixin:HOUSING_STORAGE_ENTRY_UPDATED(entryVariantID)
+	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryVariantID);
+	while self:PromotePendingHelper(entryInfo) do end --keep going until you find no matching pending decor
 end
 
 function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_UPDATED()

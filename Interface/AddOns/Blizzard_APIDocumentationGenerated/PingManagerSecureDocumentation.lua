@@ -257,6 +257,9 @@ local PingManagerSecure =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PingManagerSecure);

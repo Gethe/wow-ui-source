@@ -1,16 +1,7 @@
 AUTOCOMPLETE_MAX_BUTTONS = 5;
 
-AUTOCOMPLETE_FLAG_NONE =			0x00000000;
-AUTOCOMPLETE_FLAG_IN_GROUP = 		0x00000001;
-AUTOCOMPLETE_FLAG_IN_GUILD = 		0x00000002;
-AUTOCOMPLETE_FLAG_FRIEND =			0x00000004;
-AUTOCOMPLETE_FLAG_BNET =			0x00000008;
-AUTOCOMPLETE_FLAG_INTERACTED_WITH = 0x00000010;
-AUTOCOMPLETE_FLAG_ONLINE = 			0x00000020;
-AUTO_COMPLETE_IN_AOI = 				0x00000040;
-AUTO_COMPLETE_ACCOUNT_CHARACTER =	0x00000080;
-AUTO_COMPLETE_RECENT_PLAYER		=	0x00000100;
-AUTOCOMPLETE_FLAG_ALL =				0xffffffff;
+AUTOCOMPLETE_FLAG_NONE = 0x00000000;
+AUTOCOMPLETE_FLAG_ALL = 0xffffffff;
 
 AUTOCOMPLETE_LIST_TEMPLATES = {
 	ALL = {
@@ -19,75 +10,75 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 	},
 	ALL_OTHERS = {
 		include = AUTOCOMPLETE_FLAG_ALL,
-		exclude = AUTO_COMPLETE_ACCOUNT_CHARACTER,
+		exclude = Enum.AutoCompleteEntryFlag.AccountCharacter,
 	},
 	ALL_OTHER_CHARS = {
 		include = AUTOCOMPLETE_FLAG_ALL,
-		exclude = bit.bor(AUTO_COMPLETE_ACCOUNT_CHARACTER,AUTOCOMPLETE_FLAG_BNET),
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.AccountCharacter, Enum.AutoCompleteEntryFlag.Bnet),
 	},
 	ALL_CHARS = {
 		include = AUTOCOMPLETE_FLAG_ALL,
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	FRIENDLY_CHARS = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_FRIEND,AUTO_COMPLETE_ACCOUNT_CHARACTER),
+		include = bit.bor(Enum.AutoCompleteEntryFlag.InGuild, Enum.AutoCompleteEntryFlag.Friend, Enum.AutoCompleteEntryFlag.AccountCharacter),
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
 	ONLINE = {
-		include = AUTOCOMPLETE_FLAG_ONLINE,
+		include = Enum.AutoCompleteEntryFlag.Online,
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
 	ONLINE_NOT_BNET = {
-		include = AUTOCOMPLETE_FLAG_ONLINE,
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		include = Enum.AutoCompleteEntryFlag.Online,
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	ONLINE_NOT_IN_GROUP = {
-		include = AUTOCOMPLETE_FLAG_ONLINE,
-		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP,AUTOCOMPLETE_FLAG_BNET),
+		include = Enum.AutoCompleteEntryFlag.Online,
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.InGroup, Enum.AutoCompleteEntryFlag.Bnet),
 	},
 	ONLINE_NOT_IN_GUILD = {
-		include = AUTOCOMPLETE_FLAG_ONLINE,
-		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_BNET),
+		include = Enum.AutoCompleteEntryFlag.Online,
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.InGuild, Enum.AutoCompleteEntryFlag.Bnet),
 	},
 	NOT_FRIEND = {
 		include = AUTOCOMPLETE_FLAG_ALL,
-		exclude = bit.bor(AUTOCOMPLETE_FLAG_FRIEND,AUTOCOMPLETE_FLAG_BNET,AUTO_COMPLETE_ACCOUNT_CHARACTER);
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.Friend, Enum.AutoCompleteEntryFlag.Bnet, Enum.AutoCompleteEntryFlag.AccountCharacter);
 	},
 	IN_GROUP = {
-		include = AUTOCOMPLETE_FLAG_IN_GROUP,
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		include = Enum.AutoCompleteEntryFlag.InGroup,
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	IN_GUILD = {
-		include = AUTOCOMPLETE_FLAG_IN_GUILD,
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		include = Enum.AutoCompleteEntryFlag.InGuild,
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	FRIEND = {
-		include = AUTOCOMPLETE_FLAG_FRIEND,
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		include = Enum.AutoCompleteEntryFlag.Friend,
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	FRIEND_NOT_GUILD = {
-		include = AUTOCOMPLETE_FLAG_FRIEND,
-		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_BNET),
+		include = Enum.AutoCompleteEntryFlag.Friend,
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.InGuild, Enum.AutoCompleteEntryFlag.Bnet),
 	},
 	FRIEND_AND_GUILD = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_IN_GUILD),
-		exclude = AUTOCOMPLETE_FLAG_BNET,
+		include = bit.bor(Enum.AutoCompleteEntryFlag.Friend, Enum.AutoCompleteEntryFlag.InGuild),
+		exclude = Enum.AutoCompleteEntryFlag.Bnet,
 	},
 	KNOWN = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP, AUTOCOMPLETE_FLAG_IN_GUILD,
-						AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_INTERACTED_WITH),
-		exclude = AUTOCOMPLETE_FLAG_BNET
+		include = bit.bor(Enum.AutoCompleteEntryFlag.InGroup, Enum.AutoCompleteEntryFlag.InGuild,
+						Enum.AutoCompleteEntryFlag.Friend, Enum.AutoCompleteEntryFlag.InteractedWith),
+		exclude = Enum.AutoCompleteEntryFlag.Bnet
 	},
 	KNOWN_NOT_GUILD = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP, AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_INTERACTED_WITH),
-		exclude = bit.bor(AUTOCOMPLETE_FLAG_BNET, AUTOCOMPLETE_FLAG_IN_GUILD),
+		include = bit.bor(Enum.AutoCompleteEntryFlag.InGroup, Enum.AutoCompleteEntryFlag.Friend, Enum.AutoCompleteEntryFlag.InteractedWith),
+		exclude = bit.bor(Enum.AutoCompleteEntryFlag.Bnet, Enum.AutoCompleteEntryFlag.InGuild),
 	},
 	BNET_NOT_IN_PARTY = {
-		include = AUTOCOMPLETE_FLAG_BNET,
-		exclude = AUTOCOMPLETE_FLAG_IN_GROUP,
+		include = Enum.AutoCompleteEntryFlag.Bnet,
+		exclude = Enum.AutoCompleteEntryFlag.InGroup,
 	},
 	ALL_BNET = {
-		include = AUTOCOMPLETE_FLAG_BNET,
+		include = Enum.AutoCompleteEntryFlag.Bnet,
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
 }
@@ -124,13 +115,13 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 
 AUTOCOMPLETE_COLOR_KEYS =
 {
-[LE_AUTOCOMPLETE_PRIORITY_OTHER]  		= {key=NORMAL_FONT_COLOR_CODE, text="" },
-[LE_AUTOCOMPLETE_PRIORITY_INTERACTED] 	= {key="WHISPER", text=AUTOCOMPLETE_LABEL_INTERACTED },
-[LE_AUTOCOMPLETE_PRIORITY_IN_GROUP] 	= {key="PARTY", text=AUTOCOMPLETE_LABEL_GROUP },
-[LE_AUTOCOMPLETE_PRIORITY_GUILD]		= {key="GUILD", text=AUTOCOMPLETE_LABEL_GUILD },
-[LE_AUTOCOMPLETE_PRIORITY_FRIEND] 		= {key="BN_WHISPER", text=AUTOCOMPLETE_LABEL_FRIEND },
-[LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER] = {key=NORMAL_FONT_COLOR_CODE, text="" },
-[LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER_SAME_REALM] = {key=NORMAL_FONT_COLOR_CODE, text=""},
+	[Enum.AutoCompletePriority.Other]  		= {key=NORMAL_FONT_COLOR_CODE, text="" },
+	[Enum.AutoCompletePriority.Interacted] 	= {key="WHISPER", text=AUTOCOMPLETE_LABEL_INTERACTED },
+	[Enum.AutoCompletePriority.InGroup] 	= {key="PARTY", text=AUTOCOMPLETE_LABEL_GROUP },
+	[Enum.AutoCompletePriority.Guild]		= {key="GUILD", text=AUTOCOMPLETE_LABEL_GUILD },
+	[Enum.AutoCompletePriority.Friend] 		= {key="BN_WHISPER", text=AUTOCOMPLETE_LABEL_FRIEND },
+	[Enum.AutoCompletePriority.AccountCharacter] = {key=NORMAL_FONT_COLOR_CODE, text="" },
+	[Enum.AutoCompletePriority.AccountCharacterSameRealm] = {key=NORMAL_FONT_COLOR_CODE, text=""},
 }
 
 AUTOCOMPLETE_SIMPLE_REGEX = "(.+)";
@@ -210,7 +201,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 
 		local realmStart = text:find("-", 1, true);
 		if (realmStart) then
-			local realms = GetAutoCompleteRealms();
+			local realms = C_AutoComplete.GetAutoCompleteRealms();
 			local realm, subStart, subEnd;
 			realmStart = text:sub(realmStart + 1) --get text after hyphen
 			local index = #possibilities + 1;

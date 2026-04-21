@@ -44,6 +44,9 @@ local ArdenwealdGardening =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ArdenwealdGardening);

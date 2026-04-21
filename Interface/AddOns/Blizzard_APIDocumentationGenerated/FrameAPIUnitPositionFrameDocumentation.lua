@@ -155,6 +155,9 @@ local FrameAPIUnitPositionFrame =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIUnitPositionFrame);

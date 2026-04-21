@@ -3,8 +3,12 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip, Blizzard_QueueStatusFrame
 ## AllowLoad: game
-## AllowLoadGameType: vanilla, tbc
+## AllowLoadGameType: vanilla, tbc, wrath, cata, mists
 
+Classic\Minimap_Overrides.lua   [AllowLoadGameType vanilla, tbc]
+Wrath\Minimap_Overrides.lua     [AllowLoadGameType wrath]
+Cata\Minimap_Overrides.lua		[AllowLoadGameType cata]
+Mists\Minimap_Overrides.lua		[AllowLoadGameType mists]
 Classic\Minimap.lua
 Classic\Minimap.xml
 
@@ -13,6 +17,8 @@ Classic\MinimapTracking_Simple.xml		[AllowLoadGameType vanilla]
 Classic\MinimapTracking_Dropdown.lua	[AllowLoadGameType tbc]
 Classic\MinimapTracking_Dropdown.xml	[AllowLoadGameType tbc]
 
-Classic\GameTime_NoCalendar.lua
+Wrath\GameTime.lua	[AllowLoadGameType wrath, cata, mists]
+Classic\GameTime_NoCalendar.lua		[AllowLoadGameType vanilla, tbc]
 Classic\GameTime_Shared.lua
-Classic\GameTime_NoCalendar.xml
+Classic\GameTime_NoCalendar.xml		[AllowLoadGameType vanilla, tbc]
+Wrath\GameTime.xml	[AllowLoadGameType wrath, cata, mists]

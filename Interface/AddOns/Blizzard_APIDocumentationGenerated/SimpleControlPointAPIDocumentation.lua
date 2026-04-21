@@ -74,6 +74,9 @@ local SimpleControlPointAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleControlPointAPI);

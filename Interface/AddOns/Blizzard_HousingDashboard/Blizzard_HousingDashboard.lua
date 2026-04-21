@@ -30,6 +30,8 @@ function HousingDashboardFrameMixin:OnLoad()
 	self.activeTab = self.houseInfoTab;
 	self.baseWidth = self:GetWidth();
 	self.baseHeight = self:GetHeight();
+
+	EventRegistry:RegisterCallback("HousingDashboard.OpenToCatalogFrame", self.OnOpenToCatalogFrame, self);
 end
 
 function HousingDashboardFrameMixin:OnShow()
@@ -51,6 +53,11 @@ function HousingDashboardFrameMixin:OnTabButtonClicked(tabButton)
 			return;
 		end
 	end
+end
+
+function HousingDashboardFrameMixin:OnOpenToCatalogFrame()
+	ShowUIPanel(self);
+	self:SetTab(self.catalogTab);
 end
 
 function HousingDashboardFrameMixin:SetTab(activeTab)

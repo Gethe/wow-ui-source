@@ -504,6 +504,9 @@ local FrameScript =
 			Type = "CallbackType",
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameScript);

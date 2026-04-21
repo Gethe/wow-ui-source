@@ -195,7 +195,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) ) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) > 0) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end

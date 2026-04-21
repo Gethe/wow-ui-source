@@ -74,6 +74,9 @@ local RolodexConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RolodexConstants);

@@ -32,6 +32,14 @@ local UnitAuraShared =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresValidUnitAuraInstance",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitAuraShared);

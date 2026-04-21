@@ -18,6 +18,9 @@ local WarbandSceneInfoConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WarbandSceneInfoConstants);

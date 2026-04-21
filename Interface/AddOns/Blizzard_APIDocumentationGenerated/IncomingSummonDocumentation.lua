@@ -60,6 +60,9 @@ local IncomingSummon =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(IncomingSummon);

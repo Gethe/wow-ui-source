@@ -341,7 +341,7 @@
 								<Anchor point="CENTER" relativePoint="CENTER" x="1" relativeKey="$parent.playerLevelDiffIcon"/>
 							</Anchors>
 						</FontString>
-					</Layer>	
+					</Layer>
 				</Layers>
 			</Frame>
 
@@ -355,12 +355,6 @@
 						<Texture parentKey="Icon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
 					</Layer>
 				</Layers>
-			</Frame>
-
-			<Frame parentKey="HitTestFrame">
-				<Anchors>
-					<!-- Anchoring and size handled dynamically in lua.-->
-				</Anchors>
 			</Frame>
 		</Frames>
 		<Layers>
@@ -444,4 +438,7 @@
 
 	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+
+	<!-- This should be derived for any nameplates that register as script nameplates. The associated mixin provides stub implementations of a few methods present on the native NamePlate frame type. -->
+	<Frame name="NamePlateScriptBaseTemplate" mixin="NamePlateScriptBaseMixin" virtual="true"/>
 </Ui>

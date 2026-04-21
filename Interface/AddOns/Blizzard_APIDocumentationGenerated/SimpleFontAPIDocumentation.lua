@@ -314,6 +314,9 @@ local SimpleFontAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleFontAPI);

@@ -155,6 +155,9 @@ local RemixArtifactUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RemixArtifactUI);

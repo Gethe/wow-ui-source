@@ -18,9 +18,9 @@ local RestrictedActionsConstants =
 		{
 			Name = "AddOnRestrictionType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Combat", Type = "AddOnRestrictionType", EnumValue = 0, Documentation = { "The player is actively affecting combat." } },
@@ -28,8 +28,12 @@ local RestrictedActionsConstants =
 				{ Name = "ChallengeMode", Type = "AddOnRestrictionType", EnumValue = 2, Documentation = { "The player is in an active and incomplete challenge mode or mythic keystone dungeon." } },
 				{ Name = "PvPMatch", Type = "AddOnRestrictionType", EnumValue = 3, Documentation = { "The player is in an active and incomplete PvP match." } },
 				{ Name = "Map", Type = "AddOnRestrictionType", EnumValue = 4, Documentation = { "The player is on a map that applies addon restrictions." } },
+				{ Name = "Chat", Type = "AddOnRestrictionType", EnumValue = 5, Documentation = { "The player is in a state where addon chat communications are restricted." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

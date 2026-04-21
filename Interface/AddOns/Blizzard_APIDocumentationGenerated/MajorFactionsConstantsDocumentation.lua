@@ -41,6 +41,9 @@ local MajorFactionsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MajorFactionsConstants);

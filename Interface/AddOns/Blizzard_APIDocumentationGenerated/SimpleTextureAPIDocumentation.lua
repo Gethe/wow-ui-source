@@ -66,6 +66,9 @@ local SimpleTextureAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleTextureAPI);

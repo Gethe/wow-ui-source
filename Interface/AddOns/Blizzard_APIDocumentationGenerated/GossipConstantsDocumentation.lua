@@ -104,6 +104,9 @@ local GossipConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GossipConstants);

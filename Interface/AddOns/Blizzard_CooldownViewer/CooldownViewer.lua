@@ -695,8 +695,6 @@ end
 function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	CooldownViewerItemMixin.OnCooldownIDCleared(self);
 
-	ActionButtonSpellAlertManager:HideAlert(self);
-
 	self.previousCooldownChargesCount = nil;
 	self.cooldownChargesCount = nil;
 	self.cooldownChargesShown = nil;
@@ -729,7 +727,8 @@ function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowShowEvent(s
 		return;
 	end
 
-	ActionButtonSpellAlertManager:ShowAlert(self);
+	local showStateFromEvent = true;
+	self:RefreshOverlayGlow(showStateFromEvent);
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowHideEvent(spellID)
@@ -737,7 +736,8 @@ function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowHideEvent(s
 		return;
 	end
 
-	ActionButtonSpellAlertManager:HideAlert(self);
+	local hideStateFromEvent = false;
+	self:RefreshOverlayGlow(hideStateFromEvent);
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellUpdateUsesEvent(spellID, baseSpellID)
@@ -1091,11 +1091,17 @@ function CooldownViewerCooldownItemMixin:RefreshIconColor()
 	outOfRangeTexture:SetShown(self.spellOutOfRange == true);
 end
 
-function CooldownViewerCooldownItemMixin:RefreshOverlayGlow()
-	local spellID = self:GetSpellID();
-	local isSpellOverlayed = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
-	if isSpellOverlayed then
-		ActionButtonSpellAlertManager:ShowAlert(self);
+function CooldownViewerCooldownItemMixin:RefreshOverlayGlow(desiredShowStateFromEvent)
+	local wasFromEvent = desiredShowStateFromEvent ~= nil;
+	local skipBirth = not wasFromEvent;
+	local needShow = desiredShowStateFromEvent;
+	if needShow == nil then
+		local spellID = self:GetSpellID();
+		needShow = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
+	end
+
+	if needShow then
+		ActionButtonSpellAlertManager:ShowAlert(self, skipBirth);
 	else
 		ActionButtonSpellAlertManager:HideAlert(self);
 	end
@@ -1572,6 +1578,11 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 end
 
 function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+	if not unitAuraUpdateInfo or unitAuraUpdateInfo.isFullUpdate then
+		self:RefreshLayout();
+		return;
+	end
+
 	-- Called first so that item frames still have the right aura instanceIDs set.
 	self:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo);
 

@@ -190,6 +190,9 @@ local AzeriteItem =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AzeriteItem);

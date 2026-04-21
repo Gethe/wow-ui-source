@@ -15,6 +15,9 @@ local GuildInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GuildInfoShared);

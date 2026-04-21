@@ -180,8 +180,11 @@ function AccountLogin_Login()
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
 		if ( AccountLogin.UI.AccountsDropdown:IsShown() ) then
-			local accountStr = AccountLogin_GetPendingSavedAccountString();
-			C_Login.SelectGameAccount(accountStr);
+			-- This string will not exist if no account was selected in advance.
+			local accountStr = AccountLogin_GetSelectedAccountString();
+			if accountStr ~= nil then
+				C_Login.SelectGameAccount(accountStr);
+			end
 		end
 	end
 
@@ -347,8 +350,10 @@ local function AccountLogin_GetSavedAccountList()
 	return accounts;
 end
 
-function AccountLogin_GetPendingSavedAccountString()
-	return selectedSavedAccount.str;
+function AccountLogin_GetSelectedAccountString()
+	if selectedSavedAccount then
+		return selectedSavedAccount.str;
+	end
 end
 
 do
@@ -361,6 +366,8 @@ do
 	end
 	
 	function AccountLoginDropdown_SetupList()
+		-- This can be assigned nil if none of the accounts in the account list were selected.
+		-- See AccountLogin_GetSavedAccountList() above.
 		selectedSavedAccount = FindValueInTableIf(AccountLogin_GetSavedAccountList(), function(account)
 			return account.selected;
 		end);

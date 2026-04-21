@@ -195,6 +195,9 @@ local LootHistory =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LootHistory);

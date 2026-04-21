@@ -15,6 +15,9 @@ local SimpleAnimTranslationLineAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimTranslationLineAPI);

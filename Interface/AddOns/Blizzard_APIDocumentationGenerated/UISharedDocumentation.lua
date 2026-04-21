@@ -38,6 +38,14 @@ local UIShared =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "IsProtectedFunction",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIShared);

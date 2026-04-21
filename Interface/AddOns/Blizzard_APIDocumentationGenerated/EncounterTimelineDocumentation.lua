@@ -600,6 +600,18 @@ local EncounterTimeline =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresValidTimelineEvent",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "SecretWhenEncounterEvent",
+			Type = "Secret",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterTimeline);

@@ -172,7 +172,7 @@
 		<Button parentKey="AbandonHouseButton" inherits="UIPanelButtonTemplate" text="HOUSING_HOUSE_SETTINGS_ABANDON">
 			<Size x="152" y="28"/>
 			<Anchors>
-				<Anchor point="TOPRIGHT" x="-36" y="-110"/>
+				<Anchor point="TOPLEFT"  relativeKey="$parent.HouseOwnerDropdown" relativePoint="TOPRIGHT" x="155" y="0"/>
 			</Anchors>
 		</Button>
 	</Frames>

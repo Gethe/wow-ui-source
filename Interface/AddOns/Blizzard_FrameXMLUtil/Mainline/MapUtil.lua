@@ -2,8 +2,6 @@
 local SHADOWLANDS_CONTINENT_MAP_ID = 1550;
 local ORIBOS_UI_MAP_IDS = { 1670, 1671, 1672, 1673 };
 
-local MIDNIGHT_CONTINENT_MAP_ID = 2537;
-
 
 MapUtil = {};
 
@@ -155,19 +153,6 @@ function MapUtil.IsShadowlandsZoneMap(mapID)
 	return MapUtil.IsChildMap(mapID, SHADOWLANDS_CONTINENT_MAP_ID);
 end
 
-function MapUtil.IsMidnightZoneMap(mapID)
-	if mapID == MIDNIGHT_CONTINENT_MAP_ID then
-		return true;
-	end
-
-	local mapInfo = C_Map.GetMapInfo(mapID);
-	if (mapInfo.mapType ~= Enum.UIMapType.Zone) and (mapInfo.mapType ~= Enum.UIMapType.Continent) then
-		return false;
-	end
-
-	return MapUtil.IsChildMap(mapID, MIDNIGHT_CONTINENT_MAP_ID);
-end
-
 function MapUtil.MapShouldShowWorldQuestFilters(mapID)
-	return MapUtil.MapHasEmissaries(mapID) or MapUtil.IsShadowlandsZoneMap(mapID) or MapUtil.IsMidnightZoneMap(mapID);
+	return MapUtil.MapHasEmissaries(mapID) or MapUtil.IsShadowlandsZoneMap(mapID);
 end

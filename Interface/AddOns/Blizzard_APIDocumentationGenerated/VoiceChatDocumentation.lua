@@ -827,11 +827,11 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "voiceID", Type = "number", Nilable = false },
+				{ Name = "voiceID", Type = "number", Nilable = false, NeverSecret = true },
 				{ Name = "text", Type = "cstring", Nilable = false },
-				{ Name = "rate", Type = "number", Nilable = false },
-				{ Name = "volume", Type = "number", Nilable = false },
-				{ Name = "overlap", Type = "bool", Nilable = false, Default = false },
+				{ Name = "rate", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "volume", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "overlap", Type = "bool", Nilable = false, NeverSecret = true, Default = false },
 			},
 		},
 		{
@@ -1483,6 +1483,9 @@ local VoiceChat =
 				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

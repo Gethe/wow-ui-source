@@ -414,6 +414,9 @@ local ProfessionSpecUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ProfessionSpecUI);

@@ -45,14 +45,18 @@
 				</Anchors>
 				<Layers>
 					<Layer level ="BACKGROUND">
-						<Texture parentKey="Background" atlas="house-upgrade-reward-icon-frame" setAllPoints="true"/>
+						<Texture parentKey="Background" atlas="house-upgrade-reward-icon-background" setAllPoints="true"/>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Portrait" atlas="house-decor-budget-icon" useAtlasSize="true">
+						<Texture parentKey="Portrait" atlas="house-decor-budget-icon">
+							<Size x="58" y="58" />
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="house-upgrade-reward-icon-frame-overlay" setAllPoints="true"/>
 						<Texture parentKey="UpArrow" atlas="house-reward-green-arrow-up" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"/>
@@ -225,7 +229,7 @@
 			<Frame parentKey="CurrentLevelFrame" mixin="HouseUpgradeCurrentLevelFrameMixin">
 				<Size x="256" y="158"/>
 				<Anchors>
-					<Anchor point="TOP" y="-11"/>
+					<Anchor point="TOP" x="-8" y="-11"/>
 				</Anchors>		 
 				<Layers>
 					<Layer level="OVERLAY">
@@ -248,80 +252,6 @@
 								<Anchors>
 									<Anchor point="CENTER" x="-4"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="leaf1" atlas="house-upgrade-radial-leaf01" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="TOPRIGHT" relativePoint="CENTER" x="-110" y="-56"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="leaf2" atlas="house-upgrade-radial-leaf02" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-88" y="-60"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="leaf3" atlas="house-upgrade-radial-leaf03" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="TOP" relativePoint="CENTER" x="-73" y="-31"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="leaf4" atlas="house-upgrade-radial-leaf04" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="CENTER" x="76" y="-37"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="leaf5" atlas="house-upgrade-radial-leaf05" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="88" y="-62"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="leaf6" atlas="house-upgrade-radial-leaf06" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-											<Anchors>
-												<Anchor point="TOP" relativePoint="CENTER" x="118" y="-56"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Animations>
-									<AnimationGroup parentKey="LeafAnimation" looping="REPEAT" setToFinalAlpha="true">
-										<Rotation childKey="leaf1" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
-											<Origin point="TOPRIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf1" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="5">
-											<Origin point="TOPRIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf2" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
-											<Origin point="BOTTOMRIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf2" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="6">
-											<Origin point="BOTTOMRIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf3" duration="1" order="1" smoothing="IN_OUT" degrees="-3">
-											<Origin point="TOP"/>
-										</Rotation>
-										<Rotation childKey="leaf3" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
-											<Origin point="TOP"/>
-										</Rotation>
-										<Rotation childKey="leaf4" duration="1" order="1" smoothing="IN_OUT" degrees="4">
-											<Origin point="RIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf4" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-2">
-											<Origin point="RIGHT"/>
-										</Rotation>
-										<Rotation childKey="leaf5" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
-											<Origin point="BOTTOMLEFT"/>
-										</Rotation>
-										<Rotation childKey="leaf5" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
-											<Origin point="BOTTOMLEFT"/>
-										</Rotation>
-										<Rotation childKey="leaf6" duration="1" order="1" smoothing="IN_OUT" degrees="5">
-											<Origin point="TOP"/>
-										</Rotation>
-										<Rotation childKey="leaf6" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-4">
-											<Origin point="TOP"/>
-										</Rotation>
-									</AnimationGroup>
-								</Animations>
 							</Frame>
 							<Frame parentKey="Bar" propagateMouseInput="Motion">
 								<Size x="128" y="128"/>
@@ -383,14 +313,88 @@
 							</Frame>
 						</Frames>
 						<Layers>
-							<Layer level="OVERLAY">
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="leaf2" atlas="house-upgrade-radial-leaf02" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-84" y="-64"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="leaf5" atlas="house-upgrade-radial-leaf05" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="98" y="-64"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
 								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="3">
+								<Texture parentKey="leaf1" atlas="house-upgrade-radial-leaf01" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativePoint="CENTER" x="-106" y="-56"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="leaf3" atlas="house-upgrade-radial-leaf03" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="TOP" relativePoint="CENTER" x="-69" y="-31"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="leaf4" atlas="house-upgrade-radial-leaf04" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="CENTER" x="82" y="-39"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="leaf6" atlas="house-upgrade-radial-leaf06" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Anchors>
+										<Anchor point="TOP" relativePoint="CENTER" x="122" y="-56"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="LeafAnimation" looping="REPEAT" setToFinalAlpha="true">
+								<Rotation childKey="leaf1" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+									<Origin point="TOPRIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf1" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="5">
+									<Origin point="TOPRIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf2" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+									<Origin point="BOTTOMRIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf2" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="6">
+									<Origin point="BOTTOMRIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf3" duration="1" order="1" smoothing="IN_OUT" degrees="-3">
+									<Origin point="TOP"/>
+								</Rotation>
+								<Rotation childKey="leaf3" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
+									<Origin point="TOP"/>
+								</Rotation>
+								<Rotation childKey="leaf4" duration="1" order="1" smoothing="IN_OUT" degrees="4">
+									<Origin point="RIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf4" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-2">
+									<Origin point="RIGHT"/>
+								</Rotation>
+								<Rotation childKey="leaf5" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+									<Origin point="BOTTOMLEFT"/>
+								</Rotation>
+								<Rotation childKey="leaf5" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
+									<Origin point="BOTTOMLEFT"/>
+								</Rotation>
+								<Rotation childKey="leaf6" duration="1" order="1" smoothing="IN_OUT" degrees="5">
+									<Origin point="TOP"/>
+								</Rotation>
+								<Rotation childKey="leaf6" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-4">
+									<Origin point="TOP"/>
+								</Rotation>
+							</AnimationGroup>
+						</Animations>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -402,7 +406,7 @@
 			<Frame parentKey="TrackFrame" mixin="HouseLevelTrackFrameMixin" inherits="RewardTrackFrameTemplate">
 				<Size x="650" y="72"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.CurrentLevelFrame" relativePoint="BOTTOM" y="20" />
+					<Anchor point="TOP" relativeKey="$parent.CurrentLevelFrame" relativePoint="BOTTOM" x="8" y="20" />
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

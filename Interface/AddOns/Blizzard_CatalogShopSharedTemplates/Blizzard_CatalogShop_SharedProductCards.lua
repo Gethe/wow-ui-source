@@ -298,6 +298,9 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	self:ShowNotification();
 end
 
+function CatalogShopDefaultProductCardMixin:GetCurrentPrice()
+	return self.productInfo.price;
+end
 
 --------------------------------------------------
 -- SMALL CATALOG SHOP PRODUCT CARD MIXIN
@@ -404,12 +407,12 @@ function SmallCatalogShopHousingCurrencyCardMixin:OnEnter()
 end
 
 local CurrencyBreakpoints = {
-	[100] = "hearthsteel-icon-xs",
-	[500] = "hearthsteel-icon-sm",
-	[1000] = "hearthsteel-icon-md",
-	[2500] = "hearthsteel-icon-lg",
-	[5000] = "hearthsteel-icon-xl",
-	[10000] = "hearthsteel-icon-xxl",
+	[100] = { icon = "hearthsteel-icon-xs" },
+	[500] = { icon = "hearthsteel-icon-sm" },
+	[1000] = { icon = "hearthsteel-icon-md" },
+	[2500] = { icon = "hearthsteel-icon-lg", vfxElement="HeathSteel_L_VFX" },
+	[5000] = { icon = "hearthsteel-icon-xl", vfxElement="HeathSteel_XL_VFX" },
+	[10000] = { icon = "hearthsteel-icon-xxl", vfxElement="HeathSteel_XXL_VFX" },
 };
 
 local function BuyButtonCardLayout(card)
@@ -420,8 +423,23 @@ local function BuyButtonCardLayout(card)
 	if virtualCurrencyInfo then
 		local amount = virtualCurrencyInfo.amount;
 		container.Name:SetText(string.format(HOUSING_VC_QUANTITY, amount));
-		local textureAtlas = CurrencyBreakpoints[amount] or "hearthsteel-icon-single";
+		local textureAtlas = CurrencyBreakpoints[amount].icon or "hearthsteel-icon-single";
 		container.RectIcon:SetAtlas(textureAtlas);
+
+		local vfx = CurrencyBreakpoints[amount].vfxElement;
+		if vfx and card[vfx] then
+			card[vfx]:Show();
+		else
+			if card.HeathSteel_L_VFX then
+				card.HeathSteel_L_VFX:Hide();
+			end
+			if card.HeathSteel_XL_VFX then
+				card.HeathSteel_XL_VFX:Hide();
+			end
+			if card.HeathSteel_XXL_VFX then
+				card.HeathSteel_XXL_VFX:Hide();
+			end
+		end
 	end
 
 	local divider = container.DividerTop;
@@ -575,4 +593,74 @@ function WideCatalogShopProductCardMixin:Layout()
 	end
 
 	self:UpdateTimeRemaining();
+end
+
+--------------------------------------------------
+-- HEARTHSTEEL VFX MIXINS
+HearthsteelVFXBaseMixin = {};
+function HearthsteelVFXBaseMixin:PlayAnimation()
+	-- override this
+end
+
+function HearthsteelVFXBaseMixin:StopAnimation()
+	-- override this
+end
+
+function HearthsteelVFXBaseMixin:OnShow()
+	self:PlayAnimation();
+end
+
+function HearthsteelVFXBaseMixin:OnHide()
+	self:StopAnimation();
+end
+
+function HearthsteelVFXBaseMixin:OnEnter()
+	self:PlayAnimation();
+end
+
+
+HearthsteelVFX_L_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+function HearthsteelVFX_L_Mixin:PlayAnimation()
+	self.Glows.animation:Play();
+	self.IconGlow.animation:Play();
+	self.Flipbook.animation:Play();
+end
+
+function HearthsteelVFX_L_Mixin:StopAnimation()
+	self.Glows.animation:Stop();
+	self.IconGlow.animation:Stop();
+	self.Flipbook.animation:Stop();
+end
+
+HearthsteelVFX_XL_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+
+function HearthsteelVFX_XL_Mixin:PlayAnimation()
+	self.Rays.animation:Play();
+	self.Flipbook.animation:Play();
+	self.Shine01.animation:Play();
+	self.Shine02.animation:Play();
+	self.CoinShine.animation:Play();
+end
+
+function HearthsteelVFX_XL_Mixin:StopAnimation()
+	self.Rays.animation:Stop();
+	self.Flipbook.animation:Stop();
+	self.Shine01.animation:Stop();
+	self.Shine02.animation:Stop();
+	self.CoinShine.animation:Stop();
+end
+
+HearthsteelVFX_XXL_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+function HearthsteelVFX_XXL_Mixin:PlayAnimation()
+	self.Rays.animation:Play();
+	self.Flipbook.animation:Play();
+	self.MetalShine.animation:Play();
+	self.CoinShine.animation:Play();
+end
+
+function HearthsteelVFX_XXL_Mixin:StopAnimation()
+	self.Rays.animation:Stop();
+	self.Flipbook.animation:Stop();
+	self.MetalShine.animation:Stop();
+	self.CoinShine.animation:Stop();
 end

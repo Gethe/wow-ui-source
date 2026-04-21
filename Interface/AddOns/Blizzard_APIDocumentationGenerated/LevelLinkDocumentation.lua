@@ -46,6 +46,9 @@ local LevelLink =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LevelLink);

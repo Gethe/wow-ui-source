@@ -268,6 +268,27 @@ local function CountElements(elements)
 	return TableUtil.SafeCountIndexTable(elements.items) + TableUtil.SafeCountIndexTable(elements.currencyReagents);
 end
 
+local function SortByNameThenQuality(lhs, rhs)
+	local lhsItemID = lhs:GetItemID();
+	local rhsItemID = rhs:GetItemID();
+	local lhsName = lhs:GetItemName() or tostring(lhsItemID);
+	local rhsName = rhs:GetItemName() or tostring(rhsItemID);
+	local comparison = strcmputf8i(lhsName, rhsName);
+	if comparison ~= 0 then
+		return comparison < 0;
+	end
+
+	-- Names are the same but differ by quality.
+	local lhsQualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(lhsItemID);
+	local rhsQualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(rhsItemID);
+	if lhsQualityInfo and rhsQualityInfo then
+		return lhsQualityInfo.quality < rhsQualityInfo.quality;
+	end
+
+	-- Quality info unexpectedly missing; fallback to itemID.
+	return lhsItemID < rhsItemID;
+end
+
 function ProfessionsFlyoutMixin:Init(owner, behavior)
 	self.owner = owner;
 	self:SetBehavior(behavior);
@@ -374,6 +395,8 @@ function ProfessionsFlyoutMixin:InitializeContents()
 		end
 
 		continuableContainer:ContinueOnLoad(function()
+			table.sort(elements.items, SortByNameThenQuality);
+
 			local dataProvider = CreateDataProvider();
 			behavior:PopulateDataProvider(dataProvider, elements);
 			self.ScrollBox:SetDataProvider(dataProvider);
@@ -571,27 +594,6 @@ do
 			end
 		end
 		
-		table.sort(items, function(lhs, rhs)
-			local lhsItemID = lhs:GetItemID();
-			local rhsItemID = rhs:GetItemID();
-			local lhsName = lhs:GetItemName() or tostring(lhsItemID);
-			local rhsName = rhs:GetItemName() or tostring(rhsItemID);
-			local comparison = strcmputf8i(lhsName, rhsName);
-			if comparison ~= 0 then
-				return comparison < 0;
-			end
-
-			-- Names are the same but differ by quality.
-			local lhsQualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(lhsItemID);
-			local rhsQualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(rhsItemID);
-			if lhsQualityInfo and rhsQualityInfo then
-				return lhsQualityInfo.quality < rhsQualityInfo.quality;
-			end
-
-			-- Quality info unexpectedly missing; fallback to itemID.
-			return lhsItemID < rhsItemID;
-		end);
-
 		return {items = items};
 	end
 

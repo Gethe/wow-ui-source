@@ -60,6 +60,9 @@ local FrameAPIQuestPOI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIQuestPOI);

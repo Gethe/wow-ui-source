@@ -128,6 +128,9 @@ local SimpleLineAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleLineAPI);

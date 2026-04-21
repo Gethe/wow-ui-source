@@ -54,6 +54,9 @@ local CombatText =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatText);

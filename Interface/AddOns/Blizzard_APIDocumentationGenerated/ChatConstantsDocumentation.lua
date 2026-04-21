@@ -52,19 +52,6 @@ local ChatConstants =
 			},
 		},
 		{
-			Name = "ChatMessagingLockdownReason",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "ActiveEncounter", Type = "ChatMessagingLockdownReason", EnumValue = 0, Documentation = { "Chat lockdown is active because the player is in an active and incomplete instance encounter." } },
-				{ Name = "ActiveMythicKeystoneOrChallengeMode", Type = "ChatMessagingLockdownReason", EnumValue = 1, Documentation = { "Chat lockdown is active because the player is in an active and incomplete Mythic Keystone or Challenge Mode map." } },
-				{ Name = "ActivePvPMatch", Type = "ChatMessagingLockdownReason", EnumValue = 2, Documentation = { "Chat lockdown is active because the player is in an active and incomplete PvP match." } },
-			},
-		},
-		{
 			Name = "ChatMessagingLockdownRestriction",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -250,6 +237,14 @@ local ChatConstants =
 				{ Name = "TTSVolumeMax", Type = "number", Value = 100 },
 				{ Name = "TTSVolumeDefault", Type = "number", Value = 100 },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RestrictedForMacroChatMessages",
+			Type = "Precondition",
+			Documentation = { "Restricts sending chat messages on chat types that can be observed by external players. Only applies during instance encounters for messages initiated from macros." },
 		},
 	},
 };

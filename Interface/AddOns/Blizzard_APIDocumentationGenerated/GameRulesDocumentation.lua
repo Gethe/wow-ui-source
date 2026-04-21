@@ -330,6 +330,9 @@ local GameRules =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GameRules);

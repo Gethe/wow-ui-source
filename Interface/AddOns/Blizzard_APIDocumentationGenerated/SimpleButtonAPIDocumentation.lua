@@ -482,6 +482,9 @@ local SimpleButtonAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleButtonAPI);

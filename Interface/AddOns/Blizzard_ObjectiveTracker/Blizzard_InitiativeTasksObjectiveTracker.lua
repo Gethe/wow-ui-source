@@ -34,7 +34,7 @@ function InitiativeTasksObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseBut
 			rootDescription:SetTag("MENU_MONTHLY_ACTVITIES_TRACKER");
 
 			rootDescription:CreateTitle(block.name);
-			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_ENDEAVORS_TAB, function()
 				HousingFramesUtil.OpenFrameToTaskID(block.id)
 			end);
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()

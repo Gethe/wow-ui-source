@@ -23,6 +23,9 @@ local UICharacterClassConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UICharacterClassConstants);

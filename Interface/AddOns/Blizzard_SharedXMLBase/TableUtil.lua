@@ -593,6 +593,80 @@ function TableUtil.GetHighestNumericalValueInTable(table)
 	return highestValue;
 end
 
+-- Useful for debugging the differences between two tables.
+function CollectTableDifferences(actual, expected, path, differences, depth)
+	path = path or "";
+	differences = differences or {};
+	depth = depth or 10;
+
+	if depth <= 0 then
+		return differences;
+	end
+
+	-- Check if types match
+	local actualType = type(actual);
+	local expectedType = type(expected);
+
+	if actualType ~= expectedType then
+		table.insert(differences, {
+			path = path == "" and "root" or path,
+			actual = actual,
+			expected = expected,
+			reason = "type mismatch"
+		});
+		return differences;
+	end
+
+	-- If not tables, do direct comparison
+	if actualType ~= "table" then
+		if actual ~= expected then
+			table.insert(differences, {
+				path = path == "" and "root" or path,
+				actual = actual,
+				expected = expected,
+				reason = "value mismatch"
+			});
+		end
+		return differences;
+	end
+
+	-- Both are tables, compare recursively
+	local checkedKeys = {};
+
+	-- Check all keys in expected
+	for key, expectedValue in pairs(expected) do
+		checkedKeys[key] = true;
+		local actualValue = actual[key];
+		local keyPath = path == "" and tostring(key) or (path .. "." .. tostring(key));
+
+		if actualValue == nil then
+			table.insert(differences, {
+				path = keyPath,
+				actual = nil,
+				expected = expectedValue,
+				reason = "missing in actual"
+			});
+		else
+			CollectTableDifferences(actualValue, expectedValue, keyPath, differences, depth - 1);
+		end
+	end
+
+	-- Check for extra keys in actual
+	for key, actualValue in pairs(actual) do
+		if not checkedKeys[key] then
+			local keyPath = path == "" and tostring(key) or (path .. "." .. tostring(key));
+			table.insert(differences, {
+				path = keyPath,
+				actual = actualValue,
+				expected = nil,
+				reason = "extra in actual"
+			});
+		end
+	end
+
+	return differences;
+end
+
 --[[
 This utility creates and returns a table of elements that are sorted by value "priority".
 

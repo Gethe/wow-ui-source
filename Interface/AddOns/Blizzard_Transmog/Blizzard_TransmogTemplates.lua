@@ -688,7 +688,10 @@ function TransmogAppearanceSlotMixin:Update()
 		self.PendingFrame.AnimLoop:Restart();
 
 		-- Only play the intro animation if things actually changed on the slot.
-		if not self.lastOutfitSlotInfo or self.lastOutfitSlotInfo.displayType ~= outfitSlotInfo.displayType or (self.lastOutfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Unassigned and self.lastOutfitSlotInfo.transmogID ~= outfitSlotInfo.transmogID) then
+		if not self.lastOutfitSlotInfo
+			or self.lastOutfitSlotInfo.displayType ~= outfitSlotInfo.displayType
+			or (self.lastOutfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Unassigned and self.lastOutfitSlotInfo.transmogID ~= outfitSlotInfo.transmogID) 
+			or self.lastOutfitSlotInfo.sheatheCategory ~= outfitSlotInfo.sheatheCategory then
 			self.PendingFrame.AnimStart:Restart();
 		end
 	else
@@ -751,8 +754,8 @@ function TransmogSlotFlyoutDropdownMixin:OnMenuOpened(menu)
 end
 
 -- Overridden.
-function TransmogSlotFlyoutDropdownMixin:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function TransmogSlotFlyoutDropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:SetNormalAtlas("transmog-button-pullup", TextureKitConstants.UseAtlasSize);
 end
@@ -982,7 +985,8 @@ TransmogItemModelMixin = CreateFromMixins(ItemModelBaseMixin);
 
 TransmogItemModelMixin.DYNAMIC_EVENTS = {
 	"VIEWED_TRANSMOG_OUTFIT_CHANGED",
-	"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH"
+	"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
+	"UNIT_MODEL_CHANGED"
 };
 
 -- Overridden.
@@ -1029,6 +1033,13 @@ end
 function TransmogItemModelMixin:OnEvent(event, ...)
 	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" then
 		self:UpdateItemBorder();
+	elseif event == "UNIT_MODEL_CHANGED" then
+		-- Catches edge cases where if for any reason the unit model was not yet ready for UI, tries again here.
+		local unit = ...;
+		if unit == "player" and self.needsReload and IsUnitModelReadyForUI("player") then
+			self:Reload();
+			self:UpdateItem();
+		end
 	end
 end
 
@@ -1306,7 +1317,8 @@ end
 TransmogSetBaseModelMixin = {
 	DYNAMIC_EVENTS = {
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
-		"PLAYER_EQUIPMENT_CHANGED"
+		"PLAYER_EQUIPMENT_CHANGED",
+		"TRANSMOG_COLLECTION_ITEM_UPDATE"
 	};
 };
 
@@ -1350,11 +1362,17 @@ end
 
 function TransmogSetBaseModelMixin:OnLeave()
 	GameTooltip:Hide();
+	self.waitingOnData = nil;
 end
 
 function TransmogSetBaseModelMixin:OnEvent(event, ...)
 	if event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "PLAYER_EQUIPMENT_CHANGED" then
 		self:UpdateSet();
+	elseif event == "TRANSMOG_COLLECTION_ITEM_UPDATE" then
+		if self.waitingOnData then
+			self.waitingOnData = nil;
+			self:RefreshTooltip();
+		end
 	end
 end
 
@@ -1486,12 +1504,11 @@ function TransmogSetModelMixin:RefreshTooltip()
 		return;
 	end
 
+	local sourceData = self.elementData.sourceData;
+
 	local totalQuality = 0;
-	local numTotalSlots = 0;
 	local waitingOnQuality = false;
-	local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(self.elementData.set.setID);
-	for _index, primaryAppearance in pairs(primaryAppearances) do
-		numTotalSlots = numTotalSlots + 1;
+	for _index, primaryAppearance in ipairs(sourceData.primaryAppearances) do
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(primaryAppearance.appearanceID);
 		if sourceInfo and sourceInfo.quality then
 			totalQuality = totalQuality + sourceInfo.quality;
@@ -1504,7 +1521,7 @@ function TransmogSetModelMixin:RefreshTooltip()
 	if waitingOnQuality then
 		GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else
-		local setQuality = (numTotalSlots > 0 and totalQuality > 0) and Round(totalQuality / numTotalSlots) or Enum.ItemQuality.Common;
+		local setQuality = (sourceData.numTotal > 0 and totalQuality > 0) and Round(totalQuality / sourceData.numTotal) or Enum.ItemQuality.Common;
 		local setInfo = C_TransmogSets.GetSetInfo(self.elementData.set.setID);
 
 		local colorData = ColorManager.GetColorDataForItemQuality(setQuality);
@@ -1515,14 +1532,43 @@ function TransmogSetModelMixin:RefreshTooltip()
 		end
 
 		if setInfo.label then
-			GameTooltip:AddLine(setInfo.label);
+			local collectedColor = self.elementData.set.collected and NORMAL_FONT_COLOR or GREEN_FONT_COLOR;
+			local collectedFormat = WrapTextInColor(TRANSMOG_SET_COMPLETION_FORMAT, collectedColor);
+			local formattedCollected = string.format(collectedFormat, sourceData.numCollected, sourceData.numTotal);
+
+			local formattedLabelFormat = "%s %s";
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(formattedLabelFormat, setInfo.label, formattedCollected));
 		end
 	end
 
-	if self.elementData.set.collected then
-		GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_SET_COMPLETE);
-	else
-		GameTooltip_AddDisabledLine(GameTooltip, TRANSMOG_SET_INCOMPLETE);
+	-- Populate collected status of set pieces.
+	for _index, primaryAppearance in ipairs(sourceData.primaryAppearances) do
+		local sourceInfo = C_TransmogCollection.GetSourceInfo(primaryAppearance.appearanceID);
+
+		-- It is possible that the collected source for a set is not the primary appearance. Check and use that if present.
+		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
+		local sources = C_TransmogSets.GetSourcesForSlot(self.elementData.set.setID, slot);
+		if not TableIsEmpty(sources) then
+			CollectionWardrobeUtil.SortSources(sources, sourceInfo.visualID, sourceInfo.sourceID);
+			local sourceIndex = CollectionWardrobeUtil.GetDefaultSourceIndex(sources, sourceInfo.sourceID);
+			local sourceID = sources[sourceIndex].sourceID;
+			sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
+		end
+
+		if sourceInfo then
+			if not sourceInfo.name then
+				-- Handle sparse cases.
+				self.waitingOnData = true;
+			else
+				local wrap = false;
+				local leftOffset = 8;
+				if sourceInfo.isCollected then
+					GameTooltip_AddColoredLine(GameTooltip, sourceInfo.name, LIGHTYELLOW_FONT_COLOR, wrap, leftOffset);
+				else
+					GameTooltip_AddDisabledLine(GameTooltip, sourceInfo.name, wrap, leftOffset);
+				end
+			end
+		end
 	end
 
 	GameTooltip:Show();
@@ -1678,15 +1724,72 @@ function TransmogCustomSetModelMixin:RefreshTooltip()
 		return;
 	end
 
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
 	local name, _icon = C_TransmogCollection.GetCustomSetInfo(self.elementData.customSetID);
-	GameTooltip:SetText(name);
+	local totalCount = 0;
+	local collectedCount = 0;
+	local customSetTooltipInfo = {};
 
-	if self.elementData.isCollected then
-		GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_CUSTOM_SET_COMPLETE);
-	else
-		GameTooltip_AddDisabledLine(GameTooltip, TRANSMOG_CUSTOM_SET_INCOMPLETE);
+	local function ProcessApperanceID(appearanceID, isSecondary)
+		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(appearanceID);
+		local sourceInfo = C_TransmogCollection.GetSourceInfo(appearanceID);
+		if not appearanceInfo or not sourceInfo then
+			return;
+		end
+
+		totalCount = totalCount + 1;
+		if appearanceInfo.appearanceIsCollected then
+			collectedCount = collectedCount + 1;
+		end
+
+		if not sourceInfo.name then
+			-- Handle sparse cases.
+			self.waitingOnData = true;
+		else
+			local info = {
+				name = sourceInfo.name,
+				isCollected = appearanceInfo.appearanceIsCollected,
+				isSecondary = isSecondary
+			};
+			table.insert(customSetTooltipInfo, info);
+		end
+	end
+
+	local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(self.elementData.customSetID);
+	for slotID, itemTransmogInfo in ipairs(customSetTransmogInfo) do
+		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID and not C_TransmogCollection.IsAppearanceHiddenVisual(itemTransmogInfo.appearanceID) then
+			local isSecondary = false;
+			ProcessApperanceID(itemTransmogInfo.appearanceID, isSecondary);
+		end
+
+		if itemTransmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID
+			and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID)
+			and itemTransmogInfo.secondaryAppearanceID ~= itemTransmogInfo.appearanceID
+			and not C_TransmogCollection.IsAppearanceHiddenVisual(itemTransmogInfo.secondaryAppearanceID) then
+			local isSecondary = true;
+			ProcessApperanceID(itemTransmogInfo.secondaryAppearanceID, isSecondary);
+		end
+	end
+
+	local collectedColor = NORMAL_FONT_COLOR;
+	if not self.elementData.isCollected then
+		collectedColor = collectedCount == 0 and DISABLED_FONT_COLOR or GREEN_FONT_COLOR;
+	end
+
+	local collectedFormat = WrapTextInColor(TRANSMOG_SET_COMPLETION_FORMAT, collectedColor);
+	local formattedCollected = string.format(collectedFormat, collectedCount, totalCount);
+
+	local formattedLabelFormat = "%s %s";
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddHighlightLine(GameTooltip, string.format(formattedLabelFormat, name, formattedCollected));
+
+	for _index, tooltipInfo in ipairs(customSetTooltipInfo) do
+		local wrap = false;
+		local leftOffset = tooltipInfo.isSecondary and 16 or 8;
+		if tooltipInfo.isCollected then
+			GameTooltip_AddColoredLine(GameTooltip, tooltipInfo.name, LIGHTYELLOW_FONT_COLOR, wrap, leftOffset);
+		else
+			GameTooltip_AddDisabledLine(GameTooltip, tooltipInfo.name, wrap, leftOffset);
+		end
 	end
 
 	GameTooltip:Show();

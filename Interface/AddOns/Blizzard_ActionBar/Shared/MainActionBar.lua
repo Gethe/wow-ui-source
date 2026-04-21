@@ -11,7 +11,12 @@ function MainActionBarMixin:OnLoad()
 end
 
 function MainActionBarMixin:OnShow()
+	self:UpdateEndCaps();
 	MicroMenu:ResetMicroMenuPosition();
+end
+
+function MainActionBarMixin:OnHide()
+	self:UpdateEndCaps(true);
 end
 
 function MainActionBarMixin:SetYOffset(yOffset)

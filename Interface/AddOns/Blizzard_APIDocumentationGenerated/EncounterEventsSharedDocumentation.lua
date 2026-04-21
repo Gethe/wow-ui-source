@@ -40,6 +40,9 @@ local EncounterEventsShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterEventsShared);

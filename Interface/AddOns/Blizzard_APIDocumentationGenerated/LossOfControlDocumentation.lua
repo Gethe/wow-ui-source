@@ -162,6 +162,9 @@ local LossOfControl =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LossOfControl);

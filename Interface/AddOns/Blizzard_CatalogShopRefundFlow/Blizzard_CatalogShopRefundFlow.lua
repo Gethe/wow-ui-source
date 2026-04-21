@@ -213,7 +213,7 @@ function CatalogShopRefundFrameMixin:GetSortAscending()
 	return self.sortAscending;
 end
 
--- TODO (WOW12-45327): Table would be a little cleaner here mapping a SortFields to a default (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+-- TODO (WOW12-45327): Table would be a little cleaner here mapping a SortFields to a default
 function CatalogShopRefundFrameMixin:GetDefaultSortAscending(sortField)
 	if (sortField == SortFields.DecorGUID) then
 		return true;
@@ -332,10 +332,10 @@ function CatalogShopRefundFrameMixin:SelectionsUpdated()
 	-- Flip the select all/select none button if necessary
 	local selectAllButton = self.DecorsScrollBoxContainer.SelectAllButton;
 	if (numUnselected > 0 or (numSelected == 0 and numUnselected == 0)) then
-		selectAllButton:SetText(CATALOG_SHOP_REFUND_FLOW_SELECT_ALL);
+		selectAllButton:SetTextToFit(CATALOG_SHOP_REFUND_FLOW_SELECT_ALL);
 		selectAllButton.isSelectAll = true;
 	else
-		selectAllButton:SetText(CATALOG_SHOP_REFUND_FLOW_SELECT_NONE);
+		selectAllButton:SetTextToFit(CATALOG_SHOP_REFUND_FLOW_SELECT_NONE);
 		selectAllButton.isSelectAll = false;
 	end
 	selectAllButton:SetEnabled(numSelected > 0 or numUnselected > 0);

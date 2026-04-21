@@ -93,6 +93,9 @@ local MacOptions =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MacOptions);

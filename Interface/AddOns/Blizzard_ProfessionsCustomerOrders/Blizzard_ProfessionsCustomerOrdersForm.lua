@@ -733,6 +733,13 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 			slot:SetParent(slotParents[sectionType]);
 
 			slot:Init(transaction, reagentSlotSchematic);
+
+			-- There isn't any reason to display the reagent amount a player has in their inventory once the order
+			-- is committed.
+			if self.committed then
+				slot:SetShowOnlyRequired(true);
+			end
+
 			slot:Show();
 
 			if committed then
@@ -856,19 +863,6 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 						GameTooltip:ProcessInfo(tooltipInfo);
 					end);
 				end
-
-				if committed and reagentSlotSchematic.required then
-					slot:SetCheckmarkShown(hasAnyAllocation);
-					slot:SetCheckmarkAtlas("Professions-Icon-Customer");
-					slot:SetCheckmarkTooltipText(hasAnyAllocation and PROFESSIONS_CUSTOMER_ORDER_REAGENT_PROVIDED);
-
-					if hasAnyAllocation then
-						local quantityRequired = reagentSlotSchematic:GetQuantityRequired(slot:GetReagent());
-						slot:SetOverrideQuantity(quantityRequired);
-					else
-						slot:SetOverrideQuantity(0);
-					end
-				end
 			else
 				slot.Button:SetLocked(false);
 
@@ -970,6 +964,19 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 						end
 					end
 				end);
+			end
+
+			if committed and reagentSlotSchematic.required then
+				slot:SetCheckmarkShown(hasAnyAllocation);
+				slot:SetCheckmarkAtlas("Professions-Icon-Customer");
+				slot:SetCheckmarkTooltipText(hasAnyAllocation and PROFESSIONS_PLAYER_ORDER_REAGENT_PROVIDED);
+			
+				if hasAnyAllocation then
+					local quantityRequired = reagentSlotSchematic:GetQuantityRequired(slot:GetReagent());
+					slot:SetOverrideQuantity(quantityRequired);
+				else
+					slot:SetOverrideQuantity(0);
+				end
 			end
 		end
 	end

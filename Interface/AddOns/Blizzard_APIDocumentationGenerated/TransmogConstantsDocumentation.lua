@@ -36,6 +36,9 @@ local TransmogConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TransmogConstants);

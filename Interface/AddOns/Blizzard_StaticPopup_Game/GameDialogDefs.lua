@@ -1,17 +1,40 @@
+local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+timeFormatter:SetStripIntervalWhitespace(true);
+
+local function SetLockDeclineTimeText(button, originalText, timeleft)
+	local timeText = timeFormatter:Format(timeleft);
+	button:SetText(("%s (%s)"):format(originalText, timeText));
+end
+
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	local button2 = dialog:GetButton2();
+	local originalButtonText = button2:GetText();
+	button2:Disable();
+
+	dialog.originalHideOnEscape = dialog.hideOnEscape;
+	dialog.hideOnEscape = false;
 	dialog.declineTimeLeft = declineTimeLeft or .5;
-	dialog:GetButton2():SetButtonState("NORMAL", true);
+
+	SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
+
 	dialog.ticker = C_Timer.NewTicker(.5, function()
 		dialog.declineTimeLeft = dialog.declineTimeLeft - .5;
-		if (dialog.declineTimeLeft == 0) then
+
+		if dialog.declineTimeLeft <= 0 then
 			dialog.ticker:Cancel();
-			dialog:GetButton2():SetButtonState("NORMAL", false);
-			return;
+			button2:Enable();
+			button2:SetText(originalButtonText);
+
+			dialog.hideOnEscape = dialog.originalHideOnEscape;
+			dialog.declineTimeLeft = nil;
+			dialog.ticker = nil;
+			dialog.originalHideOnEscape = nil;
 		else
-			dialog:GetButton2():SetButtonState("NORMAL", true);
+			button2:Disable();
+			SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
 		end
 	end);
-	dialog.hideOnEscape = false;
 end
 
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
@@ -917,7 +940,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	button1 = ACCEPT_ALT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.CHANINVITE.include, AUTOCOMPLETE_LIST.CHANINVITE.exclude },
 	maxLetters = 31,
 	whileDead = 1,
@@ -1501,7 +1524,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
 	maxLetters = 12 + 1 + 64,
 	OnAccept = function(dialog, data)
@@ -1605,7 +1628,7 @@ StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
 	OnShow = function(dialog, data)
 		local currentNote = data.interactionData.note;
 		dialog:GetEditBox():SetText(currentNote or "");
-		
+
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1723,7 +1746,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.IGNORE.include, AUTOCOMPLETE_LIST.IGNORE.exclude },
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(dialog, data)
@@ -2857,7 +2880,7 @@ StaticPopupDialogs["SAVED_VARIABLES_TOO_LARGE"] = {
 };
 
 StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
-	text = PRODUCT_CLAIMING_FAILED,
+	text = "",
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,

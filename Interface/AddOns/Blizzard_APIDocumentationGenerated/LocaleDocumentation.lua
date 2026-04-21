@@ -81,6 +81,9 @@ local Locale =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Locale);

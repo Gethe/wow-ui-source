@@ -22,6 +22,9 @@ local CompactUnitFrames =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CompactUnitFrames);

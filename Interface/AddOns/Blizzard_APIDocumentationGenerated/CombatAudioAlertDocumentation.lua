@@ -250,6 +250,9 @@ local CombatAudioAlert =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatAudioAlert);

@@ -270,6 +270,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-card" useAtlasSize="true" setAllPoints="true"/>
+				<Texture parentKey="RewardCardBGGlow" atlas="ui-journeys-delve-card-glow" useAtlasSize="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="RewardCardIcon">
@@ -296,14 +297,26 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="RewardCardIconBorderDefault" atlas="UI-Frame-IconBorder" useAtlasSize="false">
-					<Size x="50" y="50"/>
+				<Texture parentKey="RewardCardIconBorderDefault" atlas="ui-journeys-delve-rewardicon-square-frame" useAtlasSize="false">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FrameGlow" alpha="0" atlas="ui-journeys-delve-rewardicon-square-frame-glow" useAtlasSize="false">
+					<Size x="58" y="58"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+				<Alpha childKey="FrameGlow" duration="1" order="1" startDelay="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="FrameGlow" duration="1" order="2" endDelay="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<!-- Journeys Frame -->
@@ -456,7 +469,7 @@
 					<Frame parentKey="DelvesCompanionConfigurationFrame" hidden="true">
 						<Size x="310" y="85"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-15"/>
 							<Anchor point="CENTER"/>
 						</Anchors>
 						<Frames>

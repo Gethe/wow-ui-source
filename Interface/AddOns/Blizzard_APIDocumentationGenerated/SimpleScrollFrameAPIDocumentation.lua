@@ -123,6 +123,9 @@ local SimpleScrollFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleScrollFrameAPI);

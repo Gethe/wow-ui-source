@@ -101,7 +101,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WallWarning" inherits="GameFontDisableSmall" text="HOUSING_DECOR_CUSTOMIZATION_WALL_WARNING">
+				<FontString parentKey="Warning" inherits="GameFontDisableSmall" text="HOUSING_DECOR_CUSTOMIZATION_WALL_WARNING">
 					<KeyValues>
 						<KeyValue key="topPadding" value="10" type="number"/>
 						<KeyValue key="bottomPadding" value="-10" type="number"/>

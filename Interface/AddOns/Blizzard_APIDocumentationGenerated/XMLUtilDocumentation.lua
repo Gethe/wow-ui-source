@@ -74,6 +74,9 @@ local XMLUtil =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(XMLUtil);

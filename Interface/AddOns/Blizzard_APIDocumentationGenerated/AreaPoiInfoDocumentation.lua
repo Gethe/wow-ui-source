@@ -174,8 +174,13 @@ local AreaPoiInfo =
 				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
 				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
 				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
+				{ Name = "isSuppressible", Type = "bool", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

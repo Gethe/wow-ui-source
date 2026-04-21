@@ -8,8 +8,8 @@ Blizzard_HousingCatalogUtil.lua
 Blizzard_HousingData.lua
 Blizzard_HousingCatalogEntry.lua
 Blizzard_HousingCatalogEntry.xml
-Blizzard_HousingCatalogBundleDisplay.lua
-Blizzard_HousingCatalogBundleDisplay.xml
+Blizzard_HousingMarketProductDisplay.lua
+Blizzard_HousingMarketProductDisplay.xml
 Blizzard_HousingCatalogCategories.lua
 Blizzard_HousingCatalogCategories.xml
 Blizzard_HousingCatalogFilters.lua

@@ -52,6 +52,9 @@ local ZoneAbility =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ZoneAbility);

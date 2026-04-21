@@ -31,8 +31,8 @@ function DamageMeterSettingsDropdownButton:OnMenuOpened(menu)
 	self:OnButtonStateChanged();
 end
 
-function DamageMeterSettingsDropdownButton:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function DamageMeterSettingsDropdownButton:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:OnButtonStateChanged();
 end

@@ -20,7 +20,7 @@ function VoiceActivityManagerMixin:OnLoad()
 
 	self.notificationTemplates = { "VoiceActivityNotificationTemplate" };
 	self.externalNotificationTemplates = {};
-	self.notificationPools = CreateFramePoolCollection();
+	self.notificationPools = CreateUnsecuredFramePoolCollection(); -- secret guids from communities lead to secret frame templates which are incompatible with secure pools
 
 	for index, templateType in ipairs(self.notificationTemplates) do
 		self.notificationPools:CreatePool("ContainedAlertFrame", self, templateType);

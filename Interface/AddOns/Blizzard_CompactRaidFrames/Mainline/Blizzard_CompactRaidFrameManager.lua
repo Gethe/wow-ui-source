@@ -298,7 +298,7 @@ function CompactRaidFrameManager_UpdateShown()
 		return;
 	end
 
-	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
+	local showManager = (IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown()) and not C_Commentator.IsSpectating();
 	CompactRaidFrameManager:SetShown(showManager);
 
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();
@@ -712,8 +712,8 @@ function CRFM_DifficultyDropdownMixin:OnMenuOpened(menu)
 	self:OnButtonStateChanged();
 end
 
-function CRFM_DifficultyDropdownMixin:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function CRFM_DifficultyDropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:OnButtonStateChanged();
 end

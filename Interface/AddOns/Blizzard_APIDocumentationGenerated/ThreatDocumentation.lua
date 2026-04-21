@@ -41,6 +41,9 @@ local Threat =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Threat);

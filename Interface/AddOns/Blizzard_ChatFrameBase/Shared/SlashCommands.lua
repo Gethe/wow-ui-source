@@ -160,9 +160,12 @@ SLASH_COMMAND = {
 	SPECTATOR_SOLORBG_WARGAME = "SPECTATOR_SOLORBG_WARGAME",
 	GUILDFINDER = "GUILDFINDER",
 	TRANSMOG_CUSTOM_SET = "TRANSMOG_CUSTOM_SET",
+	TRANSMOG_OUTFIT = "TRANSMOG_OUTFIT",
 	COMMUNITY = "COMMUNITY",
 	RAF = "RAF",
 	EDITMODE = "EDITMODE",
+	COOLDOWN_MANAGER = "COOLDOWNMANAGER",
+	CLICK_CASTING = "CLICKCASTING",
 };
 
 SLASH_COMMAND_CATEGORY = {
@@ -804,7 +807,10 @@ end);
 SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.EQUIP_SET, SLASH_COMMAND_CATEGORY.EQUIPMENT, function(msg)
 	local set = SecureCmdOptionParse(msg);
 	if ( set and set ~= "" ) then
-		C_EquipmentSet.UseEquipmentSet(C_EquipmentSet.GetEquipmentSetID(set));
+		local equipmentSetID = C_EquipmentSet.GetEquipmentSetID(set);
+		if equipmentSetID ~= nil then
+			C_EquipmentSet.UseEquipmentSet(equipmentSetID);
+		end
 	end
 end);
 
@@ -1379,7 +1385,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 	end
 
 	-- Prefixing with an "!" will prevent toggling the marker if it's already assigned.
-	if ( string.find(marker, "^!") ) then
+	if ( marker and string.find(marker, "^!") ) then
 		marker = tonumber(string.match(marker, "%d+"));
 
 		if ( GetRaidTargetIndex(target) == marker ) then
@@ -1641,5 +1647,28 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CAT
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsVisible() ) then
 		ToggleRaidFrame();
+	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
+	local parsedIndex = SecureCmdOptionParse(msg);
+	if parsedIndex == "" then
+		-- If run with no arguments, act as a clear.
+		C_TransmogOutfitInfo.ClearOutfit();
+	elseif parsedIndex ~= nil then
+		-- Note if applying the same outfit that is already applied, it will be treated as a clear unless the index is prefixed by '!'.
+		local allowRemoveOutfit = true;
+		if string.sub(parsedIndex, 1, 1) == "!" then
+			allowRemoveOutfit = false;
+			parsedIndex = string.sub(parsedIndex, 2, #parsedIndex);
+		end
+
+		-- playerFacingOutfitIndex is slightly different from outfitID that the transmog system uses, as it's a bit more player friendly (outfitIDs may have gaps).
+		-- 0 - Trial of Style outfit (if available).
+		-- 1+ - Corresponding outfit (if unlocked).
+		local playerFacingOutfitIndex = tonumber(parsedIndex);
+		if playerFacingOutfitIndex then
+			C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
+		end
 	end
 end);

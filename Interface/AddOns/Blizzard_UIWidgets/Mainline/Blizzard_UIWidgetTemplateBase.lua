@@ -498,6 +498,7 @@ end
 
 function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width, textureKit, tooltipLoc)
 	self.spellInfo = spellInfo;
+	self.textureKit = textureKit;
 
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
@@ -618,12 +619,11 @@ function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
 				hasBorderTexture = true;
 			elseif self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular then
 				local offsetX, offsetY = 0, 0;
-				if(textureKit == "itembelt-frame") then
+				if(self.textureKit == "itembelt-frame") then
 					offsetX = 4;
 					offsetY = 4;
 				end
-
-				self.Border:SetAtlas(textureKit or "Artifacts-PerkRing-Final", false);
+				self.Border:SetAtlas(self.textureKit or "Artifacts-PerkRing-Final", false);
 				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 
 				self.Border:ClearAllPoints();

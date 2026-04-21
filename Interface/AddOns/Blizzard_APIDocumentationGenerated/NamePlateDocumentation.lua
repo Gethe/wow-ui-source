@@ -63,6 +63,9 @@ local NamePlate =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(NamePlate);

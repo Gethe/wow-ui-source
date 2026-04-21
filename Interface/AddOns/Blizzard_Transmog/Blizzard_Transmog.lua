@@ -55,10 +55,14 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	button3 = CANCEL,
 	selectCallbackByIndex = true,
 	OnButton1 = function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 		local useAvailableDiscount = true;
 		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 	end,
 	OnButton2 = function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 		local useAvailableDiscount = false;
 		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 	end,
@@ -66,7 +70,7 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	end,
 	OnShow = function(dialog, _data)
 		-- Disable 'Use Gold' button if player cannot afford.
-		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		local cost, _modifierFlags = C_TransmogOutfitInfo.GetPendingTransmogCost();
 		local canAfford = cost and cost <= GetMoney();
 		dialog:GetButton2():SetEnabled(canAfford);
 	end,
@@ -111,6 +115,7 @@ function TransmogFrameMixin:OnLoad()
 	if not HelpPlatesSupported() then
 		self.HelpPlateButton:Hide();
 	end
+
 	self.HelpPlateButton:SetScript("OnClick", function()
 		if not HelpPlate.IsShowingHelpInfo(self.HELP_PLATE_INFO) then
 			self:RefreshHelpPlate();
@@ -120,6 +125,16 @@ function TransmogFrameMixin:OnLoad()
 			HelpPlate.Hide(userToggled);
 		end
 	end);
+
+	self.OutfitCollection.MoneyFrame.TooltipOverlay:SetScript("OnEnter", function()
+		local costModifierTooltip = self.OutfitCollection:GetCostModifierTooltip();
+		if costModifierTooltip then
+			GameTooltip:SetOwner(self.OutfitCollection.MoneyFrame.TooltipOverlay, "ANCHOR_RIGHT");
+			GameTooltip:SetText(costModifierTooltip);
+		end
+	end);
+
+	self.OutfitCollection.MoneyFrame.TooltipOverlay:SetScript("OnLeave", GameTooltip_Hide);
 
 	local function OutfitCollectionFrameCollapsedCallback()
 		self:SetWidth(self.collapsedWidth);
@@ -279,10 +294,46 @@ function TransmogFrameMixin:RefreshHelpPlate()
 end
 
 function TransmogFrameMixin:UpdateCostDisplay()
-	local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+	local cost, modifierFlags = C_TransmogOutfitInfo.GetPendingTransmogCost();
+	SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "white");
+
+	local costModifierTooltip = nil;
+	if modifierFlags then
+		local auraModifier = FlagsUtil.IsSet(modifierFlags, Enum.TransmogOutfitCostModifiersApplied.AuraDiscountApplied);
+		local outfitModifier = FlagsUtil.IsSet(modifierFlags, Enum.TransmogOutfitCostModifiersApplied.OutfitCostModifierApplied);
+		local voidElfModifier = FlagsUtil.IsSet(modifierFlags, Enum.TransmogOutfitCostModifiersApplied.VoidRacialDiscountApplied);
+
+		if auraModifier or outfitModifier or voidElfModifier then
+			SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "green");
+
+			if cost == 0 then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_FREE;
+			end
+		end
+
+		if not costModifierTooltip then
+			if auraModifier and outfitModifier and voidElfModifier then
+				-- Uses aura + void elf text.
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_AURA_VOID_ELF;
+			elseif auraModifier and outfitModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_AURA_OUTFIT;
+			elseif auraModifier and voidElfModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_AURA_VOID_ELF;
+			elseif outfitModifier and voidElfModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_OUTFIT_VOID_ELF;
+			elseif auraModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_AURA;
+			elseif outfitModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_OUTFIT;
+			elseif voidElfModifier then
+				costModifierTooltip = TRANSMOG_COST_MODIFIER_TOOLTIP_VOID_ELF;
+			end
+		end
+	end
+	self.OutfitCollection:SetCostModifierTooltip(costModifierTooltip);
+
 	local canApply = false;
 	local canClear = false;
-	SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "white");
 	self.OutfitCollection:SetSaveOutfitDisabledTooltip(nil);
 	if cost then
 		canClear = true;
@@ -300,11 +351,26 @@ function TransmogFrameMixin:UpdateCostDisplay()
 	MoneyFrame_Update(self.OutfitCollection.MoneyFrame.Money, cost or 0, true);
 	self.OutfitCollection.SaveOutfitButton:SetEnabled(canApply);
 	self.CharacterPreview.ClearAllPendingButton:SetShown(canClear);
+
+	if canApply and not C_TransmogOutfitInfo.IsUsableDiscountAvailable() then
+		local offsetX = 10;
+		local offsetY = 0;
+		GlowEmitterFactory:Show(self.OutfitCollection.SaveOutfitButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow, offsetX, offsetY);
+	else
+		GlowEmitterFactory:Hide(self.OutfitCollection.SaveOutfitButton);
+	end
 end
 
 function TransmogFrameMixin:SelectSlot(slotFrame, forceRefresh)
 	-- Visually update selected slot
 	self.CharacterPreview:UpdateSlot(slotFrame.slotData, forceRefresh);
+
+	-- It is possible that when updating the character preview slot, we noticed slotFrame is no longer valid (is now disabled etc.) and have selected a new slot in that flow.
+	-- Do not update the wardrobe collection with the now stale data in such case.
+	local selectedSlotData = self.CharacterPreview:GetSelectedSlotData();
+	if selectedSlotData ~= slotFrame.slotData then
+		return;
+	end
 
 	-- Navigate to correct items in collection.
 	self.WardrobeCollection:UpdateSlot(slotFrame.slotData, forceRefresh);
@@ -312,6 +378,10 @@ end
 
 function TransmogFrameMixin:GetViewedOutfitIcons()
 	return self.CharacterPreview:GetCurrentTransmogIcons();
+end
+
+function TransmogFrameMixin:ToggleSheathe()
+	self.CharacterPreview:ToggleSheathe();
 end
 
 TransmogOutfitCollectionMixin = {
@@ -405,12 +475,14 @@ function TransmogOutfitCollectionMixin:InitSaveOutfitElements()
 	self.SaveOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.SaveOutfitButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
-
-		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		local cost, _modifierFlags = C_TransmogOutfitInfo.GetPendingTransmogCost();
 		if C_TransmogOutfitInfo.IsUsableDiscountAvailable() and cost and cost > 0 then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+
 			StaticPopup_Show("CONFIRM_TRANSMOG_USABLE_DISCOUNT");
 		else
+			PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
+
 			local useAvailableDiscount = false;
 			C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
 		end
@@ -463,7 +535,9 @@ function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutfit)
 	local outfitID = selectActiveOutfit and C_TransmogOutfitInfo.GetActiveOutfitID() or viewedOutfitID;
 	if outfitID == 0 then
 		local firstElementData = dataProvider:Find(1);
-		outfitID = firstElementData.outfitID;
+		if firstElementData then
+			outfitID = firstElementData.outfitID;
+		end
 	end
 
 	-- Make sure to set the viewed outfit when first opening the frame, otherwise only call if it changed.
@@ -520,7 +594,6 @@ function TransmogOutfitCollectionMixin:UpdateShowEquippedGearButton()
 	local activeOutfit = C_TransmogOutfitInfo.IsEquippedGearOutfitDisplayed();
 	overlayFX.OverlayActive:SetShown(activeOutfit);
 	self.ShowEquippedGearSpellFrame.Label:SetFontObject(activeOutfit and "GameFontHighlight" or "GameFontNormal");
-	self.ShowEquippedGearSpellFrame.Checkmark:SetShown(activeOutfit);
 
 	local isLockedOutfit = C_TransmogOutfitInfo.IsEquippedGearOutfitLocked();
 	overlayFX.OverlayLocked:SetShown(isLockedOutfit);
@@ -610,6 +683,13 @@ function TransmogOutfitCollectionMixin:SetSaveOutfitDisabledTooltip(tooltip)
 	self.saveOutfitDisabledTooltip = tooltip;
 end
 
+function TransmogOutfitCollectionMixin:GetCostModifierTooltip()
+	return self.costModifierTooltip;
+end
+
+function TransmogOutfitCollectionMixin:SetCostModifierTooltip(tooltip)
+	self.costModifierTooltip = tooltip;
+end
 
 ShowEquippedGearSpellFrameMixin = {};
 
@@ -754,7 +834,21 @@ function TransmogCharacterMixin:OnLoad()
 		self.SavedFrame:Hide();
 	end);
 
-	self.HideIgnoredToggle.Checkbox:SetScript("OnClick", function()
+	self:InitClearAllPendingButton();
+	self:InitToggleOptions();
+
+	local function OnSlotReleased(pool, slot)
+		slot:Release();
+		Pool_HideAndClearAnchors(pool, slot);
+	end
+	self.CharacterAppearanceSlotFramePool = CreateFramePool("BUTTON", self, "TransmogAppearanceSlotTemplate", OnSlotReleased);
+	self.CharacterIllusionSlotFramePool = CreateFramePool("BUTTON", self, "TransmogIllusionSlotTemplate", OnSlotReleased);
+
+	self.ModelScene.ControlFrame:SetModelScene(self.ModelScene);
+end
+
+function TransmogCharacterMixin:InitToggleOptions()
+	self.ToggleOptions.HideIgnoredToggle.Checkbox:SetScript("OnClick", function()
 		local toggledOn = not GetCVarBool("transmogHideIgnoredSlots");
 		if toggledOn then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -767,6 +861,49 @@ function TransmogCharacterMixin:OnLoad()
 		self:RefreshSlots();
 	end);
 
+	self.ToggleOptions.SheatheWeaponToggle.Checkbox:SetScript("OnClick", function()
+		local actor = self.ModelScene:GetPlayerActor();
+		if not actor then
+			return;
+		end
+
+		local toggledOn = not actor:GetSheathed();
+		if toggledOn then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+		
+		self:ToggleSheathe();
+	end);
+
+	self.ToggleOptions.SheatheWeaponToggle.Checkbox:SetScript("OnEnter", function(button)
+		local bindingAvailableFormat = "%s %s";
+		local keyStringFormat = WrapTextInColor("(%s)", NORMAL_FONT_COLOR);
+		local tooltipText = FormatBindingKeyIntoText(TRANSMOG_SHEATHE_WEAPON_TOOLTIP, "TOGGLESHEATH", bindingAvailableFormat, keyStringFormat);
+
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+		GameTooltip_AddHighlightLine(GameTooltip, tooltipText);
+		GameTooltip:Show();
+	end);
+
+	self.ToggleOptions.SheatheWeaponToggle.Checkbox:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.ToggleOptions.PreviewedWeaponToggle.Checkbox:SetScript("OnClick", function()
+		local toggledOn = not GetCVarBool("transmogPreviewedWeaponToggle");
+		if toggledOn then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+
+		SetCVar("transmogPreviewedWeaponToggle", toggledOn);
+		self:RefreshPreviewedWeaponToggle();
+		self:RefreshSlots();
+	end);
+end
+
+function TransmogCharacterMixin:InitClearAllPendingButton()
 	self.ClearAllPendingButton:SetScript("OnMouseDown", function(button)
 		button.Icon:SetPoint("CENTER", 2, -2);
 	end);
@@ -786,15 +923,6 @@ function TransmogCharacterMixin:OnLoad()
 		PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
 		C_TransmogOutfitInfo.ClearAllPendingTransmogs();
 	end);
-
-	local function OnSlotReleased(pool, slot)
-		slot:Release();
-		Pool_HideAndClearAnchors(pool, slot);
-	end
-	self.CharacterAppearanceSlotFramePool = CreateFramePool("BUTTON", self, "TransmogAppearanceSlotTemplate", OnSlotReleased);
-	self.CharacterIllusionSlotFramePool = CreateFramePool("BUTTON", self, "TransmogIllusionSlotTemplate", OnSlotReleased);
-
-	self.ModelScene.ControlFrame:SetModelScene(self.ModelScene);
 end
 
 function TransmogCharacterMixin:OnShow()
@@ -808,6 +936,8 @@ function TransmogCharacterMixin:OnShow()
 	self.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	self:RefreshPlayerModel();
 	self:RefreshHideIgnoredToggle();
+	self:RefreshSheatheWeaponToggle();
+	self:RefreshPreviewedWeaponToggle();
 end
 
 function TransmogCharacterMixin:OnHide()
@@ -868,6 +998,16 @@ function TransmogCharacterMixin:HandleFormChanged()
 			self:Refresh();
 		end
 	end
+end
+
+function TransmogCharacterMixin:ToggleSheathe()
+	local actor = self.ModelScene:GetPlayerActor();
+	if not actor then
+		return;
+	end
+
+	actor:SetSheathed(not actor:GetSheathed());
+	self:RefreshSheatheWeaponToggle();
 end
 
 function TransmogCharacterMixin:SetupSlots()
@@ -963,13 +1103,34 @@ end
 
 function TransmogCharacterMixin:RefreshHideIgnoredToggle()
 	if not DisplayTypeUnassignedSupported() then
-		self.HideIgnoredToggle:Hide();
+		self.ToggleOptions.HideIgnoredToggle:Hide();
 		return;
 	end;
 
 	local hideIgnored = GetCVarBool("transmogHideIgnoredSlots");
-	self.HideIgnoredToggle.Checkbox:SetChecked(hideIgnored);
-	self.HideIgnoredToggle.Text:SetFontObject(hideIgnored and "GameFontHighlight" or "GameFontNormal");
+	self.ToggleOptions.HideIgnoredToggle.Checkbox:SetChecked(hideIgnored);
+	self.ToggleOptions.HideIgnoredToggle.Text:SetFontObject(hideIgnored and "GameFontHighlight" or "GameFontNormal");
+end
+
+function TransmogCharacterMixin:RefreshSheatheWeaponToggle()
+	local actor = self.ModelScene:GetPlayerActor();
+	if not actor then
+		return;
+	end
+
+	self.ToggleOptions.SheatheWeaponToggle.Checkbox:SetChecked(actor:GetSheathed());
+	self.ToggleOptions.SheatheWeaponToggle.Text:SetFontObject(actor:GetSheathed() and "GameFontHighlight" or "GameFontNormal");
+end
+
+function TransmogCharacterMixin:RefreshPreviewedWeaponToggle()
+	if not C_PaperDollInfo.IsRangedSlotShown() then
+		self.ToggleOptions.PreviewedWeaponToggle:Hide();
+		return;
+	end
+	
+	local showRanged = GetCVarBool("transmogPreviewedWeaponToggle");
+	self.ToggleOptions.PreviewedWeaponToggle.Checkbox:SetChecked(showRanged);
+	self.ToggleOptions.PreviewedWeaponToggle.Text:SetFontObject(showRanged and "GameFontHighlight" or "GameFontNormal");
 end
 
 function TransmogCharacterMixin:RefreshPlayerModel()
@@ -1004,6 +1165,11 @@ function TransmogCharacterMixin:RefreshSlots()
 	if not actor then
 		return;
 	end
+
+	-- Force the character preview to use the ranged weapon if the ranged toggle is enabled or we have the ranged slot selected
+	local mainOrOHSlotSelected = self.selectedSlotData and self.selectedSlotData.transmogLocation:IsEitherHand();
+	local rangedSlotSelected = self.selectedSlotData and self.selectedSlotData.transmogLocation:IsRangedSlot();
+	local previewRangedWeapon = C_PaperDollInfo.IsRangedSlotShown() and ((GetCVarBool("transmogPreviewedWeaponToggle") and not mainOrOHSlotSelected) or rangedSlotSelected);
 
 	for slotFrame in self.CharacterAppearanceSlotFramePool:EnumerateActive() do
 		slotFrame:Update();
@@ -1049,7 +1215,6 @@ function TransmogCharacterMixin:RefreshSlots()
 
 			local transmogLocation = slotFrame:GetTransmogLocation();
 			if transmogLocation then
-
 				local slotID = transmogLocation:GetSlotID();
 				if slotID ~= nil then
 					local appearanceID = slotFrame:GetEffectiveTransmogID();
@@ -1067,15 +1232,32 @@ function TransmogCharacterMixin:RefreshSlots()
 
 					-- Update only if there is a change or it can recurse (offhand is processed first and mainhand might override offhand).
 					if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or isLegionArtifact then
+						-- if we are replacing, we need to reset the sheathing location for removal
+					
+						if transmogLocation:IsEitherHand() or transmogLocation:IsRangedSlot() then
+							actor:SetSheathedCategory(slotID, Enum.TransmogOutfitSlotOptionSheatheCategory.Default);
+						end
+
 						if appearanceID == Constants.Transmog.NoTransmogID then
 							actor:UndressSlot(slotID);
 						else
+
+							local slotToSetID = slotID;
 							-- Don't specify a slot for ranged weapons.
-							if mainHandCategoryID and TransmogUtil.IsCategoryRangedWeapon(mainHandCategoryID) then
-								slotID = nil;
+							if transmogLocation:IsRangedSlot() or (mainHandCategoryID and TransmogUtil.IsCategoryRangedWeapon(mainHandCategoryID)) then
+								slotToSetID = nil;
 							end
-							actor:SetItemTransmogInfo(itemTransmogInfo, slotID);
+
+							if not previewRangedWeapon or not transmogLocation:IsEitherHand() then
+								actor:SetItemTransmogInfo(itemTransmogInfo, slotToSetID);
+							end
 						end
+					end
+
+					-- If this is a weapon slot, make sure that the current sheathing type is reflected correctly.
+					if transmogLocation:IsEitherHand() or transmogLocation:IsRangedSlot() then
+						local slotInfo = slotFrame:GetSlotInfo();
+						actor:SetSheathedCategory(slotID, slotInfo.sheatheCategory);
 					end
 				end
 			end
@@ -1125,6 +1307,28 @@ function TransmogCharacterMixin:SetInitialSelectedSlot()
 	return selectionFound;
 end
 
+function TransmogCharacterMixin:ShouldForceRefreshOnSlotUpdate(slotData)
+	if not C_PaperDollInfo.IsRangedSlotShown() or
+	not self.selectedSlotData or
+	not self.selectedSlotData.transmogLocation then
+		return false
+	end
+
+	local selectedDataRanged = self.selectedSlotData.transmogLocation:IsRangedSlot();
+	local selectedDataEitherHand = self.selectedSlotData.transmogLocation:IsEitherHand();
+
+	local slotDataRanged = slotData.transmogLocation:IsRangedSlot();
+	local slotDataEitherHand = slotData.transmogLocation:IsEitherHand();
+
+	if  (selectedDataEitherHand and not slotDataEitherHand) or -- Came from MhOh - going to Ranged / Gear
+		(selectedDataRanged and not slotDataRanged) or -- Came from Ranged - going to MhOh / Gear
+		((not selectedDataEitherHand and not selectedDataRanged) and (slotDataEitherHand or slotDataRanged)) then -- Came from Gear - going to MhOh / Ranged
+		return true;
+	end
+
+	return false;
+end
+
 function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 	if not slotData then
 		self.selectedSlotData = nil;
@@ -1136,6 +1340,8 @@ function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 			-- If the previous selected slot was either hand slot, and the associated help tip hasn't been acknowledged, mark it as seen as it should have been viewed by now.
 			HelpTip:HideAllSystem("TransmogCharacter");
 		end
+
+		forceRefresh = self:ShouldForceRefreshOnSlotUpdate(slotData);
 
 		self.selectedSlotData = slotData;
 		local showHelptip = self.selectedSlotData.transmogLocation:IsEitherHand() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogWeaponOptions);
@@ -1152,6 +1358,10 @@ function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 
 		for slotFrame in self.CharacterIllusionSlotFramePool:EnumerateActive() do
 			slotFrame:SetSelected(slotFrame.slotData.transmogLocation and self.selectedSlotData.transmogLocation and slotFrame.slotData.transmogLocation:IsEqual(self.selectedSlotData.transmogLocation));
+		end
+
+		if forceRefresh then
+			self:RefreshSlots();
 		end
 	elseif forceRefresh then
 		self.selectedSlotData = slotData;
@@ -1399,6 +1609,7 @@ TransmogWardrobeItemsMixin = {
 		["COLLECTION_ITEM"] = { template = "TransmogItemModelTemplate", initFunc = TransmogItemModelMixin.Init, resetFunc = TransmogItemModelMixin.Reset }
 	};
 	WEAPON_DROPDOWN_WIDTH = 168;
+	WEAPON_SHEATHE_DROPDOWN_WIDTH = 190;
 };
 
 function TransmogWardrobeItemsMixin:OnLoad()
@@ -1406,6 +1617,7 @@ function TransmogWardrobeItemsMixin:OnLoad()
 	self.PagedContent:SetElementTemplateData(self.COLLECTION_TEMPLATES);
 	self.SearchBox:SetSearchType(self.searchType);
 	self.WeaponDropdown:SetWidth(self.WEAPON_DROPDOWN_WIDTH);
+	self.WeaponSheatheDropdown:SetWidth(self.WEAPON_SHEATHE_DROPDOWN_WIDTH);
 
 	local function SetPendingDisplayTypeForSlot(displayType)
 		local selectedSlotData = self:GetSelectedSlotCallback();
@@ -1515,6 +1727,7 @@ function TransmogWardrobeItemsMixin:OnEvent(event, ...)
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" then
 		self:RefreshDisplayTypeButtons();
 		self:RefreshCollectionEntries();
+		self:RefreshWeaponSheatheDropdown();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SECONDARY_SLOTS_CHANGED" then
 		self:RefreshActiveSlotTitle();
 		self:RefreshCameras();
@@ -1593,6 +1806,7 @@ function TransmogWardrobeItemsMixin:Reset()
 	self.activeCategoryID = nil;
 	self.lastWeaponCategoryID = nil;
 	self.transmogLocation = nil;
+	self.weaponSheatheCategoryID = nil;
 	self.itemCollectionEntries = nil;
 	self.chosenVisualSources = {};
 	self.PagedContent:SetDataProvider(CreateDataProvider());
@@ -1614,6 +1828,7 @@ function TransmogWardrobeItemsMixin:Refresh()
 	self:RefreshWeaponDropdown();
 	self:RefreshDisplayTypeButtons();
 	self:RefreshSecondaryAppearanceToggle();
+	self:RefreshWeaponSheatheDropdown();
 	self:RefreshCollectionEntries();
 end
 
@@ -1671,7 +1886,6 @@ function TransmogWardrobeItemsMixin:RefreshWeaponDropdown()
 	end
 
 	local activeCollectionInfo = C_TransmogOutfitInfo.GetCollectionInfoForSlotAndOption(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentWeaponOptionInfo.weaponOption, self.activeCategoryID);
-
 	if not activeCollectionInfo or not activeCollectionInfo.isWeapon then
 		self.WeaponDropdown:Hide();
 		return;
@@ -1700,6 +1914,9 @@ function TransmogWardrobeItemsMixin:RefreshWeaponDropdown()
 	local function SetSelected(categoryID)
 		if categoryID ~= self.activeCategoryID then
 			self:SetActiveCategory(categoryID);
+
+			-- Reapply current search on new collection.
+			self:RefreshFilterButtons();
 		end
 	end
 
@@ -1732,8 +1949,15 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 
 	-- Slightly different logic if the current weapon option is an artifact option.
 	local artifactOptionSelected = false;
-	if selectedSlotData.artifactOptionsInfo then
-		for _index, artifactOptionInfo in ipairs(selectedSlotData.artifactOptionsInfo) do
+	local artifactOptionsInfo = selectedSlotData.artifactOptionsInfo;
+	if not artifactOptionsInfo and selectedSlotData.transmogLocation:IsIllusion() then
+		-- Illusions have no knowledge of possible weapon options, try to grab them here.
+		local _weaponOptionsInfo;
+		_weaponOptionsInfo, artifactOptionsInfo = C_TransmogOutfitInfo.GetWeaponOptionsForSlot(selectedSlotData.transmogLocation:GetSlot());
+	end
+
+	if artifactOptionsInfo then
+		for _index, artifactOptionInfo in ipairs(artifactOptionsInfo) do
 			if artifactOptionInfo.weaponOption == selectedSlotData.currentWeaponOptionInfo.weaponOption then
 				artifactOptionSelected = true;
 				break;
@@ -1855,13 +2079,60 @@ function TransmogWardrobeItemsMixin:RefreshSecondaryAppearanceToggle()
 	end
 end
 
+function TransmogWardrobeItemsMixin:RefreshWeaponSheatheDropdown()
+	local defaultSheatheCategory = nil;
+	self:SetWeaponSheatheCategory(defaultSheatheCategory);
+
+	local selectedSlotData = self:GetSelectedSlotCallback();
+	if not selectedSlotData or not selectedSlotData.transmogLocation or selectedSlotData.transmogLocation:IsIllusion() or not (selectedSlotData.transmogLocation:IsEitherHand() or selectedSlotData.transmogLocation:IsRangedSlot()) then
+		self.WeaponSheatheDropdown:Hide();
+		return;
+	end
+
+	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
+	if not outfitSlotInfo or outfitSlotInfo.transmogID == Constants.Transmog.NoTransmogID or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned then
+		self.WeaponSheatheDropdown:Hide();
+		return;
+	end
+
+	self:SetWeaponSheatheCategory(outfitSlotInfo.sheatheCategory);
+
+	local categoryInfo = C_TransmogOutfitInfo.GetAllTransmogOutfitOptionSheatheCategoryInfo(outfitSlotInfo.transmogID);
+	if not categoryInfo or #categoryInfo <= 1 then
+		self.WeaponSheatheDropdown:Hide();
+		return;
+	end
+
+	self.WeaponSheatheDropdown:Show();
+
+	local function IsSelected(categoryID)
+		return categoryID == self.weaponSheatheCategoryID;
+	end
+
+	local function SetSelected(categoryID)
+		if categoryID ~= self.weaponSheatheCategoryID then
+			self:SetWeaponSheatheCategory(categoryID);
+
+			C_TransmogOutfitInfo.SetPendingTransmogSheatheCategory(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentWeaponOptionInfo.weaponOption, self.weaponSheatheCategoryID);
+		end
+	end
+
+	self.WeaponSheatheDropdown:SetupMenu(function(_dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRANSMOG_WEAPONS_SHEATHE_FILTER");
+
+		for _index, category in ipairs(categoryInfo) do
+			rootDescription:CreateRadio(category.categoryName, IsSelected, SetSelected, category.sheatheCategory);
+		end
+	end);
+end
+
 function TransmogWardrobeItemsMixin:RefreshCollectionEntries()
 	if not self.transmogLocation or not self.activeCategoryID then
 		return;
 	end
 
 	if self.transmogLocation:IsIllusion() then
-		self.itemCollectionEntries = C_TransmogCollection.GetIllusions();
+		self.itemCollectionEntries = C_TransmogCollection.GetIllusions(self.activeCategoryID);
 	else
 		self.itemCollectionEntries = C_TransmogCollection.GetCategoryAppearances(self.activeCategoryID, self.transmogLocation:GetData());
 	end
@@ -2238,7 +2509,7 @@ function TransmogWardrobeItemsMixin:SetActiveSlot(transmogLocation, forceRefresh
 	end
 
 	if not categoryID then
-		if self.transmogLocation:IsEitherHand() then
+		if self.transmogLocation:IsEitherHand() or self.transmogLocation:IsRangedSlot() then
 			-- Find the first valid weapon category.
 			for weaponCategoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
 				if self:IsValidWeaponCategoryForSlot(weaponCategoryID) then
@@ -2319,6 +2590,18 @@ function TransmogWardrobeItemsMixin:SetTransmogLocation(transmogLocation)
 	self.transmogLocation = transmogLocation;
 end
 
+function TransmogWardrobeItemsMixin:GetWeaponSheatheCategory()
+	return self.weaponSheatheCategoryID;
+end
+
+function TransmogWardrobeItemsMixin:SetWeaponSheatheCategory(categoryID)
+	if self.weaponSheatheCategoryID == categoryID then
+		return;
+	end
+
+	self.weaponSheatheCategoryID = categoryID;
+end
+
 function TransmogWardrobeItemsMixin:GetActiveSlot()
 	return self.transmogLocation and self.transmogLocation:GetSlotName();
 end
@@ -2374,7 +2657,7 @@ function TransmogWardrobeSetsMixin:OnShow()
 	end
 	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
-	self:RefreshCollectionEntries();
+	self:Refresh();
 end
 
 function TransmogWardrobeSetsMixin:OnHide()
@@ -2391,7 +2674,7 @@ function TransmogWardrobeSetsMixin:OnEvent(event, ...)
 			self:RefreshCollectionEntries();
 		end
 	elseif event == "TRANSMOG_COLLECTION_UPDATED" or event == "TRANSMOG_SETS_UPDATE_FAVORITE" then
-		self:RefreshCollectionEntries();
+		self:Refresh();
 	elseif event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
 		self:RefreshCameras();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS" then
@@ -2444,6 +2727,19 @@ function TransmogWardrobeSetsMixin:HandleFormChanged()
 			self:RefreshCollectionEntries();
 		end
 	end
+end
+
+function TransmogWardrobeSetsMixin:Refresh()
+	self:RefreshHasAvailableSets();
+	self:RefreshCollectionEntries();
+end
+
+function TransmogWardrobeSetsMixin:RefreshHasAvailableSets()
+	-- Various UI updates if there are no valid sets owned by the player to show in the sets tab.
+	local hasAvailableSets = C_TransmogSets.HasAvailableSets();
+	self.FilterButton:SetShown(hasAvailableSets);
+	self.SearchBox:SetShown(hasAvailableSets);
+	self.PagedContent.NoEntriesText:SetShown(not hasAvailableSets);
 end
 
 function TransmogWardrobeSetsMixin:RefreshCollectionEntries()
@@ -2671,6 +2967,8 @@ function TransmogWardrobeCustomSetsMixin:RefreshCollectionEntries()
 	local dataProvider = CreateDataProvider(collectionData);
 	local retainCurrentPage = true;
 	self.PagedContent:SetDataProvider(dataProvider, retainCurrentPage);
+
+	self.PagedContent.NoEntriesText:SetShown(TableIsEmpty(collectionElements));
 end
 
 function TransmogWardrobeCustomSetsMixin:RefreshCameras()
@@ -2691,9 +2989,9 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 			hasPending = false;
 
 			local slotMatched = false;
-			for indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
+			for slotID, customSetInfo in ipairs(customSetTransmogInfo) do
 				-- Should we check this slot? (filters out non appearances like neck slot, as well as slots not set in the custom set).
-				local slot = C_TransmogOutfitInfo.GetTransmogOutfitSlotFromInventorySlot(indexCustomSetInfo - 1);
+				local slot = C_TransmogOutfitInfo.GetTransmogOutfitSlotFromInventorySlot(slotID - 1);
 
 				-- Weapon slots are special here, as there is ambiguity with weapon options.
 				local isValidSlot = slot ~= nil and slot ~= Constants.TransmogOutfitDataConsts.TRANSMOG_OUTFIT_SLOT_NONE and not C_TransmogOutfitInfo.IsSlotWeaponSlot(slot);
@@ -2705,6 +3003,17 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 					local outfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(slot, appearanceType, weaponOption);
 					if outfitInfo.transmogID ~= customSetInfo.appearanceID then
 						break;
+					end
+
+					-- Secondary slot check (if present)
+					if customSetInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID then
+						local linkedSlotInfo = C_TransmogOutfitInfo.GetLinkedSlotInfo(slot);
+						if linkedSlotInfo then
+							local secondaryOutfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(linkedSlotInfo.secondarySlotInfo.slot, linkedSlotInfo.secondarySlotInfo.type, weaponOption);
+							if secondaryOutfitInfo and secondaryOutfitInfo.transmogID ~= customSetInfo.secondaryAppearanceID then
+								break;
+							end
+						end
 					end
 
 					slotMatched = true;

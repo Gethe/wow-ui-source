@@ -38,11 +38,8 @@ function NamePlateUnitFrameMixin:OnLoad()
 		self.AggroHighlightScrollAnim:Stop();
 	end);
 
-	-- Nothing in the nameplate is clickable. Hit testing is done at the C++ level using the location of HitTestFrame.
+	-- Nothing in the nameplate is clickable. Hit testing is done at the C++ level using the location the internal hit test frame.
 	self:EnableMouse(false);
-
-	-- Prevent arbitrary modifcations of the frame used for hit testing.
-	self.HitTestFrame:SetForbidden(true);
 
 	self.HealthBarsContainer.healthBar:SetUnitNameFontString(self.name);
 
@@ -139,9 +136,6 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 
-	-- Needs to happen before any update logic is run.
-	C_NamePlateManager.SetNamePlateHitTestFrame(self.unit, self.HitTestFrame);
-
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsDead();
@@ -220,8 +214,10 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		local extraYOffset = setupOptions.healthBarHeight / 2;
 
 		-- Clickable region defined by health bar, extending slightly past it to make it easier to target with the mouse.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, -extraXOffset, extraYOffset);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
+		self:GetNamePlateFrame():SetHitTestPoints({
+			{ point = "TOPLEFT", relativeTo = self.HealthBarsContainer.healthBar, relativePoint = "TOPLEFT", offsetX = -extraXOffset, offsetY = extraYOffset },
+			{ point = "BOTTOMRIGHT", relativeTo = self.HealthBarsContainer.healthBar, relativePoint = "BOTTOMRIGHT", offsetX = extraXOffset, offsetY = -extraYOffset },
+		});
 	else
 		-- Outlined font is harder to read when text is outside the health bar.
 		self.name:SetFontObject("SystemFont_NamePlate");
@@ -234,8 +230,10 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		local extraYOffset = setupOptions.healthBarHeight / 2;
 
 		-- Clickable region defined by both name and health bar, extending slightly past them to make it easier to target with the mouse.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.name, -extraXOffset - nameOffset, 0);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
+		self:GetNamePlateFrame():SetHitTestPoints({
+			{ point = "TOPLEFT", relativeTo = self.name, relativePoint = "TOPLEFT", offsetX = -extraXOffset - nameOffset, offsetY = 0 },
+			{ point = "BOTTOMRIGHT", relativeTo = self.HealthBarsContainer.healthBar, relativePoint = "BOTTOMRIGHT", offsetX = extraXOffset, offsetY = -extraYOffset },
+		});
 	end
 
 	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
@@ -264,7 +262,7 @@ function NamePlateUnitFrameMixin:UpdateIsPlayer()
 	if self.explicitIsPlayer ~= nil then
 		isPlayer = self.explicitIsPlayer;
 	elseif self.unit ~= nil then
-		isPlayer = UnitIsPlayer(self.unit);
+		isPlayer = UnitIsPlayer(self.unit) or UnitTreatAsPlayerForDisplay(self.unit);
 	end
 
 	if self.isPlayer == isPlayer then
@@ -802,4 +800,16 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);
+end
+
+function NamePlateUnitFrameMixin:GetNamePlateFrame()
+	return self.namePlateFrame;
+end
+
+function NamePlateUnitFrameMixin:SetNamePlateFrame(namePlateFrame)
+	self.namePlateFrame = namePlateFrame;
+end
+
+function NamePlateUnitFrameMixin:UpdatePrivateAuras()
+	-- nop
 end

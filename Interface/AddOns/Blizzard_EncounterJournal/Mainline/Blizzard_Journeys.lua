@@ -187,7 +187,7 @@ function JourneysFrameMixin:SetupJourneysList()
 		elseif button.majorFactionData.maxLevel == button.majorFactionData.renownLevel then
 			button.RenownCardFactionLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL);
 		else
-			button.RenownCardFactionLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel));
+			button.RenownCardFactionLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel, elementData.maxLevel));
 		end
 		button.RenownCardProgressBar:RefreshBar(button.majorFactionData);
 	end
@@ -229,7 +229,7 @@ function JourneysFrameMixin:SetupJourneysList()
 			button.JourneyCardProgressBar:SetMinMaxValues(0, paragonInfo.threshold);
 			button.JourneyCardProgressBar:SetValue(paragonInfo.value - (paragonInfo.threshold * paragonInfo.level));
 		else
-			button.JourneyCardLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel));
+			button.JourneyCardLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel, elementData.maxLevel));
 			button.JourneyCardProgressBar:SetMinMaxValues(0, elementData.renownLevelThreshold);
 			if elementData.renownLevel == elementData.maxLevel then
 				button.JourneyCardProgressBar:SetValue(elementData.renownLevelThreshold);
@@ -393,6 +393,10 @@ function JourneyProgressFrameMixin:OnMouseWheel(direction)
 end
 
 function JourneyProgressFrameMixin:Refresh(fromOnShow)
+	if not self.majorFactionData or not self.majorFactionData.factionID then
+		return;
+	end
+
 	if fromOnShow then
 		local buttonData = {
 			id = self.majorFactionData and self.majorFactionData.factionID or 0,
@@ -527,7 +531,9 @@ function JourneyProgressFrameMixin:PlayLevelEffect()
 	local elements = self.track:GetElements();
 	local frame = elements[centerIndex];
 	local selected = true;
-	frame.EarnedAnim:Play();
+	if frame.EarnedAnim then
+		frame.EarnedAnim:Play();
+	end
 	frame:Refresh(self.actualLevel, self.displayLevel + 1, selected);
 
 	local fanfareSound = self.majorFactionData.renownFanfareSoundKitID;
@@ -615,44 +621,39 @@ function JourneyProgressFrameMixin:SetRewards(level)
 	for idx, reward in ipairs(rewardInfo) do
 		if idx <= MAX_REWARD_CARDS_TO_DISPLAY then
 			local rewardFrame = self.rewardPool:Acquire();
-
-			if reward.rewardType then
-				local rewardIsItem = reward.rewardType == Enum.RenownRewardDisplayType.Item;
-				local rewardIsMount = reward.rewardType == Enum.RenownRewardDisplayType.Mount;
-				local rewardIsTitle =  reward.rewardType == Enum.RenownRewardDisplayType.Title;
-				local rewardIsCurrency = reward.rewardType == Enum.RenownRewardDisplayType.Currency;
-
-				if rewardIsItem or rewardIsMount or rewardIsTitle then
-					rewardFrame.RewardCardIconBorderDefault:SetAtlas("talents-node-circle-gray"); --! TODO not final art
-					rewardFrame.TextureMask:SetAtlas("CircleMask");
-					rewardFrame.TextureMask:Show();
-				elseif rewardIsCurrency then
-					rewardFrame.RewardCardIconBorderDefault:SetAtlas("covenantsanctum-renown-hexagon-border-standard"); --! TODO not final art
-					rewardFrame.TextureMask:SetAtlas("talents-node-choice-mask");
-					rewardFrame.TextureMask:Show();
-				else
-					rewardFrame.RewardCardIconBorderDefault:SetAtlas("UI-Frame-IconBorder");
-					rewardFrame.TextureMask:Hide();
-				end
-			else
-				rewardFrame.RewardCardIconBorderDefault:SetAtlas("UI-Frame-IconBorder");
-				rewardFrame.TextureMask:Hide();
-			end
-
 			rewardFrame.RewardCardName:SetText(reward.name);
 			rewardFrame.RewardCardIcon:SetTexture(reward.icon);
+
+			local readyToClaim = self.actualLevel >= level and reward.isCollected == false;
+
+			if readyToClaim then
+				rewardFrame.PulseAnim:Play();
+				rewardFrame.RewardCardBGGlow:Show();
+			else
+				rewardFrame.PulseAnim:Stop();
+				rewardFrame.RewardCardBGGlow:Hide();
+			end
 
 			rewardFrame:SetScript("OnEnter", function(frame)
 				GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 				GameTooltip_SetTitle(GameTooltip, reward.name);
 
+				local wrapText = false;
 				if reward.isAccountUnlock then
-					local wrapText = false;
 					GameTooltip_AddColoredLine(GameTooltip, RENOWN_REWARD_ACCOUNT_UNLOCK_LABEL, ACCOUNT_WIDE_FONT_COLOR, wrapText);
 				end
 
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddNormalLine(GameTooltip, reward.description);
+
+				if reward.isCollected then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddColoredLine(GameTooltip, JOURNEYS_KNOWN_ITEM, ERROR_COLOR, wrapText);
+				elseif readyToClaim then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddColoredLine(GameTooltip, JOURNEYS_UNCLAIMED_ITEM, LIGHTBLUE_FONT_COLOR, wrapText);
+				end
+
 				GameTooltip:Show();
 
 				EventRegistry:TriggerEvent("JourneyProgressFrame.RewardFrame.OnEnter", self, GameTooltip, reward.name, reward.description);
@@ -670,10 +671,10 @@ function JourneyProgressFrameMixin:SetRewards(level)
 			elseif #rewardInfo == 2 then
 				if idx == 1 then
 					firstRewardOfRow = rewardFrame;
-					rewardFrame:SetPoint("TOP", self.DividerTexture, "BOTTOM", 0, -8);
+					rewardFrame:SetPoint("TOP", self.DividerTexture, "BOTTOM");
 					rewardFrame:SetPoint("CENTER", self, "CENTER");
 				else
-					rewardFrame:SetPoint("TOP", firstRewardOfRow, "BOTTOM", 0, -5);
+					rewardFrame:SetPoint("TOP", firstRewardOfRow, "BOTTOM");
 				end
 			elseif #rewardInfo > 2 then
 				local isFirst = idx == 1;
@@ -681,11 +682,11 @@ function JourneyProgressFrameMixin:SetRewards(level)
 
 				if isFirst then
 					firstRewardOfRow = rewardFrame;
-					rewardFrame:SetPoint("TOPLEFT", self.DividerTexture, "BOTTOMLEFT", 35, -8);
+					rewardFrame:SetPoint("TOPLEFT", self.DividerTexture, "BOTTOMLEFT", 30, 0);
 				elseif isEndOfRow then
 					rewardFrame:SetPoint("TOPLEFT", lastReward, "TOPRIGHT", 8, 0);
 				else
-					rewardFrame:SetPoint("TOPLEFT", firstRewardOfRow, "BOTTOMLEFT", 0, -5);
+					rewardFrame:SetPoint("TOPLEFT", firstRewardOfRow, "BOTTOMLEFT");
 				end
 			end
 			lastReward = rewardFrame;

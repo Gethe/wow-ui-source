@@ -371,6 +371,9 @@ local PlayerInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerInfo);

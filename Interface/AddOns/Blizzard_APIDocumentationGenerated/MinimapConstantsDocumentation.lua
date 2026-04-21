@@ -37,6 +37,9 @@ local MinimapConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MinimapConstants);

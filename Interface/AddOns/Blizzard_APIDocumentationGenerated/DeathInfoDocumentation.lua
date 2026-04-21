@@ -216,6 +216,9 @@ local DeathInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DeathInfo);

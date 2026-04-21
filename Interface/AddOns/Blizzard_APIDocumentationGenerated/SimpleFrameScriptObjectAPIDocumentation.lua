@@ -151,6 +151,9 @@ local SimpleFrameScriptObjectAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleFrameScriptObjectAPI);

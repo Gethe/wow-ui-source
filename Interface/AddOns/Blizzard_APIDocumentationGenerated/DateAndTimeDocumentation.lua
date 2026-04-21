@@ -153,6 +153,9 @@ local DateAndTime =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DateAndTime);

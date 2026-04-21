@@ -172,6 +172,9 @@ local GameCursor =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GameCursor);

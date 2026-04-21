@@ -947,6 +947,9 @@ local SimpleEditBoxAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleEditBoxAPI);

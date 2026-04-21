@@ -90,8 +90,8 @@ end
 local function FillOutExtraIconsMapWithTalents(extraIconsMap)
 	local isInspect = false;
 	for specIndex = 1, GetNumSpecGroups(isInspect) do
-		for tier = 1, MAX_TALENT_TIERS do
-			for column = 1, NUM_TALENT_COLUMNS do
+		for tier = 1, Constants.TalentTierConstants.MAX_TALENT_TIERS do
+			for column = 1, Constants.TalentConsts.NumTalentColumns do
 				local talentInfoQuery = {};
 				talentInfoQuery.tier = tier;
 				talentInfoQuery.column = column;

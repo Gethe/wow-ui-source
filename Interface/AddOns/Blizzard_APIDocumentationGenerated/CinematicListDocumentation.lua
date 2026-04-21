@@ -39,6 +39,9 @@ local CinematicList =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CinematicList);

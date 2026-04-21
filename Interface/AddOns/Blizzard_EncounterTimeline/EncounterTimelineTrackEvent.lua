@@ -331,6 +331,7 @@ function EncounterTimelineTrackEventMixin:Init(eventInfo, timer, state, track, t
 	self:UpdateFrameLevel();
 	self:UpdateIconAlpha();
 	self:UpdateIconography();
+	self:UpdateNameText();
 	self:UpdateStatusText();
 
 	self:PlayIntroAnimation();
@@ -479,6 +480,7 @@ function EncounterTimelineTrackEventMixin:SetNameText(text, color)
 	fontString:SetTextColor(color:GetRGB());
 	fontString:SetShown(self:CanShowNameText(text));
 
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.NameText);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
 end
 
@@ -487,6 +489,7 @@ function EncounterTimelineTrackEventMixin:SetStatusText(text)
 	fontString:SetText(text or "");
 	fontString:SetShown(self:CanShowStatusText(text));
 
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.StatusText);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
 end
 

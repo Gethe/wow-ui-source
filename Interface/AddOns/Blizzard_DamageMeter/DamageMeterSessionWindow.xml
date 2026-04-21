@@ -12,12 +12,6 @@
 		</ResizeBounds>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10"/>
-						<Anchor point="BOTTOMRIGHT" x="-10"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="Header" atlas="ui-damagemeters-header-bar">
 					<Size y="32"/> <!-- Provided explicit height so scroll box can be resolved prior to first render. -->
 					<Anchors>
@@ -27,23 +21,26 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="NotActive" inherits="GameFontNormalMed1" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="20" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-20" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="SessionTimer" inherits="GameFontNormalMed1" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-9"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="15" y="-9"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button parentKey="MinimizeButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-17" y="-6"/>
+				</Anchors>
+				<Size x="18" y="19"/>
+				<NormalTexture atlas="ui-questtrackerbutton-collapse-all" useAtlasSize="true"/>
+				<PushedTexture atlas="ui-questtrackerbutton-collapse-all-pressed" useAtlasSize="true"/>
+				<HighlightTexture atlas="ui-questtrackerbutton-red-highlight" alphaMode="ADD" useAtlasSize="true"/>
+			</Button>
 			<DropdownButton parentKey="SettingsDropdown" inherits="DamageMeterSettingsDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-20" y="-3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-5" y="-1"/>
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="SessionDropdown" inherits="WowStyle2DropdownTemplate">
@@ -53,7 +50,7 @@
 				</KeyValues>
 				<Size y="18"/> <!-- Width set dynamically in lua-->
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-8" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-7" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -84,46 +81,65 @@
 					</Layer>
 				</Layers>
 			</DropdownButton>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-				<Anchors>
-					<!-- Anchored dynamically in lua-->
-				</Anchors>
-			</Frame>
-			<Button parentKey="LocalPlayerEntry" inherits="DamageMeterSourceEntryTemplate" hidden="true" frameLevel="10">
-				<Anchors>
-					<!-- Anchored dynamically in lua-->
-				</Anchors>
-			</Button>
-			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" alpha="0.3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
-				</Anchors>
-			</EventFrame>
-			<Button parentKey="ResizeButton" alpha="0">
-				<Size x="60" y="60"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-1" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="damagemeters-scalehandle"/>
-				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
-				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
-			</Button>
-			<Frame parentKey="SourceWindow" inherits="DamageMeterSourceWindowTemplate" hidden="true">
-				<!-- Anchored dynamically in lua-->
+			<Frame parentKey="MinimizeContainer" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10"/>
+								<Anchor point="BOTTOMRIGHT" x="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="NotActive" inherits="GameFontNormalMed1" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Header" relativePoint="BOTTOMLEFT" x="20" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-20" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<!-- Anchored dynamically in lua-->
+						</Anchors>
+					</Frame>
+					<Button parentKey="LocalPlayerEntry" inherits="DamageMeterSourceEntryTemplate" hidden="true" frameLevel="10">
+						<Anchors>
+							<!-- Anchored dynamically in lua-->
+						</Anchors>
+					</Button>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" alpha="0.3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+						</Anchors>
+					</EventFrame>
+					<Button parentKey="ResizeButton" alpha="0">
+						<Size x="60" y="60"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-1" y="-8"/>
+						</Anchors>
+						<NormalTexture atlas="damagemeters-scalehandle"/>
+						<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
+						<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
+					</Button>
+					<Frame parentKey="SourceWindow" inherits="DamageMeterSourceWindowTemplate" hidden="true">
+						<!-- Anchored dynamically in lua-->
+					</Frame>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
+						<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
+					</AnimationGroup>
+					<AnimationGroup parentKey="EmphasizeScrollBar" setToFinalAlpha="true">
+						<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />
+					</AnimationGroup>
+				</Animations>
 			</Frame>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
-				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="ShowBackground" setToFinalAlpha="true">
-				<Alpha childKey="Background" duration="0.25" order="1" fromAlpha="0" toAlpha="0.5" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="EmphasizeScrollBar" setToFinalAlpha="true">
-				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

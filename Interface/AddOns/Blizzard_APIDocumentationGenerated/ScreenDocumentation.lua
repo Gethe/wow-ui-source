@@ -61,6 +61,9 @@ local Screen =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Screen);

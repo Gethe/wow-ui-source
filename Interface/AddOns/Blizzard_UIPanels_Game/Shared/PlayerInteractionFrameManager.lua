@@ -219,6 +219,11 @@ local InteractionManagerFrameInfo = {
 		loadFunc = function() UIParentLoadAddOn("Blizzard_GuildRename"); end,
 		showFunc = function() GuildRenameFrame:BeginInteraction(); end,
 	},
+	[Enum.PlayerInteractionType.TieredEntrance] = {
+		frame = "DelvesDifficultyPickerFrame",
+		loadFunc = function() C_AddOns.LoadAddOn("Blizzard_DelvesDifficultyPicker"); end;
+		showFunc = function() DelvesDifficultyPickerFrame:TryShow(textureKit); end;
+	}
 };
 
 PlayerInteractionFrameManagerMixin = { };

@@ -15,6 +15,9 @@ local PingPinFrameAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PingPinFrameAPI);

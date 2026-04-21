@@ -11,6 +11,9 @@ local AuctionHouseConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AuctionHouseConstants);

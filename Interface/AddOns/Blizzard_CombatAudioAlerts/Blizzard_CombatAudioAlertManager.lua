@@ -1088,7 +1088,7 @@ end
 
 function addonTable:OnThrottleTimerComplete(throttleType)
 	local throttleInfo = self.throttles[throttleType];
-	if throttleInfo then
+	if throttleInfo and throttleInfo.timer then
 		--print("throttle "..throttleType.." complete");
 		throttleInfo.timer:Cancel();
 		throttleInfo.timer = nil;

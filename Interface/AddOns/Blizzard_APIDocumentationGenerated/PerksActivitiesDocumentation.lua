@@ -230,6 +230,9 @@ local PerksActivities =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PerksActivities);

@@ -85,6 +85,9 @@ local PetBattles =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PetBattles);

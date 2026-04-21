@@ -25,6 +25,12 @@ local DAMAGE_METER_TYPE_SUPPRESS_ICON = {
 	[Enum.DamageMeterType.EnemyDamageTaken] = true,
 };
 
+-- Certain categories do not display value per second even if the edit mode Numbers setting is set to Complete or Compact.
+local DAMAGE_METER_TYPE_SUPPRESS_VALUE_PER_SECOND = {
+	[Enum.DamageMeterType.Interrupts] = true,
+	[Enum.DamageMeterType.Dispels] = true,
+};
+
 local DAMAGE_METER_TYPE_NAMES = {
 	[Enum.DamageMeterType.DamageDone] = DAMAGE_METER_TYPE_DAMAGE_DONE,
 	[Enum.DamageMeterType.Dps] = DAMAGE_METER_TYPE_DPS,
@@ -106,20 +112,28 @@ function DamageMeterSessionWindowMixin:GetSessionName()
 	return self:GetSessionDropdown().SessionName;
 end
 
+function DamageMeterSessionWindowMixin:GetMinimizeButton()
+	return self.MinimizeButton;
+end
+
+function DamageMeterSessionWindowMixin:GetMinimizeContainer()
+	return self.MinimizeContainer;
+end
+
 function DamageMeterSessionWindowMixin:GetSettingsDropdown()
 	return self.SettingsDropdown;
 end
 
 function DamageMeterSessionWindowMixin:GetSourceWindow()
-	return self.SourceWindow;
+	return self:GetMinimizeContainer().SourceWindow;
 end
 
 function DamageMeterSessionWindowMixin:GetScrollBox()
-	return self.ScrollBox;
+	return self:GetMinimizeContainer().ScrollBox;
 end
 
 function DamageMeterSessionWindowMixin:GetScrollBar()
-	return self.ScrollBar;
+	return self:GetMinimizeContainer().ScrollBar;
 end
 
 function DamageMeterSessionWindowMixin:GetHeader()
@@ -127,23 +141,31 @@ function DamageMeterSessionWindowMixin:GetHeader()
 end
 
 function DamageMeterSessionWindowMixin:GetLocalPlayerEntry()
-	return self.LocalPlayerEntry;
+	return self:GetMinimizeContainer().LocalPlayerEntry;
 end
 
 function DamageMeterSessionWindowMixin:GetResizeButton()
-	return self.ResizeButton;
+	return self:GetMinimizeContainer().ResizeButton;
 end
 
 function DamageMeterSessionWindowMixin:GetBackground()
-	return self.Background;
+	return self:GetMinimizeContainer().Background;
 end
 
 function DamageMeterSessionWindowMixin:GetNotActiveFontString()
-	return self.NotActive;
+	return self:GetMinimizeContainer().NotActive;
 end
 
 function DamageMeterSessionWindowMixin:GetSessionTimerFontString()
 	return self.SessionTimer;
+end
+
+function DamageMeterSessionWindowMixin:GetShowResizeButtonAnim()
+	return self:GetMinimizeContainer().ShowResizeButton;
+end
+
+function DamageMeterSessionWindowMixin:GetEmphasizeScrollBarAnim()
+	return self:GetMinimizeContainer().EmphasizeScrollBar;
 end
 
 function DamageMeterSessionWindowMixin:OnLoad()
@@ -153,6 +175,7 @@ function DamageMeterSessionWindowMixin:OnLoad()
 	self:InitializeDamageMeterTypeDropdown();
 	self:InitializeSessionDropdown();
 	self:InitializeResizeButton();
+	self:InitializeMinimizeButton();
 end
 
 function DamageMeterSessionWindowMixin:OnShow()
@@ -242,33 +265,24 @@ function DamageMeterSessionWindowMixin:OnUpdate()
 		local resizeButton = self:GetResizeButton();
 		local isMouseOver = self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing();
 		local shouldResizeButtonBeShown = self:CanMoveOrResize();
-		local shouldChangeBackgroundOpacity = not self:DoesCurrentStyleUseBackground();
 
 		if isMouseOver and self.playedMouseOverAnims ~= true then
 			self.playedMouseOverAnims = true;
 
-			self.EmphasizeScrollBar:Play();
+			self:GetEmphasizeScrollBarAnim():Play();
 
 			if shouldResizeButtonBeShown then
-				self.ShowResizeButton:Play();
-			end
-
-			if shouldChangeBackgroundOpacity then
-				self.ShowBackground:Play();
+				self:GetShowResizeButtonAnim():Play();
 			end
 		elseif not isMouseOver then
 			self.playedMouseOverAnims = false;
 
 			local reverse = true;
 
-			self.EmphasizeScrollBar:Play(reverse);
+			self:GetEmphasizeScrollBarAnim():Play(reverse);
 
 			if shouldResizeButtonBeShown then
-				self.ShowResizeButton:Play(reverse);
-			end
-
-			if shouldChangeBackgroundOpacity then
-				self.ShowBackground:Play(reverse);
+				self:GetShowResizeButtonAnim():Play(reverse);
 			end
 
 			self:SetOnUpdateReason("MouseOver", false);
@@ -337,8 +351,8 @@ function DamageMeterSessionWindowMixin:InitializeScrollBox()
 	self:InitializeScrollBoxPadding(view);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self:GetScrollBox(), self:GetScrollBar(), view);
 
-	local topLeftX, topLeftY = 20, -5;
-	local bottomRightX, bottomRightY = -22, 6;
+	local topLeftX, topLeftY = 17, -5;
+	local bottomRightX, bottomRightY = -15, 6;
 	local withBarXOffset = 20;
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", self:GetHeader(), "BOTTOMLEFT", topLeftX, topLeftY),
@@ -426,7 +440,7 @@ end
 
 function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 	local function IsCreateNewSessionWindowEnabled()
-		return self:GetDamageMeterOwner():CanShowNewSessionWindow();
+		return self:GetDamageMeterOwner():CanShowNewSecondarySessionWindow();
 	end
 
 	local function IsDeleteSessionWindowEnabled()
@@ -500,7 +514,7 @@ function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 		rootDescription:CreateSpacer();
 
 		local createNewSessionWindowButton = rootDescription:CreateButton(DAMAGE_METER_SHOW_NEW_WINDOW, function(...)
-			self:GetDamageMeterOwner():ShowNewSessionWindow();
+			self:GetDamageMeterOwner():ShowNewSecondarySessionWindow();
 		end);
 		createNewSessionWindowButton:SetEnabled(IsCreateNewSessionWindowEnabled);
 	end);
@@ -533,6 +547,14 @@ function DamageMeterSessionWindowMixin:InitializeResizeButton()
 
 	resizeButton:SetScript("OnEnter", function()
 		self:OnEnter();
+	end);
+end
+
+function DamageMeterSessionWindowMixin:InitializeMinimizeButton()
+	local minimizeButton = self:GetMinimizeButton();
+
+	minimizeButton:SetScript("OnClick", function(button)
+		self:GetDamageMeterOwner():SetSessionWindowMinimized(self, not self:IsMinimized());
 	end);
 end
 
@@ -571,6 +593,11 @@ function DamageMeterSessionWindowMixin:SuppressIcon()
 	return DAMAGE_METER_TYPE_SUPPRESS_ICON[damageMeterType];
 end
 
+function DamageMeterSessionWindowMixin:SuppressValuePerSecond()
+	local damageMeterType = self:GetDamageMeterType();
+	return DAMAGE_METER_TYPE_SUPPRESS_VALUE_PER_SECOND[damageMeterType];
+end
+
 function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 	combatSession = combatSession or self:GetCombatSession();
 
@@ -583,6 +610,8 @@ function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
 	local alwaysShowsLocalPlayer = self:AlwaysShowsLocalPlayer();
 	local suppressIcon = self:SuppressIcon();
+	local suppressValuePerSecond = self:SuppressValuePerSecond();
+
 	local damageMeterType = self:GetDamageMeterType();
 
 	self.localPlayerIndex = nil;
@@ -610,6 +639,7 @@ function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 		combatSource.index = i;
 		combatSource.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
 		combatSource.suppressIcon = suppressIcon;
+		combatSource.suppressValuePerSecond = suppressValuePerSecond;
 		combatSource.damageMeterType = damageMeterType;
 
 		dataProvider:Insert(combatSource);
@@ -703,9 +733,13 @@ function DamageMeterSessionWindowMixin:UpdateExistingDataProvider(dataProvider)
 	-- can be updated, as long as the frames to which the elements are attached are updated with
 	-- the new values.
 	for i = 1, currentProvider:GetSize() do
-		-- This could use SetTablePairsToTable in the future, but if so check for self assignment
-		-- so the table isn't wiped. It's possible that the new and old elements are pointers to
-		-- the same element.
+		-- Some fields of the new table could be nil that aren't nil in the current table.
+		-- Check for self assignment so the new table isn't wiped. It's possible that the new and old elements
+		-- are pointers to the same element.
+		if currentProvider.collection[i] ~= dataProvider.collection[i] then
+			table.wipe(currentProvider.collection[i]);
+		end
+
 		Mixin(currentProvider.collection[i], dataProvider.collection[i]);
 	end
 
@@ -837,6 +871,30 @@ function DamageMeterSessionWindowMixin:SetNonInteractive(nonInteractive)
 	end
 end
 
+-- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
+-- any code other than DamageMeterMixin:SetSessionWindowMinimized
+function DamageMeterSessionWindowMixin:SetMinimized(minimized)
+	self.isMinimized = minimized;
+
+	local minimizeButton = self:GetMinimizeButton();
+	local normalTexture = minimizeButton:GetNormalTexture();
+	local pushedTexture = minimizeButton:GetPushedTexture();
+
+	if self:IsMinimized() then
+		normalTexture:SetAtlas("ui-questtrackerbutton-expand-all", TextureKitConstants.UseAtlasSize);
+		pushedTexture:SetAtlas("ui-questtrackerbutton-expand-all-pressed", TextureKitConstants.UseAtlasSize);
+	else
+		normalTexture:SetAtlas("ui-questtrackerbutton-collapse-all", TextureKitConstants.UseAtlasSize);
+		pushedTexture:SetAtlas("ui-questtrackerbutton-collapse-all-pressed", TextureKitConstants.UseAtlasSize);
+	end
+
+	self:GetMinimizeContainer():SetShown(not self:IsMinimized());
+end
+
+function DamageMeterSessionWindowMixin:IsMinimized()
+	return self.isMinimized;
+end
+
 function DamageMeterSessionWindowMixin:CanMoveOrResize()
 	if not self:GetDamageMeterOwner():CanMoveOrResizeSessionWindow(self) then
 		return false;
@@ -924,6 +982,18 @@ end
 
 function DamageMeterSessionWindowMixin:SetIsEditing(isEditing)
 	self.isEditing = isEditing;
+
+	-- Force maximize the window when entering edit mode because trying to edit a minimized window is confusing.
+	if isEditing then
+		self.minimizeAfterDoneEditing = self:IsMinimized();
+		self:GetDamageMeterOwner():SetSessionWindowMinimized(self, false);
+	else
+		-- Return the window to minimized if entering edit mode maximized it.
+		if self.minimizeAfterDoneEditing then
+			self.minimizeAfterDoneEditing = nil;
+			self:GetDamageMeterOwner():SetSessionWindowMinimized(self, true);
+		end
+	end
 
 	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 end
@@ -1064,15 +1134,6 @@ function DamageMeterSessionWindowMixin:SetBackgroundAlpha(alpha)
 	end
 end
 
-function DamageMeterSessionWindowMixin:DoesCurrentStyleUseBackground()
-	-- return self:GetStyle() == Enum.DamageMeterStyle.FullBackground;
-	return true;
-end
-
 function DamageMeterSessionWindowMixin:UpdateBackground()
-	if self:DoesCurrentStyleUseBackground() then
-		self:GetBackground():SetAlpha(self:GetBackgroundAlpha());
-	else
-		self:GetBackground():SetAlpha(0);
-	end
+	self:GetBackground():SetAlpha(self:GetBackgroundAlpha());
 end

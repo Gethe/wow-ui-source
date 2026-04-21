@@ -44,6 +44,9 @@ local ClientScene =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClientScene);

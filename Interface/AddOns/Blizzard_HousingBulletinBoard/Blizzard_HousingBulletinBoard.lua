@@ -513,7 +513,7 @@ local NeighborhoodInviteErrorTypeStrings = {
 	[Enum.NeighborhoodInviteResult.InviteLimit] = HOUSING_NEIGHBORHOOD_INVITE_ERR_LIMIT,
 	[Enum.NeighborhoodInviteResult.NotEnoughPlots] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NO_PLOTS,
 	[Enum.NeighborhoodInviteResult.NotFound] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NOT_FOUND,
-	[Enum.NeighborhoodInviteResult.AlreadyInNeighborhood] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
+	[Enum.NeighborhoodInviteResult.AlreadyInNeighborhood] = HOUSING_NEIGHBORHOOD_INVITE_ERR_ALREADY_IN_NEIGHBORHOOD,
 };
 
 local INVITE_RESIDENT_SHOWING_EVENTS = {
@@ -683,7 +683,7 @@ end
 HousingInviteSearchBoxMixin = {}
 
 function HousingInviteSearchBoxMixin:OnLoad()
-	AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS.include, AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS.exclude);
+	AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS.include, AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS.exclude);
 	self.addHighlightedText = true;
 end
 

@@ -217,6 +217,9 @@ local CovenantSanctum =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CovenantSanctum);

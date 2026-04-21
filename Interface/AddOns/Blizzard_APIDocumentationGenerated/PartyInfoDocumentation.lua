@@ -267,6 +267,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetLootMethodStyle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "methodStyle", Type = "LootMethodStyles", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -377,6 +386,21 @@ local PartyInfo =
 			Returns =
 			{
 				{ Name = "isDelveComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLootMethodAvailable",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -787,6 +811,14 @@ local PartyInfo =
 				{ Name = "QuestSync", Type = "LeavePartyConfirmReason", EnumValue = 0 },
 				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequiresValidInviteTarget",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

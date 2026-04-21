@@ -166,6 +166,9 @@ local TooltipInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TooltipInfoShared);

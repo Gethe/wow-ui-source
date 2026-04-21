@@ -206,6 +206,8 @@ function MapCanvasPinMixin:OnReleased()
 	if self.widgetContainer then
 		self.widgetContainer:UnregisterForWidgetSet();
 	end
+
+	self:RemoveAllTags();
 end
 
 function MapCanvasPinMixin:AddIconWidgets()

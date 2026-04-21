@@ -1171,6 +1171,44 @@ local CommentatorFrame =
 			RequiresActiveCommentator = true,
 		},
 		{
+			Name = "SendAddonMessage",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Works the same as C_ChatInfo.SendAddonMessage but accepts secrets and is only allowed when outgoing addon comms are allowed (i.e. on tournament realms)" },
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "cstring", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
+				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendAddonMessageLogged",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Works the same as C_ChatInfo.SendAddonMessageLogged but accepts secrets and is only allowed when outgoing addon comms are allowed (i.e. on tournament realms)" },
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "cstring", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
+				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = true },
+			},
+		},
+		{
 			Name = "SetAdditionalCameraWeight",
 			Type = "Function",
 			RequiresActiveCommentator = true,
@@ -1843,6 +1881,9 @@ local CommentatorFrame =
 				{ Name = "overrideName", Type = "string", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

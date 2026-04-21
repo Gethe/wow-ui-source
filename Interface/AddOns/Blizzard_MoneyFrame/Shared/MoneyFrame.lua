@@ -260,18 +260,20 @@ local moneyFrameFonts =
 	{
 		[MONEY_FRAME_FONT_USER_SCALED] =
 		{
+			["default"] = UserScaledFontNumberNormalRight,
 			["yellow"] = UserScaledFontNumberNormalRightYellow,
 			["red"] = UserScaledFontNumberNormalRightRed,
 			["gray"] = UserScaledFontNumberNormalRightGray,
-			["default"] = UserScaledFontNumberNormalRight,
+			["green"] = UserScaledFontNumberNormalRightGreen
 		},
 
 		[MONEY_FRAME_FONT_FIXED_SCALE] =
 		{
+			["default"] = NumberFontNormalRight,
 			["yellow"] = NumberFontNormalRightYellow,
 			["red"] = NumberFontNormalRightRed,
 			["gray"] = NumberFontNormalRightGray,
-			["default"] = NumberFontNormalRight,
+			["green"] = NumberFontNormalRightGreen
 		},
 	},
 
@@ -280,18 +282,20 @@ local moneyFrameFonts =
 		-- Not yet supported.
 		[MONEY_FRAME_FONT_USER_SCALED] =
 		{
+			["default"] = NumberFontNormalLargeRight,
 			["yellow"] = NumberFontNormalLargeRightYellow,
 			["red"] = NumberFontNormalLargeRightRed,
 			["gray"] = NumberFontNormalLargeRightGray,
-			["default"] = NumberFontNormalLargeRight,
+			["green"] = NumberFontNormalLargeRightGreen
 		},
 
 		[MONEY_FRAME_FONT_FIXED_SCALE] =
 		{
+			["default"] = NumberFontNormalLargeRight,
 			["yellow"] = NumberFontNormalLargeRightYellow,
 			["red"] = NumberFontNormalLargeRightRed,
 			["gray"] = NumberFontNormalLargeRightGray,
-			["default"] = NumberFontNormalLargeRight,
+			["green"] = NumberFontNormalLargeRightGreen
 		},
 	},
 };

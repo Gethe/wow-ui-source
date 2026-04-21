@@ -48,6 +48,9 @@ local UIGenericWidgetDisplay =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIGenericWidgetDisplay);

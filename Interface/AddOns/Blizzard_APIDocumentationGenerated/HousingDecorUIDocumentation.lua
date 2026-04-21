@@ -37,6 +37,22 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "GetDecorHyperlink",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperLink", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDecorIcon",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -393,6 +409,9 @@ local HousingDecorUI =
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

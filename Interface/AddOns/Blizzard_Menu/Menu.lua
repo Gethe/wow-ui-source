@@ -584,6 +584,12 @@ do
 	RootMenuDescriptionProxyMixin.SetTag = SetTag;
 	MenuElementDescriptionProxyMixin.SetTag = SetTag;
 
+	local function ToDebugString(descriptionProxy)
+		return descriptionProxy:GetTag();
+	end
+	RootMenuDescriptionProxyMixin.ToDebugString = ToDebugString;
+	MenuElementDescriptionProxyMixin.ToDebugString = ToDebugString;
+
 	local function ClearQueuedDescriptions(descriptionProxy)
 		descriptionProxy.queuedProxies = nil;
 	end
@@ -1191,6 +1197,12 @@ function MenuMixin:SetMenuDescription(menuDescription)
 	self:PerformLayout();
 end
 
+function MenuMixin:ToDebugString()
+	if self.menuDescription then
+		return self.menuDescription.proxy:GetTag();
+	end
+end
+
 function MenuMixin:Open(menuDescription, onElementMouseDown, onElementEnter, onElementLeave)
 	-- Retain these wrappers in case the description is replaced.
 	self.onElementMouseDown = onElementMouseDown;
@@ -1651,7 +1663,7 @@ function MenuMixin:DiscardChildFrames()
 	self.frames:Wipe();
 end
 
-function MenuMixin:Close()
+function MenuMixin:Close(closeReason)
 	local menuFrame = self:ToProxy();
 	menuFrame:SetScript("OnEnter", nil);
 	menuFrame:SetScript("OnLeave", nil);
@@ -1662,7 +1674,7 @@ function MenuMixin:Close()
 	-- All scripts must be finished before the compositor flushes our keys.
 
 	if self.onCloseCallback then
-		self.onCloseCallback(menuFrame);
+		self.onCloseCallback(menuFrame, closeReason);
 	end
 
 	-- Hide is necessary here to ensure any OnLeave scripts are fired on child frames before
@@ -1891,22 +1903,21 @@ function MenuManagerMixin:ContainsCursor()
 	return false;
 end
 
-function MenuManagerMixin:CloseMenu(menu)
+function MenuManagerMixin:CloseMenu(menu, closeReason)
 	if not menu then
 		return;
 	end
 
-	self:RemoveMenu(menu);
+	self:RemoveMenu(menu, closeReason or MenuCloseReason.Unspecified);
 end
 
 function MenuManagerMixin:CloseMenus()
 	for stackIndex, menu in self.menus:EnumerateReverse() do
-		self:CloseMenu(menu);
+		self:CloseMenu(menu, MenuCloseReason.CloseAll);
 	end
 end
 
-
-function MenuManagerMixin:RemoveMenu(menu)
+function MenuManagerMixin:RemoveMenu(menu, closeReason)
 	if not menu then
 		return;
 	end
@@ -1915,14 +1926,14 @@ function MenuManagerMixin:RemoveMenu(menu)
 		return;
 	end
 
-	self:CollapseMenusUntilLevel(menu:GetLevel());
+	self:CollapseMenusUntilLevel(menu:GetLevel(), closeReason);
 
 	local proxy = menu:ToProxy();
 
 	-- All scripts must be finished before the compositor flushes our keys.
 	-- Notify listeners that the menu is closing.
 	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
-		onReleased(proxy);
+		onReleased(proxy, closeReason);
 	end);
 
 	--[[
@@ -1930,7 +1941,7 @@ function MenuManagerMixin:RemoveMenu(menu)
 	callbacks registered on the menu description object, as the compositor will have flushed our
 	keys.
 	]]--
-	menu:Close();
+	menu:Close(closeReason);
 
 	--[[
 	The proxy for a menu must be manually removed because a pool frame is never
@@ -1970,10 +1981,10 @@ function MenuManagerMixin:IsMenuOpen(menu)
 	return self.menus:Contains(menu);
 end
 
-function MenuManagerMixin:CollapseMenusUntilLevel(level)
+function MenuManagerMixin:CollapseMenusUntilLevel(level, closeReason)
 	for stackIndex, menu in self.menus:EnumerateReverse() do
 		if menu:GetLevel() > level then
-			self:RemoveMenu(menu);
+			self:RemoveMenu(menu, closeReason);
 		end
 	end
 end

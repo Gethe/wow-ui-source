@@ -41,6 +41,9 @@ local SimpleStatusBarConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleStatusBarConstants);

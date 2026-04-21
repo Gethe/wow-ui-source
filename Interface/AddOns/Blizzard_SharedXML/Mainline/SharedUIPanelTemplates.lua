@@ -746,7 +746,9 @@ function TruncatedTooltipFontStringMixin:OnEnterInternal(owner)
 	if self:IsTruncated() then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(owner or self, "ANCHOR_RIGHT");
-		tooltip:SetText(self:GetText(), self:GetTextColor());
+		local r, g, b, a = self:GetTextColor();
+		local wordwrap = true;
+		tooltip:SetText(self:GetText(), r, g, b, a, wordwrap);
 		tooltip:Show();
 	end
 end

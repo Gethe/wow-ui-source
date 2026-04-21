@@ -189,6 +189,9 @@ local SimpleScriptRegionResizingAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleScriptRegionResizingAPI);

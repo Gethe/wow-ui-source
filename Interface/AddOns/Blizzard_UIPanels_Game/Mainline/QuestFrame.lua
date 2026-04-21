@@ -410,6 +410,7 @@ function QuestFrame_OnShow()
 		TutorialFrame_Hide();
 	end
 	QuestFrame.FriendshipStatusBar:Update();
+	QuestFrame.AccountCompletedNotice:Refresh();
 end
 
 function QuestFrame_OnHide()

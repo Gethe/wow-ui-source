@@ -200,6 +200,9 @@ local AchievementInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AchievementInfo);

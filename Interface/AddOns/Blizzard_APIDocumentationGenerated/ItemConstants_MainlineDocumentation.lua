@@ -72,6 +72,9 @@ local ItemConstants_Mainline =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ItemConstants_Mainline);

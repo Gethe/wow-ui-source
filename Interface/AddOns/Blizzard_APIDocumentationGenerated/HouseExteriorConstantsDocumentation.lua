@@ -78,6 +78,9 @@ local HouseExteriorConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HouseExteriorConstants);

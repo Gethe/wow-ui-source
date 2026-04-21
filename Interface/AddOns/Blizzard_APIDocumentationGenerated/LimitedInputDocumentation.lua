@@ -45,6 +45,9 @@ local LimitedInput =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LimitedInput);

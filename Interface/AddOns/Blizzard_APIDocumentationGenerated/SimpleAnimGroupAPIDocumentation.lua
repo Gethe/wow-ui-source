@@ -352,6 +352,9 @@ local SimpleAnimGroupAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimGroupAPI);

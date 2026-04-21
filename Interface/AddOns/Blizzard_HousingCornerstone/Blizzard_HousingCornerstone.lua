@@ -27,6 +27,7 @@ end
 
 function HousingCornerstoneFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneFrameShowingEvents);
+	C_HousingNeighborhood.OnCornerstoneClosed();
 end
 
 function HousingCornerstoneFrameMixin:UpdateTabs()
@@ -65,8 +66,10 @@ function HousingCornerstonePurchaseFrameMixin:OnLoad()
 	self.BuyButton:SetScript("OnClick", GenerateClosure(self.OnPurchaseClicked, self));
 	FrameUtil.RegisterFrameForEvents(self, CornerstonePurchaseFrameLifetimeEvents);
 
-	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
-	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
+	EventRegistry:RegisterCallback("HousingCornerstonePurchaseFrame.SetInputMaskShown", self.SetInputMaskShown, self);
+
+	SmallMoneyFrame_OnLoad(self.CostTextFrame.PriceMoneyFrame);
+	MoneyFrame_SetType(self.CostTextFrame.PriceMoneyFrame, "STATIC");
 
 	self.MoneyFrame.GoldButton:EnableMouse(false);
 	self.MoneyFrame.SilverButton:EnableMouse(false);
@@ -84,7 +87,7 @@ function HousingCornerstonePurchaseFrameMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_MONEY" then
 		self:CheckPurchaseEligibility(false);
 	elseif event == "CLOSE_PLOT_CORNERSTONE" then
-		HideUIPanel(HousingCornerstonePurchaseFrame);
+		HideUIPanel(self);
 	end
 end
 
@@ -96,18 +99,19 @@ end
 
 function HousingCornerstonePurchaseFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CornerstonePurchaseFrameShowingEvents);
+
+	EventRegistry:RegisterCallback("HousingCornerstonePurchaseFrame.ConfirmPurchase", self.OnConfirmPurchase, self);
+
 	self.houseInfo = C_HousingNeighborhood.GetCornerstoneHouseInfo();
 	self.neighborhoodInfo = C_HousingNeighborhood.GetCornerstoneNeighborhoodInfo();
 
 	self.PlotText:SetText(string.format(HOUSING_PLOT_NUMBER, self.houseInfo.plotID));
 
-	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
-	if self.houseInfo.plotCost == 0 then
-		MoneyFrame_SetType(self.PriceMoneyFrame, "GUILD_REPAIR");
-	else
-		MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
-	end
-	MoneyFrame_Update("HousingCornerstonePriceMoneyFrame", self.houseInfo.plotCost);
+	local forceShow = true;
+	MoneyFrame_Update("HousingCornerstonePriceMoneyFrame", self.houseInfo.plotCost, forceShow);
+
+	local offset = (self.CostTextFrame.PriceMoneyFrame:GetWidth() - 10) / 2; --the 10 is due to some negative space that is in money frames.
+	self.CostTextFrame:SetPoint("CENTER", -offset, 0);
 
 	self.NeighborhoodText:SetText(self.neighborhoodInfo.neighborhoodName);
 	self.NeighborhoodLocationText:SetText(self.neighborhoodInfo.locationName);
@@ -124,17 +128,21 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 	self.purchaseMode = C_HousingNeighborhood.GetCornerstonePurchaseMode();
 	if self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
 		-- Hide the money frame because moves are always free. If HousingMoveHouseJob is updated to deduct a cost, we need to update this
-		self.PriceMoneyFrame:Hide();
+		self.CostTextFrame:Hide();
 
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_MOVE_BUTTON);
 		self.BuyButton:Enable();
 		self.ErrorText:Hide();
 		self:CheckPurchaseEligibility(true);
 	else
-		self.PriceMoneyFrame:Show();
+		self.CostTextFrame:Show();
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_BUY);
 		self:CheckPurchaseEligibility(false);
 	end
+
+	-- Resize the button width to have the proper padding
+	self.BuyButton:SetWidth(math.max(self.BuyButton:GetTextWidth() + 64, 116));
+
 	self:CheckMoveCooldown();
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_OPEN);
@@ -154,7 +162,7 @@ function HousingCornerstonePurchaseFrameMixin:CheckMoveCooldown()
 	if cooldown > 0 and self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
 		self.BuyButton:Disable();
 		self.BuyButton:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(HousingCornerstonePurchaseFrame.BuyButton, "ANCHOR_RIGHT");
+			GameTooltip:SetOwner(self.BuyButton, "ANCHOR_RIGHT");
 			GameTooltip_AddHighlightLine(GameTooltip, HOUSING_CORNERSTONE_MOVE_TOOLTIP);
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_CORNERSTONE_MOVE_TOOLTIP_TIME, moveCooldownTimeFormatter:Format(cooldown)));
 			GameTooltip:Show();
@@ -189,15 +197,24 @@ local CantPurchaseReasonStrings = {
 	[Enum.PurchaseHouseDisabledReason.GuildLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.CharterLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.MaxHouses] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
-	[Enum.PurchaseHouseDisabledReason.NoGameTimeRemaining] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
+	[Enum.PurchaseHouseDisabledReason.NoGameTimeRemaining] = HOUSING_CORNERSTONE_GAMETIME_PERMISSION,
 };
 
 function HousingCornerstonePurchaseFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstonePurchaseFrameShowingEvents);
 
+	EventRegistry:UnregisterCallback("HousingCornerstonePurchaseFrame.ConfirmPurchase", self);
+
 	if self.boughtHouse == false then
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_CLOSE);
 	end
+
+	C_HousingNeighborhood.OnCornerstoneClosed();
+
+	-- Force all of these to hidden if the cornerstone purchase frame closes
+	StaticPopupSpecial_Hide(BuyHouseConfirmationDialog);
+	StaticPopupSpecial_Hide(ImportHouseConfirmationDialog);
+	StaticPopupSpecial_Hide(MoveHouseConfirmationDialog);
 end
 
 function HousingCornerstonePurchaseFrameMixin:CheckPurchaseEligibility(ignoreCostCheck)
@@ -226,34 +243,25 @@ function HousingCornerstonePurchaseFrameMixin:CheckPurchaseEligibility(ignoreCos
 		self.BuyButton:Enable();
 		self.ErrorText:Hide();
 	end
-	
 end
 
-StaticPopupDialogs["HOUSING_PURCHASE_PLOT_CONFIRMATION"] = {
-	text = HOUSING_PURCHASE_PLOT_CONFIRMATION_TEXT,
-	button1 = HOUSING_PURCHASE_PLOT_BUY,
-	button2 = HOUSING_PURCHASE_PLOT_CANCEL,
-	OnAccept = function(self)
-		HousingCornerstonePurchaseFrame:OnConfirmPurchase();
-	end,
-	OnCancel = function (self)
-		self:Hide();
-		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CANCEL);
-	end,
-	hideOnEscape = 1
-};
-
 function HousingCornerstonePurchaseFrameMixin:OnPurchaseClicked()
+	local inputMaskShown = false;
 	if self.purchaseMode == Enum.CornerstonePurchaseMode.Basic then
-		StaticPopup_Show("HOUSING_PURCHASE_PLOT_CONFIRMATION");
+		StaticPopupSpecial_Show(BuyHouseConfirmationDialog);
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY);
+		inputMaskShown = true;
 	elseif self.purchaseMode == Enum.CornerstonePurchaseMode.Import then
 		StaticPopupSpecial_Show(ImportHouseConfirmationDialog);
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_BUTTONS);
+		inputMaskShown = true;
 	elseif self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
 		StaticPopupSpecial_Show(MoveHouseConfirmationDialog);
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_MOVE);
+		inputMaskShown = true;
 	end
+
+	self:SetInputMaskShown(inputMaskShown);
 end
 
 function HousingCornerstonePurchaseFrameMixin:OnConfirmPurchase()
@@ -263,7 +271,8 @@ function HousingCornerstonePurchaseFrameMixin:OnConfirmPurchase()
 		C_HousingNeighborhood.TryPurchasePlot();
 	end
 	self.boughtHouse = true;
-	HideUIPanel(HousingCornerstonePurchaseFrame);
+
+	HideUIPanel(self);
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CONFIRM);
 end
@@ -272,6 +281,10 @@ function HousingCornerstonePurchaseFrameMixin:OnNeighborhoodInfoUpdated(neighbor
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.NeighborhoodText:SetText(self.neighborhoodName);
 	self:CheckPurchaseEligibility(false);
+end
+
+function HousingCornerstonePurchaseFrameMixin:SetInputMaskShown(shown)
+	self.InputMask:SetShown(shown);
 end
 
 --//////////////////////////////Shared Visitor Frame//////////////////////////////////////////
@@ -320,6 +333,7 @@ end
 
 function HousingCornerstoneVisitorFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneVisitorFrameShowingEvents);
+	C_HousingNeighborhood.OnCornerstoneClosed();
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
 end
 
@@ -341,6 +355,8 @@ end
 function HousingCornerstoneHouseInfoFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneHouseInfoFrameEvents);
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
+
+	HousingControlsFrame.OwnerControlFrame.HouseInfoButton:UpdateState();
 end
 
 function HousingCornerstoneHouseInfoFrameMixin:OnEvent(event, ...)
@@ -399,6 +415,45 @@ function HousingCornerstoneHouseInfoFrameMixin:UpdateHouseInfo()
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_OPEN);
 end
 
+local function GetDialogHouseInfo()
+	local houseInfo = C_HousingNeighborhood.GetCornerstoneHouseInfo();
+	local neighborhoodInfo = C_HousingNeighborhood.GetCornerstoneNeighborhoodInfo();
+
+	local dialogInfo = {};
+	dialogInfo.plotNumber = NORMAL_FONT_COLOR:WrapTextInColorCode(string.format(HOUSING_PLOT_NUMBER, houseInfo.plotID));
+	dialogInfo.neighborhoodName = NORMAL_FONT_COLOR:WrapTextInColorCode(neighborhoodInfo.neighborhoodName);
+
+	local separateThousands = true;
+	dialogInfo.plotCost = GetMoneyString(houseInfo.plotCost, separateThousands);
+
+	return dialogInfo;
+end
+
+BuyHouseConfirmationDialogMixin = {}
+
+function BuyHouseConfirmationDialogMixin:OnLoad()
+	self.AcceptButton:SetScript("OnClick", function()
+		EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.ConfirmPurchase");
+		StaticPopupSpecial_Hide(self);
+	end);
+
+	self.CancelButton:SetScript("OnClick", function()
+		StaticPopupSpecial_Hide(self);
+		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CANCEL);
+	end);
+end
+
+function BuyHouseConfirmationDialogMixin:OnShow()
+	local dialogInfo = GetDialogHouseInfo();
+	local dialogText = string.format(HOUSING_PURCHASE_PLOT_CONFIRMATION_TEXT, dialogInfo.plotNumber, dialogInfo.neighborhoodName, dialogInfo.plotCost);
+	self.Text:SetText(dialogText);
+end
+
+function BuyHouseConfirmationDialogMixin:OnHide()
+	local inputMaskShown = false;
+	EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.SetInputMaskShown", inputMaskShown);
+end
+
 --//////////////////////////////moving confirmation dialog//////////////////////////////////////////
 MoveHouseConfirmationDialogMixin = {}
 
@@ -413,7 +468,7 @@ function MoveHouseConfirmationDialogMixin:OnLoad()
 	self.CancelButton:SetText(HOUSING_PURCHASE_PLOT_CANCEL);
 
 	self.ConfirmButton:SetScript("OnClick", function()
-		HousingCornerstonePurchaseFrame:OnConfirmPurchase();
+		EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.ConfirmPurchase");
 		StaticPopupSpecial_Hide(self);
 	end);
 
@@ -426,29 +481,33 @@ end
 function MoveHouseConfirmationDialogMixin:OnShow()
 	local discountPrice = C_HousingNeighborhood.GetDiscountedMovePrice();
 
-	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
-	if discountPrice == 0 then
-		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "GUILD_REPAIR");
-	else
-		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "STATIC");
-	end
-
 	--Handle negative values in case the refund from old house is more than the cost of the new house
 	if discountPrice < 0 then
 		discountPrice = math.abs(discountPrice);
-		MoneyFrame_Update(self.PriceMoneyFrameOriginal, discountPrice);
+		local forceShow = true;
+		MoneyFrame_Update(self.PriceMoneyFrameOriginal, discountPrice, forceShow);
 		self.PriceMoneyFrameDiscount:Hide();
 		self.PriceLabel:SetText(HOUSING_CORNERSTONE_REFUND);
 		self.OriginalStrikethrough:Hide();
 	else
-		MoneyFrame_Update(self.PriceMoneyFrameOriginal, HousingCornerstonePurchaseFrame.houseInfo.plotCost);
-		MoneyFrame_Update(self.PriceMoneyFrameDiscount, discountPrice);
+		local forceShow = true;
+		MoneyFrame_Update(self.PriceMoneyFrameOriginal, HousingCornerstonePurchaseFrame.houseInfo.plotCost, forceShow);
+		MoneyFrame_Update(self.PriceMoneyFrameDiscount, discountPrice, forceShow);
 		self.PriceMoneyFrameDiscount:Show();
 		self.PriceLabel:SetText(HOUSING_CORNERSTONE_PRICE);
 		self.OriginalStrikethrough:Show();
 	end
 
 	self.HouseToMoveText:SetText(C_HousingNeighborhood.GetPreviousHouseIdentifier());
+
+	local dialogInfo = GetDialogHouseInfo();
+	local dialogText = string.format(HOUSING_CORNERSTONE_MOVE_DIALOG, dialogInfo.plotNumber, dialogInfo.neighborhoodName);
+	self.ConfirmationText:SetText(dialogText);
+end
+
+function MoveHouseConfirmationDialogMixin:OnHide()
+	local inputMaskShown = false;
+	EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.SetInputMaskShown", inputMaskShown);
 end
 
 --//////////////////////////////re-use old house confirmation dialog//////////////////////////////////////////
@@ -459,7 +518,7 @@ function ImportHouseConfirmationDialogMixin:OnLoad()
 	self.CancelButton:SetText(HOUSING_PURCHASE_PLOT_CANCEL);
 
 	self.ConfirmButton:SetScript("OnClick", function()
-		HousingCornerstonePurchaseFrame:OnConfirmPurchase();
+		EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.ConfirmPurchase");
 		StaticPopupSpecial_Hide(self);
 	end);
 
@@ -470,5 +529,13 @@ function ImportHouseConfirmationDialogMixin:OnLoad()
 end
 
 function ImportHouseConfirmationDialogMixin:OnShow()
+	local dialogInfo = GetDialogHouseInfo();
+	local dialogText = string.format(HOUSING_CORNERSTONE_IMPORT_DIALOG, dialogInfo.plotNumber, dialogInfo.neighborhoodName, dialogInfo.plotCost);
+	self.ConfirmationText:SetText(dialogText);
 	self.HouseToImportText:SetText(C_HousingNeighborhood.GetPreviousHouseIdentifier());
+end
+
+function ImportHouseConfirmationDialogMixin:OnHide()
+	local inputMaskShown = false;
+	EventRegistry:TriggerEvent("HousingCornerstonePurchaseFrame.SetInputMaskShown", inputMaskShown);
 end

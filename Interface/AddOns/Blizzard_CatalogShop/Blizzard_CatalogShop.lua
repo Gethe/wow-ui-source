@@ -47,9 +47,9 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
-	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
 	self:RegisterEvent("SET_SEEN_PRODUCTS");
 	self:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED");
+	self:RegisterEvent("BN_DISCONNECTED");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -355,9 +355,6 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--StoreFrame_CheckMarketPriceUpdates();
 	elseif (event == "UI_SCALE_CHANGED") then
 		FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + CatalogShopConstants.ScreenPadding.Horizontal, self:GetHeight() + CatalogShopConstants.ScreenPadding.Vertical);
-	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
-		--	// Finish implementation when completing [WOW11-144188]
-		--...handle it
 	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE") then
 		local currencyCode, balance = ...;
 		balance = tonumber(balance);
@@ -367,7 +364,7 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
 		self.PersistentRefundContainerFrame:UpdateState();
 
-		-- TODO (WOW12-45327): Clean up this selected product logic (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+		-- TODO (WOW12-45327): Clean up this selected product logic
 		local selectedProductInfo = self:GetSelectedProductInfo();
 		if (selectedProductInfo) then
 			self.CatalogShopDetailsFrame:UpdateState();
@@ -389,6 +386,8 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		if (result == Enum.BulkRefundResult.ResultOk) then
 			C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
 		end
+	elseif event == "BN_DISCONNECTED" then
+		self:Hide();
 	end
 end
 
@@ -428,6 +427,9 @@ function CatalogShopMixin:OnShow()
 	end
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + CatalogShopConstants.ScreenPadding.Horizontal, self:GetHeight() + CatalogShopConstants.ScreenPadding.Vertical);
 	self.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromShop();
+
+	local isShown = true;
+	CatalogShopOutbound.VisibilityUpdated(isShown);
 end
 
 function CatalogShopMixin:OnHide()
@@ -464,6 +466,9 @@ function CatalogShopMixin:OnHide()
 	self.shoppingSessionUUIDStr = nil;
 	self.failedLoad = false;
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
+
+	local isShown = false;
+	CatalogShopOutbound.VisibilityUpdated(isShown);
 end
 
 function CatalogShopMixin:GetUseNativeForm()
@@ -615,8 +620,8 @@ function CatalogShopMixin:HideProductDetails()
 	-- clear the product we had selected for the details frame
 	self.ProductDetailsContainerFrame.DetailsProductContainerFrame:SetSelectedProductInfo(nil);
 	local productInfo = self.ProductContainerFrame:GetSelectedProductInfo();
-	local showDetails = false;
-	self:ToggleProductDetails(showDetails, productInfo);
+	self.showDetails = false;
+	self:ToggleProductDetails(self.showDetails, productInfo);
 end
 
 function CatalogShopMixin:ShowProductDetails()
@@ -625,8 +630,8 @@ function CatalogShopMixin:ShowProductDetails()
 	if not productInfo then
 		return;
 	end
-	local showDetails = true;
-	self:ToggleProductDetails(showDetails, productInfo);
+	self.showDetails = true;
+	self:ToggleProductDetails(self.showDetails, productInfo);
 end
 
 function CatalogShopMixin:ShowAllRefundableDecor()
@@ -656,11 +661,27 @@ end
 
 function CatalogShopMixin:OnProductSelected(data)
 	-- Background texture fills the whole window and is behind everything
-	local backgroundTexture = data and data.backgroundTexture or nil;
-	if backgroundTexture and backgroundTexture ~= "" then
-		self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+		
+	local overrideURL = data and data.previewBGOverrideProductURL;
+	if overrideURL then
+		-- is there a full screen URL specified in PMT?
+		self.BackgroundContainer:SetBackgroundTextureFromPMT(overrideURL);
 	else
-		self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
+		-- if not, use the texture set in PMT attributes or the default
+		local backgroundTexture = data and data.backgroundTexture or nil;
+		if backgroundTexture and backgroundTexture ~= "" then
+			self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+		else
+			self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
+		end
+	end
+
+	local smallOverrideURL = data and data.previewSmallBGOverrideProductURL;
+	if smallOverrideURL then
+		-- do we want to show the small PMT image frame?
+		local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
+		C_Texture.SetURLTexture(texture, smallOverrideURL);
+		CatalogShopFrame.PMTImageContainerFrame:Show();
 	end
 
 	-- Foreground texture fills the whole window and is in front of the background texture
@@ -709,16 +730,12 @@ function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
 		self.ProductDetailsContainerFrame:UpdateProductInfo(productInfo);
-	else
-		-- If we have a productInfo we need to ask the ProductContainerFrame to update so
-		-- that product is selected and the scroll view is rebuilt correctly. [Fixes CLASS-45742]
-		if productInfo then
-			local resetSelection = false;
-			self.ProductContainerFrame:UpdateProducts(resetSelection);
-		end
+	elseif productInfo then
+		self.ProductContainerFrame:TrySelectProduct(productInfo);
 	end
 	self.CatalogShopDetailsFrame:MarkDirty();
 	self.PersistentRefundContainerFrame:UpdateState();
+	self.PMTImageContainerFrame:SetDetailsShown(showDetails);
 end
 
 function CatalogShopMixin:FormatTimeLeft(secondsRemaining, formatter)
@@ -941,9 +958,13 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		self.ProductType:SetShown(false);
 	end
 
-	if (not not selectedProductInfo.consumableQuantity) then
+	if (selectedProductInfo.decorQuantity ~= nil) then
+		local placedQuantity = selectedProductInfo.decorQuantity.placedQuantity;
+		local storedQuantity = selectedProductInfo.decorQuantity.storedQuantity;
+		local totalQuantity = placedQuantity + storedQuantity;
+
 		if (selectedProductInfo.isBundle) then
-			self.QuantityOwned:SetShown(selectedProductInfo.consumableQuantity > 0 and (not selectedProductInfo.isFullyOwned));
+			self.QuantityOwned:SetShown(totalQuantity > 0 and (not selectedProductInfo.isFullyOwned));
 			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..CATALOG_SHOP_DECOR_BUNDLE_OWNED);
 			self.QuantityOwned.tooltip = {
 				name = CATALOG_SHOP_DECOR_BUNDLE_OWNED,
@@ -951,8 +972,11 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 			};
 		else
 			self.QuantityOwned:Show();
-			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED, selectedProductInfo.consumableQuantity));
-			self.QuantityOwned.tooltip = nil;
+			self.QuantityOwned:SetText(HouseChestAtlasMarkup.." "..string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED, totalQuantity));
+			self.QuantityOwned.tooltip = {
+				name = string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED, totalQuantity),
+				description = string.format(CATALOG_SHOP_DECOR_INDIVIDUAL_OWNED_TOOLTIP, placedQuantity, storedQuantity),
+			};
 		end
 	else
 		self.QuantityOwned:Hide();
@@ -1038,6 +1062,15 @@ function BackgroundContainerMixin:SetBackgroundTexture(backgroundAtlas)
 		self.currentBackground:SetDrawLayer("BACKGROUND", 1);
 		self.nextBackground:SetDrawLayer("BACKGROUND", 2);
 		self.nextBackground:SetAtlas(backgroundAtlas);
+		self.nextFadeIn:Play();
+	end
+end
+
+function BackgroundContainerMixin:SetBackgroundTextureFromPMT(imageURL)
+	if imageURL then
+		self.currentBackground:SetDrawLayer("BACKGROUND", 1);
+		self.nextBackground:SetDrawLayer("BACKGROUND", 2);
+		C_Texture.SetURLTexture(self.nextBackground, imageURL);
 		self.nextFadeIn:Play();
 	end
 end

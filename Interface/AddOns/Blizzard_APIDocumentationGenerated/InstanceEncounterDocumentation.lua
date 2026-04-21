@@ -112,6 +112,9 @@ local InstanceEncounter =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InstanceEncounter);

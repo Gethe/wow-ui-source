@@ -131,6 +131,9 @@ local MerchantFrame =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MerchantFrame);

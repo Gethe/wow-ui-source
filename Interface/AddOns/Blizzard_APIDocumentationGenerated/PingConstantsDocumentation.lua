@@ -88,6 +88,9 @@ local PingConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PingConstants);

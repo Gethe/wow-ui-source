@@ -355,7 +355,11 @@ function RoomComponentPaneMixin:SetRoomComponentInfo(roomComponentInfo)
 
 	local isCustomizingWall = roomComponentInfo.type == Enum.HousingRoomComponentType.Wall;
 	self.ApplyWallpaperToAllWallsButton:SetShown(isCustomizingWall);
-	self.WallWarning:SetShown(isCustomizingWall);
+	local warningText = isCustomizingWall and HOUSING_DECOR_CUSTOMIZATION_WALL_WARNING
+		or (roomComponentInfo.type == Enum.HousingRoomComponentType.Ceiling) and HOUSING_DECOR_CUSTOMIZATION_CEILING_WARNING
+		or nil;
+	self.Warning:SetText(warningText);
+	self.Warning:SetShown(not not warningText);
 
 	self:Layout();
 end

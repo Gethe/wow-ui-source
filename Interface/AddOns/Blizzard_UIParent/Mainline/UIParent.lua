@@ -520,6 +520,9 @@ function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
 
+function CooldownBroadcaster_LoadUI()
+	UIParentLoadAddOn("Blizzard_CooldownBroadcaster");
+end
 
 function WeeklyRewards_ShowUI()
 	if not WeeklyRewardsFrame then
@@ -1296,6 +1299,10 @@ function UIParent_OnEvent(self, event, ...)
 			BattlefieldMap_LoadUI();
 		end
 
+		if ( not CooldownBroadcasterFrame and not C_ChatInfo.AreOutgoingAddonChatMessagesRestricted()) then
+			CooldownBroadcaster_LoadUI();
+		end
+
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
 			GMChatFrame_LoadUI();
@@ -1575,7 +1582,7 @@ function UIParent_OnEvent(self, event, ...)
 				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.BonusRoll then
-					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
+					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID, spellConfirmation.displayItemID, spellConfirmation.itemContext, spellConfirmation.treasureContextLevel);
 				end
 			end
 		end
@@ -1737,7 +1744,7 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
+		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel = ...;
 		if ( confirmType == Enum.ConfirmationPromptUIType.StaticText ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert ) then
@@ -1747,7 +1754,7 @@ function UIParent_OnEvent(self, event, ...)
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", text, nil, spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.BonusRoll ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
@@ -2350,8 +2357,6 @@ function ToggleGameMenu()
 		Social_SetShown(false);
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerFrameCloseButton:Click();
-	elseif ( MultiCastFlyoutFrame:IsShown() ) then
-		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 	elseif (not DISALLOW_SPELL_FLYOUTS and SpellFlyout:IsShown() ) then
 		SpellFlyout:Hide();
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
@@ -2391,10 +2396,12 @@ function ToggleGameMenu()
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
 	elseif(ALLOW_PLAYER_CHOICE_ON_GAME_MENU_TOGGLE and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then
+	elseif (HousingInspectModeManagerFrame and HousingInspectModeManagerFrame:IsInspectModeActive()) then
+		HousingInspectModeManagerFrame:ExitInspectMode();
 	elseif(ReportFrame and ReportFrame:IsShown()) then
 		ReportFrame:Hide();
-	elseif(HousingPhotoSharingFrame and HousingPhotoSharingFrame:IsShown()) then
-		HousingPhotoSharingFrame:Hide();
+	elseif(PhotoSharingFrame and PhotoSharingFrame:IsShown()) then
+		PhotoSharingFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);

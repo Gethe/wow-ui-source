@@ -52,7 +52,7 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	local unselectedFontObject = self.unselectedFontObject or GameFontNormalSmall;
 	self:SetNormalFontObject(isSelected and selectedFontObject or unselectedFontObject);
 
-	self:SetEnabled(not isSelected and not self.forceDisabled);
+	self:SetEnabled(not isSelected and not self:IsForceDisabled());
 
 	self.Text:SetPoint("CENTER", self, "CENTER", 0, self:GetTextYOffset(isSelected));
 
@@ -64,6 +64,11 @@ end
 
 function TabSystemButtonArtMixin:SetTabWidth(width)
 	self:SetWidth(width);
+end
+
+function TabSystemButtonArtMixin:IsForceDisabled()
+	-- Override in your derived Mixin.
+	return false, nil;
 end
 
 TabSystemButtonMixin = {};
@@ -124,8 +129,8 @@ end
 
 function TabSystemButtonMixin:SetTabEnabled(enabled, errorReason)
 	self.forceDisabled = not enabled;
-	self:SetEnabled(enabled and not self.isSelected);
-	local text = enabled and self.tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(self.tabText);
+	self:SetEnabled(not self:IsForceDisabled() and not self.isSelected);
+	local text = not self:IsForceDisabled() and self.tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(self.tabText);
 	self.Text:SetText(text);
 	self.errorReason = errorReason;
 end
@@ -171,6 +176,23 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	self:SetTabWidth(width);
 end
 
+function TabSystemButtonMixin:IsSelected()
+	return not not self.isSelected;
+end
+
+function TabSystemButtonMixin:IsForceDisabled()
+	-- Note: this will intentionally override TabSystemButtonArtMixin.
+	return self.forceDisabled, self.errorReason;
+end
+
+function TabSystemButtonMixin:GetTooltipText()
+	return self.tooltipText;
+end
+
+function TabSystemButtonMixin:GetNotificationFrame()
+	return self.notificationFrame;
+end
+
 function TabSystemButtonMixin:GetTabID()
 	return self.tabID;
 end
@@ -198,6 +220,7 @@ function TabSystemMixin:AddTab(tabText)
 	return tabID;
 end
 
+-- tabSelectedCallback: function (tabID, isUserAction) -> suppressVisualSelection
 function TabSystemMixin:SetTabSelectedCallback(tabSelectedCallback)
 	self.tabSelectedCallback = tabSelectedCallback;
 end
@@ -235,7 +258,7 @@ function TabSystemMixin:SetTabEnabled(tabID, enabled, errorReason)
 end
 
 function TabSystemMixin:IsTabEnabled(tabID)
-	return not self.tabs[tabID]:IsEnabled();
+	return not self.tabs[tabID]:IsForceDisabled();
 end
 
 function TabSystemMixin:GetTabWidthConstraints()

@@ -61,6 +61,9 @@ local AccountInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AccountInfo);

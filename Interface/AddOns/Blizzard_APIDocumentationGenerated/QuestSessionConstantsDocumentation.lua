@@ -62,6 +62,9 @@ local QuestSessionConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestSessionConstants);

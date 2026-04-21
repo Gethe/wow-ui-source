@@ -14,7 +14,9 @@
 	<!-- Base choice entry for dropdown menu use -->
 	<Button name="HouseExteriorOptionDropdownElementTemplate" mixin="HouseExteriorOptionDropdownElementMixin" inherits="CustomizationElementTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="overrideDetailsWidth" value="160" type="number"/>
+			<KeyValue key="minDetailsWidth" value="160" type="number"/>
+			<KeyValue key="maxDetailsWidth" value="260" type="number"/>
+			<KeyValue key="widthPadding" value="10" type="number"/>
 		</KeyValues>
 	</Button>
 
@@ -61,6 +63,12 @@
 
 	<!-- Dropdown specifically for Core Fixture options -->
 	<Frame name="HouseExteriorCoreFixtureDropdownTemplate" mixin="HouseExteriorCoreFixtureDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+		<KeyValues>
+			<!-- Whether this option is selecting a "variant" of a core fixture as opposed to a wholly different one -->
+			<!-- <KeyValue key="isVariantSelection" value="false" type="boolean"/> -->
+			<!-- Which core fixture type this option is for -->
+			<!-- <KeyValue key="coreFixtureType" value="Enum.HousingFixtureType.Base" type="global"/> -->
+		</KeyValues>
 	</Frame>
 
 	<!-- List of non-core fixture options -->
@@ -141,4 +149,35 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="HouseExteriorCheckboxOptionTemplate" mixin="HouseExteriorCheckboxOptionMixin" inherits="ResizeLayoutFrame" virtual="true">
+		 <KeyValues>
+			<KeyValue key="align" value="left" type="string"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Button" relativePoint="LEFT" x="-75"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
 </Ui>

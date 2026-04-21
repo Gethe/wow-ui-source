@@ -42,6 +42,9 @@ local GlyphInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GlyphInfo);

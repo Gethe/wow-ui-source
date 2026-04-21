@@ -77,6 +77,9 @@ local SimpleObjectAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleObjectAPI);

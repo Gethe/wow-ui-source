@@ -423,6 +423,9 @@ local Bank =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Bank);

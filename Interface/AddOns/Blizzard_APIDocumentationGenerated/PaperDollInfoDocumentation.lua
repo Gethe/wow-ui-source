@@ -413,6 +413,9 @@ local PaperDollInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PaperDollInfo);

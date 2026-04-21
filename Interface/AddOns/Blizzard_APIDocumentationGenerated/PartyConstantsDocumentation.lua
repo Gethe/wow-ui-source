@@ -56,6 +56,9 @@ local PartyConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PartyConstants);

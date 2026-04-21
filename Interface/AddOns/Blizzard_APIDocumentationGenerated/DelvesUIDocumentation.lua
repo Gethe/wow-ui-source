@@ -8,6 +8,16 @@ local DelvesUI =
 	Functions =
 	{
 		{
+			Name = "GetActiveDelveTier",
+			Type = "Function",
+			Documentation = { "Returns the entrance tier information for the active Delve (via party data). Assumes only Delves use this type for now." },
+
+			Returns =
+			{
+				{ Name = "tierInfo", Type = "TieredEntranceTierInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCompanionInfoForActivePlayer",
 			Type = "Function",
 
@@ -39,8 +49,8 @@ local DelvesUI =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false, NeverSecret = true },
 			},
 
 			Returns =
@@ -86,6 +96,51 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "seasonNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceBackgroundWidgetSetID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "backgroundWidgetSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceDescriptionString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelveEntranceHeaderString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "header", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelveEntranceMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceTiers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "levelInfo", Type = "table", InnerType = "TieredEntranceTierInfo", Nilable = false },
 			},
 		},
 		{
@@ -209,13 +264,30 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetTieredEntranceOptionalAffixTraitTreeID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "treeID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetTieredEntrancePDEID",
 			Type = "Function",
-			MayReturnNothing = true,
 
 			Returns =
 			{
 				{ Name = "pdeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTieredEntranceType",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "entranceType", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -252,16 +324,26 @@ local DelvesUI =
 		{
 			Name = "HasActiveDelve",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "mapID", Type = "number", Nilable = true },
-			},
 
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDelveEntranceTierEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -302,7 +384,7 @@ local DelvesUI =
 
 			Arguments =
 			{
-				{ Name = "gossipOption", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -314,6 +396,16 @@ local DelvesUI =
 			{
 				{ Name = "slotType", Type = "CompanionConfigSlotTypes", Nilable = false },
 				{ Name = "ownedCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SelectDelveEntranceTier",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -400,6 +492,46 @@ local DelvesUI =
 				{ Name = "Utility", Type = "CurioType", EnumValue = 1 },
 			},
 		},
+		{
+			Name = "TieredEntranceRewardType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Item", Type = "TieredEntranceRewardType", EnumValue = 0 },
+				{ Name = "Currency", Type = "TieredEntranceRewardType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TieredEntranceRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "rewardType", Type = "TieredEntranceRewardType", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+		},
+		{
+			Name = "TieredEntranceTierInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "suggestedILvl", Type = "number", Nilable = false },
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "tierDescription", Type = "string", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "TieredEntranceRewardInfo", Nilable = false },
+				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
+				{ Name = "lockedReason", Type = "cstring", Nilable = true },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

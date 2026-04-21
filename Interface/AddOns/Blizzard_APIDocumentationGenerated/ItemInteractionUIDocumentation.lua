@@ -151,6 +151,9 @@ local ItemInteractionUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ItemInteractionUI);

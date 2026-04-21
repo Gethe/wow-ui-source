@@ -1287,7 +1287,7 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
-	elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
+	elseif setting == Enum.EditModeUnitFrameSetting.IconSize or setting == Enum.EditModeUnitFrameSetting.BigDefensiveIconSize then
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
@@ -1446,7 +1446,7 @@ end
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
 	self:UpdateCompactRaidFrameContainerSetting(
 		"mini", DefaultCompactMiniFrameSetup,
-		"normal", CompactUnitFrame_UpdateAll,
+		"normal", CompactUnitFrame_UpdateAllFromEditMode,
 		"group", CompactRaidGroup_UpdateBorder
 	);
 end
@@ -1454,7 +1454,7 @@ end
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
 	self:UpdateCompactRaidFrameContainerSetting(
 		"mini", DefaultCompactMiniFrameSetup,
-		"normal", CompactUnitFrame_UpdateAll,
+		"normal", CompactUnitFrame_UpdateAllFromEditMode,
 		"group", CompactRaidGroup_UpdateBorder
 	);
 end
@@ -1464,13 +1464,15 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingAuraOrganizationType()
-	-- New setting, not sure this one is right...
-	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAll);
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingIconSize()
-	-- New setting, not sure this one is right...
-	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAll);
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingBigDefensiveIconSize()
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingOpacity()
@@ -1587,6 +1589,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 			self:UpdateSystemSettingOpacity();
 		elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
 			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.BigDefensiveIconSize then
+			self:UpdateSystemSettingBigDefensiveIconSize();
 		end
 	end
 
@@ -2507,6 +2511,21 @@ function EditModeStatusTrackingBarSystemMixin:ApplySystemAnchor()
 	StatusTrackingBarManager:UpdateBarVisuals(true);
 end
 
+function EditModeStatusTrackingBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeStatusTrackingBarSetting.Size and self:HasSetting(Enum.EditModeStatusTrackingBarSetting.Size) then
+		self:SetScale(self:GetSettingValue(Enum.EditModeStatusTrackingBarSetting.Size) / 100);
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
 EditModeStatusTrackingBar1SystemMixin = {};
 
 function EditModeStatusTrackingBar1SystemMixin:OnEditModeEnter()
@@ -2648,6 +2667,25 @@ function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSetting(setting, en
 
 	if setting == Enum.EditModeVehicleSeatIndicatorSetting.Size and self:HasSetting(Enum.EditModeVehicleSeatIndicatorSetting.Size) then
 		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeTotemActionBarSystemMixin = {};
+
+function EditModeTotemActionBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeTotemActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
 	end
 
 	self:ClearDirtySetting(setting);

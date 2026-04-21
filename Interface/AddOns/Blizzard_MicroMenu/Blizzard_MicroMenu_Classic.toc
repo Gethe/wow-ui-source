@@ -6,15 +6,10 @@
 
 Shared\MicroMenuUtil.lua
 
-[Family]\MainMenuBarMicroButtons.lua
-[Game]\MainMenuBarMicroButtons.lua [AllowLoadGameType wrath, cata, mists]
-Cata\MainMenuBarMicroButtons.xml [AllowLoadGameType mists]
-[Game]\MainMenuBarMicroButtons.xml [AllowLoadGameType wrath, cata, mists]
-Vanilla\MainMenuBarMicroButtons.lua [AllowLoadGameType vanilla, tbc]
-Vanilla\MainMenuBarMicroButtons.xml [AllowLoadGameType vanilla, tbc]
+Classic\MainMenuBarMicroButtons.lua
+Classic\MainMenuBarMicroButtons.xml
 
 Shared\MicroMenuContainer.lua
-[Family]\MicroMenuContainerOverrides.lua [ExcludeLoadGameType vanilla, mists]
 Vanilla\MicroMenuContainerOverrides.lua [AllowLoadGameType vanilla, tbc]
-Mists\MicroMenuContainerOverrides.lua [AllowLoadGameType mists]
-[Family]\MicroMenuContainer.xml
+[Game]\MicroMenuContainerOverrides.lua [AllowLoadGameType wrath, cata, mists]
+Classic\MicroMenuContainer.xml

@@ -346,6 +346,9 @@ local MythicPlusInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MythicPlusInfo);

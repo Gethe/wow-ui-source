@@ -663,6 +663,9 @@ local GuildInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GuildInfo);

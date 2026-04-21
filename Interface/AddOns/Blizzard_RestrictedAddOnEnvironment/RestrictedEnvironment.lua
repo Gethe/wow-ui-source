@@ -22,79 +22,79 @@ local RestrictedTable_copytable = _G.rtable.copytable;
 -- useful without being ridiculously restrictive.
 
 local RESTRICTED_FUNCTIONS_SCOPE = {
-    math = math;
-    string = string;
-    -- table is provided elsewhere, as direct tables are not allowed
+	math = math,
+	string = string,
+	-- table is provided elsewhere, as direct tables are not allowed
 
-    select = select;
-    tonumber = tonumber;
-    tostring = tostring;
-	rawtype = type;  -- Added for test cases; almost certainly useless to addons.
+	select = select,
+	tonumber = tonumber,
+	tostring = tostring,
+	rawtype = type,  -- Added for test cases; almost certainly useless to addons.
 
-    -- String methods
-    format = format;
-    gmatch = gmatch;
-    gsub = gsub; -- Restricted table aware rtgsub is added later
-    strbyte = strbyte;
-    strchar = strchar;
-    strcmputf8i = strcmputf8i;
-    strconcat = strconcat;
-    strfind = strfind;
-    strjoin = strjoin;
-    strlen = strlen;
-    strlenutf8 = strlenutf8;
-    strlower = strlower;
-    strmatch = strmatch;
-    strrep = strrep;
-    strrev = strrev;
-    strsplit = strsplit;
-    strsub = strsub;
-    strtrim = strtrim;
-    strupper = strupper;
+	-- String methods
+	format = format,
+	gmatch = gmatch,
+	gsub = gsub, -- Restricted table aware rtgsub is added later
+	strbyte = strbyte,
+	strchar = strchar,
+	strcmputf8i = strcmputf8i,
+	strconcat = strconcat,
+	strfind = strfind,
+	strjoin = strjoin,
+	strlen = strlen,
+	strlenutf8 = strlenutf8,
+	strlower = strlower,
+	strmatch = strmatch,
+	strrep = strrep,
+	strrev = strrev,
+	strsplit = strsplit,
+	strsub = strsub,
+	strtrim = strtrim,
+	strupper = strupper,
 
-    -- Math functions
-    abs = abs;
-    acos = acos;
-    asin = asin;
-    atan = atan;
-    atan2 = atan2;
-    ceil = ceil;
-    cos = cos;
-    deg = deg;
-    exp = exp;
-    floor = floor;
-    frexp = frexp;
-    ldexp = ldexp;
-    log = log;
-    log10 = log10;
-    max = max;
-    min = min;
-    mod = mod;
-    rad = rad;
-    random = random;
-    sin = sin;
-    tan = tan;
+	-- Math functions
+	abs = abs,
+	acos = acos,
+	asin = asin,
+	atan = atan,
+	atan2 = atan2,
+	ceil = ceil,
+	cos = cos,
+	deg = deg,
+	exp = exp,
+	floor = floor,
+	frexp = frexp,
+	ldexp = ldexp,
+	log = log,
+	log10 = log10,
+	max = max,
+	min = min,
+	mod = mod,
+	rad = rad,
+	random = random,
+	sin = sin,
+	tan = tan,
 };
 
 -- Initialize directly available functions so they can be copied into the
 -- table
 local DIRECT_MACRO_CONDITIONAL_NAMES = {
-    "SecureCmdOptionParse",
-    "GetShapeshiftForm", "IsStealthed",
-    "UnitExists", "UnitIsDead", "UnitIsGhost",
-    "UnitPlayerOrPetInParty", "UnitPlayerOrPetInRaid",
-    "IsRightAltKeyDown", "IsLeftAltKeyDown", "IsAltKeyDown",
-    "IsRightControlKeyDown", "IsLeftControlKeyDown", "IsControlKeyDown",
-    "IsLeftShiftKeyDown", "IsRightShiftKeyDown", "IsShiftKeyDown",
-    "IsModifierKeyDown", "IsModifiedClick",
-    "GetMouseButtonClicked",
-    "IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea", "IsAdvancedFlyableArea", "IsDrivableArea",
-    "IsIndoors", "IsOutdoors", "CanExitVehicle"
+	"SecureCmdOptionParse",
+	"GetShapeshiftForm", "IsStealthed",
+	"UnitExists", "UnitIsDead", "UnitIsGhost",
+	"UnitPlayerOrPetInParty", "UnitPlayerOrPetInRaid",
+	"IsRightAltKeyDown", "IsLeftAltKeyDown", "IsAltKeyDown",
+	"IsRightControlKeyDown", "IsLeftControlKeyDown", "IsControlKeyDown",
+	"IsLeftShiftKeyDown", "IsRightShiftKeyDown", "IsShiftKeyDown",
+	"IsModifierKeyDown", "IsModifiedClick",
+	"GetMouseButtonClicked",
+	"IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea", "IsAdvancedFlyableArea", "IsDrivableArea",
+	"IsIndoors", "IsOutdoors", "CanExitVehicle"
 };
 
 -- Copy the direct functions into the table
-for _, name in ipairs( DIRECT_MACRO_CONDITIONAL_NAMES ) do
-    RESTRICTED_FUNCTIONS_SCOPE[name] = _G[name];
+for _, name in ipairs(DIRECT_MACRO_CONDITIONAL_NAMES) do
+	RESTRICTED_FUNCTIONS_SCOPE[name] = _G[name];
 end
 
 -- The remaining functions in this file are bindings to either non-builtin
@@ -158,19 +158,19 @@ ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
 ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
 ENV.UnitTargetsVehicleInRaidUI = UnitTargetsVehicleInRaidUI;
 
-local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
+local safeActionTypes = { ["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true, ["outfit"] = true }
 local function scrubActionInfo(actionType, id, subType, ...)
 	if actionType == "spell" and subType == "assistedcombat" then
 		return actionType, C_AssistedCombat.GetActionSpell(), subType, ...;
-    elseif safeActionTypes[actionType] then
-        return actionType, id, subType, ...;
-    else
-        return actionType;
-    end
+	elseif safeActionTypes[actionType] then
+		return actionType, id, subType, ...;
+	else
+		return actionType;
+	end
 end
 
 function ENV.GetActionInfo(...)
-    return scrubActionInfo(GetActionInfo(...));
+	return scrubActionInfo(GetActionInfo(...));
 end
 
 function ENV.IsGamePadEnabled()
@@ -181,36 +181,46 @@ function ENV.GetGamePadState()
 	return C_GamePad.GetDeviceMappedState();
 end
 
-function ENV.PlayerCanAttack( unit )
-    return UnitCanAttack( "player", unit )
+function ENV.PlayerCanAttack(unit)
+	return UnitCanAttack("player", unit)
 end
 
-function ENV.PlayerCanAssist( unit )
-    return UnitCanAssist( "player", unit )
+function ENV.PlayerCanAssist(unit)
+	return UnitCanAssist("player", unit)
 end
 
 function ENV.PlayerIsChanneling()
-    return (UnitChannelInfo( "player" ) ~= nil)
+	return (UnitChannelInfo("player") ~= nil)
 end
 
 function ENV.PlayerPetSummary()
-    return UnitCreatureFamily( "pet" ), (UnitName( "pet" ))
+	return UnitCreatureFamily("pet"), (UnitName("pet"))
 end
 
 function ENV.PlayerInCombat()
-    return UnitAffectingCombat( "player" ) or UnitAffectingCombat( "pet" )
+	return UnitAffectingCombat("player") or UnitAffectingCombat("pet")
 end
 
 function ENV.PlayerInGroup()
-    return ( IsInRaid() and "raid" )
-        or ( IsInGroup() and "party" )
+	return (IsInRaid() and "raid")
+		or (IsInGroup() and "party")
 end
 
 function ENV.UnitHasVehicleUI(unit)
-    unit = tostring(unit);
-    return UnitHasVehicleUI(unit) and
-        (UnitCanAssist("player", unit:gsub("(%D+)(%d*)", "%1pet%2")) and true) or
-        (UnitCanAssist("player", unit) and false);
+	unit = tostring(unit);
+	return UnitHasVehicleUI(unit) and
+		(UnitCanAssist("player", unit:gsub("(%D+)(%d*)", "%1pet%2")) and true) or
+		(UnitCanAssist("player", unit) and false);
+end
+
+function ENV.GetTransmogOutfitIndex(outfitID)
+	local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(outfitID);
+
+	if outfitInfo then
+		return outfitInfo.playerFacingOutfitIndex;
+	else
+		return nil;
+	end
 end
 
 -- The following functions are outbound calls to Lua functions defined in the
@@ -229,31 +239,31 @@ function ENV.print(...)
 end
 
 function ENV.RegisterStateDriver(frameHandle, ...)
-    _G.RegisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
+	_G.RegisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterStateDriver(frameHandle, ...)
-    _G.UnregisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
+	_G.UnregisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.RegisterAttributeDriver(frameHandle, ...)
-    _G.RegisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
+	_G.RegisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterAttributeDriver(frameHandle, ...)
-    _G.UnregisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
+	_G.UnregisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.RegisterUnitWatch(frameHandle, ...)
-    _G.RegisterUnitWatch(GetFrameHandleFrame(frameHandle), scrub(...));
+	_G.RegisterUnitWatch(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterUnitWatch(frameHandle, ...)
-    _G.UnregisterUnitWatch(GetFrameHandleFrame(frameHandle));
+	_G.UnregisterUnitWatch(GetFrameHandleFrame(frameHandle));
 end
 
 function ENV.UnitWatchRegistered(frameHandle, ...)
-    return _G.UnitWatchRegistered(GetFrameHandleFrame(frameHandle));
+	return _G.UnitWatchRegistered(GetFrameHandleFrame(frameHandle));
 end
 
 -- All functions in the ENV table need copying to RESTRICTED_FUNCTIONS_SCOPE

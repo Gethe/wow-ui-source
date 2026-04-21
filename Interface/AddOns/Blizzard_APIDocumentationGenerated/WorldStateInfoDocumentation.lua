@@ -86,6 +86,9 @@ local WorldStateInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WorldStateInfo);

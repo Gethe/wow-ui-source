@@ -76,6 +76,9 @@ local HousingFixturePointFrameAPI =
 			Type = "CallbackType",
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingFixturePointFrameAPI);

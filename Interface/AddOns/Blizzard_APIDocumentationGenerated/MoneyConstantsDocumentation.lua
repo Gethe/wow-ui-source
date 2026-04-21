@@ -11,6 +11,9 @@ local MoneyConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MoneyConstants);

@@ -135,6 +135,9 @@ local EncounterEvents =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterEvents);

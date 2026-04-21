@@ -84,6 +84,9 @@ local SimpleCheckboxAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleCheckboxAPI);

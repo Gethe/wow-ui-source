@@ -847,7 +847,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
 	maxLetters = 48,
 	OnAccept = function(dialog, data)
@@ -1269,7 +1269,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 			dialog.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND);
 			dialog:GetEditBox().Instructions:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_EDITBOX_INSTRUCTIONS);
 		else
-			AutoCompleteEditBox_SetAutoCompleteSource(dialog:GetEditBox(), GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
+			AutoCompleteEditBox_SetAutoCompleteSource(dialog:GetEditBox(), C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
 			dialog.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
 			dialog:GetEditBox().Instructions:SetText("");
 		end

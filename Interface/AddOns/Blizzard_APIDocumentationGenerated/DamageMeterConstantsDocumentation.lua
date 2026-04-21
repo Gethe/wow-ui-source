@@ -44,6 +44,19 @@ local DamageMeterConstants =
 			},
 		},
 		{
+			Name = "DamageMeterSourceDisplayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "DamageMeterSourceDisplayType", EnumValue = 0 },
+				{ Name = "Ally", Type = "DamageMeterSourceDisplayType", EnumValue = 1 },
+				{ Name = "Enemy", Type = "DamageMeterSourceDisplayType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "DamageMeterSpellDetailsDisplayType",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -98,6 +111,9 @@ local DamageMeterConstants =
 				{ Name = "EnemyDamageTaken", Type = "DamageMeterType", EnumValue = 10 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

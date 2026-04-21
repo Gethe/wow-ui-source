@@ -30,6 +30,9 @@ local IslandsInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(IslandsInfo);

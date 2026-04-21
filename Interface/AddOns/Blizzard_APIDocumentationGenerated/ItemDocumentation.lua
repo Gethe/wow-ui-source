@@ -1912,6 +1912,9 @@ local Item =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Item);

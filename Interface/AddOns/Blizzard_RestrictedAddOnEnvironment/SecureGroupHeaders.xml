@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-  <!-- A frame used for managing group members -->
+	<!-- A frame used for managing group members -->
 	<Frame name="SecureGroupHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad function="SecureGroupHeader_OnLoad"/>
@@ -61,6 +61,7 @@
 		</Scripts>
 	</Frame>
 
+	<!-- A frame used for an individual button in a secure aura header template. Provided as a convenience for user addon authors. -->
 	<Button name="SecureAuraButtonTemplate" inherits="SecureActionButtonTemplate" registerForClicks="RightButtonDown" virtual="true">
 		<Attributes>
 			<Attribute name="type2" value="cancelaura"/>

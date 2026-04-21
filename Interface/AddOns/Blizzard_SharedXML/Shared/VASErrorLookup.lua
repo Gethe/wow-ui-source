@@ -272,6 +272,12 @@ local vasErrorData = {
 	},
 };
 
+local vasAssignErrorData = {
+	[Enum.PurchaseResult.ErrorThrottledByUserServer] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_BOOST_THROTTLE,
+	},
+};
+
 local storeErrorData = {
 	[Enum.StoreError.InvalidPaymentMethod] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
@@ -380,4 +386,10 @@ function StoreErrorData_GetMessage(errorCode)
 	end
 
 	return info.title, info.msg, info.link;
+end
+
+function VASAssignErrorData_GetMessage(errorCode)
+	local info = vasAssignErrorData[errorCode];
+	local errorText = info and info.msg or BLIZZARD_STORE_INTERNAL_ERROR;
+	return errorText;
 end

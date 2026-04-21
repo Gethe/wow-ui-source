@@ -31,6 +31,9 @@ local TimerunningUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TimerunningUI);

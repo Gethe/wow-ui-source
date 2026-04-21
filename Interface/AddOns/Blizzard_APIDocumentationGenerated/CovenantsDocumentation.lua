@@ -81,6 +81,9 @@ local Covenants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Covenants);

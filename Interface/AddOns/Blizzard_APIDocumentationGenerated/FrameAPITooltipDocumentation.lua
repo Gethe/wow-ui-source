@@ -128,6 +128,9 @@ local FrameAPITooltip =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPITooltip);

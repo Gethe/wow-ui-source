@@ -368,6 +368,9 @@ local EncounterJournal =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncounterJournal);

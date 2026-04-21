@@ -445,6 +445,8 @@ local TooltipInfo =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = true },
+				{ Name = "itemContext", Type = "number", Nilable = true },
+				{ Name = "treasureContextLevel", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -631,8 +633,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "checkIndoors", Type = "bool", Nilable = true },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "checkIndoors", Type = "bool", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -1047,12 +1049,12 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isPet", Type = "bool", Nilable = true },
-				{ Name = "showSubtext", Type = "bool", Nilable = true },
-				{ Name = "dontOverride", Type = "bool", Nilable = true },
-				{ Name = "difficultyID", Type = "number", Nilable = true },
-				{ Name = "isLink", Type = "bool", Nilable = true },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "isPet", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "showSubtext", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "dontOverride", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "difficultyID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "isLink", Type = "bool", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -1216,12 +1218,12 @@ local TooltipInfo =
 			Type = "Function",
 			MayReturnNothing = true,
 			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Obtains aura info like other functions with the caveat that the filters will always at least include the typically mutually exclusive HELPFUL|HARMFUL regardless of what the argument value is set to" },
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1240,7 +1242,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1255,11 +1257,11 @@ local TooltipInfo =
 			Type = "Function",
 			MayReturnNothing = true,
 			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1278,7 +1280,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1293,11 +1295,11 @@ local TooltipInfo =
 			Type = "Function",
 			MayReturnNothing = true,
 			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -1393,6 +1395,9 @@ local TooltipInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

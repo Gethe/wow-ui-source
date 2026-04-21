@@ -886,9 +886,12 @@ local HousingUI =
 				{ Name = "Fixture", Type = "HousingItemToastType", EnumValue = 1 },
 				{ Name = "Customization", Type = "HousingItemToastType", EnumValue = 2 },
 				{ Name = "Decor", Type = "HousingItemToastType", EnumValue = 3 },
-				{ Name = "House", Type = "HousingItemToastType", EnumValue = 4 },
+				{ Name = "HouseType", Type = "HousingItemToastType", EnumValue = 4 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

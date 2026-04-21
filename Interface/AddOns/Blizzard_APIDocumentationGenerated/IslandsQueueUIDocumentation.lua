@@ -88,6 +88,9 @@ local IslandsQueueUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(IslandsQueueUI);

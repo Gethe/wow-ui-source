@@ -202,19 +202,19 @@ local function Register()
 
 	-- Connect to Photo Sharing
 	do
-		if C_HousingPhotoSharing.IsEnabled() then
+		if C_PhotoSharing.IsEnabled() then
 			local setting = Settings.RegisterCVarSetting(category, "enableConnectToPhotoSharing", Settings.VarType.Boolean, PHOTO_SHARING_SETTINGS_LABEL);
 
 			local function OnConnectButtonClick()
-				if not C_HousingPhotoSharing.IsAuthorized() then
-					C_HousingPhotoSharing.BeginAuthorizationFlow();
+				if not C_PhotoSharing.IsAuthorized() then
+					C_PhotoSharing.BeginAuthorizationFlow();
 				else
-					C_HousingPhotoSharing.ClearAuthorization();
+					C_PhotoSharing.ClearAuthorization();
 				end
 			end
 
 			local function EvaluateButtonName()
-				if C_HousingPhotoSharing.IsAuthorized() then
+				if C_PhotoSharing.IsAuthorized() then
 					return PHOTO_SHARING_DISCONNECT;
 				else
 					return PHOTO_SHARING_SIGN_IN;
@@ -224,14 +224,23 @@ local function Register()
 			local function OnEvaluateState(self)
 				-- This is true when the checkbox is unchecked
 				if not self:GetSetting():GetValue() then
-					C_HousingPhotoSharing.ClearAuthorization();
+					C_PhotoSharing.ClearAuthorization();
 				end
 
 				-- This is governed by server settings, unrelated to client checkbox
-				if C_HousingPhotoSharing.IsEnabled() then
+				if C_PhotoSharing.IsEnabled() then
+					C_CVar.SetCVar("enableConnectToPhotoSharing", 1);
+
+					self.data.tooltip = PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP;
 					self:Show();
 				else
-					self:Hide();
+					C_CVar.SetCVar("enableConnectToPhotoSharing", 0);
+
+					if C_PhotoSharing.GetStatus() == Enum.PhotoSharingStatus.ParentalControl then
+						self.data.tooltip = PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP_RESTRICTED;
+					else
+						self:Hide();
+					end
 				end
 			end
 

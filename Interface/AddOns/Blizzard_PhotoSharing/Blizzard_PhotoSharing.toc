@@ -1,0 +1,8 @@
+## Title: Blizzard Photo Sharing
+## Author: Blizzard Entertainment
+## AllowLoadGameType: standard
+
+Blizzard_PhotoSharing.lua
+Blizzard_PhotoSharing.xml
+Blizzard_PhotoSharingBrowser.lua
+Blizzard_PhotoSharingBrowser.xml

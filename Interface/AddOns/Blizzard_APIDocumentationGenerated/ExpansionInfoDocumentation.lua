@@ -54,6 +54,9 @@ local ExpansionInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ExpansionInfo);

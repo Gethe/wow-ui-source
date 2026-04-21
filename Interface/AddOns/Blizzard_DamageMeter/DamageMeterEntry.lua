@@ -94,8 +94,10 @@ function DamageMeterEntryMixin:ShowsValuePerSecondAsPrimary()
 end
 
 local function GetEntryValueText(value, parentheticalValue, percentageValue)
-	if percentageValue then
+	if parentheticalValue and percentageValue then
 		return DAMAGE_METER_ENTRY_FORMAT_COMPLETE:format(AbbreviateLargeNumbers(value), AbbreviateLargeNumbers(parentheticalValue), Round(percentageValue * 100));
+	elseif percentageValue then
+		return DAMAGE_METER_ENTRY_FORMAT_COMPLETE_NO_PARENTHESIS:format(AbbreviateLargeNumbers(value), Round(percentageValue * 100));
 	elseif parentheticalValue then
 		return DAMAGE_METER_ENTRY_FORMAT_COMPACT:format(AbbreviateLargeNumbers(value), AbbreviateLargeNumbers(parentheticalValue));
 	else
@@ -118,6 +120,10 @@ end
 local function GetParentheticalValue(entry)
 	if entry.value and entry:ShowsValuePerSecondAsPrimary() then
 		return entry.value;
+	end
+
+	if entry.suppressValuePerSecond then
+		return nil;
 	end
 
 	if entry.valuePerSecond then
@@ -459,8 +465,12 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.specIconID = combatSource.specIconID;
 	self.deathRecapID = combatSource.deathRecapID;
 	self.deathTimeSeconds = combatSource.deathTimeSeconds;
-	self.isCreature = combatSource.sourceCreatureID ~= nil;
+
+	 -- Creatures, but not those treated as players for display (who will have classFilename like players)
+	self.isCreature = (combatSource.sourceCreatureID ~= nil) and (self.classFilename == '');
+
 	self.classification = combatSource.classification;
+	self.suppressValuePerSecond = combatSource.suppressValuePerSecond;
 	self:SetSuppressIcon(combatSource.suppressIcon);
 
 	DamageMeterEntryMixin.Init(self, combatSource);
