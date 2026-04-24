@@ -1070,6 +1070,7 @@ Interface\AddOns\Blizzard_Console\Blizzard_Console_AutoComplete.lua
 Interface\AddOns\Blizzard_Console\Blizzard_Console_AutoComplete.xml
 Interface\AddOns\Blizzard_CooldownBroadcaster\Blizzard_CooldownBroadcaster.lua
 Interface\AddOns\Blizzard_CooldownBroadcaster\Blizzard_CooldownBroadcaster.toc
+Interface\AddOns\Blizzard_CooldownBroadcaster\MessageQueue.lua
 Interface\AddOns\Blizzard_CooldownBroadcaster\TrackedCooldowns.lua
 Interface\AddOns\Blizzard_CooldownViewer\Blizzard_CooldownViewer.toc
 Interface\AddOns\Blizzard_CooldownViewer\CooldownViewer.lua
@@ -1844,10 +1845,9 @@ Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlateFrameOptions.lua
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlateHealthBar.lua
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlateRaidTarget.lua
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlateUnitFrame.lua
-Interface\AddOns\Blizzard_NamePlates\TBC\Blizzard_NamePlates.lua
-Interface\AddOns\Blizzard_NamePlates\TBC\Blizzard_NamePlates.xml
-Interface\AddOns\Blizzard_NamePlates\Vanilla\Blizzard_NamePlates.lua
-Interface\AddOns\Blizzard_NamePlates\Vanilla\Blizzard_NamePlates.xml
+Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.lua
+Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.toc
+Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.xml
 Interface\AddOns\Blizzard_Notification\Blizzard_Notification.toc
 Interface\AddOns\Blizzard_Notification\Blizzard_Notification.xml
 Interface\AddOns\Blizzard_Notification\Blizzard_NotificationUtil.lua

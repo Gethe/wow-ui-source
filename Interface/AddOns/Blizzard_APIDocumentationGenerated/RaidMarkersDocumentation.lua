@@ -85,6 +85,12 @@ local RaidMarkers =
 			},
 		},
 		{
+			Name = "RemoveRaidTargets",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Removes all assigned raid target markers." },
+		},
+		{
 			Name = "SetRaidTarget",
 			Type = "Function",
 			HasRestrictions = true,

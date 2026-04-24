@@ -7,6 +7,15 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "CreateUnitHealPredictionCalculator",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "GetUnitEmpowerHoldAtMaxTime",
 			Type = "Function",
 			SecretWhenUnitSpellCastRestricted = true,
@@ -759,6 +768,35 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitGetDetailedHealPrediction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGetIncomingHeals",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "healerGUID", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitGetTotalAbsorbs",
 			Type = "Function",
 			SecretReturns = true,
@@ -834,6 +872,77 @@ local Unit =
 			Returns =
 			{
 				{ Name = "hasPower", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthMax",
+			Type = "Function",
+			SecretWhenUnitHealthMaxRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthMissing",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitHealthMax() - UnitHealth()" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthPercent",
+			Type = "Function",
+			SecretWhenCurveSecret = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns percent of health remaining - can be scaled via a curve for display purposes" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
+			},
+		},
+		{
+			Name = "UnitHealth",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1507,6 +1616,40 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPartialPower",
+			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "partialPower", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPercentHealthFromGUID",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "percentHealth", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1653,6 +1796,67 @@ local Unit =
 			Returns =
 			{
 				{ Name = "maxPower", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerMissing",
+			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitPowerMax() - UnitPower()" },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerPercent",
+			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the percent of power remaining, optionally evaluating it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
+			},
+		},
+		{
+			Name = "UnitPowerType",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenPvPRestrictedForAddOns", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+				{ Name = "powerTypeToken", Type = "string", Nilable = false },
+				{ Name = "rgbX", Type = "number", Nilable = false },
+				{ Name = "rgbY", Type = "number", Nilable = false },
+				{ Name = "rgbZ", Type = "number", Nilable = false },
 			},
 		},
 		{

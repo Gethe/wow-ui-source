@@ -14,7 +14,7 @@ local SecretPredicates =
 		{
 			Name = "RequiresDeclassifiedUnitIdentity",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 			Documentation = { "Guarded APIs and events require that callers have access to the identity of a supplied unit token." },
 		},
 		{
@@ -26,22 +26,22 @@ local SecretPredicates =
 		{
 			Name = "RequiresScriptObjectAlphaAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresScriptObjectDesaturationAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresStatusBarDesaturationAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresUnitIdentityAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 			Documentation = { "Guarded APIs and events require that callers have access to unit identity values. This does not raise a blocked action error - instead, protected APIs will return no values." },
 		},
 		{

@@ -187,6 +187,7 @@ Interface\AddOns\Blizzard_MicroMenu\Blizzard_MicroMenu_Mainline.toc
 Interface\AddOns\Blizzard_Minimap\Blizzard_Minimap_Classic.toc
 Interface\AddOns\Blizzard_MoneyFrame\Blizzard_MoneyFrame_Classic.toc
 Interface\AddOns\Blizzard_MovePad\Blizzard_MovePad.toc
+Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.toc
 Interface\AddOns\Blizzard_Notification\Blizzard_Notification.toc
 Interface\AddOns\Blizzard_ObjectAPI\Blizzard_ObjectAPI_Classic.toc
 Interface\AddOns\Blizzard_OverrideActionBar\Blizzard_OverrideActionBar.toc

@@ -1,0 +1,444 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="NamePlateDriverFrame" toplevel="true" mixin="NamePlateDriverMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="NamePlateFullBorderTemplate" mixin="NamePlateBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-8">
+				<!-- Left -->
+				<Texture parentKey="Left" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Right -->
+				<Texture parentKey="Right" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Bottom -->
+				<Texture parentKey="Bottom" parentArray="Textures">
+					<Size y="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Top -->
+				<Texture parentKey="Top" parentArray="Textures">
+					<Size y="1.0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="NamePlateSecondaryBarBorderTemplate" mixin="NamePlateBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-8">
+				<!-- Left -->
+				<Texture parentKey="Left" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Right -->
+				<Texture parentKey="Right" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Bottom -->
+				<Texture parentKey="Bottom" parentArray="Textures">
+					<Size y="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="BaseNamePlateUnitFrameTemplate" mixin="NamePlateUnitFrameMixin" parentKey="UnitFrame" useParentLevel="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="disableMouse" value="true" type="boolean"/>
+			<KeyValue key="ignoreCUFNameRequirement" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+
+		<Frames>
+			<Frame parentKey="HealthBarsContainer" useParentLevel="true">
+				<Frames>
+					<StatusBar parentKey="healthBar" mixin="NamePlateHealthBarMixin" inherits="TextStatusBar" useParentLevel="true">
+						<BarTexture parentKey="barTexture" atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="bgTexture" atlas="UI-HUD-CoolDownManager-Bar-BG">
+									<!-- Anchoring handled dynamically in lua.-->
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="selectedBorder" atlas="UI-HUD-Nameplates-Selected">
+									<!-- Anchoring handled dynamically in lua.-->
+								</Texture>
+								<Texture parentKey="deselectedOverlay" atlas="ui-hud-nameplates-deselected-overlay">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="5">
+								<Texture parentKey="myHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+								<Texture parentKey="otherHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+								<Texture parentKey="totalAbsorb"/>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="6">
+								<Texture parentKey="totalAbsorbOverlay"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<FontString parentKey="Text" inherits="SystemFont_NamePlate" smoothScaling="true">
+									<Anchors>
+										<Anchor point="RIGHT" x="-5" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="RightText" inherits="SystemFont_NamePlate" smoothScaling="true">
+									<Anchors>
+										<Anchor point="RIGHT" x="-5" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="LeftText" inherits="SystemFont_NamePlate" smoothScaling="true">
+									<Anchors>
+										<Anchor point="RIGHT" x="0" y="0" relativeKey="$parent.RightText" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="myHealAbsorb"/>
+								<Texture parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
+								<Texture parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
+									<TexCoords left="1" right="0" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="overAbsorbGlow"/>
+								<Texture parentKey="overHealAbsorbGlow"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<StatusBar parentKey="castBar" mixin="NamePlateCastingBarMixin" inherits="CastingBarFrameAnimsTemplate" frameLevel="100" hidden="true">
+				<KeyValues>
+					<KeyValue key="HideIconWhenNotInterruptible" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="ui-castingbar-background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
+							<!-- Anchoring and size handled dynamically in lua.-->
+						</Texture>
+						<Texture parentKey="CastTargetIndicator" atlas="ui-hud-nameplates-targetedbyenemy">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4" y="4"/>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Icon" hidden="true">
+							<!-- Anchoring and size handled dynamically in lua.-->
+						</Texture>
+						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" smoothScaling="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" smoothScaling="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="0"/>
+								<Anchor point="RIGHT" x="-4" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true">
+							<!-- Anchoring and size handled dynamically in lua.-->
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+							<Size x="4" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" />
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent" />
+					<OnUpdate method="OnUpdate" />
+					<OnShow method="OnShow" />
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="ImportantCastFlashAnim" looping="REPEAT">
+						<Alpha childKey="ImportantCastIndicator" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="ImportantCastIndicator" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</StatusBar>
+
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.castBar" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="RaidTargetFrame" mixin="NamePlateRaidTargetMixin" collapsesLayout="true">
+				<Size x="22" y="22"/>
+				<!-- Anchoring handled dynamically in lua.-->
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="ClassificationFrame" mixin="NamePlateClassificationFrameMixin" collapsesLayout="true">
+				<Size x="20" y="20" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RaidTargetFrame" relativePoint="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="classificationIndicator">
+							<Size x="20" y="20" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="AurasFrame" mixin="NamePlateAurasMixin" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="DebuffListFrame" inherits="NamePlateAuraListTemplate">
+						<KeyValues>
+							<KeyValue key="maxAuraItemsDisplayed" value="12" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<!-- Vertical anchoring handled in lua.-->
+							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer" relativePoint="LEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BuffListFrame" inherits="NamePlateAuraListTemplate">
+						<KeyValues>
+							<KeyValue key="layoutFramesGoingRight" value="false" type="boolean"/>
+							<KeyValue key="maxAuraItemsDisplayed" value="2" type="number"/>
+							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.ClassificationFrame" relativePoint="LEFT" x="-5"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="CrowdControlListFrame" inherits="NamePlateAuraListTemplate">
+						<KeyValues>
+							<KeyValue key="maxAuraItemsDisplayed" value="2" type="number"/>
+							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer.healthBar" relativePoint="RIGHT" x="5"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="LossOfControlFrame">
+						<Size x="30" y="30"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer.healthBar" relativePoint="RIGHT" x="5"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="AuraItemFrame" inherits="NameplateAuraItemTemplate" setAllPoints="true"/>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="PlayerLevelDiffFrame" frameStrata="HIGH" hidden="true">
+				<Size x="28" y="28" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="LEFT" x="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="playerLevelDiffIcon" atlas="plunderstorm-nameplates-icon-ring">
+							<Size x="18" y="18" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="playerLevelDiffText" inherits="GameFontWhiteTiny2">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" x="1" relativeKey="$parent.playerLevelDiffIcon"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="SoftTargetFrame">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="behindCameraIcon" atlas="common-icon-offscreen" rotation="45" snapToPixelGrid="false">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.castBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="LEFT" smoothScaling="true">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Nameplates don't display a highlight when selected, but expect this texture to exist.-->
+				<Texture parentKey="selectionHighlight"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="aggroHighlight">
+					<!-- Nameplates don't use this for display, but expect this texture to exist so CompactUnitFrame can drive the logic.-->
+				</Texture>
+				<Texture parentKey="aggroHighlightBase" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="aggroHighlightAdditive" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true" alpha="0.4" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="aggroHighlightMask" atlas="UI-HUD-Nameplates-Aggro-Mask" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="aggroHighlightBase"/>
+						<MaskedTexture childKey="aggroHighlightAdditive"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="aggroFlash" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" />
+					</Anchors>
+					<Color r="1" g="1" b="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="LoseAggroAnim" setToFinalAlpha="true">
+				<Alpha childKey="aggroFlash" duration=".25" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha childKey="aggroFlash" duration=".25" fromAlpha="1" toAlpha="0" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AggroHighlightFadeInAnim" setToFinalAlpha="true">
+				<Alpha parentKey="aggroHighlightBaseAlpha" childKey="aggroHighlightBase" duration="2" order="1" toAlpha="1"/>
+				<Alpha parentKey="aggroHighlightAdditiveAlpha" childKey="aggroHighlightAdditive" duration="2" order="1" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AggroHighlightFadeOutAnim" setToFinalAlpha="true">
+				<Alpha parentKey="aggroHighlightBaseAlpha" childKey="aggroHighlightBase" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha parentKey="aggroHighlightAdditiveAlpha" childKey="aggroHighlightAdditive" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AggroHighlightScrollAnim" looping="REPEAT">
+				<TextureCoordTranslation childKey="aggroHighlightBase" duration="40" order="1" offsetU="1" offsetV="0"/>
+				<TextureCoordTranslation childKey="aggroHighlightAdditive" duration="40" order="1" offsetU="-1" offsetV="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
+
+	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+
+	<!-- This should be derived for any nameplates that register as script nameplates. The associated mixin provides stub implementations of a few methods present on the native NamePlate frame type. -->
+	<Frame name="NamePlateScriptBaseTemplate" mixin="NamePlateScriptBaseMixin" virtual="true"/>
+</Ui>

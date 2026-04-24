@@ -80,7 +80,7 @@ function DamageMeterMixin:OnLoad()
 
 	self.windowDataList = {};
 	self.sessionType = Enum.DamageMeterSessionType.Overall;
-	self.sessionID = nill;
+	self.sessionID = nil;
 
 	self:InitializeWindowDataList();
 end
@@ -368,7 +368,7 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 			windowData.nonInteractive = savedWindowData.nonInteractive;
 			windowData.minimized = savedWindowData.minimized;
 
-			if savedWindowData.shown then
+			if savedWindowData.shown or i == PRIMARY_SESSION_WINDOW_INDEX then
 				self:SetupSessionWindow(i, windowData);
 			end
 		end

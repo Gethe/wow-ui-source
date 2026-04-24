@@ -3478,7 +3478,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local allowsCrossFaction = (categoryInfo and categoryInfo.allowCrossFaction) and (activityInfo and activityInfo.allowCrossFaction);
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
-	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
+	tooltip:SetText(searchResultInfo.name, 1, 1, 1, 1, true);
 	tooltip:AddLine(activityInfo.fullName);
 
 	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then

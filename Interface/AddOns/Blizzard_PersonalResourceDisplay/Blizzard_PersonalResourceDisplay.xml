@@ -10,9 +10,9 @@
 		<BarTexture atlas="UI-HUD-CoolDownManager-Bar" texelSnappingBias="0" snapToPixelGrid="false"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
+				<Texture atlas="UI-HUD-CoolDownManager-Bar-BG" texelSnappingBias="0" snapToPixelGrid="false">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
 						<Anchor point="BOTTOMRIGHT" x="6" y="-7"/>
 					</Anchors>
 				</Texture>

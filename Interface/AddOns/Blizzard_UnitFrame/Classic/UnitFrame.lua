@@ -520,7 +520,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 
 	-- Setup newbie tooltip
 	if ( manaBar.unit ~= "pet") then
-	    if ( unitFrame:GetName() == "PlayerFrame" ) then
+	    if ( unitFrame:GetName() == "PlayerFrame" and powerType ~= nil ) then
 		    manaBar.tooltipTitle = prefix;
 		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR"..powerType];
 	    else
