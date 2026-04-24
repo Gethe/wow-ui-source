@@ -4,7 +4,8 @@ function CommentatorSpellBaseMixin:Initialize(spellCache)
 	self.spellCache = spellCache;
 
 	local spellID = spellCache:GetSpellID();
-	self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID));
+	local _spellTexture, baseSpellTexture = C_Spell.GetSpellTexture(spellID);
+	self.Icon:SetTexture(baseSpellTexture);
 
 	self:SetActive(spellCache:IsActive());
 end
