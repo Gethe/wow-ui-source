@@ -307,6 +307,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDistanceSquared",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "distance", Type = "number", Nilable = false },
+				{ Name = "checkedDistance", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitFactionGroup",
 			Type = "Function",
 
@@ -391,6 +406,21 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInRange",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inRange", Type = "bool", Nilable = false },
+				{ Name = "checkedRange", Type = "bool", Nilable = false },
 			},
 		},
 		{

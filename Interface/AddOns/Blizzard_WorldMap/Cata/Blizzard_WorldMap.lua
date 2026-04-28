@@ -3,6 +3,7 @@ WorldMapMixin = {};
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
 		self.MiniBorderFrame:Hide();
+		self:SetFrameStrata("FULLSCREEN");
 
 		self.WorldMapLevelDropDown:ClearAllPoints();
 
@@ -36,6 +37,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 	else
 		self.MiniBorderFrame:Show();
 		self:SetMovable("true");
+		self:SetFrameStrata("MEDIUM");
 
 		WorldMapFrame:ClearAllPoints();
 		self.WorldMapLevelDropDown:ClearAllPoints();

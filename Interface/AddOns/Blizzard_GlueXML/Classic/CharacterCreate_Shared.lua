@@ -51,7 +51,8 @@ function CharacterCreateEnumerateRaces()
 
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
-		button.tooltip = nil;
+		button.tooltip = raceData.name; -- May be overwritten later.
+		button.raceName = raceData.name;
 
 		local disable = true;
 		if CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
@@ -106,7 +107,6 @@ function CharacterCreateEnumerateRaces()
 				texture:SetDesaturated(false);
 			end
 		end
-		button.tooltip = raceData.name;
 
 		button.raceID = raceData.raceID;
 	end

@@ -301,7 +301,7 @@ function CompactRaidFrameManager_UpdateShown()
 		return;
 	end
 
-	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
+	local showManager = (IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown()) and not C_Commentator.IsSpectating();
 	CompactRaidFrameManager:SetShown(showManager);
 
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();

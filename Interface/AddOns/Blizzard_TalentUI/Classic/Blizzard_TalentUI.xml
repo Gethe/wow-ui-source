@@ -41,13 +41,13 @@
 						<Anchor point="TOPRIGHT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="PlayerTalentFrameBottomLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+				<Texture name="PlayerTalentFrameBottomLeft" file="Interface\TALENTFRAME\UI-TalentFrame-BotLeft">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="PlayerTalentFrameBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+				<Texture name="PlayerTalentFrameBottomRight" file="Interface\TALENTFRAME\UI-TalentFrame-BotRight">
 					<Size x="128" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
@@ -68,8 +68,19 @@
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-44" y="-25"/>
 				</Anchors>
 			</Button>
+			<Button name="PlayerTalentFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE" frameStrata="HIGH">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="305" y="-420"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						UIPanelCloseButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Frame name="PlayerTalentFrameStatusFrame" hidden="true">
-				<Size x="224" y="20"/>
+				<Size x="264" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" x="73" y="-46"/>
 				</Anchors>
@@ -83,7 +94,7 @@
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePointsMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="208" y="20"/>
+							<Size x="248" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="PlayerTalentFramePointsLeft" relativePoint="RIGHT"/>
 							</Anchors>
@@ -96,7 +107,13 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<FontString name="PlayerTalentFrameStatusText" inherits="GameFontNormal" text="TALENT_ACTIVE_SPEC_STATUS">
+						<FontString name="PlayerTalentFrameSpentPointsText" inherits="GameFontNormalSmall">
+							<Size x="0" y="15"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PlayerTalentFrameStatusText" inherits="GameFontNormal" text="TALENT_ACTIVE_SPEC_STATUS" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -118,21 +135,21 @@
 				</Scripts>
 			</Button>
 			<Frame name="PlayerTalentFramePointsBar">
-				<Size x="331" y="26"/>
+				<Size x="251" y="26"/>
 				<Anchors>
 					<Anchor point="LEFT" x="16" y="0"/>
-					<Anchor point="RIGHT" x="-36" y="0"/>
+					<Anchor point="RIGHT" x="-116" y="0"/>
 					<Anchor point="BOTTOM" x="0" y="81"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground" file="Interface\Buttons\UI-Button-Borders2" setAllPoints="true">
+						<Texture name="$parentBackground" file="Interface\Buttons\UI-Button-Borders2" setAllPoints="true" hidden="true">
 							<Size x="331" y="26"/>
 							<TexCoords left="0.0" right="0.646484375" top="0.2109375" bottom="0.4140625"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
+						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2" hidden="true">
 							<Size x="6" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" x="4" y="0"/>
@@ -141,7 +158,7 @@
 							</Anchors>
 							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
 						</Texture>
-						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
+						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2" hidden="true">
 							<Size x="6" y="18"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="-4" y="0"/>
@@ -150,7 +167,7 @@
 							</Anchors>
 							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
 						</Texture>
-						<Texture name="$parentBorderMiddle" file="Interface\Buttons\UI-Button-Borders2">
+						<Texture name="$parentBorderMiddle" file="Interface\Buttons\UI-Button-Borders2" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentBorderLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderRight" relativePoint="BOTTOMLEFT"/>
@@ -159,12 +176,6 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="PlayerTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
-							<Size x="0" y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" x="12" y="0"/>
-							</Anchors>
-						</FontString>
 						<FontString name="PlayerTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 							<Size x="0" y="15"/>
 							<Anchors>

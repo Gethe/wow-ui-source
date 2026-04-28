@@ -305,6 +305,19 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
+			<OnEnter>
+				if MOVING_CHATFRAME then
+					return;
+				end
+				
+				local chatFrame = _G["ChatFrame"..self:GetID()];
+				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
 			<OnClick>
 				FCF_Tab_OnClick(self, button);
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
@@ -317,22 +330,11 @@
 					end
 				end
 			</OnDoubleClick>
-			<OnEnter>
-				local chatFrame = _G["ChatFrame"..self:GetID()];
-
-				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 			<OnDragStart>
 				local chatFrame = _G["ChatFrame"..self:GetID()];
 				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-					if (chatFrame.isLocked) then
-						return;
-					end
-					chatFrame:StartMoving();
-					MOVING_CHATFRAME = chatFrame;
+					-- Default frame is managed via edit mode
+					return;
 				elseif ( chatFrame.isDocked ) then
 					FCF_UnDockFrame(chatFrame);
 					FCF_SetLocked(chatFrame, false);

@@ -36,7 +36,7 @@ function AutoCastOverlayManagerMixin:OnLoad()
 end
 
 function AutoCastOverlayManagerMixin:AddActiveShine(shine)
-	tinsert(self.activeShines, shine);
+	tInsertUnique(self.activeShines, shine);
 end
 
 function AutoCastOverlayManagerMixin:RemoveActiveShine(shine)
