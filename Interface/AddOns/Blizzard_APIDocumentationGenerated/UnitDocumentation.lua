@@ -2368,7 +2368,7 @@ local Unit =
 			Name = "UnitName",
 			Type = "Function",
 			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
