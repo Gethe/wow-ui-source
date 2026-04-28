@@ -1174,6 +1174,7 @@ Interface\AddOns\Blizzard_Contribution\Blizzard_Contribution.toc
 Interface\AddOns\Blizzard_Contribution\Blizzard_Contribution.xml
 Interface\AddOns\Blizzard_CooldownBroadcaster\Blizzard_CooldownBroadcaster.lua
 Interface\AddOns\Blizzard_CooldownBroadcaster\Blizzard_CooldownBroadcaster.toc
+Interface\AddOns\Blizzard_CooldownBroadcaster\MessageQueue.lua
 Interface\AddOns\Blizzard_CooldownBroadcaster\TrackedCooldowns.lua
 Interface\AddOns\Blizzard_CooldownViewer\Blizzard_CooldownViewer.toc
 Interface\AddOns\Blizzard_CooldownViewer\CooldownViewer.lua

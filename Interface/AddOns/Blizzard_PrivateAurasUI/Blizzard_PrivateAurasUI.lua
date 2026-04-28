@@ -1208,7 +1208,9 @@ function PrivateAuraUnitWatcher:HandleUpdateInfo(privateAuraSource, updateInfo)
 		for _, auraInstanceID in ipairs(updateInfo.updatedAuraInstanceIDs) do
 			if self.auras[auraInstanceID] ~= nil then
 				local newAura = C_UnitAurasPrivate.GetAuraDataByAuraInstanceIDPrivate(self.unit, auraInstanceID);
-				newAura.isPrivate = privateAuraSource;
+				if newAura then
+					newAura.isPrivate = privateAuraSource;
+				end
 				self.auras[auraInstanceID] = newAura;
 				aurasChanged = true;
 			end
