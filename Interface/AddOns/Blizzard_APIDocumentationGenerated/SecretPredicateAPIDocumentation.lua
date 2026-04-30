@@ -9,6 +9,23 @@ local SecretPredicateAPI =
 	Functions =
 	{
 		{
+			Name = "CanCompareUnitTokens",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if queries to compare two input unit tokens are permitted. If this returns false, APIs guarded by the RequiresComparableUnitTokens predicate will fail." },
+
+			Arguments =
+			{
+				{ Name = "unit1", Type = "UnitToken", Nilable = false },
+				{ Name = "unit2", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitComparisonPermitted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPowerTypeSecrecy",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -368,6 +385,16 @@ local SecretPredicateAPI =
 			},
 		},
 		{
+			Name = "ShouldUnitStatsBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit statistics will produce secret values." },
+
+			Returns =
+			{
+				{ Name = "hasSecretStats", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldUnitThreatStateBeSecret",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -408,6 +435,9 @@ local SecretPredicateAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -288,6 +288,24 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "RoomConnectionSupportsDoorType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Check whether a specific room component, within a specific room, supports a particular doorType" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "newDoortype", Type = "HousingRoomComponentDoorType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doorTypeSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRoomComponentCeilingType",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -436,6 +454,9 @@ local HousingCustomizeModeUI =
 				{ Name = "roomComponentTextureRecID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

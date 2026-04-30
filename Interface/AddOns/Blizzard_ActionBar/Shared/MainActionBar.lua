@@ -11,7 +11,12 @@ function MainActionBarMixin:OnLoad()
 end
 
 function MainActionBarMixin:OnShow()
+	self:UpdateEndCaps(self.hideBarArt);
 	MicroMenu:ResetMicroMenuPosition();
+end
+
+function MainActionBarMixin:OnHide()
+	self:UpdateEndCaps(true);
 end
 
 function MainActionBarMixin:SetYOffset(yOffset)
@@ -26,7 +31,7 @@ function MainActionBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-		self:UpdateEndCaps();
+		self:UpdateEndCaps(self.hideBarArt);
 	end
 end
 

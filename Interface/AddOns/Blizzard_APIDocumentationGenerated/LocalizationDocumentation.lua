@@ -46,7 +46,7 @@ local Localization =
 			Arguments =
 			{
 				{ Name = "largeNumber", Type = "number", Nilable = false },
-				{ Name = "natural", Type = "bool", Nilable = false, Default = false },
+				{ Name = "natural", Type = "bool", Nilable = false, NeverSecret = true, Default = false },
 			},
 
 			Returns =
@@ -72,6 +72,7 @@ local Localization =
 		{
 			Name = "CreateAbbreviateConfig",
 			Type = "Function",
+			RequiresRestrictedAbbreviationBreakpoints = true,
 			SecretArguments = "NotAllowed",
 
 			Arguments =
@@ -99,6 +100,22 @@ local Localization =
 			Returns =
 			{
 				{ Name = "declinedNames", Type = "string", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "GetDefaultAbbreviationBreakpoints",
+			Type = "Function",
+			Namespace = "C_StringUtil",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "locale", Type = "WowLocale", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "breakpoints", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 		{
@@ -169,6 +186,9 @@ local Localization =
 				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

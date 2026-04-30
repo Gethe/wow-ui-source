@@ -132,7 +132,7 @@
 				<KeyValues>
 					<KeyValue key="syncKey" value="HousingSubModeActiveAnims" type="string"/>
 				</KeyValues>
-				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="-360">
+				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="0">
 					<Origin point="CENTER"/>
 				</Rotation>
 			</AnimationGroup>
@@ -296,9 +296,9 @@
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="7" type="number"/>
 					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.ExteriorCustomization"/>
-					<KeyValue key="iconDefault" type="string" value="decor-ability-layoutmode-default"/>
-					<KeyValue key="iconActive" type="string" value="decor-ability-layoutmode-active"/>
-					<KeyValue key="iconPressed" type="string" value="decor-ability-layoutmode-pressed"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-exterior-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-exterior-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-exterior-pressed"/>
 					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_EXTERIOR_CUSTOMIZATION_NAME"/>
 					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEEXTERIORCUSTOMIZEMODE"/>
 					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_EXTERIOR_CUSTOMIZATION_BUTTON"/>

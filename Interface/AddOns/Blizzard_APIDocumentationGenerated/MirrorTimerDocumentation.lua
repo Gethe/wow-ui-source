@@ -66,6 +66,9 @@ local MirrorTimer =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MirrorTimer);

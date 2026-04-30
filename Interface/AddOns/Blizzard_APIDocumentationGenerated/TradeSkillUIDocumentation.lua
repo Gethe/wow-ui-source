@@ -1387,6 +1387,9 @@ local TradeSkillUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TradeSkillUI);

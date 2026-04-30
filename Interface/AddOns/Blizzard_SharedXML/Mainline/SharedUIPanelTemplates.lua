@@ -746,7 +746,9 @@ function TruncatedTooltipFontStringMixin:OnEnterInternal(owner)
 	if self:IsTruncated() then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(owner or self, "ANCHOR_RIGHT");
-		tooltip:SetText(self:GetText(), self:GetTextColor());
+		local r, g, b, a = self:GetTextColor();
+		local wordwrap = true;
+		tooltip:SetText(self:GetText(), r, g, b, a, wordwrap);
 		tooltip:Show();
 	end
 end
@@ -1420,6 +1422,11 @@ PanelDragBarMixin = {};
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self:SetTarget(self:GetParent());
+	self.suspendDrag = false;
+end
+
+function PanelDragBarMixin:SetDragSuspended(suspendDrag)
+	self.suspendDrag = suspendDrag;
 end
 
 function PanelDragBarMixin:Init(target)
@@ -1432,6 +1439,10 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStart = true;
@@ -1452,6 +1463,10 @@ function PanelDragBarMixin:OnDragStart()
 end
 
 function PanelDragBarMixin:OnDragStop()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStop = true;
@@ -1512,6 +1527,11 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	target:SetScript("OnSizeChanged", function(target, width, height)
 		originalTargetOnSizeChanged(target, width, height);
 
+		-- Size changes should not be enforced here unless this button caused the change.
+		if not self.isActive then
+			return;
+		end
+
 		local newWidth = width;
 		if width < self.minWidth then
 			newWidth = self.minWidth;
@@ -1520,7 +1540,7 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 			newWidth = self.maxWidth;
 			target:SetWidth(newWidth);
 		end
-
+		
 		local newHeight = height;
 		if height < self.minHeight then
 			newHeight = self.minHeight;
@@ -1607,6 +1627,14 @@ end
 
 function PanelResizeButtonMixin:SetMinHeight(minHeight)
 	self.minHeight = minHeight;
+end
+
+function PanelResizeButtonMixin:SetMaxWidth(maxWidth)
+	self.maxWidth = maxWidth;
+end
+
+function PanelResizeButtonMixin:SetMaxHeight(maxHeight)
+	self.maxHeight = maxHeight;
 end
 
 function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)

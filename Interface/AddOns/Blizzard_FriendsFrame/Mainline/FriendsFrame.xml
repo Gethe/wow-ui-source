@@ -1655,7 +1655,7 @@
 								<Scripts>
 									<OnLoad>
 										UserScaledElementMixin.OnLoad_UserScaledElement(self);
-										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
+										AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
 										self.addHighlightedText = true;
 									</OnLoad>
 									<OnEnterPressed>

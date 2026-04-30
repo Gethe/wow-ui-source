@@ -104,6 +104,9 @@ local MapConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MapConstants);

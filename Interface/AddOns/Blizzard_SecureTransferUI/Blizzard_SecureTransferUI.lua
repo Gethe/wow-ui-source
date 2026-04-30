@@ -65,6 +65,15 @@ function GetSecureMoneyString(money, separateThousands)
 	return moneyString;
 end
 
+function GetSecureTradeWarningString()
+	if (C_SecureTransfer.ShouldShowTradeOfferWarning()) then
+		local otherPlayer = C_SecureTransfer.GetTradePartner() or PLAYER; -- Probably should never hit this fallback case, but adding it just to be safe. Would rather show PLAYER than not show the warning at all.
+		return string.format(TRADE_WARNING_CHANGED_OFFER, otherPlayer);
+	end
+
+	return nil;
+end
+
 function SecureTransferDialog_DelayedAccept(self)
     self.Button1:Disable();
     C_Timer.After(1, function()
@@ -92,7 +101,8 @@ end
 local SECURE_TRANSFER_DIALOGS = {
     ["CONFIRM_TRADE"] = {
         text = TRADE_ACCEPT_CONFIRMATION,
-		onShow = SecureTransferDialog_DelayedAccept,
+		acceptWarning = GetSecureTradeWarningString,
+		onShow = SecureTransferDialog_TimerOnAccept,
         onAccept = function()
             C_SecureTransfer.AcceptTrade();
         end,
@@ -128,6 +138,9 @@ local SECURE_TRANSFER_DIALOGS = {
 			if result == Enum.BulkPurchaseResult.ResultOk or result == Enum.BulkPurchaseResult.ResultPartialSuccess then
 				PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CELEBRATION);
 				self:Hide();
+			elseif result == Enum.BulkPurchaseResult.ResultInsufficientFunds then
+				-- Show failure dialog before hiding
+				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS");			
 			else
 				-- Show failure dialog before hiding
 				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE");
@@ -152,6 +165,11 @@ local SECURE_TRANSFER_DIALOGS = {
 		overrideFrameStrata = "FULLSCREEN_DIALOG",
 		hideButton2 = true,
 	},
+	["HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS"] = {
+		text = HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS,
+		overrideFrameStrata = "FULLSCREEN_DIALOG",
+		hideButton2 = true,
+	},
 	["START_HOUSING_VC_PURCHASE"] = {
 		button1 = CONTINUE,
 		text = HOUSING_MARKET_VC_PURCHASE_CONFIRMATION,
@@ -167,6 +185,10 @@ local SECURE_TRANSFER_DIALOGS = {
 		getFocusedFrame = SecureTransferOutbound.GetCatalogShopTopUpFrame,
 	},
 }
+
+-- Doing this after since everything about this is the same except for the text and formatting
+SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM"] = CopyTable(SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE"]);
+SECURE_TRANSFER_DIALOGS["CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM"].text = HOUSING_MARKET_PURCHASE_CONFIRMATION_SINGLE_ITEM;
 
 local currentDialog;
 
@@ -211,6 +233,14 @@ function SecureTransferDialog_Show(which, ...)
     else
         SecureTransferDialog.MoneyLabel:Hide();
     end
+
+	if (currentDialog.acceptWarning) then
+		SecureTransferDialog.WarningText:SetText(currentDialog.acceptWarning());
+		height = height + SecureTransferDialog.WarningText:GetHeight();
+	else
+		SecureTransferDialog.WarningText:Hide();
+	end
+
     SecureTransferDialog:SetHeight(height);
 
 	local parent = SecureTransferOutbound.GetAppropriateTopLevelParent();
@@ -273,8 +303,13 @@ function SecureTransferDialog_OnEvent(self, event, ...)
             SecureTransferDialog_Show("SEND_ITEMS_TO_STRANGER", mailInfo.target);
         end
 	elseif (event == "SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE") then
+		local numProducts = C_SecureTransfer.GetHousingPurchaseQuantity();
 		local costText = C_SecureTransfer.GetHousingPurchaseCost() .. HearthsteelAtlasMarkup;
-		SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE", costText);
+		if numProducts > 1 then
+			SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE", numProducts, costText);
+		else
+			SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE_SINGLE_ITEM", costText);
+		end
 	elseif (event == "SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION") then
 		local productID = C_SecureTransfer.GetHousingVCPurchaseProductID();
 		local productInfo = C_CatalogShop.GetProductInfo(productID);

@@ -60,26 +60,40 @@
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="4" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_BASE_TYPE_LABEL" type="global"/>
+							<KeyValue key="isVariantSelection" value="false" type="boolean"/>
+							<KeyValue key="coreFixtureType" value="Enum.HousingFixtureType.Base" type="global"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="BaseVariantOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="5" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_BASE_VARIANT_LABEL" type="global"/>
+							<KeyValue key="isVariantSelection" value="true" type="boolean"/>
+							<KeyValue key="coreFixtureType" value="Enum.HousingFixtureType.Base" type="global"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="RoofStyleOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="6" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_ROOF_TYPE_LABEL" type="global"/>
+							<KeyValue key="isVariantSelection" value="false" type="boolean"/>
+							<KeyValue key="coreFixtureType" value="Enum.HousingFixtureType.Roof" type="global"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="RoofVariantOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="7" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_ROOF_VARIANT_LABEL" type="global"/>
+							<KeyValue key="isVariantSelection" value="true" type="boolean"/>
+							<KeyValue key="coreFixtureType" value="Enum.HousingFixtureType.Roof" type="global"/>
 						</KeyValues>
 					</Frame>
+					 <Frame parentKey="HideDecorButton" inherits="HouseExteriorCheckboxOptionTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="8" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_HIDE_DECOR_LABEL" type="global"/>
+						</KeyValues>
+					 </Frame>
 				</Frames>
 			</Frame>
 			

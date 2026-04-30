@@ -7,7 +7,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" parentArray="Textures">
-					<Size x="40" y="40"/>
+					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -43,7 +43,7 @@
 						<Anchor relativeKey="$parent.LevelRectangle" point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<MaskTexture parentKey="HexMask" atlas="ui-journeys-delve-rewardicon-octagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+				<MaskTexture parentKey="IconMask" atlas="ui-journeys-delve-rewardicon-octagon-mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -51,7 +51,7 @@
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="HighlightTexture" parentArray="Textures" alphaMode="ADD" alpha="0.4">
-					<Size x="40" y="40"/>
+					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -84,7 +84,7 @@
 				<Texture parentKey="Icon" parentArray="Textures">
 					<Size x="45" y="45"/>
 					<Anchors>
-						<Anchor point="BOTTOM" y="-20"/>
+						<Anchor point="BOTTOM" y="-14"/>
 					</Anchors>
 				</Texture>
 				
@@ -96,25 +96,23 @@
 						<Anchor point="TOP" y="9"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="IconBorder" atlas="ui-journeys-delve-rewardicon-square-frame" parentArray="Textures">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.LevelSquare"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="RewardName" inherits="GameFontHighlight">
-					<Size x="90" y="85"/>
+					<Size x="90" y="75"/>
 					<Anchors>
-						<Anchor point="CENTER" y="1"/>
+						<Anchor point="CENTER" y="3"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="IconBorder" atlas="ui-journeys-delve-rewardicon-square-frame" parentArray="Textures">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -124,7 +122,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" virtual="true">
+	<Button name="RewardTrackArtButtonTemplate" mixin="RewardTrackArtButtonMixin" virtual="true">
 		<Size x="22" y="34"/>
 		<NormalTexture atlas="ui-journeys-delve-arrow-big-left" useAtlasSize="true">
 			<Anchors>
@@ -148,6 +146,12 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" inherits="RewardTrackArtButtonTemplate" virtual="true">
+		<Size x="22" y="34"/>
+		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnDisable method="OnDisable"/>

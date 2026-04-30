@@ -739,6 +739,9 @@ local Soulbinds =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Soulbinds);

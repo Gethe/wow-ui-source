@@ -198,6 +198,8 @@ local SimpleFontAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -312,6 +314,9 @@ local SimpleFontAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

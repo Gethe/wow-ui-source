@@ -102,8 +102,12 @@ function TransmogUtil.CanEnchantSource(sourceID)
 			TransmogUtil.HiddenModelFrame:SetKeepModelOnHide(true);
 		end
 
-		TransmogUtil.HiddenModelFrame:SetItemAppearance(appearanceSourceInfo.itemAppearanceID, 0, appearanceSourceInfo.itemSubclass);
-		return TransmogUtil.HiddenModelFrame:HasAttachmentPoints();
+		if appearanceSourceInfo.ignoreModelAttachmentChecksForIllusion then
+			return true;
+		else
+			TransmogUtil.HiddenModelFrame:SetItemAppearance(appearanceSourceInfo.itemAppearanceID, 0, appearanceSourceInfo.itemSubclass);
+			return TransmogUtil.HiddenModelFrame:HasAttachmentPoints();
+		end
 	end
 
 	return false;
@@ -512,7 +516,7 @@ end
 function TransmogUtil.IsCustomSetCollected(customSetID)
 	local isCollected = true;
 	local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID);
-	for _indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
+	for _slotID, customSetInfo in ipairs(customSetTransmogInfo) do
 		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(customSetInfo.appearanceID);
 		if appearanceInfo and isCollected and not appearanceInfo.appearanceIsCollected then
 			isCollected = false;
@@ -829,7 +833,7 @@ function ItemModelBaseMixin:Reload()
 	end
 
 	local reloadSlot = itemsCollectionFrame:GetActiveSlot();
-	if self:IsShown() then
+	if self:IsShown() and IsUnitModelReadyForUI("player") then
 		local wardrobeModelSetupData = TransmogUtil.GetWardrobeModelSetupData(reloadSlot);
 
 		-- No need to update things if the last used form (if supported for this character) and setup data is the same.

@@ -11,6 +11,8 @@ HousingCatalogFrameMixin = {};
 
 function HousingCatalogFrameMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, CatalogLifetimeEvents);
+
+	EventRegistry:RegisterCallback("HousingCatalogFrame.OpenToDecorID", self.OnOpenToDecorID, self);
 end
 
 function HousingCatalogFrameMixin:OneTimeInit()
@@ -24,15 +26,25 @@ function HousingCatalogFrameMixin:OneTimeInit()
 	-- TODO: A better way to filter out rooms category
 	local displayContext = Enum.HouseEditorMode.BasicDecor;
 
+	self.OptionsContainer:SetEntryDisplayContextGetter(function()
+		return {
+			showMarketInfo = false,
+			showVariantStacks = false,
+			showDestroyOptions = false,
+			showTrackingOptions = true
+		};
+	end);
+
 	self.catalogSearcher = C_HousingCatalog.CreateCatalogSearcher();
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
-	self.catalogSearcher:SetOwnedOnly(false);
+	self.catalogSearcher:SetStoredOnly(false);
+	self.catalogSearcher:SetBaseVariantOnly(true);
 	self.catalogSearcher:SetEditorModeContext(displayContext);
 
 	self.Filters:Initialize(self.catalogSearcher);
 	self.Filters:SetCollectionFiltersAvailable(true);
-	self.Categories:Initialize(GenerateClosure(self.OnCategoryFocusChanged, self), { withOwnedEntriesOnly = false, editorModeContext = displayContext });
+	self.Categories:Initialize(GenerateClosure(self.OnCategoryFocusChanged, self), { withStoredEntriesOnly = false, editorModeContext = displayContext });
 	self.SearchBox:Initialize(GenerateClosure(self.OnSearchTextUpdated, self));
 end
 
@@ -40,8 +52,8 @@ function HousingCatalogFrameMixin:OnEvent(event, ...)
 	if event == "HOUSING_STORAGE_UPDATED" and self.catalogSearcher then
 		self.catalogSearcher:RunSearch();
 	elseif event == "HOUSING_STORAGE_ENTRY_UPDATED" then
-		local entryID = ...;
-		self:OnCatalogEntryUpdated(entryID);
+		local entryVariantID = ...;
+		self:OnCatalogEntryUpdated(entryVariantID);
 	end
 end
 
@@ -52,11 +64,11 @@ function HousingCatalogFrameMixin:OnShow()
 	EventRegistry:RegisterCallback("HousingCatalogEntry.OnInteract", function(owner, catalogEntry, button, isDrag)
 		if button == "LeftButton" and not isDrag then
 			if ContentTrackingUtil.IsTrackingModifierDown() then
-				if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID) then
-					C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID, Enum.ContentTrackingStopType.Manual);
+				if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID) then
+					C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID, Enum.ContentTrackingStopType.Manual);
 					PlaySound(SOUNDKIT.CONTENT_TRACKING_STOP_TRACKING);
 				else
-					local error = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID);
+					local error = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID);
 					if error then
 						ContentTrackingUtil.DisplayTrackingError(error);
 					else 
@@ -66,8 +78,8 @@ function HousingCatalogFrameMixin:OnShow()
 				end
 			else
 				PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
-				self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo);
-				self.PreviewFrame:Show();	
+				self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo, catalogEntry.variantInfo);
+				self.PreviewFrame:Show();
 			end
 		end
 	end, self);
@@ -92,6 +104,29 @@ end
 
 function HousingCatalogFrameMixin:OnEntryResultsUpdated()
 	self:UpdateCatalogData();
+
+	-- Once we get back catalog data, if we've deferred a link click, open to the deferred id
+	if self.deferredTargetDecorID then
+
+		local elementData, _frame = self.OptionsContainer:TryGetElementAndFrameByPredicate(function(elementData)
+			if elementData.entryVariantID and elementData.entryVariantID.entryType == Enum.HousingCatalogEntryType.Decor then
+				return elementData.entryVariantID.recordID == self.deferredTargetDecorID;
+			end
+		end);
+
+		if elementData and self.OptionsContainer.ScrollBox then
+				self.OptionsContainer.ScrollBox:ScrollToElementData(elementData);
+
+				local element = self.OptionsContainer.ScrollBox:FindFrame(elementData);
+				if element then
+					local button = "LeftButton";
+					local drag = false;
+					EventRegistry:TriggerEvent("HousingCatalogEntry.OnInteract", element, button, drag);
+				end
+		end
+
+		self.deferredTargetDecorID = nil;
+	end
 end
 
 function HousingCatalogFrameMixin:UpdateCatalogData()
@@ -105,7 +140,8 @@ function HousingCatalogFrameMixin:UpdateCatalogData()
 	if not self.PreviewFrame:IsShown() and entries and #entries > 0 then
 		local firstEntry = entries[1];
 		local firstEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(firstEntry);
-		self.PreviewFrame:PreviewCatalogEntryInfo(firstEntryInfo);
+		local firstEntryVariantInfo = C_HousingCatalog.GetCatalogEntryVariantInfo(firstEntry);
+		self.PreviewFrame:PreviewCatalogEntryInfo(firstEntryInfo, firstEntryVariantInfo);
 		self.PreviewFrame:Show();
 	end
 
@@ -128,10 +164,22 @@ function HousingCatalogFrameMixin:UpdateCategoryText()
 	end
 end
 
-function HousingCatalogFrameMixin:OnCatalogEntryUpdated(entryID)
-	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
+function HousingCatalogFrameMixin:OnOpenToDecorID(decorID)
+	if not self.didOneTimeInitialize then
+		self:OneTimeInit();
+	end
 
-	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
+	EventRegistry:TriggerEvent("HousingDashboard.OpenToCatalogFrame");
+
+	self.Filters:ResetFiltersToDefault(); --always reset filters when opening to a particular decor.
+	self.deferredTargetDecorID = decorID;
+	self.catalogSearcher:RunSearch();
+end
+
+function HousingCatalogFrameMixin:OnCatalogEntryUpdated(entryVariantID)
+	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryVariantID);
+
+	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryVariantID);
 	
 	-- If option was added or removed entirely, reset our options list
 	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then

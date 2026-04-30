@@ -54,7 +54,7 @@ local function CheckAndSetArtStyle(actionButton)
 		return;
 	end
 
-	if AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
+	if AssistedCombatManager and AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
 		alertFrame.ProcStartFlipbook:Hide();
 		alertFrame.ProcLoopFlipbook:Hide();
 		alertFrame.ProcAltGlow:Show();
@@ -77,7 +77,7 @@ local function HideAlert(actionButton)
 	self.activeAlerts[actionButton] = nil;
 end
 
-local function ShowAlert(actionButton, alertType)
+local function ShowAlert(actionButton, alertType, skipBirth)
 	-- if there is an alert already, it must be a different type so hide it
 	if self.activeAlerts[actionButton] then
 		HideAlert(actionButton);
@@ -88,7 +88,12 @@ local function ShowAlert(actionButton, alertType)
 	local alertFrame = GetAlertFrame(actionButton, create);
 	alertFrame:Show();
 	CheckAndSetArtStyle(actionButton);
-	alertFrame.ProcStartAnim:Play();
+
+	if not skipBirth then
+		alertFrame.ProcStartAnim:Play();
+	else
+		alertFrame.ProcLoop:Play();
+	end
 end
 
 do
@@ -102,25 +107,26 @@ do
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetUseAssistedHighlight", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.RotationSpellsUpdated", RefreshArtStyles);
+	CVarCallbackRegistry:RegisterCallback("assistedCombatReduceHighlights", RefreshArtStyles);
 end
 
 -- public functions
 
-function ActionButtonSpellAlertManager:ShowAlert(actionButton)
+function ActionButtonSpellAlertManager:ShowAlert(actionButton, skipBirth)
 	local currentAlertType = self.activeAlerts[actionButton];
 	local alertType = self.SpellAlertType.Default;
 	if actionButton.action and C_ActionBar.IsAssistedCombatAction(actionButton.action) then
 		alertType = self.SpellAlertType.AssistedCombatRotation;
 	end
 	if currentAlertType ~= alertType then
-		ShowAlert(actionButton, alertType);
+		ShowAlert(actionButton, alertType, skipBirth);
 	end
 end
 
 function ActionButtonSpellAlertManager:HideAlert(actionButton)
 	local currentAlertType = self.activeAlerts[actionButton];
 	if currentAlertType then
-		HideAlert(actionButton, alertType);
+		HideAlert(actionButton);
 	end
 end
 

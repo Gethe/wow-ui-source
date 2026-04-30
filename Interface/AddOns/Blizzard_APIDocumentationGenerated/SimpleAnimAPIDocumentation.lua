@@ -456,6 +456,9 @@ local SimpleAnimAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimAPI);

@@ -1,0 +1,123 @@
+local RUNES_OF_POWER_SYSTEM_ID = 48;
+
+MidnightLandingOverlayMixin = {};
+
+local minimapDisplayInfo = {
+	useDefaultButtonSize = true,
+	expansionLandingPageType = Enum.ExpansionLandingPageType.Midnight,
+	anchorOffset = { x = 12, y = -153 },
+	["normalAtlas"] = "midnight-landingbutton-up",
+	["pushedAtlas"] = "midnight-landingbutton-down",
+	["highlightAtlas"] = "midnight-landingbutton-circlehighlight",
+	["glowAtlas"] = "midnight-landingbutton-circleglow",
+	["title"] = MIDNIGHT_LANDING_PAGE_TITLE,
+	["description"] = MIDNIGHT_LANDING_PAGE_TOOLTIP,
+};
+
+local unlockEvents = {
+	-- Insert events related to overlay unlock requirements here
+	"QUEST_LOG_UPDATE",
+};
+
+local overlayFrame = nil;
+
+local function ShouldShowRunesOfPowerTutorial()
+	return not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RunesOfPower);
+end
+
+function MidnightLandingOverlayMixin.IsOverlayUnlocked()
+	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_MIDNIGHT);
+end
+
+function MidnightLandingOverlayMixin:TryCelebrateUnlock()
+	if ShouldShowRunesOfPowerTutorial() then
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", OMNIUM_FOLIO_UNLOCKED);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", MinimapPulseLock.RunesOfPower);
+	end
+end
+
+function MidnightLandingOverlayMixin.GetMinimapDisplayInfo()
+	return minimapDisplayInfo;
+end
+
+function MidnightLandingOverlayMixin.GetMinimapAnimationEvents()
+	return minimapAnimationEvents;
+end
+
+function MidnightLandingOverlayMixin.GetUnlockEvents()
+	return unlockEvents;
+end
+
+function MidnightLandingOverlayMixin.CreateOverlay(parent)
+	if not overlayFrame then
+		overlayFrame = CreateFrame("Frame", nil, parent, "MidnightLandingOverlayTemplate");
+	end
+
+	return overlayFrame;
+end
+
+function MidnightLandingOverlayMixin:OnLoad()
+	self.CloseButton:ClearAllPoints();
+	local xOffset, yOffset = -4, -5;
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", xOffset, yOffset);
+end
+
+function MidnightLandingOverlayMixin:OnShow()
+	EventRegistry:TriggerEvent("ExpansionLandingPage.ClearPulses");
+end
+
+function MidnightLandingOverlayMixin:GetMinimapInsetInfo()
+	return 2.10, 2.54, 0.8;
+end
+
+RunesOfPowerMixin = { };
+
+function RunesOfPowerMixin:OnLoad()
+	TalentFrameBaseMixin.OnLoad(self);
+	self:SetConfigIDBySystemID(RUNES_OF_POWER_SYSTEM_ID);
+	self:SetTreeCurrencyDisplayTextCallback(TalentFrameUtil.GenerateTreeCurrencyDisplayCallback());
+	self.CurrencyDisplay:SetTalentFrame(self);
+	self.CurrencyDisplay.Background:Hide();
+
+	-- bump this up so helptip doesn't cover expanded choice nodes
+	self.ButtonsParent:SetFrameStrata("HIGH");
+end
+
+function RunesOfPowerMixin:OnShow()
+	TalentFrameBaseMixin.OnShow(self);
+
+	if ShouldShowRunesOfPowerTutorial() then
+		-- show a helptip for the first selectable node
+		local buttons = self:GetButtonsInDefaultOrder();
+		for i, button in ipairs(buttons) do
+			if button:IsVisibleAndSelectable() then
+				local helpTipInfo = {
+					text = RUNES_OF_POWER_HELPTIP,
+					buttonStyle = HelpTip.ButtonStyle.None,
+					targetPoint = HelpTip.Point.LeftEdgeCenter,
+					offsetX = -40,
+					useParentStrata = true,
+				};
+				HelpTip:Show(self, helpTipInfo, button);
+				break;
+			end
+		end
+	end
+end
+
+function RunesOfPowerMixin:OnHide()
+	TalentFrameBaseMixin.OnHide(self);
+
+	if ShouldShowRunesOfPowerTutorial() then
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", MinimapPulseLock.RunesOfPower);
+	end
+end
+
+function RunesOfPowerMixin:ShowPurchaseVisuals(...)
+	AutoCommitTraitFrameMixin.ShowPurchaseVisuals(self, ...);
+
+	if ShouldShowRunesOfPowerTutorial() then
+		HelpTip:Hide(self, RUNES_OF_POWER_HELPTIP);
+		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RunesOfPower, true);
+	end
+end

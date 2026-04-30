@@ -1110,6 +1110,9 @@ local SharedTraits =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SharedTraits);

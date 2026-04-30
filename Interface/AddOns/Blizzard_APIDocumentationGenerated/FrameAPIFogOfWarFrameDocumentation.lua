@@ -155,6 +155,9 @@ local FrameAPIFogOfWarFrame =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPIFogOfWarFrame);

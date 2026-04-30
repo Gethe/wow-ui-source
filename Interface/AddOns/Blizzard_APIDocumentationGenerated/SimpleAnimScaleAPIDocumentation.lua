@@ -117,6 +117,9 @@ local SimpleAnimScaleAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimScaleAPI);

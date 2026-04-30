@@ -48,3 +48,7 @@ end
 function CatalogShopOutboundInterface.ShowRefundFlow(productID)
 	securecall("CatalogShopRefundFlow_Show", productID);
 end
+
+function CatalogShopOutboundInterface.VisibilityUpdated(isShown)
+	securecall("CatalogShopVisibilityUpdated", isShown);
+end

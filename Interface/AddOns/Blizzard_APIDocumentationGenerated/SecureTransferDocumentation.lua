@@ -38,6 +38,16 @@ local SecureTransfer =
 			},
 		},
 		{
+			Name = "GetHousingPurchaseQuantity",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHousingVCPurchaseProductID",
 			Type = "Function",
 			HasRestrictions = true,
@@ -58,9 +68,29 @@ local SecureTransfer =
 			},
 		},
 		{
+			Name = "GetTradePartner",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "SendMail",
 			Type = "Function",
 			HasRestrictions = true,
+		},
+		{
+			Name = "ShouldShowTradeOfferWarning",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -109,6 +139,9 @@ local SecureTransfer =
 				{ Name = "sendMoney", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

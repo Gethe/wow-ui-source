@@ -93,6 +93,9 @@ local FrameAPITabardModel =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPITabardModel);

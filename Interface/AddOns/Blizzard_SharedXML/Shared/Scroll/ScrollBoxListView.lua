@@ -261,8 +261,7 @@ end
 function ScrollBoxListViewMixin:RemoveDataProviderInternal()
 	local dataProvider = self:GetDataProvider();
 	if dataProvider then
-		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
-		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
+		self:DetachDataProviderCallbacks();
 	end
 
 	self.dataProvider = nil;
@@ -296,12 +295,21 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 
 	self.dataProvider = dataProvider;
 	if dataProvider then
-		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnDataProviderSizeChanged, self);
-		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
+		self:AttachDataProviderCallbacks();
 	end
 	
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataProviderReassigned);
 	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
+end
+
+function ScrollBoxListViewMixin:AttachDataProviderCallbacks()
+	self.dataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnDataProviderSizeChanged, self);
+	self.dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
+end
+
+function ScrollBoxListViewMixin:DetachDataProviderCallbacks()
+	self.dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
+	self.dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
 end
 
 function ScrollBoxListViewMixin:OnDataProviderSizeChanged(pendingSort)

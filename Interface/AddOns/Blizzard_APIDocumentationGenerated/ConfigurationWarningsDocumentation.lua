@@ -72,6 +72,9 @@ local ConfigurationWarnings =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ConfigurationWarnings);

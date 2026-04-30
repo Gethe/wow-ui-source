@@ -316,6 +316,9 @@ local Transmog =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Transmog);

@@ -206,6 +206,9 @@ local QuestSession =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestSession);

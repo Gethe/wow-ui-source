@@ -92,6 +92,9 @@ local AlliedRacesFrame =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AlliedRacesFrame);

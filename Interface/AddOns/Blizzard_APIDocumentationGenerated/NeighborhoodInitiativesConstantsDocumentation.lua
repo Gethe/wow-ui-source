@@ -106,6 +106,9 @@ local NeighborhoodInitiativesConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(NeighborhoodInitiativesConstants);

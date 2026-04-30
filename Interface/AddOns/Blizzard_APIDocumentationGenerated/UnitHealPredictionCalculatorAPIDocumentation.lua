@@ -485,6 +485,9 @@ local UnitHealPredictionCalculatorAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitHealPredictionCalculatorAPI);

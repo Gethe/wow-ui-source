@@ -184,9 +184,16 @@ function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)
 		return;
 	end
 
+	local selectedComponentInfo = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
+
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, supportedComponentName);
-	if componentInfo.canBeCustomized then	
+	if selectedComponentInfo
+		and selectedComponentInfo.componentID == componentInfo.componentID
+		and selectedComponentInfo.roomGUID == componentInfo.roomGUID
+	then
+		GameTooltip_AddNormalLine(GameTooltip,  HOUSING_CUSTOMIZE_DECOR_SELECTED_TOOLTIP);
+	elseif componentInfo.canBeCustomized then	
 		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_HOVER_TOOLTIP);
 	else
 		GameTooltip_AddErrorLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_UNAVAILABLE_HOVER_TOOLTIP);

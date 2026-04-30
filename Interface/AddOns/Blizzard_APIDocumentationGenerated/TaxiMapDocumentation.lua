@@ -141,6 +141,9 @@ local TaxiMap =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TaxiMap);

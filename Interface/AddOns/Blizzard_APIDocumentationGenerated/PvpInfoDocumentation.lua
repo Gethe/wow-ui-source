@@ -1678,6 +1678,7 @@ local PvpInfo =
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
 				{ Name = "minItemLevel", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "shouldHideRewardIcon", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -1762,7 +1763,7 @@ local PvpInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false, NeverSecret = true },
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "killingBlows", Type = "number", Nilable = false },
 				{ Name = "honorableKills", Type = "number", Nilable = false },
@@ -1895,6 +1896,9 @@ local PvpInfo =
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

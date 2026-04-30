@@ -122,6 +122,19 @@ local HousingLayoutPinFrameAPI =
 			},
 		},
 		{
+			Name = "IsConnectedToDraggingRoom",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isConnectedToDraggingRoom", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOccupiedDoor",
 			Type = "Function",
 			Documentation = { "Will be nil if pin is not a Door" },
@@ -133,6 +146,19 @@ local HousingLayoutPinFrameAPI =
 			Returns =
 			{
 				{ Name = "isOccupied", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsPartOfDraggingRoom",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isPartOfDraggingRoom", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -200,6 +226,9 @@ local HousingLayoutPinFrameAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

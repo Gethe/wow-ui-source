@@ -19,7 +19,7 @@ local EncounterWarnings =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -159,7 +159,7 @@ local EncounterWarnings =
 				{ Name = "iconFileID", Type = "number", Nilable = false, SecretValue = true },
 				{ Name = "tooltipSpellID", Type = "number", Nilable = false, SecretValue = true },
 				{ Name = "isDeadly", Type = "bool", Nilable = false, SecretValue = true },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, SecretValue = true },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false, SecretValue = true },
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
 				{ Name = "shouldPlaySound", Type = "bool", Nilable = false },
@@ -167,6 +167,9 @@ local EncounterWarnings =
 				{ Name = "shouldShowWarning", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

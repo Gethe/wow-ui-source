@@ -13,6 +13,9 @@ local SimpleHTMLShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleHTMLShared);

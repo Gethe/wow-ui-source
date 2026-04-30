@@ -92,8 +92,8 @@ function CommentatorNamePlateMixin:UpdateAnchors()
 	NamePlateUnitFrameMixin.UpdateAnchors(self);
 
 	self.teamBorder:ClearAllPoints();
-	PixelUtil.SetPoint(self.teamBorder, "TOPLEFT", self.HealthBarsContainer.selectedBorder, "TOPLEFT", 0, 0);
-	PixelUtil.SetPoint(self.teamBorder, "BOTTOMRIGHT", self.HealthBarsContainer.selectedBorder, "BOTTOMRIGHT", 0, 0);
+	PixelUtil.SetPoint(self.teamBorder, "TOPLEFT", self.HealthBarsContainer.healthBar.selectedBorder, "TOPLEFT", 0, 0);
+	PixelUtil.SetPoint(self.teamBorder, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar.selectedBorder, "BOTTOMRIGHT", 0, 0);
 
 	self.castBar.border:UpdateSizes();
 

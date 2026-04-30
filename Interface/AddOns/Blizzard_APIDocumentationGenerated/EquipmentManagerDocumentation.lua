@@ -336,6 +336,9 @@ local EquipmentManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EquipmentManager);

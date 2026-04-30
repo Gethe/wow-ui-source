@@ -117,7 +117,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 		GameTooltip:SetHyperlink(self.itemLink);
 	elseif self.money then
 		GameTooltip:AddLine(YOU_RECEIVED);
-		SetTooltipMoney(GameTooltip, self.money, nil);
+		GameTooltip_AddMoneyLine(GameTooltip, self.money);
 	elseif self.xp then
 		GameTooltip:AddLine(YOU_RECEIVED);
 		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -225,7 +225,7 @@ function DungeonCompletionAlertFrameReward_OnEnter(self)
 		end
 
 		if ( rewardData.moneyAmount > 0 ) then
-			SetTooltipMoney(GameTooltip, rewardData.moneyAmount, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, rewardData.moneyAmount);
 		end
 	elseif ( self.reward.rewardItemLink ) then
 		TooltipSetLFGCompletionReward(GameTooltip, self.reward.rewardItemLink, self.reward.bonusQuantity);
@@ -1443,13 +1443,6 @@ end
 
 -- [[ HousingItemEarnedAlertFrameSystem ]] --
 
-local HousingItemTypeStrings = {
-	[Enum.HousingItemToastType.Decor] = HOUSING_ITEM_TOAST_TYPE_DECOR,
-	[Enum.HousingItemToastType.Room] = HOUSING_ITEM_TOAST_TYPE_ROOM,
-	[Enum.HousingItemToastType.Customization] = HOUSING_ITEM_TOAST_TYPE_CUSTOMIZATION,
-	[Enum.HousingItemToastType.Fixture] = HOUSING_ITEM_TOAST_TYPE_FIXTURE,
-};
-
 function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
 	PlaySound(SOUNDKIT.HOUSING_ITEM_ACQUIRED);
 	if rewardData.icon then
@@ -1461,8 +1454,10 @@ function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
 		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericFixture");
 	elseif rewardData.itemType == Enum.HousingItemToastType.Customization then
 		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericCustomization");
+	else
+		-- If a toast type doesn't have a specific or generic icon, explicitly fall back to question mark to make it stand out as wrong
+		frame.Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
 	end
-	frame.DecorType:SetText(HousingItemTypeStrings[rewardData.itemType]);
 	frame.DecorName:SetText(rewardData.itemName);
 	frame.LightRays:SetAlpha(0);
 	frame.LightRays2:SetAlpha(0);

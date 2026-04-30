@@ -1,7 +1,7 @@
 ## Title: Blizzard_ChatFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_EditMode, Blizzard_ChatFrameBase, Blizzard_VoiceToggleButton
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_ChatFrameBase
+## Dep: Blizzard_VoiceToggleButton
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Shared\VoiceChatDots.lua

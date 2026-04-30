@@ -195,7 +195,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) ) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) > 0) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -312,14 +312,24 @@ function GameTooltip_OnLoad(self)
 	end
 end
 
+function GameTooltip_AddColoredMoneyLine(self, rawCopper, color)
+	local text = MoneyFormatterUtil.FormatMoney(rawCopper, GameTooltipMoneyFormat);
+	GameTooltip_AddColoredLine(self, text, color);
+end
+
+function GameTooltip_AddMoneyLine(self, rawCopper, useRedLineColor)
+	local color = useRedLineColor and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	GameTooltip_AddColoredMoneyLine(self, rawCopper, color);
+end
+
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	if( not maxcost or maxcost < 1 ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
+		GameTooltip_AddHighlightLine(self, string.format("%s: %s", SELL_PRICE, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
 	else
 		GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
 		local indent = string.rep(" ",4)
-		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MINIMUM, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MAXIMUM, MoneyFormatterUtil.FormatMoney(maxcost, GameTooltipMoneyFormat)));
 	end
 end
 

@@ -673,6 +673,8 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -945,6 +947,9 @@ local SimpleEditBoxAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

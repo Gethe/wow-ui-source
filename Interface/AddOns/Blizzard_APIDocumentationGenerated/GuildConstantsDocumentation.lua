@@ -66,6 +66,9 @@ local GuildConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(GuildConstants);

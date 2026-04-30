@@ -37,6 +37,9 @@ local RenownConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RenownConstants);

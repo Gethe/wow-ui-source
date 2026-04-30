@@ -74,7 +74,7 @@ function InspectGlyphMixin:OnClick()
 			local glyphSlotIndex = self:GetID();
 			local link = C_GlyphInfo.GetGlyphLink(glyphSlotIndex, self.glyphID);
 			if link then
-				ChatEdit_InsertLink(link);
+				ChatFrameUtil.InsertLink(link);
 			end
 		end
 	end

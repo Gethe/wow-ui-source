@@ -78,6 +78,10 @@ function BaseMapPoiPinMixin:OnAcquired(poiInfo)
 	self:SetDataProvider(poiInfo.dataProvider);
 	self:SetTexture(poiInfo);
 	self:SetPosition(poiInfo.position:GetXY());
+
+	if poiInfo.isSuppressible then
+		self:AddTag(MapPinTags.IsSuppressible);
+	end
 end
 
 function BaseMapPoiPinMixin:GetPoiInfo()

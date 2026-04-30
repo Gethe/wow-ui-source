@@ -45,6 +45,9 @@ local UIModifiedInstance =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIModifiedInstance);

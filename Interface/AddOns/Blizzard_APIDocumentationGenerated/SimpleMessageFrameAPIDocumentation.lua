@@ -294,6 +294,8 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -417,6 +419,9 @@ local SimpleMessageFrameAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

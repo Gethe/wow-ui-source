@@ -28,6 +28,9 @@ local ProceduralSpawnConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ProceduralSpawnConstants);

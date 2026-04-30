@@ -25,6 +25,9 @@ local BNetOutage =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BNetOutage);

@@ -98,10 +98,6 @@ local function GetServerTier()
 	return GetServerExpansionLevel() + 1;
 end
 
-local function GetJourneysDefaultTier()
-	return GetServerTier();
-end
-
 local EJ_TIER_DATA =
 {
 	[1] = { backgroundAtlas = "UI-EJ-Classic", expansionLevel = LE_EXPANSION_CLASSIC},
@@ -150,6 +146,17 @@ function GetEJTierDataTableID(expansion)
 end
 
 local EJ_JOURNEYS_MIN_TIER = GetEJTierDataTableID(LE_EXPANSION_DRAGONFLIGHT);
+
+local function SelectJourneysTier()
+	local currentTier = EJ_GetCurrentTier();
+	if currentTier < EJ_JOURNEYS_MIN_TIER then
+		-- Invalid tier for journeys, so reset to default selected tier
+		C_EncounterJournal.InitalizeSelectedTier();
+		currentTier = EJ_GetCurrentTier();
+	end
+
+	EncounterJournal_ExpansionDropdown_Select(EncounterJournal, currentTier);
+end
 
 local SlotFilterToSlotName = {
 	[Enum.ItemSlotFilterType.Head] = INVTYPE_HEAD,
@@ -430,7 +437,7 @@ function EncounterJournal_OnLoad(self)
 				EJ_ContentTab_Select(self.selectedTab);
 			else
 				EJ_ContentTab_Select(self.JourneysTab:GetID());
-				EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
+				SelectJourneysTier();
 			end
 		end,
 	}
@@ -472,7 +479,7 @@ function EncounterJournal_OnLoad(self)
 			EJTutorialsFrame_OpenFrame();
 		else
 			EJ_ContentTab_Select(self.JourneysTab:GetID());
-			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
+			SelectJourneysTier();
 		end
 	end);
 
@@ -681,9 +688,8 @@ function EncounterJournal_GetLootJournalPanels(view)
 end
 
 function EncounterJournal_EnableExpansionDropdown(xOffset, yOffset, relativeKey)
-	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
-	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);
 	EncounterJournal.instanceSelect.ExpansionDropdown:Enable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
 end
 
 function EncounterJournal_ShowGreatVaultButton()
@@ -696,6 +702,12 @@ end
 
 function EncounterJournal_DisableExpansionDropdown()
 	EncounterJournal.instanceSelect.ExpansionDropdown:Disable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
+end
+
+function EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey)
+	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
+	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);	
 end
 
 function EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID)
@@ -714,7 +726,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 		EncounterJournal.lastInstance = nil;
 		EncounterJournal.lastDifficulty = nil;
 		EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
-		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
+		SelectJourneysTier();
 	else
 		EJ_ContentTab_SelectAppropriateInstanceTab(instanceID);
 
@@ -2237,7 +2249,6 @@ function EncounterJournal_LootUpdate()
 	local extremelyRareLoot = {};
 	local seasonalLoot = {};
 	local currentSeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
-	local currentSeasonExpansion = C_SeasonInfo.GetCurrentDisplaySeasonExpansion();
 
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
@@ -2262,9 +2273,8 @@ function EncounterJournal_LootUpdate()
 	end
 
 	local seasonalHeaderTitle;
-	local uiSeason = PVPUtil.GetCurrentSeasonNumber();
-	if #seasonalLoot > 0 and currentSeason and currentSeasonExpansion then
-		seasonalHeaderTitle = EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
+	if #seasonalLoot > 0 and currentSeason then
+		seasonalHeaderTitle = PVPUtil.GetCurrentSeasonText();
 	end
 
 	local lootCategories = {
@@ -2768,7 +2778,6 @@ function EJ_ContentTab_Select(id)
 		EJ_HideTutorialsPanel();
 		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(EncounterJournal);
 		EJ_ShowLootJournalPanel();
-		EncounterJournal_EnableExpansionDropdown();
 		EncounterJournal_HideGreatVaultButton();
 	elseif showDungeons or showRaid then
 		EJ_HideNonInstancePanels();
@@ -2780,7 +2789,8 @@ function EJ_ContentTab_Select(id)
 		EJ_HideNonInstancePanels();
 		EncounterJournal_EnableExpansionDropdown(-40, -30, EncounterJournal);
 		if EJ_GetCurrentTier() < EJ_JOURNEYS_MIN_TIER then
-			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
+			C_EncounterJournal.InitalizeSelectedTier();
+			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_GetCurrentTier());
 		else
 			EncounterJournal_SetupExpansionDropdown(EncounterJournal);
 		end

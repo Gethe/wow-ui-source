@@ -12,6 +12,7 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
 	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:RegisterEvent("TRADE_UPDATE_WARNINGS");
 	FrameTemplate_SetAtticHeight(self, 440);
 	TradeRecipientItemsInset.Bg:SetAlpha(0.1);
 	TradeRecipientMoneyInset.Bg:SetAlpha(0);
@@ -59,6 +60,8 @@ function TradeFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TRADE_POTENTIAL_REMOVE_TRANSMOG" ) then
 		StaticPopup_Show("TRADE_POTENTIAL_REMOVE_TRANSMOG", arg1, nil, arg2);
+	elseif ( event == "TRADE_UPDATE_WARNINGS" ) then
+		TradeFrame_UpdateWarnings();
 	end
 end
 
@@ -75,10 +78,23 @@ function TradeFrame_Update(self)
 	TradeHighlightPlayer:Hide();
 	TradeHighlightPlayerEnchant:Hide();
 	TradeHighlightRecipientEnchant:Hide();
+
+	TradeFrame_UpdateWarnings();
+end
+
+function TradeFrame_UpdateWarnings()
+	if (C_TradeInfo.ShouldShowTradeOfferWarning()) then
+		local otherPlayer = GetUnitName("NPC") or PLAYER; -- Probably should never hit this fallback case, but adding it just to be safe. Would rather show PLAYER than not show the warning at all.
+		TradeFrameTradeButton.warningTooltip = string.format(TRADE_WARNING_CHANGED_OFFER, otherPlayer);
+		TradeFrameTradeButton.WarningIcon:Show();
+	else
+		TradeFrameTradeButton.warningTooltip = nil;
+		TradeFrameTradeButton.WarningIcon:Hide();
+	end
 end
 
 function TradeFrame_UpdatePlayerItem(id)
-	local name, texture, numItems, quality, enchantment, canLoseTransmog, isBound = GetTradePlayerItemInfo(id);
+	local name, texture, numItems, quality, enchantment, canLoseTransmog, isBound, itemID = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
 
 	-- See if its the enchant slot
@@ -122,10 +138,12 @@ function TradeFrame_UpdatePlayerItem(id)
 	if ( dialog and dialog.data == id and not canLoseTransmog ) then
 		StaticPopup_Hide("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	end
+
+	TradeFrame_AlertItemIfChanged(tradeItemButton, itemID, name, numItems, enchantment);
 end
 
 function TradeFrame_UpdateTargetItem(id)
-	local name, texture, numItems, quality, isUsable, enchantment = GetTradeTargetItemInfo(id);
+	local name, texture, numItems, quality, isUsable, enchantment, itemID = GetTradeTargetItemInfo(id);
 	local buttonText = _G["TradeRecipientItem"..id.."Name"];
 	-- See if its the enchant slot
 	if ( id == TRADE_ENCHANT_SLOT ) then
@@ -167,6 +185,22 @@ function TradeFrame_UpdateTargetItem(id)
 	local isBound = false;
 	local ignoreColorOverrides = not texture;
 	SetItemButtonQuality(tradeItemButton, quality, GetTradeTargetItemLink(id), suppressOverlays, isBound, ignoreColorOverrides);
+
+	TradeFrame_AlertItemIfChanged(tradeItemButton, itemID, name, numItems, enchantment);
+end
+
+function TradeFrame_AlertItemIfChanged(tradeItemButton, itemID, name, numItems, enchantment)
+	-- Play alert if anything about this item slot changed. (We don't alert the first time an item is placed in the slot, though.)
+	local alertFrame = tradeItemButton.Alert;
+	local oldItemKey = alertFrame.itemKey;
+	local newItemKey = { id = itemID, name = name, quantity = numItems, enchantmentID = enchantment };
+	if (oldItemKey and not tCompare(oldItemKey, newItemKey)) then
+		alertFrame.ItemIconAlertAnim:Restart();
+	end
+	if (oldItemKey or itemID > 0) then
+		-- Update our key to the new item, except in the case where we didn't start with a key (fresh trade) and this isn't actually an item yet.
+		alertFrame.itemKey = newItemKey;
+	end
 end
 
 function TradeFrame_SetAcceptState(playerState, targetState)
@@ -267,3 +301,27 @@ function TradeFrameTradeButton_SetToEnabledState()
 	end
 end
 
+TradeFrameTradeButtonMixin = {};
+
+function TradeFrameTradeButtonMixin:OnLoad()
+	self.Text:SetText(TRADE); -- Note: Doing this here so that we can anchor the WarningIcon to self.Text and have it be positioned appropriately.
+	self.warningTooltip = nil;
+end
+
+function TradeFrameTradeButtonMixin:OnEnter()
+	if (self.warningTooltip) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, self.warningTooltip);
+		GameTooltip:Show();
+	end
+end
+
+TradeItemAlertTemplateMixin = {};
+
+function TradeItemAlertTemplateMixin:OnShow()
+	self.itemKey = nil; -- Used to track when this itemSlot changes in a way that should trigger an alert.
+end
+
+function TradeItemAlertTemplateMixin:OnHide()
+	self.ItemIconAlertAnim:Stop();
+end

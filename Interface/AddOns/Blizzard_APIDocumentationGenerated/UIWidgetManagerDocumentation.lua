@@ -2249,6 +2249,9 @@ local UIWidgetManager =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIWidgetManager);

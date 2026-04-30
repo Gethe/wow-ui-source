@@ -8,6 +8,16 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "AreOutgoingAddonChatMessagesRestricted",
+			Type = "Function",
+			Documentation = { "Returns false if addons are allowed to send outgoing chat messages. This is controlled on a realm-by-realm basis (tournament realms allow it), and the ability for addons to receive comms is controlled separately." },
+
+			Returns =
+			{
+				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerSpeakLanguage",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -287,7 +297,6 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
-				{ Name = "lockdownReason", Type = "ChatMessagingLockdownReason", Nilable = true, Documentation = { "Optionally specified reason for the chat lockdown. Always nil if isRestricted is false, but should also be treated as potentially nil if true." } },
 			},
 		},
 		{
@@ -480,8 +489,8 @@ local ChatInfo =
 			Arguments =
 			{
 				{ Name = "input", Type = "string", Nilable = false },
-				{ Name = "noIconReplacement", Type = "bool", Nilable = true },
-				{ Name = "noGroupReplacement", Type = "bool", Nilable = true },
+				{ Name = "noIconReplacement", Type = "bool", Nilable = true, NeverSecret = true },
+				{ Name = "noGroupReplacement", Type = "bool", Nilable = true, NeverSecret = true },
 			},
 
 			Returns =
@@ -560,9 +569,9 @@ local ChatInfo =
 
 			Arguments =
 			{
-				{ Name = "message", Type = "cstring", Nilable = false, NeverSecret = true },
-				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, NeverSecret = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
-				{ Name = "languageID", Type = "number", Nilable = true, NeverSecret = true, Documentation = { "Language to send the message in." } },
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
+				{ Name = "languageID", Type = "number", Nilable = true, Documentation = { "Language to send the message in." } },
 				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Name of the player to send a message to. Only applies to chat types that support targeted messages." } },
 			},
 		},
@@ -1319,7 +1328,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatFactionChange",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_FACTION_CHANGE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1346,7 +1354,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatHonorGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_HONOR_GAIN",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1373,7 +1380,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatMiscInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_MISC_INFO",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1400,7 +1406,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatXpGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_XP_GAIN",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1454,7 +1459,6 @@ local ChatInfo =
 			Name = "ChatMsgCurrency",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CURRENCY",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1535,7 +1539,6 @@ local ChatInfo =
 			Name = "ChatMsgFiltered",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_FILTERED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1722,7 +1725,6 @@ local ChatInfo =
 			Name = "ChatMsgLoot",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_LOOT",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1749,7 +1751,6 @@ local ChatInfo =
 			Name = "ChatMsgMoney",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONEY",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2259,7 +2260,6 @@ local ChatInfo =
 			Name = "ChatMsgRestricted",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RESTRICTED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2717,17 +2717,6 @@ local ChatInfo =
 	Tables =
 	{
 		{
-			Name = "AddonMessageParams",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "prefix", Type = "cstring", Nilable = false },
-				{ Name = "message", Type = "cstring", Nilable = false },
-				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
-				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
-			},
-		},
-		{
 			Name = "ChatMessageEventParams",
 			Type = "Structure",
 			Fields =
@@ -2756,12 +2745,15 @@ local ChatInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "message", Type = "cstring", Nilable = false, NeverSecret = true },
-				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, NeverSecret = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
-				{ Name = "languageID", Type = "number", Nilable = true, NeverSecret = true, Documentation = { "Language to send the message in." } },
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
+				{ Name = "languageID", Type = "number", Nilable = true, Documentation = { "Language to send the message in." } },
 				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Name of the player to send a message to. Only applies to chat types that support targeted messages." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

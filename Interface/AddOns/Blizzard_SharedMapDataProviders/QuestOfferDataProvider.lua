@@ -449,7 +449,7 @@ function QuestHubPinMixin:OnAcquired(poiInfo)
 
 	self:BuildRelatedQuests(self);
 	self:SetIsQuestHubForCityMap(self.dataProvider:IsQuestHubForCityMap(self));
-	AreaPOIPinMixin.OnAcquired(self, poiInfo);	
+	AreaPOIPinMixin.OnAcquired(self, poiInfo);
 end
 
 function QuestHubPinMixin:BuildRelatedQuests()
@@ -505,7 +505,7 @@ local function DetermineHigherPriorityPin(pin1, pin2)
 	if pin1IsEvent or pin2IsEvent then
 		return pin1IsEvent and pin1 or pin2;
 	end
-	
+
 	local pin1IsWorldQuest = pin1:MatchesTag(MapPinTags.WorldQuest);
 	local pin2IsWorldQuest = pin2:MatchesTag(MapPinTags.WorldQuest);
 	if pin1IsWorldQuest or pin2IsWorldQuest then
@@ -521,7 +521,7 @@ local function DetermineHigherPriorityPin(pin1, pin2)
 	if pin1IsQuestOffer or pin2IsQuestOffer then
 		return pin1IsQuestOffer and pin1 or pin2;
 	end
-	
+
 	return pin1; -- fallback, last pin that was considered better remains better.
 end
 
@@ -536,7 +536,7 @@ function QuestHubPinMixin:UpdatePriorityQuestDisplay()
 	if not pins then
 		return;
 	end
-	
+
 	local bestPin;
 	for pin, active in pairs(pins) do
 		if active then
@@ -582,6 +582,14 @@ local suppressedTooltipSections =
 		maxItems = MAX_DISPLAYED_CONTENT_ITEMS_IN_TOOLTIP,
 		moreItemsRemainingString = QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING,
 	},
+
+	-- Arbitrary suppressed pins, typically portals, possibly any areaPOI
+	{
+		suppressedPinIndex = 3,
+		header = QUEST_HUB_TOOLTIP_TRAVEL_HEADER,
+		maxItems = 1,
+		moreItemsRemainingString = QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING,
+	},
 };
 
 function QuestHubPinMixin:AddCustomTooltipData(tooltip)
@@ -619,7 +627,7 @@ function QuestHubPinMixin:AddSuppressedPinsToTooltip(tooltip, allSuppressedPins,
 
 		if needsOverflowLine then
 			container:SetAdditionalItemsText(formatData.moreItemsRemainingString:format(count - formatData.maxItems));
-		end		
+		end
 
 		container:Layout();
 		GameTooltip_InsertFrame(tooltip, container, 0);
@@ -643,7 +651,7 @@ function QuestHubPinMixin:CreatePinTooltipFrame(pin)
 end
 
 function QuestHubPinMixin:GetOrCreateSuppressedPinTooltipPool()
-	if not self.suppressedPinPool then 
+	if not self.suppressedPinPool then
 		self.suppressedPinPool = CreateFramePool("Frame", GetAppropriateTopLevelParent(), "SuppressedPinTooltipTemplate");
 	end
 
@@ -709,6 +717,17 @@ local function SortQuestOffer(questOffer1, questOffer2)
 	return questOffer1.questID < questOffer2.questID;
 end
 
+local function GetPinAtlasName(pin)
+	if pin.GetPoiInfo then
+		local info = pin:GetPoiInfo();
+		if info then
+			return info.atlasName;
+		end
+	end
+
+	return nil;
+end
+
 local function SortSuppressedPins(pin1, pin2)
 	local pin1Type = pin1:MatchesTag(MapPinTags.Event);
 	local pin2Type = pin2:MatchesTag(MapPinTags.Event);
@@ -733,7 +752,17 @@ local function SortSuppressedPins(pin1, pin2)
 	if (pin1Type or pin2Type) and pin1Type ~= pin2Type then
 		return pin1Type;
 	end
-	
+
+	-- If the types are the same, first sort by atlas name ensuring that pins with the same atlases are grouped together.
+	local pin1Atlas = GetPinAtlasName(pin1);
+	local pin2Atlas = GetPinAtlasName(pin1);
+	if pin1Atlas and pin2Atlas and pin1Atlas ~= pin2Atlas then
+		local strCmpResult = strcmputf8i(pin1Atlas, pin2Atlas);
+		if (strCmpResult ~= 0) then
+			return strCmpResult < 0;
+		end
+	end
+
 	-- If the types are the same, alphabetical ordering
 	local strCmpResult = strcmputf8i(pin1:GetDisplayName(), pin2:GetDisplayName());
 	if (strCmpResult ~= 0) then
@@ -748,11 +777,16 @@ function QuestHubPinMixin:GetSuppressedPinsSorted()
 	local pins = self:GetSuppressedPins();
 	local orderedPins = {};
 	local orderedQuestOffers = {};
+	local orderedTravelPins = {};
 	if pins then
 		for pin, active in pairs(pins) do
 			if active then
 				if pin:MatchesTag(MapPinTags.QuestOffer) then
 					table.insert(orderedQuestOffers, pin);
+				elseif pin:MatchesTag(MapPinTags.IsSuppressible) then
+					-- HACK: this implies that right now all suppressed pins with this tag are travel pins.
+					-- Hopefully nobody is using that flag for anything except portals.
+					table.insert(orderedTravelPins, pin);
 				elseif self:ShouldAddSuppressedPinToTooltip(pin) then
 					table.insert(orderedPins, pin);
 				end
@@ -762,8 +796,9 @@ function QuestHubPinMixin:GetSuppressedPinsSorted()
 
 	table.sort(orderedPins, SortSuppressedPins);
 	table.sort(orderedQuestOffers, SortQuestOffer);
+	table.sort(orderedTravelPins, SortSuppressedPins);
 
-	return orderedPins, orderedQuestOffers;
+	return orderedPins, orderedQuestOffers, orderedTravelPins;
 end
 
 function QuestHubPinMixin:ShouldSuppressPin(pin)
@@ -776,8 +811,8 @@ function QuestHubPinMixin:ShouldSuppressPin(pin)
 		return false;
 	end
 
-	local isSuppressionCandidate = pin:MatchesAnyTag(MapPinTags.Event, MapPinTags.WorldQuest, MapPinTags.BonusObjective, MapPinTags.FlightPoint);
-	
+	local isSuppressionCandidate = pin:MatchesAnyTag(MapPinTags.Event, MapPinTags.WorldQuest, MapPinTags.BonusObjective, MapPinTags.FlightPoint, MapPinTags.IsSuppressible);
+
 	if isSuppressionCandidate and self:Intersects(pin) then
 		return true;
 	end
@@ -915,7 +950,7 @@ end
 function SuppressedPinTooltipContainerMixin:AddLine(line)
 	local previousLine = self.lines[#self.lines];
 	table.insert(self.lines, line);
-	
+
 	line:ClearAllPoints();
 	line:SetParent(self);
 	line:Show();

@@ -41,6 +41,21 @@ local Totem =
 			},
 		},
 		{
+			Name = "GetTotemDuration",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -111,6 +126,9 @@ local Totem =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

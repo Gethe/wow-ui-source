@@ -15,6 +15,9 @@ local LuaDurationObjectShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LuaDurationObjectShared);

@@ -74,7 +74,7 @@ end
 
 function EncounterTimelineTrackOrientationMixin:GetOrientedOffsets(x, y)
 	x = x * self.primaryAxisOffsetMultiplier;
-	y = y * self.crossAxisOffsetMultiplier;
+	y = y;
 
 	if self.primaryAxisIsVertical then
 		return y, x;
@@ -100,12 +100,6 @@ end
 function EncounterTimelineUtil.CreateTrackOrientation(orientationSetting, iconDirectionSetting)
 	local orientationData = EncounterTimelineTrackOrientationSetup[orientationSetting][iconDirectionSetting];
 	local orientation = CreateFromMixins(EncounterTimelineTrackOrientationMixin, orientationData);
-
-	-- This field will (probably) be used at some point for swapping the
-	-- spell name from left/right while in a vertical orientation; for now
-	-- just hardcoding it.
-	orientation.crossAxisOffsetMultiplier = 1;
-
 	return orientation;
 end
 
@@ -148,12 +142,14 @@ end
 
 EncounterTimelineTrackInterpolatorMixin = {};
 
-function EncounterTimelineTrackInterpolatorMixin:Init()
+function EncounterTimelineTrackInterpolatorMixin:Init(timer)
+	self.timer = timer;
 	self:SetFixedOffset(0);
 end
 
 function EncounterTimelineTrackInterpolatorMixin:Reset()
 	self:SetFixedOffset(0);
+	self.timer = nil;
 end
 
 function EncounterTimelineTrackInterpolatorMixin:GetCurrentOffset()
@@ -186,23 +182,16 @@ function EncounterTimelineTrackInterpolatorMixin:SetInterpolatedOffset(offsetFro
 	self.currentTime = 0;
 end
 
-function EncounterTimelineTrackInterpolatorMixin:Update(eventID)
+function EncounterTimelineTrackInterpolatorMixin:Update()
 	local currentTime;
 
 	if self.useAbsoluteTime then
 		currentTime = C_EncounterTimeline.GetCurrentTime();
 	else
-		currentTime = C_EncounterTimeline.GetEventTimeRemaining(eventID);
+		currentTime = self.timer:GetRemainingDuration();
 	end
 
-	-- GetEventTimeRemaining can return a nil value if an event has been
-	-- removed from the timeline. In such a circumstance, we want the
-	-- interpolation to effectively pause at the last sampled time value.
-
-	if currentTime ~= nil then
-		self.currentTime = currentTime;
-	end
-
+	self.currentTime = currentTime;
 	return self:GetCurrentOffset();
 end
 

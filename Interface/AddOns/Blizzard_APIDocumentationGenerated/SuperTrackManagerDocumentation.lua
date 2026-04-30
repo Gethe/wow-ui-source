@@ -224,6 +224,9 @@ local SuperTrackManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SuperTrackManager);

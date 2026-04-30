@@ -442,7 +442,7 @@ function PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, answer, canSe
 	else
 		newCheckbox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
 		newCheckbox.text = newCheckbox:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-		newCheckbox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+		newCheckbox.text:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE, THICK")
 		newCheckbox.text:SetJustifyH("CENTER")
 		newCheckbox.text:SetJustifyV("MIDDLE")
 		newCheckbox.text:SetTextColor(1, 1, 1)
@@ -662,13 +662,13 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
 			local maxWidth = 253
 			
 			titleBox.text:SetText(text)
-			titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE, THICK")
 			titleBox:SetSize(253, titleBox.text:GetHeight()*2)
 			local currentFont = 12
 			local currentWidth = titleBox.text:GetWidth()
 			while (currentWidth > maxWidth) and (currentFont > 5) do
 				currentFont = currentFont - 1
-				titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", currentFont)
+				titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", currentFont, "OUTLINE, THICK")
 				titleBox.text:SetText(text)
 				currentWidth = titleBox.text:GetWidth()
 			end

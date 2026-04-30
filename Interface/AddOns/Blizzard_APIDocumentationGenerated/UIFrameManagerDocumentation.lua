@@ -60,6 +60,9 @@ local UIFrameManager =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIFrameManager);

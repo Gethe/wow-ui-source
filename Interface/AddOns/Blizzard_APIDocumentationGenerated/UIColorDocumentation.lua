@@ -25,6 +25,9 @@ local UIColor =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIColor);

@@ -162,13 +162,17 @@ CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, 
 
 function CooldownViewerSettingsItemMixin:RefreshData()
 	if not self:IsEmptyCategory() then
-		self.Icon:SetTexture(self:GetSpellTexture());
+		self:RefreshSpellTexture();
 		self:RefreshIconState();
 	else
 		self.Icon:SetAtlas("cdm-empty");
 		self.Icon:SetDesaturated(false);
 		self:RefreshAlertTypeOverlay();
 	end
+end
+
+function CooldownViewerSettingsItemMixin:RefreshSpellTexture()
+	self.Icon:SetTexture(self:GetSpellTexture());
 end
 
 local function AnchorAlertTypeIcons(overlay)
@@ -650,6 +654,20 @@ function CooldownViewerSettingsCategoryMixin:OnLoad()
 	self:SetupGridLayoutParams();
 end
 
+function CooldownViewerSettingsCategoryMixin:OnShow()
+	self:RegisterEvent("SPELL_UPDATE_ICON");
+end
+
+function CooldownViewerSettingsCategoryMixin:OnHide()
+	self:UnregisterEvent("SPELL_UPDATE_ICON");
+end
+
+function CooldownViewerSettingsCategoryMixin:OnEvent(event, ...)
+	if event == "SPELL_UPDATE_ICON" then
+		self:RefreshSpellIcons();
+	end
+end
+
 function CooldownViewerSettingsCategoryMixin:GetItemTemplate()
 	return "CooldownViewerSettingsItemTemplate";
 end
@@ -750,6 +768,14 @@ function CooldownViewerSettingsCategoryMixin:ApplyFilter()
 
 	for item in self.itemPool:EnumerateActive() do
 		item:ApplyFilter(viewerSettings:DoesCooldownMatchTextFilter(item, filterText));
+	end
+end
+
+function CooldownViewerSettingsCategoryMixin:RefreshSpellIcons()
+	for item in self.itemPool:EnumerateActive() do
+		if not item:IsEmptyCategory() then
+			item:RefreshSpellTexture();
+		end
 	end
 end
 

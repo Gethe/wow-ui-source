@@ -72,9 +72,9 @@ function CompactUnitFrameProfiles:ApplyCurrentSettings()
 
 	--Refresh all frames to make sure the changes stick.
 	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAllFromEditMode);
 	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("mini", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("mini", CompactUnitFrame_UpdateAllFromEditMode);
 
 	--Update the borders on the group frames.
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);

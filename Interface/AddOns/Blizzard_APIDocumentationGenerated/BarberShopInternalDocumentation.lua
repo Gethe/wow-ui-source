@@ -26,6 +26,9 @@ local BarberShopInternal =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BarberShopInternal);

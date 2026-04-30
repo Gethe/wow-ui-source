@@ -329,6 +329,9 @@ local LegendaryCrafting =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LegendaryCrafting);

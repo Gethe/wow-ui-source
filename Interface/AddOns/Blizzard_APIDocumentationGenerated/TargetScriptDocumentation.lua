@@ -203,6 +203,9 @@ local TargetScript =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TargetScript);

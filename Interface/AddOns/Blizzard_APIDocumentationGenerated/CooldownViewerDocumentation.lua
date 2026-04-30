@@ -133,6 +133,9 @@ local CooldownViewer =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CooldownViewer);

@@ -158,6 +158,17 @@ local TextureUtils =
 
 	Events =
 	{
+		{
+			Name = "UrlTextureRequestResult",
+			Type = "Event",
+			LiteralName = "URL_TEXTURE_REQUEST_RESULT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "result", Type = "UrlTextureResult", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -173,6 +184,20 @@ local TextureUtils =
 				{ Name = "Small", Type = "TitleIconVersion", EnumValue = 0 },
 				{ Name = "Medium", Type = "TitleIconVersion", EnumValue = 1 },
 				{ Name = "Large", Type = "TitleIconVersion", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UrlTextureResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Found", Type = "UrlTextureResult", EnumValue = 1 },
+				{ Name = "NotFound", Type = "UrlTextureResult", EnumValue = 2 },
+				{ Name = "Requested", Type = "UrlTextureResult", EnumValue = 3 },
+				{ Name = "NotAllowed", Type = "UrlTextureResult", EnumValue = 4 },
 			},
 		},
 		{
@@ -205,6 +230,9 @@ local TextureUtils =
 				{ Name = "texture", Type = "fileID", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

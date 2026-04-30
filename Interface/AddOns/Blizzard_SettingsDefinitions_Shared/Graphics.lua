@@ -844,6 +844,7 @@ local function Register()
 				return value == AA_IMAGE or value == AA_ADVANCED;
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample
@@ -888,6 +889,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample Alpha Test
@@ -913,6 +915,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 	end
 

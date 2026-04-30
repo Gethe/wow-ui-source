@@ -14,6 +14,9 @@ local EventSchedulerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EventSchedulerConstants);

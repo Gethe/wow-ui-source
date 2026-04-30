@@ -1,6 +1,8 @@
 ## Title: Blizzard_ObjectiveTracker
-## RequiredDep: Blizzard_MawBuffs, Blizzard_TransmogShared
-## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
+## Dep: Blizzard_MawBuffs
+## Dep: Blizzard_TieredEntranceTraits
+## Dep: Blizzard_TransmogShared
+## Dep: Blizzard_UIWidgets
 
 Blizzard_ObjectiveTrackerFonts.xml
 Blizzard_ObjectiveTrackerManager.lua [AllowLoadEnvironment Global]

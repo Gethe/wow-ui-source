@@ -28,6 +28,7 @@ local InGameNavigation =
 		{
 			Name = "GetNearestPartyMemberToken",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Returns =
 			{
@@ -109,6 +110,9 @@ local InGameNavigation =
 				{ Name = "Disabled", Type = "NavigationState", EnumValue = 3 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

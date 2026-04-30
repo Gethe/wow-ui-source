@@ -16,6 +16,9 @@ local CursorUtil =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CursorUtil);

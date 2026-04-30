@@ -123,6 +123,9 @@ local PlayerLocation =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerLocation);

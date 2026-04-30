@@ -151,6 +151,7 @@ local BattleNet =
 			Name = "SendWhisper",
 			Type = "Function",
 			HasRestrictions = true,
+			RestrictedForMacroChatMessages = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -262,6 +263,9 @@ local BattleNet =
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

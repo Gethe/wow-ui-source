@@ -514,6 +514,11 @@ function GameDialogMixin:GetEditBox()
 	return self.EditBox;
 end
 
+function GameDialogMixin:GetEditBoxText()
+	local editBox = self:GetEditBox();
+	return editBox and editBox:GetText() or "";
+end
+
 function GameDialogMixin:GetButton1()
 	return self:GetButton(1);
 end

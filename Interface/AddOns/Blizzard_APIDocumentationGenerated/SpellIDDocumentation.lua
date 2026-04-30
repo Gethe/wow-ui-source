@@ -23,6 +23,9 @@ local SpellID =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellID);

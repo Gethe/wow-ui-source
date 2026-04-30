@@ -106,6 +106,9 @@ local PingManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PingManager);

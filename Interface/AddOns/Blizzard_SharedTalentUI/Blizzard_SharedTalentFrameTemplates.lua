@@ -1,7 +1,6 @@
 
 -- A simple limit to avoid infinite loops
 local MAX_DISPLAYED_CURRENCIES = 10;
-local CURRENCY_DISPLAY_ICON_SIZE = 24;
 
 TalentFrameCurrencyDisplayMixin = {};
 
@@ -29,7 +28,7 @@ function TalentFrameCurrencyDisplayMixin:Update()
 
 	local text = "";
 	for i = 1, MAX_DISPLAYED_CURRENCIES do
-		local currencyText = self.talentFrame:GetTreeCurrencyTextByIndex(i, CURRENCY_DISPLAY_ICON_SIZE, CURRENCY_DISPLAY_ICON_SIZE);
+		local currencyText = self.talentFrame:GetTreeCurrencyTextByIndex(i, self.iconSize, self.iconSize);
 		if currencyText then
 			if i > 1 then
 				text = " " .. text;

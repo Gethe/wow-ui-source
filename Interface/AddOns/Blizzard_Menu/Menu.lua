@@ -41,14 +41,6 @@ local function ClearMouseLeaveEventData()
 	return false;
 end
 
-local function TryHideTooltip(frame)
-	local tooltip = GetAppropriateTooltip();
-	if tooltip:GetOwner() == frame then
-		tooltip:Hide();
-		tooltip:SetWindow(nil);
-	end
-end
-
 --[[
 For ease of debugging with internal tools, dropdowns are prevented from automatically
 closing when clicked outside when either the edit menu or editor is shown.
@@ -149,6 +141,20 @@ do
 	function SharedMenuPropertiesMixin:GetMenuMixin()
 		return securecall(GetMenuMixin, self);
 	end
+end
+
+do
+	local function GetTooltipFrame(smp)
+		return smp.tooltip or GetAppropriateTooltip();
+	end
+
+	function SharedMenuPropertiesMixin:GetTooltipFrame()
+		return securecall(GetTooltipFrame, self);
+	end
+end
+
+function SharedMenuPropertiesMixin:SetTooltipFrame(tooltip)
+	self.tooltip = tooltip;
 end
 
 function SharedMenuPropertiesMixin:GetMenuResponseCallbacks()
@@ -396,6 +402,10 @@ function BaseMenuDescriptionMixin:DisableReacquireFrames()
 	self:GetSharedMenuProperties():DisableReacquireFrames();
 end
 
+function BaseMenuDescriptionMixin:GetTooltipFrame()
+	return self:GetSharedMenuProperties():GetTooltipFrame();
+end
+
 function BaseMenuDescriptionMixin:HasElements()
 	return self.elementDescriptions:HasValues();
 end
@@ -482,6 +492,10 @@ function RootMenuDescriptionMixin:AddMenuReleasedCallback(callback)
 	self:GetSharedMenuProperties():AddMenuReleasedCallback(callback);
 end
 
+function RootMenuDescriptionMixin:SetTooltipFrame(tooltip)
+	self:GetSharedMenuProperties():SetTooltipFrame(tooltip);
+end
+
 --[[
 Menu element descriptions represent each individual menu element. Adding menu element
 descriptions into an existing element description creates a submenu.
@@ -531,6 +545,7 @@ local BaseMenuDescriptionAPI =
 	"SetMaximumWidth",
 	"SetGridMode",
 	"SetScrollMode",
+	"GetTooltipFrame",
 };
 
 local RootMenuDescriptionProxyMixin;
@@ -541,6 +556,7 @@ do
 		"AddMenuChangedCallback",
 		"AddMenuAcquiredCallback",
 		"AddMenuReleasedCallback",
+		"SetTooltipFrame",
 		"DisableCompositor",
 		"DisableReacquireFrames",
 	};
@@ -583,6 +599,12 @@ do
 
 	RootMenuDescriptionProxyMixin.SetTag = SetTag;
 	MenuElementDescriptionProxyMixin.SetTag = SetTag;
+
+	local function ToDebugString(descriptionProxy)
+		return descriptionProxy:GetTag();
+	end
+	RootMenuDescriptionProxyMixin.ToDebugString = ToDebugString;
+	MenuElementDescriptionProxyMixin.ToDebugString = ToDebugString;
 
 	local function ClearQueuedDescriptions(descriptionProxy)
 		descriptionProxy.queuedProxies = nil;
@@ -790,7 +812,11 @@ do
 			self.onLeave(frame, self);
 		end
 
-		TryHideTooltip(frame);
+		local tooltip = self:GetTooltipFrame();
+		if tooltip:GetOwner() == frame then
+			tooltip:Hide();
+			tooltip:SetWindow(nil);
+		end
 	end
 
 	function MenuElementDescriptionProxyMixin:SetEnabled(isEnabled)
@@ -1031,8 +1057,6 @@ local function ResetMenuElement(pool, frame, new)
 	frame:SetToDefaults();
 
 	if not new then
-		TryHideTooltip(frame);
-
 		--[[
 		Clear scripts to ensure they cannot be called when the pool removes this frame's anchors.
 		Any callback assigned to the menu description will be unavailable now that the
@@ -1189,6 +1213,12 @@ function MenuMixin:SetMenuDescription(menuDescription)
 
 	--After all initializers have been called, continue with layout.
 	self:PerformLayout();
+end
+
+function MenuMixin:ToDebugString()
+	if self.menuDescription then
+		return self.menuDescription.proxy:GetTag();
+	end
 end
 
 function MenuMixin:Open(menuDescription, onElementMouseDown, onElementEnter, onElementLeave)
@@ -1471,7 +1501,14 @@ function MenuMixin:PerformLayout()
 	the appropriate axis if necessary. Note that if this was a grid menu with the compaction margin provided,
 	this will have no effect along the vertical axis.
 	]]--
-	self:FlipPositionIfOffscreen();
+
+	local window = menuFrame:GetWindow();
+	if window == nil then
+		-- We're not attempting to flip offscreen menus in external windows. The longterm
+		-- goal is to have menus in external windows be opened into their own external window,
+		-- making any repositioning across the axis of an anchor target unnecessary.
+		self:FlipPositionIfOffscreen();
+	end
 
 	--[[
 	After any menu position has been inverted, finish by clamping to screen. If this is a new menu, the menu
@@ -1545,18 +1582,15 @@ do
 			return;
 		end
 
-		local overflowHorizontal, overflowVertical = false, false;
-
-		local br, bt;
-		local window = menuFrame:GetWindow();
-		if window then
-			br, bt = window:GetWindowSize();
-		else
-			local boundsParent = GetAppropriateTopLevelParent();
-			br = boundsParent:GetRight();
-			bt = boundsParent:GetTop();
+		local boundsParent = GetAppropriateTopLevelParent();
+		local br = boundsParent:GetRight();
+		local bt = boundsParent:GetTop();
+		if not br or not bt then
+			-- If we cannot obtain bounds, then we cannot determine if the menu is offscreen.
+			return;
 		end
 
+		local overflowHorizontal, overflowVertical = false, false;
 		if (l < 0) or (r > br) then
 			overflowHorizontal = true;
 		end
@@ -1651,7 +1685,7 @@ function MenuMixin:DiscardChildFrames()
 	self.frames:Wipe();
 end
 
-function MenuMixin:Close()
+function MenuMixin:Close(closeReason)
 	local menuFrame = self:ToProxy();
 	menuFrame:SetScript("OnEnter", nil);
 	menuFrame:SetScript("OnLeave", nil);
@@ -1662,7 +1696,7 @@ function MenuMixin:Close()
 	-- All scripts must be finished before the compositor flushes our keys.
 
 	if self.onCloseCallback then
-		self.onCloseCallback(menuFrame);
+		self.onCloseCallback(menuFrame, closeReason);
 	end
 
 	-- Hide is necessary here to ensure any OnLeave scripts are fired on child frames before
@@ -1891,22 +1925,21 @@ function MenuManagerMixin:ContainsCursor()
 	return false;
 end
 
-function MenuManagerMixin:CloseMenu(menu)
+function MenuManagerMixin:CloseMenu(menu, closeReason)
 	if not menu then
 		return;
 	end
 
-	self:RemoveMenu(menu);
+	self:RemoveMenu(menu, closeReason or MenuCloseReason.Unspecified);
 end
 
 function MenuManagerMixin:CloseMenus()
 	for stackIndex, menu in self.menus:EnumerateReverse() do
-		self:CloseMenu(menu);
+		self:CloseMenu(menu, MenuCloseReason.CloseAll);
 	end
 end
 
-
-function MenuManagerMixin:RemoveMenu(menu)
+function MenuManagerMixin:RemoveMenu(menu, closeReason)
 	if not menu then
 		return;
 	end
@@ -1915,14 +1948,14 @@ function MenuManagerMixin:RemoveMenu(menu)
 		return;
 	end
 
-	self:CollapseMenusUntilLevel(menu:GetLevel());
+	self:CollapseMenusUntilLevel(menu:GetLevel(), closeReason);
 
 	local proxy = menu:ToProxy();
 
 	-- All scripts must be finished before the compositor flushes our keys.
 	-- Notify listeners that the menu is closing.
 	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
-		onReleased(proxy);
+		onReleased(proxy, closeReason);
 	end);
 
 	--[[
@@ -1930,7 +1963,7 @@ function MenuManagerMixin:RemoveMenu(menu)
 	callbacks registered on the menu description object, as the compositor will have flushed our
 	keys.
 	]]--
-	menu:Close();
+	menu:Close(closeReason);
 
 	--[[
 	The proxy for a menu must be manually removed because a pool frame is never
@@ -1970,10 +2003,10 @@ function MenuManagerMixin:IsMenuOpen(menu)
 	return self.menus:Contains(menu);
 end
 
-function MenuManagerMixin:CollapseMenusUntilLevel(level)
+function MenuManagerMixin:CollapseMenusUntilLevel(level, closeReason)
 	for stackIndex, menu in self.menus:EnumerateReverse() do
 		if menu:GetLevel() > level then
-			self:RemoveMenu(menu);
+			self:RemoveMenu(menu, closeReason);
 		end
 	end
 end

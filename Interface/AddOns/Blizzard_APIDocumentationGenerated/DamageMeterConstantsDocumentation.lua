@@ -5,14 +5,15 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterCombineSessionType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "None", Type = "DamageMeterCombineSessionType", EnumValue = 0 },
 				{ Name = "ChallengeMode", Type = "DamageMeterCombineSessionType", EnumValue = 1 },
 				{ Name = "Arena", Type = "DamageMeterCombineSessionType", EnumValue = 2 },
+				{ Name = "ArenaMultiRound", Type = "DamageMeterCombineSessionType", EnumValue = 3 },
 			},
 		},
 		{
@@ -41,6 +42,19 @@ local DamageMeterConstants =
 				{ Name = "Overall", Type = "DamageMeterSessionType", EnumValue = 0 },
 				{ Name = "Current", Type = "DamageMeterSessionType", EnumValue = 1 },
 				{ Name = "Expired", Type = "DamageMeterSessionType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DamageMeterSourceDisplayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "DamageMeterSourceDisplayType", EnumValue = 0 },
+				{ Name = "Ally", Type = "DamageMeterSourceDisplayType", EnumValue = 1 },
+				{ Name = "Enemy", Type = "DamageMeterSourceDisplayType", EnumValue = 2 },
 			},
 		},
 		{
@@ -98,6 +112,9 @@ local DamageMeterConstants =
 				{ Name = "EnemyDamageTaken", Type = "DamageMeterType", EnumValue = 10 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -10,10 +10,11 @@ local CombatText =
 		{
 			Name = "GetActiveUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = true },
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -28,6 +29,7 @@ local CombatText =
 		{
 			Name = "SetActiveUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -52,6 +54,9 @@ local CombatText =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

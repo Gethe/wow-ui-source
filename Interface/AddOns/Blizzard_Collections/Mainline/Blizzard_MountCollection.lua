@@ -414,10 +414,12 @@ function MountJournal_OnEvent(self, event, ...)
 	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" or event == "PLAYER_REGEN_ENABLED" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
-			MountJournal_FullUpdate(self);
+			local skipMountDisplay = true;
+			MountJournal_FullUpdate(self, skipMountDisplay);
 		end
 	elseif ( event == "MOUNT_JOURNAL_SEARCH_UPDATED" ) then
-		MountJournal_FullUpdate(self);
+		local skipMountDisplay = true;
+		MountJournal_FullUpdate(self, skipMountDisplay);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
 			local forceSceneChange = true;
@@ -626,15 +628,18 @@ function MountJournal_UpdateEquipment(self)
 	MountJournal_UpdateEquipmentPalette(self);
 end
 
-function MountJournal_FullUpdate(self)
+function MountJournal_FullUpdate(self, skipMountDisplay)
 	if (self:IsVisible()) then
 		MountJournal_UpdateMountList();
 
 		if (not MountJournal.selectedSpellID) then
 			MountJournal_Select(1);
 		end
-		local forceSceneChange = true;
-		MountJournal_UpdateMountDisplay(forceSceneChange);
+
+		if not skipMountDisplay then
+			local forceSceneChange = true;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
+		end
 	end
 end
 

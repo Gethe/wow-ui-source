@@ -240,3 +240,4 @@ HybridScrollFrame.lua
 HybridScrollFrame.xml
 
 Shared\Localization.lua
+MoneyFormatter.lua

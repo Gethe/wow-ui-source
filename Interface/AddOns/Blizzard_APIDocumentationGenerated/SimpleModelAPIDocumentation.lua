@@ -775,6 +775,9 @@ local SimpleModelAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleModelAPI);

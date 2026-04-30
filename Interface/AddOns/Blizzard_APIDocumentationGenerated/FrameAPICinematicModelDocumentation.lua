@@ -200,6 +200,9 @@ local FrameAPICinematicModel =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(FrameAPICinematicModel);

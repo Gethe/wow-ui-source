@@ -14,7 +14,7 @@ local ClickBindings =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Base spellID for spell, spellID for PetAction" } },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false, Documentation = { "Base spellID for spell, spellID for PetAction" } },
 			},
 
 			Returns =
@@ -146,6 +146,9 @@ local ClickBindings =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

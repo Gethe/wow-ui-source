@@ -133,8 +133,31 @@ EditModeSettingCheckboxMixin = {};
 function EditModeSettingCheckboxMixin:SetupSetting(settingData)
 	self.setting = settingData.displayInfo.setting;
 	self.checked = (settingData.currentValue == 1);
+	self.disabledTooltipText = settingData.displayInfo.disabledTooltipText;
+
+	local isDisabled = settingData.displayInfo.disabled;
+
 	self.Label:SetText(settingData.settingName);
+	self.Label:SetFontObject(isDisabled and "GameFontDisableMed2" or "GameFontHighlightMedium");
+
 	self.Button:SetChecked(self.checked);
+	self.Button:SetEnabled(not isDisabled);
+end
+
+function EditModeSettingCheckboxMixin:OnEnter()
+	if self.disabledTooltipText and not self.Button:IsEnabled() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(tooltip, self.disabledTooltipText);
+		tooltip:Show();
+	end
+end
+
+function EditModeSettingCheckboxMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self.Button then
+		tooltip:Hide();
+	end
 end
 
 function EditModeSettingCheckboxMixin:OnCheckButtonClick()
@@ -250,12 +273,19 @@ function EditModeCheckButtonMixin:EditModeCheckButton_OnLoad()
 	self.Button:SetScript("OnLeave", function(_button)
 		self:OnLeave();
 	end);
+
+	-- If the button has been disabled because the underlying CVar is not enabled, but the CVar
+	-- supports being enabled from edit mode, the player can shift click to enable the CVar without
+	-- needing to go to the options menu.
+	self.Button:SetScript("OnMouseUp", function(_button)
+		if self.allowAutoEnableCVar and IsShiftKeyDown() and not self:ShouldEnable() then
+			self:AutoEnableCVar();
+		end
+	end);
 end
 
 function EditModeCheckButtonMixin:EditModeCheckButton_OnShow()
-	local shouldEnable = self:ShouldEnable();
-	self.Button:SetEnabled(shouldEnable);
-	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2");
+	self:UpdateDisplay();
 end
 
 function EditModeCheckButtonMixin:OnEnter()
@@ -273,6 +303,11 @@ function EditModeCheckButtonMixin:OnEnter()
 
 		if showDisabledTooltip then
 			GameTooltip_AddNormalLine(tooltip, self.disabledTooltipText);
+
+			if self.allowAutoEnableCVar then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+				GameTooltip_AddInstructionLine(tooltip, HUD_EDIT_MODE_AUTO_ENABLE_CVAR_TOOLTIP);
+			end
 		end
 
 		tooltip:Show();
@@ -282,12 +317,34 @@ function EditModeCheckButtonMixin:OnEnter()
 end
 
 function EditModeCheckButtonMixin:OnLeave()
+	self:HideButtonTooltip();
+	self:RunMouseOverCallback(false);
+end
+
+function EditModeCheckButtonMixin:HideButtonTooltip()
 	local tooltip = GetAppropriateTooltip();
 	if tooltip:GetOwner() == self.Button then
 		tooltip:Hide();
 	end
+end
 
-	self:RunMouseOverCallback(false);
+function EditModeCheckButtonMixin:UpdateDisplay()
+	local shouldEnable = self:ShouldEnable();
+	self.Button:SetEnabled(shouldEnable);
+	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2");
+end
+
+function EditModeCheckButtonMixin:AutoEnableCVar()
+	local cvarValue = true;
+	if self.shouldEnableCVarInverted then
+		cvarValue = false;
+	end
+
+	SetCVar(self.shouldEnableCVarName, cvarValue);
+
+	-- Refresh the visuals now that the CVar is enabled.
+	self:UpdateDisplay();
+	self:HideButtonTooltip();
 end
 
 function EditModeCheckButtonMixin:RunMouseOverCallback(isMouseOver)

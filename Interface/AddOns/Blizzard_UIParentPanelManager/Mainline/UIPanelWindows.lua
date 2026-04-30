@@ -62,5 +62,5 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 	UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 	UIPanelWindows["PerksProgramFrame"] =			{ area = "full",			pushable = 0,};
-	UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	allowOtherPanels = 1};
+	UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 910, 	allowOtherPanels = 1};
 end

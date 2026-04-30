@@ -348,6 +348,9 @@ local AzeriteEssence =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AzeriteEssence);

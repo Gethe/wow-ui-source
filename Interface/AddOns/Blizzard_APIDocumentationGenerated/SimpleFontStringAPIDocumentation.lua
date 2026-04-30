@@ -126,7 +126,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = true },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = true },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
@@ -295,6 +295,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetSmoothScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpacing",
 			Type = "Function",
 
@@ -395,6 +408,22 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetUnboundedStringWidthForText",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWrappedWidth",
 			Type = "Function",
 			SecretWhenAnchoringSecret = true,
@@ -459,13 +488,20 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = false },
-				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
-				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = false },
+				{ Name = "fontHeight", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -594,6 +630,16 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "SetSmoothScaling",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false, Documentation = { "If true, text height will not snap to nearest whole numbers for scaled font strings." } },
+			},
+		},
+		{
 			Name = "SetSpacing",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -676,6 +722,9 @@ local SimpleFontStringAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

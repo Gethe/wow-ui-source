@@ -1,8 +1,6 @@
 
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 4;
-MAX_TALENT_TIERS = 7;
-NUM_TALENT_COLUMNS = 3;
 
 DEFAULT_TALENT_TAB = 1;
 
@@ -46,22 +44,22 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	if(TalentFrame.bg ~= nil) then
 		TalentFrame.bg:SetDesaturated(disable);
 	end
-	
-	for tier=1, MAX_TALENT_TIERS do
+
+	for tier=1, Constants.TalentTierConstants.MAX_TALENT_TIERS do
 		local talentRow = TalentFrame["tier"..tier];
 		local rowAvailable = true;
-		
+
 		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
 		-- Skip updating rows that we recently selected a talent for but have not received a server response
 		if (TalentFrame.inspect or not TalentFrame.talentInfo[tier] or
 			(selectedTalent ~= 0 and TalentFrame.talentInfo[tier] == selectedTalent)) then
-			
+
 			if (not TalentFrame.inspect and selectedTalent ~= 0) then
 				TalentFrame.talentInfo[tier] = nil;
 			end
-			
+
 			local restartGlow = false;
-			for column=1, NUM_TALENT_COLUMNS do
+			for column=1, Constants.TalentConsts.NumTalentColumns do
 				-- Set the button info
 				local talentInfoQuery = {};
 				talentInfoQuery.tier = tier;
@@ -74,7 +72,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
-				
+
 				if (button and talentInfo) then
 					button:SetID(talentInfo.talentID);
 
@@ -239,16 +237,16 @@ function PvpTalentSlotMixin:SetUp(slotIndex)
 		{
 			["setFunction"] = function(value)
 				return LearnPvpTalent(value, slotIndex);
-			end, 
+			end,
 			["getFunction"] = function()
 				if not self:IsPendingTalentRemoval() then
 					local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
 					return slotInfo and slotInfo.selectedTalentID;
 				end
-			end, 
+			end,
 		}
 	);
-	
+
 	self:Update();
 end
 

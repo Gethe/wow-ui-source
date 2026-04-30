@@ -16,11 +16,12 @@ local EncounterEvents =
 			Arguments =
 			{
 				{ Name = "encounterEventID", Type = "number", Nilable = false },
+				{ Name = "trigger", Type = "EncounterEventColorTrigger", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{
@@ -110,7 +111,8 @@ local EncounterEvents =
 			Arguments =
 			{
 				{ Name = "encounterEventID", Type = "number", Nilable = false },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "trigger", Type = "EncounterEventColorTrigger", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{
@@ -133,6 +135,9 @@ local EncounterEvents =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -560,7 +560,8 @@ function WeeklyRewardsActivityMixin:OnEnter()
 				formatRemainingProgress = true;
 			end
 
-			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, AddMythicProgressLines);
+			local subTitle = nil;
+			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, subTitle, AddMythicProgressLines);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.World then
 			
 			local description = GREAT_VAULT_REWARDS_WORLD_INCOMPLETE;
@@ -579,30 +580,35 @@ function WeeklyRewardsActivityMixin:OnEnter()
 			GameTooltip:Show();
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local description;
-			local showRaidCompletionInTooltip = false;
 			if self.info.progress == 0 then
 				description = GREAT_VAULT_REWARDS_RAID_INCOMPLETE;
 			else
 				description = GREAT_VAULT_REWARDS_RAID_INPROGRESS;
-				showRaidCompletionInTooltip = true;
 			end
 			local formatRemainingProgress = true;
-			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, nil, self:GetRaidName() or RAID)
-
-			if showRaidCompletionInTooltip then
-				self:AddRaidCompletionInfoToGameTooltip();
+			local subTitle;
+			if self:HasMultipleRaidInstances() then
+				subTitle = PVPUtil.GetCurrentSeasonText();
 			end
-			GameTooltip:Show();
+			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, subTitle)
 
+			self:AddRaidCompletionInfoToGameTooltip();
+			GameTooltip:Show();
 		end
 	end
 end
 
-function WeeklyRewardsActivityMixin:ShowIncompleteTooltip(title, description, formatRemainingProgress, addProgressLineCallback, extraFormatString)
+function WeeklyRewardsActivityMixin:ShowIncompleteTooltip(title, description, formatRemainingProgress, subTitle, addProgressLineCallback)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
 	GameTooltip_SetTitle(GameTooltip, title);
+
+	if subTitle then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddHighlightLine(GameTooltip, subTitle);
+	end
+
 	if formatRemainingProgress then
-		GameTooltip_AddNormalLine(GameTooltip, description:format(self.info.threshold - self.info.progress, extraFormatString));
+		GameTooltip_AddNormalLine(GameTooltip, description:format(self.info.threshold - self.info.progress));
 	else
 		GameTooltip_AddNormalLine(GameTooltip, description);
 	end
@@ -681,6 +687,24 @@ function WeeklyRewardsActivityMixin:GetRaidName()
 			return instanceName;
 		end
 	end
+end
+
+function WeeklyRewardsActivityMixin:HasMultipleRaidInstances()
+	local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+	if encounters then
+		local lastInstanceID = nil;
+		for index, encounter in ipairs(encounters) do
+			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
+			if not lastInstanceID then
+				lastInstanceID = instanceID;
+			elseif lastInstanceID ~= instanceID then
+				-- this is the 2nd unique instanceID
+				return true;
+			end
+		end
+	end
+
+	return false;
 end
 
 function WeeklyRewardsActivityMixin:AddRaidCompletionInfoToGameTooltip()

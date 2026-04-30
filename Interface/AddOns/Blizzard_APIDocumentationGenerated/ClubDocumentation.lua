@@ -69,7 +69,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "roleId", Type = "ClubRoleIdentifier", Nilable = false },
 			},
 		},
@@ -361,7 +361,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 
 			Returns =
@@ -444,7 +444,7 @@ local Club =
 
 			Returns =
 			{
-				{ Name = "members", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -617,7 +617,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 
 			Returns =
@@ -887,7 +887,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -981,7 +981,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -993,7 +993,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "guildClubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -1020,7 +1020,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -1075,7 +1075,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "note", Type = "string", Nilable = false },
 			},
 		},
@@ -1280,7 +1280,7 @@ local Club =
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -1291,7 +1291,7 @@ local Club =
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
 			},
 		},
@@ -1303,7 +1303,7 @@ local Club =
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -1314,7 +1314,7 @@ local Club =
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "roleId", Type = "number", Nilable = false },
 			},
 		},
@@ -1326,7 +1326,7 @@ local Club =
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -1766,7 +1766,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "priority", Type = "luaIndex", Nilable = false },
 				{ Name = "status", Type = "ClubInvitationCandidateStatus", Nilable = false },
@@ -1796,7 +1796,7 @@ local Club =
 			Fields =
 			{
 				{ Name = "isSelf", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
@@ -1965,6 +1965,14 @@ local Club =
 				{ Name = "defaultStreamId", Type = "ClubStreamId", Nilable = true },
 				{ Name = "creator", Type = "ClubMemberInfo", Nilable = false },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequiresClubsInitialized",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

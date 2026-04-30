@@ -209,6 +209,9 @@ local WarCampaign =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WarCampaign);

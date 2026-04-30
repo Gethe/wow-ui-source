@@ -188,7 +188,7 @@ local function ReserveSortWidgets(a, b)
 	end
 end
 
-function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sortedWidgets)
+function PlayerChoice_WidgetsLayout(widgetContainer, sortedWidgets, consolidateWidgets)
 	local topWidgets = {};
 	local bottomWidgets = {};
 
@@ -197,7 +197,7 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 
 	-- First put the top and bottom widgets into separate tables
 	for index, widgetFrame in ipairs(sortedWidgets) do
-		if IsTopWidget(widgetFrame, self.optionInfo.consolidateWidgets) then
+		if IsTopWidget(widgetFrame, consolidateWidgets) then
 			table.insert(topWidgets, widgetFrame);
 		else
 			table.insert(bottomWidgets, widgetFrame);
@@ -242,6 +242,10 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 
 	-- Finally call Layout on the widget container itself so it resizes to fit all the widgets and padding
 	widgetContainer:Layout();
+end
+
+function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sortedWidgets)
+	PlayerChoice_WidgetsLayout(widgetContainer, sortedWidgets, self.optionInfo.consolidateWidgets);
 
 	if PlayerChoiceFrame:AreOptionsAligned() then
 		-- This indicates that a widget has shown/hidden while the player choice frame is up (and the player choice frame itself was not also updated)
@@ -251,28 +255,35 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 	end
 end
 
+function PlayerChoice_WidgetInit(widgetFrame, fontInfo)
+	if widgetFrame.SetFontStringColor and fontInfo then
+		widgetFrame:SetFontStringColor(fontInfo.widgetColor or fontInfo.descriptionColor);
+	end
+end
+
 function PlayerChoiceBaseOptionTemplateMixin:WidgetInit(widgetFrame)
-	if widgetFrame.SetFontStringColor then
-		local fontInfo = self:GetOptionFontInfo();
-		if fontInfo then
-			widgetFrame:SetFontStringColor(fontInfo.descriptionColor);
-		end
+	PlayerChoice_WidgetInit(widgetFrame, self:GetOptionFontInfo());
+end
+
+function PlayerChoice_SetupWidgets(optionInfo, widgetContainer, widgetsLayout, widgetsInit)
+	if optionInfo.widgetSetID ~= widgetContainer.widgetSetID then
+		local attachedUnitInfo = {unit = PlayerChoiceFrame:GetObjectGUID(), isGuid = true};
+		widgetContainer:RegisterForWidgetSet(optionInfo.widgetSetID, widgetsLayout, widgetsInit, attachedUnitInfo);
+	elseif widgetContainer:GetNumWidgetsShowing() > 0 then
+		-- WidgetContainer is also used as the filler frame, so the height may have been adjusted the last time this option was set up.
+		-- If the widget set ID is the same as it was before, and there are widgets showing, then we need to call UpdateWidgetLayout
+		widgetContainer:UpdateWidgetLayout();
 	end
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupWidgets()
-	if self.optionInfo.widgetSetID ~= self.WidgetContainer.widgetSetID then
-		local attachedUnitInfo = {unit = PlayerChoiceFrame:GetObjectGUID(), isGuid = true};
-		self.WidgetContainer:RegisterForWidgetSet(self.optionInfo.widgetSetID, GenerateClosure(self.WidgetsLayout, self), GenerateClosure(self.WidgetInit, self), attachedUnitInfo);
-	elseif self.WidgetContainer:GetNumWidgetsShowing() > 0 then
-		-- WidgetContainer is also used as the filler frame, so the height may have been adjusted the last time this option was set up.
-		-- If the widget set ID is the same as it was before, and there are widgets showing, then we need to call UpdateWidgetLayout
-		self.WidgetContainer:UpdateWidgetLayout();
-	end
+	PlayerChoice_SetupWidgets(self.optionInfo, self.WidgetContainer,
+		GenerateClosure(self.WidgetsLayout, self),
+		GenerateClosure(self.WidgetInit, self));
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupButtons()
-	self.OptionButtonsContainer:Setup(self.optionInfo, self.showAsList);
+	self.OptionButtonsContainer:Setup(self.optionInfo, self.showAsList, self);
 end
 
 PlayerChoiceBaseOptionAlignedSectionMixin = {};
@@ -359,7 +370,7 @@ local listFontByDisabledState = {
 	[true] = GRAY_FONT_COLOR,
 };
 
-function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, optionInfo, showAsList)
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, optionInfo, showAsList, parentOption)
 	if showAsList then
 		local fontColor = listFontByDisabledState[buttonInfo.disabled];
 		self.ListText:SetTextColor(fontColor:GetRGBA());
@@ -373,7 +384,7 @@ function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, option
 		self:SetScript("OnLeave", nil);
 	end
 
-	self.Button:Setup(buttonInfo, optionInfo);
+	self.Button:Setup(buttonInfo, optionInfo, parentOption);
 	self:Layout();
 end
 
@@ -384,13 +395,14 @@ end
 PlayerChoiceBaseOptionButtonTemplateMixin = {};
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnLoad()
-	self.parentOption = self:GetParent():GetParent():GetParent();
 	self.disabledFont = self:GetDisabledFontObject();
 end
 
 local COMPLETED_ATLAS_MARKUP = CreateAtlasMarkup("common-icon-checkmark", 16, 16);
 
-function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
+function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo, parentOption)
+	self.parentOption = parentOption;
+
 	local enabledState = not buttonInfo.disabled;
 	if self.Text then
 		if buttonInfo.showCheckmark then
@@ -432,7 +444,10 @@ end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnConfirm()
 	C_PlayerChoice.SendPlayerChoiceResponse(self.buttonID);
-	self.parentOption:OnSelected();
+
+	if self.parentOption then
+		self.parentOption:OnSelected();
+	end
 end
 
 StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
@@ -569,7 +584,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:SetPaddedHeight(paddedHeigh
 	self.topPadding = math.max(paddingHeight, 5);
 end
 
-function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsList)
+function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsList, parentOption)
 	local buttonStride = math.max(math.floor(#optionInfo.buttons / self.numColumns), 1);
 
 	if buttonStride ~= self.lastStride then
@@ -585,7 +600,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 	local buttonFrames = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
 		local buttonFrame = self.buttonFramePool:Acquire(buttonFrameTemplate);
-		buttonFrame:Setup(buttonInfo, optionInfo, showAsList);
+		buttonFrame:Setup(buttonInfo, optionInfo, showAsList, parentOption);
 		buttonFrame:Show();
 		table.insert(buttonFrames, buttonFrame);
 	end

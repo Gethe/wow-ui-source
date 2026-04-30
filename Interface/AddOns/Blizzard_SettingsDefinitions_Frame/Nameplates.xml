@@ -3,7 +3,7 @@
 	<Frame name="NamePlatePreviewTemplate" virtual="true">
 		<Size y="195"/> <!-- Must be at least as large as largest possible value of NamePlateDriverMixin:GetNamePlateHeight plus the height of the Preview FontString.-->
 		<Frames>
-			<Button parentKey="NamePlate" mixin="NamePlatePreviewMixin">
+			<Button parentKey="NamePlate" inherits="NamePlateScriptBaseTemplate" mixin="NamePlatePreviewMixin">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>

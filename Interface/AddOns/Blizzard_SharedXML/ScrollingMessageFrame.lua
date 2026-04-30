@@ -34,6 +34,14 @@ function ScrollingMessageFrameMixin:GetMessageInfo(messageIndex)
 	end
 end
 
+function ScrollingMessageFrameMixin:ForEachMessage(op)
+	for i, entry in self.historyBuffer:EnumerateIndexedEntries() do
+		if (op(entry)) then
+			break;
+		end
+	end
+end
+
 function ScrollingMessageFrameMixin:RemoveMessagesByPredicate(predicate)
 	local function Transform(entry)
 		return self:UnpackageEntry(entry);

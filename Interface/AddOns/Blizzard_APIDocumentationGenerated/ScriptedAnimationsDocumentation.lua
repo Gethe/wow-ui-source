@@ -109,6 +109,9 @@ local ScriptedAnimations =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ScriptedAnimations);

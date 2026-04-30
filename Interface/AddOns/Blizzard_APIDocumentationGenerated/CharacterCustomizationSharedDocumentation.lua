@@ -140,6 +140,9 @@ local CharacterCustomizationShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CharacterCustomizationShared);

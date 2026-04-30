@@ -3,6 +3,19 @@ local EncounterEventsShared =
 	Tables =
 	{
 		{
+			Name = "EncounterEventColorTrigger",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "TextWarning", Type = "EncounterEventColorTrigger", EnumValue = 0, Documentation = { "Color to be used when an encounter event shown as a text warning alert." } },
+				{ Name = "TimelineEvent", Type = "EncounterEventColorTrigger", EnumValue = 1, Documentation = { "Color to be used when an encounter event is placed on the timeline." } },
+				{ Name = "TimelineEventHighlight", Type = "EncounterEventColorTrigger", EnumValue = 2, Documentation = { "Color to be used when an encounter event reaches its 'highlight' duration on the timeline (typically, ~5s before the cast is due)." } },
+			},
+		},
+		{
 			Name = "EncounterEventSoundTrigger",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -26,7 +39,6 @@ local EncounterEventsShared =
 				{ Name = "iconFileID", Type = "number", Nilable = false, Documentation = { "Icon file ID for the event. Typically the same as the spell icon, but may be overridden." } },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false, Documentation = { "Severity level of this event." } },
 				{ Name = "icons", Type = "EncounterEventIconmask", Nilable = false, Documentation = { "Bitmask of spell support icons to show for this event." } },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true, Documentation = { "Color associated with this event. At present, only set if an override has been applied via the SetEventColor function." } },
 			},
 		},
 		{
@@ -39,6 +51,9 @@ local EncounterEventsShared =
 				{ Name = "volume", Type = "number", Nilable = false, Default = 1, Documentation = { "Volume scalar for the sound file." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

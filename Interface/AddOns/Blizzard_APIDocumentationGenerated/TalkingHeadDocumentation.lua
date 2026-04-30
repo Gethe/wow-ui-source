@@ -28,6 +28,9 @@ local TalkingHead =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TalkingHead);

@@ -228,6 +228,9 @@ local TTSSettings =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TTSSettings);

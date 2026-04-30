@@ -84,6 +84,9 @@ local UIMacros =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIMacros);

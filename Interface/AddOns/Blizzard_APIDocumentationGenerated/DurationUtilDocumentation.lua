@@ -18,13 +18,13 @@ local DurationUtil =
 			},
 		},
 		{
-			Name = "GetCurrentTime",
+			Name = "CreateManualClock",
 			Type = "Function",
-			Documentation = { "Returns the current time used by duration objects. Equivalent to GetTime() in public builds." },
+			Documentation = { "Creates a manually driven time source for use with duration objects." },
 
 			Returns =
 			{
-				{ Name = "currentTime", Type = "FrameTime", Nilable = false },
+				{ Name = "clock", Type = "LuaDurationManualClock", Nilable = false },
 			},
 		},
 	},
@@ -34,6 +34,9 @@ local DurationUtil =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

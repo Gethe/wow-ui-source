@@ -1,13 +1,13 @@
-## Title: Blizzard Account Store
+## Title: Blizzard_AccountStore
 ## AllowLoad: Both
-## Author: Blizzard Entertainment
-## Dependencies: Blizzard_SharedXML, Blizzard_StaticPopup
-## OptionalDep: Blizzard_UIParentPanelManager
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_StaticPopup
+## Dep: Blizzard_UIParentPanelManager [AllowLoad game]
 ## LoadOnDemand: 1
 
 Blizzard_AccountStoreUtil.lua
 Blizzard_AccountStoreCategoryList.lua
-Blizzard_AccountStoreCategoryList.xml 
+Blizzard_AccountStoreCategoryList.xml
 Blizzard_AccountStoreCardTemplates.lua
 Blizzard_AccountStoreCardTemplates.xml
 Blizzard_AccountStoreItemRack.lua

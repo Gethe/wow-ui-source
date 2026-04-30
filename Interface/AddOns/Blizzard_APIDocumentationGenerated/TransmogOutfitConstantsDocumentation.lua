@@ -199,6 +199,20 @@ local TransmogOutfitConstants =
 			},
 		},
 		{
+			Name = "TransmogOutfitSlotOptionSheatheCategory",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Default", Type = "TransmogOutfitSlotOptionSheatheCategory", EnumValue = 0 },
+				{ Name = "Back", Type = "TransmogOutfitSlotOptionSheatheCategory", EnumValue = 1 },
+				{ Name = "Side", Type = "TransmogOutfitSlotOptionSheatheCategory", EnumValue = 2 },
+				{ Name = "Hide", Type = "TransmogOutfitSlotOptionSheatheCategory", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "TransmogOutfitSlotPosition",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -276,9 +290,9 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogSituation",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 32,
 			MinValue = 0,
-			MaxValue = 21,
+			MaxValue = 31,
 			Fields =
 			{
 				{ Name = "AllSpecs", Type = "TransmogSituation", EnumValue = 0 },
@@ -303,6 +317,16 @@ local TransmogOutfitConstants =
 				{ Name = "AllRacialForms", Type = "TransmogSituation", EnumValue = 19 },
 				{ Name = "FormNative", Type = "TransmogSituation", EnumValue = 20 },
 				{ Name = "FormNonNative", Type = "TransmogSituation", EnumValue = 21 },
+				{ Name = "AllWeather", Type = "TransmogSituation", EnumValue = 22 },
+				{ Name = "WeatherClear", Type = "TransmogSituation", EnumValue = 23 },
+				{ Name = "WeatherRain", Type = "TransmogSituation", EnumValue = 24 },
+				{ Name = "WeatherSnow", Type = "TransmogSituation", EnumValue = 25 },
+				{ Name = "WeatherSand", Type = "TransmogSituation", EnumValue = 26 },
+				{ Name = "AllTime", Type = "TransmogSituation", EnumValue = 27 },
+				{ Name = "TimeMorning", Type = "TransmogSituation", EnumValue = 28 },
+				{ Name = "TimeDay", Type = "TransmogSituation", EnumValue = 29 },
+				{ Name = "TimeEvening", Type = "TransmogSituation", EnumValue = 30 },
+				{ Name = "TimeNight", Type = "TransmogSituation", EnumValue = 31 },
 			},
 		},
 		{
@@ -336,9 +360,9 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogSituationTrigger",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogSituationTrigger", EnumValue = 0 },
@@ -350,6 +374,8 @@ local TransmogOutfitConstants =
 				{ Name = "EquipmentSet", Type = "TransmogSituationTrigger", EnumValue = 6 },
 				{ Name = "Forms", Type = "TransmogSituationTrigger", EnumValue = 7 },
 				{ Name = "EventOutfit", Type = "TransmogSituationTrigger", EnumValue = 8 },
+				{ Name = "Weather", Type = "TransmogSituationTrigger", EnumValue = 9 },
+				{ Name = "TimeOfDay", Type = "TransmogSituationTrigger", EnumValue = 10 },
 			},
 		},
 		{
@@ -382,6 +408,20 @@ local TransmogOutfitConstants =
 			},
 		},
 		{
+			Name = "TransmogTimeOfDayCategory",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Morning", Type = "TransmogTimeOfDayCategory", EnumValue = 0 },
+				{ Name = "Midday", Type = "TransmogTimeOfDayCategory", EnumValue = 1 },
+				{ Name = "Evening", Type = "TransmogTimeOfDayCategory", EnumValue = 2 },
+				{ Name = "Night", Type = "TransmogTimeOfDayCategory", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "TransmogOutfitDataConsts",
 			Type = "Constants",
 			Values =
@@ -390,6 +430,9 @@ local TransmogOutfitConstants =
 				{ Name = "TRANSMOG_OUTFIT_SLOT_NONE", Type = "TransmogOutfitSlot", Value = -1 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

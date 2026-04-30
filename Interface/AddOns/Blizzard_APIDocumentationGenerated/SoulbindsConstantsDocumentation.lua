@@ -85,6 +85,9 @@ local SoulbindsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SoulbindsConstants);

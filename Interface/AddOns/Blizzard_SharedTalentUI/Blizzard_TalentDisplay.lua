@@ -70,7 +70,6 @@ function TalentDisplayMixin:SetLayoutIndex(layoutIndex)
 end
 
 function TalentDisplayMixin:OnRelease()
-	--print("On release over here", self.previousTransmogSetID);
 	-- We don't do a full reset for efficency. The next time the button is acquired it'll end up being updated.
 
 	self.visualState = nil;

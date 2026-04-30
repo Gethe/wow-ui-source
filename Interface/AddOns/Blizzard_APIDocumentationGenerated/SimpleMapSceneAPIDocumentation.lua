@@ -81,6 +81,9 @@ local SimpleMapSceneAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleMapSceneAPI);

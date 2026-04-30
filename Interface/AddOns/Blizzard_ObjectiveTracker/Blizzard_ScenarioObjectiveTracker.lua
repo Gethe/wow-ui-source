@@ -43,7 +43,7 @@ end
 local settings = {
 	hasDisplayPriority = true,
 	headerText = TRACKER_HEADER_SCENARIO,
-	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN" },
+	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN", "ACTIVE_DELVE_DATA_UPDATE" },
 	fromHeaderOffsetY = 0,
 	blockOffsetX = 20,
 	lineSpacing = 12,
@@ -123,7 +123,13 @@ function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
 		local rewardQuestID, xp, money = ...;
 		if (xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel()) or (money and money > 0) then
 			ScenarioRewardsFrame:DisplayRewards(xp, money);
-		end		
+		end
+	elseif event == "ACTIVE_DELVE_DATA_UPDATE" then
+		local _scenarioName, _currentStage, numStages = C_Scenario.GetInfo();
+		local isInScenario = numStages > 0;
+		if isInScenario then
+			self:MarkDirty();
+		end
 	end
 end
 
@@ -259,6 +265,14 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		stageBlock:SetupStageTransition(hasNewStage, scenarioCompleted);
 		self:SlideOutContents();
 		return;
+	end
+
+	if C_ScenarioInfo.IsTieredEntranceScenario() then
+		local spells = C_ScenarioInfo.GetTieredEntranceActiveSpells();
+		if spells then
+			self.TieredEntranceTraitsBlock.Container:SetSpells(spells);
+			self:LayoutBlock(self.TieredEntranceTraitsBlock);
+		end
 	end
 
 	if isInScenario then
@@ -465,7 +479,7 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
-			SetTooltipMoney(GameTooltip, money, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, money);
 		end
 
 		GameTooltip:Show();
@@ -483,6 +497,7 @@ local textureKitOffsets = {
 	["evergreen-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = -4, finalBGY = 2},
 	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
 	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
+	["midnight-scenario"] = {normalBGX = -6, normalBGY = 0, finalBGX = -22, finalBGY = 0},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};
@@ -558,7 +573,15 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 		self.NormalBG:SetPoint("TOPLEFT", offsets.normalBGX, offsets.normalBGY);
 		self.FinalBG:SetPoint("TOPLEFT", offsets.finalBGX, offsets.finalBGY);
 	end
-	
+
+	local displayInfo = C_ScenarioInfo.GetDisplayInfo();
+	if displayInfo then
+		self.ThemeOverlay:Show();
+		self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
+	else
+		self.ThemeOverlay:Hide();
+	end
+
 	self:UpdateFindGroupButton(scenarioID);
 end
 

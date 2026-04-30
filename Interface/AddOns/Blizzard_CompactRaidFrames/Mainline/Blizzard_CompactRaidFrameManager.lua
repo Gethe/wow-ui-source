@@ -298,7 +298,7 @@ function CompactRaidFrameManager_UpdateShown()
 		return;
 	end
 
-	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
+	local showManager = (IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown()) and not C_Commentator.IsSpectating();
 	CompactRaidFrameManager:SetShown(showManager);
 
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();
@@ -712,8 +712,8 @@ function CRFM_DifficultyDropdownMixin:OnMenuOpened(menu)
 	self:OnButtonStateChanged();
 end
 
-function CRFM_DifficultyDropdownMixin:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function CRFM_DifficultyDropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:OnButtonStateChanged();
 end
@@ -1231,7 +1231,7 @@ end
 
 function RaidFrameEveryoneIsAssistMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	SetEveryoneIsAssistant(self:GetChecked());
+	C_PartyInfo.SetEveryoneIsAssistant(self:GetChecked());
 end
 
 function RaidFrameEveryoneIsAssistMixin:OnButtonStateChanged()
@@ -1246,7 +1246,7 @@ RaidFrameReadyCheckMixin = CreateFromMixins(CRFM_ToolbarButtonMixin);
 
 function RaidFrameReadyCheckMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	DoReadyCheck();
+	C_PartyInfo.DoReadyCheck();
 end
 
 RaidFrameRolePollMixin = CreateFromMixins(CRFM_ToolbarButtonMixin);

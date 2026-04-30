@@ -185,8 +185,12 @@ local PetConstants =
 				{ Name = "NUM_PET_SLOTS_MAGE", Type = "number", Value = 1 },
 				{ Name = "NUM_PET_SLOTS_WARLOCK", Type = "number", Value = Constants.PetConsts.MAX_SUMMONABLE_PETS },
 				{ Name = "MAX_NUM_PET_SLOTS", Type = "number", Value = Constants.PetConsts_PostCata.NUM_PET_SLOTS_HUNTER },
+				{ Name = "PET_MAX_LEVEL_DIFFERENCE", Type = "number", Value = 0 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -37,6 +37,9 @@ local ImmersiveInteractionManager =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ImmersiveInteractionManager);

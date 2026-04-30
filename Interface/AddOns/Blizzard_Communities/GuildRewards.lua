@@ -11,13 +11,9 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 	local guildFactionData = C_Reputation.GetGuildFactionData();
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(index);
 
-	-- Only set the name if there's no itemID or it's different.
-	-- This prevents a flicker if the reward items got evicted from sparse.
-	if self.itemID ~= itemID and not self.Name:GetText() then
-		self.Name:SetText(itemName);
-	end
 	self.itemID = itemID;
 
+	self.Name:SetText(itemName);
 	self.Icon:SetTexture(iconTexture);
 
 	if ( moneyCost and moneyCost > 0 ) then

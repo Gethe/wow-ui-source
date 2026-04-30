@@ -207,6 +207,8 @@ local DamageMeter =
 				{ Name = "deathRecapID", Type = "number", Nilable = false, NeverSecret = true },
 				{ Name = "deathTimeSeconds", Type = "number", Nilable = false },
 				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "sourceDisplayType", Type = "DamageMeterSourceDisplayType", Nilable = false },
+				{ Name = "factionGroup", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -240,6 +242,9 @@ local DamageMeter =
 				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

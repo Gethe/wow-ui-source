@@ -199,6 +199,9 @@ local AddOnProfiler =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AddOnProfiler);

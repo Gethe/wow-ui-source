@@ -21,15 +21,6 @@ local GossipInfo =
 			},
 		},
 		{
-			Name = "GetActiveDelveGossip",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "gossip", Type = "GossipOptionUIInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetActiveQuests",
 			Type = "Function",
 
@@ -94,15 +85,6 @@ local GossipInfo =
 			Returns =
 			{
 				{ Name = "rankInfo", Type = "FriendshipReputationRankInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetGossipDelveMapID",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -436,6 +418,9 @@ local GossipInfo =
 				{ Name = "questInfoID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

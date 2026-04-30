@@ -1,33 +1,30 @@
-local function IsSpellOnGCD(spellID, spellCooldownInfo)
-	-- Get cooldown information for the dummy GCD spell (ID 61304)
-	local gcdInfo = C_Spell.GetSpellCooldown(61304);
+--[[
+debugSpells = {};
+debugCooldowns = {};
 
-	-- Return false if the spell is not on cooldown at all
-	if gcdInfo and spellCooldownInfo.duration ~= 0 then
-		-- Compare the current cooldown state of the spell with the current GCD state
-		-- If the spell's cooldown is the same as the GCD's, and both are active,
-		-- then the spell is currently on the GCD.
-		if spellCooldownInfo.startTime == gcdInfo.startTime and spellCooldownInfo.duration == gcdInfo.duration then
-			return true;
-		end
-	end
-
-	return false;
+local function IsDebugEntry(t, id)
+	return not not t[id];
 end
 
-debugSpells = {};
 local function IsDebugSpell(spellID)
-	if debugSpells[spellID] then
-		return true;
-	end
+	return IsDebugEntry(debugSpells, spellID);
+end
 
-	return false;
+local function IsDebugCooldown(cooldownID)
+	return IsDebugEntry(debugCooldowns, cooldownID);
 end
 
 local function LogCooldown(spellID, functionName, fmt, ...)
 	if IsDebugSpell(spellID) then
 		local msg = fmt:format(...);
 		print(("%.2f [%d]: %s : %s"):format(GetTime(), spellID, functionName, msg));
+	end
+end
+
+local function LogCooldownItem(cooldownItem, functionName, fmt, ...)
+	if IsDebugCooldown(cooldownItem:GetCooldownID()) then
+		local msg = fmt:format(...);
+		print(("%.2f [%d]: %s : %s"):format(GetTime(), cooldownItem:GetCooldownID(), functionName, msg));
 	end
 end
 
@@ -39,17 +36,15 @@ end
 
 local function CheckDisplayCooldownInfo(functionName, spellID, cachedInfo)
 	if IsDebugSpell(spellID) then
-		local isOnGCD = IsSpellOnGCD(spellID, cachedInfo);
-
-		LogCooldown(spellID, functionName, "ST: %.4f, Dur: %.4f, Enabled: %s, Mod: %.4f, Cat: %s, Recovery: %.4f, structOnGCD: %s, hackOnGCD: %s",
+		LogCooldown(spellID, functionName, "ST: %.4f, Dur: %.4f, Enabled: %s, Mod: %.4f, Cat: %s, Recovery: %.4f, structOnGCD: %s",
 			cachedInfo.startTime, cachedInfo.duration, tostring(cachedInfo.isEnabled), cachedInfo.modRate, tostring(cachedInfo.activeCategory),
-			(cachedInfo.timeUntilEndOfStartRecovery or 0), tostring(cachedInfo.isOnGCD), tostring(isOnGCD));
+			(cachedInfo.timeUntilEndOfStartRecovery or 0), tostring(cachedInfo.isOnGCD));
 
 		local cdInfo = C_Spell.GetSpellCooldown(spellID);
 		assertsafe(cdInfo == cachedInfo or tCompare(cachedInfo, cdInfo), "cd info mismatch");
-		assertsafe(cachedInfo.isOnGCD == isOnGCD, "GCD hack mismatch");
 	end
 end
+--]]
 
 CooldownViewerConstants = {
 	ITEM_USABLE_COLOR = CreateColor(1.0, 1.0, 1.0, 1.0);
@@ -115,6 +110,21 @@ function CooldownViewerItemMixin:GetIconTexture()
 	return self.Icon;
 end
 
+function CooldownViewerItemMixin:MarkDirty()
+	self.needsFullRefresh = true;
+end
+
+function CooldownViewerItemMixin:IsDirty()
+	return self.needsFullRefresh;
+end
+
+function CooldownViewerItemMixin:Clean()
+	if self.needsFullRefresh then
+		self.needsFullRefresh = false;
+		self:RefreshData();
+	end
+end
+
 function CooldownViewerItemMixin:OnLoad()
 	self:RefreshActive();
 
@@ -177,8 +187,13 @@ function CooldownViewerItemMixin:OnSpellUpdateCooldownEvent(spellID, baseSpellID
 	end
 end
 
+function CooldownViewerItemMixin:OnSpellUpdateIconEvent()
+	self:RefreshSpellTexture();
+end
+
 function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
 	if self:GetAuraSpellID() == self:GetLinkedSpell() then
+		-- LogCooldownItem(self, "OnUnitAuraRemovedEvent", "AuraSpell %s matches linked spell, clearing linked spell.", tostring(self:GetAuraSpellID()));
 		self:SetLinkedSpell(nil);
 	end
 
@@ -275,7 +290,7 @@ end
 
 function CooldownViewerItemMixin:RefreshIconBorder()
 	if self.DebuffBorder then
-		self.DebuffBorder:UpdateFromAuraData(self:GetAuraData());
+		self.DebuffBorder:UpdateFromAuraData(self:GetAuraDataCached());
 	end
 end
 
@@ -367,6 +382,7 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, start
 	end
 
 	if self:UpdateLinkedSpell(spellID) then
+		-- LogCooldownItem(self, "NeedsCooldownUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
 		return true;
 	end
 
@@ -409,6 +425,7 @@ function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
 
 	local spellID = auraInfo.spellId;
 	if self:UpdateLinkedSpell(spellID) then
+		-- LogCooldownItem(self, "NeedsAddedAuraUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
 		return true;
 	end
 
@@ -421,6 +438,7 @@ end
 
 function CooldownViewerItemMixin:NeedsTotemUpdate(previousTotemSlot, slot, spellID)
 	if self:UpdateLinkedSpell(spellID) then
+		-- LogCooldownItem(self, "NeedsTotemUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
 		return true;
 	end
 
@@ -488,7 +506,7 @@ function CooldownViewerItemMixin:TriggerAvailableAlert()
 end
 
 function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeNow)
-	auraData = auraData or self:GetAuraData();
+	auraData = auraData or self:GetAuraDataCached();
 	timeNow = timeNow or GetTime();
 	local isActive = auraData and (auraData.expirationTime > timeNow);
 	if self:GetAuraDataUnit() == "target" and isActive then
@@ -502,7 +520,7 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeN
 			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverToNewCast, auraData.expirationTime);
 		end
 
-		LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTiggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
+		-- LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTiggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
 
 		return allowPandemicAlert;
 	end
@@ -515,7 +533,7 @@ function CooldownViewerItemMixin:SetPandemicAlertTriggerTime(timeNow, pandemicSt
 	self.pandemicStartTime = pandemicStartTime;
 	self.pandemicEndTime = pandemicEndTime;
 
-	LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
+	-- LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
 
 	self:CheckPandemicTimeDisplay(timeNow);
 end
@@ -535,7 +553,7 @@ function CooldownViewerItemMixin:TriggerPandemicAlert()
 	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.PandemicTime);
 
 	-- NOTE: No need to refresh anything after the alert fires because the visual state of the button should remain in pandemic until the aura is removed.
-	LogCooldown(self:GetSpellID(), "TriggerPandemicAlert", "Displaying pandemic state for %s", self:GetNameText());
+	--LogCooldown(self:GetSpellID(), "TriggerPandemicAlert", "Displaying pandemic state for %s", self:GetNameText());
 end
 
 function CooldownViewerItemMixin:CheckPandemicTimeDisplay(timeNow)
@@ -558,6 +576,8 @@ function CooldownViewerItemMixin:HidePandemicStateFrame()
 	if self.PandemicIcon then
 		self:GetViewerFrame():HidePandemicStateFrame(self.PandemicIcon);
 		self.PandemicIcon = nil;
+
+		-- LogCooldownItem(self, "Hide the pandemic frame:\n%s", debugstack());
 	end
 end
 
@@ -609,6 +629,7 @@ function CooldownViewerItemMixin:OnNewTarget()
 	-- This is the first thing that should happen when handling a target switch
 	-- Clear out all state data that was built while a previous target existed.
 	self:SetIsActive(false); -- Force the frame back to an inactive state so that the pending update can re-run the refresh logic.
+	-- LogCooldownItem(self, "OnNewTarget", "Linked spell was %s, but clearing it for new target to force update.", tostring(self:GetLinkedSpell()));
 	self:SetLinkedSpell(nil);
 	self:SetPandemicAlertTriggerTime(GetTime(), nil, nil);
 end
@@ -695,8 +716,6 @@ end
 function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	CooldownViewerItemMixin.OnCooldownIDCleared(self);
 
-	ActionButtonSpellAlertManager:HideAlert(self);
-
 	self.previousCooldownChargesCount = nil;
 	self.cooldownChargesCount = nil;
 	self.cooldownChargesShown = nil;
@@ -721,7 +740,7 @@ function CooldownViewerCooldownItemMixin:OnCooldownDone()
 		self:RefreshIconDesaturation();
 	end
 
-	CheckDisplayCooldownState("OnCooldownDone", self);
+	-- CheckDisplayCooldownState("OnCooldownDone", self);
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowShowEvent(spellID)
@@ -729,7 +748,8 @@ function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowShowEvent(s
 		return;
 	end
 
-	ActionButtonSpellAlertManager:ShowAlert(self);
+	local showStateFromEvent = true;
+	self:RefreshOverlayGlow(showStateFromEvent);
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowHideEvent(spellID)
@@ -737,7 +757,8 @@ function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowHideEvent(s
 		return;
 	end
 
-	ActionButtonSpellAlertManager:HideAlert(self);
+	local hideStateFromEvent = false;
+	self:RefreshOverlayGlow(hideStateFromEvent);
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellUpdateUsesEvent(spellID, baseSpellID)
@@ -811,7 +832,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 			return; -- Early return because totems take precedence and we can avoid aura lookup
 		end
 
-		local auraData = self:GetAuraData();
+		local auraData = self:GetAuraDataCached();
 		if auraData then
 			-- NOTE: Auras are in a priority class where we want to show their cooldown info, but keep the charge count display, but not the charge cooldown display.
 			-- This is why auras don't check to see if HasVisualDataSource_Charges is true, but it means that the charge radial swipe will not display.
@@ -886,7 +907,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 	local spellCooldownInfo = spellID and C_Spell.GetSpellCooldown(spellID);
 	if spellCooldownInfo and not self:HasVisualDataSource_Charges() then
 		self:AddVisualDataSource_Cooldown();
-		CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
+		-- CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
 
 		local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
 		self.cooldownIsActive = endTime > timeNow;
@@ -908,7 +929,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 		self.cooldownDesaturated = self.isOnActualCooldown;
 		self.cooldownPlayFlash = self.isOnActualCooldown;
 
-		LogCooldown(spellID, "CheckCacheCooldownValuesFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
+		-- LogCooldown(spellID, "CheckCacheCooldownValuesFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
 	end
 end
 
@@ -1038,7 +1059,7 @@ function CooldownViewerCooldownItemMixin:RefreshSpellCooldownInfo()
 		cooldownFlashFrame.FlashAnim:Stop();
 	end
 
-	CheckDisplayCooldownState("RefreshSpellCooldownInfo", self);
+	-- CheckDisplayCooldownState("RefreshSpellCooldownInfo", self);
 
 	if self.allowOnCooldownAlert then
 		self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.OnCooldown);
@@ -1059,7 +1080,7 @@ function CooldownViewerCooldownItemMixin:RefreshSpellChargeInfo()
 end
 
 function CooldownViewerCooldownItemMixin:RefreshIconDesaturation()
-	LogCooldown(self:GetSpellID(), "RefreshIconDesaturation", "%s, expired: %s", tostring(self.cooldownDesaturated), tostring(self:IsExpired()));
+	-- LogCooldown(self:GetSpellID(), "RefreshIconDesaturation", "%s, expired: %s", tostring(self.cooldownDesaturated), tostring(self:IsExpired()));
 
 	local iconTexture = self:GetIconTexture();
 	local desaturated = self.cooldownDesaturated and not self:IsExpired();
@@ -1091,11 +1112,17 @@ function CooldownViewerCooldownItemMixin:RefreshIconColor()
 	outOfRangeTexture:SetShown(self.spellOutOfRange == true);
 end
 
-function CooldownViewerCooldownItemMixin:RefreshOverlayGlow()
-	local spellID = self:GetSpellID();
-	local isSpellOverlayed = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
-	if isSpellOverlayed then
-		ActionButtonSpellAlertManager:ShowAlert(self);
+function CooldownViewerCooldownItemMixin:RefreshOverlayGlow(desiredShowStateFromEvent)
+	local wasFromEvent = desiredShowStateFromEvent ~= nil;
+	local skipBirth = not wasFromEvent;
+	local needShow = desiredShowStateFromEvent;
+	if needShow == nil then
+		local spellID = self:GetSpellID();
+		needShow = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
+	end
+
+	if needShow then
+		ActionButtonSpellAlertManager:ShowAlert(self, skipBirth);
 	else
 		ActionButtonSpellAlertManager:HideAlert(self);
 	end
@@ -1132,27 +1159,40 @@ function CooldownViewerBuffItemMixin:OnCooldownIDCleared()
 	CooldownViewerItemMixin.OnCooldownIDCleared(self);
 end
 
+function CooldownViewerBuffItemMixin:IsExpired()
+	local totemData = self:GetTotemData();
+	if totemData then
+		return totemData.expirationTime <= GetTime();
+	end
+
+	local auraData = self:GetAuraDataCached();
+	if auraData then
+		-- Auras with an expirationTime of 0 are infinite and considered active until they are removed.
+		if auraData.expirationTime == 0 then
+			return false;
+		end
+
+		return auraData.expirationTime <= GetTime();
+	end
+
+	return true;
+end
+
 function CooldownViewerBuffItemMixin:ShouldBeActive()
 	if not CooldownViewerItemMixin.ShouldBeActive(self) then
 		return false;
 	end
 
-	local totemData = self:GetTotemData();
-	if totemData then
-		return totemData.expirationTime > GetTime();
-	end
-
-	local auraData = self:GetAuraData();
-	if auraData then
-		-- Auras with an expirationTime of 0 are infinite and considered active until they are removed.
-		if auraData.expirationTime == 0 then
-			return true;
+	if self:IsExpired() then
+		-- An aura may have just expired so check to see if there is still a related aura present on the player or target and mark dirty for a full refresh if needed.
+		if self:RefreshLinkedSpell() then
+			self:MarkDirty();
 		end
 
-		return auraData.expirationTime > GetTime();
+		return self:GetLinkedSpell() ~= nil;
 	end
 
-	return false;
+	return true; -- still active
 end
 
 function CooldownViewerBuffItemMixin:OnActiveStateChanged()
@@ -1160,7 +1200,7 @@ function CooldownViewerBuffItemMixin:OnActiveStateChanged()
 
 	local active = self:IsActive();
 	if active then
-		self:CheckSetPandemicAlertTiggerTime(self:GetAuraData());
+		self:CheckSetPandemicAlertTiggerTime();
 	end
 end
 
@@ -1192,7 +1232,7 @@ function CooldownViewerBuffItemMixin:GetCooldownValues()
 end
 
 function CooldownViewerBuffItemMixin:GetApplicationsText()
-	local auraData = self:GetAuraData();
+	local auraData = self:GetAuraDataCached();
 	if auraData and auraData.applications and auraData.applications > 1 then
 		return auraData.applications;
 	end
@@ -1319,8 +1359,13 @@ end
 function CooldownViewerBuffBarItemMixin:OnUpdate(elapsed, timeNow)
 	if self:IsActive() then
 		CooldownViewerItemMixin.OnUpdate(self, elapsed, timeNow);
-		self:RefreshCooldownInfo();
 		self:RefreshActive();
+
+		if self:IsDirty() then
+			self:Clean();
+		else
+			self:RefreshCooldownInfo();
+		end
 	end
 end
 
@@ -1500,12 +1545,16 @@ end
 
 function CooldownViewerMixin:UnregisterAuraInstanceIDItemFrame(auraInstanceID, itemFrame)
 	tDeleteItem(self.auraInstanceIDToItemFramesMap[auraInstanceID], itemFrame);
+	if #self.auraInstanceIDToItemFramesMap[auraInstanceID] == 0 then
+		self.auraInstanceIDToItemFramesMap[auraInstanceID] = nil;
+	end
 end
 
 function CooldownViewerMixin:OnShow()
 	-- Events passed directly to the items.
 	self:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("SPELL_UPDATE_ICON");
 	self:RegisterUnitEvent("UNIT_AURA", "player", "target");
 	self:RegisterUnitEvent("UNIT_TARGET", "player");
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
@@ -1521,6 +1570,7 @@ function CooldownViewerMixin:OnHide()
 	-- Events passed directly to the items.
 	self:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:UnregisterEvent("SPELL_UPDATE_ICON");
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("UNIT_TARGET");
 	self:UnregisterEvent("PLAYER_TOTEM_UPDATE");
@@ -1549,6 +1599,10 @@ function CooldownViewerMixin:OnEvent(event, ...)
 		for itemFrame in self.itemFramePool:EnumerateActive() do
 			itemFrame:OnSpellUpdateCooldownEvent(spellID, baseSpellID, startRecoveryCategory);
 		end
+	elseif event == "SPELL_UPDATE_ICON" then
+		for itemFrame in self.itemFramePool:EnumerateActive() do
+			itemFrame:OnSpellUpdateIconEvent();
+		end
 	elseif event == "UNIT_AURA" then
 		local unit, unitAuraUpdateInfo = ...;
 		self:OnUnitAura(unit, unitAuraUpdateInfo);
@@ -1571,11 +1625,16 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 	end
 end
 
-function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+function CooldownViewerMixin:OnUnitAura(_unit, unitAuraUpdateInfo)
+	if not unitAuraUpdateInfo or unitAuraUpdateInfo.isFullUpdate then
+		self:RefreshLayout();
+		return;
+	end
+
 	-- Called first so that item frames still have the right aura instanceIDs set.
 	self:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo);
 
-	if unit == "player" and unitAuraUpdateInfo then
+	if unitAuraUpdateInfo then
 		if unitAuraUpdateInfo.removedAuraInstanceIDs then
 			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
 				local itemFrames = self.auraInstanceIDToItemFramesMap[auraInstanceID];
@@ -1603,8 +1662,6 @@ function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
 				itemFrame:OnUnitAuraAddedEvent(unitAuraUpdateInfo);
 			end
 		end
-	elseif unit == "target" then
-		self:RefreshActiveFramesForTargetChange();
 	end
 
 	-- Called last so that item frames have already processed the aura changes.

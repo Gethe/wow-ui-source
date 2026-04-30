@@ -223,6 +223,9 @@ local StableInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(StableInfo);

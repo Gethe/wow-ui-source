@@ -76,15 +76,31 @@
 								<KeyValue key="expand" value="true" type="boolean"/>
 							</KeyValues>
 						</FontString>
-						<FontString parentKey="NumOwned" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="DyesLabel" inherits="GameFontNormal" text="HOUSING_DECOR_DYES_LABEL" justifyH="LEFT">
 							<Size y="0"/>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="NumOwned" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
 								<KeyValue key="expand" value="true" type="boolean"/>
 							</KeyValues>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="DyeDisplay" inherits="HousingCatalogDyeDisplayTemplate">
+						<KeyValues>
+							<KeyValue key="spacingAdjust" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.DyesLabel" relativePoint="RIGHT" x="6" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate" useParentLevel="true">
 				<Anchors>
@@ -94,9 +110,22 @@
 			</ModelScene>
 			<Frame parentKey="ModelSceneControls" inherits="ModelSceneControlFrameTemplate" hidden="false">
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="10"/>
+					<Anchor point="BOTTOM" x="0" y="20"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="VariantLeftButton" inherits="RewardTrackArtButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="20" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="VariantRightButton" inherits="RewardTrackArtButtonTemplate">
+				<KeyValues>
+					<KeyValue key="direction" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-20" y="0"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

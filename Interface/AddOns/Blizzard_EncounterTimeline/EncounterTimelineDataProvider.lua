@@ -5,6 +5,7 @@ EncounterTimelineDataProviderMixin.DynamicEvents = {
 	"ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED",
 	"ENCOUNTER_TIMELINE_EVENT_TRACK_CHANGED",
 	"ENCOUNTER_TIMELINE_EVENT_BLOCK_STATE_CHANGED",
+	"ENCOUNTER_TIMELINE_EVENT_COLOR_CHANGED",
 	"ENCOUNTER_TIMELINE_EVENT_HIGHLIGHT",
 	"ENCOUNTER_TIMELINE_EVENT_REMOVED",
 };
@@ -41,6 +42,12 @@ function EncounterTimelineDataProviderMixin:OnEvent(event, ...)
 		if self:HasEvent(eventID) then
 			self:OnEventHighlight(eventID);
 		end
+	elseif event == "ENCOUNTER_TIMELINE_EVENT_COLOR_CHANGED" then
+		local eventID = ...;
+
+		if self:HasEvent(eventID) then
+			self:OnEventColorChanged(eventID, self:GetEventColor(eventID));
+		end
 	elseif event == "ENCOUNTER_TIMELINE_EVENT_REMOVED" then
 		local eventID = ...;
 		self:RemoveEvent(eventID);
@@ -65,6 +72,11 @@ end
 function EncounterTimelineDataProviderMixin:OnEventBlockStateChanged(_eventID, _blocked)
 	-- Override in a derived mixin to run logic when a timeline event instance
 	-- has changed its blocked state.
+end
+
+function EncounterTimelineDataProviderMixin:OnEventColorChanged(_eventID, _color)
+	-- Override in a derived mixin to run logic when a timeline event instance
+	-- has undergone a color change.
 end
 
 function EncounterTimelineDataProviderMixin:OnEventHighlight(_eventID)
@@ -122,6 +134,10 @@ end
 
 function EncounterTimelineDataProviderMixin:GetEventInfo(eventID)
 	return self.eventInstances[eventID];
+end
+
+function EncounterTimelineDataProviderMixin:GetEventColor(eventID)
+	return C_EncounterTimeline.GetEventColor(eventID);
 end
 
 function EncounterTimelineDataProviderMixin:GetEventState(eventID)

@@ -58,6 +58,9 @@ local RaidLocks =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RaidLocks);

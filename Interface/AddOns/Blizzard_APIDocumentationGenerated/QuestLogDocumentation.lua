@@ -1584,6 +1584,9 @@ local QuestLog =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestLog);

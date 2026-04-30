@@ -163,6 +163,9 @@ local CursorConst =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CursorConst);

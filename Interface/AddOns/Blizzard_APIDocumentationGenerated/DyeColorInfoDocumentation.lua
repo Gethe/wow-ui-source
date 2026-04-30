@@ -152,6 +152,9 @@ local DyeColorInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DyeColorInfo);

@@ -193,6 +193,7 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
+Classic\GameTooltipTemplate.lua
 Classic\GameTooltipTemplate.xml
 MixinUtil.lua
 DebugBarManager.lua [AllowLoadEnvironment Global]
@@ -224,3 +225,4 @@ AlertFrameIntrinsic.xml
 Shared\VASErrorLookup.lua
 
 CommonUIPanelTemplates.xml
+MoneyFormatter.lua

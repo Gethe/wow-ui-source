@@ -985,6 +985,9 @@ local LFGListInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LFGListInfo);

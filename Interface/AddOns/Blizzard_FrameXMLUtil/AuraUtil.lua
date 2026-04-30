@@ -170,7 +170,6 @@ AuraUtil.AuraFilters =
 	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
 	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
 	BigDefensive = "BIG_DEFENSIVE",
-	Important = "IMPORTANT",
 };
 
 function AuraUtil.CreateFilterString(...)
@@ -499,3 +498,15 @@ function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelT
 		borderRegion:Hide();
 	end
 end
+
+local function OnSwitchAuraDataProvider(...)
+	local whatAreTheArgs = { ... };
+	local realData = select(2, ...);
+	if realData then
+		AuraUtil.ClearDataProvider();
+	else
+		AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
+	end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("AURA_DATA_PROVIDER_SWITCH", OnSwitchAuraDataProvider, {});

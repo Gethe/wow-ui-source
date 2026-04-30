@@ -1710,6 +1710,9 @@ local AuctionHouse =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AuctionHouse);

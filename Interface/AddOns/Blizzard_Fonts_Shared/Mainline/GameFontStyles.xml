@@ -1,9 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Font name="NumberFontNormalRightGreen" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-
 	<Font name="NumberFontSmallYellowLeft" inherits="NumberFont_Small" justifyH="LEFT" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

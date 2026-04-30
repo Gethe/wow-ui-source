@@ -155,6 +155,9 @@ local WorldLootObject =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WorldLootObject);

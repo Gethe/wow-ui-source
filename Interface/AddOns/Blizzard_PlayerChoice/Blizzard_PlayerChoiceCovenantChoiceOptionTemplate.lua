@@ -39,11 +39,14 @@ function PlayerChoiceCovenantChoiceOptionTemplateMixin:SetupButtons()
 	local previewButtonInfo = table.remove(self.optionInfo.buttons);
 	previewButtonInfo.showCheckmark = false;
 	previewButtonInfo.hideButtonShowText = false;
-	self.PreviewButton:Setup(previewButtonInfo, self.optionInfo);
+
+	-- Do not pass this choice as the third argument here, because we don't want the PreviewButton click
+	-- to inform PlayerChoiceFrame to do anything else (like close)
+	self.PreviewButton:Setup(previewButtonInfo, self.optionInfo, nil);
 
 	-- Covenant Choice doesn't support showing buttons as a list
 	local showAsListNo = false;
-	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo);
+	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo, self);
 end
 
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnUpdate()
@@ -93,16 +96,7 @@ function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnLeave()
 end
 
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnSelected()
+	PlayerChoiceCovenantChoiceOptionTemplateMixin.OnSelected(self);
+
 	PlaySound(SOUNDKIT.UI_COVENANT_CHOICE_CONFIRM_COVENANT);
-	PlayerChoiceFrame:OnSelectionMade();
-end
-
-PlayerChoiceCovenantChoicePreviewButtonMixin = CreateFromMixins(PlayerChoiceBaseOptionButtonTemplateMixin);
-
-function PlayerChoiceCovenantChoicePreviewButtonMixin:OnLoad()
-	self.parentOption = self:GetParent();
-end
-
-function PlayerChoiceCovenantChoicePreviewButtonMixin:OnConfirm()
-	C_PlayerChoice.SendPlayerChoiceResponse(self.buttonID);
 end

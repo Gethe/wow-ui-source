@@ -99,6 +99,10 @@ function PlayerChoicePowerChoiceTemplateMixin:FadeOut()
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnSelected()
+	-- Base call is intentionally omitted here because the animation drives the call to
+	-- PlayerChoiceFrame:OnSelectionMade. See the FadeoutSelected animation in XML.
+	--PlayerChoiceBaseOptionTemplateMixin.OnSelected(self);
+
 	self.selected = true;
 	PlayerChoiceFrame:FadeOutAllOptions();
 end
@@ -208,7 +212,7 @@ end
 function PlayerChoicePowerChoiceTemplateMixin:SetupButtons()
 	-- PowerChoice Player Choices don't support showing their buttons as a list
 	local showAsListNo = false;
-	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo);
+	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo, self);
 end
 
 local rarityToString = 

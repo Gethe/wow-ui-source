@@ -34,6 +34,9 @@ local SlashCommand =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SlashCommand);

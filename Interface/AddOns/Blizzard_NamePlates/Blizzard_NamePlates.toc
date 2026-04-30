@@ -1,6 +1,6 @@
-## Title: Blizzard NamePlates
-## LoadOnDemand: 0
-## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs, Blizzard_UnitFrame
+## Title: Blizzard_NamePlates
+## Dep: Blizzard_UIWidgets
+## Dep: Blizzard_UnitFrame
 
 Blizzard_NamePlateConstants.lua
 Blizzard_NamePlateFrameOptions.lua

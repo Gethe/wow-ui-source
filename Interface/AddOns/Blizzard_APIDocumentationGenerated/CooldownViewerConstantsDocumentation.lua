@@ -91,6 +91,9 @@ local CooldownViewerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CooldownViewerConstants);

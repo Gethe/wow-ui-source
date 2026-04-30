@@ -46,6 +46,9 @@ local LoreText =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LoreText);

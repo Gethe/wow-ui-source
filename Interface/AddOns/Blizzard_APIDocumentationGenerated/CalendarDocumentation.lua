@@ -1178,6 +1178,9 @@ local Calendar =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Calendar);

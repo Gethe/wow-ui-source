@@ -287,7 +287,7 @@
 			<KeyValue key="resourcePointTemplate" value="EssencePointButtonTemplate" type="string"/>
 			<KeyValue key="shouldShowBarFunc" value="EssencePowerBar.SetupEvoker" type="global"/>
 			<KeyValue key="spacing" value="-1" type="number"/>
-			<KeyValue key="class" value="DRACTHYR" type="string"/>
+			<KeyValue key="class" value="EVOKER" type="string"/>
 		</KeyValues>
 	</Frame>
 

@@ -144,6 +144,9 @@ local AnimaDiversionUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AnimaDiversionUI);

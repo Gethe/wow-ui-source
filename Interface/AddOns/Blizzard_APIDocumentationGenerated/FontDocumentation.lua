@@ -72,7 +72,7 @@ local Font =
 			{
 				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "outline", Type = "cstring", Nilable = false },
+				{ Name = "outline", Type = "string", Nilable = false },
 				{ Name = "shadow", Type = "FontScriptShadowInfo", Nilable = true },
 				{ Name = "fontObject", Type = "SimpleFont", Nilable = false },
 				{ Name = "canBeUserScaled", Type = "bool", Nilable = false },
@@ -88,6 +88,9 @@ local Font =
 				{ Name = "y", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -1139,9 +1139,6 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 					for _, requirement in ipairs(requirements) do
 						self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
 					end
-
-					local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
-					self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 				end
 			end
 		end
@@ -1402,18 +1399,14 @@ function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
 end
 
 function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
-	return C_CharacterServices.IsTrialBoostEnabled() and
-		not IsKioskGlueEnabled() and
-		not C_CharacterCreation.IsNewPlayerRestricted() and
-		not C_CharacterCreation.IsTrialAccountRestricted() and
+	return CharacterServices_CanTrialBoostCharacter() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
 		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	local showTrialBoost = self:CanTrialBoostCharacter() and not fullCharacterCreateDisabled;
+	local showTrialBoost = self:CanTrialBoostCharacter();
 	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
 
 	self.ClassTrialCheckButton:SetShown(showTrialBoost);

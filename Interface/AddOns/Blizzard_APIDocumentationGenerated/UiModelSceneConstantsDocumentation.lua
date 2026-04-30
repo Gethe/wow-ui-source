@@ -29,6 +29,9 @@ local UiModelSceneConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UiModelSceneConstants);

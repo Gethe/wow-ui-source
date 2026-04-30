@@ -17,6 +17,9 @@ local SocialConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SocialConstants);

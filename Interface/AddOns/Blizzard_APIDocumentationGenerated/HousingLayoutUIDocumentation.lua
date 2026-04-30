@@ -522,6 +522,9 @@ local HousingLayoutUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingLayoutUI);

@@ -37,6 +37,22 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "GetDecorHyperlink",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperLink", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDecorIcon",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -384,6 +400,19 @@ local HousingDecorUI =
 	Tables =
 	{
 		{
+			Name = "LightRadiusIndicatorType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "LightRadiusIndicatorType", EnumValue = 0 },
+				{ Name = "Overlap", Type = "LightRadiusIndicatorType", EnumValue = 1 },
+				{ Name = "Never", Type = "LightRadiusIndicatorType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "HousingDecorInstanceListEntry",
 			Type = "Structure",
 			Documentation = { "Smaller structs with the minimum fields from HousingDecorInstanceInfo needed to identify/display a slim list of placed decor" },
@@ -393,6 +422,9 @@ local HousingDecorUI =
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

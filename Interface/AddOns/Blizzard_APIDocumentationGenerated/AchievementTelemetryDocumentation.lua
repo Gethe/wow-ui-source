@@ -42,6 +42,9 @@ local AchievementTelemetry =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AchievementTelemetry);

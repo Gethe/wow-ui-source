@@ -54,6 +54,9 @@ local DuelInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DuelInfo);

@@ -188,7 +188,7 @@ local HousingBasicModeUI =
 
 			Arguments =
 			{
-				{ Name = "catalogEntryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "catalogEntryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
 			},
 		},
 		{
@@ -283,6 +283,9 @@ local HousingBasicModeUI =
 				{ Name = "House", Type = "HousingBasicModeTargetType", EnumValue = 2 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

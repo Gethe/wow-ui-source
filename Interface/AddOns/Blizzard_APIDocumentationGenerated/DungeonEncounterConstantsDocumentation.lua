@@ -109,6 +109,9 @@ local DungeonEncounterConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DungeonEncounterConstants);

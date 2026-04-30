@@ -230,6 +230,21 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsExpansionLandingPageUnlockedForPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "expansionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMirrorImage",
 			Type = "Function",
 
@@ -370,6 +385,9 @@ local PlayerInfo =
 				{ Name = "runs", Type = "table", InnerType = "MythicPlusRatingMapSummary", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

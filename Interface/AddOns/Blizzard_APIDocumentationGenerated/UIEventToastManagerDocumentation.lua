@@ -94,6 +94,9 @@ local UIEventToastManager =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIEventToastManager);

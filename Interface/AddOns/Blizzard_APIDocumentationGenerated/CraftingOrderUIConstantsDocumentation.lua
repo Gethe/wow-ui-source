@@ -38,6 +38,9 @@ local CraftingOrderUIConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CraftingOrderUIConstants);

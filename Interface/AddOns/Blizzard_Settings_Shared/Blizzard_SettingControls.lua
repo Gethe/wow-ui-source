@@ -609,22 +609,22 @@ function SettingsDropdownControlMixin:OnLoad()
 	self.Control:SetPoint("LEFT", self, "CENTER", -48, 3);
 	self.Control.Dropdown:SetWidth(220);
 
-	local function OnShow()
+	local function OnMenuOpen(dropdown)
 		local initializer = self:GetElementData();
 		if initializer.OnShow then
 			initializer.OnShow();
 		end
 	end
 
-	local function OnHide()
+	local function OnMenuClose(dropdown, menu, closeReason)
 		local initializer = self:GetElementData();
 		if initializer.OnHide then
 			initializer.OnHide();
 		end
 	end
 
-	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, OnShow);
-	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, OnHide);
+	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, OnMenuOpen);
+	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, OnMenuClose);
 
 	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
 end
@@ -1173,6 +1173,12 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	local inserter = Settings.CreateDropdownOptionInserter(dropdownSetting, dropdownOptions);
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
+
+	local function OnCheckboxSettingValueChanged(o, setting, value)
+		self.Checkbox:SetValue(value);
+		self:EvaluateState();
+	end
+	self.cbrHandles:SetOnValueChangedCallback(cbSetting:GetVariable(), OnCheckboxSettingValueChanged);
 
 	local function OnDropdownSettingChanged()
 		self:EvaluateState();

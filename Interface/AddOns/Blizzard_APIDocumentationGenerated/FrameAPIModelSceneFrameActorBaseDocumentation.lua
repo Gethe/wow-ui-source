@@ -143,7 +143,7 @@ local FrameAPIModelSceneFrameActorBase =
 
 			Returns =
 			{
-				{ Name = "guid", Type = "WOWGUID", Nilable = false, ConditionalSecret = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -382,6 +382,18 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetGradientMaskWithDyes",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "grad0DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad1DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad2DyeColorID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetModelByCreatureDisplayID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -432,6 +444,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -616,6 +629,9 @@ local FrameAPIModelSceneFrameActorBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

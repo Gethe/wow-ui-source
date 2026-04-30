@@ -153,6 +153,8 @@ function HousingHouseSettingsFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HouseSettingsFrameShownEvents);
 	PlaySound(SOUNDKIT.HOUSING_SETTINGS_CLOSE_MENU);
 	StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
+
+	HousingControlsFrame.OwnerControlFrame.SettingsButton:UpdateState();
 end
 
 function HousingHouseSettingsFrameMixin:OnAccessChanged()

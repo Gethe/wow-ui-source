@@ -39,6 +39,9 @@ local BehavioralMessaging =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BehavioralMessaging);

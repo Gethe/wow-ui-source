@@ -73,6 +73,9 @@ local BlackMarketInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BlackMarketInfo);

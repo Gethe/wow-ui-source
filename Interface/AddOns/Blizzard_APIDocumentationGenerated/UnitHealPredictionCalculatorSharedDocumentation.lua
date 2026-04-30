@@ -106,6 +106,9 @@ local UnitHealPredictionCalculatorShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UnitHealPredictionCalculatorShared);

@@ -41,6 +41,9 @@ local MountConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MountConstants);

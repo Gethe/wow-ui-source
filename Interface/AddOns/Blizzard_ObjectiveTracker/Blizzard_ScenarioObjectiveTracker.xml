@@ -241,6 +241,13 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="ThemeOverlay" atlas="themed-scenario-trackerheader-add" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.NormalBG" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
 						<Texture parentKey="FinalBG" atlas="evergreen-scenario-trackerheader-final-filigree" useAtlasSize="true">
 							<Anchors>
@@ -350,6 +357,19 @@
 					<Button parentKey="Container" inherits="MawBuffsContainer">
 						<Anchors>
 							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="TieredEntranceTraitsBlock" parentArray="FixedBlocks">
+				<Size x="243" y="34"/>
+				<KeyValues>
+					<KeyValue key="height" value="34" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button parentKey="Container" inherits="TieredEntranceTraitsContainer">
+						<Anchors>
+							<Anchor point="BOTTOM" x="-4"/>
 						</Anchors>
 					</Button>
 				</Frames>

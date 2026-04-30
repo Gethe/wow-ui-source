@@ -188,7 +188,7 @@ function PartyMemberFrameMixin:Setup()
 	myHealthbar:SetBarText(self.HealthBarContainer.CenterText, self.HealthBarContainer.LeftText, self.HealthBarContainer.RightText);
 
 	local tempMaxHealthLossBar = self.HealthBarContainer.TempMaxHealthLoss;
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar( self.HealthBarContainer, myHealthbar);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar( self.HealthBarContainer, myHealthbar);
 
 	if PARTY_FRAME_SHOW_BUFFS then
 		self.showBuffs = true;

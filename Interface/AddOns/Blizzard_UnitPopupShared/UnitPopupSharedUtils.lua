@@ -162,7 +162,7 @@ function UnitPopupSharedUtil.IsInGroupWithPlayer(contextData)
 
 	local guid = contextData.guid;
 	if guid then
-		return IsGUIDInGroup(guid);
+		return C_PartyInfo.IsGUIDInGroup(guid);
 	end
 
 	return false;

@@ -143,6 +143,9 @@ local HouseEditorUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HouseEditorUI);

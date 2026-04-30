@@ -112,6 +112,9 @@ local ResearchInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ResearchInfo);

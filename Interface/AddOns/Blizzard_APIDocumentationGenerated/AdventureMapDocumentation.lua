@@ -91,6 +91,9 @@ local AdventureMap =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AdventureMap);

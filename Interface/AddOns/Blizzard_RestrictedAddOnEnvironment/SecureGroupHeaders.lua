@@ -31,8 +31,8 @@ showSolo = [BOOLEAN] -- true if the header should be shown while not in a group 
 nameList = [STRING] -- a comma separated list of player names (not used if 'groupFilter' is set)
 groupFilter = [1-8, STRING] -- a comma seperated list of raid group numbers and/or uppercase class names and/or uppercase roles
 roleFilter = [STRING] -- a comma seperated list of MT/MA/Tank/Healer/DPS role strings
-strictFiltering = [BOOLEAN] 
--- if true, then 
+strictFiltering = [BOOLEAN]
+-- if true, then
 ---- if only groupFilter is specified then characters must match both a group and a class from the groupFilter list
 ---- if only roleFilter is specified then characters must match at least one of the specified roles
 ---- if both groupFilter and roleFilters are specified then characters must match a group and a class from the groupFilter list and a role from the roleFilter list
@@ -113,8 +113,7 @@ local function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunc
 	if ( type(configCode) == "string" ) then
 		local selfHandle = GetFrameHandle(newChild);
 		if ( selfHandle ) then
-			CallRestrictedClosure(newChild, "self", GetManagedEnvironment(header, true),
-			                      selfHandle, configCode, selfHandle);
+			CallRestrictedClosure(newChild, "self", GetManagedEnvironment(header, true), selfHandle, configCode, selfHandle);
 		end
 	end
 
@@ -213,9 +212,7 @@ local function configureChildren(self, unitTable)
 		if ( type(configCode) == "string" ) then
 			local selfHandle = GetFrameHandle(unitButton);
 			if ( selfHandle ) then
-				CallRestrictedClosure(unitButton, "self",
-				                      GetManagedEnvironment(unitButton, true),
-				                      selfHandle, configCode, selfHandle);
+				CallRestrictedClosure(unitButton, "self", GetManagedEnvironment(unitButton, true), selfHandle, configCode, selfHandle);
 			end
 		end
 
@@ -420,24 +417,24 @@ function SecureGroupHeader_Update(self)
 			if ( strictFiltering ) then
 				fillTable(tokenTable, "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE")
 			end
-		
+
 		elseif ( roleFilter and not groupFilter ) then
 			-- filtering by role (of either type)
 			fillTable(tokenTable, strsplit(",", roleFilter));
 			if ( strictFiltering ) then
 				fillTable(tokenTable, 1, 2, 3, 4, 5, 6, 7, 8, unpack(CLASS_SORT_ORDER))
 			end
-		
+
 		else
 			-- filtering by group, class and/or role
 			fillTable(tokenTable, strsplit(",", groupFilter));
 			fillTable(tokenTable, strsplit(",", roleFilter));
-		
+
 		end
 
 		for i = start, stop, 1 do
 			local unit, name, subgroup, className, role, assignedRole = GetGroupRosterInfo(kind, i);
-			
+
 			if ( name and
 				((not strictFiltering) and
 					( tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role]) or tokenTable[assignedRole] ) -- non-strict filtering
@@ -454,10 +451,10 @@ function SecureGroupHeader_Update(self)
 
 				elseif ( groupBy == "ROLE" ) then
 					groupingTable[unit] = role;
-				
+
 				elseif ( groupBy == "ASSIGNEDROLE" ) then
 					groupingTable[unit] = assignedRole;
-				
+
 				end
 			end
 		end
@@ -570,9 +567,10 @@ function SecureGroupPetHeader_Update(self)
 			end
 			if ( UnitExists(petUnit) ) then
 				if ( name and
-					((not strictFiltering) and
-					 (tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role])) -- non-strict filtering
-				 ) or
+					(
+						(not strictFiltering) and
+						(tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role])) -- non-strict filtering
+					) or
 					(tokenTable[subgroup] and tokenTable[className]) -- strict filtering
 				) then
 					tinsert(sortingTable, unit);
@@ -666,8 +664,7 @@ local function SetupAuraButtonConfiguration( header, newChild, defaultConfigFunc
 	if ( type(configCode) == "string" ) then
 		local selfHandle = GetFrameHandle(newChild);
 		if ( selfHandle ) then
-			CallRestrictedClosure(newChild, "self", GetManagedEnvironment(header, true),
-			                      selfHandle, configCode, selfHandle);
+			CallRestrictedClosure(newChild, "self", GetManagedEnvironment(header, true), selfHandle, configCode, selfHandle);
 		end
 	end
 end
@@ -757,7 +754,7 @@ local function constructChild(kind, name, parent, template)
 end
 
 local enchantableSlots = {
-	[1] = "MainHandSlot", 
+	[1] = "MainHandSlot",
 	[2] = "SecondaryHandSlot"
 }
 
@@ -789,7 +786,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 				button:ClearAllPoints();
 			else
 				button = constructChild(buffWidget, name and name.."AuraButton"..i, self, buffTemplate);
-				setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button)); 
+				setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
 			end
 			local buffInfo = auraTable[i];
 			button:SetID(buffInfo.index);
@@ -880,7 +877,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		deadIndex = deadIndex + 1;
 		button = self:GetAttribute("child"..deadIndex)
 	end
-	
+
 	if ( display >= 1 ) then
 		self:SetWidth(max(right - left, minWidth));
 		self:SetHeight(max(top - bottom, minHeight));
@@ -1060,6 +1057,9 @@ function SecureAuraHeader_Update(self)
 			aura.name = auraData.name;
 			duration = auraData.duration;
 			aura.expires = auraData.expirationTime;
+			if aura.expires == 0 then
+				aura.expires = math.huge;  -- Permanent auras should sort after auras with long durations.
+			end
 			aura.caster = auraData.caster;
 			aura.filter = fullFilter;
 			aura.index = index;

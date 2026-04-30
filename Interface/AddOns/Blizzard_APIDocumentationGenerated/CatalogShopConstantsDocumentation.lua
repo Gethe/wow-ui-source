@@ -12,6 +12,9 @@ local CatalogShopConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CatalogShopConstants);

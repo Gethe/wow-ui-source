@@ -101,6 +101,9 @@ local CovenantPreview =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CovenantPreview);

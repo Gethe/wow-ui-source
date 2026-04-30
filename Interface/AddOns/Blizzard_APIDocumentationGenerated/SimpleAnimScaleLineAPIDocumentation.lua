@@ -15,6 +15,9 @@ local SimpleAnimScaleLineAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimScaleLineAPI);

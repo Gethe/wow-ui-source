@@ -14,6 +14,9 @@ local UIMapPinShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIMapPinShared);

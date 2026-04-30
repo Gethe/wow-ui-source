@@ -33,6 +33,9 @@ local QuestItemUse =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestItemUse);

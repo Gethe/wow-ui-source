@@ -42,6 +42,21 @@ local Instance =
 			},
 		},
 		{
+			Name = "GetBaseDifficultyID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDifficultyInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -100,6 +115,7 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -263,8 +279,12 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

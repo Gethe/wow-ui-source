@@ -80,6 +80,9 @@ local MapExploration =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MapExploration);

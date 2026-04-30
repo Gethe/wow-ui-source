@@ -5,9 +5,6 @@ function EncounterTimelineViewMixin:OnLoad()
 	EncounterTimelineDataProviderMixin.OnLoad(self);
 	EncounterTimelineViewSettingsMixin.OnLoad(self);
 
-	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_ACTIVATED");
-	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_DEACTIVATED");
-
 	self.eventFramePools = CreateFramePoolCollection();
 end
 
@@ -19,24 +16,6 @@ end
 function EncounterTimelineViewMixin:OnHide()
 	self:SetDynamicEventsRegistered(false);
 	self:RemoveAllEvents();
-end
-
-function EncounterTimelineViewMixin:OnEvent(event, ...)
-	EncounterTimelineDataProviderMixin.OnEvent(self, event, ...);
-
-	if event == "ENCOUNTER_TIMELINE_VIEW_ACTIVATED" then
-		local viewType = ...;
-
-		if viewType == self:GetViewType() then
-			self:ActivateView();
-		end
-	elseif event == "ENCOUNTER_TIMELINE_VIEW_DEACTIVATED" then
-		local viewType = ...;
-
-		if viewType == self:GetViewType() then
-			self:DeactivateView();
-		end
-	end
 end
 
 function EncounterTimelineViewMixin:OnSizeChanged(width, height)
@@ -112,6 +91,21 @@ function EncounterTimelineViewMixin:OnEventBlockStateChanged(eventID, blocked)
 
 	if eventFrame ~= nil then
 		eventFrame:SetEventBlocked(blocked);
+	end
+end
+
+function EncounterTimelineViewMixin:OnEventColorChanged(eventID, color)
+	-- Skip color changes on frames that are in a terminal state, as
+	-- they'll be in the process of animating out anyway.
+
+	if EncounterTimelineUtil.IsTerminalEventState(self:GetEventState(eventID)) then
+		return;
+	end
+
+	local eventFrame = self:GetEventFrame(eventID);
+
+	if eventFrame ~= nil then
+		eventFrame:SetEventColor(color);
 	end
 end
 
@@ -200,19 +194,13 @@ function EncounterTimelineViewMixin:ActivateView()
 		return;
 	end
 
-	if not self:CanActivateView() then
-		return;
-	end
-
-	-- Activation of a view just shows this frame and notifies the parent
-	-- container. We don't register for dynamic events or add events directly
-	-- here as the parent container may not be visible - instead, allow the
-	-- OnShow script to fire and handle that for us.
+	-- Activation of a view just shows this frame. We don't register for
+	-- dynamic events or add events directly here as the parent container
+	-- may not be visible - instead, allow the OnShow script to fire and
+	-- handle that for us.
 
 	self:Show();
 	self:OnViewActivated();
-
-	EventRegistry:TriggerEvent("EncounterTimeline.OnViewActivated", self);
 end
 
 function EncounterTimelineViewMixin:DeactivateView()
@@ -229,16 +217,6 @@ function EncounterTimelineViewMixin:DeactivateView()
 	self:SetDynamicEventsRegistered(false);
 	self:RemoveAllEvents();
 	self:Hide();
-
-	EventRegistry:TriggerEvent("EncounterTimeline.OnViewDeactivated", self);
-end
-
-function EncounterTimelineViewMixin:CanActivateView()
-	-- Override if there are additional reasons that this view shouldn't
-	-- attempt to self-activate. Note that deactivation of a view is never
-	-- blocked.
-
-	return C_EncounterTimeline.GetViewType() == self:GetViewType();
 end
 
 function EncounterTimelineViewMixin:GetViewType()
@@ -281,10 +259,11 @@ function EncounterTimelineViewMixin:InitializeEventFrame(eventID, eventFrame)
 	local state = self:GetEventState(eventID);
 	local track, trackSortIndex = self:GetEventTrack(eventID);
 	local blocked = self:IsEventBlocked(eventID);
+	local color = self:GetEventColor(eventID);
 
 	self:InitializeEventFrameSettings(eventFrame);
 
-	eventFrame:Init(eventInfo, timer, state, track, trackSortIndex, blocked);
+	eventFrame:Init(eventInfo, timer, state, track, trackSortIndex, blocked, color);
 
 	if self:ShouldShowEventFrameOnInitialization(eventFrame) then
 		eventFrame:Show();

@@ -1,13 +1,17 @@
 
-TotemFrameMixin = { }; 
+TotemFrameMixin = { };
 
 function TotemFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
-	self:RegisterEvent("PLAYER_TALENT_UPDATE");	
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED"); 
 	self.totemPool = CreateFramePool("BUTTON", self, "TotemButtonTemplate");
+end
+
+function TotemFrameMixin:OnEvent(event, ...)
+	self:Update();
 end
 
 function TotemFrameMixin:Update()
@@ -15,7 +19,7 @@ function TotemFrameMixin:Update()
 	local priorities = STANDARD_TOTEM_PRIORITIES;
 	if (class == "SHAMAN") then
 		priorities = SHAMAN_TOTEM_PRIORITIES;
-	end	
+	end
 
 	local haveTotem, name, startTime, duration, icon;
 	local slot;
@@ -27,7 +31,7 @@ function TotemFrameMixin:Update()
 		haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		if ( haveTotem ) then
 			button = self.totemPool:Acquire();
-			button.layoutIndex = i; 
+			button.layoutIndex = i;
 			button.slot = slot;
 			button:Update(startTime, duration, icon);
 
@@ -37,27 +41,11 @@ function TotemFrameMixin:Update()
 		end
 	end
 	self:Layout(); 
-	if ( self.activeTotems > 0 ) then
-		self:Show();
-	else
-		self:Hide();
-	end
+	self:SetShown(self.activeTotems > 0);
 	PlayerFrame_AdjustAttachments();
 end
 
-function TotemFrameMixin:OnEvent(event, ...)
-	self:Update();
-end
-
-TotemButtonMixin = { }; 
-function TotemButtonMixin:OnClick(mouseButton)
-	local cannotDismiss = GetTotemCannotDismiss(self.slot)
-	if ( not cannotDismiss ) then
-		if ( mouseButton == "RightButton" and self.slot > 0 ) then
-			DestroyTotem(self.slot);
-		end
-	end
-end
+TotemButtonMixin = { };
 
 function TotemButtonMixin:OnLoad()
 	self:RegisterForClicks("RightButtonUp");
@@ -68,6 +56,15 @@ function TotemButtonMixin:OnLoad()
 	local lowTexCoords = { x = cdSwipeAtlas.leftTexCoord, y = cdSwipeAtlas.topTexCoord };
 	local highTexCoords = { x = cdSwipeAtlas.rightTexCoord, y = cdSwipeAtlas.bottomTexCoord };
 	self.Icon.Cooldown:SetTexCoordRange(lowTexCoords, highTexCoords);
+end
+
+function TotemButtonMixin:OnClick(mouseButton)
+	local cannotDismiss = GetTotemCannotDismiss(self.slot)
+	if ( not cannotDismiss ) then
+		if ( mouseButton == "RightButton" and self.slot > 0 ) then
+			DestroyTotem(self.slot);
+		end
+	end
 end
 
 function TotemButtonMixin:OnUpdate(elapsed)

@@ -8,6 +8,22 @@ local CombatAudioAlert =
 	Functions =
 	{
 		{
+			Name = "AddToKnownTargetingList",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "added", Type = "bool", Nilable = false, SecretValue = true },
+			},
+		},
+		{
 			Name = "GetCategoryVoice",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -99,6 +115,22 @@ local CombatAudioAlert =
 			Returns =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFromKnownTargetingList",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "removed", Type = "bool", Nilable = false, SecretValue = true },
 			},
 		},
 		{
@@ -216,6 +248,9 @@ local CombatAudioAlert =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

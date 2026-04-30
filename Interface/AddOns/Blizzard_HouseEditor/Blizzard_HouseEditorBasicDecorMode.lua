@@ -228,18 +228,23 @@ end
 local invalidCollisionFlagsMask = bit.bor(Enum.HousingDecorPlacementRestriction.InvalidCollision, Enum.HousingDecorPlacementRestriction.InvalidTarget);
 function HouseEditorBasicDecorModeMixin:TryShowInvalidPlacementTooltip(placementFlags)
 	if FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.OutsidePlotBounds) then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_OUTSIDE_PLOT_ERROR_TITLE, ERROR_COLOR);
 		GameTooltip:Show();
 		return true;
+	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.InvalidLightOverlap) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_LIGHT_OVERLAP_ERROR_TITLE, ERROR_COLOR);
+		GameTooltip:Show();
+		return true;
 	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.ChildOutsideBounds) then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		-- Post 12.0.0, add a new more specific tooltip string rather than using the generic error code one
 		GameTooltip_SetTitle(GameTooltip, ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT, ERROR_COLOR);
 		GameTooltip:Show();
 		return true;
 	elseif FlagsUtil.IsAnySet(placementFlags, invalidCollisionFlagsMask) then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
 		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
 		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));

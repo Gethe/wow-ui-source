@@ -1,3 +1,9 @@
+local SetPropagateMouseMotion = function(frame, propagate)
+	frame:SetPropagateMouseMotion(propagate);
+end;
+
+local SetPropagateMouseMotionDelegate = CreateSecureDelegate(SetPropagateMouseMotion);
+
 MenuTemplates = {};
 
 --[[
@@ -306,7 +312,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 		end
 
 		if truncated then
-			MenuUtil.ShowTooltip(button, function(tooltip)
+			MenuUtil.ShowTooltipEx(button, description:GetTooltipFrame(), function(tooltip)
 				GameTooltip_SetTitle(tooltip, text);
 			end);
 		end
@@ -324,7 +330,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
 		end
 
-		MenuUtil.HideTooltip(button);
+		MenuUtil.HideTooltipEx(button, description:GetTooltipFrame());
 	end
 
 	optionDescription:AddInitializer(function(button, description, menu)
@@ -403,7 +409,7 @@ end
 
 do
 	local function OnAutoHideButtonLeave(button)
-		MenuUtil.HideTooltip(button);
+		MenuUtil.HideTooltipEx(button, GetAppropriateTooltip());
 	end
 
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
@@ -412,7 +418,7 @@ do
 		button:Hide();
 
 		-- SetToDefaults wipes propagateMouseInput on pooled frames even though it was set by the template, so it needs to be set here every time.
-		button:SetPropagateMouseMotion(true);
+		SetPropagateMouseMotionDelegate(button, true);
 
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
 
@@ -441,7 +447,9 @@ function MenuTemplates.AttachBasicButton(parent, width, height)
 
 	-- SetToDefaults wipes button state, desired states must be explicitly set now.
 	button:Show();
-	button:SetPropagateMouseMotion(true);
+
+	SetPropagateMouseMotionDelegate(button, true);
+
 	button:SetMouseClickEnabled(true);
 	button:SetMouseMotionEnabled(true);
 	button:SetSize(width or 16, height or 16);
@@ -661,10 +669,11 @@ function DropdownSelectionTextMixin:SetTooltip(tooltipFunc)
 end
 
 function DropdownSelectionTextMixin:ShowTooltip()
+	local tooltip = GetAppropriateTooltip();
 	if self.tooltipFunc then
-		MenuUtil.ShowTooltip(self, self.tooltipFunc);
+		MenuUtil.ShowTooltipEx(self, tooltip, self.tooltipFunc);
 	else
-		MenuUtil.ShowTooltip(self, function(tooltip)
+		MenuUtil.ShowTooltipEx(self, tooltip, function(tooltip)
 			GameTooltip_SetTitle(tooltip, self.Text:GetText());
 		end);
 	end
@@ -673,7 +682,7 @@ end
 function DropdownSelectionTextMixin:OnLeave()
 	ButtonStateBehaviorMixin.OnLeave(self);
 
-	MenuUtil.HideTooltip(self);
+	MenuUtil.HideTooltipEx(self, GetAppropriateTooltip());
 end
 
 -- Inherited by dropdown buttons that require the reset button behavior. The reset button
@@ -883,8 +892,8 @@ function WowStyle2DropdownMixin:OnMenuOpened(menu)
 	self:OnButtonStateChanged();
 end
 
-function WowStyle2DropdownMixin:OnMenuClosed(menu)
-	DropdownButtonMixin.OnMenuClosed(self, menu);
+function WowStyle2DropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:OnButtonStateChanged();
 end

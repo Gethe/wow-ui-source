@@ -68,6 +68,9 @@ local SimpleMovieAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleMovieAPI);

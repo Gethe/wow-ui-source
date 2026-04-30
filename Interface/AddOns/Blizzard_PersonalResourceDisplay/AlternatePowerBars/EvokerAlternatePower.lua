@@ -15,10 +15,6 @@ function EvokerAlternatePowerBarMixin:Initialize()
     self.powerName = "EBON_MIGHT";
 	self.alternatePowerRequirementsMet = false;
 
-    local statusBarTexture = self:GetStatusBarTexture();
-	statusBarTexture:SetTexelSnappingBias(0);
-	statusBarTexture:SetSnapToPixelGrid(false);
-
     self:EvaluateUnit();
 end
 
@@ -79,12 +75,13 @@ function EvokerAlternatePowerBarMixin:GetCurrentMinMaxPower()
 end
 
 function EvokerAlternatePowerBarMixin:UpdateArt()
+	local barTextureAtlas = self.barTextureAtlas;
 	local info = self.overrideArtInfo or PowerBarColor[self.powerName];
 	if info then
-        self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
-        self:SetStatusBarColor(info.r, info.g, info.b);
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
+		self:SetStatusBarColor(info.r, info.g, info.b);
 	else
-		self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
 		self:SetStatusBarColor(1, 1, 1);
 	end
 end

@@ -239,9 +239,9 @@ function RewardTrackFrameMixin:RequestStop()
 	end
 end
 
-RewardTrackButtonMixin = { };
+RewardTrackArtButtonMixin = { };
 
-function RewardTrackButtonMixin:OnLoad()
+function RewardTrackArtButtonMixin:OnLoad()
 	if self.direction == 1 then
 		self:GetNormalTexture():SetTexCoord(1, 0, 0, 1);
 		self:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
@@ -249,6 +249,8 @@ function RewardTrackButtonMixin:OnLoad()
 		self:GetDisabledTexture():SetTexCoord(1, 0, 0, 1);
 	end
 end
+
+RewardTrackButtonMixin = { };
 
 function RewardTrackButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
@@ -337,18 +339,6 @@ function RenownLevelMixin:TryInit()
 	self.init = true;
 	self.Level:SetText(self.info.level);
 
-	if self.info.isCapstone then
-		if self.HexMask then
-			self.Icon:AddMaskTexture(self.HexMask);
-			self.HighlightTexture:AddMaskTexture(self.HexMask);
-		end
-	else
-		if self.HexMask then
-			self.Icon:RemoveMaskTexture(self.HexMask);
-			self.HighlightTexture:RemoveMaskTexture(self.HexMask);
-		end
-	end
-
 	local maskTexture = self:GetParent().Mask;
 	if maskTexture then
 		for i, texture in ipairs(self.Textures) do
@@ -368,42 +358,62 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 
 	local level = self:GetLevel();
 	local earned = level <= displayLevel;
+	local lastEarned = level == displayLevel;
+	local iconShape = "square";
+	local maskAtlas = "ui-journeys-delve-rewardicon-%s-mask";
 	local borderAtlas;
 	local rectangleFrameAtlas;
-	-- There is no "Standard" milestone border, using the default instead
-	local textureKit = self.info.textureKit or "Standard";
+	local backgroundFrameAtlas;
+
+	local reward = self.info.rewardInfo[1];
+	if reward and reward.rewardType then
+		local rewardIsItem = reward.rewardType == Enum.RenownRewardDisplayType.Item;
+		local rewardIsMount = reward.rewardType == Enum.RenownRewardDisplayType.Mount;
+		local rewardIsTitle =  reward.rewardType == Enum.RenownRewardDisplayType.Title;
+		local rewardIsCurrency = reward.rewardType == Enum.RenownRewardDisplayType.Currency;
+
+		if rewardIsItem or rewardIsMount or rewardIsTitle then
+			iconShape = "ring";
+		elseif rewardIsCurrency then
+			iconShape = "octagon";
+		end
+	end
+
 	if selected then
-		borderAtlas = "ui-journeys-delve-rewardicon-square-frame-yellow";
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-yellow";
 		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-yellow";
-		if self.info.isCapstone then
-			borderAtlas = "ui-journeys-delve-rewardicon-octagon-frame-yellow";
-		elseif self.info.isMilestone and textureKit ~= "Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Next-Border-%s";
-		end
 	elseif earned then
-		borderAtlas = "ui-journeys-delve-rewardicon-square-frame";
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame";
 		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame";
-		if self.info.isCapstone then
-			borderAtlas = "ui-journeys-delve-rewardicon-octagon-frame";
-		elseif self.info.isMilestone and textureKit ~="Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Border-%s";
-		end
 	else
-		borderAtlas = "ui-journeys-delve-rewardicon-square-frame-grey";
+		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-grey";
 		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-grey";
-		if self.info.isCapstone then
-			borderAtlas = "ui-journeys-delve-rewardicon-octagon-frame-grey";
-		elseif self.info.isMilestone and textureKit ~="Standard" then
-			borderAtlas = "CovenantSanctum-Renown-Special-Disabled-Border-%s";
-		end
+	end
+
+	if lastEarned then
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-green";
+	elseif earned then
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar";
+	else
+		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-grey";
+	end
+
+	if self.IconMask then
+		self.IconMask:SetAtlas(maskAtlas:format(iconShape), TextureKitConstants.IgnoreAtlasSize);
+		self.Icon:AddMaskTexture(self.IconMask);
+		self.HighlightTexture:AddMaskTexture(self.IconMask);
 	end
 
 	if self.IconBorder then
-		self.IconBorder:SetAtlas(borderAtlas:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
+		self.IconBorder:SetAtlas(borderAtlas:format(iconShape), TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	if self.LevelRectangle then
-		self.LevelRectangle:SetAtlas(rectangleFrameAtlas:format(textureKit), TextureKitConstants.UseAtlasSize);
+		self.LevelRectangle:SetAtlas(rectangleFrameAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
+	if self.RewardCardBG then
+		self.RewardCardBG:SetAtlas(backgroundFrameAtlas, TextureKitConstants.UseAtlasSize);
 	end
 
 	if earned then

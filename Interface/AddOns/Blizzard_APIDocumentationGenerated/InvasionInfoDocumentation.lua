@@ -84,6 +84,9 @@ local InvasionInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InvasionInfo);

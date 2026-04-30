@@ -102,6 +102,9 @@ local PartyPoseUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PartyPoseUI);

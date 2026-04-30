@@ -41,6 +41,7 @@ local function SetSavedWindowData(windowIndex, windowData)
 	savedWindowData.shown = windowData.sessionWindow and windowData.sessionWindow:IsShown() or false;
 	savedWindowData.locked = windowData.locked;
 	savedWindowData.nonInteractive = windowData.nonInteractive;
+	savedWindowData.minimized = windowData.minimized;
 	-- sessionID is intentionally not preserved in saved data as it's specific to the player's recent encounters.
 end
 
@@ -74,25 +75,42 @@ function DamageMeterMixin:OnLoad()
 
 	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
 
 	self.windowDataList = {};
 	self.sessionType = Enum.DamageMeterSessionType.Overall;
-	self.sessionID = nill;
+	self.sessionID = nil;
 
 	self:InitializeWindowDataList();
 end
 
 function DamageMeterMixin:OnEvent(event, ...)
-	if event == "PLAYER_IN_COMBAT_CHANGED" or event == "PLAYER_LEVEL_CHANGED" then
+	if event == "PLAYER_IN_COMBAT_CHANGED" or event == "PLAYER_LEVEL_CHANGED" or event == "GROUP_JOINED" or event == "GROUP_LEFT" then
 		self:UpdateShownState();
 	end
 end
 
 function DamageMeterMixin:GetDefaultWindowData()
 	return {
-			damageMeterType = Enum.DamageMeterType.DamageDone;
-			sessionType = self:GetSessionType();
-			sessionID = self:GetSessionID(); };
+		damageMeterType = Enum.DamageMeterType.DamageDone,
+		sessionType = self:GetSessionType(),
+		sessionID = self:GetSessionID()
+	};
+end
+
+function DamageMeterMixin:CreateWindowData(windowDataIndex)
+	assertsafe(windowDataIndex);
+	assertsafe(not self.windowDataList[windowDataIndex]);
+	assertsafe(windowDataIndex <= MAX_DAMAGE_METER_SESSION_WINDOWS);
+
+	local windowData = self:GetDefaultWindowData();
+
+	self.windowDataList[windowDataIndex] = windowData;
+
+	self:SetupSessionWindow(windowDataIndex, windowData);
+
+	SetSavedWindowData(windowDataIndex, windowData);
 end
 
 function DamageMeterMixin:InitializeWindowDataList()
@@ -104,12 +122,7 @@ function DamageMeterMixin:InitializeWindowDataList()
 	-- If it doesn't exist, create the primary session window, which much always exist and can't be hidden.
 	-- This can happen if the saved window data doesn't exist or has been corrupted.
 	if self:GetPrimarySessionWindow() == nil then
-		local windowData = self:GetDefaultWindowData();
-		self.windowDataList[PRIMARY_SESSION_WINDOW_INDEX] = windowData;
-
-		self:SetupSessionWindow(windowData, PRIMARY_SESSION_WINDOW_INDEX);
-
-		SetSavedWindowData(PRIMARY_SESSION_WINDOW_INDEX, windowData);
+		self:CreateWindowData(PRIMARY_SESSION_WINDOW_INDEX);
 	end
 end
 
@@ -146,6 +159,10 @@ function DamageMeterMixin:IsPlayerInCombat()
 	return isInCombat;
 end
 
+function DamageMeterMixin:IsPlayerInGroup()
+	return IsInGroup();
+end
+
 function DamageMeterMixin:ShouldBeShown()
 	if self:IsEditing() then
 		return true;
@@ -167,6 +184,8 @@ function DamageMeterMixin:ShouldBeShown()
 			return self:IsPlayerInCombat();
 		elseif self.visibility == Enum.DamageMeterVisibility.Hidden then
 			return false;
+		elseif self.visibility == Enum.DamageMeterVisibility.InGroup then
+			return self:IsPlayerInGroup();
 		else
 			assertsafe(false, "Unknown value for visible setting: " .. self.visibleSetting);
 		end
@@ -193,25 +212,12 @@ function DamageMeterMixin:GetSessionWindow(index)
 	return self.windowDataList and self.windowDataList[index] and self.windowDataList[index].sessionWindow or nil;
 end
 
-function DamageMeterMixin:EnumerateSessionWindows()
-	local function GetNextSessionWindow(self_, index)
-		while index < #self.windowDataList do
-			index = index + 1;
-			local window = self_:GetSessionWindow(index);
-
-			if window ~= nil then
-				return index, window;
-			end
-		end
-	end;
-
-	local initialIndex = 0;
-	return GetNextSessionWindow, self, initialIndex;
-end
-
 function DamageMeterMixin:ForEachSessionWindow(func, ...)
-	for _index, sessionWindow in self:EnumerateSessionWindows() do
-		func(sessionWindow, ...);
+	for _, windowData in pairs(self.windowDataList) do
+		local sessionWindow = windowData.sessionWindow;
+		if sessionWindow then
+			func(sessionWindow, ...);
+		end
 	end
 end
 
@@ -235,29 +241,54 @@ function DamageMeterMixin:GetCurrentSessionWindowCount()
 	return currentCount;
 end
 
-function DamageMeterMixin:CanShowNewSessionWindow()
+function DamageMeterMixin:CanShowNewSecondarySessionWindow()
 	return self:GetCurrentSessionWindowCount() < self:GetMaxSessionWindowCount();
 end
 
-function DamageMeterMixin:GetAvailableSessionWindowIndex()
+-- Returns an index of an empty slot in the windowData table.
+-- Can return nil if the maximum number of windowData entries have already been created.
+function DamageMeterMixin:GetAvailableSecondaryWindowDataIndex()
 	local windowDataList = self:GetWindowDataList();
-	for i, windowData in ipairs(windowDataList) do
-		if windowData.sessionWindow == nil or windowData.sessionWindow:IsShown() == false then
-			return i;
+	local maxSessionWindowCount = self:GetMaxSessionWindowCount();
+	for i = 1, maxSessionWindowCount do
+		if i ~= PRIMARY_SESSION_WINDOW_INDEX then
+			local windowData = windowDataList[i];
+			if not windowData then
+				return i;
+			end
 		end
 	end
 
 	return nil;
 end
 
-function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
-	local sessionWindow = windowData.sessionWindow or CreateFrame("FRAME", "DamageMeterSessionWindow" .. windowIndex, self, "DamageMeterSessionWindowTemplate");
+-- Returns an index of an existing windowData entry that either doesn't have a sessionWindow created, or the sessionWindow is hidden.
+-- Can return nil if the maximum number of windows are already shown.
+function DamageMeterMixin:GetAvailableSecondarySessionWindowIndex()
+	local windowDataList = self:GetWindowDataList();
+	local maxSessionWindowCount = self:GetMaxSessionWindowCount();
+	for i = 1, maxSessionWindowCount do
+		if i ~= PRIMARY_SESSION_WINDOW_INDEX then
+			local windowData = windowDataList[i];
+			if windowData then
+				if windowData.sessionWindow == nil or windowData.sessionWindow:IsShown() == false then
+					return i;
+				end
+			end
+		end
+	end
+
+	return nil;
+end
+
+function DamageMeterMixin:SetupSessionWindow(windowDataIndex, windowData)
+	local sessionWindow = windowData.sessionWindow or CreateFrame("FRAME", "DamageMeterSessionWindow" .. windowDataIndex, self, "DamageMeterSessionWindowTemplate");
 
 	if not windowData.sessionWindow then
 		windowData.sessionWindow = sessionWindow;
 	end
 
-	sessionWindow:SetDamageMeterOwner(self, windowIndex);
+	sessionWindow:SetDamageMeterOwner(self, windowDataIndex);
 	sessionWindow:SetDamageMeterType(windowData.damageMeterType);
 	sessionWindow:SetSession(windowData.sessionType, windowData.sessionID);
 	sessionWindow:SetUseClassColor(self:ShouldUseClassColor());
@@ -271,19 +302,19 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 	sessionWindow:SetNumberDisplayType(self:GetNumberDisplayType());
 
 	-- Each new window should render above the previous ones.
-	sessionWindow:SetFrameLevel(windowIndex);
+	sessionWindow:SetFrameLevel(windowDataIndex);
 
 	-- Give the window initial positioning that may be overwritten by the saved frame position cache when it's loaded.
 	sessionWindow:ClearAllPoints();
 
 	-- Primary window is always anchored to the Damage Meter frame so its size and location are controlled through edit mode.
 	-- All other windows are given an initial offset so they're not stacked on top of each other when shown.
-	if windowIndex == PRIMARY_SESSION_WINDOW_INDEX then
+	if windowDataIndex == PRIMARY_SESSION_WINDOW_INDEX then
 		sessionWindow:SetPoint("TOPLEFT");
 		sessionWindow:SetPoint("BOTTOMRIGHT");
 	else
-		local xOffset = (windowIndex - PRIMARY_SESSION_WINDOW_INDEX) * 40;
-		local yOffset = (windowIndex - PRIMARY_SESSION_WINDOW_INDEX) * -40;
+		local xOffset = (windowDataIndex - PRIMARY_SESSION_WINDOW_INDEX) * 40;
+		local yOffset = (windowDataIndex - PRIMARY_SESSION_WINDOW_INDEX) * -40;
 		sessionWindow:SetPoint("TOPLEFT", UIParent, "TOPLEFT", xOffset, yOffset);
 	end
 
@@ -306,6 +337,10 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 
 	if windowData.nonInteractive then
 		sessionWindow:SetNonInteractive(true);
+	end
+
+	if type(windowData.minimized) == "boolean" then
+		sessionWindow:SetMinimized(windowData.minimized);
 	end
 end
 
@@ -331,9 +366,10 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 			windowData.sessionType = savedWindowData.sessionType or self:GetSessionType();
 			windowData.locked = savedWindowData.locked;
 			windowData.nonInteractive = savedWindowData.nonInteractive;
+			windowData.minimized = savedWindowData.minimized;
 
-			if savedWindowData.shown then
-				self:SetupSessionWindow(windowData, i);
+			if savedWindowData.shown or i == PRIMARY_SESSION_WINDOW_INDEX then
+				self:SetupSessionWindow(i, windowData);
 			end
 		end
 	end
@@ -346,26 +382,23 @@ function DamageMeterMixin:GetSessionWindowData(sessionWindow)
 	return sessionWindowIndex, windowData;
 end
 
-function DamageMeterMixin:ShowNewSessionWindow()
-	if self:CanShowNewSessionWindow() ~= true then
+function DamageMeterMixin:ShowNewSecondarySessionWindow()
+	if self:CanShowNewSecondarySessionWindow() ~= true then
 		return;
 	end
 
-	local windowData;
-
-	local sessionWindowIndex = self:GetAvailableSessionWindowIndex();
+	local sessionWindowIndex = self:GetAvailableSecondarySessionWindowIndex();
 	if sessionWindowIndex then
-		windowData = self.windowDataList[sessionWindowIndex];
+		local windowData = self.windowDataList[sessionWindowIndex];
+
+		self:SetupSessionWindow(sessionWindowIndex, windowData);
+
+		SetSavedWindowData(sessionWindowIndex, windowData);
 	else
-		windowData = self:GetDefaultWindowData();
-		table.insert(self.windowDataList, windowData );
+		sessionWindowIndex = self:GetAvailableSecondaryWindowDataIndex();
 
-		sessionWindowIndex = #self.windowDataList;
+		self:CreateWindowData(sessionWindowIndex);
 	end
-
-	self:SetupSessionWindow(windowData, sessionWindowIndex);
-
-	SetSavedWindowData(sessionWindowIndex, windowData);
 end
 
 function DamageMeterMixin:CanHideSessionWindow(sessionWindow)
@@ -454,6 +487,16 @@ function DamageMeterMixin:SetSessionWindowNonInteractive(sessionWindow, nonInter
 	SetSavedWindowData(sessionWindowIndex, windowData);
 
 	sessionWindow:SetNonInteractive(nonInteractive);
+end
+
+function DamageMeterMixin:SetSessionWindowMinimized(sessionWindow, minimized)
+	local sessionWindowIndex, windowData = self:GetSessionWindowData(sessionWindow);
+
+	windowData.minimized = minimized;
+
+	SetSavedWindowData(sessionWindowIndex, windowData);
+
+	sessionWindow:SetMinimized(minimized);
 end
 
 function DamageMeterMixin:OnUseClassColorChanged(useClassColor)

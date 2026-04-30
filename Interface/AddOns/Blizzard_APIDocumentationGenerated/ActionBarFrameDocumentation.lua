@@ -71,7 +71,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
 			},
 
 			Returns =
@@ -137,7 +137,7 @@ local ActionBarFrame =
 			Name = "GetActionCharges",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -147,14 +147,14 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "chargeInfo", Type = "ActionBarChargeInfo", Nilable = false },
+				{ Name = "chargeInfo", Type = "SpellChargeInfo", Nilable = false },
 			},
 		},
 		{
 			Name = "GetActionCooldown",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -164,7 +164,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "cooldownInfo", Type = "ActionBarCooldownInfo", Nilable = false },
+				{ Name = "cooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
 			},
 		},
 		{
@@ -177,6 +177,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -188,7 +189,7 @@ local ActionBarFrame =
 			Name = "GetActionDisplayCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Depending on the action type, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
 
@@ -202,24 +203,6 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "displayCount", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "GetActionLossOfControlCooldown",
-			Type = "Function",
-			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "actionID", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "startTime", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -237,6 +220,23 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionLossOfControlCooldownInfo",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
 			},
 		},
 		{
@@ -276,7 +276,7 @@ local ActionBarFrame =
 			Name = "GetActionUseCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -573,7 +573,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -828,7 +828,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -949,6 +949,22 @@ local ActionBarFrame =
 				{ Name = "checkboxFrame", Type = "SimpleCheckbox", Nilable = false },
 			},
 		},
+		{
+			Name = "UsesActionText",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "usesActionText", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -1062,6 +1078,9 @@ local ActionBarFrame =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

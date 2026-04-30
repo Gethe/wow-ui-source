@@ -31,6 +31,9 @@ local ChatBubbles =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ChatBubbles);

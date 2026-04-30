@@ -43,19 +43,6 @@ local NamePlateManager =
 			},
 		},
 		{
-			Name = "SetNamePlateHitTestFrame",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Set the frame used to determine where the mouse should interact with the nameplate. Used to control which part of the nameplate is clickable." },
-
-			Arguments =
-			{
-				{ Name = "unitToken", Type = "UnitTokenNamePlate", Nilable = false },
-				{ Name = "hitTestFrame", Type = "SimpleFrame", Nilable = false },
-			},
-		},
-		{
 			Name = "SetNamePlateHitTestInsets",
 			Type = "Function",
 			HasRestrictions = true,
@@ -104,7 +91,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -114,7 +101,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -134,7 +121,7 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 		{
@@ -155,12 +142,15 @@ local NamePlateManager =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenType", Nilable = false },
 			},
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

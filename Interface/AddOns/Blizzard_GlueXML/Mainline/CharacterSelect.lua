@@ -225,7 +225,7 @@ end
 
 function CharacterSelectFrameMixin:OnHide()
     CharacterDeleteDialog:Hide();
-    CharacterRenameDialog:Hide();
+	StaticPopup_Hide("FORCE_RENAME_CHARACTER");
     AccountReactivate_CloseDialogs();
 
     if ( DeclensionFrame ) then
@@ -498,10 +498,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignNearest);
 		end
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-        StaticPopup_HideAll();
-        local message = ...;
-        CharacterRenameDialog:Show();
-        CharacterRenameText1:SetText(_G[message]);
+		StaticPopup_HideAll();
+		local message = ...;
+		StaticPopup_Show("FORCE_RENAME_CHARACTER", CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]));
     elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
         StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
     elseif ( event == "STORE_STATUS_CHANGED" ) then
@@ -1985,7 +1984,10 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
             StaticPopup_Show("BOOST_FACTION_CHANGE_IN_PROGRESS");
             return;
         end
-        StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+
+		local errorCode = ...;
+		local errorText = VASAssignErrorData_GetMessage(errorCode);
+		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", errorText);
     end
 end
 

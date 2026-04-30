@@ -31,6 +31,9 @@ local CombatLogInternal =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatLogInternal);

@@ -10,6 +10,9 @@ local CombatTextShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CombatTextShared);

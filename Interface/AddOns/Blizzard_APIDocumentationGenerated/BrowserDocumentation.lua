@@ -58,6 +58,9 @@ local Browser =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(Browser);

@@ -55,6 +55,9 @@ local LuaCurveObjectBaseAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LuaCurveObjectBaseAPI);

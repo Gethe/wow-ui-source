@@ -1429,6 +1429,7 @@ function ToggleGameMenu()
 		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
+	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then

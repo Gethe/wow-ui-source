@@ -218,7 +218,7 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 			return true;
 		end
 
-		if aura.icon then
+		if aura.icon and not aura.hideOnPartyFrames then
 			local debuffFrame = self.PartyMemberDebuffPool:Acquire();
 			local isBuff = false;
 			debuffFrame:Setup(frame.unit, aura, isBuff);

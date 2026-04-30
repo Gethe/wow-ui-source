@@ -112,6 +112,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Decor then
 			-- Decor
 			factory(CatalogShopConstants.CardTemplate.DetailsDecor, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Room then
+			-- Room
+			factory(CatalogShopConstants.CardTemplate.DetailsRoom, InitializeButton);
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.TradersTenders then
 			-- Trader's Tender
 			factory(CatalogShopConstants.CardTemplate.DetailsTender, InitializeButton);
@@ -121,6 +124,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
 			-- Access
 			factory(CatalogShopConstants.CardTemplate.DetailsAccess, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.HousingExteriorType then
+			-- House exterior type
+			factory(CatalogShopConstants.CardTemplate.DetailsExteriorType, InitializeButton);
 		else
 			factory(CatalogShopConstants.CardTemplate.Details, InitializeButton);
 		end

@@ -112,6 +112,9 @@ local ColorOverrides =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ColorOverrides);

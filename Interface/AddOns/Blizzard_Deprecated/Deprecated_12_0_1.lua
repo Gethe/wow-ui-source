@@ -71,3 +71,11 @@ function UnitIsSpellTarget(unit, target)
 
 	return false;
 end
+
+function C_SpellBook.GetSpellBookItemLossOfControlCooldown(spellBookItem)
+	local lossOfControlInfo = C_SpellBook.GetSpellBookItemLossOfControlCooldownInfo(spellBookItem);
+
+	if lossOfControlInfo then
+		return lossOfControlInfo.startTime, lossOfControlInfo.duration;
+	end
+end

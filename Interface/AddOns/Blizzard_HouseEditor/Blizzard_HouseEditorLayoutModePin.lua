@@ -101,8 +101,15 @@ function HousingLayoutDoorPinMixin:Update()
 	self:SetEnabled(isEnabled);
 	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;
 
+	local isDraggingRoom = C_HousingLayout.IsDraggingRoom();
+
 	if (isOccupied) then
-		self:Hide();
+		if (isDraggingRoom and (pin:IsPartOfDraggingRoom() or pin:IsConnectedToDraggingRoom())) then
+			self:Show();
+			self:SetAlpha(1);
+		else
+			self:Hide();
+		end
 	elseif C_HousingLayout.HasSelectedRoom() then
 		self.NodeAvailable:Hide();
 		self:SetShown(pin:IsAnyPartOfRoomSelected());

@@ -34,3 +34,5 @@ Blizzard_TalentFrameList.lua
 Blizzard_TalentFrameList.xml
 Blizzard_TalentFrameGrid.lua
 Blizzard_TalentFrameGrid.xml
+Blizzard_AutoCommitTraitFrame.lua
+Blizzard_AutoCommitTraitFrame.xml

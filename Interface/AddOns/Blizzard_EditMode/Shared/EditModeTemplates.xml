@@ -137,7 +137,7 @@
 			<KeyValue key="fixedHeight" value="32" type="number"/>
 		</KeyValues>
 		<Frames>
-			<CheckButton parentKey="Button">
+			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" x="-5"/>
@@ -151,6 +151,12 @@
 					<OnClick>
 						self:GetParent():OnCheckButtonClick();
 					</OnClick>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
 				</Scripts>
 			</CheckButton>
 		</Frames>

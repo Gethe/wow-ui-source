@@ -201,6 +201,9 @@ local EditModeManager =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EditModeManager);

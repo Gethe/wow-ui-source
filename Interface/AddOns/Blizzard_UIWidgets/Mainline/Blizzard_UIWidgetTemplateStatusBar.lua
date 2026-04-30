@@ -92,15 +92,6 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SanitizeTextureKits(widgetInfo);
 
-	local barColor = barColorFromTintValue[widgetInfo.colorTint];
-	if barColor then 
-		self.Bar:SetStatusBarColor(barColor:GetRGB());
-		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
-	else
-		self.Bar:SetStatusBarColor(WHITE_FONT_COLOR:GetRGB());
-		self.Bar.Spark:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
-	end 
-
 	self:SetupTextures(widgetInfo);
 
 	local texKitOptions = GetStatusBarTextureKitOptions(self.frameTextureKit);
@@ -116,6 +107,16 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.Bar:SetWidth(barWidth);
 
 	self.Bar:Setup(widgetContainer, widgetInfo, widgetInfo.tooltipLoc);
+
+	-- now that the bar texture is set up, color it
+	local barColor = barColorFromTintValue[widgetInfo.colorTint];
+	if barColor then
+		self.Bar:SetStatusBarColor(barColor:GetRGB());
+		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
+	else
+		self.Bar:SetStatusBarColor(WHITE_FONT_COLOR:GetRGB());
+		self.Bar.Spark:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+	end
 
 	self.Label:Setup(widgetInfo.text, widgetInfo.textFontType, widgetInfo.textSizeType, widgetInfo.textEnabledState);
 

@@ -362,6 +362,9 @@ local ReputationInfo =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ReputationInfo);

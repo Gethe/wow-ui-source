@@ -37,6 +37,9 @@ local WowSurvey =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WowSurvey);

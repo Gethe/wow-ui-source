@@ -70,6 +70,9 @@ local ChromieTimeUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ChromieTimeUI);

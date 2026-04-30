@@ -220,8 +220,10 @@ end
 
 function TalentButtonBaseMixin:GetTraitCurrenciesCost()
 	local nodeCost = self:GetTalentFrame():GetNodeCost(self.nodeID);
-	if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
-		return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+	if self:GetEntryInfo() ~= nil then
+		if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
+			return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+		end
 	end
 
 	return nodeCost;

@@ -243,7 +243,11 @@ HousingRoomComponentDoorTypeMixin = CreateFromMixins(HousingRoomComponentOptionM
 function HousingRoomComponentDoorTypeMixin:GetSupportsComponent(roomComponentInfo)
 	-- Only supports walls that are already some kind of door, no special labels needed
 	local isDoorComponent = roomComponentInfo.type == Enum.HousingRoomComponentType.Wall and roomComponentInfo.doorType ~= Enum.HousingRoomComponentDoorType.None;
-	return isDoorComponent, nil;
+
+	-- Make sure the connecting room supports smaller doors, if not we default to wide doors and skip the UI
+	local isDoorwaySupported = C_HousingCustomizeMode.RoomConnectionSupportsDoorType(roomComponentInfo.roomGUID, roomComponentInfo.componentID, Enum.HousingRoomComponentDoorType.Doorway);
+
+	return isDoorComponent and isDoorwaySupported, nil;
 end
 
 function HousingRoomComponentDoorTypeMixin:UpdateDropdown()
@@ -355,7 +359,11 @@ function RoomComponentPaneMixin:SetRoomComponentInfo(roomComponentInfo)
 
 	local isCustomizingWall = roomComponentInfo.type == Enum.HousingRoomComponentType.Wall;
 	self.ApplyWallpaperToAllWallsButton:SetShown(isCustomizingWall);
-	self.WallWarning:SetShown(isCustomizingWall);
+	local warningText = isCustomizingWall and HOUSING_DECOR_CUSTOMIZATION_WALL_WARNING
+		or (roomComponentInfo.type == Enum.HousingRoomComponentType.Ceiling) and HOUSING_DECOR_CUSTOMIZATION_CEILING_WARNING
+		or nil;
+	self.Warning:SetText(warningText);
+	self.Warning:SetShown(not not warningText);
 
 	self:Layout();
 end

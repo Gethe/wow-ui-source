@@ -1,26 +1,52 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<!-- Personal Resource Display -->
+	<StatusBar name="PersonalResourceStatusBar" inherits="TextStatusBar" virtual="true">
+		<KeyValues>
+			<KeyValue key="showPercentage" value="true" type="boolean"/>
+			<KeyValue key="showNumeric" value="true" type="boolean"/>
+			<KeyValue key="capNumericDisplay" value="true" type="boolean"/>
+			<KeyValue key="controlsShownState" value="false" type="boolean"/>
+		</KeyValues>
+		<BarTexture atlas="UI-HUD-CoolDownManager-Bar" texelSnappingBias="0" snapToPixelGrid="false"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="UI-HUD-CoolDownManager-Bar-BG" texelSnappingBias="0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="TextString" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</StatusBar>
+	
 	<Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin">
 		<Size x="200" y="75"/>
 		<Frames>
 			<!-- Health -->
 			<Frame parentKey="HealthBarsContainer">
-				<Size y="15"/>
+				<!-- Size dynamically managed in Lua. -->
 				<Anchors>
-					<Anchor point="LEFT"/>
 					<Anchor point="TOP"/>
-					<Anchor point="RIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a="0.65"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Frames>
-					<Frame parentKey="border" inherits="NamePlateFullBorderTemplate"/>
 					<StatusBar parentKey="TempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" mixin="TempMaxHealthLossMixin" frameLevel="100">
 						<BarTexture parentKey="TempMaxHealthLossTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss"/>
 						<Anchors>
@@ -28,7 +54,7 @@
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 					</StatusBar>
-					<StatusBar parentKey="healthBar">
+					<StatusBar parentKey="healthBar" inherits="PersonalResourceStatusBar">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
@@ -54,23 +80,17 @@
 								<Texture parentKey="overHealAbsorbGlow" hidden="true"/>
 							</Layer>
 						</Layers>
-						<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
 					</StatusBar>
 				</Frames>
 			</Frame>
 
 			<!-- Power (Mana, Rage, etc.) -->
-			<StatusBar parentKey="PowerBar">
-				<Size x="200" y="15"/>
+			<StatusBar parentKey="PowerBar" inherits="PersonalResourceStatusBar">
+				<!-- Size dynamically managed in Lua. -->
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.HealthBarsContainer" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a="0.65"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="ManaCostPredictionBar" file="Interface\TargetingFrame\UI-StatusBar">
 							<Color r="0.0" g="0.447" b="1.0"/>
@@ -78,7 +98,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate"/>
 					<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame"/>
 					<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
 						<Size x="200" y="17"/>
@@ -87,24 +106,16 @@
 						</Anchors>
 					</Frame>
 				</Frames>
-				<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 				<BarColor r="0" g="0" b="1"/>
 			</StatusBar>
 
 			<!-- Alternate Power -->
-			<StatusBar parentKey="AlternatePowerBar" hidden="true">
-				<Size x="200" y="15"/>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a="0.65"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate"/>
-				</Frames>
-				<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+			<StatusBar parentKey="AlternatePowerBar" inherits="PersonalResourceStatusBar" hidden="true">
+				<KeyValues>
+					<KeyValue key="showPercentage" value="false" type="boolean"/>
+					<KeyValue key="disableMaxValue" value="true" type="boolean"/>
+				</KeyValues>
+				<!-- Size dynamically managed in Lua. -->
 				<BarColor r="0" g="0" b="1"/>
 			</StatusBar>
 

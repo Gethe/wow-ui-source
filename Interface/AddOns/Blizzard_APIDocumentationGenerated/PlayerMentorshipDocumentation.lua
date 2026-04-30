@@ -81,6 +81,9 @@ local PlayerMentorship =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerMentorship);

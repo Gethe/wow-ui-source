@@ -132,6 +132,9 @@ local ScrappingMachineUI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ScrappingMachineUI);

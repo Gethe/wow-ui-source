@@ -261,4 +261,17 @@
 		</KeyValues>
 		<Size x="64" y="64"/>
 	</Button>
+
+	<Button name="TalentButtonScenarioChallengeCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.ScenarioChallengeCircle" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="TalentButtonDelveChallengeCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.DelveChallengeCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.DelveChallengeCircle" type="global"/>
+		</KeyValues>
+	</Button>
 </Ui>

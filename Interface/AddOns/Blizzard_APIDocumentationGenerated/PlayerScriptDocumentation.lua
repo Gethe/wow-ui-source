@@ -21,12 +21,12 @@ local PlayerScript =
 		{
 			Name = "Ambiguate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
 				{ Name = "fullName", Type = "cstring", Nilable = false },
-				{ Name = "context", Type = "cstring", Nilable = false },
+				{ Name = "context", Type = "cstring", Nilable = false, NeverSecret = true },
 			},
 
 			Returns =
@@ -201,6 +201,7 @@ local PlayerScript =
 		{
 			Name = "GetAttackPowerForStat",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -235,6 +236,7 @@ local PlayerScript =
 		{
 			Name = "GetAvoidance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -253,6 +255,7 @@ local PlayerScript =
 		{
 			Name = "GetBlockChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -280,6 +283,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRating",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -295,6 +299,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRatingBonus",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -353,6 +358,7 @@ local PlayerScript =
 		{
 			Name = "GetCritChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -371,6 +377,7 @@ local PlayerScript =
 		{
 			Name = "GetDodgeChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -380,6 +387,7 @@ local PlayerScript =
 		{
 			Name = "GetDodgeChanceFromAttribute",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -389,6 +397,7 @@ local PlayerScript =
 		{
 			Name = "GetExpertise",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -400,6 +409,7 @@ local PlayerScript =
 		{
 			Name = "GetExpertisePercent",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -411,6 +421,7 @@ local PlayerScript =
 		{
 			Name = "GetHaste",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -420,6 +431,7 @@ local PlayerScript =
 		{
 			Name = "GetHitModifier",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -438,6 +450,7 @@ local PlayerScript =
 		{
 			Name = "GetLifesteal",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -456,6 +469,7 @@ local PlayerScript =
 		{
 			Name = "GetManaRegen",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -466,6 +480,7 @@ local PlayerScript =
 		{
 			Name = "GetMastery",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -475,26 +490,12 @@ local PlayerScript =
 		{
 			Name = "GetMasteryEffect",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
 				{ Name = "masteryEffect", Type = "number", Nilable = false },
 				{ Name = "bonusCoefficient", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetMaxCombatRatingBonus",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "ratingIndex", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -509,6 +510,7 @@ local PlayerScript =
 		{
 			Name = "GetMeleeHaste",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -518,6 +520,7 @@ local PlayerScript =
 		{
 			Name = "GetModResilienceDamageReduction",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -545,6 +548,7 @@ local PlayerScript =
 		{
 			Name = "GetOverrideAPBySpellPower",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -554,6 +558,7 @@ local PlayerScript =
 		{
 			Name = "GetOverrideSpellPowerByAP",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -620,6 +625,7 @@ local PlayerScript =
 		{
 			Name = "GetParryChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -629,6 +635,7 @@ local PlayerScript =
 		{
 			Name = "GetParryChanceFromAttribute",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -638,6 +645,7 @@ local PlayerScript =
 		{
 			Name = "GetPetMeleeHaste",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -647,6 +655,7 @@ local PlayerScript =
 		{
 			Name = "GetPetSpellBonusDamage",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -687,6 +696,7 @@ local PlayerScript =
 		{
 			Name = "GetPowerRegen",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -697,6 +707,7 @@ local PlayerScript =
 		{
 			Name = "GetPowerRegenForPowerType",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -713,6 +724,7 @@ local PlayerScript =
 		{
 			Name = "GetPvpPowerDamage",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -722,6 +734,7 @@ local PlayerScript =
 		{
 			Name = "GetPvpPowerHealing",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -731,6 +744,7 @@ local PlayerScript =
 		{
 			Name = "GetRangedCritChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -740,6 +754,7 @@ local PlayerScript =
 		{
 			Name = "GetRangedHaste",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -833,6 +848,7 @@ local PlayerScript =
 		{
 			Name = "GetShieldBlock",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -842,6 +858,7 @@ local PlayerScript =
 		{
 			Name = "GetSpeed",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -851,6 +868,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellBonusDamage",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -866,6 +884,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellBonusHealing",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -875,6 +894,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellCritChance",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -884,6 +904,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellHitModifier",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -893,6 +914,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellPenetration",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -902,6 +924,7 @@ local PlayerScript =
 		{
 			Name = "GetSturdiness",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -920,6 +943,7 @@ local PlayerScript =
 		{
 			Name = "GetVersatilityBonus",
 			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1312,6 +1336,7 @@ local PlayerScript =
 			Name = "PlayerEffectiveAttackPower",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -1625,6 +1650,9 @@ local PlayerScript =
 				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

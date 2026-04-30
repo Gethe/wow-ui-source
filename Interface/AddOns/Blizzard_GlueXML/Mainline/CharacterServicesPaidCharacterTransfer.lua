@@ -160,6 +160,12 @@ function PCTDestinationSelectBlock:IsFinished(wasFromRewind)
 
 	local realmAddress, isSameRealm = ValidateVasRealm(result.destinationRealm);
 	if realmAddress then
+		-- If the realm is the same, the account must be different.
+		-- Note: we don't need to check the bnetAccountGuid because only wow account transfers are supported.
+		if isSameRealm and (GetCurrentWoWAccountGUID() == result.account.accountGUID) then
+			return false;
+		end
+
 		-- With Seamless VAS refactor: we cannot enfore same realm different account here because the UI doesn't know the virtual realm of a remote character
 		-- This will be enforced on the server.
 		return result.account.accountGUID or IsValidEmailAddress(result.account.accountEmail);

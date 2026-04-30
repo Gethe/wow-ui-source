@@ -105,6 +105,9 @@ local HeirloomInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HeirloomInfo);

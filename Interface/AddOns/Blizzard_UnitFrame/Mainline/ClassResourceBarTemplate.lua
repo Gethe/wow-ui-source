@@ -1,4 +1,4 @@
---[[ 
+--[[
 --------------------------- KeyValues --------------------------------
 	tooltip1, tooltip2 [global] - Builds the mouseover tooltip1
 	class [string] - The string name of the class
@@ -6,7 +6,7 @@
 	powerToken [string] = power token of the resource
 	powerToken2 [string] = second power token of the resource
 	maxUsablePoints [number] = the max points of the resource
-	powerType [Enum.PowerType] = the power type of the class resource 
+	powerType [Enum.PowerType] = the power type of the class resource
 	spec [global] - the spec for the power bar to show
 	resourceBarMixin [global] - override the default inherited mixin: ClassPowerBar
 	resourcePointTemplate [string] - template for the horizontal layout frame to instantiate from
@@ -38,10 +38,23 @@ function ClassResourceBarMixin:OnLoad()
 	end
 	self.maxUsablePoints = self.maxUsablePoints or 5;
 	self.resourceBarMixin.OnLoad(self);
+
+	EventRegistry:RegisterCallback("PersonalResourceDisplay.HideClassInfoOnPlayerFrameChanged", self.OnHideClassInfoOnPlayerFrameChanged, self);
+end
+
+function ClassResourceBarMixin:OnHideClassInfoOnPlayerFrameChanged(hideClassInfoOnPlayerFrame)
+	local hiddenByPersonalResourceDisplay = hideClassInfoOnPlayerFrame and self.canBeHiddenByPersonalResourceDisplay;
+
+	-- Don't call Setup a second time while loading the UI in the default case where the class resource is not hidden by the PRD.
+	-- Using not not to convert nil to false for the comparison so hiddenByPersonalResourceDisplay doesn't need to be initialized to an assumed default value.
+	if hiddenByPersonalResourceDisplay ~= not not self.hiddenByPersonalResourceDisplay then
+		self.hiddenByPersonalResourceDisplay = hiddenByPersonalResourceDisplay;
+		self:Setup();
+	end
 end
 
 function ClassResourceBarMixin:OnEvent(event, arg1, arg2)
-	if(event == "PLAYER_LEVEL_UP") then 
+	if(event == "PLAYER_LEVEL_UP") then
 		local unit = self.unit or self:GetParent().unit;
 		unit = unit or "player";
 		if(self.requiredShownLevel and UnitLevel(unit) >= self.requiredShownLevel) then
@@ -65,7 +78,7 @@ function ClassResourceBarMixin:OnEvent(event, arg1, arg2)
 end
 
 function ClassResourceBarMixin:HandleBarSetup()
-	local frameLevel = self:GetParent() and self:GetParent():GetFrameLevel() + 2 or self:GetFrameLevel(); 
+	local frameLevel = self:GetParent() and self:GetParent():GetFrameLevel() + 2 or self:GetFrameLevel();
 	self:SetFrameLevel(frameLevel);
 	if (self.showBarFunc) then
 		self.showBarFunc(self);
@@ -73,7 +86,7 @@ function ClassResourceBarMixin:HandleBarSetup()
 		self:Show();
 	end
 	self:UpdateMaxPower();
-	if(self.resourceBarMixin.UpdateMaxPower) then 
+	if(self.resourceBarMixin.UpdateMaxPower) then
 		self.resourceBarMixin.UpdateMaxPower(self);
 	end
 	self:UpdatePower();
@@ -86,6 +99,8 @@ function ClassResourceBarMixin:Setup()
 	if UnitInVehicle("player") then
 		self.xOffset = 43;
 		showBar = PlayerVehicleHasComboPoints();
+	elseif self.hiddenByPersonalResourceDisplay then
+		showBar = false;
 	else
 		showBar = self.resourceBarMixin.Setup(self);
 		if(self.shouldShowBarFunc) then
@@ -128,7 +143,7 @@ function ClassResourceBarMixin:UpdateMaxPower()
 
 		self.classResourceButtonPool:ReleaseAll();
 		self.classResourceButtonTable = { };
-	
+
 		assertsafe(self.maxUsablePoints < 100, "MaxUsablePoints unexpectedly high maxUsablePoints = " .. self.maxUsablePoints .. " powerType = " .. self.powerType);
 
 		for i = 1, self.maxUsablePoints do
@@ -140,7 +155,7 @@ function ClassResourceBarMixin:UpdateMaxPower()
 			resourcePoint.layoutIndex = i;
 			resourcePoint:Show();
 		end
-	
+
 		self:Layout();
 
 		-- Since we just re-acquired all the resource buttons, make sure they all get the current power state applied to them

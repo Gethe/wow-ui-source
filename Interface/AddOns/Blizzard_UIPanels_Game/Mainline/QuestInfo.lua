@@ -47,8 +47,6 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		end
 	end
 
-	QuestFrame.AccountCompletedNotice:Refresh();
-
 	QuestInfoFrame.questLog = template.questLog;
 	QuestInfoFrame.chooseItems = template.chooseItems;
 	QuestInfoFrame.acceptButton = acceptButton;

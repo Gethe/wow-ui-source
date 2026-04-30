@@ -175,6 +175,9 @@ local ReportSystem =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ReportSystem);

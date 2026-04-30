@@ -75,6 +75,9 @@ local EndOfMatchUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EndOfMatchUI);

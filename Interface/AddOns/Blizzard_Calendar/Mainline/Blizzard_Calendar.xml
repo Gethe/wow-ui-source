@@ -820,9 +820,9 @@
 								if ( userInput ) then
 									local isGuildEvent = C_Calendar.EventGetCalendarType() == "GUILD_EVENT";
 									if ( isGuildEvent ) then
-										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.include, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.exclude);
+										AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.include, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.exclude);
 									else
-										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDAREVENT.include, AUTOCOMPLETE_LIST.CALENDAREVENT.exclude);
+										AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDAREVENT.include, AUTOCOMPLETE_LIST.CALENDAREVENT.exclude);
 									end
 									AutoCompleteEditBox_OnTextChanged(self, userInput);
 								end

@@ -61,22 +61,11 @@
 							<KeyValue key="labelText" value="TRANSMOG_SHOW_EQUIPPED_GEAR" type="global"/>
 							<KeyValue key="spellButtonJustifyLeft" value="true" type="boolean"/>
 							<KeyValue key="buttonBorderAtlas" value="transmog-outfit-spellframe" type="string"/>
-							<KeyValue key="textPadRight" value="28" type="number"/>
 						</KeyValues>
 						<Size x="280" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="14" y="-44"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="Checkmark" atlas="transmog-icon-tick" hidden="true">
-									<Size x="24" y="21"/>
-									<Anchors>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Frames>
 							<Frame parentKey="OverlayFX" frameLevel="100">
 								<Size x="36" y="36"/>
@@ -186,6 +175,12 @@
 								<Size x="141" y="15"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="9" y="6"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="TooltipOverlay">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Money"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Money" relativePoint="BOTTOMRIGHT" x="-10" y="0"/>
 								</Anchors>
 							</Frame>
 						</Frames>
@@ -320,7 +315,7 @@
 							</AnimationGroup>
 						</Animations>
 					</Frame>
-					<Frame parentKey="Gradients" setAllPoints="true" frameLevel="0">
+					<Frame parentKey="Gradients" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="2">
 								<Texture parentKey="GradientLeft" atlas="transmog-outfit-darkbg-gradient">
@@ -366,23 +361,69 @@
 							</Frame>
 						</Frames>
 					</ModelScene>
-					<Frame parentKey="HideIgnoredToggle">
-						<Size x="30" y="29"/>
+					<Frame parentKey="ToggleOptions" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="5" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="25" y="-25"/>
 						</Anchors>
 						<Frames>
-							<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+							<Frame parentKey="HideIgnoredToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_HIDE_UNASSIGNED_SLOTS">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="SheatheWeaponToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_SHEATHE_WEAPON">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="PreviewedWeaponToggle">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="3" type="number"/>
+								</KeyValues>
+								<Size x="30" y="29"/>
+								<Frames>
+									<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_PREVIEWED_WEAPON_TOGGLE">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 						</Frames>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="TRANSMOG_HIDE_UNASSIGNED_SLOTS">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 					</Frame>
 					<Frame parentKey="LeftSlots" inherits="VerticalLayoutFrame">
 						<KeyValues>
@@ -491,7 +532,7 @@
 											<Anchor point="TOPRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPLEFT" x="-10" y="1"/>
 										</Anchors>
 									</EditBox>
-									<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate" hidden="false">
+									<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="-31" y="-106"/>
 										</Anchors>
@@ -560,6 +601,11 @@
 											</Layer>
 										</Layers>
 									</Frame>
+									<DropdownButton parentKey="WeaponSheatheDropdown" inherits="WowStyle1DropdownTemplate">
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" x="29" y="22"/>
+										</Anchors>
+									</DropdownButton>
 								</Frames>
 								<Scripts>
 									<OnLoad method="OnLoad"/>
@@ -597,6 +643,16 @@
 											<Anchor point="TOPLEFT" x="26" y="-72"/>
 											<Anchor point="BOTTOMRIGHT" x="-26" y="10"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString parentKey="NoEntriesText" inherits="GameFontNormalMed2" text="TRANSMOG_SETS_NONE" hidden="true">
+													<Size x="590"/>
+													<Anchors>
+														<Anchor point="CENTER" x="-3" y="31"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Frames>
 											<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
 											<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
@@ -644,6 +700,16 @@
 											<Anchor point="TOPLEFT" x="26" y="-72"/>
 											<Anchor point="BOTTOMRIGHT" x="-26" y="10"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString parentKey="NoEntriesText" inherits="GameFontNormalMed2" text="TRANSMOG_CUSTOM_SETS_NONE" hidden="true">
+													<Size x="590"/>
+													<Anchors>
+														<Anchor point="CENTER" x="-3" y="31"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Frames>
 											<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
 											<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
@@ -693,7 +759,7 @@
 											<KeyValue key="spacing" value="15" type="number"/>
 										</KeyValues>
 										<Anchors>
-											<Anchor point="TOPLEFT" x="43" y="-261"/>
+											<Anchor point="TOPLEFT" x="43" y="-235"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -720,7 +786,7 @@
 										</Layers>
 									</Frame>
 									<Button parentKey="ApplyButton" inherits="SharedButtonTemplate" motionScriptsWhileDisabled="true" text="TRANSMOG_SITUATIONS_APPLY">
-										<Size x="146" y="33"/>
+										<Size x="165" y="33"/>
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="32"/>
 										</Anchors>

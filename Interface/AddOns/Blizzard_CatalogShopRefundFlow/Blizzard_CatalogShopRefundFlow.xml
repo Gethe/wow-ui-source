@@ -88,7 +88,7 @@
 							<KeyValue key="labelText" value="CATALOG_SHOP_REFUND" type="global" />
 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.SelectAllButton" relativePoint="BOTTOMRIGHT" x="185" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.RefundDividerTop" relativePoint="TOPRIGHT" x="-180" y="10" />
 						</Anchors>
 					</Button>
 					<Button parentKey="TimeSortButton" inherits="RefundHeaderSortButtonTemplate">

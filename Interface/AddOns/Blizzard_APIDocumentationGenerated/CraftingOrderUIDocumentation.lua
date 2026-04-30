@@ -605,6 +605,9 @@ local CraftingOrderUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CraftingOrderUI);

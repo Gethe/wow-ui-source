@@ -90,5 +90,5 @@ NewSettings["12.0.1"] = {
 }
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
-	return C_HousingPhotoSharing.IsEnabled();
+	return C_PhotoSharing.IsEnabled();
 end

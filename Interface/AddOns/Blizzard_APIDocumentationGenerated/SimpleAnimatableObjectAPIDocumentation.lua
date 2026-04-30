@@ -52,6 +52,9 @@ local SimpleAnimatableObjectAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleAnimatableObjectAPI);

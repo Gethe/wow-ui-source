@@ -34,6 +34,9 @@ local SeasonInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SeasonInfo);

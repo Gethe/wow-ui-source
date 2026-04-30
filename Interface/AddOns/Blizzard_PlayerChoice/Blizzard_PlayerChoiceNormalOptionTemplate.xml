@@ -112,4 +112,72 @@
 			</Frame>
 		</Frames>
 	</Frame>
+
+	<Button name="PlayerChoiceNormalOptionGridTemplate" mixin="PlayerChoiceNormalOptionGridTemplateMixin" virtual="true">
+		<Size x="232" y="123"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="TextBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+				<!--Unimplemented-->
+				<Texture parentKey="Complete" atlas="playerchoice-checkmark-gradient" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Artwork">
+					<Size x="214" y="107"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ArtworkAdditive" alpha=".4" alphaMode="ADD" hidden="true">
+					<Size x="214" y="107"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-7"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture atlas="playerchoice-tile-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="214" y="107"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Artwork"/>
+						<MaskedTexture childKey="ArtworkAdditive"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="ArtworkBorder"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="Selected" atlas="playerchoice-tile-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ArtworkBorder" x="-4" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArtworkBorder" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" font="SystemFont_Med3" justifyV="TOP" justifyH="LEFT" maxLines="1">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="22" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubHeaderText" font="GameFontNormalSmall2" justifyV="BOTTOM" justifyH="LEFT" maxLines="1" hidden="true">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
 </Ui>

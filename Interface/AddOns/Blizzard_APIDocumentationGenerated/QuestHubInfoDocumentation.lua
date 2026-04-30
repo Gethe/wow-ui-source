@@ -32,6 +32,9 @@ local QuestHubInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestHubInfo);

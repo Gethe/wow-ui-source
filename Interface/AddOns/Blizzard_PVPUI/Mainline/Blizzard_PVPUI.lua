@@ -1078,9 +1078,10 @@ function HonorFrameBonusFrame_Update()
 
 		if (brawlInfo and brawlInfo.canQueue) then
 			button.Title:SetText(brawlInfo.name);
-
-			PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
-			button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
+			if (not brawlInfo.shouldHideRewardIcon) then
+				PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
+				button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
+			end
 		else
 			local timeUntilNext = brawlInfo and brawlInfo.timeLeftUntilNextChange or 0;
 			if (timeUntilNext == 0) then
@@ -1115,9 +1116,10 @@ function HonorFrameBonusFrame_Update()
 
 			if (brawlInfo and brawlInfo.canQueue) then
 				button.Title:SetText(brawlInfo.name);
-
-				PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
-				button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
+				if (not brawlInfo.shouldHideRewardIcon) then
+					PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
+					button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
+				end
 			else
 				button.Title:SetText(BRAWL_CLOSED);
 				button.Reward:Hide();

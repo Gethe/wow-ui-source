@@ -73,6 +73,9 @@ local UITimer =
 			Type = "CallbackType",
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UITimer);

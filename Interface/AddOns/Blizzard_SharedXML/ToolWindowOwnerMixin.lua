@@ -10,6 +10,8 @@ function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, mi
 	-- Setup window visual
 	window:SetTitle(title);
 
+	-- FIXME: The size passed to SetWindowSize will be overwritten by SetMinSize because
+	-- the desired size is unretrievable until the view event pump updates the actual window rect.
 	if width and height then
 		window:SetWindowSize(width, height);
 	end
@@ -56,6 +58,17 @@ function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, mi
 	return true;
 end
 
+function ToolWindowOwnerMixin:SetMinSize(minWidth, minHeight)
+	local window = self:GetWindow();
+	if not window then
+		return;
+	end
+
+	if minWidth and minHeight then
+		window:SetMinSize(minWidth, minHeight);
+	end
+end
+
 function ToolWindowOwnerMixin:SetWindowFocus()
 	local window = self:GetWindow();
 	if not window then
@@ -63,6 +76,24 @@ function ToolWindowOwnerMixin:SetWindowFocus()
 	end
 
 	window:SetFocus();
+end
+
+function ToolWindowOwnerMixin:IsTopmost()
+	local window = self:GetWindow();
+	if not window then
+		return;
+	end
+
+	return window:IsTopmost();
+end
+
+function ToolWindowOwnerMixin:SetTopmost(topmost)
+	local window = self:GetWindow();
+	if not window then
+		return;
+	end
+
+	window:SetTopmost(topmost);
 end
 
 function ToolWindowOwnerMixin:MoveToMainWindow()

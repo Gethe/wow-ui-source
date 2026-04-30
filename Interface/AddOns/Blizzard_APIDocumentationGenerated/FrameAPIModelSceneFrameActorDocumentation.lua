@@ -333,6 +333,17 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "SetSheathedCategory",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TransmogOutfitSlotOptionSheatheCategory", Nilable = false },
+			},
+		},
+		{
 			Name = "SetUseTransmogChoices",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -372,6 +383,16 @@ local FrameAPIModelSceneFrameActor =
 				{ Name = "inventorySlots", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "UseUnitSheatheCategory",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "useCategory", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -379,6 +400,9 @@ local FrameAPIModelSceneFrameActor =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

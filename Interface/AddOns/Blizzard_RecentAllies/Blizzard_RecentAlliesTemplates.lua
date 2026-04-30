@@ -237,7 +237,7 @@ function RecentAlliesEntryMixin:InitializeStateDisplay()
 	self:UpdateBackgroundForOnlineStatus(stateData.isOnline);
 
 	self.StateIconContainer.PinDisplay:Init(stateData);
-	self.StateIconContainer.FriendRequestPendingDisplay:SetShown(stateData.hasFriendRequestPending);
+	self.StateIconContainer.FriendRequestPendingDisplay:SetShown(stateData.friendRequestSentThisSession);
 	self.StateIconContainer.PinDisplay:SetShown(stateData.pinExpirationDate ~= nil);
 
 	self.PartyButton:SetEnabled(stateData.isOnline);

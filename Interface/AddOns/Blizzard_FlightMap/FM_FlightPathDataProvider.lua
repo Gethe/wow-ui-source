@@ -249,7 +249,7 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 	elseif self.taxiNodeData.state == Enum.FlightPathState.Reachable then
 		local cost = TaxiNodeCost(self.taxiNodeData.slotIndex);
 		if cost > 0 then
-			SetTooltipMoney(GameTooltip, cost);
+			GameTooltip_AddMoneyLine(GameTooltip, cost);
 		elseif self.taxiNodeData.specialIconCostString then
 			if self.taxiNodeData.useSpecialIcon then
 				GameTooltip_AddHighlightLine(GameTooltip, self.taxiNodeData.specialIconCostString, true);

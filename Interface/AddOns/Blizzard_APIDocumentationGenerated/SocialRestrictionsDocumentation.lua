@@ -112,6 +112,9 @@ local SocialRestrictions =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SocialRestrictions);

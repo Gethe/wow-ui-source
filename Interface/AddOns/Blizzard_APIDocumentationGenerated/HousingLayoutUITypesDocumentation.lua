@@ -67,6 +67,9 @@ local HousingLayoutUITypes =
 			Type = "CallbackType",
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingLayoutUITypes);

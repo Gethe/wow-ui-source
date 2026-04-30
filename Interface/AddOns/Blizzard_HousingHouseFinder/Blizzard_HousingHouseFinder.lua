@@ -168,13 +168,14 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 		self.GuildSubdivisionDropdown:Hide();
 	end
 
-	if button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
-		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_CHARTER_INVITE);
-		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
-		self.HouseFinderNotificationBanner:Show();
-	elseif button.neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None and not C_Housing.DoesFactionMatchNeighborhood(button.neighborhoodInfo.neighborhoodGUID) then
+	
+	if button.neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None and not C_Housing.DoesFactionMatchNeighborhood(button.neighborhoodInfo.neighborhoodGUID) then
 		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_WRONG_FACTION);
 		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-red");
+		self.HouseFinderNotificationBanner:Show();
+	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_CHARTER_INVITE);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
 		self.HouseFinderNotificationBanner:Show();
 	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.PartySync then
 		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_PARTY_LEADER);
@@ -355,7 +356,7 @@ HouseFinderBNetFriendSearchBoxMixin = {};
 
 function HouseFinderBNetFriendSearchBoxMixin:OnLoad()
 	local template = AUTOCOMPLETE_LIST.HOUSE_FINDER;
-	AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, template.include, template.exclude);
+	AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, template.include, template.exclude);
 
 	local function HouseFinderAutoComplete(_editBox, fullText, nameInfo, _ambiguatedName)
 		self.autoCompleteBnetID = nameInfo.bnetID;
@@ -476,7 +477,11 @@ function HouseFinderPlotInfoFrameMixin:OnEvent(event, ...)
 		if result == Enum.HousingResult.Success then
 			self.VisitHouseButton:Enable();
 			HideUIPanel(HouseFinderFrame);
+		elseif result == Enum.HousingResult.BoundToStartingArea then
+			self.ReservationError:SetText(SPELL_FAILED_NOT_HERE);
+			self.ReservationError:Show();
 		else
+			self.ReservationError:SetText(HOUSEFINDER_RESERVATION_ERROR);
 			self.ReservationError:Show();
 		end
 	end

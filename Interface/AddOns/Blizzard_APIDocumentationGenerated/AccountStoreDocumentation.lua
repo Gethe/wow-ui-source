@@ -270,6 +270,9 @@ local AccountStore =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AccountStore);

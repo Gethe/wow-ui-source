@@ -77,6 +77,24 @@ function DamageMeterEntryMixin:GetClassificationAtlasElement()
 	return nil;
 end
 
+function DamageMeterEntryMixin:GetSourceTypeAtlasElement()
+	-- When class color is off, the bars are colored by source type and don't need an icon to indicate teams.
+	if not self.isClassColorDesired then
+		return nil;
+	end
+
+	-- Only show icons for members of the enemy team.
+	if self.sourceDisplayType == Enum.DamageMeterSourceDisplayType.Enemy then
+		if self.factionGroup == PLAYER_FACTION_GROUP[0] then
+			return "HordeSymbol";
+		elseif self.factionGroup == PLAYER_FACTION_GROUP[1] then
+			return "AllianceSymbol";
+		end
+	end
+
+	return nil;
+end
+
 function DamageMeterEntryMixin:GetNameText()
 	-- Override as necessary.
 end
@@ -94,8 +112,10 @@ function DamageMeterEntryMixin:ShowsValuePerSecondAsPrimary()
 end
 
 local function GetEntryValueText(value, parentheticalValue, percentageValue)
-	if percentageValue then
+	if parentheticalValue and percentageValue then
 		return DAMAGE_METER_ENTRY_FORMAT_COMPLETE:format(AbbreviateLargeNumbers(value), AbbreviateLargeNumbers(parentheticalValue), Round(percentageValue * 100));
+	elseif percentageValue then
+		return DAMAGE_METER_ENTRY_FORMAT_COMPLETE_NO_PARENTHESIS:format(AbbreviateLargeNumbers(value), Round(percentageValue * 100));
 	elseif parentheticalValue then
 		return DAMAGE_METER_ENTRY_FORMAT_COMPACT:format(AbbreviateLargeNumbers(value), AbbreviateLargeNumbers(parentheticalValue));
 	else
@@ -118,6 +138,10 @@ end
 local function GetParentheticalValue(entry)
 	if entry.value and entry:ShowsValuePerSecondAsPrimary() then
 		return entry.value;
+	end
+
+	if entry.suppressValuePerSecond then
+		return nil;
 	end
 
 	if entry.valuePerSecond then
@@ -249,10 +273,10 @@ function DamageMeterEntryMixin:SetupDefaultStyle()
 	statusBar:SetPoint("TOP", 0, -1);
 	statusBar:SetPoint("BOTTOMRIGHT", -4, 1);
 
-	name:SetPoint("LEFT", 5, 0);
+	name:SetPoint("LEFT", 2, 0);
 	name:SetPoint("RIGHT", self:GetValue(), "LEFT", -25, 0);
 
-	value:SetPoint("RIGHT", -8, 0);
+	value:SetPoint("RIGHT", -3, 0);
 end
 
 function DamageMeterEntryMixin:SetupBorderedStyle()
@@ -281,7 +305,7 @@ function DamageMeterEntryMixin:SetupThinStyle()
 	name:SetPoint("RIGHT", value, "LEFT", -25, 0);
 
 	value:SetPoint("TOP", self, "TOP", 0, 0);
-	value:SetPoint("RIGHT", self, "RIGHT", -8, 0);
+	value:SetPoint("RIGHT", self, "RIGHT", -3, 0);
 end
 
 function DamageMeterEntryMixin:UpdateStyle()
@@ -308,6 +332,14 @@ function DamageMeterEntryMixin:GetCreatureStatusBarColor()
 	return DAMAGE_METER_STATUS_BAR_CREATURE_COLOR;
 end
 
+function DamageMeterEntryMixin:GetAllyStatusBarColor()
+	return DAMAGE_METER_STATUS_BAR_ALLY_COLOR;
+end
+
+function DamageMeterEntryMixin:GetEnemyStatusBarColor()
+	return DAMAGE_METER_STATUS_BAR_ENEMY_COLOR;
+end
+
 function DamageMeterEntryMixin:GetStatusBarColor()
 	local r, g, b = self:GetStatusBarTexture():GetVertexColor();
 	return CreateColor(r, g, b);
@@ -329,6 +361,12 @@ function DamageMeterEntryMixin:GetDesiredBarColor()
 		local classFilename = self.classFilename or self.unitClassFilename;
 		if classFilename then
 			return RAID_CLASS_COLORS[classFilename] or self:GetDefaultStatusBarColor();
+		end
+	else
+		if self.sourceDisplayType == Enum.DamageMeterSourceDisplayType.Ally then
+			return self:GetAllyStatusBarColor();
+		elseif self.sourceDisplayType == Enum.DamageMeterSourceDisplayType.Enemy then
+			return self:GetEnemyStatusBarColor();
 		end
 	end
 
@@ -459,8 +497,14 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.specIconID = combatSource.specIconID;
 	self.deathRecapID = combatSource.deathRecapID;
 	self.deathTimeSeconds = combatSource.deathTimeSeconds;
-	self.isCreature = combatSource.sourceCreatureID ~= nil;
+
+	 -- Creatures, but not those treated as players for display (who will have classFilename like players)
+	self.isCreature = (combatSource.sourceCreatureID ~= nil) and (self.classFilename == '');
+
 	self.classification = combatSource.classification;
+	self.suppressValuePerSecond = combatSource.suppressValuePerSecond;
+	self.sourceDisplayType = combatSource.sourceDisplayType;
+	self.factionGroup = combatSource.factionGroup;
 	self:SetSuppressIcon(combatSource.suppressIcon);
 
 	DamageMeterEntryMixin.Init(self, combatSource);
@@ -503,6 +547,12 @@ function DamageMeterEntryMixin:GetFormattedSourceNameText()
 	local classificationAtlasElement = self:GetClassificationAtlasElement();
 	if classificationAtlasElement then
 		local atlasMarkup = CreateAtlasMarkup(classificationAtlasElement);
+		return string.format("%s %s", atlasMarkup, self.sourceName);
+	end
+
+	local sourceTypeAtlasElement = self:GetSourceTypeAtlasElement();
+	if sourceTypeAtlasElement then
+		local atlasMarkup = CreateAtlasMarkup(sourceTypeAtlasElement);
 		return string.format("%s %s", atlasMarkup, self.sourceName);
 	end
 

@@ -71,7 +71,7 @@ function GridButtonTrayMixin:OnSizeChanged()
 	end
 
 	local widthEpsilon = 0.1;
-	if ApproximatelyEqual(self.previousWidth, newWidth, widthEpsilon) then
+	if ApproximatelyEqual(self.previousWidth or 0, newWidth, widthEpsilon) then
 		return;
 	end
 
@@ -91,6 +91,16 @@ function GridButtonTrayMixin:IsTrayLayoutDirty()
 	return self.isTrayLayoutDirty
 end
 
+function GridButtonTrayMixin:AddControlExternal(control)
+	-- External controls need to be parented to this frame in order
+	-- for this frame to treat them as children during resize.
+	control:SetParent(self);
+	control:Show();
+
+	table.insert(self.controls, control);
+	self:MarkTrayLayoutDirty();
+end
+
 function GridButtonTrayMixin:AddControl(label, controlCallback, ...)
 	local control = BaseButtonTrayMixin.AddControl(self, label, controlCallback, ...);
 	if control ~= nil then
@@ -99,6 +109,41 @@ function GridButtonTrayMixin:AddControl(label, controlCallback, ...)
 	end
 
 	return control;
+end
+
+function GridButtonTrayMixin:AddControlsExternal(...)
+	local count = select("#", ...);
+	for index = 1, count do
+		local control = select(index, ...);
+		self:AddControlExternal(control);
+	end
+end
+
+function GridButtonTrayMixin:RemoveControl(control)
+	local index = tIndexOf(self.controls, control);
+	if index then
+		table.remove(self.controls, index);
+		control:SetParent(nil);
+		control:Hide();
+		self:MarkTrayLayoutDirty();
+	end
+end
+
+function GridButtonTrayMixin:RemoveControls(...)
+	local count = select("#", ...);
+	for index = 1, count do
+		local control = select(index, ...);
+		self:RemoveControl(control);
+	end
+end
+
+function GridButtonTrayMixin:RemoveAllControls()
+	for index, control in ipairs(self.controls) do
+		control:SetParent(nil);
+		control:Hide();
+	end
+	self.controls = {};
+	self:MarkTrayLayoutDirty();
 end
 
 function GridButtonTrayMixin:UpdateTrayLayout()

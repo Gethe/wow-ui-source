@@ -17,6 +17,9 @@ local LuaCurveObjectConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(LuaCurveObjectConstants);

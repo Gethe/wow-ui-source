@@ -15,6 +15,9 @@ local SimpleMaskTextureAPI =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SimpleMaskTextureAPI);

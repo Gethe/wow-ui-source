@@ -72,6 +72,9 @@ local UIModelInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIModelInfoShared);

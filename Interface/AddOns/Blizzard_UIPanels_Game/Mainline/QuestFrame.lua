@@ -410,6 +410,7 @@ function QuestFrame_OnShow()
 		TutorialFrame_Hide();
 	end
 	QuestFrame.FriendshipStatusBar:Update();
+	QuestFrame.AccountCompletedNotice:Refresh();
 end
 
 function QuestFrame_OnHide()
@@ -477,11 +478,11 @@ function QuestFrameModelSceneMixin:OnShow()
 end
 
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y, useCompactDescription)
+	QuestModelScene:ClearAllPoints();
+	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:SetParent(parentFrame);
 	QuestModelScene:SetFrameStrata("HIGH");
 	QuestModelScene:SetFrameLevel(1000);
-	QuestModelScene:ClearAllPoints();
-	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
 	QuestModelScene:TransitionToModelSceneID(modelSceneID or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	QuestModelScene:Show();

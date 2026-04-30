@@ -80,6 +80,9 @@ local SystemTime =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SystemTime);

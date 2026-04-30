@@ -168,6 +168,29 @@ local CVar =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresIndexInRange",
+			Type = "Precondition",
+			FailureMode = "Error",
+		},
+		{
+			Name = "RequiresNonReadOnlyCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresNonSecureCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresValidAndPublicCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CVar);

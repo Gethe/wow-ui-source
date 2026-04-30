@@ -19,3 +19,7 @@ function MicroMenuMixin:GenerateButtonInfos()
 
 	return buttonInfos;
 end
+
+function MicroMenuMixin:ApplyMicroMenuOverrides()
+	self.childXPadding = -4;
+end

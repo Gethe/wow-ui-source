@@ -6,11 +6,6 @@ UIPanelWindows["GenericTraitFrame"] = {
 	checkFitExtraHeight = 40,
 };
 
-local FrameLevelPerRow = 10;
-local TotalFrameLevelSpread = 500;
-local BaseYOffset = 1500;
-local BaseRowHeight = 600;
-
 GenericTraitFrameMixin = {};
 
 local GenericTraitFrameEvents = {
@@ -71,11 +66,6 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 end
 
 function GenericTraitFrameMixin:OnShow()
-	-- Changes can happen to the tree while it was hidden that may require a full update so mark it
-	-- as dirty before calling the base OnShow. For example, skyriding talents can be automatically
-	-- purchased on level up.
-	self:MarkTreeDirty();
-
 	TalentFrameBaseMixin.OnShow(self);
 
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
@@ -105,18 +95,6 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 
 	if event == "TRAIT_SYSTEM_NPC_CLOSED" then
 		HideUIPanel(self);
-	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
-		-- Hack: traitNodeInfo.canPurchaseRank is not getting updated after currency changes, so button state does not get updated.
-		-- This is a temp fix to dirty all nodes to force it to get latest node info.
-		local treeID = ...;
-		if treeID == self:GetTalentTreeID() then
-			for talentButton in self:EnumerateAllTalentButtons() do
-				local nodeID = talentButton:GetNodeID();
-				if nodeID then
-					self:MarkNodeInfoCacheDirty(nodeID);
-				end
-			end
-		end
 	end
 end
 
@@ -139,76 +117,8 @@ function GenericTraitFrameMixin:SetTreeID(traitTreeID)
 	EventRegistry:TriggerEvent("GenericTraitFrame.SetTreeID", traitTreeID, configID);
 end
 
-function GenericTraitFrameMixin:CheckAndReportCommitOperation()
-	if not C_Traits.IsReadyForCommit() then
-		self:ReportConfigCommitError();
-		return false;
-	end
-
-	return TalentFrameBaseMixin.CheckAndReportCommitOperation(self);
-end
-
-function GenericTraitFrameMixin:AttemptConfigOperation(...)
-	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
-		if not self:CommitConfig() then
-			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
-			self:MarkTreeDirty();
-			return false;
-		end
-
-		return true;
-	else
-		self:MarkTreeDirty();
-	end
-
-	return false;
-end
-
-function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
-	if self:ShouldShowConfirmation(nodeID) then
-		local baseButton = self:GetTalentButtonByNodeID(nodeID);
-		if baseButton and baseButton:IsMaxed() then
-			self:SetSelectionCallback(nodeID, entryID);
-			return;
-		end
-
-		local referenceKey = self;
-		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-			StaticPopup_Hide("GENERIC_CONFIRMATION");
-		end
-
-		local cost = self:GetNodeCost(nodeID);
-		local costStrings = self:GetCostStrings(cost);
-		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
-
-		local setSelectionCallback = GenerateClosure(self.SetSelectionCallback, self, nodeID, entryID);
-		local customData = {
-			text = costString,
-			callback = setSelectionCallback,
-			referenceKey = self,
-		};
-
-		StaticPopup_ShowCustomGenericConfirmation(customData);
-	else
-		self:SetSelectionCallback(nodeID, entryID);
-	end
-end
-
-function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
-	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) then
-		if entryID then
-			self:ShowPurchaseVisuals(nodeID);
-			self:PlaySelectSoundForNode(nodeID);
-		else
-			self:PlayDeselectSoundForNode(nodeID);
-		end
-	end
-end
-
-function GenericTraitFrameMixin:GetConfigCommitErrorString()
-	-- Overrides TalentFrameBaseMixin.
-
-	return TALENT_FRAME_CONFIG_OPERATION_TOO_FAST;
+function GenericTraitFrameMixin:GetButtonPurchaseFXIDs()
+	return self.buttonPurchaseFXIDs;
 end
 
 function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
@@ -235,57 +145,6 @@ function GenericTraitFrameMixin:ShouldInstantiateInvisibleButtons()
 	return true;
 end
 
-function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
-	-- Overrides TalentFrameBaseMixin.
-
-	-- Layer the nodes so shadows line up properly, including for edges.
-	local scaledYOffset = ((nodeInfo.posY - BaseYOffset) / BaseRowHeight) * FrameLevelPerRow;
-	return TotalFrameLevelSpread - scaledYOffset;
-end
-
-function GenericTraitFrameMixin:IsLocked()
-	-- Overrides TalentFrameBaseMixin.
-
-	local canEditTalents, errorMessage = C_Traits.CanEditConfig(self:GetConfigID());
-	return not canEditTalents, errorMessage;
-end
-
-function GenericTraitFrameMixin:PurchaseRank(nodeID)
-	if self:ShouldShowConfirmation(nodeID) then
-		local referenceKey = self;
-		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-			StaticPopup_Hide("GENERIC_CONFIRMATION");
-		end
-
-		local cost = self:GetNodeCost(nodeID);
-		local costStrings = self:GetCostStrings(cost);
-
-		local confirmationString;
-		if #costStrings > 0 then
-			confirmationString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
-		else
-			confirmationString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE;
-		end
-
-		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
-		local customData = {
-			text = confirmationString,
-			callback = purchaseRankCallback,
-			referenceKey = self,
-		};
-
-		StaticPopup_ShowCustomGenericConfirmation(customData);
-	else
-		self:PurchaseRankCallback(nodeID);
-	end
-end
-
-function GenericTraitFrameMixin:PurchaseRankCallback(nodeID)
-	if TalentFrameBaseMixin.PurchaseRank(self, nodeID) then
-		self:ShowPurchaseVisuals(nodeID);
-	end
-end
-
 function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 	local treeID = self:GetTalentTreeID();
 	if not treeID then
@@ -300,41 +159,6 @@ function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 		HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
 	end
 end
-
-function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
-	if not self.buttonPurchaseFXIDs then
-		return;
-	end
-
-	local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseCompleteEffect then
-		buttonWithPurchase:PlayPurchaseCompleteEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
-	end
-end
-
-function GenericTraitFrameMixin:PlaySelectSoundForNode(nodeID)
-	self:InvokeTalentButtonMethodByNodeID("PlaySelectSound", nodeID);
-end
-
-function GenericTraitFrameMixin:PlayDeselectSoundForNode(nodeID)
-	self:InvokeTalentButtonMethodByNodeID("PlayDeselectSound", nodeID);
-end
-
-function GenericTraitFrameMixin:ShouldShowConfirmation(nodeID)
-	local traitSystemFlags = C_Traits.GetTraitSystemFlags(self:GetConfigID());
-	local showSpendConfirmation = traitSystemFlags and FlagsUtil.IsSet(traitSystemFlags, Enum.TraitSystemFlag.ShowSpendConfirmation);
-
-	-- If nodeID is provided, check if this is a subtree selection and if suppression is enabled
-	if nodeID and self.suppressSubTreeConfirmation then
-		local nodeInfo = C_Traits.GetNodeInfo(self:GetConfigID(), nodeID);
-		if nodeInfo and nodeInfo.type == Enum.TraitNodeType.SubTreeSelection then
-			return false;
-		end
-	end
-
-	return showSpendConfirmation;
-end
-
 
 GenericTraitFrameCurrencyFrameMixin = {};
 

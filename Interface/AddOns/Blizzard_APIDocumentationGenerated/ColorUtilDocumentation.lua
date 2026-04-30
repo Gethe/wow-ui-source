@@ -146,6 +146,9 @@ local ColorUtil =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ColorUtil);

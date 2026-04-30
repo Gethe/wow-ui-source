@@ -376,6 +376,19 @@ TalentButtonUtil.SizingAdjustment = {
 		{ region = "SpendText", anchorX = 2, anchorY = -7, },
 	},
 
+	DelveChallengeCircle = {
+		{ region = "Icon", adjust = 12, },
+		{ region = "DisabledOverlay", adjust = 13, },
+		{ region = "BorderShadow", adjust = -2, },
+		{ region = "StateBorder", adjust = -4, },
+		{ region = "Border2", adjust = 14, },
+		{ region = "Border", adjust = 17, },
+		{ region = "IconMask", adjust = 4, },
+		{ region = "BorderMask", adjust = -7, },
+		{ region = "Border2Mask", adjust = -4, },
+		{ region = "BorderShadowMask", adjust = -2, },
+		{ region = "DisabledOverlayMask", adjust = 9, },
+	},
 };
 
 local HoverAlphaByVisualState = {

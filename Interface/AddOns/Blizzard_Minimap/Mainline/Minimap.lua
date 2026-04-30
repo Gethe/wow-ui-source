@@ -8,15 +8,24 @@ MINIMAP_EXPANDER_MAXSIZE = 28;
 HUNTER_TRACKING = 1;
 TOWNSFOLK_TRACKING = 2;
 
-GARRISON_ALERT_CONTEXT_BUILDING = 1;
-GARRISON_ALERT_CONTEXT_MISSION = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = 2,
-	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = 4,
-	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = 5,
-	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = 6,
-	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = 6,
+MinimapPulseLock = EnumUtil.MakeEnum(
+	"GarrisonBuilding",
+	"GarrisonInvasion",
+	"GarrisonMission_6_0",
+	"GarrisonMission_6_0_Boat",
+	"GarrisonMission_7_0",
+	"GarrisonMission_8_0",
+	"GarrisonMission_9_0",
+	"RunesOfPower"
+);
+
+local followerToPulseLock = {
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_6_0,
+	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat]			  = MinimapPulseLock.GarrisonMission_6_0_Boat,
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_7_0,
+	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_8_0,
+	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_9_0,
 };
-GARRISON_ALERT_CONTEXT_INVASION = 3;
 
 local REMOVED_FILTERS = {
 	[Enum.MinimapTrackingFilter.VenderFood] = true,
@@ -243,14 +252,9 @@ function MinimapMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
-		self.ZoomIn:Enable();
-		self.ZoomOut:Enable();
 		local zoom = Minimap:GetZoom();
-		if ( zoom == (Minimap:GetZoomLevels() - 1) ) then
-			self.ZoomIn:Disable();
-		elseif ( zoom == 0 ) then
-			self.ZoomOut:Disable();
-		end
+		self.ZoomIn:SetEnabled(zoom ~= (Minimap:GetZoomLevels() - 1));
+		self.ZoomOut:SetEnabled(zoom ~= 0);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if C_Minimap.ShouldUseHybridMinimap() then
 			if not HybridMinimap then
@@ -305,8 +309,11 @@ MinimapZoomInButtonMixin = { };
 function MinimapZoomInButtonMixin:OnClick()
 	Minimap.ZoomOut:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_IN);
-	Minimap:SetZoom(Minimap:GetZoom() + 1);
-	if(Minimap:GetZoom() == (Minimap:GetZoomLevels() - 1)) then
+
+	local maxZoomLevel = Minimap:GetZoomLevels() - 1;
+	local currentZoomLevel = math.min(Minimap:GetZoom(), maxZoomLevel - 1);
+	Minimap:SetZoom(currentZoomLevel + 1);
+	if(Minimap:GetZoom() == maxZoomLevel) then
 		Minimap.ZoomIn:Disable();
 	end
 end
@@ -327,7 +334,9 @@ MinimapZoomOutButtonMixin = { };
 function MinimapZoomOutButtonMixin:OnClick()
 	Minimap.ZoomIn:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_OUT);
-	Minimap:SetZoom(Minimap:GetZoom() - 1);
+
+	local currentZoom = math.max(1, Minimap:GetZoom());
+	Minimap:SetZoom(currentZoom - 1);
 	if(Minimap:GetZoom() == 0) then
 		Minimap.ZoomOut:Disable();
 	end
@@ -799,6 +808,7 @@ ExpansionLandingPageMinimapButtonMixin = { };
 
 ExpansionLandingPageMode = {
 	Garrison = 1,
+	ExpansionOverlay = 2,
 };
 
 local GarrisonLandingPageEvents = {
@@ -817,6 +827,8 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.OnOverlayChanged, self);
+
 	self.pulseLocks = {};
 
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
@@ -831,8 +843,14 @@ function ExpansionLandingPageMinimapButtonMixin:IsInGarrisonMode()
 	return self.mode == ExpansionLandingPageMode.Garrison;
 end
 
+function ExpansionLandingPageMinimapButtonMixin:IsExpansionOverlayMode()
+	return self.mode == ExpansionLandingPageMode.ExpansionOverlay;
+end
+
 function ExpansionLandingPageMinimapButtonMixin:SetBestLandingPageMode()
-	if not self:IsInGarrisonMode() then
+	if ExpansionLandingPage:IsOverlayApplied() then
+		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
+	elseif not self:IsInGarrisonMode() then
 		self.mode = ExpansionLandingPageMode.Garrison;
 		FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
 	end
@@ -866,10 +884,36 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	end
 end
 
+function ExpansionLandingPageMinimapButtonMixin:OnShow()
+	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerPulseLock", self.TriggerPulseLock, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.HidePulse", self.HidePulse, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.ClearPulses", self.ClearPulses, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerAlert", self.TriggerAlert, self);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnHide()
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerPulseLock", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.HidePulse", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.ClearPulses", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerAlert", self);
+end
+
 function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	if self:IsInGarrisonMode() and tContains(GarrisonLandingPageEvents, event) then
 		self:HandleGarrisonEvent(event, ...);
 	end
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
+	local forceUpdateIcon = false;
+
+	local expansionLandingPageType = ExpansionLandingPage:GetLandingPageType();
+	if self.expansionLandingPageType ~= expansionLandingPageType then
+		self.expansionLandingPageType = expansionLandingPageType;
+		forceUpdateIcon = true;
+	end
+
+	self:RefreshButton(forceUpdateIcon);
 end
 
 function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize)
@@ -905,6 +949,14 @@ end
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	if self:IsInGarrisonMode() then
 		self:UpdateIconForGarrison();
+	else
+		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
+		if minimapDisplayInfo then
+			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconOffset(minimapDisplayInfo.anchorOffset);
+			self.title = minimapDisplayInfo.title;
+			self.description = minimapDisplayInfo.description;
+		end
 	end
 end
 
@@ -916,6 +968,8 @@ function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
 	if self:IsInGarrisonMode() then
 		GarrisonLandingPage_Toggle();
 		GarrisonMinimap_HideHelpTip(self);
+	elseif self:IsExpansionOverlayMode() then
+		ToggleExpansionLandingPage();
 	end
 end
 
@@ -1040,7 +1094,7 @@ function ExpansionLandingPageMinimapButtonMixin:HandleGarrisonEvent(event, ...)
 			GarrisonMinimapBuilding_ShowPulse(self);
 		end
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
-		self:HidePulse(GARRISON_ALERT_CONTEXT_BUILDING);
+		self:HidePulse(MinimapPulseLock.GarrisonBuilding);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local followerType = ...;
 		if ( DoesFollowerMatchCurrentGarrisonType(followerType) ) then
@@ -1048,15 +1102,15 @@ function ExpansionLandingPageMinimapButtonMixin:HandleGarrisonEvent(event, ...)
 		end
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
 		local followerType = ...;
-		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[followerType]);
+		GarrisonMinimapMission_HidePulse(self, followerType);
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
-		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_0_Boat]);
+		GarrisonMinimapMission_HidePulse(self, Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
 		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0_Garrison ) then
 			GarrisonMinimapInvasion_ShowPulse(self);
 		end
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
-		self:HidePulse(GARRISON_ALERT_CONTEXT_INVASION);
+		self:HidePulse(MinimapPulseLock.GarrisonInvasion);
 	elseif (event == "SHIPMENT_UPDATE") then
 		local shipmentStarted, isTroop = ...;
 		if (shipmentStarted) then
@@ -1119,20 +1173,24 @@ function GarrisonLandingPage_Toggle()
 end
 
 function GarrisonMinimapBuilding_ShowPulse(self)
-	self:SetPulseLock(GARRISON_ALERT_CONTEXT_BUILDING, true);
+	self:SetPulseLock(MinimapPulseLock.GarrisonBuilding, true);
 	self.MinimapLoopPulseAnim:Play();
 end
 
 function GarrisonMinimapMission_ShowPulse(self, followerType)
-	self:SetPulseLock(GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
+	self:SetPulseLock(followerToPulseLock[followerType], true);
 	self.MinimapLoopPulseAnim:Play();
+end
+
+function GarrisonMinimapMission_HidePulse(self, followerType)
+	self:HidePulse(followerToPulseLock[followerType]);
 end
 
 function GarrisonMinimapInvasion_ShowPulse(self)
 	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_INVASION_ALERT);
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
 	self:JustifyText(self.AlertText);
-	self:SetPulseLock(GARRISON_ALERT_CONTEXT_INVASION, true);
+	self:SetPulseLock(MinimapPulseLock.GarrisonInvasion, true);
 	self.MinimapAlertAnim:Play();
 	self.MinimapLoopPulseAnim:Play();
 end
@@ -1150,7 +1208,19 @@ function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
 	self.MinimapAlertAnim:Play();
 end
 
-function GarrisonMinimap_ShowCovenantCallingsNotification(self)
+function GarrisonMinimap_CheckShowCovenantCallingsNotification(self)
+	if not self:IsInGarrisonMode() then
+		return;
+	end
+
+	if self.garrisonType ~= Enum.GarrisonType.Type_9_0_Garrison then
+		return;
+	end
+
+	if not C_Garrison.IsLandingPageMinimapButtonVisible(Enum.GarrisonType.Type_9_0_Garrison) then
+		return;
+	end
+
 	self.AlertText:SetText(COVENANT_CALLINGS_AVAILABLE);
 	self:JustifyText(self.AlertText);
 	self.MinimapAlertAnim:Play();
@@ -1172,7 +1242,7 @@ end
 function GarrisonMinimap_OnCallingsUpdated(self, callings, completedCount, availableCount)
 	if self.isInitialLogin then
 		if availableCount > 0 then
-			GarrisonMinimap_ShowCovenantCallingsNotification(self);
+			GarrisonMinimap_CheckShowCovenantCallingsNotification(self);
 		end
 
 		self.isInitialLogin = false;

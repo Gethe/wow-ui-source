@@ -15,6 +15,7 @@ local textureKitInfo =
 	["jailerstower-scenario-nodeaths"] = {currencyContainerOffsets = {xOffset = 34, yOffset = -46}},
 	["plunderstorm-scenariotracker-active"] = {currencyFontObject = GameFontHighlight, hideCurrencyIcon = true, currencyContainerOffsets = {xOffset = 40, yOffset = -46}, currencyFontColor = WHITE_FONT_COLOR},
 	["plunderstorm-scenariotracker-waiting"] = {currencyFontObject = GameFontHighlight, hideCurrencyIcon = true, currencyContainerOffsets = {xOffset = 40, yOffset = -46}, currencyFontColor = WHITE_FONT_COLOR},
+	["themed-scenario"] = { isThemed = true },
 }
 
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
@@ -33,6 +34,17 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 	self.CurrencyContainer:SetPoint("TOPLEFT", self, "TOPLEFT", currencyContainerOffsets.xOffset, currencyContainerOffsets.yOffset);
 
 	self.currencyPool:ReleaseAll();
+	if textureKitInfo and textureKitInfo.isThemed then
+		local displayInfo = C_ScenarioInfo.GetDisplayInfo();
+		if displayInfo then
+			self.ThemeOverlay:Show();
+			self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
+		else
+			self.ThemeOverlay:Hide();
+		end
+	else
+		self.ThemeOverlay:Hide();
+	end
 
 	local previousCurrencyFrame;
 	local totalCurrencyWidth = 0;
@@ -88,6 +100,6 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:OnLoad()
 end
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:OnReset()
-	UIWidgetBaseTemplateMixin.OnReset(self);
+	UIWidgetBaseScenarioHeaderTemplateMixin.OnReset(self);
 	UIWidgetBaseCurrencyPoolOnReset(self.currencyPool);
 end

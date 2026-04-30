@@ -293,6 +293,7 @@ local MajorFactions =
 				{ Name = "description", Type = "cstring", Nilable = true },
 				{ Name = "toastDescription", Type = "cstring", Nilable = true },
 				{ Name = "rewardType", Type = "number", Nilable = true },
+				{ Name = "isCollected", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -305,6 +306,9 @@ local MajorFactions =
 				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

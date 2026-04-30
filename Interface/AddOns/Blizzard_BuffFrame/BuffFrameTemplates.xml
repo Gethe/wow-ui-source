@@ -11,11 +11,6 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Count" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Duration" inherits="GameFontNormalSmall" hidden="true" >
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
@@ -38,6 +33,11 @@
 				<FontString parentKey="Symbol" inherits="TextStatusBarText">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>

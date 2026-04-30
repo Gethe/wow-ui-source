@@ -36,6 +36,9 @@ local WorldSafeLocsUIInternal =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WorldSafeLocsUIInternal);

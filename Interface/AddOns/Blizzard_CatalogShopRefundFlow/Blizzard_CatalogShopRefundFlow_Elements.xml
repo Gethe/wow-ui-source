@@ -3,22 +3,32 @@
 
 	<Button name="CatalogShopRefundButtonLargeTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
 		<Size x="150" y="50"/>
+		<KeyValues>
+			<KeyValue key="fitTextCanWidthDecrease" value="false" type="boolean"/>
+			<KeyValue key="fitTextWidthPadding" value="35" type="number"/>
+		</KeyValues>
 		<NormalFont style="GameFontWhiteLarge"/>
 		<HighlightFont style="GameFontHighlightLarge"/>
 		<DisabledFont style="GameFontDisableLarge"/>
 		<Scripts>
+			<OnLoad method="OnLoad" />
 			<OnClick method="OnClick" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
 		</Scripts>
 	</Button>
 
-	<Button name="CatalogShopRefundButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
+	<Button name="CatalogShopRefundButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true">
 		<Size x="120" y="30"/>
+		<KeyValues>
+			<KeyValue key="fitTextCanWidthDecrease" value="false" type="boolean"/>
+			<KeyValue key="fitTextWidthPadding" value="20" type="number"/>
+		</KeyValues>
 		<NormalFont style="GameFontWhite"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
 		<Scripts>
+			<OnLoad method="OnLoad" />
 			<OnClick method="OnClick" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />

@@ -43,11 +43,19 @@ local function Register()
 			PlayerSpellsUtil.ToggleSpellBookFrame();
 		end
 
+		local subsectionInitializer;
 		local addSearchTags = false;
-		local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
-		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
-		initializer:SetKioskProtected();
-		layout:AddInitializer(initializer);
+		do
+			local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
+			initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+			initializer:SetKioskProtected();
+			layout:AddInitializer(initializer);
+			subsectionInitializer = initializer;
+		end
+		do
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatReduceHighlights", ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS, OPTION_TOOLTIP_ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS);
+			initializer:SetParentInitializer(subsectionInitializer);
+		end
 	end);
 
 	-- Assisted Highlight
@@ -323,6 +331,7 @@ local function Register()
 			ShowDesiredPanelFromSettingsPanel(EditModeManagerFrame);
 		end
 		local editModeInitializer = CreateSettingsButtonInitializer("", COOLDOWN_VIEWER_OPTIONS_OPEN_EDIT_MODE, OpenEditMode, nil, addSearchTags);
+		editModeInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
 		layout:AddInitializer(editModeInitializer);
 
 		-- Open Cooldown Manager
@@ -331,6 +340,7 @@ local function Register()
 		end
 
 		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags, "ADVANCED_COOLDOWN_SETTINGS");
+		managerInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
 		layout:AddInitializer(managerInitializer);
 	end);
 

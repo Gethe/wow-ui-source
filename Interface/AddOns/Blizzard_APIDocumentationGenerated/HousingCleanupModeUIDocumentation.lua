@@ -68,6 +68,9 @@ local HousingCleanupModeUI =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(HousingCleanupModeUI);

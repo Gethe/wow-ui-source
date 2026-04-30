@@ -36,6 +36,9 @@ local InstanceLeaverInfo =
 	Tables =
 	{
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InstanceLeaverInfo);

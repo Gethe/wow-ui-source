@@ -48,6 +48,9 @@ local UISystemVisibilityManager =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UISystemVisibilityManager);
