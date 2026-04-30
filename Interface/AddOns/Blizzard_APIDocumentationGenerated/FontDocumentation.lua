@@ -9,7 +9,6 @@ local Font =
 		{
 			Name = "CreateFontFamily",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +45,7 @@ local Font =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "outline", Type = "string", Nilable = false },
 				{ Name = "shadow", Type = "FontScriptShadowInfo", Nilable = true },
@@ -59,7 +58,7 @@ local Font =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 			},

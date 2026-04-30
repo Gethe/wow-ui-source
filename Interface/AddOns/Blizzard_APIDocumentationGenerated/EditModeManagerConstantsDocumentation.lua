@@ -534,9 +534,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModePersonalResourceDisplaySetting",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 14,
 			Fields =
 			{
 				{ Name = "HideHealth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
@@ -553,6 +553,7 @@ local EditModeManagerConstants =
 				{ Name = "ShowClassColor", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 11 },
 				{ Name = "BarWidth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 12 },
 				{ Name = "ShowBarText", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 13 },
+				{ Name = "HideAltPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 14 },
 			},
 		},
 		{

@@ -11,7 +11,6 @@ local CurrencyInfo =
 			Name = "GetBasicCurrencyInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,7 +26,6 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinIcon",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,7 +40,6 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,7 +55,6 @@ local CurrencyInfo =
 		{
 			Name = "GetCoinTextureString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,7 +71,6 @@ local CurrencyInfo =
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,7 +87,6 @@ local CurrencyInfo =
 			Name = "GetCurrencyInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,7 +102,6 @@ local CurrencyInfo =
 			Name = "GetCurrencyInfoFromLink",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,7 +116,6 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyListLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,7 +130,6 @@ local CurrencyInfo =
 		{
 			Name = "IsCurrencyContainer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

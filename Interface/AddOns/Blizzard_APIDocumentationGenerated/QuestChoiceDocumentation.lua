@@ -26,7 +26,6 @@ local QuestChoice =
 			Name = "GetQuestChoiceOptionInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,7 +44,6 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +62,6 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardFaction",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,7 +79,6 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -106,7 +102,6 @@ local QuestChoice =
 			Name = "GetQuestChoiceRewardItem",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,7 +120,6 @@ local QuestChoice =
 		{
 			Name = "SendQuestChoiceResponse",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

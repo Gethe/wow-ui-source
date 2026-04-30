@@ -23,7 +23,6 @@ local Minimap =
 		{
 			Name = "GetPOITextureCoords",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,7 +40,6 @@ local Minimap =
 		{
 			Name = "GetTrackingInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +54,6 @@ local Minimap =
 		{
 			Name = "SetTracking",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,7 +69,6 @@ local Minimap =
 			Name = "MinimapPing",
 			Type = "Event",
 			LiteralName = "MINIMAP_PING",
-			SecretPayloads = true,
 			HasRestrictions = true,
 			CallbackEvent = true,
 			Payload =

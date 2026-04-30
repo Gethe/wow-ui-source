@@ -11,7 +11,6 @@ local TransmogOutfitInfo =
 			Name = "AddNewOutfit",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,7 +21,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "ChangeDisplayedOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,7 +33,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "ChangeToOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +43,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "ChangeViewedOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +60,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "ClearDisplayedOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,7 +74,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "CommitAndApplyAllPending",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,7 +83,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "CommitOutfitInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,7 +119,6 @@ local TransmogOutfitInfo =
 			Name = "GetAllTransmogOutfitOptionSheatheCategoryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +134,6 @@ local TransmogOutfitInfo =
 			Name = "GetCollectionInfoForSlotAndOption",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -169,7 +160,6 @@ local TransmogOutfitInfo =
 			Name = "GetEquippedSlotOptionFromTransmogSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,7 +175,6 @@ local TransmogOutfitInfo =
 			Name = "GetIllusionDefaultIMAIDForCollectionType",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,7 +189,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "GetItemModifiedAppearanceEffectiveCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,7 +204,6 @@ local TransmogOutfitInfo =
 			Name = "GetLinkedSlotInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -231,7 +218,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "GetMaxNumberOfTotalOutfitsForSource",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,7 +250,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "GetNumberOfOutfitsUnlockedForSource",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,7 +265,6 @@ local TransmogOutfitInfo =
 			Name = "GetOutfitInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -296,7 +280,6 @@ local TransmogOutfitInfo =
 			Name = "GetOutfitInfoByName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -312,7 +295,6 @@ local TransmogOutfitInfo =
 			Name = "GetOutfitInfoByPlayerFacingIndex",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -327,7 +309,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "GetOutfitSituation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -372,7 +353,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "GetSecondarySlotState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -388,7 +368,6 @@ local TransmogOutfitInfo =
 			Name = "GetSetSourcesForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -415,7 +394,6 @@ local TransmogOutfitInfo =
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -432,7 +410,6 @@ local TransmogOutfitInfo =
 			Name = "GetTransmogOutfitSlotForInventoryType",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,7 +425,6 @@ local TransmogOutfitInfo =
 			Name = "GetTransmogOutfitSlotFromInventorySlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -474,7 +450,6 @@ local TransmogOutfitInfo =
 			Name = "GetUnassignedAtlasForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -490,7 +465,6 @@ local TransmogOutfitInfo =
 			Name = "GetUnassignedDisplayAtlasForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -506,7 +480,6 @@ local TransmogOutfitInfo =
 			Name = "GetViewedOutfitSlotInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -524,7 +497,6 @@ local TransmogOutfitInfo =
 			Name = "GetWeaponOptionsForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -585,7 +557,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "IsLockedOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -600,7 +571,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "IsSlotWeaponSlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -624,7 +594,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "IsValidTransmogOutfitName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -639,7 +608,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "PickupOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -653,7 +621,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "RevertPendingTransmog",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -665,7 +632,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetOutfitSituationsEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -675,7 +641,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetOutfitToCustomSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -685,7 +650,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetOutfitToOutfit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -695,7 +659,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetOutfitToSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -705,7 +668,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetPendingTransmog",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -719,7 +681,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetPendingTransmogSheatheCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -732,7 +693,6 @@ local TransmogOutfitInfo =
 			Name = "SetSecondarySlotState",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -743,7 +703,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SetViewedWeaponOptionForSlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -754,7 +713,6 @@ local TransmogOutfitInfo =
 		{
 			Name = "SlotHasSecondary",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -779,7 +737,6 @@ local TransmogOutfitInfo =
 			Name = "UpdatePendingSituation",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

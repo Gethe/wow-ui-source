@@ -9,7 +9,6 @@ local FrameAPITooltip =
 		{
 			Name = "GetLeftLine",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,7 +23,6 @@ local FrameAPITooltip =
 		{
 			Name = "GetMinimumWidth",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.MinimumWidth },
 
 			Arguments =
 			{
@@ -39,7 +37,6 @@ local FrameAPITooltip =
 		{
 			Name = "GetRightLine",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,8 +51,6 @@ local FrameAPITooltip =
 		{
 			Name = "SetMinimumWidth",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.MinimumWidth },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -66,17 +61,15 @@ local FrameAPITooltip =
 		{
 			Name = "SetText",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "alpha", Type = "number", Nilable = false, ConditionalSecret = true, Default = 1 },
-				{ Name = "wrap", Type = "bool", Nilable = false, ConditionalSecret = true, Default = false },
+				{ Name = "alpha", Type = "number", Nilable = false, Default = 1 },
+				{ Name = "wrap", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 	},

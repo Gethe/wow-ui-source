@@ -45,7 +45,6 @@ local HousingExpertModeUI =
 		{
 			Name = "GetPrecisionSubmodeRestriction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the type of restriction currently active on the submode; Will return HousingExpertSubmodeRestriction:None if submode is not currently restricted" },
 
 			Arguments =
@@ -125,7 +124,6 @@ local HousingExpertModeUI =
 		{
 			Name = "ResetPrecisionChanges",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Reset the selected target's transform back to default values; This is NOT an undo, meaning it will completely reset the transform value to default, NOT just recently-made changes" },
 
 			Arguments =
@@ -141,7 +139,6 @@ local HousingExpertModeUI =
 		{
 			Name = "SetGridVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,7 +148,6 @@ local HousingExpertModeUI =
 		{
 			Name = "SetPrecisionIncrementingActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets a specific type of incremental change active or inactive; Whilever that type is active and target stays selected, incremental changes of that type will continue to be made every frame" },
 
 			Arguments =
@@ -163,7 +159,6 @@ local HousingExpertModeUI =
 		{
 			Name = "SetPrecisionSubmode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Activate a specific Expert submode" },
 
 			Arguments =

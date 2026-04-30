@@ -9,7 +9,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "EvaluateCurrentHealthPercent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the percentage of current unit health and evaluates it against the supplied curve." },
 
 			Arguments =
@@ -25,7 +24,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "EvaluateMissingHealthPercent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the percentage of missing unit health and evaluates it against the supplied curve." },
 
 			Arguments =
@@ -69,7 +67,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetDamageAbsorbClampMode",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured damage absorb clamping mode." },
 
 			Arguments =
@@ -99,7 +96,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetHealAbsorbClampMode",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured heal absorb clamping mode." },
 
 			Arguments =
@@ -114,7 +110,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetHealAbsorbMode",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured heal absorb processing mode." },
 
 			Arguments =
@@ -144,7 +139,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetIncomingHealClampMode",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured incoming heal clamping mode." },
 
 			Arguments =
@@ -159,7 +153,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetIncomingHealOverflowPercent",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured incoming heal maximum overflow percentage." },
 
 			Arguments =
@@ -233,7 +226,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "GetMaximumHealthMode",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns the configured maximum health mode." },
 
 			Arguments =
@@ -360,7 +352,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "HasSecretValues",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns true if the object has been configured with any secret values." },
 
 			Arguments =
@@ -393,7 +384,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetDamageAbsorbClampMode",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the clamping mode used when calculating damage absorb amounts." },
 
 			Arguments =
@@ -404,7 +394,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetHealAbsorbClampMode",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the clamping mode used when calculating heal absorb amounts." },
 
 			Arguments =
@@ -415,7 +404,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetHealAbsorbMode",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the processing mode used when calculating both heal absorb and incoming heal amounts." },
 
 			Arguments =
@@ -426,7 +414,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetIncomingHealClampMode",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the clamping mode used when calculating incoming heal amounts." },
 
 			Arguments =
@@ -437,7 +424,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetIncomingHealOverflowPercent",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the maximum overflow percentage for incoming heals. Increasing this to a value over 1.0 will mean that incoming heals can extend beyond maximum health." },
 
 			Arguments =
@@ -448,7 +434,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetMaximumHealthMode",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the calculation mode for maximum health values used for clamping." },
 
 			Arguments =
@@ -459,7 +444,6 @@ local UnitHealPredictionCalculatorAPI =
 		{
 			Name = "SetPredictedValues",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the healing values used for all calculations." },
 
 			Arguments =

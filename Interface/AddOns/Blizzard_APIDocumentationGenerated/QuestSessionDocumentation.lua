@@ -108,7 +108,6 @@ local QuestSession =
 		{
 			Name = "SendSessionBeginResponse",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,7 +117,6 @@ local QuestSession =
 		{
 			Name = "SetQuestIsSuperTracked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

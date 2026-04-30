@@ -9,7 +9,6 @@ local SimpleAnimPathAPI =
 		{
 			Name = "CreateControlPoint",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -65,7 +64,6 @@ local SimpleAnimPathAPI =
 		{
 			Name = "SetCurveType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

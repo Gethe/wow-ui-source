@@ -10,7 +10,6 @@ local PvpInfo =
 		{
 			Name = "ClearLocklistMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local PvpInfo =
 		{
 			Name = "GetArenaCrowdControlDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,8 +34,6 @@ local PvpInfo =
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenLossOfControlInfoRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +52,6 @@ local PvpInfo =
 			Name = "GetArenaRewards",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +71,6 @@ local PvpInfo =
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +87,6 @@ local PvpInfo =
 			Name = "GetBattlefieldVehicles",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,7 +136,6 @@ local PvpInfo =
 		{
 			Name = "GetLocklistMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,7 +150,6 @@ local PvpInfo =
 		{
 			Name = "GetLocklistMapName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,7 +164,6 @@ local PvpInfo =
 		{
 			Name = "GetOutdoorPvPWaitTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -245,7 +235,6 @@ local PvpInfo =
 		{
 			Name = "GetWorldPVPAreaInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -260,7 +249,6 @@ local PvpInfo =
 		{
 			Name = "GetWorldPvPWaitTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -333,7 +321,6 @@ local PvpInfo =
 			Name = "JoinBattlefield",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -345,7 +332,6 @@ local PvpInfo =
 		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -355,7 +341,6 @@ local PvpInfo =
 		{
 			Name = "SetLocklistMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -366,7 +351,6 @@ local PvpInfo =
 			Name = "SetPVP",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -376,7 +360,6 @@ local PvpInfo =
 		{
 			Name = "SetSelectedBattlefieldByIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

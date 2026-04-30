@@ -9,7 +9,6 @@ local Cinematic =
 		{
 			Name = "CinematicFinished",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,7 +20,6 @@ local Cinematic =
 		{
 			Name = "CinematicStarted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,7 +49,6 @@ local Cinematic =
 		{
 			Name = "MouseOverrideCinematicDisable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -11,7 +11,6 @@ local MerchantFrame =
 			Name = "GetBuybackItemID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

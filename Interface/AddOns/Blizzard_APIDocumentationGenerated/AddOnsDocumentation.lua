@@ -10,7 +10,6 @@ local AddOns =
 		{
 			Name = "DisableAddOn",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,7 +20,6 @@ local AddOns =
 		{
 			Name = "DisableAllAddOns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,7 +29,6 @@ local AddOns =
 		{
 			Name = "DoesAddOnExist",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +43,6 @@ local AddOns =
 		{
 			Name = "DoesAddOnHaveLoadError",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,7 +57,6 @@ local AddOns =
 		{
 			Name = "EnableAddOn",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,7 +67,6 @@ local AddOns =
 		{
 			Name = "EnableAllAddOns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,7 +76,6 @@ local AddOns =
 		{
 			Name = "GetAddOnDependencies",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,7 +90,6 @@ local AddOns =
 		{
 			Name = "GetAddOnEnableState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,7 +105,6 @@ local AddOns =
 		{
 			Name = "GetAddOnInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,7 +124,6 @@ local AddOns =
 		{
 			Name = "GetAddOnInterfaceVersion",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,7 +138,6 @@ local AddOns =
 		{
 			Name = "GetAddOnLocalTable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the addon table (passed as the second argument of ... to files) for any addon that opts in through setting AllowAddOnTableAccess: 1 in the toc file. Insecure code cannot query addon tables from Blizzard addons." },
 
 			Arguments =
@@ -164,7 +153,6 @@ local AddOns =
 		{
 			Name = "GetAddOnMetadata",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,7 +168,6 @@ local AddOns =
 		{
 			Name = "GetAddOnName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,7 +182,6 @@ local AddOns =
 		{
 			Name = "GetAddOnNotes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,7 +196,6 @@ local AddOns =
 		{
 			Name = "GetAddOnOptionalDependencies",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,7 +210,6 @@ local AddOns =
 		{
 			Name = "GetAddOnSecurity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -240,7 +224,6 @@ local AddOns =
 		{
 			Name = "GetAddOnTitle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -273,7 +256,6 @@ local AddOns =
 		{
 			Name = "IsAddOnDefaultEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,7 +270,6 @@ local AddOns =
 		{
 			Name = "IsAddOnLoadOnDemand",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,7 +284,6 @@ local AddOns =
 		{
 			Name = "IsAddOnLoadable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -321,7 +301,6 @@ local AddOns =
 		{
 			Name = "IsAddOnLoaded",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -346,7 +325,6 @@ local AddOns =
 		{
 			Name = "LoadAddOn",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -374,7 +352,6 @@ local AddOns =
 		{
 			Name = "SetAddonVersionCheck",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

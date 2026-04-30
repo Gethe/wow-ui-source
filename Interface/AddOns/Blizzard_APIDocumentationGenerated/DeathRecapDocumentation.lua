@@ -10,7 +10,6 @@ local DeathRecap =
 		{
 			Name = "GetRecapEvents",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local DeathRecap =
 		{
 			Name = "GetRecapLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local DeathRecap =
 		{
 			Name = "GetRecapMaxHealth",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the max health for the unit that died in the provided death recap." },
 
 			Arguments =
@@ -56,7 +53,6 @@ local DeathRecap =
 		{
 			Name = "HasRecapEvents",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

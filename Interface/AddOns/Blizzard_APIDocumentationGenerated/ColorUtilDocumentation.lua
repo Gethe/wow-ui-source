@@ -10,7 +10,6 @@ local ColorUtil =
 		{
 			Name = "ConvertHSLToHSV",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Converts an unpacked HSL color to HSV." },
 
 			Arguments =
@@ -30,7 +29,6 @@ local ColorUtil =
 		{
 			Name = "ConvertHSVToHSL",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Converts an unpacked HSV color to HSL." },
 
 			Arguments =
@@ -50,7 +48,6 @@ local ColorUtil =
 		{
 			Name = "ConvertHSVToRGB",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Converts an unpacked HSV color to RGB." },
 
 			Arguments =
@@ -70,7 +67,6 @@ local ColorUtil =
 		{
 			Name = "ConvertRGBToHSV",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Converts an unpacked RGB color to HSV. For achromatic inputs, the returned hue will be -1." },
 
 			Arguments =
@@ -90,12 +86,11 @@ local ColorUtil =
 		{
 			Name = "GenerateTextColorCode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Generates a hex color code suitable for use in text color code markup." },
 
 			Arguments =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, Documentation = { "Color to generate a hex color code from." } },
+				{ Name = "color", Type = "colorRGB", Nilable = false, Documentation = { "Color to generate a hex color code from." } },
 			},
 
 			Returns =
@@ -106,13 +101,12 @@ local ColorUtil =
 		{
 			Name = "WrapTextInColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Wraps a given string with color code markup." },
 
 			Arguments =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, Documentation = { "Text to be wrapped in color markup." } },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, Documentation = { "Color to apply to the text." } },
+				{ Name = "color", Type = "colorRGB", Nilable = false, Documentation = { "Color to apply to the text." } },
 			},
 
 			Returns =
@@ -123,7 +117,6 @@ local ColorUtil =
 		{
 			Name = "WrapTextInColorCode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Wraps a given string with color code markup." },
 
 			Arguments =

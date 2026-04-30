@@ -48,7 +48,6 @@ local FrameAPINamePlate =
 			Name = "SetAllHitTestPoints",
 			Type = "Function",
 			RequiresCanChangeHitTestPoints = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the anchor points that determine where the mouse interacts with the nameplate to fully encompass the target region." },
 
 			Arguments =
@@ -60,7 +59,6 @@ local FrameAPINamePlate =
 			Name = "SetHitTestPoints",
 			Type = "Function",
 			RequiresCanChangeHitTestPoints = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the anchor points that determine where the mouse interacts with the nameplate." },
 
 			Arguments =
@@ -71,7 +69,6 @@ local FrameAPINamePlate =
 		{
 			Name = "SetStackingBoundsFrame",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -11,7 +11,6 @@ local GamePad =
 			Name = "AddSDLMapping",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,7 +31,6 @@ local GamePad =
 		{
 			Name = "AxisIndexToConfigName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +45,6 @@ local GamePad =
 		{
 			Name = "ButtonBindingToIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +59,6 @@ local GamePad =
 		{
 			Name = "ButtonIndexToBinding",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,7 +73,6 @@ local GamePad =
 		{
 			Name = "ButtonIndexToConfigName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,7 +92,6 @@ local GamePad =
 			Name = "DeleteConfig",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,7 +137,6 @@ local GamePad =
 		{
 			Name = "GetConfig",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,7 +151,6 @@ local GamePad =
 		{
 			Name = "GetDeviceMappedState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,7 +165,6 @@ local GamePad =
 		{
 			Name = "GetDeviceRawState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,13 +182,12 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
 			Name = "GetPowerLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -222,7 +212,6 @@ local GamePad =
 			Name = "SetConfig",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -232,17 +221,15 @@ local GamePad =
 		{
 			Name = "SetLedColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
 			Name = "SetVibration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -253,7 +240,6 @@ local GamePad =
 		{
 			Name = "StickIndexToConfigName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

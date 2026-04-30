@@ -88,6 +88,7 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(message, messageType, sta
 	end
 
 	stack = stack or "";
+	locals = locals or "<none>";
 
 	local messageKey = string.format("%s\n%s", message, stack);
 
@@ -135,13 +136,17 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(message, messageType, sta
 end
 
 local function PackageAndAddError(errors, messageType, message, stack, locals)
+	-- Message, stack, and local data should be decimal escaped here as we
+	-- need to support cases where Lua values dumped in those strings may
+	-- contain control characters or byte sequences rejected by EditBoxes
+	-- for display (such that the error reporter shows no text at all).
 	local errorData = {
 		count = 1,
-		message = message,
+		message = C_StringUtil.EscapeDecimalNonPrintables(message),
 		messageType = messageType,
 		time = date(),
-		stack = stack,
-		locals = locals,
+		stack = C_StringUtil.EscapeDecimalNonPrintables(stack),
+		locals = C_StringUtil.EscapeDecimalNonPrintables(locals),
 	};
 
 	table.insert(errors, errorData);
@@ -189,7 +194,7 @@ function ScriptErrorsFrameMixin:Update()
 	if messageType == WarningMessageType then
 		text = WARNING_FORMAT:format(errorData.message, errorData.time, errorData.count);
 	elseif messageType == ErrorMessageType then
-		text = ERROR_FORMAT:format(errorData.message, errorData.time, errorData.count, errorData.stack, errorData.locals or "<none>");
+		text = ERROR_FORMAT:format(errorData.message, errorData.time, errorData.count, errorData.stack, errorData.locals);
 	end
 
 	local parent = editBox:GetParent();

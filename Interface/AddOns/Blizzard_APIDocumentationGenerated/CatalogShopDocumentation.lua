@@ -11,7 +11,6 @@ local CatalogShop =
 			Name = "BulkPurchaseProducts",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,7 +25,6 @@ local CatalogShop =
 		{
 			Name = "BulkRefundDecors",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local CatalogShop =
 		{
 			Name = "ConfirmHousingPurchase",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,7 +47,6 @@ local CatalogShop =
 		{
 			Name = "FindBestCurrencyProductForNeededAmount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -84,7 +80,6 @@ local CatalogShop =
 		{
 			Name = "GetCatalogShopProductDisplayInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,7 +94,6 @@ local CatalogShop =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,7 +108,6 @@ local CatalogShop =
 		{
 			Name = "GetCategorySectionInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,7 +133,6 @@ local CatalogShop =
 		{
 			Name = "GetFirstCategoryByProductID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,7 +156,6 @@ local CatalogShop =
 		{
 			Name = "GetProductAvailabilityTimeRemainingSecs",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,7 +170,6 @@ local CatalogShop =
 		{
 			Name = "GetProductIDsForBundle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,7 +184,6 @@ local CatalogShop =
 		{
 			Name = "GetProductIDsForCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -209,7 +198,6 @@ local CatalogShop =
 		{
 			Name = "GetProductIDsForCategorySection",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -226,7 +214,6 @@ local CatalogShop =
 			Name = "GetProductInfo",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -241,7 +228,6 @@ local CatalogShop =
 		{
 			Name = "GetProductSortOrder",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,7 +244,6 @@ local CatalogShop =
 		{
 			Name = "GetRefundableDecors",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,7 +259,6 @@ local CatalogShop =
 		{
 			Name = "GetSectionIDsForCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -289,7 +273,6 @@ local CatalogShop =
 		{
 			Name = "GetSpellVisualInfoForMount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -313,7 +296,6 @@ local CatalogShop =
 		{
 			Name = "GetVirtualCurrencyBalance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -337,7 +319,6 @@ local CatalogShop =
 		{
 			Name = "IsProductIncludedInAnyBundle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -361,7 +342,6 @@ local CatalogShop =
 		{
 			Name = "OnLegalDisclaimerClicked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -394,7 +374,6 @@ local CatalogShop =
 			Name = "ProductDisplayedTelemetry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -407,7 +386,6 @@ local CatalogShop =
 			Name = "ProductSelectedTelemetry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -421,7 +399,6 @@ local CatalogShop =
 			Name = "PurchaseProduct",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -440,7 +417,6 @@ local CatalogShop =
 		{
 			Name = "RefreshVirtualCurrencyBalance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -459,7 +435,6 @@ local CatalogShop =
 		{
 			Name = "StartHousingVCPurchaseConfirmation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

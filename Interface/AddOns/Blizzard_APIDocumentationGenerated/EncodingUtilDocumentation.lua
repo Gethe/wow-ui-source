@@ -11,7 +11,6 @@ local EncodingUtil =
 			Name = "CompressString",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -29,7 +28,6 @@ local EncodingUtil =
 			Name = "DecodeBase64",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +44,6 @@ local EncodingUtil =
 			Name = "DecodeHex",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +59,6 @@ local EncodingUtil =
 			Name = "DecompressString",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,7 +74,6 @@ local EncodingUtil =
 		{
 			Name = "DeserializeCBOR",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +88,6 @@ local EncodingUtil =
 		{
 			Name = "DeserializeJSON",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +103,6 @@ local EncodingUtil =
 			Name = "EncodeBase64",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,7 +119,6 @@ local EncodingUtil =
 			Name = "EncodeHex",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -141,7 +133,6 @@ local EncodingUtil =
 		{
 			Name = "SerializeCBOR",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,7 +148,6 @@ local EncodingUtil =
 		{
 			Name = "SerializeJSON",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

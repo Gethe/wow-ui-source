@@ -10,7 +10,6 @@ local UISystemVisibilityManager =
 		{
 			Name = "IsSystemVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

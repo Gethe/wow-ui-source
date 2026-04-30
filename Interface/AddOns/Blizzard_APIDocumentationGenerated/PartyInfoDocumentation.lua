@@ -19,7 +19,6 @@ local PartyInfo =
 		{
 			Name = "ConfirmLeaveParty",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
 
 			Arguments =
@@ -31,7 +30,6 @@ local PartyInfo =
 			Name = "ConfirmReadyCheck",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,7 +40,6 @@ local PartyInfo =
 			Name = "DemoteAssistant",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,7 +51,6 @@ local PartyInfo =
 			Name = "DoCountdown",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +90,6 @@ local PartyInfo =
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,7 +124,6 @@ local PartyInfo =
 		{
 			Name = "GetMinLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,7 +139,6 @@ local PartyInfo =
 			Name = "InviteUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
 
 			Arguments =
@@ -156,7 +149,6 @@ local PartyInfo =
 		{
 			Name = "IsCrossFactionParty",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,7 +163,6 @@ local PartyInfo =
 		{
 			Name = "IsGUIDInGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,7 +178,6 @@ local PartyInfo =
 		{
 			Name = "IsLootMethodAvailable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,7 +192,6 @@ local PartyInfo =
 		{
 			Name = "IsPartyFull",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,7 +216,6 @@ local PartyInfo =
 			Name = "PromoteToAssistant",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -239,7 +227,6 @@ local PartyInfo =
 			Name = "PromoteToLeader",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,7 +238,6 @@ local PartyInfo =
 			Name = "SetEveryoneIsAssistant",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,7 +253,6 @@ local PartyInfo =
 			Name = "SetLootMethod",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -284,7 +269,6 @@ local PartyInfo =
 			Name = "UninviteUnit",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -478,7 +462,6 @@ local PartyInfo =
 			Name = "ReadyCheck",
 			Type = "Event",
 			LiteralName = "READY_CHECK",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

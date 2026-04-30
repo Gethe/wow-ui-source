@@ -10,7 +10,6 @@ local AccountInfo =
 		{
 			Name = "GetIDFromBattleNetAccountGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local AccountInfo =
 		{
 			Name = "IsGUIDBattleNetAccountType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local AccountInfo =
 		{
 			Name = "IsGUIDRelatedToLocalAccount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

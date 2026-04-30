@@ -131,7 +131,6 @@ local HousingBasicModeUI =
 		{
 			Name = "RotateDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Rotates the currently selected decor along a single axis; For wall decor, rotates such that the object stays flat against its current wall; For all other decor, rotates around the Z (vertical) axis" },
 
 			Arguments =
@@ -142,7 +141,6 @@ local HousingBasicModeUI =
 		{
 			Name = "RotateHouseExterior",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Rotates the House Exterior around the Z (vertical) axis" },
 
 			Arguments =
@@ -153,7 +151,6 @@ local HousingBasicModeUI =
 		{
 			Name = "SetFreePlaceEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Set whether free place is enabled; When free place is enabled, collision checks while dragging decor/the house exterior are ignored" },
 
 			Arguments =
@@ -164,7 +161,6 @@ local HousingBasicModeUI =
 		{
 			Name = "SetGridSnapEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,7 +170,6 @@ local HousingBasicModeUI =
 		{
 			Name = "SetGridVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,7 +179,6 @@ local HousingBasicModeUI =
 		{
 			Name = "StartPlacingNewDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,7 +188,6 @@ local HousingBasicModeUI =
 		{
 			Name = "StartPlacingPreviewDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

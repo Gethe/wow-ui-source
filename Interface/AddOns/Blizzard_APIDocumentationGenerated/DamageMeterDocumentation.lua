@@ -20,8 +20,6 @@ local DamageMeter =
 		{
 			Name = "GetCombatSessionFromID",
 			Type = "Function",
-			SecretWhenInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the data for the player's combat session with the specified ID." },
 
 			Arguments =
@@ -38,8 +36,6 @@ local DamageMeter =
 		{
 			Name = "GetCombatSessionFromType",
 			Type = "Function",
-			SecretWhenInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the data for the player's current combat session." },
 
 			Arguments =
@@ -56,8 +52,6 @@ local DamageMeter =
 		{
 			Name = "GetCombatSessionSourceFromID",
 			Type = "Function",
-			SecretWhenInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the data for a single source (unit) in the player's current combat session with the specified ID." },
 
 			Arguments =
@@ -76,8 +70,6 @@ local DamageMeter =
 		{
 			Name = "GetCombatSessionSourceFromType",
 			Type = "Function",
-			SecretWhenInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the data for a single source (unit) in the player's current combat session." },
 
 			Arguments =
@@ -96,7 +88,6 @@ local DamageMeter =
 		{
 			Name = "GetSessionDurationSeconds",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the amount of time a combat session has lasted" },
 
 			Arguments =
@@ -198,15 +189,15 @@ local DamageMeter =
 			{
 				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true },
 				{ Name = "sourceCreatureID", Type = "number", Nilable = true },
-				{ Name = "name", Type = "cstring", Nilable = false, ConditionalSecret = true },
-				{ Name = "classFilename", Type = "cstring", Nilable = false, NeverSecret = true },
-				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
+				{ Name = "specIconID", Type = "fileID", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 				{ Name = "amountPerSecond", Type = "number", Nilable = false },
-				{ Name = "isLocalPlayer", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "deathRecapID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "isLocalPlayer", Type = "bool", Nilable = false },
+				{ Name = "deathRecapID", Type = "number", Nilable = false },
 				{ Name = "deathTimeSeconds", Type = "number", Nilable = false },
-				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "classification", Type = "cstring", Nilable = false },
 				{ Name = "sourceDisplayType", Type = "DamageMeterSourceDisplayType", Nilable = false },
 				{ Name = "factionGroup", Type = "cstring", Nilable = true },
 			},
@@ -234,12 +225,12 @@ local DamageMeter =
 			Fields =
 			{
 				{ Name = "unitName", Type = "cstring", Nilable = false },
-				{ Name = "unitClassFilename", Type = "cstring", Nilable = false, NeverSecret = true },
-				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "unitClassFilename", Type = "cstring", Nilable = false },
+				{ Name = "classification", Type = "cstring", Nilable = false },
 				{ Name = "isPet", Type = "bool", Nilable = false },
 				{ Name = "isMob", Type = "bool", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
-				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
+				{ Name = "specIconID", Type = "fileID", Nilable = false },
 			},
 		},
 	},

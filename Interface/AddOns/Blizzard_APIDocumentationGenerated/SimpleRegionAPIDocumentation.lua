@@ -9,7 +9,6 @@ local SimpleRegionAPI =
 		{
 			Name = "GetAlpha",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -37,7 +36,6 @@ local SimpleRegionAPI =
 		{
 			Name = "GetEffectiveScale",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Scale },
 
 			Arguments =
 			{
@@ -51,7 +49,6 @@ local SimpleRegionAPI =
 		{
 			Name = "GetScale",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Scale },
 
 			Arguments =
 			{
@@ -66,7 +63,6 @@ local SimpleRegionAPI =
 			Name = "GetVertexColor",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -122,8 +118,6 @@ local SimpleRegionAPI =
 		{
 			Name = "SetAlpha",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -133,8 +127,6 @@ local SimpleRegionAPI =
 		{
 			Name = "SetAlphaFromBoolean",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -146,7 +138,6 @@ local SimpleRegionAPI =
 		{
 			Name = "SetDrawLayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,7 +148,6 @@ local SimpleRegionAPI =
 		{
 			Name = "SetIgnoreParentAlpha",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,7 +158,6 @@ local SimpleRegionAPI =
 			Name = "SetIgnoreParentScale",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -179,8 +168,6 @@ local SimpleRegionAPI =
 			Name = "SetScale",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Scale },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -190,8 +177,6 @@ local SimpleRegionAPI =
 		{
 			Name = "SetVertexColor",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -204,14 +189,12 @@ local SimpleRegionAPI =
 		{
 			Name = "SetVertexColorFromBoolean",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
 				{ Name = "value", Type = "bool", Nilable = false },
-				{ Name = "colorIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "colorIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "colorIfTrue", Type = "colorRGBA", Nilable = false },
+				{ Name = "colorIfFalse", Type = "colorRGBA", Nilable = false },
 			},
 		},
 	},

@@ -20,7 +20,6 @@ local EncounterTimeline =
 		{
 			Name = "AddScriptEvent",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Adds a custom event to the timeline." },
 
 			Arguments =
@@ -47,7 +46,6 @@ local EncounterTimeline =
 			Name = "CancelScriptEvent",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Cancels a custom timeline event, removing it from the timeline." },
 
 			Arguments =
@@ -59,7 +57,6 @@ local EncounterTimeline =
 			Name = "FinishScriptEvent",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Finishes a custom timeline event, removing it from the timeline." },
 
 			Arguments =
@@ -81,8 +78,6 @@ local EncounterTimeline =
 			Name = "GetEventColor",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretWhenEncounterEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the current color used to render timeline event." },
 
 			Arguments =
@@ -93,13 +88,12 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "GetEventCountBySource",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of present events in the timeline by their source type." },
 
 			Arguments =
@@ -126,8 +120,6 @@ local EncounterTimeline =
 			Name = "GetEventInfo",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretWhenEncounterEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns information about a timeline event. This data is generally expected to be static for the lifetime of an event." },
 
 			Arguments =
@@ -154,7 +146,6 @@ local EncounterTimeline =
 			Name = "GetEventState",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the current state of a timeline event." },
 
 			Arguments =
@@ -171,7 +162,6 @@ local EncounterTimeline =
 			Name = "GetEventTimeElapsed",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the elapsed duration of a timeline event." },
 
 			Arguments =
@@ -188,7 +178,6 @@ local EncounterTimeline =
 			Name = "GetEventTimeRemaining",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the remaining duration of a timeline event." },
 
 			Arguments =
@@ -204,7 +193,6 @@ local EncounterTimeline =
 		{
 			Name = "GetEventTimer",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns a Duration object that tracks the elapsed duration of a timeline event. This object tracks the range [0, duration] of the event and automatically pauses its progression based on event state." },
 
 			Arguments =
@@ -221,7 +209,6 @@ local EncounterTimeline =
 			Name = "GetEventTrack",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns information about the position of an event on the timeline." },
 
 			Arguments =
@@ -238,7 +225,6 @@ local EncounterTimeline =
 		{
 			Name = "GetSortedEventList",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns a sorted list of event IDs present in the timeline from shortest to longest remaining durations, meeting the requirements of the specified filters." },
 
 			Arguments =
@@ -257,7 +243,6 @@ local EncounterTimeline =
 		{
 			Name = "GetTrackInfo",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns information for a single timeline track." },
 
 			Arguments =
@@ -283,7 +268,6 @@ local EncounterTimeline =
 		{
 			Name = "GetTrackMaxEventDuration",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the maximum permitted event duration on a single timeline track." },
 
 			Arguments =
@@ -299,7 +283,6 @@ local EncounterTimeline =
 		{
 			Name = "GetTrackType",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns the type of a single timeline track." },
 
 			Arguments =
@@ -366,7 +349,6 @@ local EncounterTimeline =
 			Name = "IsEventBlocked",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Returns true if the event is in a 'blocked' state, where the cast for this event may not occur due to encounter conditions not being met." },
 
 			Arguments =
@@ -403,7 +385,6 @@ local EncounterTimeline =
 			Name = "PauseScriptEvent",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Pauses a custom timeline event, hiding it from the timeline. A paused event can later be resumed to show it again, or canceled." },
 
 			Arguments =
@@ -415,7 +396,6 @@ local EncounterTimeline =
 			Name = "ResumeScriptEvent",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Resumes a custom timeline event, showing it on the timeline again if it is currently paused." },
 
 			Arguments =
@@ -427,7 +407,6 @@ local EncounterTimeline =
 			Name = "SetEventIconTextures",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Updates a given vector of texture objects to reference art assets for icons associated with an event." },
 
 			Arguments =
@@ -440,7 +419,6 @@ local EncounterTimeline =
 		{
 			Name = "SetViewType",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Changes the view type for the timeline. This adjusts track layouts to be more appropriate for a specific mode and optimizes event processing." },
 
 			Arguments =
@@ -456,7 +434,6 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventAdded",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_ADDED",
-			SecretWhenEncounterEvent = true,
 			SynchronousEvent = true,
 			Documentation = { "Fired when an event has been added to the timeline." },
 			Payload =
@@ -586,13 +563,13 @@ local EncounterTimeline =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "id", Type = "EncounterTimelineEventID", Nilable = false, NeverSecret = true, Documentation = { "Instance ID for this event." } },
-				{ Name = "source", Type = "EncounterTimelineEventSource", Nilable = false, NeverSecret = true, Documentation = { "Source that this event came from." } },
+				{ Name = "id", Type = "EncounterTimelineEventID", Nilable = false, Documentation = { "Instance ID for this event." } },
+				{ Name = "source", Type = "EncounterTimelineEventSource", Nilable = false, Documentation = { "Source that this event came from." } },
 				{ Name = "spellName", Type = "string", Nilable = false, Documentation = { "Spell name associated with this event. For script events, this may instead be the contents of the 'overrideName' field if it wasn't empty." } },
 				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Spell ID associated with this event." } },
 				{ Name = "iconFileID", Type = "fileID", Nilable = false, Documentation = { "Icon file ID associated with this event." } },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false, NeverSecret = true, Documentation = { "Base duration of this event at the point that it was queued onto the timeline." } },
-				{ Name = "maxQueueDuration", Type = "DurationSeconds", Nilable = false, NeverSecret = true, Documentation = { "Hold duration for this event after it reaches the end of the timeline. During this period, the event will sit in the queued track of the timeline until manually finished or this added duration expires." } },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false, Documentation = { "Base duration of this event at the point that it was queued onto the timeline." } },
+				{ Name = "maxQueueDuration", Type = "DurationSeconds", Nilable = false, Documentation = { "Hold duration for this event after it reaches the end of the timeline. During this period, the event will sit in the queued track of the timeline until manually finished or this added duration expires." } },
 				{ Name = "icons", Type = "EncounterEventIconmask", Nilable = false, Documentation = { "Bitmask of active icon states for this event." } },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false, Documentation = { "Severity of this event." } },
 				{ Name = "isApproximate", Type = "bool", Nilable = false, Documentation = { "If true, this event is an approximation and may not occur exactly when the timeline suggests it will." } },
@@ -635,10 +612,6 @@ local EncounterTimeline =
 			Name = "RequiresValidTimelineEvent",
 			Type = "Precondition",
 			FailureMode = "ReturnNothing",
-		},
-		{
-			Name = "SecretWhenEncounterEvent",
-			Type = "Secret",
 		},
 	},
 };

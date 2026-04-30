@@ -44,7 +44,6 @@ local FrameAPISimpleCheckout =
 			Name = "OpenCheckout",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +75,6 @@ local FrameAPISimpleCheckout =
 			Name = "SetZoom",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

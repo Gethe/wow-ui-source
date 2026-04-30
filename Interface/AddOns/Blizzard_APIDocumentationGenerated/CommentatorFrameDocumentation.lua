@@ -10,7 +10,6 @@ local CommentatorFrame =
 		{
 			Name = "AddPlayerOverrideName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,7 +21,6 @@ local CommentatorFrame =
 			Name = "AddTrackedDefensiveAuras",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,7 +31,6 @@ local CommentatorFrame =
 			Name = "AddTrackedOffensiveAuras",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,7 +49,6 @@ local CommentatorFrame =
 		{
 			Name = "AssignPlayerToTeam",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,7 +59,6 @@ local CommentatorFrame =
 		{
 			Name = "AssignPlayersToTeam",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,7 +69,6 @@ local CommentatorFrame =
 		{
 			Name = "AssignPlayersToTeamInCurrentInstance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,7 +99,6 @@ local CommentatorFrame =
 			Name = "ClearLookAtTarget",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,7 +120,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,7 +136,6 @@ local CommentatorFrame =
 		{
 			Name = "FindTeamNameInCurrentInstance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,7 +150,6 @@ local CommentatorFrame =
 		{
 			Name = "FindTeamNameInDirectory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,7 +169,6 @@ local CommentatorFrame =
 			Name = "FollowPlayer",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -192,7 +181,6 @@ local CommentatorFrame =
 			Name = "FollowUnit",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,7 +208,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -367,7 +354,6 @@ local CommentatorFrame =
 			Name = "GetIndirectSpellID",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +370,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -415,7 +400,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -516,7 +500,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -531,7 +514,6 @@ local CommentatorFrame =
 		{
 			Name = "GetOrCreateSeries",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -549,7 +531,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -570,7 +551,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -590,7 +570,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -611,7 +590,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -631,7 +609,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -651,7 +628,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -669,7 +645,6 @@ local CommentatorFrame =
 			Name = "GetPlayerData",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -686,7 +661,6 @@ local CommentatorFrame =
 			Name = "GetPlayerFlagInfo",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -703,7 +677,6 @@ local CommentatorFrame =
 			Name = "GetPlayerFlagInfoByUnit",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -719,7 +692,6 @@ local CommentatorFrame =
 			Name = "GetPlayerOverrideName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -736,7 +708,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -758,7 +729,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -815,7 +785,6 @@ local CommentatorFrame =
 			Name = "GetStartLocation",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -824,13 +793,12 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "pos", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "pos", Type = "vector3", Nilable = false },
 			},
 		},
 		{
 			Name = "GetTeamColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -839,13 +807,12 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
 			Name = "GetTeamColorByUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -854,7 +821,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
@@ -870,7 +837,6 @@ local CommentatorFrame =
 			Name = "GetTrackedSpellID",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -886,7 +852,6 @@ local CommentatorFrame =
 			Name = "GetTrackedSpells",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -904,7 +869,6 @@ local CommentatorFrame =
 			Name = "GetTrackedSpellsByUnit",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -921,7 +885,6 @@ local CommentatorFrame =
 			Name = "GetUnitData",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -938,7 +901,6 @@ local CommentatorFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -957,7 +919,6 @@ local CommentatorFrame =
 			Name = "HasTrackedAuras",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -992,7 +953,6 @@ local CommentatorFrame =
 			Name = "IsTrackedDefensiveAura",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1008,7 +968,6 @@ local CommentatorFrame =
 			Name = "IsTrackedOffensiveAura",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1024,7 +983,6 @@ local CommentatorFrame =
 			Name = "IsTrackedSpell",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1043,7 +1001,6 @@ local CommentatorFrame =
 			Name = "IsTrackedSpellByUnit",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1070,7 +1027,6 @@ local CommentatorFrame =
 			Name = "LookAtPlayer",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1086,7 +1042,6 @@ local CommentatorFrame =
 		{
 			Name = "RemovePlayerOverrideName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1097,7 +1052,6 @@ local CommentatorFrame =
 			Name = "RequestPlayerCooldownInfo",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1112,7 +1066,6 @@ local CommentatorFrame =
 		{
 			Name = "ResetSeriesScores",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1133,7 +1086,6 @@ local CommentatorFrame =
 			Name = "SetAdditionalCameraWeight",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1146,7 +1098,6 @@ local CommentatorFrame =
 			Name = "SetAdditionalCameraWeightByToken",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1157,7 +1108,6 @@ local CommentatorFrame =
 		{
 			Name = "SetBlocklistedAuras",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1167,7 +1117,6 @@ local CommentatorFrame =
 		{
 			Name = "SetBlocklistedCooldowns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1179,7 +1128,6 @@ local CommentatorFrame =
 			Name = "SetCamera",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1196,7 +1144,6 @@ local CommentatorFrame =
 			Name = "SetCameraCollision",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1207,7 +1154,6 @@ local CommentatorFrame =
 			Name = "SetCameraPosition",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1220,7 +1166,6 @@ local CommentatorFrame =
 		{
 			Name = "SetCheatsEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1230,7 +1175,6 @@ local CommentatorFrame =
 		{
 			Name = "SetCommentatorHistory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1240,7 +1184,6 @@ local CommentatorFrame =
 		{
 			Name = "SetDistanceBeforeForcedHorizontalConvergence",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1250,7 +1193,6 @@ local CommentatorFrame =
 		{
 			Name = "SetDurationToForceHorizontalConvergence",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1260,7 +1202,6 @@ local CommentatorFrame =
 		{
 			Name = "SetExcludeDistance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1271,7 +1212,6 @@ local CommentatorFrame =
 			Name = "SetFollowCameraSpeeds",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1282,7 +1222,6 @@ local CommentatorFrame =
 		{
 			Name = "SetHardlockWeight",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1292,7 +1231,6 @@ local CommentatorFrame =
 		{
 			Name = "SetHorizontalAngleThresholdToSmooth",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1302,7 +1240,6 @@ local CommentatorFrame =
 		{
 			Name = "SetLookAtLerpAmount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1313,7 +1250,6 @@ local CommentatorFrame =
 			Name = "SetMapAndInstanceIndex",
 			Type = "Function",
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1324,7 +1260,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMouseDisabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1334,7 +1269,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMoveSpeed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1344,7 +1278,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMsToHoldForHorizontalMovement",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1354,7 +1287,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMsToHoldForVerticalMovement",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1364,7 +1296,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMsToSmoothHorizontalChange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1374,7 +1305,6 @@ local CommentatorFrame =
 		{
 			Name = "SetMsToSmoothVerticalChange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1384,7 +1314,6 @@ local CommentatorFrame =
 		{
 			Name = "SetPositionLerpAmount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1394,7 +1323,6 @@ local CommentatorFrame =
 		{
 			Name = "SetRequestedDebuffCooldowns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1405,7 +1333,6 @@ local CommentatorFrame =
 		{
 			Name = "SetRequestedDefensiveCooldowns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1416,7 +1343,6 @@ local CommentatorFrame =
 		{
 			Name = "SetRequestedOffensiveCooldowns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1427,7 +1353,6 @@ local CommentatorFrame =
 		{
 			Name = "SetSeriesScore",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1440,7 +1365,6 @@ local CommentatorFrame =
 		{
 			Name = "SetSeriesScores",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1453,7 +1377,6 @@ local CommentatorFrame =
 		{
 			Name = "SetSmartCameraLocked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1464,7 +1387,6 @@ local CommentatorFrame =
 			Name = "SetSmoothFollowTransitioning",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1474,7 +1396,6 @@ local CommentatorFrame =
 		{
 			Name = "SetSoftlockWeight",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1484,7 +1405,6 @@ local CommentatorFrame =
 		{
 			Name = "SetSpeedFactor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1495,7 +1415,6 @@ local CommentatorFrame =
 			Name = "SetTargetHeightOffset",
 			Type = "Function",
 			RequiresActiveCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1505,7 +1424,6 @@ local CommentatorFrame =
 		{
 			Name = "SetUseSmartCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1521,7 +1439,6 @@ local CommentatorFrame =
 			Name = "StartWargame",
 			Type = "Function",
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1544,7 +1461,6 @@ local CommentatorFrame =
 			Name = "UpdateMapInfo",
 			Type = "Function",
 			RequiresCommentator = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

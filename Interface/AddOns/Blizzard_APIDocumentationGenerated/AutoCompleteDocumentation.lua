@@ -10,7 +10,6 @@ local AutoComplete =
 		{
 			Name = "GetAutoCompletePresenceID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +33,6 @@ local AutoComplete =
 		{
 			Name = "GetAutoCompleteResults",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,7 +52,6 @@ local AutoComplete =
 		{
 			Name = "IsRecognizedName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

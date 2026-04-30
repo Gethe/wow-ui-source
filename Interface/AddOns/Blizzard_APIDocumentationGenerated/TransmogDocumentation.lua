@@ -10,7 +10,6 @@ local Transmog =
 		{
 			Name = "CanHaveSecondaryAppearanceForSlotID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local Transmog =
 		{
 			Name = "ExtractTransmogIDList",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local Transmog =
 		{
 			Name = "GetItemIDForSource",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +53,6 @@ local Transmog =
 			Name = "GetSlotForInventoryType",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,11 +68,10 @@ local Transmog =
 			Name = "GetSlotVisualInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = false },
 			},
 
 			Returns =
@@ -217,7 +212,7 @@ local Transmog =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = false },
 			},
 		},
 		{
@@ -227,7 +222,7 @@ local Transmog =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = true },
 				{ Name = "action", Type = "cstring", Nilable = true },
 			},
 		},

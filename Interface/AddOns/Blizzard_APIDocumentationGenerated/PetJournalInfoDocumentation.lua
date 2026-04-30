@@ -18,7 +18,6 @@ local PetJournalInfo =
 		{
 			Name = "DismissSummonedPet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,7 +27,6 @@ local PetJournalInfo =
 		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,7 +42,6 @@ local PetJournalInfo =
 		{
 			Name = "GetDisplayProbabilityByIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,7 +57,6 @@ local PetJournalInfo =
 		{
 			Name = "GetNonBattlePetLinkByIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,7 +71,6 @@ local PetJournalInfo =
 		{
 			Name = "GetNumDisplays",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,7 +85,6 @@ local PetJournalInfo =
 		{
 			Name = "GetNumPetsInJournal",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,7 +110,6 @@ local PetJournalInfo =
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,7 +127,6 @@ local PetJournalInfo =
 			Name = "GetPetAbilityListTable",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -150,7 +142,6 @@ local PetJournalInfo =
 			Name = "GetPetInfoTableByPetID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -166,7 +157,6 @@ local PetJournalInfo =
 			Name = "GetPetLoadOutInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,7 +175,6 @@ local PetJournalInfo =
 		{
 			Name = "GetPetSummonInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,7 +209,6 @@ local PetJournalInfo =
 		{
 			Name = "IsCurrentlySummoned",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -244,7 +232,6 @@ local PetJournalInfo =
 		{
 			Name = "PetIsSummonable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -259,7 +246,6 @@ local PetJournalInfo =
 		{
 			Name = "PetUsesRandomDisplay",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -278,7 +264,6 @@ local PetJournalInfo =
 		{
 			Name = "SetHoveredBattlePet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,7 +273,6 @@ local PetJournalInfo =
 		{
 			Name = "SetSearchFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -298,7 +282,6 @@ local PetJournalInfo =
 		{
 			Name = "SpellTargetBattlePet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

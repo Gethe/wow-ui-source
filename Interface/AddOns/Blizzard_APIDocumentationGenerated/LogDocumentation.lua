@@ -10,7 +10,6 @@ local Log =
 		{
 			Name = "LogErrorMessage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local Log =
 		{
 			Name = "LogMessage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,7 +28,6 @@ local Log =
 		{
 			Name = "LogMessageWithPriority",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,7 +38,6 @@ local Log =
 		{
 			Name = "LogWarningMessage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

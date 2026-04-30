@@ -154,3 +154,7 @@ function UpdateFloatingCombatTextSafe()
 		CombatText_UpdateDisplayedMessages();
 	end
 end
+
+function IsMouseoverCastSupported()
+	return false;
+end

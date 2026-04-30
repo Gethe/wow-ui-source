@@ -9,7 +9,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "Assign",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Copies another duration object and assigns it to this one." },
 
 			Arguments =
@@ -20,7 +19,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "Copy",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns a copy of this duration object." },
 
 			Arguments =
@@ -35,8 +33,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "EvaluateElapsedDuration",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the elapsed duration in seconds and evaluates it against a supplied curve." },
 
 			Arguments =
@@ -53,8 +49,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "EvaluateElapsedPercent",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the elapsed duration as a percentage value and evaluates it against a supplied curve." },
 
 			Arguments =
@@ -71,8 +65,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "EvaluateRemainingDuration",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the remaining duration in seconds and evaluates it against a supplied curve." },
 
 			Arguments =
@@ -89,8 +81,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "EvaluateRemainingPercent",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the remaining duration as a percentage value and evaluates it against a supplied curve." },
 
 			Arguments =
@@ -107,8 +97,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "EvaluateTotalDuration",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the total duration in seconds and evaluates it against a supplied curve." },
 
 			Arguments =
@@ -125,8 +113,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "FormatElapsedDuration",
 			Type = "Function",
-			SecretWhenNumericFormatterSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats the elapsed duration of this object to a string." },
 
 			Arguments =
@@ -143,8 +129,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "FormatRemainingDuration",
 			Type = "Function",
-			SecretWhenNumericFormatterSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats the remaining duration of this object to a string." },
 
 			Arguments =
@@ -161,8 +145,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "FormatTotalDuration",
 			Type = "Function",
-			SecretWhenNumericFormatterSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats the total duration of this object to a string." },
 
 			Arguments =
@@ -207,7 +189,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetElapsedDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the elapsed duration of the stored time span." },
 
 			Arguments =
@@ -223,7 +204,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetElapsedPercent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the elapsed duration as a percentage value." },
 
 			Arguments =
@@ -239,7 +219,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetEndTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the end time of the stored time span." },
 
 			Arguments =
@@ -269,7 +248,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetRemainingDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the remaining duration of the stored time span." },
 
 			Arguments =
@@ -285,7 +263,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetRemainingPercent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the remaining duration as a percentage value." },
 
 			Arguments =
@@ -301,7 +278,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetStartTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the start time of the stored time span." },
 
 			Arguments =
@@ -317,7 +293,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "GetTotalDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the total duration of the stored time span." },
 
 			Arguments =
@@ -333,7 +308,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "HasSecretValues",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns true if the duration has been configured with any secret values." },
 
 			Arguments =
@@ -371,7 +345,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "SetClock",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the clock source used by this object." },
 
 			Arguments =
@@ -382,7 +355,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "SetTimeFromEnd",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the duration object to represent an end time and a duration." },
 
 			Arguments =
@@ -395,7 +367,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "SetTimeFromStart",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the duration object to represent a start time and a duration." },
 
 			Arguments =
@@ -408,7 +379,6 @@ local LuaDurationObjectAPI =
 		{
 			Name = "SetTimeSpan",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the duration object to represent a fixed start and end time span. If the end time is earlier than the start time, the duration will clamp to zero." },
 
 			Arguments =

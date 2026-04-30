@@ -11,7 +11,6 @@ local GlyphInfo =
 			Name = "GetGlyphInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,7 +31,6 @@ local GlyphInfo =
 			Name = "GetGlyphLink",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

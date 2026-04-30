@@ -9,7 +9,6 @@ local GameUI =
 		{
 			Name = "SetInWorldUIVisibility",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,7 +18,6 @@ local GameUI =
 		{
 			Name = "SetUIVisibility",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

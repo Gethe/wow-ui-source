@@ -15,7 +15,6 @@ local WowSurvey =
 		{
 			Name = "TriggerSurveyServe",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

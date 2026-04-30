@@ -18,11 +18,10 @@ local Item =
 		{
 			Name = "CanBeRefunded",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -33,11 +32,10 @@ local Item =
 		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -61,7 +59,6 @@ local Item =
 		{
 			Name = "DoesItemContainSpec",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,11 +75,10 @@ local Item =
 		{
 			Name = "DoesItemExist",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "emptiableItemLocation", Type = "EmptiableItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "emptiableItemLocation", Type = "EmptiableItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -93,7 +89,6 @@ local Item =
 		{
 			Name = "DoesItemExistByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,7 +103,6 @@ local Item =
 		{
 			Name = "DropItemOnUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,7 +112,6 @@ local Item =
 		{
 			Name = "EndBoundTradeable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,7 +121,6 @@ local Item =
 		{
 			Name = "EndRefund",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,7 +130,6 @@ local Item =
 		{
 			Name = "EquipItemByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,41 +140,38 @@ local Item =
 		{
 			Name = "GetAppliedItemTransmogInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+				{ Name = "info", Type = "ItemTransmogInfo", Nilable = true },
 			},
 		},
 		{
 			Name = "GetBaseItemTransmogInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+				{ Name = "info", Type = "ItemTransmogInfo", Nilable = true },
 			},
 		},
 		{
 			Name = "GetCurrentItemLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -194,23 +182,21 @@ local Item =
 		{
 			Name = "GetCurrentItemTransmogInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+				{ Name = "info", Type = "ItemTransmogInfo", Nilable = true },
 			},
 		},
 		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,7 +213,6 @@ local Item =
 		{
 			Name = "GetItemChildInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,7 +228,6 @@ local Item =
 		{
 			Name = "GetItemClassInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,7 +242,6 @@ local Item =
 		{
 			Name = "GetItemCount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -277,7 +260,6 @@ local Item =
 		{
 			Name = "GetItemCreationContext",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -293,7 +275,6 @@ local Item =
 		{
 			Name = "GetItemFamily",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,11 +289,10 @@ local Item =
 		{
 			Name = "GetItemGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -324,7 +304,6 @@ local Item =
 			Name = "GetItemGem",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -342,7 +321,6 @@ local Item =
 			Name = "GetItemGemID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -358,11 +336,10 @@ local Item =
 		{
 			Name = "GetItemID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -373,7 +350,6 @@ local Item =
 		{
 			Name = "GetItemIDForItemInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -388,11 +364,10 @@ local Item =
 		{
 			Name = "GetItemIcon",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -403,7 +378,6 @@ local Item =
 		{
 			Name = "GetItemIconByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -419,7 +393,6 @@ local Item =
 			Name = "GetItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -452,7 +425,6 @@ local Item =
 			Name = "GetItemInfoInstant",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -473,7 +445,6 @@ local Item =
 		{
 			Name = "GetItemInventorySlotInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -488,7 +459,6 @@ local Item =
 		{
 			Name = "GetItemInventorySlotKey",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -503,11 +473,10 @@ local Item =
 		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -518,7 +487,6 @@ local Item =
 		{
 			Name = "GetItemInventoryTypeByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -533,11 +501,10 @@ local Item =
 		{
 			Name = "GetItemLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -548,11 +515,10 @@ local Item =
 		{
 			Name = "GetItemMaxStackSize",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -563,7 +529,6 @@ local Item =
 		{
 			Name = "GetItemMaxStackSizeByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -578,11 +543,10 @@ local Item =
 		{
 			Name = "GetItemName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -593,7 +557,6 @@ local Item =
 		{
 			Name = "GetItemNameByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -608,7 +571,6 @@ local Item =
 		{
 			Name = "GetItemNumAddedSockets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -623,7 +585,6 @@ local Item =
 		{
 			Name = "GetItemNumSockets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -638,11 +599,10 @@ local Item =
 		{
 			Name = "GetItemQuality",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -653,7 +613,6 @@ local Item =
 		{
 			Name = "GetItemQualityByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -668,7 +627,6 @@ local Item =
 		{
 			Name = "GetItemQualityColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -686,7 +644,6 @@ local Item =
 		{
 			Name = "GetItemSetInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -702,7 +659,6 @@ local Item =
 			Name = "GetItemSpecInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -718,7 +674,6 @@ local Item =
 			Name = "GetItemSpell",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -735,7 +690,6 @@ local Item =
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -753,7 +707,6 @@ local Item =
 			Name = "GetItemUniqueness",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -770,7 +723,6 @@ local Item =
 			Name = "GetItemUniquenessByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -788,11 +740,10 @@ local Item =
 		{
 			Name = "GetStackCount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -803,7 +754,6 @@ local Item =
 		{
 			Name = "IsArtifactPowerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -818,11 +768,10 @@ local Item =
 		{
 			Name = "IsBound",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -833,7 +782,6 @@ local Item =
 		{
 			Name = "IsConsumableItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -848,7 +796,6 @@ local Item =
 		{
 			Name = "IsCurrentItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -863,7 +810,6 @@ local Item =
 		{
 			Name = "IsDressableItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -878,7 +824,6 @@ local Item =
 		{
 			Name = "IsEquippableItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -893,7 +838,6 @@ local Item =
 		{
 			Name = "IsEquippedItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -908,7 +852,6 @@ local Item =
 		{
 			Name = "IsEquippedItemType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -923,7 +866,6 @@ local Item =
 		{
 			Name = "IsHarmfulItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -938,7 +880,6 @@ local Item =
 		{
 			Name = "IsHelpfulItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -953,11 +894,10 @@ local Item =
 		{
 			Name = "IsItemDataCached",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -968,7 +908,6 @@ local Item =
 		{
 			Name = "IsItemDataCachedByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -983,7 +922,6 @@ local Item =
 		{
 			Name = "IsItemInRange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -999,11 +937,10 @@ local Item =
 		{
 			Name = "IsLocked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -1014,7 +951,6 @@ local Item =
 		{
 			Name = "IsUsableItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1030,7 +966,6 @@ local Item =
 		{
 			Name = "ItemHasRange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1045,17 +980,15 @@ local Item =
 		{
 			Name = "LockItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{
 			Name = "LockItemByGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1065,7 +998,6 @@ local Item =
 		{
 			Name = "PickupItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1083,17 +1015,15 @@ local Item =
 		{
 			Name = "RequestLoadItemData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{
 			Name = "RequestLoadItemDataByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1103,17 +1033,15 @@ local Item =
 		{
 			Name = "UnlockItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{
 			Name = "UnlockItemByGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1123,7 +1051,6 @@ local Item =
 		{
 			Name = "UseItemByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

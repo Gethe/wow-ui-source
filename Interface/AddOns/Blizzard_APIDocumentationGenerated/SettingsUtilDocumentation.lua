@@ -15,7 +15,6 @@ local SettingsUtil =
 			Name = "OpenSettingsPanel",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

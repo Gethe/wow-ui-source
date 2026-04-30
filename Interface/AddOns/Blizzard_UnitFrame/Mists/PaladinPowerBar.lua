@@ -24,9 +24,9 @@ function PaladinPowerBarMixin:Update()
 	if ( self.delayedUpdate ) then
 		return;
 	end
-	
-	local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, Enum.PowerType.HolyPower );
-	local maxHolyPower = UnitPowerMax( PaladinPowerBar:GetParent().unit, Enum.PowerType.HolyPower );
+
+	local numHolyPower = UnitPower( PlayerFrame.unit, Enum.PowerType.HolyPower );
+	local maxHolyPower = UnitPowerMax( PlayerFrame.unit, Enum.PowerType.HolyPower );
 	
 	-- a little hacky but we want to signify that the bank is being used to replenish holy power
 	if ( self.lastPower and self.lastPower > HOLY_POWER_FULL and numHolyPower == self.lastPower - HOLY_POWER_FULL ) then
@@ -104,7 +104,7 @@ end
 
 
 function PaladinPowerBarMixin:OnEvent (event, arg1, arg2)
-	if ( (event == "UNIT_POWER_UPDATE") and (arg1 == self:GetParent().unit) ) then
+	if ( (event == "UNIT_POWER_UPDATE") and (arg1 == PlayerFrame.unit) ) then
 		if ( arg2 == "HOLY_POWER" ) then
 			self:Update();
 		end

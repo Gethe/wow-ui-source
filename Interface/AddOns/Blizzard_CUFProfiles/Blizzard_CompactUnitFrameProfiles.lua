@@ -117,6 +117,7 @@ CompactUnitFrameProfiles:Init({
 	raidFramesHealthBarColorBG					= { option = "healthBarColorBG", accessor = CUF_GetCVarColor, },
 	raidOptionDisplayPets						= { option = "DisplayPets", mutator = CUF_SetRaidFrameManagerSetting, },
 	raidOptionDisplayMainTankAndAssist			= { option = "DisplayMainTankAndAssist", mutator = CUF_SetRaidFrameManagerSetting, },
+	raidFramesDisplayBuffs						= { option = "displayBuffs", },
 	raidFramesDisplayDebuffs					= { option = "displayDebuffs", },
 	raidFramesDisplayOnlyDispellableDebuffs		= { option = "displayOnlyDispellableDebuffs", },
 	raidFramesDisplayLargerRoleSpecificDebuffs	= { option = "displayLargerRoleSpecificDebuffs", },

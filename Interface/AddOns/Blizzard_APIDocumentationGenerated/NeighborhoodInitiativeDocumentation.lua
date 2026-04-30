@@ -10,7 +10,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "AddTrackedInitiativeTask",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +46,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "GetInitiativeTaskChatLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +60,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "GetInitiativeTaskInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,7 +146,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "RemoveTrackedInitiativeTask",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -167,7 +163,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "SetActiveNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -177,7 +172,6 @@ local NeighborhoodInitiative =
 		{
 			Name = "SetViewingNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

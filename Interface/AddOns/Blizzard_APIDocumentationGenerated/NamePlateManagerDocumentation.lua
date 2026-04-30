@@ -10,7 +10,6 @@ local NamePlateManager =
 		{
 			Name = "GetNamePlateHitTestInsets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the values used to adjust the hit testing area for nameplates." },
 
 			Arguments =
@@ -29,7 +28,6 @@ local NamePlateManager =
 		{
 			Name = "IsNamePlateUnitBehindCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the unit to which the nameplate is attached is behind the player's camera." },
 
 			Arguments =
@@ -46,7 +44,6 @@ local NamePlateManager =
 			Name = "SetNamePlateHitTestInsets",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "NotAllowed",
 			Documentation = { "Provide values to adjust the hit testing area for nameplates. Positive values will decrease the hit test area, negative values will increase it. Note that all hit testing is clamped to the bounds of the nameplate and can not be moved outside it." },
 
 			Arguments =
@@ -61,7 +58,6 @@ local NamePlateManager =
 		{
 			Name = "SetNamePlateSimplified",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Set whether the nameplate attached to a unit is considered simplified, which can change the way it's displayed." },
 
 			Arguments =

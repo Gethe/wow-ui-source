@@ -9,7 +9,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "CreateAnimation",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -125,8 +124,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,9 +139,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "HasScript",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,7 +153,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,7 +250,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "Play",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,7 +268,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "Restart",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,7 +278,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetAnimationSpeedMultiplier",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -297,7 +287,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetLooping",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -307,7 +296,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetPlaying",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -317,7 +305,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -328,7 +315,6 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetToFinalAlpha",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

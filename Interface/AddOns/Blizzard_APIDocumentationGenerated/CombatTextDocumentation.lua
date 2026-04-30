@@ -20,7 +20,6 @@ local CombatText =
 		{
 			Name = "GetCurrentEventInfo",
 			Type = "Function",
-			SecretReturns = true,
 
 			Returns =
 			{
@@ -30,7 +29,6 @@ local CombatText =
 			Name = "SetActiveUnit",
 			Type = "Function",
 			RequiresDeclassifiedUnitIdentity = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -10,7 +10,6 @@ local LimitedInput =
 		{
 			Name = "LimitedInputAllowed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

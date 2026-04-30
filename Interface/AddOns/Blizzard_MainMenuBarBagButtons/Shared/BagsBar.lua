@@ -15,7 +15,7 @@ function BagsBarMixin:OnLoad()
 
 	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.Layout, self));
 	EventRegistry:RegisterCallback("MainMenuBarManager.OnExpandChanged", self.Layout, self);
-	EventRegistry:RegisterCallback("MainActionBarMixin.UpdateEndCaps", self.OnUpdateEndCaps, self);
+	EventRegistry:RegisterCallback("ActionBarController.MainActionBarStateOverridden", self.MainActionBarStateOverridden, self);
 end
 
 function BagsBarMixin:GetBagButtonAnchorPoints()
@@ -130,6 +130,6 @@ function BagsBarMixin:IsDirectionUp()
 	return not self:IsHorizontal() and self.direction == Enum.BagsDirection.Up;
 end
 
-function BagsBarMixin:OnUpdateEndCaps(show)
-	self:SetShown(show);
+function BagsBarMixin:MainActionBarStateOverridden(overridden)
+	-- overriden per game type
 end

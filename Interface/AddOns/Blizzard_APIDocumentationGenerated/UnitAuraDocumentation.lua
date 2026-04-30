@@ -10,7 +10,6 @@ local UnitAura =
 		{
 			Name = "AddBlockedAura",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,7 +20,6 @@ local UnitAura =
 		{
 			Name = "AddPrivateAuraAnchor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,7 +35,6 @@ local UnitAura =
 			Name = "AddPrivateAuraAppliedSound",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,7 +49,6 @@ local UnitAura =
 		{
 			Name = "AuraIsBigDefensive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -67,7 +63,6 @@ local UnitAura =
 		{
 			Name = "AuraIsPrivate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -82,7 +77,6 @@ local UnitAura =
 		{
 			Name = "ClearBlockedAuras",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,8 +87,6 @@ local UnitAura =
 			Name = "DoesAuraHaveExpirationTime",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if an aura instance will expire after a certain amount of time." },
 
 			Arguments =
@@ -112,16 +104,14 @@ local UnitAura =
 			Name = "GetAuraApplicationDisplayCount",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a string for displaying the number of applications an aura has present." },
 
 			Arguments =
 			{
 				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "minDisplayCount", Type = "number", Nilable = false, NeverSecret = true, Default = 2, Documentation = { "Minimum number of applications required; if the application count is below this figure an empty string will be returned." } },
-				{ Name = "maxDisplayCount", Type = "number", Nilable = true, NeverSecret = true, Documentation = { "Maximum number of applications allowed; if the application count is above this figure then the string '*' will be returned." } },
+				{ Name = "minDisplayCount", Type = "number", Nilable = false, Default = 2, Documentation = { "Minimum number of applications required; if the application count is below this figure an empty string will be returned." } },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = true, Documentation = { "Maximum number of applications allowed; if the application count is above this figure then the string '*' will be returned." } },
 			},
 
 			Returns =
@@ -133,8 +123,6 @@ local UnitAura =
 			Name = "GetAuraBaseDuration",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the base duration of the given spell (or aura). Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
 
 			Arguments =
@@ -152,12 +140,10 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
@@ -169,8 +155,6 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByIndex",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,12 +171,10 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -204,13 +186,11 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySpellName",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
 			RequiresNonSecretAura = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "spellName", Type = "cstring", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -224,9 +204,6 @@ local UnitAura =
 			Name = "GetAuraDispelTypeColor",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretWhenUnitAuraRestricted = true,
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the dispel type associated with an aura instance and remaps it to a color via a curve, with the dispel type ID used as the 'x' value." },
 
 			Arguments =
@@ -238,14 +215,13 @@ local UnitAura =
 
 			Returns =
 			{
-				{ Name = "dispelTypeColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "dispelTypeColor", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "GetAuraDuration",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -261,7 +237,6 @@ local UnitAura =
 		{
 			Name = "GetAuraSlots",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,8 +255,6 @@ local UnitAura =
 		{
 			Name = "GetBuffDataByIndex",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -298,7 +271,6 @@ local UnitAura =
 		{
 			Name = "GetCooldownAuraBySpellID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -313,8 +285,6 @@ local UnitAura =
 		{
 			Name = "GetDebuffDataByIndex",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,9 +301,7 @@ local UnitAura =
 		{
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
 			RequiresNonSecretAura = true,
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -349,8 +317,6 @@ local UnitAura =
 			Name = "GetRefreshExtendedDuration",
 			Type = "Function",
 			RequiresValidUnitAuraInstance = true,
-			SecretWhenUnitAuraRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the client-predicted new duration of this aura if it were cast again right now. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
 
 			Arguments =
@@ -368,14 +334,12 @@ local UnitAura =
 		{
 			Name = "GetUnitAuraBySpellID",
 			Type = "Function",
-			SecretWhenUnitAuraRestricted = true,
 			RequiresNonSecretAura = true,
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
@@ -387,11 +351,10 @@ local UnitAura =
 		{
 			Name = "GetUnitAuraInstanceIDs",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -406,11 +369,10 @@ local UnitAura =
 		{
 			Name = "GetUnitAuras",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -419,13 +381,12 @@ local UnitAura =
 
 			Returns =
 			{
-				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false, ConditionalSecretContents = true },
+				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false },
 			},
 		},
 		{
 			Name = "IsAuraFilteredOutByInstanceID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -442,7 +403,6 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAnchor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -452,7 +412,6 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAppliedSound",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,7 +425,6 @@ local UnitAura =
 		{
 			Name = "SetPrivateWarningTextAnchor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -481,7 +439,6 @@ local UnitAura =
 		{
 			Name = "TriggerPrivateAuraShowDispelType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -491,7 +448,6 @@ local UnitAura =
 		{
 			Name = "WantsAlteredForm",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

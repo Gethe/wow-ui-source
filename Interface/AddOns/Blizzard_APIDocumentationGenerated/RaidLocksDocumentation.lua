@@ -10,7 +10,6 @@ local RaidLocks =
 		{
 			Name = "GetRedirectedDifficultyID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,7 +25,6 @@ local RaidLocks =
 		{
 			Name = "IsEncounterComplete",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -49,7 +49,6 @@ local MythicPlusInfo =
 		{
 			Name = "GetEndOfRunGearSequenceLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,7 +104,6 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelForDifficultyLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,7 +119,6 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelFromKeystoneLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -136,7 +133,6 @@ local MythicPlusInfo =
 		{
 			Name = "GetRunHistory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,7 +150,6 @@ local MythicPlusInfo =
 			Name = "GetSeasonBestAffixScoreInfoForMap",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets the active players best runs by the seasonal tracked affixes as well as their overall score for the current season." },
 
 			Arguments =
@@ -171,7 +166,6 @@ local MythicPlusInfo =
 		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,7 +193,6 @@ local MythicPlusInfo =
 			Name = "GetSeasonTimesForMap",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets the active player's best and last time for a map." },
 
 			Arguments =
@@ -216,7 +209,6 @@ local MythicPlusInfo =
 			Name = "GetWeeklyBestForMap",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

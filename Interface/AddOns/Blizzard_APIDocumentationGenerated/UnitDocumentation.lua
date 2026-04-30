@@ -18,8 +18,6 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerHoldAtMaxTime",
 			Type = "Function",
-			SecretWhenUnitSpellCastRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,8 +32,6 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerMinHoldTime",
 			Type = "Function",
-			SecretWhenUnitSpellCastRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,8 +46,6 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerStageDuration",
 			Type = "Function",
-			SecretWhenUnitSpellCastRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,7 +61,6 @@ local Unit =
 		{
 			Name = "GetUnitHealthModifier",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,7 +75,6 @@ local Unit =
 		{
 			Name = "GetUnitMaxHealthModifier",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,7 +90,6 @@ local Unit =
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,7 +105,6 @@ local Unit =
 			Name = "GetUnitPowerBarInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,7 +119,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarStrings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,7 +135,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarStringsByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,7 +151,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarTextureInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,7 +171,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarTextureInfoByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,7 +190,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerModifier",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,7 +204,6 @@ local Unit =
 		{
 			Name = "GetUnitTotalModifiedMaxHealthPercent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -234,7 +218,6 @@ local Unit =
 		{
 			Name = "IsPlayerInGuildFromGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,7 +232,6 @@ local Unit =
 		{
 			Name = "IsUnitModelReadyForUI",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,8 +246,6 @@ local Unit =
 		{
 			Name = "PlayerIsSpellTarget",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit is the player. Returns false if the unit is not casting a spell or the spell has no target." },
 
 			Arguments =
@@ -281,7 +261,6 @@ local Unit =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -293,7 +272,6 @@ local Unit =
 		{
 			Name = "SetPortraitTextureFromCreatureDisplayID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -304,7 +282,6 @@ local Unit =
 		{
 			Name = "SetUnitCursorTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,7 +299,6 @@ local Unit =
 		{
 			Name = "ShouldKnowUnitHealth",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Whether the player would have been able to know the unit's exact health value in the original game release." },
 
 			Arguments =
@@ -338,7 +314,6 @@ local Unit =
 		{
 			Name = "UnitBattlePetLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -353,7 +328,6 @@ local Unit =
 		{
 			Name = "UnitBattlePetSpeciesID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -368,7 +342,6 @@ local Unit =
 		{
 			Name = "UnitBattlePetType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -383,7 +356,6 @@ local Unit =
 		{
 			Name = "UnitCanAssist",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +371,6 @@ local Unit =
 		{
 			Name = "UnitCanAttack",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -415,7 +386,6 @@ local Unit =
 		{
 			Name = "UnitCanCooperate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -431,7 +401,6 @@ local Unit =
 		{
 			Name = "UnitCanPetBattle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,8 +417,6 @@ local Unit =
 			Name = "UnitCastingDuration",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -464,8 +431,6 @@ local Unit =
 		{
 			Name = "UnitCastingInfo",
 			Type = "Function",
-			SecretWhenUnitSpellCastRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -479,19 +444,18 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
-				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitChannelDuration",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -506,8 +470,6 @@ local Unit =
 		{
 			Name = "UnitChannelInfo",
 			Type = "Function",
-			SecretWhenUnitSpellCastRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -521,19 +483,18 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitClass",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -542,7 +503,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "className", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "className", Type = "cstring", Nilable = false },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
@@ -551,7 +512,6 @@ local Unit =
 			Name = "UnitClassBase",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -568,7 +528,6 @@ local Unit =
 			Name = "UnitClassFromGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -577,7 +536,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "className", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "className", Type = "cstring", Nilable = false },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
@@ -585,8 +544,6 @@ local Unit =
 		{
 			Name = "UnitCreatureFamily",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -602,9 +559,7 @@ local Unit =
 		{
 			Name = "UnitCreatureID",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
 			RequiresUnitIdentityAccess = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -619,8 +574,6 @@ local Unit =
 		{
 			Name = "UnitCreatureType",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -636,7 +589,6 @@ local Unit =
 		{
 			Name = "UnitDistanceSquared",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -653,7 +605,6 @@ local Unit =
 			Name = "UnitEmpoweredChannelDuration",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a duration object that includes the duration of an empowered cast channel." },
 
 			Arguments =
@@ -671,7 +622,6 @@ local Unit =
 			Name = "UnitEmpoweredStageDurations",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a vector of duration objects that measure the time spans for each individual stage in an empowered channel, with hold-at-max time included as the last element." },
 
 			Arguments =
@@ -688,7 +638,6 @@ local Unit =
 			Name = "UnitEmpoweredStagePercentages",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a vector of percentages that describe how much of the total duration of an empowered channel is occupied by a stage." },
 
 			Arguments =
@@ -705,7 +654,6 @@ local Unit =
 		{
 			Name = "UnitExists",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -720,7 +668,6 @@ local Unit =
 		{
 			Name = "UnitFactionGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -737,8 +684,6 @@ local Unit =
 		{
 			Name = "UnitFullName",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -754,8 +699,6 @@ local Unit =
 		{
 			Name = "UnitGUID",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -770,7 +713,6 @@ local Unit =
 		{
 			Name = "UnitGetDetailedHealPrediction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -782,8 +724,6 @@ local Unit =
 		{
 			Name = "UnitGetIncomingHeals",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -799,8 +739,6 @@ local Unit =
 		{
 			Name = "UnitGetTotalAbsorbs",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -815,8 +753,6 @@ local Unit =
 		{
 			Name = "UnitGetTotalHealAbsorbs",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -831,7 +767,6 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssigned",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -846,7 +781,6 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -861,7 +795,6 @@ local Unit =
 		{
 			Name = "UnitHasPowerType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -877,8 +810,6 @@ local Unit =
 		{
 			Name = "UnitHealthMax",
 			Type = "Function",
-			SecretWhenUnitHealthMaxRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -893,8 +824,6 @@ local Unit =
 		{
 			Name = "UnitHealthMissing",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Result of UnitHealthMax() - UnitHealth()" },
 
 			Arguments =
@@ -911,9 +840,6 @@ local Unit =
 		{
 			Name = "UnitHealthPercent",
 			Type = "Function",
-			SecretWhenCurveSecret = true,
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns percent of health remaining - can be scaled via a curve for display purposes" },
 
 			Arguments =
@@ -931,8 +857,6 @@ local Unit =
 		{
 			Name = "UnitHealth",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -948,7 +872,6 @@ local Unit =
 		{
 			Name = "UnitInAnyGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -964,7 +887,6 @@ local Unit =
 		{
 			Name = "UnitInBattleground",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -980,7 +902,6 @@ local Unit =
 		{
 			Name = "UnitInOtherParty",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Checks whether this unit cannot see your party chat because it is in an instance group" },
 
 			Arguments =
@@ -996,7 +917,6 @@ local Unit =
 		{
 			Name = "UnitInParty",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1012,7 +932,6 @@ local Unit =
 		{
 			Name = "UnitInPartyIsAI",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1027,7 +946,6 @@ local Unit =
 		{
 			Name = "UnitInRaid",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1043,8 +961,6 @@ local Unit =
 		{
 			Name = "UnitInRange",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1060,7 +976,6 @@ local Unit =
 		{
 			Name = "UnitInSubgroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1076,8 +991,6 @@ local Unit =
 		{
 			Name = "UnitIsAFK",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1092,7 +1005,6 @@ local Unit =
 		{
 			Name = "UnitIsBattlePet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1107,7 +1019,6 @@ local Unit =
 		{
 			Name = "UnitIsBattlePetCompanion",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1122,7 +1033,6 @@ local Unit =
 		{
 			Name = "UnitIsCharmed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1137,7 +1047,6 @@ local Unit =
 		{
 			Name = "UnitIsConnected",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1152,7 +1061,6 @@ local Unit =
 		{
 			Name = "UnitIsCorpse",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1167,8 +1075,6 @@ local Unit =
 		{
 			Name = "UnitIsDND",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1183,7 +1089,6 @@ local Unit =
 		{
 			Name = "UnitIsEnemy",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1199,7 +1104,6 @@ local Unit =
 		{
 			Name = "UnitIsFriend",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1215,7 +1119,6 @@ local Unit =
 		{
 			Name = "UnitIsGameObject",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1230,7 +1133,6 @@ local Unit =
 		{
 			Name = "UnitIsGroupAssistant",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1245,7 +1147,6 @@ local Unit =
 		{
 			Name = "UnitIsGroupLeader",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1261,7 +1162,6 @@ local Unit =
 		{
 			Name = "UnitIsHumanPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1277,7 +1177,6 @@ local Unit =
 		{
 			Name = "UnitIsInMyGuild",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1292,7 +1191,6 @@ local Unit =
 		{
 			Name = "UnitIsInteractable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1307,7 +1205,6 @@ local Unit =
 		{
 			Name = "UnitIsNPCAsPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1322,7 +1219,6 @@ local Unit =
 		{
 			Name = "UnitIsOtherPlayersBattlePet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1337,7 +1233,6 @@ local Unit =
 		{
 			Name = "UnitIsOtherPlayersPet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1352,7 +1247,6 @@ local Unit =
 		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1368,7 +1262,6 @@ local Unit =
 		{
 			Name = "UnitIsPVP",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1383,7 +1276,6 @@ local Unit =
 		{
 			Name = "UnitIsPVPFreeForAll",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1398,7 +1290,6 @@ local Unit =
 		{
 			Name = "UnitIsPVPSanctuary",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1413,7 +1304,6 @@ local Unit =
 		{
 			Name = "UnitIsPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1429,7 +1319,6 @@ local Unit =
 		{
 			Name = "UnitIsPossessed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1444,7 +1333,6 @@ local Unit =
 		{
 			Name = "UnitIsRaidOfficer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1460,8 +1348,6 @@ local Unit =
 			Name = "UnitIsUnit",
 			Type = "Function",
 			RequiresComparableUnitTokens = true,
-			SecretWhenUnitComparisonRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1477,7 +1363,6 @@ local Unit =
 		{
 			Name = "UnitIsVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1492,7 +1377,6 @@ local Unit =
 		{
 			Name = "UnitIsWildBattlePet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1507,7 +1391,6 @@ local Unit =
 		{
 			Name = "UnitLeadsAnyGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1522,8 +1405,6 @@ local Unit =
 		{
 			Name = "UnitName",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1539,8 +1420,6 @@ local Unit =
 		{
 			Name = "UnitNameUnmodified",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1556,7 +1435,6 @@ local Unit =
 		{
 			Name = "UnitNameplateShowsWidgetsOnly",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1571,7 +1449,6 @@ local Unit =
 		{
 			Name = "UnitNumPowerBarTimers",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1586,8 +1463,6 @@ local Unit =
 		{
 			Name = "UnitOwnerGUID",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1602,8 +1477,6 @@ local Unit =
 		{
 			Name = "UnitPVPName",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1618,8 +1491,6 @@ local Unit =
 		{
 			Name = "UnitPartialPower",
 			Type = "Function",
-			SecretWhenUnitPowerRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1636,8 +1507,6 @@ local Unit =
 		{
 			Name = "UnitPercentHealthFromGUID",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1652,7 +1521,6 @@ local Unit =
 		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1667,7 +1535,6 @@ local Unit =
 		{
 			Name = "UnitPlayerControlled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1682,7 +1549,6 @@ local Unit =
 		{
 			Name = "UnitPlayerOrPetInParty",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1698,7 +1564,6 @@ local Unit =
 		{
 			Name = "UnitPlayerOrPetInRaid",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1714,8 +1579,6 @@ local Unit =
 		{
 			Name = "UnitPower",
 			Type = "Function",
-			SecretWhenUnitPowerRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1732,7 +1595,6 @@ local Unit =
 		{
 			Name = "UnitPowerBarID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1748,8 +1610,6 @@ local Unit =
 			Name = "UnitPowerBarTimerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1768,7 +1628,6 @@ local Unit =
 		{
 			Name = "UnitPowerDisplayMod",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1783,8 +1642,6 @@ local Unit =
 		{
 			Name = "UnitPowerMax",
 			Type = "Function",
-			SecretWhenUnitPowerMaxRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1801,8 +1658,6 @@ local Unit =
 		{
 			Name = "UnitPowerMissing",
 			Type = "Function",
-			SecretWhenUnitPowerRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Result of UnitPowerMax() - UnitPower()" },
 
 			Arguments =
@@ -1820,9 +1675,6 @@ local Unit =
 		{
 			Name = "UnitPowerPercent",
 			Type = "Function",
-			SecretWhenUnitPowerRestricted = true,
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the percent of power remaining, optionally evaluating it against a supplied curve." },
 
 			Arguments =
@@ -1842,7 +1694,6 @@ local Unit =
 			Name = "UnitPowerType",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1862,7 +1713,6 @@ local Unit =
 		{
 			Name = "UnitPvpClassification",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1877,7 +1727,6 @@ local Unit =
 		{
 			Name = "UnitReaction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1893,7 +1742,6 @@ local Unit =
 		{
 			Name = "UnitRealmRelationship",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1908,7 +1756,6 @@ local Unit =
 		{
 			Name = "UnitSex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1923,7 +1770,6 @@ local Unit =
 		{
 			Name = "UnitSexBase",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1938,7 +1784,6 @@ local Unit =
 		{
 			Name = "UnitShouldDisplaySpellTargetName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns whether the target's name should be displayed. Returns false if the unit is not casting a spell or the spell has no target." },
 
 			Arguments =
@@ -1954,8 +1799,6 @@ local Unit =
 		{
 			Name = "UnitSpellHaste",
 			Type = "Function",
-			SecretWhenUnitStatsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1970,8 +1813,6 @@ local Unit =
 		{
 			Name = "UnitSpellTargetClass",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns the class of the spell's target unit. Returns nil if the unit is not casting a spell or the spell has no target." },
 
 			Arguments =
@@ -1987,8 +1828,6 @@ local Unit =
 		{
 			Name = "UnitSpellTargetName",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns the name of the spell's target unit. Returns nil if the unit is not casting a spell or the spell has no target." },
 
 			Arguments =
@@ -2004,8 +1843,6 @@ local Unit =
 		{
 			Name = "UnitTokenFromGUID",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -2020,7 +1857,6 @@ local Unit =
 		{
 			Name = "UnitTreatAsPlayerForDisplay",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2036,7 +1872,6 @@ local Unit =
 			Name = "UnitWidgetSet",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2051,7 +1886,6 @@ local Unit =
 		{
 			Name = "WorldLootObjectExists",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2083,7 +1917,6 @@ local Unit =
 			Name = "ArenaCrowdControlSpellUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
-			SecretWhenLossOfControlInfoRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2273,7 +2106,6 @@ local Unit =
 			Name = "PartyKill",
 			Type = "Event",
 			LiteralName = "PARTY_KILL",
-			SecretWhenUnitIdentityRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2457,7 +2289,6 @@ local Unit =
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
-			SecretWhenUnitIdentityRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2580,7 +2411,6 @@ local Unit =
 			Name = "RunePowerUpdate",
 			Type = "Event",
 			LiteralName = "RUNE_POWER_UPDATE",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2592,7 +2422,6 @@ local Unit =
 			Name = "RuneTypeUpdate",
 			Type = "Event",
 			LiteralName = "RUNE_TYPE_UPDATE",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2650,6 +2479,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_ARENA_COOLDOWNS_UPDATE",
 			SynchronousEvent = true,
+			UniqueEvent = true,
 			Documentation = { "Only signaled when the active player is a commentator or spectator." },
 			Payload =
 			{
@@ -2761,7 +2591,6 @@ local Unit =
 			Name = "UnitDied",
 			Type = "Event",
 			LiteralName = "UNIT_DIED",
-			SecretWhenUnitIdentityRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2782,7 +2611,6 @@ local Unit =
 			Name = "UnitDistanceCheckUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_DISTANCE_CHECK_UPDATE",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2877,7 +2705,6 @@ local Unit =
 			Name = "UnitInRangeUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_IN_RANGE_UPDATE",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2931,7 +2758,6 @@ local Unit =
 			Name = "UnitMaxHealthModifiersChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			UniqueEvent = true,
 			Payload =
@@ -3150,21 +2976,19 @@ local Unit =
 			Name = "UnitSpellcastChannelStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastChannelStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3172,56 +2996,52 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastChannelUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastDelayed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3230,56 +3050,52 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "complete", Type = "bool", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastFailed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastFailedQuiet",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastInterrupted",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3287,7 +3103,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -3314,7 +3130,6 @@ local Unit =
 			Name = "UnitSpellcastReticleClear",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3327,7 +3142,6 @@ local Unit =
 			Name = "UnitSpellcastReticleTarget",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -3340,12 +3154,11 @@ local Unit =
 			Name = "UnitSpellcastSent",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SENT",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
-				{ Name = "target", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "target", Type = "cstring", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -3354,42 +3167,39 @@ local Unit =
 			Name = "UnitSpellcastStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_STOP",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastSucceeded",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
-			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -3523,12 +3333,12 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
-				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true },
+				{ Name = "delayTimeMs", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -3541,12 +3351,12 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true },
 			},
 		},
 		{

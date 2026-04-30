@@ -9,7 +9,6 @@ local FrameScript =
 		{
 			Name = "AddSourceLocationExclude",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local FrameScript =
 			Name = "canaccessallvalues",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the immediate calling function has appropriate permissions to access and operate on all supplied values." },
 
 			Arguments =
@@ -48,7 +46,6 @@ local FrameScript =
 			Name = "canaccesstable",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the immediate calling function has appropriate permissions to index secret tables. This will return false if the caller cannot access the table value itself, or if access to the table contents is disallowed by taint." },
 
 			Arguments =
@@ -65,7 +62,6 @@ local FrameScript =
 			Name = "canaccessvalue",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the immediate calling function has appropriate permissions to access and operate on a specific value." },
 
 			Arguments =
@@ -82,7 +78,6 @@ local FrameScript =
 			Name = "CreateFromMixins",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,7 +94,6 @@ local FrameScript =
 			Type = "Function",
 			SecureHooksAllowed = false,
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,7 +108,6 @@ local FrameScript =
 		{
 			Name = "CreateWindow",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -137,7 +130,6 @@ local FrameScript =
 			Name = "dumpobject",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Invokes the '__dump' metamethod on any value (if present), returning its result." },
 
 			Arguments =
@@ -181,7 +173,6 @@ local FrameScript =
 			Name = "GetEventTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,7 +201,6 @@ local FrameScript =
 			Name = "hasanysecretvalues",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a supplied value is a secret value." },
 
 			Arguments =
@@ -227,7 +217,6 @@ local FrameScript =
 			Name = "issecrettable",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a supplied value is a secret table. This function will return true if the table value itself is secret, or if flags on the table are set such that accesses of the table would produce secrets." },
 
 			Arguments =
@@ -244,7 +233,6 @@ local FrameScript =
 			Name = "issecretvalue",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a supplied value is a secret value." },
 
 			Arguments =
@@ -261,7 +249,6 @@ local FrameScript =
 			Name = "mapvalues",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Applies a given function over all supplied values individually, replacing the value with the result of the call." },
 
 			Arguments =
@@ -279,7 +266,6 @@ local FrameScript =
 			Name = "Mixin",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -296,7 +282,6 @@ local FrameScript =
 			Name = "RegisterEventCallback",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,7 +293,6 @@ local FrameScript =
 			Name = "RegisterUnitEventCallback",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -320,7 +304,6 @@ local FrameScript =
 		{
 			Name = "RunScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,7 +314,6 @@ local FrameScript =
 			Name = "scrubsecretvalues",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a transformed list of values with inputs that are secret values replaced by nil values." },
 
 			Arguments =
@@ -348,7 +330,6 @@ local FrameScript =
 			Name = "scrub",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a transformed list of values with inputs that are either secret or are not string, number, or boolean type replaced by nil values." },
 
 			Arguments =
@@ -366,7 +347,6 @@ local FrameScript =
 			Type = "Function",
 			SecureHooksAllowed = false,
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Unwraps all supplied secrets, converting them back to regular values." },
 
 			Arguments =
@@ -383,7 +363,6 @@ local FrameScript =
 			Name = "secretwrap",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Converts all supplied values to secret values, preventing most operations on them from occurring on tainted code paths." },
 
 			Arguments =
@@ -400,7 +379,6 @@ local FrameScript =
 			Name = "securecallmethod",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Invokes a named method on an object with a secure call barrier that prevents errors or taint from function lookup and execution from propagating to the caller." },
 
 			Arguments =
@@ -418,7 +396,6 @@ local FrameScript =
 		{
 			Name = "SetErrorCallstackHeight",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -430,7 +407,6 @@ local FrameScript =
 			Type = "Function",
 			SecureHooksAllowed = false,
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -442,7 +418,6 @@ local FrameScript =
 			Name = "UnregisterEventCallback",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -454,7 +429,6 @@ local FrameScript =
 			Name = "UnregisterUnitEventCallback",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

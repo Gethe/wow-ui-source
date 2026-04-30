@@ -11,7 +11,6 @@ local ClassColor =
 			Name = "GetClassColor",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -20,7 +19,7 @@ local ClassColor =
 
 			Returns =
 			{
-				{ Name = "classColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "classColor", Type = "colorRGB", Nilable = false },
 			},
 		},
 	},

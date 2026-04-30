@@ -10,7 +10,6 @@ local VoiceChat =
 		{
 			Name = "ActivateChannel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local VoiceChat =
 		{
 			Name = "ActivateChannelTranscription",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,7 +28,6 @@ local VoiceChat =
 		{
 			Name = "BeginLocalCapture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,7 +55,6 @@ local VoiceChat =
 		{
 			Name = "CreateChannel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,7 +69,6 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,7 +78,6 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannelTranscription",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,8 +128,6 @@ local VoiceChat =
 			Name = "GetChannel",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,8 +143,6 @@ local VoiceChat =
 			Name = "GetChannelForChannelType",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,8 +158,6 @@ local VoiceChat =
 			Name = "GetChannelForCommunityStream",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,7 +209,6 @@ local VoiceChat =
 		{
 			Name = "GetLocalPlayerMemberID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -245,8 +232,6 @@ local VoiceChat =
 		{
 			Name = "GetMemberGUID",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -262,8 +247,6 @@ local VoiceChat =
 		{
 			Name = "GetMemberID",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -279,8 +262,6 @@ local VoiceChat =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -296,8 +277,6 @@ local VoiceChat =
 		{
 			Name = "GetMemberName",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -313,11 +292,10 @@ local VoiceChat =
 		{
 			Name = "GetMemberVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -392,7 +370,6 @@ local VoiceChat =
 		{
 			Name = "IsChannelJoinPending",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -436,7 +413,6 @@ local VoiceChat =
 		{
 			Name = "IsMemberLocalPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -452,11 +428,10 @@ local VoiceChat =
 		{
 			Name = "IsMemberMuted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -467,8 +442,6 @@ local VoiceChat =
 		{
 			Name = "IsMemberMutedForAll",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -484,8 +457,6 @@ local VoiceChat =
 		{
 			Name = "IsMemberSilenced",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -528,11 +499,10 @@ local VoiceChat =
 		{
 			Name = "IsPlayerUsingVoice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -597,7 +567,6 @@ local VoiceChat =
 		{
 			Name = "LeaveChannel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -630,7 +599,6 @@ local VoiceChat =
 		{
 			Name = "RequestJoinAndActivateCommunityStreamChannel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -641,7 +609,6 @@ local VoiceChat =
 		{
 			Name = "RequestJoinChannelByChannelType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -652,7 +619,6 @@ local VoiceChat =
 		{
 			Name = "SetCommunicationMode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -662,7 +628,6 @@ local VoiceChat =
 		{
 			Name = "SetDeafened",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -672,7 +637,6 @@ local VoiceChat =
 		{
 			Name = "SetInputDevice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -682,7 +646,6 @@ local VoiceChat =
 		{
 			Name = "SetInputVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -692,7 +655,6 @@ local VoiceChat =
 		{
 			Name = "SetMasterVolumeScale",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -702,30 +664,27 @@ local VoiceChat =
 		{
 			Name = "SetMemberMuted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 				{ Name = "muted", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "SetMemberVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adjusts member volume across all channels" },
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "SetMuted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -735,7 +694,6 @@ local VoiceChat =
 		{
 			Name = "SetOutputDevice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -745,7 +703,6 @@ local VoiceChat =
 		{
 			Name = "SetOutputVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -755,7 +712,6 @@ local VoiceChat =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -767,7 +723,6 @@ local VoiceChat =
 		{
 			Name = "SetPushToTalkBinding",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -777,7 +732,6 @@ local VoiceChat =
 		{
 			Name = "SetVADSensitivity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -797,7 +751,6 @@ local VoiceChat =
 		{
 			Name = "SpeakRemoteTextSample",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -807,16 +760,15 @@ local VoiceChat =
 		{
 			Name = "SpeakText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "SpeakText also supports XML TTS tags on Windows including bookmarks - see SAPI XML TTS Tutorial in Microsoft's online documentation for more information." },
 
 			Arguments =
 			{
-				{ Name = "voiceID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "voiceID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "cstring", Nilable = false },
-				{ Name = "rate", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "volume", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "overlap", Type = "bool", Nilable = false, NeverSecret = true, Default = false },
+				{ Name = "rate", Type = "number", Nilable = false },
+				{ Name = "volume", Type = "number", Nilable = false },
+				{ Name = "overlap", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -830,11 +782,10 @@ local VoiceChat =
 		{
 			Name = "ToggleMemberMuted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 		},
 		{
@@ -904,7 +855,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelDisplayNameChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_DISPLAY_NAME_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -930,7 +880,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberActiveStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -943,7 +892,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberAdded",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ADDED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -955,7 +903,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberEnergyChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -968,7 +915,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberGuidUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -980,7 +926,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberMuteForAllChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1005,7 +950,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberRemoved",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_REMOVED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1017,7 +961,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSilencedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1030,7 +973,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSpeakingStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1043,7 +985,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSttMessage",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_STT_MESSAGE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1057,7 +998,6 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberVolumeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_VOLUME_CHANGED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1413,15 +1353,15 @@ local VoiceChat =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "channelType", Type = "ChatChannelType", Nilable = false, NeverSecret = true },
-				{ Name = "clubId", Type = "ClubId", Nilable = false, NeverSecret = true },
-				{ Name = "streamId", Type = "ClubStreamId", Nilable = false, NeverSecret = true },
-				{ Name = "volume", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "isActive", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "isMuted", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "isTransmitting", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "isTranscribing", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = false },
+				{ Name = "volume", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isMuted", Type = "bool", Nilable = false },
+				{ Name = "isTransmitting", Type = "bool", Nilable = false },
+				{ Name = "isTranscribing", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
 			},
 		},

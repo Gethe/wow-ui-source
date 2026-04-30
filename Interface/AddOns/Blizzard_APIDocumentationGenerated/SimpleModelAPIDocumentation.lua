@@ -402,7 +402,6 @@ local SimpleModelAPI =
 		{
 			Name = "ReplaceIconTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -412,7 +411,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -422,7 +420,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCameraDistance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -432,7 +429,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCameraFacing",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -442,7 +438,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCameraPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -454,7 +449,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCameraRoll",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -464,7 +458,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCameraTarget",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -476,7 +469,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetCustomCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -486,7 +478,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetDesaturation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -496,7 +487,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetFacing",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -506,7 +496,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetFogColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -519,7 +508,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetFogFar",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -529,7 +517,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetFogNear",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -539,7 +526,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetGlow",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -549,7 +535,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetGradientMask",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -562,7 +547,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetLight",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -573,7 +557,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetModel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -584,7 +567,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetModelAlpha",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -594,7 +576,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetModelDrawLayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -604,7 +585,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetModelScale",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -614,7 +594,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetParticlesEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -624,7 +603,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetPaused",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -634,7 +612,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetPitch",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -644,7 +621,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -656,7 +632,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetRoll",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -666,7 +641,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetSequence",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -676,7 +650,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetSequenceTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -687,7 +660,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetShadowEffect",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -697,12 +669,11 @@ local SimpleModelAPI =
 		{
 			Name = "SetTransform",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "translation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
-				{ Name = "rotation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
+				{ Name = "translation", Type = "vector3", Nilable = true },
+				{ Name = "rotation", Type = "vector3", Nilable = true },
 				{ Name = "scale", Type = "number", Nilable = true },
 			},
 		},
@@ -710,7 +681,6 @@ local SimpleModelAPI =
 			Name = "SetUseGBuffer",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -720,7 +690,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetViewInsets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -733,7 +702,6 @@ local SimpleModelAPI =
 		{
 			Name = "SetViewTranslation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -744,22 +712,20 @@ local SimpleModelAPI =
 		{
 			Name = "TransformCameraSpaceToModelSpace",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "cameraPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "cameraPosition", Type = "vector3", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "modelPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "modelPosition", Type = "vector3", Nilable = false },
 			},
 		},
 		{
 			Name = "UseModelCenterToTransform",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

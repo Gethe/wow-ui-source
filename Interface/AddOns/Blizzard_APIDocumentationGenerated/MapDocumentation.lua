@@ -10,7 +10,6 @@ local Map =
 		{
 			Name = "GetAreaInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local Map =
 		{
 			Name = "GetBestMapForUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only works for the player and party members." },
 
 			Arguments =
@@ -41,7 +39,6 @@ local Map =
 		{
 			Name = "GetBountySetIDForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,7 +62,6 @@ local Map =
 		{
 			Name = "GetMapArtBackgroundAtlas",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,7 +76,6 @@ local Map =
 		{
 			Name = "GetMapArtHelpTextPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,7 +91,6 @@ local Map =
 			Name = "GetMapArtID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,7 +106,6 @@ local Map =
 			Name = "GetMapArtLayerTextures",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,7 +122,6 @@ local Map =
 			Name = "GetMapArtLayers",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,7 +136,6 @@ local Map =
 		{
 			Name = "GetMapBannersForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,7 +151,6 @@ local Map =
 			Name = "GetMapChildrenInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -178,7 +168,6 @@ local Map =
 			Name = "GetMapDisplayInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,7 +183,6 @@ local Map =
 			Name = "GetMapGroupID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,7 +198,6 @@ local Map =
 			Name = "GetMapGroupMembersInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -226,7 +213,6 @@ local Map =
 			Name = "GetMapHighlightInfoAtPosition",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,7 +237,6 @@ local Map =
 			Name = "GetMapInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,7 +252,6 @@ local Map =
 			Name = "GetMapInfoAtPosition",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -286,7 +270,6 @@ local Map =
 			Name = "GetMapLevels",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -304,7 +287,6 @@ local Map =
 		{
 			Name = "GetMapLinksForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -320,26 +302,24 @@ local Map =
 			Name = "GetMapPosFromWorldPos",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Nilable = false },
 				{ Name = "overrideUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 			},
 		},
 		{
 			Name = "GetMapRectOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -358,7 +338,6 @@ local Map =
 		{
 			Name = "GetPlayerMapPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only works for the player and party members." },
 
 			Arguments =
@@ -369,31 +348,29 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Nilable = true },
 			},
 		},
 		{
 			Name = "GetWorldPosFromMapPos",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Nilable = false },
 			},
 		},
 		{
 			Name = "MapHasArt",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -408,7 +385,6 @@ local Map =
 		{
 			Name = "RequestPreloadMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -463,7 +439,7 @@ local Map =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "linkedUiMapID", Type = "number", Nilable = false },

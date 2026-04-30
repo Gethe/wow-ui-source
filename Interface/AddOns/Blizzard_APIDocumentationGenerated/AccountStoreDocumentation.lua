@@ -10,7 +10,6 @@ local AccountStore =
 		{
 			Name = "BeginPurchase",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local AccountStore =
 		{
 			Name = "GetCategories",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local AccountStore =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,7 +52,6 @@ local AccountStore =
 		{
 			Name = "GetCategoryItems",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,7 +66,6 @@ local AccountStore =
 		{
 			Name = "GetCurrencyAvailable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,7 +80,6 @@ local AccountStore =
 		{
 			Name = "GetCurrencyIDForStore",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,7 +94,6 @@ local AccountStore =
 		{
 			Name = "GetCurrencyInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,7 +108,6 @@ local AccountStore =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,7 +122,6 @@ local AccountStore =
 		{
 			Name = "GetStoreFrontState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,7 +136,6 @@ local AccountStore =
 		{
 			Name = "RefundItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,7 +150,6 @@ local AccountStore =
 		{
 			Name = "RequestStoreFrontInfoUpdate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

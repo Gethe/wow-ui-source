@@ -10,7 +10,6 @@ local SpellBook =
 		{
 			Name = "FindBaseSpellByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local SpellBook =
 		{
 			Name = "FindFlyoutSlotBySpellID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local SpellBook =
 		{
 			Name = "FindSpellOverrideByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,7 +64,6 @@ local SpellBook =
 		{
 			Name = "IsSpellInSpellBook",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell should be found in the spellbook. This function can also return true for spells that aren't known, such as override spells granted by an aura linked to class talents" },
 
 			Arguments =
@@ -85,7 +81,6 @@ local SpellBook =
 		{
 			Name = "IsSpellKnown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a player knows a spell. This function can also return true for spells that aren't in the spellbook, such as temporarily-granted abilities" },
 
 			Arguments =
@@ -102,7 +97,6 @@ local SpellBook =
 		{
 			Name = "IsSpellKnownOrInSpellBook",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell is considered to be known or present in the spellbook" },
 
 			Arguments =

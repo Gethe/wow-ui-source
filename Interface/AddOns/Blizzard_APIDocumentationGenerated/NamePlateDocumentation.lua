@@ -10,7 +10,6 @@ local NamePlate =
 		{
 			Name = "GetNamePlateForUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +45,6 @@ local NamePlate =
 			Name = "SetNamePlateSize",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

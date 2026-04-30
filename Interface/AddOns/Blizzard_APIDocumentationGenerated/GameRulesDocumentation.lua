@@ -10,7 +10,6 @@ local GameRules =
 		{
 			Name = "AutoConnectToGameModeRealm",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local GameRules =
 		{
 			Name = "DoesGameModeHavePromo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,7 +69,6 @@ local GameRules =
 		{
 			Name = "GetDisplayedGameModeRecordIDAtIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,7 +83,6 @@ local GameRules =
 		{
 			Name = "GetGameModeDisplayInfoByRecordID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,7 +106,6 @@ local GameRules =
 		{
 			Name = "GetGameModePromoGlobalString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,7 +120,6 @@ local GameRules =
 		{
 			Name = "GetGameRuleAsFloat",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the numeric value specified in the Game Rule, multiplied by 0.1 for every decimal place requested" },
 
 			Arguments =
@@ -142,7 +136,6 @@ local GameRules =
 		{
 			Name = "GetGameRuleAsFrameStrata",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the value specified in the Game Rule converted to a frame strata" },
 
 			Arguments =
@@ -176,7 +169,6 @@ local GameRules =
 		{
 			Name = "IsClassAllowedForGameMode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,7 +183,6 @@ local GameRules =
 		{
 			Name = "IsGameModeEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -206,7 +197,6 @@ local GameRules =
 		{
 			Name = "IsGameRuleActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -11,7 +11,6 @@ local AchievementTelemetry =
 			Name = "LinkAchievementInClub",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,7 +21,6 @@ local AchievementTelemetry =
 			Name = "LinkAchievementInWhisper",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

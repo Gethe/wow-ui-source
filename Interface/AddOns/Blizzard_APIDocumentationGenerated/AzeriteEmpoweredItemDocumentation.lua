@@ -10,11 +10,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "CanSelectPower",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -26,21 +25,19 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "ConfirmAzeriteEmpoweredItemRespec",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 		{
 			Name = "GetAllTierInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -51,7 +48,6 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetAllTierInfoByItemID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,7 +73,6 @@ local AzeriteEmpoweredItem =
 			Name = "GetPowerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,11 +88,10 @@ local AzeriteEmpoweredItem =
 			Name = "GetPowerText",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "AzeritePowerLevel", Nilable = false },
 			},
@@ -111,7 +105,6 @@ local AzeriteEmpoweredItem =
 			Name = "GetSpecsForPower",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,11 +119,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasAnyUnselectedPowers",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -141,11 +133,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasBeenViewed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -156,11 +147,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -171,7 +161,6 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItemByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,7 +175,6 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeritePreviewSourceDisplayable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -211,7 +199,6 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerAvailableForSpec",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,11 +214,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerSelected",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -243,11 +229,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SelectPower",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -259,11 +244,10 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SetHasBeenViewed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 	},
@@ -287,7 +271,7 @@ local AzeriteEmpoweredItem =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 	},

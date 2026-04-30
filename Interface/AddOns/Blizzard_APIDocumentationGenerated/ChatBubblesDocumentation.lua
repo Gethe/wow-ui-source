@@ -10,7 +10,6 @@ local ChatBubbles =
 		{
 			Name = "GetAllChatBubbles",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

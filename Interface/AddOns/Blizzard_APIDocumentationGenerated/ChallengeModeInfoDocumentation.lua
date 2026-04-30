@@ -20,7 +20,6 @@ local ChallengeModeInfo =
 			Name = "GetChallengeBestTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +45,6 @@ local ChallengeModeInfo =
 			Name = "GetChallengeGuildBestTimeInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,7 +59,6 @@ local ChallengeModeInfo =
 		{
 			Name = "GetChallengeMapRewardInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,7 +79,6 @@ local ChallengeModeInfo =
 		{
 			Name = "GetChallengeModeMapTimes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,7 +94,6 @@ local ChallengeModeInfo =
 			Name = "GetChallengeRealmBestTimeInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,7 +138,6 @@ local ChallengeModeInfo =
 			Name = "GetMapUIInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,7 +157,6 @@ local ChallengeModeInfo =
 		{
 			Name = "GetNumChallengeMapRewards",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,7 +172,6 @@ local ChallengeModeInfo =
 		{
 			Name = "GetNumMedals",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,7 +186,6 @@ local ChallengeModeInfo =
 		{
 			Name = "GetSpecificDungeonOverallScoreRarityColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a color value from the passed in mythic+ rating from the combined affix scores for a specific dungeon" },
 
 			Arguments =
@@ -204,7 +195,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
@@ -237,7 +228,6 @@ local ChallengeModeInfo =
 		{
 			Name = "RequestChallengeModeLeaderboard",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Request a page of challenge mode leaderboards that will be returned in a 'CHALLENGE_MODE_LEADERBOARD_RESULT' event" },
 
 			Arguments =
@@ -250,7 +240,6 @@ local ChallengeModeInfo =
 		{
 			Name = "RequestLeaders",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

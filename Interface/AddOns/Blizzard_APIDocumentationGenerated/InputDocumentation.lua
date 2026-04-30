@@ -39,7 +39,6 @@ local Input =
 			Name = "SetCursorPosition",
 			Type = "Function",
 			RequiresLimitedInput = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
 
 			Arguments =
@@ -52,7 +51,7 @@ local Input =
 			Name = "SimulateMouseClick",
 			Type = "Function",
 			RequiresLimitedInput = true,
-			SecretArguments = "AllowedWhenUntainted",
+			MouseFocusValidForLimitedInput = true,
 			Documentation = { "Effectively the same as SimulateMouseDown plus SimulateMouseUp and consumes limited input for both." },
 
 			Arguments =
@@ -64,7 +63,7 @@ local Input =
 			Name = "SimulateMouseDown",
 			Type = "Function",
 			RequiresLimitedInput = true,
-			SecretArguments = "AllowedWhenUntainted",
+			MouseFocusValidForLimitedInput = true,
 			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
 
 			Arguments =
@@ -76,7 +75,7 @@ local Input =
 			Name = "SimulateMouseUp",
 			Type = "Function",
 			RequiresLimitedInput = true,
-			SecretArguments = "AllowedWhenUntainted",
+			MouseFocusValidForLimitedInput = true,
 			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
 
 			Arguments =
@@ -88,7 +87,7 @@ local Input =
 			Name = "SimulateMouseWheel",
 			Type = "Function",
 			RequiresLimitedInput = true,
-			SecretArguments = "AllowedWhenUntainted",
+			MouseFocusValidForLimitedInput = true,
 			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
 
 			Arguments =
@@ -107,6 +106,12 @@ local Input =
 	},
 	Predicates =
 	{
+		{
+			Name = "MouseFocusValidForLimitedInput",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+			Documentation = { "Requires that all mouse foci are not forbidden, hidden from the global environment, fully locked down, script inaccessible, or protected frames (while in combat)" },
+		},
 		{
 			Name = "RequiresLimitedInput",
 			Type = "Precondition",

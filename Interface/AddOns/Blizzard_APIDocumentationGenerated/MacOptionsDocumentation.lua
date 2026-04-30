@@ -77,7 +77,6 @@ local MacOptions =
 		{
 			Name = "SetOSShortcutsDisabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -19,7 +19,6 @@ local AssistedCombat =
 		{
 			Name = "GetNextCastSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

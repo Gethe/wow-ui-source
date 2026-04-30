@@ -23,7 +23,6 @@ local HousingUI =
 		{
 			Name = "CanTakeReportScreenshot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,7 +37,6 @@ local HousingUI =
 		{
 			Name = "CreateGuildNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,7 +46,6 @@ local HousingUI =
 		{
 			Name = "CreateNeighborhoodCharter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +59,6 @@ local HousingUI =
 		{
 			Name = "DoesFactionMatchNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,7 +73,6 @@ local HousingUI =
 		{
 			Name = "EditNeighborhoodCharter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,7 +91,6 @@ local HousingUI =
 		{
 			Name = "GetCurrentHouseLevelFavor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,7 +118,6 @@ local HousingUI =
 		{
 			Name = "GetHouseLevelFavorForLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,7 +132,6 @@ local HousingUI =
 		{
 			Name = "GetHouseLevelRewardsForLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -167,7 +159,6 @@ local HousingUI =
 		{
 			Name = "GetNeighborhoodTextureSuffix",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,7 +173,6 @@ local HousingUI =
 		{
 			Name = "GetOthersOwnedHouses",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,7 +197,6 @@ local HousingUI =
 		{
 			Name = "GetUIMapIDForNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,7 +238,6 @@ local HousingUI =
 		{
 			Name = "HouseFinderRequestReservationAndPort",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -361,7 +349,6 @@ local HousingUI =
 		{
 			Name = "OnHouseFinderClickPlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -375,7 +362,6 @@ local HousingUI =
 		{
 			Name = "OnSignCharterClicked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -385,7 +371,6 @@ local HousingUI =
 		{
 			Name = "RelinquishHouse",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +384,6 @@ local HousingUI =
 		{
 			Name = "RequestHouseFinderNeighborhoodData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -419,7 +403,6 @@ local HousingUI =
 		{
 			Name = "SaveHouseSettings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -430,7 +413,6 @@ local HousingUI =
 		{
 			Name = "SearchBNetFriendNeighborhoods",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -445,7 +427,6 @@ local HousingUI =
 		{
 			Name = "SearchBNetFriendNeighborhoodsByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -460,7 +441,6 @@ local HousingUI =
 		{
 			Name = "SetTrackedHouseGuid",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -475,7 +455,6 @@ local HousingUI =
 			Name = "TeleportHome",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -487,7 +466,6 @@ local HousingUI =
 		{
 			Name = "TryRenameNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -501,7 +479,6 @@ local HousingUI =
 		{
 			Name = "ValidateNeighborhoodName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -512,7 +489,6 @@ local HousingUI =
 			Name = "VisitHouse",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -66,7 +66,6 @@ local SimpleAnimScaleAPI =
 		{
 			Name = "SetOrigin",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,7 +77,6 @@ local SimpleAnimScaleAPI =
 		{
 			Name = "SetScale",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,7 +87,6 @@ local SimpleAnimScaleAPI =
 		{
 			Name = "SetScaleFrom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,7 +97,6 @@ local SimpleAnimScaleAPI =
 		{
 			Name = "SetScaleTo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

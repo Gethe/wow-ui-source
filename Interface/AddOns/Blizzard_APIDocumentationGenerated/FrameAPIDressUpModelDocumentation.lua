@@ -30,7 +30,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "GetItemModifiedAppearanceID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +45,6 @@ local FrameAPIDressUpModel =
 			Name = "GetItemTransmogInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,7 +53,7 @@ local FrameAPIDressUpModel =
 
 			Returns =
 			{
-				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
@@ -100,7 +98,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "GetSpellItemEnchantmentID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,7 +151,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "IsSlotAllowed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -169,7 +165,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "IsSlotVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,7 +179,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetAutoDress",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,11 +188,10 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetItemTransmogInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Nilable = false },
 				{ Name = "inventorySlot", Type = "luaIndex", Nilable = true },
 				{ Name = "ignoreChildItems", Type = "bool", Nilable = false, Default = false },
 			},
@@ -211,7 +204,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetObeyHideInTransmogFlag",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,7 +213,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetSheathed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -231,7 +222,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetUseTransmogChoices",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -241,7 +231,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "SetUseTransmogSkin",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,7 +240,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "TryOn",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,7 +259,6 @@ local FrameAPIDressUpModel =
 		{
 			Name = "UndressSlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

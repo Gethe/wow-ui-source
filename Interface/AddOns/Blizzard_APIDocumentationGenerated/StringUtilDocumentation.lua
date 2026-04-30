@@ -38,9 +38,24 @@ local StringUtil =
 			},
 		},
 		{
+			Name = "EscapeDecimalNonPrintables",
+			Type = "Function",
+			Documentation = { "Returns a string with ASCII control characters (except \
+, \r, and 	) and invalid UTF-8 bytes replaced by decimal escape sequences (e.g. \\127)." },
+
+			Arguments =
+			{
+				{ Name = "text", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "escapedText", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaFormatString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a string with Lua format string tokens ('%') escaped." },
 
 			Arguments =
@@ -56,7 +71,6 @@ local StringUtil =
 		{
 			Name = "EscapeLuaPatterns",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a string with all Lua pattern characters escaped." },
 
 			Arguments =
@@ -72,7 +86,6 @@ local StringUtil =
 		{
 			Name = "EscapeQuotedCodes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a string with all quoted code sequences ('|' characters) escaped." },
 
 			Arguments =
@@ -88,7 +101,6 @@ local StringUtil =
 		{
 			Name = "FloorToNearestString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -103,13 +115,12 @@ local StringUtil =
 		{
 			Name = "RemoveContiguousSpaces",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a string with all contiguous occurrences of ASCII space characters truncated." },
 
 			Arguments =
 			{
 				{ Name = "text", Type = "stringView", Nilable = false },
-				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, NeverSecret = true, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
+				{ Name = "maxAllowedSpaces", Type = "number", Nilable = false, Documentation = { "Maximum number of permitted contiguous space characters; excessive spaces will be truncated to this count." } },
 			},
 
 			Returns =
@@ -120,7 +131,6 @@ local StringUtil =
 		{
 			Name = "RoundToNearestString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -135,7 +145,6 @@ local StringUtil =
 		{
 			Name = "StripHyperlinks",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -155,7 +164,6 @@ local StringUtil =
 		{
 			Name = "StripTextureMarkupForLooseFiles",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -171,7 +179,6 @@ local StringUtil =
 			Name = "trim",
 			Type = "Function",
 			Namespace = "string",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a string with all bytes in the 'characters' set removed from the start and end." },
 
 			Arguments =
@@ -188,7 +195,6 @@ local StringUtil =
 		{
 			Name = "TruncateWhenZero",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Formats the given number to a string as an integer (rounding down). If the integer is zero, returns an empty string." },
 
 			Arguments =
@@ -204,7 +210,6 @@ local StringUtil =
 		{
 			Name = "WrapString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a string with 'prefix' and 'suffix' joined to 'infix' iif 'infix' is not an empty string. Else, an empty string is returned." },
 
 			Arguments =

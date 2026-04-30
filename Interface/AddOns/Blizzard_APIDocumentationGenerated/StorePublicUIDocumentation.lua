@@ -10,7 +10,6 @@ local StorePublicUI =
 		{
 			Name = "DoesGroupHavePurchaseableProducts",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local StorePublicUI =
 		{
 			Name = "EventStoreUISetShown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

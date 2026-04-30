@@ -10,12 +10,11 @@ local MapExploration =
 		{
 			Name = "GetExploredAreaIDsAtPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedPosition", Type = "vector2", Nilable = false },
 			},
 
 			Returns =
@@ -27,7 +26,6 @@ local MapExploration =
 			Name = "GetExploredMapTextures",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

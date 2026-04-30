@@ -10,11 +10,10 @@ local ItemUpgrade =
 		{
 			Name = "CanUpgradeItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -44,7 +43,6 @@ local ItemUpgrade =
 			Name = "GetItemUpgradeEffect",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -84,7 +82,6 @@ local ItemUpgrade =
 		{
 			Name = "UpgradeItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

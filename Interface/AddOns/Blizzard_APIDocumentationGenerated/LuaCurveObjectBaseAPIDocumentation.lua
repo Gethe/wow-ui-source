@@ -23,7 +23,6 @@ local LuaCurveObjectBaseAPI =
 		{
 			Name = "HasSecretValues",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns true if the curve has been configured with any secret values. Curves with secret values always produce secret results when evaluated." },
 
 			Arguments =
@@ -38,7 +37,6 @@ local LuaCurveObjectBaseAPI =
 		{
 			Name = "SetType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Changes the evaluation type of the curve." },
 
 			Arguments =

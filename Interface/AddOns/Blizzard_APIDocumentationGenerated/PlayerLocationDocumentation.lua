@@ -10,7 +10,6 @@ local PlayerLocation =
 		{
 			Name = "GUIDIsPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,11 +24,10 @@ local PlayerLocation =
 		{
 			Name = "GetClass",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -42,11 +40,10 @@ local PlayerLocation =
 		{
 			Name = "GetName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -57,11 +54,10 @@ local PlayerLocation =
 		{
 			Name = "GetRace",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -72,11 +68,10 @@ local PlayerLocation =
 		{
 			Name = "GetSex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -87,11 +82,10 @@ local PlayerLocation =
 		{
 			Name = "IsConnected",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = true },
 			},
 
 			Returns =
@@ -102,11 +96,10 @@ local PlayerLocation =
 		{
 			Name = "UnitIsSameServer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =

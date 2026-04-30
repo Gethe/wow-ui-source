@@ -1,0 +1,23 @@
+## Title: Blizzard_StoreUI
+## AllowLoad: Both
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_SimpleCheckout
+## Dep: Blizzard_GlueParent [AllowLoad glue]
+## Dep: Blizzard_FrameXMLBase [AllowLoad game]
+## UseSecureEnvironment: 1
+[Family]\StoreConstants.lua [AllowLoadGameType classic]
+[Family]\Blizzard_StoreUIPatchwerk.xml [AllowLoadGameType classic]
+[Family]\Blizzard_StoreUIInbound.lua [AllowLoadGameType classic]
+[Family]\Blizzard_StoreUIOutbound.lua [AllowLoadGameType classic]
+TBC\Blizzard_StoreUISecure.lua [AllowLoadGameType tbc wrath cata mists]
+TBC\Blizzard_StoreUI.xml [AllowLoadGameType tbc wrath cata mists]
+Vanilla\Blizzard_StoreUISecure.lua [AllowLoadGameType vanilla]
+Vanilla\Blizzard_StoreUI.xml [AllowLoadGameType vanilla]
+[Family]\Blizzard_StoreUIInsecure.lua [AllowLoadGameType classic]
+Blizzard_Shared_StoreButtonMixin.lua [AllowLoadGameType mainline]
+Blizzard_Shared_StoreUITemplates.xml [AllowLoadGameType mainline]
+Blizzard_Shared_ProductCardTemplates.xml [AllowLoadGameType mainline]
+Blizzard_Shared_StoreUI.xml [AllowLoadGameType mainline]
+Blizzard_Shared_StoreUIInsecure.lua [AllowLoadGameType mainline]
+[Family]\Localization.lua [AllowLoadGameType classic]
+Shared_Localization.lua [AllowLoadGameType mainline]

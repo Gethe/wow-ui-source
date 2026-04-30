@@ -49,7 +49,6 @@ local SimpleBrowserAPI =
 		{
 			Name = "NavigateHome",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,7 +82,6 @@ local SimpleBrowserAPI =
 		{
 			Name = "OpenTicket",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,7 +99,6 @@ local SimpleBrowserAPI =
 		{
 			Name = "SetZoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

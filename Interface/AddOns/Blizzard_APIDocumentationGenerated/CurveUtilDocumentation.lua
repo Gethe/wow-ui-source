@@ -30,25 +30,23 @@ local CurveUtil =
 		{
 			Name = "EvaluateColorFromBoolean",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Evaluates a potentially-secret boolean value and returns a color." },
 
 			Arguments =
 			{
 				{ Name = "boolean", Type = "bool", Nilable = false },
-				{ Name = "valueIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "valueIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "valueIfTrue", Type = "colorRGBA", Nilable = false },
+				{ Name = "valueIfFalse", Type = "colorRGBA", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "value", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "value", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "EvaluateColorValueFromBoolean",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Evaluates a potentially-secret boolean value and returns a single color component (eg. alpha)." },
 
 			Arguments =
@@ -66,7 +64,6 @@ local CurveUtil =
 		{
 			Name = "EvaluateGameCurve",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

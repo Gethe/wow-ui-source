@@ -10,7 +10,6 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,7 +25,6 @@ local AreaPoiInfo =
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,7 +41,6 @@ local AreaPoiInfo =
 			Name = "GetAreaPOITimeLeft",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of minutes until the POI expires." },
 
 			Arguments =
@@ -59,7 +56,6 @@ local AreaPoiInfo =
 		{
 			Name = "IsAreaPOITimed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This statically determines if the POI is timed, GetAreaPOITimeLeft retrieves the value from the server and may return nothing for long intervals" },
 
 			Arguments =
@@ -92,7 +88,7 @@ local AreaPoiInfo =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = true },
 				{ Name = "linkedUiMapID", Type = "number", Nilable = true },

@@ -9,7 +9,6 @@ local SimpleScrollFrameAPI =
 		{
 			Name = "GetHorizontalScroll",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ScrollOffset },
 
 			Arguments =
 			{
@@ -23,7 +22,6 @@ local SimpleScrollFrameAPI =
 		{
 			Name = "GetHorizontalScrollRange",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ScrollRange },
 
 			Arguments =
 			{
@@ -50,7 +48,6 @@ local SimpleScrollFrameAPI =
 		{
 			Name = "GetVerticalScroll",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ScrollOffset },
 
 			Arguments =
 			{
@@ -64,7 +61,6 @@ local SimpleScrollFrameAPI =
 		{
 			Name = "GetVerticalScrollRange",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ScrollRange },
 
 			Arguments =
 			{
@@ -79,8 +75,6 @@ local SimpleScrollFrameAPI =
 			Name = "SetHorizontalScroll",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArgumentsAddAspect = { Enum.SecretAspect.ScrollOffset },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,7 +85,6 @@ local SimpleScrollFrameAPI =
 			Name = "SetScrollChild",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,8 +95,6 @@ local SimpleScrollFrameAPI =
 			Name = "SetVerticalScroll",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArgumentsAddAspect = { Enum.SecretAspect.ScrollOffset },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

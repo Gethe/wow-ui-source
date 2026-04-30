@@ -9,13 +9,12 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "AddPoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adds a single point to the curve." },
 
 			Arguments =
 			{
 				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
@@ -30,7 +29,6 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "Copy",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns a new copy of this curve." },
 
 			Arguments =
@@ -45,8 +43,6 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "Evaluate",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a calculated color value from the configured curve points." },
 
 			Arguments =
@@ -56,14 +52,12 @@ local LuaColorCurveObjectAPI =
 
 			Returns =
 			{
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "EvaluateUnpacked",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns an unpacked calculated color value from the configured curve points." },
 
 			Arguments =
@@ -82,8 +76,6 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "GetPoint",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the vector for an individual point index on the curve." },
 
 			Arguments =
@@ -127,7 +119,6 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "RemovePoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Removes a single point from the curve. Raises an error if the supplied point index is out of range." },
 
 			Arguments =
@@ -138,7 +129,6 @@ local LuaColorCurveObjectAPI =
 		{
 			Name = "SetPoints",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Replaces all points on the curve." },
 
 			Arguments =
@@ -169,7 +159,7 @@ local LuaColorCurveObjectAPI =
 			Fields =
 			{
 				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 	},

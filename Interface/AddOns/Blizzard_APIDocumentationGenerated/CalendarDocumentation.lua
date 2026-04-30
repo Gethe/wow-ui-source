@@ -46,7 +46,6 @@ local Calendar =
 		{
 			Name = "ContextMenuEventCanComplain",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,7 +62,6 @@ local Calendar =
 		{
 			Name = "ContextMenuEventCanEdit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,7 +78,6 @@ local Calendar =
 		{
 			Name = "ContextMenuEventCanRemove",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,7 +116,6 @@ local Calendar =
 		{
 			Name = "ContextMenuEventPaste",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,7 +160,6 @@ local Calendar =
 		{
 			Name = "ContextMenuSelectEvent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,7 +208,6 @@ local Calendar =
 		{
 			Name = "EventClearModerator",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,8 +240,6 @@ local Calendar =
 			Name = "EventGetInvite",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -263,8 +255,6 @@ local Calendar =
 			Name = "EventGetInviteResponseTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -298,7 +288,6 @@ local Calendar =
 		{
 			Name = "EventGetStatusOptions",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -313,7 +302,6 @@ local Calendar =
 		{
 			Name = "EventGetTextures",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -364,7 +352,6 @@ local Calendar =
 		{
 			Name = "EventInvite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -374,7 +361,6 @@ local Calendar =
 		{
 			Name = "EventRemoveInvite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +370,6 @@ local Calendar =
 		{
 			Name = "EventRemoveInviteByGuid",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -394,7 +379,6 @@ local Calendar =
 		{
 			Name = "EventSelectInvite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -408,7 +392,6 @@ local Calendar =
 		{
 			Name = "EventSetClubId",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -418,7 +401,6 @@ local Calendar =
 		{
 			Name = "EventSetDate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -430,7 +412,6 @@ local Calendar =
 		{
 			Name = "EventSetDescription",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -440,7 +421,6 @@ local Calendar =
 		{
 			Name = "EventSetInviteStatus",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -455,7 +435,6 @@ local Calendar =
 		{
 			Name = "EventSetModerator",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -465,7 +444,6 @@ local Calendar =
 		{
 			Name = "EventSetTextureID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -475,7 +453,6 @@ local Calendar =
 		{
 			Name = "EventSetTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -486,7 +463,6 @@ local Calendar =
 		{
 			Name = "EventSetTitle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -496,7 +472,6 @@ local Calendar =
 		{
 			Name = "EventSetType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -510,7 +485,6 @@ local Calendar =
 		{
 			Name = "EventSortInvites",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -525,8 +499,6 @@ local Calendar =
 		{
 			Name = "GetClubCalendarEvents",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -544,8 +516,6 @@ local Calendar =
 			Name = "GetDayEvent",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -581,7 +551,6 @@ local Calendar =
 		{
 			Name = "GetEventIndexInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -608,7 +577,6 @@ local Calendar =
 		{
 			Name = "GetFirstPendingInvite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -625,7 +593,6 @@ local Calendar =
 			Name = "GetGuildEventInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -641,7 +608,6 @@ local Calendar =
 			Name = "GetGuildEventSelectionInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -657,7 +623,6 @@ local Calendar =
 			Name = "GetHolidayInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -692,7 +657,6 @@ local Calendar =
 		{
 			Name = "GetMonthInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -716,7 +680,6 @@ local Calendar =
 		{
 			Name = "GetNumDayEvents",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -760,7 +723,6 @@ local Calendar =
 			Name = "GetRaidInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -795,7 +757,6 @@ local Calendar =
 		{
 			Name = "MassInviteCommunity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -808,7 +769,6 @@ local Calendar =
 		{
 			Name = "MassInviteGuild",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -824,7 +784,6 @@ local Calendar =
 		{
 			Name = "OpenEvent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -845,7 +804,6 @@ local Calendar =
 		{
 			Name = "SetAbsMonth",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -856,7 +814,6 @@ local Calendar =
 		{
 			Name = "SetMonth",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -866,7 +823,6 @@ local Calendar =
 		{
 			Name = "SetNextClubId",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

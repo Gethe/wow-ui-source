@@ -22,7 +22,6 @@ local FrameAPIQuestPOI =
 		{
 			Name = "GetTooltipIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,7 +36,6 @@ local FrameAPIQuestPOI =
 		{
 			Name = "UpdateMouseOverTooltip",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

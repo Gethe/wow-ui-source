@@ -23,7 +23,6 @@ local SimpleAnimTranslationAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

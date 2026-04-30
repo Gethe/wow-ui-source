@@ -10,7 +10,6 @@ local Sound =
 		{
 			Name = "GetSoundScaledVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local Sound =
 		{
 			Name = "IsPlaying",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,19 +38,17 @@ local Sound =
 		{
 			Name = "PlayItemSound",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "soundType", Type = "ItemSoundType", Nilable = false },
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{
 			Name = "PlaySound",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,7 +68,6 @@ local Sound =
 		{
 			Name = "PlayVocalErrorSound",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

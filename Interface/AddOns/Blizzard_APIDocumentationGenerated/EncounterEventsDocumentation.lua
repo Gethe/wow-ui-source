@@ -10,7 +10,6 @@ local EncounterEvents =
 		{
 			Name = "GetEventColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns any custom color override applied for an encounter event." },
 
 			Arguments =
@@ -21,14 +20,13 @@ local EncounterEvents =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "color", Type = "colorRGBA", Nilable = true },
 			},
 		},
 		{
 			Name = "GetEventInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information about an encounter event." },
 
 			Arguments =
@@ -55,7 +53,6 @@ local EncounterEvents =
 			Name = "GetEventSound",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on a custom sound file to be played when an encounter event trigger occurs." },
 
 			Arguments =
@@ -72,7 +69,6 @@ local EncounterEvents =
 		{
 			Name = "HasEventInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if an encounter event record with a specified ID exists." },
 
 			Arguments =
@@ -88,7 +84,6 @@ local EncounterEvents =
 		{
 			Name = "PlayEventSound",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Plays any registered custom sound file for a given encounter event trigger." },
 
 			Arguments =
@@ -105,20 +100,18 @@ local EncounterEvents =
 		{
 			Name = "SetEventColor",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Sets a custom color override for an encounter event. This can be used to colorize text or timer bars individually." },
 
 			Arguments =
 			{
 				{ Name = "encounterEventID", Type = "number", Nilable = false },
 				{ Name = "trigger", Type = "EncounterEventColorTrigger", Nilable = false },
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "color", Type = "colorRGBA", Nilable = true },
 			},
 		},
 		{
 			Name = "SetEventSound",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Sets a custom sound file to be played when an encounter event trigger occurs." },
 
 			Arguments =

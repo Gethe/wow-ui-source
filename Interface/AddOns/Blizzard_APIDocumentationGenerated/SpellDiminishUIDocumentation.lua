@@ -11,7 +11,6 @@ local SpellDiminishUI =
 			Name = "GetAllSpellDiminishCategories",
 			Type = "Function",
 			RequiresSpellDiminishUI = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,7 +26,6 @@ local SpellDiminishUI =
 			Name = "GetSpellDiminishCategoryInfo",
 			Type = "Function",
 			RequiresSpellDiminishUI = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,8 +50,6 @@ local SpellDiminishUI =
 			Name = "ShouldTrackSpellDiminishCategory",
 			Type = "Function",
 			RequiresSpellDiminishUI = true,
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,7 +70,6 @@ local SpellDiminishUI =
 			Name = "UnitSpellDiminishCategoryStateUpdated",
 			Type = "Event",
 			LiteralName = "UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED",
-			SecretPayloads = true,
 			SynchronousEvent = true,
 			Payload =
 			{

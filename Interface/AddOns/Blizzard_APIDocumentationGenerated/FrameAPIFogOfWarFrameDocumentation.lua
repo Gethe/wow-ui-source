@@ -87,7 +87,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetFogOfWarBackgroundAtlas",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,7 +96,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetFogOfWarBackgroundTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +107,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetFogOfWarMaskAtlas",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,7 +116,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetFogOfWarMaskTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,7 +125,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetMaskScalar",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,7 +134,6 @@ local FrameAPIFogOfWarFrame =
 		{
 			Name = "SetUiMapID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

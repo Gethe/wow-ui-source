@@ -30,7 +30,6 @@ local SpecializationInfo =
 		{
 			Name = "GetActiveSpecGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,7 +45,6 @@ local SpecializationInfo =
 		{
 			Name = "GetNumSpecializationsForClassID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,7 +59,6 @@ local SpecializationInfo =
 		{
 			Name = "GetSpecialization",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,7 +75,6 @@ local SpecializationInfo =
 		{
 			Name = "GetSpecializationInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,7 +104,6 @@ local SpecializationInfo =
 		{
 			Name = "GetSpecializationMasterySpells",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,7 +120,6 @@ local SpecializationInfo =
 		{
 			Name = "GetTalentInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,7 +143,6 @@ local SpecializationInfo =
 		{
 			Name = "SetActiveSpecGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

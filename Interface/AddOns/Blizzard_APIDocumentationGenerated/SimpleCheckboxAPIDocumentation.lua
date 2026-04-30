@@ -48,7 +48,6 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetChecked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,7 +57,6 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetCheckedTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,7 +66,6 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetDisabledCheckedTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

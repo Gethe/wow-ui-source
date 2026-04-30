@@ -9,7 +9,6 @@ local Localization =
 		{
 			Name = "AbbreviateLargeNumbers",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local Localization =
 		{
 			Name = "AbbreviateNumbers",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -42,7 +40,6 @@ local Localization =
 			Name = "CreateAbbreviateConfig",
 			Type = "Function",
 			RequiresRestrictedAbbreviationBreakpoints = true,
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -57,7 +54,6 @@ local Localization =
 		{
 			Name = "DeclineName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,7 +71,6 @@ local Localization =
 			Name = "GetDefaultAbbreviationBreakpoints",
 			Type = "Function",
 			Namespace = "C_StringUtil",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,7 +85,6 @@ local Localization =
 		{
 			Name = "GetNumDeclensionSets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,7 +109,6 @@ local Localization =
 		{
 			Name = "SetEuropeanNumbers",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

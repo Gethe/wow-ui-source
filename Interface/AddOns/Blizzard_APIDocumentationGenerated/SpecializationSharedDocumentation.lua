@@ -9,7 +9,6 @@ local SpecializationShared =
 		{
 			Name = "GetSpecializationInfoForClassID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +33,6 @@ local SpecializationShared =
 		{
 			Name = "GetSpecializationInfoForSpecID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,7 +56,6 @@ local SpecializationShared =
 		{
 			Name = "GetSpecializationNameForSpecID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

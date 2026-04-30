@@ -27,7 +27,7 @@ end
 function WarlockPowerFrameMixin:OnEvent(event, arg1, arg2)
 	-- update events
 	if ( self.activeBar ) then
-		if ( (event == "UNIT_POWER_FREQUENT") and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
+		if ( (event == "UNIT_POWER_FREQUENT") and (arg1 == PlayerFrame.unit) ) then
 			self.activeBar:OnEvent(arg2);
 			return;
 		elseif ( event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
@@ -36,7 +36,7 @@ function WarlockPowerFrameMixin:OnEvent(event, arg1, arg2)
 		end
 	end
 	-- power specific events
-	if ( event == "UNIT_AURA" and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
+	if ( event == "UNIT_AURA" and (arg1 == PlayerFrame.unit) ) then
 		DemonicFuryBarFrame:CheckAndSetState();
 	elseif ( event == "SPELLS_CHANGED" ) then
 		if ( self.reqSpellID ) then
@@ -226,8 +226,8 @@ function ShardBarMixin:Update(powerType)
 		return;
 	end
 
-	local numShards = UnitPower( WarlockPowerFrame:GetParent().unit, Enum.PowerType.SoulShards );
-	local maxShards = UnitPowerMax( WarlockPowerFrame:GetParent().unit, Enum.PowerType.SoulShards );
+	local numShards = UnitPower( PlayerFrame.unit, Enum.PowerType.SoulShards );
+	local maxShards = UnitPowerMax( PlayerFrame.unit, Enum.PowerType.SoulShards );
 	-- update individual shard display
 	for i = 1, maxShards do
 		local shard = _G["ShardBarFrameShard"..i];
@@ -259,6 +259,20 @@ function DemonicFuryBarMixin:SetPower(power)
 	end
 	WarlockPowerFrame:UpdateFill(self.fill, texData, power, self.maxPower);
 	self:UpdateTextStringWithValues(self.powerText, math.floor(power), 1, self.maxPower);
+end
+
+function DemonicFuryBarMixin:UpdateTextStringWithValues(textString, value, valueMin, valueMax)
+	if not textString then
+		return;
+	end
+
+	if self.lockShow > 0 then
+		textString:Show();
+		textString:SetText(tostring(value) .. ' / ' .. tostring(valueMax));
+	else
+		textString:Hide();
+		textString:SetText("");
+	end
 end
 
 function DemonicFuryBarMixin:CheckAndSetState()

@@ -11,7 +11,6 @@ local ReputationInfo =
 			Name = "GetFactionParagonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,7 +48,6 @@ local ReputationInfo =
 		{
 			Name = "IsAccountWideReputation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +62,6 @@ local ReputationInfo =
 		{
 			Name = "IsFactionParagon",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,7 +76,6 @@ local ReputationInfo =
 		{
 			Name = "IsFactionParagonForCurrentPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +90,6 @@ local ReputationInfo =
 		{
 			Name = "IsMajorFaction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +104,6 @@ local ReputationInfo =
 		{
 			Name = "RequestFactionParagonPreloadRewardData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

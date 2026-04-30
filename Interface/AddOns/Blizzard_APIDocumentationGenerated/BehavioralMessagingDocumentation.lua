@@ -10,7 +10,6 @@ local BehavioralMessaging =
 		{
 			Name = "SendNotificationReceipt",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

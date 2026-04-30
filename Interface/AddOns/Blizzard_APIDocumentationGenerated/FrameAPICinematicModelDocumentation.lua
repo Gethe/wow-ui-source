@@ -9,7 +9,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "EquipItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,7 +18,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "InitializeCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -29,7 +27,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "InitializePanCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +44,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetAnimOffset",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -57,7 +53,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetCameraPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,7 +64,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetCameraTarget",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,7 +75,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetCreatureData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,7 +84,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetFacingLeft",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,7 +93,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetFadeTimes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,7 +103,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetHeightFactor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,7 +112,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetJumpInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,7 +122,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetPanDistance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,7 +131,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetSpellVisualKit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,7 +140,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "SetTargetDistance",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,7 +149,6 @@ local FrameAPICinematicModel =
 		{
 			Name = "StartPan",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

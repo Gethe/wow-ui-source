@@ -18,7 +18,6 @@ local PhotoSharingUI =
 		{
 			Name = "CompleteAuthorizationFlow",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,7 +72,6 @@ local PhotoSharingUI =
 		{
 			Name = "SetScreenshotPreviewTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,7 +85,6 @@ local PhotoSharingUI =
 		{
 			Name = "UploadPhotoToService",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

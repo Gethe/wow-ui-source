@@ -87,8 +87,6 @@ local SimpleAnimAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,9 +154,6 @@ local SimpleAnimAPI =
 		{
 			Name = "HasScript",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,7 +168,6 @@ local SimpleAnimAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,7 +268,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetChildKey",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -289,7 +282,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -300,7 +292,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetEndDelay",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -311,7 +302,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetOrder",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -321,7 +311,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -332,7 +321,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetPlaying",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -342,7 +330,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -353,7 +340,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetSmoothProgress",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -363,7 +349,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetSmoothing",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -373,7 +358,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetStartDelay",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +368,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetTarget",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +382,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetTargetKey",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -414,7 +396,6 @@ local SimpleAnimAPI =
 		{
 			Name = "SetTargetName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

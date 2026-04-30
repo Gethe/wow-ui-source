@@ -14,7 +14,6 @@ local ItemSocketInfo =
 		{
 			Name = "ClickSocketButton",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,7 +31,6 @@ local ItemSocketInfo =
 		{
 			Name = "GetExistingSocketInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,7 +47,6 @@ local ItemSocketInfo =
 		{
 			Name = "GetExistingSocketLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +61,6 @@ local ItemSocketInfo =
 		{
 			Name = "GetNewSocketInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,7 +77,6 @@ local ItemSocketInfo =
 		{
 			Name = "GetNewSocketLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,7 +129,6 @@ local ItemSocketInfo =
 		{
 			Name = "GetSocketTypes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

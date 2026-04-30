@@ -10,11 +10,10 @@ local ReportSystem =
 		{
 			Name = "CanReportPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -25,11 +24,10 @@ local ReportSystem =
 		{
 			Name = "CanReportPlayerForLanguage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -40,7 +38,6 @@ local ReportSystem =
 		{
 			Name = "GetMajorCategoriesForReportType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,7 +52,6 @@ local ReportSystem =
 		{
 			Name = "GetMajorCategoryString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,7 +66,6 @@ local ReportSystem =
 		{
 			Name = "GetMinorCategoriesForReportTypeAndMajorCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,7 +81,6 @@ local ReportSystem =
 		{
 			Name = "GetMinorCategoryString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +103,6 @@ local ReportSystem =
 		{
 			Name = "RequiresScreenshotForReportType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,19 +119,17 @@ local ReportSystem =
 			Name = "SendReport",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
 			{
-				{ Name = "reportInfo", Type = "ReportInfo", Mixin = "ReportInfoMixin", Nilable = false },
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "reportInfo", Type = "ReportInfo", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = true },
 			},
 		},
 		{
 			Name = "SetScreenshotPreviewTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -11,7 +11,6 @@ local ClubFinder =
 			Name = "ApplicantAcceptClubInvite",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,7 +21,6 @@ local ClubFinder =
 			Name = "ApplicantDeclineClubInvite",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,7 +31,6 @@ local ClubFinder =
 			Name = "CancelMembershipRequest",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,7 +56,6 @@ local ClubFinder =
 		{
 			Name = "DoesPlayerBelongToClubFromClubGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +89,6 @@ local ClubFinder =
 			Name = "GetClubTypeFromFinderGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,7 +103,6 @@ local ClubFinder =
 		{
 			Name = "GetFocusIndexFromFlag",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -141,7 +135,6 @@ local ClubFinder =
 		{
 			Name = "GetPlayerClubApplicationStatus",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -165,7 +158,6 @@ local ClubFinder =
 		{
 			Name = "GetPostingIDFromClubFinderGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,7 +172,6 @@ local ClubFinder =
 		{
 			Name = "GetRecruitingClubInfoFromClubID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,7 +186,6 @@ local ClubFinder =
 		{
 			Name = "GetRecruitingClubInfoFromFinderGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,7 +200,6 @@ local ClubFinder =
 		{
 			Name = "GetStatusOfPostingFromClubId",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,7 +232,6 @@ local ClubFinder =
 		{
 			Name = "HasAlreadyAppliedToLinkedPosting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,7 +246,6 @@ local ClubFinder =
 		{
 			Name = "HasPostingBeenDelisted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -291,7 +278,6 @@ local ClubFinder =
 		{
 			Name = "IsListingEnabledFromFlags",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -306,7 +292,6 @@ local ClubFinder =
 		{
 			Name = "IsPostingBanned",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -321,7 +306,6 @@ local ClubFinder =
 		{
 			Name = "IsValidSearchString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -336,7 +320,6 @@ local ClubFinder =
 		{
 			Name = "LookupClubPostingFromClubFinderGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -357,7 +340,6 @@ local ClubFinder =
 		{
 			Name = "PlayerRequestPendingClubsList",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -386,7 +368,6 @@ local ClubFinder =
 			Name = "PostClub",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -408,7 +389,6 @@ local ClubFinder =
 		{
 			Name = "RequestApplicantList",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -419,7 +399,6 @@ local ClubFinder =
 			Name = "RequestClubsList",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -432,7 +411,6 @@ local ClubFinder =
 			Name = "RequestMembershipToClub",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -444,7 +422,6 @@ local ClubFinder =
 		{
 			Name = "RequestNextCommunityPage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -455,7 +432,6 @@ local ClubFinder =
 		{
 			Name = "RequestNextGuildPage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,7 +442,6 @@ local ClubFinder =
 		{
 			Name = "RequestPostingInformationFromClubId",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -490,7 +465,6 @@ local ClubFinder =
 			Name = "RespondToApplicant",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -506,7 +480,6 @@ local ClubFinder =
 		{
 			Name = "ReturnClubApplicantList",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -539,7 +512,6 @@ local ClubFinder =
 		{
 			Name = "ReturnPendingClubApplicantList",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -554,7 +526,6 @@ local ClubFinder =
 		{
 			Name = "SendChatWhisper",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -567,7 +538,6 @@ local ClubFinder =
 		{
 			Name = "SetAllRecruitmentSettings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -577,7 +547,6 @@ local ClubFinder =
 		{
 			Name = "SetPlayerApplicantLocaleFlags",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -587,7 +556,6 @@ local ClubFinder =
 		{
 			Name = "SetPlayerApplicantSettings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -598,7 +566,6 @@ local ClubFinder =
 		{
 			Name = "SetRecruitmentLocale",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -608,7 +575,6 @@ local ClubFinder =
 		{
 			Name = "SetRecruitmentSettings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

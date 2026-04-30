@@ -10,7 +10,6 @@ local HouseEditorUI =
 		{
 			Name = "ActivateHouseEditorMode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempts switch the House Editor to a specific House Editor mode" },
 
 			Arguments =
@@ -55,7 +54,6 @@ local HouseEditorUI =
 		{
 			Name = "GetHouseEditorModeAvailability",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the availability of a specific House Editor mode" },
 
 			Arguments =
@@ -81,7 +79,6 @@ local HouseEditorUI =
 		{
 			Name = "IsHouseEditorModeActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the specific House Editor mode is active" },
 
 			Arguments =

@@ -60,7 +60,6 @@ local GossipInfo =
 			Name = "GetFriendshipReputation",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,7 +74,6 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputationRanks",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,7 +115,6 @@ local GossipInfo =
 		{
 			Name = "GetPoiForUiMapID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,7 +129,6 @@ local GossipInfo =
 		{
 			Name = "GetPoiInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,7 +153,6 @@ local GossipInfo =
 		{
 			Name = "SelectActiveQuest",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -167,7 +162,6 @@ local GossipInfo =
 		{
 			Name = "SelectAvailableQuest",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -177,7 +171,6 @@ local GossipInfo =
 		{
 			Name = "SelectOption",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,7 +182,6 @@ local GossipInfo =
 		{
 			Name = "SelectOptionByIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,7 +315,7 @@ local GossipInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "inBattleMap", Type = "bool", Nilable = false },
 			},
 		},

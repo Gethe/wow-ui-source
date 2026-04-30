@@ -11,7 +11,6 @@ local SecretPredicateAPI =
 		{
 			Name = "CanCompareUnitTokens",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries to compare two input unit tokens are permitted. If this returns false, APIs guarded by the RequiresComparableUnitTokens predicate will fail." },
 
 			Arguments =
@@ -28,7 +27,6 @@ local SecretPredicateAPI =
 		{
 			Name = "GetPowerTypeSecrecy",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the base secrecy for a power type." },
 
 			Arguments =
@@ -44,7 +42,6 @@ local SecretPredicateAPI =
 		{
 			Name = "GetSpellAuraSecrecy",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the base secrecy for a spell if queried as an aura." },
 
 			Arguments =
@@ -60,7 +57,6 @@ local SecretPredicateAPI =
 		{
 			Name = "GetSpellCastSecrecy",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the base secrecy for a spell if queried as a cast." },
 
 			Arguments =
@@ -76,7 +72,6 @@ local SecretPredicateAPI =
 		{
 			Name = "GetSpellCooldownSecrecy",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries the base secrecy for a spell if queried as a cooldown." },
 
 			Arguments =
@@ -102,7 +97,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldActionCooldownBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given action bar slot ID will produce secret values for cooldowns if queried." },
 
 			Arguments =
@@ -138,7 +132,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldSpellAuraBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given spell identifier would, if applied as an aura, produce secret values when queried." },
 
 			Arguments =
@@ -154,7 +147,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldSpellCooldownBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given spell identifier will produce secret values for cooldowns if queried." },
 
 			Arguments =
@@ -170,7 +162,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldTotemSlotBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if information about a totem slot will produce secret values if queried." },
 
 			Arguments =
@@ -186,7 +177,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldTotemSpellBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if information about a spell when associated with a totem slot will produce secret values if queried." },
 
 			Arguments =
@@ -202,7 +192,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitAuraIndexBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given aura index will produce secret values if queried." },
 
 			Arguments =
@@ -220,7 +209,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitAuraInstanceBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given aura instance ID will produce secret values if queried." },
 
 			Arguments =
@@ -237,7 +225,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitAuraSlotBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a given aura slot ID will produce secret values if queried." },
 
 			Arguments =
@@ -254,7 +241,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitComparisonBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries that compare units will produce secret values." },
 
 			Arguments =
@@ -271,7 +257,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitHealthMaxBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for maximum unit health will produce secret values." },
 
 			Arguments =
@@ -287,7 +272,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitIdentityBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for unit identity (such as name or GUID) will produce secret values." },
 
 			Arguments =
@@ -303,7 +287,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitPowerBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for unit power will produce secret values." },
 
 			Arguments =
@@ -320,7 +303,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitPowerMaxBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for maximum unit power will produce secret values." },
 
 			Arguments =
@@ -337,7 +319,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitSpellCastBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for spell casting information for a unit would produce secret values when queried." },
 
 			Arguments =
@@ -354,7 +335,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitSpellCastingBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for spell casting information for a specific unit will generally produce secret values." },
 
 			Arguments =
@@ -380,7 +360,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitThreatStateBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for unit threat status will produce secret values." },
 
 			Arguments =
@@ -397,7 +376,6 @@ local SecretPredicateAPI =
 		{
 			Name = "ShouldUnitThreatValuesBeSecret",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if queries for unit threat values will produce secret values." },
 
 			Arguments =

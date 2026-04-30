@@ -10,7 +10,6 @@ local WowTokenUI =
 		{
 			Name = "StartTokenSell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -10,7 +10,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "AdjustPointsOffset",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,7 +31,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "ClearPoint",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,9 +63,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "GetPoint",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAnchoringSecret = true,
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,9 +83,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "GetPointByName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAnchoringSecret = true,
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,7 +103,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetAllPoints",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,7 +114,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetHeight",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,7 +124,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetPoint",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,7 +138,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetPointsOffset",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,7 +149,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetSize",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,7 +160,6 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetWidth",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

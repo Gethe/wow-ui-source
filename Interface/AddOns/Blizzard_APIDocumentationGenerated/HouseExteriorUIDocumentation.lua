@@ -15,7 +15,6 @@ local HouseExteriorUI =
 		{
 			Name = "GetCoreFixtureOptionsInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +93,6 @@ local HouseExteriorUI =
 		{
 			Name = "IsAnyDecorAttachedToCoreFixture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if any decor is attached to the specified core fixture type, OR any child fixtures attached to it; Will also return false if the type provided is not a core fixture type, or if not in Exterior Customization mode on an owned plot" },
 
 			Arguments =
@@ -149,7 +147,6 @@ local HouseExteriorUI =
 		{
 			Name = "RemoveFixtureFromSelectedPoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,7 +156,6 @@ local HouseExteriorUI =
 		{
 			Name = "SelectCoreFixtureOption",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -170,7 +166,6 @@ local HouseExteriorUI =
 		{
 			Name = "SelectFixtureOption",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,7 +176,6 @@ local HouseExteriorUI =
 		{
 			Name = "SetExteriorDecorHidden",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,7 +185,6 @@ local HouseExteriorUI =
 		{
 			Name = "SetHouseExteriorSize",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,7 +195,6 @@ local HouseExteriorUI =
 		{
 			Name = "SetHouseExteriorType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

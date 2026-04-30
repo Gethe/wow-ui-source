@@ -20,7 +20,6 @@ local HousingCatalogUI =
 		{
 			Name = "DeletePreviewCartDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,7 +29,6 @@ local HousingCatalogUI =
 		{
 			Name = "DestroyEntry",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to delete the entry from storage" },
 
 			Arguments =
@@ -51,7 +49,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetAllVariantInfosForEntry",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns variant info for all variants of a given catalog entry; Variants represent different visual modifications of the same base entry (ex: dyed versions)" },
 
 			Arguments =
@@ -67,7 +64,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetBundleInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,7 +88,6 @@ local HousingCatalogUI =
 			Name = "GetCatalogCategoryAndSubcategoryNames",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If found, returns the names of the parent category and the specified subcategory" },
 
 			Arguments =
@@ -109,7 +104,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,7 +118,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogEntryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,7 +132,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogEntryInfoByItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,7 +146,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogEntryInfoByRecordID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -170,7 +161,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogEntryRefundTimeStampByRecordID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,7 +176,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogEntryVariantInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,7 +190,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetCatalogSubcategoryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -236,7 +224,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetDestroyableInstanceCount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of instances that can be to be destroyed in storage; These instances count towards the max storage limit" },
 
 			Arguments =
@@ -270,7 +257,6 @@ local HousingCatalogUI =
 		{
 			Name = "GetMarketInfoForDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns market info for a specific decor. This is decor-only for now but should be extended to support entry type and recordID generically" },
 
 			Arguments =
@@ -296,7 +282,6 @@ local HousingCatalogUI =
 			Name = "HousingMarketActionAddToCart",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -313,7 +298,6 @@ local HousingCatalogUI =
 			Name = "HousingMarketActionRemoveFromCart",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -324,7 +308,6 @@ local HousingCatalogUI =
 			Name = "HousingMarketActionViewBundle",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -335,7 +318,6 @@ local HousingCatalogUI =
 			Name = "HousingMarketActionViewInStore",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -345,7 +327,6 @@ local HousingCatalogUI =
 		{
 			Name = "IsPreviewCartItemShown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -360,7 +341,6 @@ local HousingCatalogUI =
 		{
 			Name = "PromotePreviewDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +364,6 @@ local HousingCatalogUI =
 		{
 			Name = "SearchCatalogCategories",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +378,6 @@ local HousingCatalogUI =
 		{
 			Name = "SearchCatalogSubcategories",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -414,7 +392,6 @@ local HousingCatalogUI =
 		{
 			Name = "SetPreviewCartItemShown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

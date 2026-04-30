@@ -10,7 +10,6 @@ local TradeSkillUI =
 		{
 			Name = "GetItemReagentQualityInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local TradeSkillUI =
 		{
 			Name = "GetTradeSkillDisplayName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local TradeSkillUI =
 		{
 			Name = "GetTradeSkillTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

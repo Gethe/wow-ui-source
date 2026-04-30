@@ -60,7 +60,6 @@ local LFGInfo =
 		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +75,6 @@ local LFGInfo =
 			Name = "GetDungeonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,7 +98,6 @@ local LFGInfo =
 		{
 			Name = "GetLevelUpInstances",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,7 +123,6 @@ local LFGInfo =
 		{
 			Name = "HideNameFromUI",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,7 +164,6 @@ local LFGInfo =
 		{
 			Name = "IsLFGFollowerDungeon",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

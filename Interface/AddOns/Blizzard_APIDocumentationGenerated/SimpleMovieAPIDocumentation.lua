@@ -9,7 +9,6 @@ local SimpleMovieAPI =
 		{
 			Name = "EnableSubtitles",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,7 +18,6 @@ local SimpleMovieAPI =
 		{
 			Name = "StartMovie",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,7 +34,6 @@ local SimpleMovieAPI =
 		{
 			Name = "StartMovieByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

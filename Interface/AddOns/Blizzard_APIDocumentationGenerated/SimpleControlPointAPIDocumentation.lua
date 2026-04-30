@@ -36,7 +36,6 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +46,6 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetOrder",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -57,7 +55,6 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

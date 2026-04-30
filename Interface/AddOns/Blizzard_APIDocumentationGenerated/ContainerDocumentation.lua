@@ -20,7 +20,6 @@ local Container =
 			Name = "ContainerIDToInventoryID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,7 +34,6 @@ local Container =
 		{
 			Name = "ContainerRefundItemPurchase",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +45,6 @@ local Container =
 		{
 			Name = "GetBagName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +59,6 @@ local Container =
 		{
 			Name = "GetBagSlotFlag",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,7 +75,6 @@ local Container =
 			Name = "GetContainerFreeSlots",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +89,6 @@ local Container =
 		{
 			Name = "GetContainerItemCooldown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,7 +107,6 @@ local Container =
 			Name = "GetContainerItemDurability",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,7 +123,6 @@ local Container =
 		{
 			Name = "GetContainerItemGems",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,14 +132,13 @@ local Container =
 
 			Returns =
 			{
-				{ Name = "numGems", Type = "table", InnerType = "number", Nilable = false, NilableContents = true },
+				{ Name = "numGems", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "GetContainerItemID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,7 +155,6 @@ local Container =
 			Name = "GetContainerItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,7 +170,6 @@ local Container =
 		{
 			Name = "GetContainerItemLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -197,7 +186,6 @@ local Container =
 			Name = "GetContainerItemPurchaseCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,7 +204,6 @@ local Container =
 			Name = "GetContainerItemPurchaseInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -234,7 +221,6 @@ local Container =
 			Name = "GetContainerItemPurchaseItem",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -252,7 +238,6 @@ local Container =
 		{
 			Name = "GetContainerItemQuestInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -268,7 +253,6 @@ local Container =
 		{
 			Name = "GetContainerNumFreeSlots",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -284,7 +268,6 @@ local Container =
 		{
 			Name = "GetContainerNumSlots",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -309,7 +292,6 @@ local Container =
 			Name = "GetItemCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -326,7 +308,6 @@ local Container =
 		{
 			Name = "HasContainerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -342,7 +323,6 @@ local Container =
 		{
 			Name = "IsBagSlotFlagEnabledOnOtherBankBags",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -358,7 +338,6 @@ local Container =
 		{
 			Name = "IsContainerFiltered",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -373,7 +352,6 @@ local Container =
 		{
 			Name = "PickupContainerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +362,6 @@ local Container =
 		{
 			Name = "SetBagPortraitTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -395,7 +372,6 @@ local Container =
 		{
 			Name = "SetBagSlotFlag",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -407,7 +383,6 @@ local Container =
 		{
 			Name = "SetInsertItemsLeftToRight",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -417,7 +392,6 @@ local Container =
 		{
 			Name = "SetItemSearch",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -427,7 +401,6 @@ local Container =
 		{
 			Name = "ShowContainerSellCursor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -438,7 +411,6 @@ local Container =
 		{
 			Name = "SocketContainerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -454,7 +426,6 @@ local Container =
 		{
 			Name = "SplitContainerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,7 +437,6 @@ local Container =
 		{
 			Name = "UseContainerItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

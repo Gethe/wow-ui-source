@@ -11,7 +11,6 @@ local KeyBindings =
 			Name = "ActivateBindingContext",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,7 +21,6 @@ local KeyBindings =
 			Name = "DeactivateBindingContext",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,7 +30,6 @@ local KeyBindings =
 		{
 			Name = "GetBindingByKey",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,7 +45,6 @@ local KeyBindings =
 		{
 			Name = "GetBindingContextForAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,7 +59,6 @@ local KeyBindings =
 		{
 			Name = "GetBindingIndex",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,7 +73,6 @@ local KeyBindings =
 		{
 			Name = "GetCustomBindingType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +87,6 @@ local KeyBindings =
 		{
 			Name = "GetSearchTagsForAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,7 +110,6 @@ local KeyBindings =
 		{
 			Name = "IsBindingContextActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,7 +124,6 @@ local KeyBindings =
 		{
 			Name = "SetTurnStrafeStyle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Can only set to Modern or Legacy." },
 
 			Arguments =

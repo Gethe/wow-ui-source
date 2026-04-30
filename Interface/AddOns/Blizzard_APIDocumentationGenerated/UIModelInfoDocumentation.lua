@@ -10,7 +10,6 @@ local UIModelInfo =
 		{
 			Name = "AddActiveModelScene",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This function does nothing in public clients" },
 
 			Arguments =
@@ -22,7 +21,6 @@ local UIModelInfo =
 		{
 			Name = "AddActiveModelSceneActor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This function does nothing in public clients" },
 
 			Arguments =
@@ -34,7 +32,6 @@ local UIModelInfo =
 		{
 			Name = "ClearActiveModelScene",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This function does nothing in public clients" },
 
 			Arguments =
@@ -45,7 +42,6 @@ local UIModelInfo =
 		{
 			Name = "ClearActiveModelSceneActor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This function does nothing in public clients" },
 
 			Arguments =
@@ -57,7 +53,6 @@ local UIModelInfo =
 			Name = "GetModelSceneActorDisplayInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,7 +68,6 @@ local UIModelInfo =
 			Name = "GetModelSceneActorInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,7 +83,6 @@ local UIModelInfo =
 			Name = "GetModelSceneCameraInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,7 +98,6 @@ local UIModelInfo =
 			Name = "GetModelSceneInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -155,7 +147,7 @@ local UIModelInfo =
 			{
 				{ Name = "modelActorID", Type = "number", Nilable = false },
 				{ Name = "scriptTag", Type = "cstring", Nilable = false },
-				{ Name = "position", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "position", Type = "vector3", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
 				{ Name = "roll", Type = "number", Nilable = false },
@@ -174,14 +166,14 @@ local UIModelInfo =
 				{ Name = "modelSceneCameraID", Type = "number", Nilable = false },
 				{ Name = "scriptTag", Type = "cstring", Nilable = false },
 				{ Name = "cameraType", Type = "cstring", Nilable = false },
-				{ Name = "target", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "target", Type = "vector3", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
 				{ Name = "roll", Type = "number", Nilable = false },
 				{ Name = "zoomDistance", Type = "number", Nilable = false },
 				{ Name = "minZoomDistance", Type = "number", Nilable = false },
 				{ Name = "maxZoomDistance", Type = "number", Nilable = false },
-				{ Name = "zoomedTargetOffset", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "zoomedTargetOffset", Type = "vector3", Nilable = false },
 				{ Name = "zoomedYawOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedPitchOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedRollOffset", Type = "number", Nilable = false },

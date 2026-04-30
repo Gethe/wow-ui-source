@@ -9,7 +9,6 @@ local RaidMarkers =
 		{
 			Name = "CanBeRaidTarget",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local RaidMarkers =
 			Name = "ClearRaidMarker",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,8 +33,6 @@ local RaidMarkers =
 		{
 			Name = "GetRaidTargetIndex",
 			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,7 +47,6 @@ local RaidMarkers =
 		{
 			Name = "IsRaidMarkerActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +71,6 @@ local RaidMarkers =
 			Name = "PlaceRaidMarker",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +88,6 @@ local RaidMarkers =
 			Name = "SetRaidTarget",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

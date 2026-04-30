@@ -10,7 +10,6 @@ local PlayerInfo =
 		{
 			Name = "CanUseItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,7 +52,6 @@ local PlayerInfo =
 		{
 			Name = "GetPetStableCreatureDisplayInfoID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,7 +76,6 @@ local PlayerInfo =
 		{
 			Name = "HasVisibleInvSlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

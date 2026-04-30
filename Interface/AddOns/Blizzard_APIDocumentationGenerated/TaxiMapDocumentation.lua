@@ -10,7 +10,6 @@ local TaxiMap =
 		{
 			Name = "GetAllTaxiNodes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes at the current flight master." },
 
 			Arguments =
@@ -26,7 +25,6 @@ local TaxiMap =
 		{
 			Name = "GetTaxiNodesForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes for a given map, without considering the current flight master." },
 
 			Arguments =
@@ -101,7 +99,7 @@ local TaxiMap =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "cstring", Nilable = false },
 				{ Name = "faction", Type = "FlightPathFaction", Nilable = false },
@@ -115,7 +113,7 @@ local TaxiMap =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "state", Type = "FlightPathState", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },

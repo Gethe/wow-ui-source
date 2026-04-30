@@ -11,7 +11,6 @@ local RestrictedActions =
 			Name = "CheckAllowProtectedFunctions",
 			Type = "Function",
 			SecureHooksAllowed = false,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the calling context has permissions to call protected functions on the supplied object." },
 
 			Arguments =
@@ -28,7 +27,6 @@ local RestrictedActions =
 		{
 			Name = "GetAddOnRestrictionState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the current state of an addon restriction type." },
 
 			Arguments =
@@ -54,7 +52,6 @@ local RestrictedActions =
 		{
 			Name = "IsAddOnRestrictionActive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if an addon restriction type is in an active state. Will always return false during dispatch of ADDON_RESTRICTION_STATE_CHANGED." },
 
 			Arguments =

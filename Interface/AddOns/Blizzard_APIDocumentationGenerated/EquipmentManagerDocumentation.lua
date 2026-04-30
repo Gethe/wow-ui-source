@@ -10,7 +10,6 @@ local EquipmentManager =
 		{
 			Name = "AssignSpecToEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +33,6 @@ local EquipmentManager =
 		{
 			Name = "CreateEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,7 +43,6 @@ local EquipmentManager =
 		{
 			Name = "DeleteEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,7 +52,6 @@ local EquipmentManager =
 		{
 			Name = "EquipmentSetContainsLockedItems",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,7 +67,6 @@ local EquipmentManager =
 			Name = "GetEquipmentSetAssignedSpec",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,7 +82,6 @@ local EquipmentManager =
 			Name = "GetEquipmentSetForSpec",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,7 +97,6 @@ local EquipmentManager =
 			Name = "GetEquipmentSetID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,7 +121,6 @@ local EquipmentManager =
 			Name = "GetEquipmentSetInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,7 +144,6 @@ local EquipmentManager =
 			Name = "GetIgnoredSlots",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,14 +152,13 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "slotIgnored", Type = "table", InnerType = "bool", Nilable = false, NilableContents = true },
+				{ Name = "slotIgnored", Type = "table", InnerType = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "GetItemIDs",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -177,14 +167,13 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false, NilableContents = true },
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "GetItemLocations",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -193,7 +182,7 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "locations", Type = "table", InnerType = "number", Nilable = false, NilableContents = true },
+				{ Name = "locations", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -208,7 +197,6 @@ local EquipmentManager =
 		{
 			Name = "IgnoreSlotForSave",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -218,7 +206,6 @@ local EquipmentManager =
 		{
 			Name = "IsSlotIgnoredForSave",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -233,7 +220,6 @@ local EquipmentManager =
 		{
 			Name = "ModifyEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -245,7 +231,6 @@ local EquipmentManager =
 		{
 			Name = "PickupEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -255,7 +240,6 @@ local EquipmentManager =
 		{
 			Name = "SaveEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,7 +250,6 @@ local EquipmentManager =
 		{
 			Name = "UnassignEquipmentSetSpec",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,7 +259,6 @@ local EquipmentManager =
 		{
 			Name = "UnignoreSlotForSave",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -286,7 +268,6 @@ local EquipmentManager =
 		{
 			Name = "UseEquipmentSet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

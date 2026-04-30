@@ -21,7 +21,6 @@ local CombatLogSecure =
 			Name = "CreateCombatLogMessage",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,7 +53,6 @@ local CombatLogSecure =
 			Name = "GetEntryCount",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,7 +68,6 @@ local CombatLogSecure =
 			Name = "SeekToNewestEntry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,7 +83,6 @@ local CombatLogSecure =
 			Name = "SeekToPreviousEntry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

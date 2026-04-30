@@ -10,7 +10,6 @@ local MailInfo =
 		{
 			Name = "HasInboxMoney",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

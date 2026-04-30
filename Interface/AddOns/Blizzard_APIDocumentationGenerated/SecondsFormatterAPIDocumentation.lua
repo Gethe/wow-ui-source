@@ -9,7 +9,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "CanApproximate",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the given number of seconds is within an appropriate range for approximated formatting." },
 
 			Arguments =
@@ -53,7 +52,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateDesiredUnitCount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the unit count that a given number of seconds will use for formatting." },
 
 			Arguments =
@@ -69,7 +67,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMaxInterval",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the maximum interval band that a given number of seconds will use for formatting." },
 
 			Arguments =
@@ -85,7 +82,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMinInterval",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the minimum interval band that a given number of seconds will use for formatting." },
 
 			Arguments =
@@ -101,7 +97,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "Format",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a number of seconds and returns the resulting string." },
 
 			Arguments =
@@ -118,7 +113,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "FormatZero",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns formatted string representing a zero second duration." },
 
 			Arguments =
@@ -297,7 +291,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetApproximationSeconds",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the formatter to render numeric values between zero and this value as approximated strings (eg. '< 1m')." },
 
 			Arguments =
@@ -308,7 +301,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetCanRoundUpIntervals",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the formatter to promote intervals if values are large enough (eg. '60m' -> '1h')." },
 
 			Arguments =
@@ -319,7 +311,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetCanRoundUpLastUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the formatter to round the last formatted unit up, rather than down." },
 
 			Arguments =
@@ -330,7 +321,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetConvertToLower",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Configures the formatter to convert all interval format strings to lowercase." },
 
 			Arguments =
@@ -341,7 +331,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetDefaultAbbreviation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the default abbreviation mode used for formatting." },
 
 			Arguments =
@@ -352,7 +341,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetDesiredUnitCount",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the desired unit count used for formatting." },
 
 			Arguments =
@@ -363,7 +351,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetDesiredUnitCountCurve",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the desired unit count used for formatting to a curve that will be evaluated with seconds values to produce a desired unit count." },
 
 			Arguments =
@@ -374,7 +361,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetMaxInterval",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the maximum interval band used for formatting." },
 
 			Arguments =
@@ -385,7 +371,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetMaxIntervalCurve",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the maximum interval band used for formatting to a curve that will be evaluated with seconds values to produce a value matching a SecondsFormatterInterval enum member." },
 
 			Arguments =
@@ -396,7 +381,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetMillisecondsThreshold",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the threshold below which a value will be formatted as a decimal number of seconds with one place for milliseconds (eg. '3.4')" },
 
 			Arguments =
@@ -407,7 +391,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetMinInterval",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the minimum interval band used for formatting." },
 
 			Arguments =
@@ -418,7 +401,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetMinIntervalCurve",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the minimum interval band used for formatting to a curve that will be evaluated with seconds values to produce a value matching a SecondsFormatterInterval enum member." },
 
 			Arguments =
@@ -429,7 +411,6 @@ local SecondsFormatterAPI =
 		{
 			Name = "SetStripIntervalWhitespace",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the whitespace stripping mode for the formatter." },
 
 			Arguments =

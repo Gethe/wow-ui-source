@@ -10,7 +10,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyDyeToSelectedDecor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If a dyeable decor is selected, applies a specific dye color in a specific slot as a preview; See CommitDyesForSelectedDecor to actually save applied dye changes" },
 
 			Arguments =
@@ -22,7 +21,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyThemeToRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to apply a specific theme set (aka style) to all applicable room components in the current room" },
 
 			Arguments =
@@ -33,7 +31,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyThemeToSelectedRoomComponent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to apply a specific theme set (aka style) to the currently selected room component only" },
 
 			Arguments =
@@ -44,7 +41,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyWallpaperToAllWalls",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to apply a specific wallpaper (aka material/texture) to all applicable room components in the current room" },
 
 			Arguments =
@@ -55,7 +51,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyWallpaperToSelectedRoomComponent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to apply a specific wallpaper (aka material/texture) to the currently selected room component only" },
 
 			Arguments =
@@ -191,7 +186,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetThemeSetInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the name of the specified theme set (aka style) if it exists" },
 
 			Arguments =
@@ -207,7 +201,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetWallpapersForRoomComponentType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get all wallpapers (aka materials/textures) available for the selected room component type, if any" },
 
 			Arguments =
@@ -273,7 +266,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "RoomComponentSupportsVariant",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check whether a specific room component supports a particular variant; What kind of id or enum 'variant' equates to is complicated, as it depends on the component type" },
 
 			Arguments =
@@ -290,7 +282,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "RoomConnectionSupportsDoorType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check whether a specific room component, within a specific room, supports a particular doorType" },
 
 			Arguments =
@@ -308,7 +299,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "SetRoomComponentCeilingType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to set a specific ceiling component, within a specific room, to a specific new ceiling type" },
 
 			Arguments =
@@ -321,7 +311,6 @@ local HousingCustomizeModeUI =
 		{
 			Name = "SetRoomComponentDoorType",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to set a specific door component, within a specific room, to a specific new door type" },
 
 			Arguments =

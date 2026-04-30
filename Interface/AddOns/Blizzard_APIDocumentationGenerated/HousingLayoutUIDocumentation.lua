@@ -10,7 +10,6 @@ local HousingLayoutUI =
 		{
 			Name = "AnyRoomsOnFloor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -29,7 +28,6 @@ local HousingLayoutUI =
 		{
 			Name = "ConfirmStairChoice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,7 +182,6 @@ local HousingLayoutUI =
 		{
 			Name = "HasStairs",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,7 +196,6 @@ local HousingLayoutUI =
 		{
 			Name = "HasValidConnection",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,7 +212,6 @@ local HousingLayoutUI =
 		{
 			Name = "IsBaseRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -241,7 +236,6 @@ local HousingLayoutUI =
 		{
 			Name = "MoveDraggedRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to move the room currently being dragged to a specific connection point on a specific other room" },
 
 			Arguments =
@@ -254,7 +248,6 @@ local HousingLayoutUI =
 		{
 			Name = "MoveLayoutCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -265,7 +258,6 @@ local HousingLayoutUI =
 		{
 			Name = "RemoveRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to return a previously placed room to the House Chest" },
 
 			Arguments =
@@ -276,7 +268,6 @@ local HousingLayoutUI =
 		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Rotates either the currently dragged or currently selected room, if either exist" },
 
 			Arguments =
@@ -287,7 +278,6 @@ local HousingLayoutUI =
 		{
 			Name = "RotateRoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to rotate an already placed room" },
 
 			Arguments =
@@ -299,7 +289,6 @@ local HousingLayoutUI =
 		{
 			Name = "SelectFloorplan",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -309,7 +298,6 @@ local HousingLayoutUI =
 		{
 			Name = "SetViewedFloor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,7 +319,6 @@ local HousingLayoutUI =
 		{
 			Name = "ZoomLayoutCamera",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

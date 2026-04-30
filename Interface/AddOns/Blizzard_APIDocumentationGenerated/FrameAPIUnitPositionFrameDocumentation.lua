@@ -9,7 +9,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "AddUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,7 +82,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetPlayerPingScale",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +91,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetPlayerPingTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -106,7 +103,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetUiMapID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,7 +112,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "SetUnitColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,7 +125,6 @@ local FrameAPIUnitPositionFrame =
 		{
 			Name = "StartPlayerPing",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

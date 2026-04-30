@@ -76,7 +76,6 @@ local SimpleLineAPI =
 		{
 			Name = "SetEndPoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,7 +88,6 @@ local SimpleLineAPI =
 		{
 			Name = "SetHitRectThickness",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,7 +97,6 @@ local SimpleLineAPI =
 		{
 			Name = "SetStartPoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,7 +109,6 @@ local SimpleLineAPI =
 		{
 			Name = "SetThickness",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

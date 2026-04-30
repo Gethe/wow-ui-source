@@ -10,7 +10,6 @@ local CreatureInfo =
 		{
 			Name = "GetClassInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +33,6 @@ local CreatureInfo =
 		{
 			Name = "GetCreatureFamilyInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,7 +47,6 @@ local CreatureInfo =
 		{
 			Name = "GetCreatureID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,7 +70,6 @@ local CreatureInfo =
 		{
 			Name = "GetCreatureTypeInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,7 +84,6 @@ local CreatureInfo =
 		{
 			Name = "GetFactionInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,7 +98,6 @@ local CreatureInfo =
 		{
 			Name = "GetRaceInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -12,7 +12,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,7 +22,6 @@ local Club =
 			Name = "AddClubStreamChatChannel",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,7 +33,6 @@ local Club =
 			Name = "AdvanceStreamViewMarker",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,7 +44,6 @@ local Club =
 			Name = "AreMembersReady",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +60,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,7 +72,6 @@ local Club =
 			Name = "CanResolvePlayerLocationFromClubMessageData",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -106,7 +100,6 @@ local Club =
 			Name = "CompareBattleNetDisplayName",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,7 +118,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +134,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check the canCreateStream privilege." },
 
 			Arguments =
@@ -158,7 +149,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check canCreateTicket privilege." },
 
 			Arguments =
@@ -175,7 +165,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,7 +176,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check the canDestroy privilege." },
 
 			Arguments =
@@ -200,7 +188,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -214,7 +201,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check canDestroyStream privilege." },
 
 			Arguments =
@@ -228,7 +214,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check canDestroyTicket privilege." },
 
 			Arguments =
@@ -251,7 +236,6 @@ local Club =
 			Name = "DoesCommunityHaveMembersOfTheOppositeFaction",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -268,7 +252,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "nil arguments will not change existing club data" },
 
 			Arguments =
@@ -287,7 +270,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -302,7 +284,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check the canSetStreamName, canSetStreamSubject, canSetStreamAccess privileges. nil arguments will not change existing stream data." },
 
 			Arguments =
@@ -328,7 +309,6 @@ local Club =
 			Name = "FocusMembers",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -339,7 +319,6 @@ local Club =
 			Name = "FocusStream",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,7 +335,6 @@ local Club =
 			Name = "GetAssignableRoles",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -373,7 +351,6 @@ local Club =
 			Name = "GetAvatarIdList",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "listen for AVATAR_LIST_UPDATED event. This can happen if we haven't downloaded the battle.net avatar list yet" },
 
 			Arguments =
@@ -399,9 +376,7 @@ local Club =
 		{
 			Name = "GetClubInfo",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -417,7 +392,6 @@ local Club =
 			Name = "GetClubLimits",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -432,9 +406,7 @@ local Club =
 		{
 			Name = "GetClubMembers",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -451,7 +423,6 @@ local Club =
 			Name = "GetClubPrivileges",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "The privileges for the logged in user for this club" },
 
 			Arguments =
@@ -468,7 +439,6 @@ local Club =
 			Name = "GetClubStreamNotificationSettings",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -484,7 +454,6 @@ local Club =
 			Name = "GetCommunityNameResultText",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -510,7 +479,6 @@ local Club =
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -525,7 +493,6 @@ local Club =
 			Name = "GetInvitationCandidates",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a list of players that you can send a request to a Battle.net club. Returns an empty list for Character based clubs" },
 
 			Arguments =
@@ -546,7 +513,6 @@ local Club =
 			Name = "GetInvitationInfo",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get info about a specific club the active player has been invited to." },
 
 			Arguments =
@@ -563,7 +529,6 @@ local Club =
 			Name = "GetInvitationsForClub",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the pending invitations for this club. Call RequestInvitationsForClub() to retrieve invitations from server." },
 
 			Arguments =
@@ -593,7 +558,6 @@ local Club =
 			MayReturnNothing = true,
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -610,9 +574,7 @@ local Club =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -629,7 +591,6 @@ local Club =
 			Name = "GetMemberInfoForSelf",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Info for the logged in user for this club" },
 
 			Arguments =
@@ -645,9 +606,7 @@ local Club =
 		{
 			Name = "GetMessageInfo",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get info about a particular message." },
 
 			Arguments =
@@ -665,9 +624,7 @@ local Club =
 		{
 			Name = "GetMessageRanges",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the ranges of the messages currently downloaded." },
 
 			Arguments =
@@ -684,9 +641,7 @@ local Club =
 		{
 			Name = "GetMessagesBefore",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages before (and including) the specified messageId limited by count. These are filtered by ignored players" },
 
 			Arguments =
@@ -705,9 +660,7 @@ local Club =
 		{
 			Name = "GetMessagesInRange",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get downloaded messages in the given range. These are filtered by ignored players" },
 
 			Arguments =
@@ -726,9 +679,7 @@ local Club =
 		{
 			Name = "GetStreamInfo",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -745,7 +696,6 @@ local Club =
 			Name = "GetStreamViewMarker",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -761,9 +711,7 @@ local Club =
 		{
 			Name = "GetStreams",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -778,7 +726,6 @@ local Club =
 		{
 			Name = "GetSubscribedClubs",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
 
 			Returns =
@@ -790,7 +737,6 @@ local Club =
 			Name = "GetTickets",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the existing tickets for this club. Call RequestTickets() to retrieve tickets from server." },
 
 			Arguments =
@@ -807,7 +753,6 @@ local Club =
 			Name = "IsAccountMuted",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -822,9 +767,7 @@ local Club =
 		{
 			Name = "IsBeginningOfStream",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the given message is the first message in the stream, taking into account ignored messages" },
 
 			Arguments =
@@ -863,7 +806,6 @@ local Club =
 			Name = "IsSubscribedToStream",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -881,7 +823,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check kickableRoleIds privilege." },
 
 			Arguments =
@@ -895,7 +836,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -907,7 +847,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -918,7 +857,6 @@ local Club =
 			Name = "RequestInvitationsForClub",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Request invitations for this club from server. Check canGetInvitation privilege." },
 
 			Arguments =
@@ -929,9 +867,7 @@ local Club =
 		{
 			Name = "RequestMoreMessagesBefore",
 			Type = "Function",
-			SecretInChatMessagingLockdown = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Call this when the user scrolls near the top of the message view, and more need to be displayed. The history will be downloaded backwards (newest to oldest)." },
 
 			Arguments =
@@ -951,7 +887,6 @@ local Club =
 			Name = "RequestTicket",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -962,7 +897,6 @@ local Club =
 			Name = "RequestTickets",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Request tickets from server. Check canGetTicket privilege." },
 
 			Arguments =
@@ -975,7 +909,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check canRevokeOwnInvitation or canRevokeOtherInvitation" },
 
 			Arguments =
@@ -988,7 +921,6 @@ local Club =
 			Name = "SendBattleTagFriendRequest",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1001,7 +933,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1014,7 +945,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check the canSendInvitation privilege." },
 
 			Arguments =
@@ -1028,7 +958,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1041,7 +970,6 @@ local Club =
 			Name = "SetAutoAdvanceStreamViewMarker",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only one stream can be set for auto-advance at a time. Focused streams will have their view times advanced automatically." },
 
 			Arguments =
@@ -1055,7 +983,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1069,7 +996,6 @@ local Club =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Check the canSetOwnMemberNote and canSetOtherMemberNote privileges." },
 
 			Arguments =
@@ -1083,7 +1009,6 @@ local Club =
 			Name = "SetClubPresenceSubscription",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "You can only be subscribed to 0 or 1 clubs for presence.  Subscribing to a new club automatically unsuscribes you to existing subscription." },
 
 			Arguments =
@@ -1095,7 +1020,6 @@ local Club =
 			Name = "SetClubStreamNotificationSettings",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1107,7 +1031,6 @@ local Club =
 			Name = "SetCommunityID",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1118,7 +1041,6 @@ local Club =
 			Name = "SetFavorite",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1130,7 +1052,6 @@ local Club =
 			Name = "SetSocialQueueingEnabled",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1142,7 +1063,6 @@ local Club =
 			Name = "ShouldAllowClubType",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1158,7 +1078,6 @@ local Club =
 			Name = "UnfocusAllStreams",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1169,7 +1088,6 @@ local Club =
 			Name = "UnfocusMembers",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1180,7 +1098,6 @@ local Club =
 			Name = "UnfocusStream",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1192,7 +1109,6 @@ local Club =
 			Name = "ValidateText",
 			Type = "Function",
 			RequiresClubsInitialized = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1747,14 +1663,14 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "clubId", Type = "ClubId", Nilable = false, NeverSecret = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortName", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "broadcast", Type = "string", Nilable = false },
-				{ Name = "clubType", Type = "ClubType", Nilable = false, NeverSecret = true },
+				{ Name = "clubType", Type = "ClubType", Nilable = false },
 				{ Name = "avatarId", Type = "number", Nilable = false },
-				{ Name = "memberCount", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "memberCount", Type = "number", Nilable = true },
 				{ Name = "favoriteTimeStamp", Type = "BigUInteger", Nilable = true },
 				{ Name = "joinTime", Type = "BigUInteger", Nilable = true },
 				{ Name = "socialQueueingEnabled", Type = "bool", Nilable = true },
@@ -1795,7 +1711,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "isSelf", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isSelf", Type = "bool", Nilable = false },
 				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
@@ -1824,7 +1740,7 @@ local Club =
 				{ Name = "guildRankOrder", Type = "luaIndex", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
-				{ Name = "faction", Type = "PvPFaction", Nilable = true, NeverSecret = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
@@ -1939,7 +1855,7 @@ local Club =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subject", Type = "string", Nilable = false },
 				{ Name = "leadersAndModeratorsOnly", Type = "bool", Nilable = false },
-				{ Name = "streamType", Type = "ClubStreamType", Nilable = false, NeverSecret = true },
+				{ Name = "streamType", Type = "ClubStreamType", Nilable = false },
 				{ Name = "creationTime", Type = "BigUInteger", Nilable = false },
 			},
 		},

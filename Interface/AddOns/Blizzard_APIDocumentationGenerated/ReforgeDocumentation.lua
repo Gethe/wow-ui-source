@@ -14,7 +14,6 @@ local Reforge =
 		{
 			Name = "GetDestinationReforgeStats",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +63,6 @@ local Reforge =
 		{
 			Name = "GetReforgeOptionInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +92,6 @@ local Reforge =
 		{
 			Name = "ReforgeItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

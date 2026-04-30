@@ -11,7 +11,6 @@ local ScenarioInfo =
 			Name = "GetCriteriaInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,7 +26,6 @@ local ScenarioInfo =
 			Name = "GetCriteriaInfoByStep",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,7 +51,6 @@ local ScenarioInfo =
 		{
 			Name = "GetJailersTowerTypeString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,7 +66,6 @@ local ScenarioInfo =
 			Name = "GetScenarioIconInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,7 +91,6 @@ local ScenarioInfo =
 			Name = "GetScenarioStepInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,8 +116,6 @@ local ScenarioInfo =
 			Name = "GetUnitCriteriaProgressValues",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,7 +278,7 @@ local ScenarioInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "themeColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "themeColor", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{

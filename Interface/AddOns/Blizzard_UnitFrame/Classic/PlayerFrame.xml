@@ -378,7 +378,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate" mixin="PlayerFrameBottomManagedFramesContainerMixin">
+	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate" frameLevel="5" mixin="PlayerFrameBottomManagedFramesContainerMixin">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="160" type="number"/>
 		</KeyValues>

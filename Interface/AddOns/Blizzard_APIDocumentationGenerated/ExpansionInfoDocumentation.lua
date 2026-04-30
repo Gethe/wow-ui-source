@@ -9,7 +9,6 @@ local ExpansionInfo =
 		{
 			Name = "ClassicExpansionAtLeast",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,7 +23,6 @@ local ExpansionInfo =
 		{
 			Name = "ClassicExpansionAtMost",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

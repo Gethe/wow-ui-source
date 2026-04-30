@@ -10,7 +10,6 @@ local CooldownViewer =
 		{
 			Name = "GetCooldownViewerCategorySet",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,7 +26,6 @@ local CooldownViewer =
 			Name = "GetCooldownViewerCooldownInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,7 +49,6 @@ local CooldownViewer =
 		{
 			Name = "GetValidAlertTypes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +73,6 @@ local CooldownViewer =
 		{
 			Name = "SetLayoutData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

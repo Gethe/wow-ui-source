@@ -20,7 +20,6 @@ local Camera =
 		{
 			Name = "GetUICameraInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

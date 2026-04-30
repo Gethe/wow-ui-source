@@ -49,7 +49,6 @@ local MinimapFrameAPI =
 		{
 			Name = "PingLocation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,7 +59,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetBlipTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,7 +68,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetCorpsePOIArrowTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,7 +77,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetIconTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,7 +86,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetMaskTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,7 +95,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetPOIArrowTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,7 +104,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetPlayerTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -120,7 +113,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetStaticPOIArrowTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,7 +122,6 @@ local MinimapFrameAPI =
 		{
 			Name = "SetZoom",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

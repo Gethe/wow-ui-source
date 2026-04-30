@@ -9,7 +9,6 @@ local LuaDurationManualClockAPI =
 		{
 			Name = "AdvanceTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Advances the clock by a specified number of seconds." },
 
 			Arguments =
@@ -29,7 +28,6 @@ local LuaDurationManualClockAPI =
 		{
 			Name = "RewindTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Rewinds the clock by a specified number of seconds." },
 
 			Arguments =
@@ -40,7 +38,6 @@ local LuaDurationManualClockAPI =
 		{
 			Name = "SetTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Sets the current clock timestamp to a given value." },
 
 			Arguments =

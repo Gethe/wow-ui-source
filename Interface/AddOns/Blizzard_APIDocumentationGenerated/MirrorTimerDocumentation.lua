@@ -10,7 +10,6 @@ local MirrorTimer =
 			Name = "GetMirrorTimerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,7 +30,6 @@ local MirrorTimer =
 		{
 			Name = "GetMirrorTimerProgress",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

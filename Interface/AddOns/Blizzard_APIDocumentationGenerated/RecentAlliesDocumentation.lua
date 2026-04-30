@@ -11,7 +11,6 @@ local RecentAllies =
 			Name = "CanSetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,7 +36,6 @@ local RecentAllies =
 			Name = "GetRecentAllyByFullName",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,7 +51,6 @@ local RecentAllies =
 			Name = "GetRecentAllyByGUID",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,7 +66,6 @@ local RecentAllies =
 			Name = "IsRecentAllyByFullName",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,7 +81,6 @@ local RecentAllies =
 			Name = "IsRecentAllyByGUID",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,7 +106,6 @@ local RecentAllies =
 			Name = "IsRecentAllyPinned",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,7 +139,6 @@ local RecentAllies =
 			Name = "SetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,7 +150,6 @@ local RecentAllies =
 			Name = "SetRecentAllyPinned",
 			Type = "Function",
 			RequiresRecentAllies = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

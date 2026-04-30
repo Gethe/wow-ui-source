@@ -16,7 +16,7 @@ local SimpleAnimVertexColorAPI =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
@@ -29,27 +29,25 @@ local SimpleAnimVertexColorAPI =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "SetEndColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "SetStartColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 	},

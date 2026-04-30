@@ -320,6 +320,7 @@ UIManagerDocumentation.lua
 UIActionDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
+UIFileAssetAPIDocumentation.lua
 UIMacrosDocumentation.lua
 UISystemVisibilityManagerDocumentation.lua
 UITimerDocumentation.lua

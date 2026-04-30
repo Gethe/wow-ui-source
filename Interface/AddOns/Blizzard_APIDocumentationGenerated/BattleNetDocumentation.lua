@@ -19,7 +19,6 @@ local BattleNet =
 		{
 			Name = "BNCheckBattleTagInviteToRecentAlly",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -29,7 +28,6 @@ local BattleNet =
 		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,7 +42,6 @@ local BattleNet =
 		{
 			Name = "GetAccountInfoByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,7 +57,6 @@ local BattleNet =
 		{
 			Name = "GetFriendAccountInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,7 +72,6 @@ local BattleNet =
 		{
 			Name = "GetFriendGameAccountInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,7 +87,6 @@ local BattleNet =
 		{
 			Name = "GetFriendNumGameAccounts",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,7 +101,6 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,7 +115,6 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +134,6 @@ local BattleNet =
 		{
 			Name = "SendGameData",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,7 +152,6 @@ local BattleNet =
 			Type = "Function",
 			HasRestrictions = true,
 			RestrictedForMacroChatMessages = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -178,7 +168,6 @@ local BattleNet =
 			Name = "SetAFK",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,7 +178,6 @@ local BattleNet =
 			Name = "SetCustomMessage",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -205,7 +193,6 @@ local BattleNet =
 			Name = "SetDND",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

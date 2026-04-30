@@ -10,7 +10,6 @@ local EncounterWarnings =
 		{
 			Name = "GetColorForSeverity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,13 +18,12 @@ local EncounterWarnings =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
 			Name = "GetEditModeWarningInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,7 +48,6 @@ local EncounterWarnings =
 		{
 			Name = "GetSoundKitForSeverity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +91,6 @@ local EncounterWarnings =
 			Name = "PlaySound",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +105,6 @@ local EncounterWarnings =
 		{
 			Name = "SetPlayCustomSoundsWhenHidden",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Controls whether custom sound alerts for encounter events are allowed to play for warning messages that are hidden." },
 
 			Arguments =
@@ -120,7 +115,6 @@ local EncounterWarnings =
 		{
 			Name = "SetWarningsShown",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
 			Documentation = { "Controls whether text messages for encounter events are allowed to be shown." },
 
 			Arguments =
@@ -151,15 +145,15 @@ local EncounterWarnings =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "text", Type = "cstring", Nilable = false, SecretValue = true },
-				{ Name = "casterGUID", Type = "WOWGUID", Nilable = false, SecretValue = true },
-				{ Name = "casterName", Type = "cstring", Nilable = false, SecretValue = true },
-				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false, SecretValue = true },
-				{ Name = "targetName", Type = "cstring", Nilable = false, SecretValue = true },
-				{ Name = "iconFileID", Type = "number", Nilable = false, SecretValue = true },
-				{ Name = "tooltipSpellID", Type = "number", Nilable = false, SecretValue = true },
-				{ Name = "isDeadly", Type = "bool", Nilable = false, SecretValue = true },
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false, SecretValue = true },
+				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "casterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "casterName", Type = "cstring", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "tooltipSpellID", Type = "number", Nilable = false },
+				{ Name = "isDeadly", Type = "bool", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Nilable = false },
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
 				{ Name = "shouldPlaySound", Type = "bool", Nilable = false },

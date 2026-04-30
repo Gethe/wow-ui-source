@@ -9,7 +9,6 @@ local NumericRuleFormatterAPI =
 		{
 			Name = "AddBreakpoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adds a new breakpoint to the formatter." },
 
 			Arguments =
@@ -29,7 +28,6 @@ local NumericRuleFormatterAPI =
 		{
 			Name = "Copy",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns a new copy of this formatter." },
 
 			Arguments =
@@ -58,7 +56,6 @@ local NumericRuleFormatterAPI =
 		{
 			Name = "SetBreakpoints",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Replaces all breakpoints on the formatter." },
 
 			Arguments =

@@ -45,7 +45,6 @@ local Expansion =
 		{
 			Name = "GetExpansionDisplayInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,7 +61,6 @@ local Expansion =
 			Name = "GetExpansionForLevel",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,7 +94,6 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =

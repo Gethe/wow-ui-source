@@ -22,7 +22,6 @@ local FrameAPIScenarioPOI =
 		{
 			Name = "UpdateMouseOverTooltip",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

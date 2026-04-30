@@ -3263,6 +3263,13 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateDisplayInfoOptions(dis
 		return updatedDisplayInfo;
 	end
 
+	if setting == Enum.EditModePersonalResourceDisplaySetting.HideAltPower and not self:HasAlternatePowerBar() then
+		local updatedDisplayInfo = CopyTable(displayInfo);
+		updatedDisplayInfo.disabled = true;
+		updatedDisplayInfo.disabledTooltipText = HUD_EDIT_MODE_PERSONAL_RESOURCE_DISPLAY_NO_ALT_POWER_BAR_TOOLTIP;
+		return updatedDisplayInfo;
+	end
+
 	return displayInfo;
 end
 
@@ -3274,6 +3281,11 @@ end
 function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHidePower()
 	local hidePower = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.HidePower);
 	self:SetHidePower(hidePower);
+end
+
+function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHideAltPower()
+	local hideAltPower = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.HideAltPower);
+	self:SetHideAltPower(hideAltPower);
 end
 
 function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHideClassInfo()
@@ -3342,6 +3354,8 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting,
 		self:UpdateSystemSettingHideHealth();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HidePower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HidePower) then
 		self:UpdateSystemSettingHidePower();
+	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HideAltPower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideAltPower) then
+		self:UpdateSystemSettingHideAltPower();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HideClassInfo and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideClassInfo) then
 		self:UpdateSystemSettingHideClassInfo();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HideClassInfoOnPlayerFrame and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideClassInfoOnPlayerFrame) then

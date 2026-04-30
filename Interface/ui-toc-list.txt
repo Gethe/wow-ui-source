@@ -243,11 +243,7 @@ Interface\AddOns\Blizzard_StaticPopup\Blizzard_StaticPopup.toc
 Interface\AddOns\Blizzard_StaticPopup_Game\Blizzard_StaticPopup_Game.toc
 Interface\AddOns\Blizzard_StaticPopup_Glue\Blizzard_StaticPopup_Glue.toc
 Interface\AddOns\Blizzard_StatusUI\Blizzard_StatusUI.toc
-Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI_Cata.toc
-Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI_Mists.toc
-Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI_TBC.toc
-Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI_Vanilla.toc
-Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI_Wrath.toc
+Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUI.toc
 Interface\AddOns\Blizzard_Subtitles\Blizzard_Subtitles.toc
 Interface\AddOns\Blizzard_TalentUI\Blizzard_TalentUI_Cata.toc
 Interface\AddOns\Blizzard_TalentUI\Blizzard_TalentUI_Mists.toc

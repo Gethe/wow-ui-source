@@ -126,7 +126,16 @@ function PersonalResourceDisplayMixin:OnShow()
 	-- Ex. You take damage while out of combat, then enter combat, or your max health/power changes because you switched specs.
 	self:UpdateMaxHealth();
 	self:UpdateHealthPrediction();
-	self:UpdateMaxPower();
+	-- If the spec changed while hidden, fully refresh the power bar and alternate power bar.
+	-- Otherwise a simple max power update is sufficient.
+	local currentSpec = C_SpecializationInfo.GetSpecialization();
+	if currentSpec ~= self.lastKnownSpec then
+		self:UpdatePowerBar();
+		self:UpdateAlternatePowerBar();
+		self.lastKnownSpec = currentSpec;
+	else
+		self:UpdateMaxPower();
+	end
 end
 
 function PersonalResourceDisplayMixin:OnHide()
@@ -144,6 +153,7 @@ function PersonalResourceDisplayMixin:Setup()
 		self:SetupAlternatePowerBar();
 		self:SetupClassBar();
 		self:UpdateFrameHeight();
+		self.lastKnownSpec = C_SpecializationInfo.GetSpecialization();
 	end
 end
 
@@ -212,6 +222,7 @@ function PersonalResourceDisplayMixin:OnEvent(event, ...)
 		self:UpdatePowerBar();
 		self:UpdateAlternatePowerBar();
 		self:UpdateFrameHeight();
+		self.lastKnownSpec = C_SpecializationInfo.GetSpecialization();
 	elseif event == "UNIT_AURA" then
 		if self.AlternatePowerBar and self.AlternatePowerBar.UpdateAuraState then
 			self.AlternatePowerBar:UpdateAuraState();
@@ -258,6 +269,15 @@ function PersonalResourceDisplayMixin:HasClassInfo()
 	end
 
 	return true;
+end
+
+function PersonalResourceDisplayMixin:HasAlternatePowerBar()
+	local classAltPowerBarInfo = ClassAltPowerBarInfoForClassID(self.classID);
+	if not classAltPowerBarInfo then
+		return false;
+	end
+
+	return self.AlternatePowerBar.alternatePowerRequirementsMet;
 end
 
 -- NOTE: Textures, colors, etc. here are similar to old PRD and the PlayerFrame. They aren't shared, so they can be more easily changed later.
@@ -585,7 +605,12 @@ end
 function PersonalResourceDisplayMixin:SetHidePower(hidePower)
 	self.hidePower = hidePower;
 	self.PowerBar:SetShown(not self.hidePower);
-	self.AlternatePowerBar:SetShown(not self.hidePower and self.AlternatePowerBar.alternatePowerRequirementsMet);
+	self:UpdateAdditionalBarAnchors();
+end
+
+function PersonalResourceDisplayMixin:SetHideAltPower(hideAltPower)
+	self.hideAltPower = hideAltPower;
+	self.AlternatePowerBar:SetShown(not self.hideAltPower and self:HasAlternatePowerBar());
 	self:UpdateAdditionalBarAnchors();
 end
 
@@ -698,7 +723,7 @@ function PersonalResourceDisplayMixin:UpdateAlternatePowerBar()
 	if classAltPowerBarInfo then
 		self.AlternatePowerBar:Initialize();
 
-		if self.hidePower or not self.AlternatePowerBar.alternatePowerRequirementsMet then
+		if self.hideAltPower or not self:HasAlternatePowerBar() then
 			self.AlternatePowerBar:Hide();
 		else
 			self.AlternatePowerBar:Show();
@@ -747,7 +772,14 @@ function PersonalResourceDisplayMixin:UpdateAdditionalBarAnchors()
 	local padding = self:GetBarPadding();
 
 	if alternatePowerBarShown then
-		self.AlternatePowerBar:SetPoint("TOP", self.PowerBar, "BOTTOM", 0, -padding);
+		self.AlternatePowerBar:ClearAllPoints();
+		if not self.hidePower then
+			self.AlternatePowerBar:SetPoint("TOP", self.PowerBar, "BOTTOM", 0, -padding);
+		elseif not self.hideHealth then
+			self.AlternatePowerBar:SetPoint("TOP", self.HealthBarsContainer, "BOTTOM", 0, -padding);
+		else
+			self.AlternatePowerBar:SetPoint("TOP", self, "TOP", 0, 0);
+		end
 	end
 
 	if classFrameContainerShown then
@@ -783,14 +815,17 @@ function PersonalResourceDisplayMixin:UpdateFrameHeight()
 			totalHeight = totalHeight + self:GetBarPadding();
 		end
 		totalHeight = totalHeight + self.PowerBar:GetHeight();
+	end
 
-		if self.AlternatePowerBar:IsShown() then
-			totalHeight = totalHeight + self:GetBarPadding() + self.AlternatePowerBar:GetHeight();
+	if self.AlternatePowerBar:IsShown() then
+		if not self.hidePower or not self.hideHealth then
+			totalHeight = totalHeight + self:GetBarPadding();
 		end
+		totalHeight = totalHeight + self.AlternatePowerBar:GetHeight();
 	end
 
 	if self.ClassFrameContainer:IsShown() and self:HasClassInfo() then
-		local hasBarAboveClassFrame = not self.hidePower or not self.hideHealth;
+		local hasBarAboveClassFrame = not self.hidePower or not self.hideHealth or self.AlternatePowerBar:IsShown();
 		if hasBarAboveClassFrame then
 			totalHeight = totalHeight + self:GetBarPadding();
 		end

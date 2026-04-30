@@ -10,7 +10,6 @@ local MountJournal =
 		{
 			Name = "ClearFanfare",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,7 +27,6 @@ local MountJournal =
 		{
 			Name = "GetAllCreatureDisplayIDsForMountID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,7 +50,6 @@ local MountJournal =
 		{
 			Name = "GetCollectedFilterSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,7 +65,6 @@ local MountJournal =
 			Name = "GetDisplayedMountAllCreatureDisplayInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,7 +79,6 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,7 +94,6 @@ local MountJournal =
 			Name = "GetDisplayedMountInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,7 +121,6 @@ local MountJournal =
 			Name = "GetDisplayedMountInfoExtra",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,7 +152,6 @@ local MountJournal =
 		{
 			Name = "GetIsFavorite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -176,7 +168,6 @@ local MountJournal =
 			Name = "GetMountAllCreatureDisplayInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,7 +182,6 @@ local MountJournal =
 		{
 			Name = "GetMountFromItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -206,7 +196,6 @@ local MountJournal =
 		{
 			Name = "GetMountFromSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -231,7 +220,6 @@ local MountJournal =
 			Name = "GetMountInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -259,7 +247,6 @@ local MountJournal =
 			Name = "GetMountInfoExtraByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -282,7 +269,6 @@ local MountJournal =
 		{
 			Name = "GetMountLink",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -298,7 +284,6 @@ local MountJournal =
 			Name = "GetMountUsabilityByID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -352,7 +337,6 @@ local MountJournal =
 		{
 			Name = "IsSourceChecked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -367,7 +351,6 @@ local MountJournal =
 		{
 			Name = "IsTypeChecked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -391,7 +374,6 @@ local MountJournal =
 		{
 			Name = "IsValidSourceFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -406,7 +388,6 @@ local MountJournal =
 		{
 			Name = "IsValidTypeFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -421,7 +402,6 @@ local MountJournal =
 		{
 			Name = "NeedsFanfare",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -436,7 +416,6 @@ local MountJournal =
 		{
 			Name = "Pickup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -450,7 +429,6 @@ local MountJournal =
 		{
 			Name = "SetAllSourceFilters",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -460,7 +438,6 @@ local MountJournal =
 		{
 			Name = "SetAllTypeFilters",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -470,7 +447,6 @@ local MountJournal =
 		{
 			Name = "SetCollectedFilterSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -485,7 +461,6 @@ local MountJournal =
 		{
 			Name = "SetIsFavorite",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -496,7 +471,6 @@ local MountJournal =
 		{
 			Name = "SetSearch",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -506,7 +480,6 @@ local MountJournal =
 		{
 			Name = "SetSourceFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -517,7 +490,6 @@ local MountJournal =
 		{
 			Name = "SetTypeFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -528,7 +500,6 @@ local MountJournal =
 		{
 			Name = "SummonByID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

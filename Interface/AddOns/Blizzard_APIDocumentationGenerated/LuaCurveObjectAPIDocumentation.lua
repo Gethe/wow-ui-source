@@ -9,7 +9,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "AddPoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adds a single point to the curve." },
 
 			Arguments =
@@ -30,7 +29,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "Copy",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns a new copy of this curve." },
 
 			Arguments =
@@ -45,8 +43,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "Evaluate",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a calculated 'y' value from the configured curve points." },
 
 			Arguments =
@@ -62,8 +58,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "GetPoint",
 			Type = "Function",
-			ConstSecretAccessor = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the vector for an individual point index on the curve." },
 
 			Arguments =
@@ -73,7 +67,7 @@ local LuaCurveObjectAPI =
 
 			Returns =
 			{
-				{ Name = "point", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "point", Type = "vector2", Nilable = true },
 			},
 		},
 		{
@@ -107,7 +101,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "RemovePoint",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Removes a single point from the curve. Raises an error if the supplied point index is out of range." },
 
 			Arguments =
@@ -118,7 +111,6 @@ local LuaCurveObjectAPI =
 		{
 			Name = "SetPoints",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Replaces all points on the curve." },
 
 			Arguments =

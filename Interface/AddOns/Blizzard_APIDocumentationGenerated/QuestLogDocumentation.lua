@@ -40,7 +40,6 @@ local QuestLog =
 			Name = "GetQuestInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +55,6 @@ local QuestLog =
 			Name = "GetQuestObjectives",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,7 +70,6 @@ local QuestLog =
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,7 +84,6 @@ local QuestLog =
 		{
 			Name = "IsOnQuest",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,7 +98,6 @@ local QuestLog =
 		{
 			Name = "IsQuestFlaggedCompleted",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,7 +112,6 @@ local QuestLog =
 		{
 			Name = "IsQuestFromContentPush",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,7 +126,6 @@ local QuestLog =
 		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +135,6 @@ local QuestLog =
 		{
 			Name = "ShouldShowQuestRewards",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

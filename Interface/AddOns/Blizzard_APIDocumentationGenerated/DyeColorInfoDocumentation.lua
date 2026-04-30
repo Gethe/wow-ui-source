@@ -19,7 +19,6 @@ local DyeColorInfo =
 		{
 			Name = "GetAllDyeColors",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +33,6 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorCategoryInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,7 +47,6 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorForItem",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,11 +61,10 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorForItemLocation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -79,7 +75,6 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,7 +89,6 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorsInCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,7 +104,6 @@ local DyeColorInfo =
 		{
 			Name = "IsDyeColorOwned",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "True if the player owns any of the consumable item used to apply the specified dye" },
 
 			Arguments =

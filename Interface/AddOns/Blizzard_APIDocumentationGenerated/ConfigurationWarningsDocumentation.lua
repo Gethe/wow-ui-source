@@ -10,7 +10,6 @@ local ConfigurationWarnings =
 		{
 			Name = "GetConfigurationWarningSeen",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,7 +25,6 @@ local ConfigurationWarnings =
 			Name = "GetConfigurationWarningString",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,7 +39,6 @@ local ConfigurationWarnings =
 		{
 			Name = "GetConfigurationWarnings",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +53,6 @@ local ConfigurationWarnings =
 		{
 			Name = "SetConfigurationWarningSeen",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

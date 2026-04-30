@@ -19,7 +19,6 @@ local PaperDollInfo =
 		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,7 +34,6 @@ local PaperDollInfo =
 		{
 			Name = "GetArmorEffectivenessAgainstTarget",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,7 +48,6 @@ local PaperDollInfo =
 		{
 			Name = "GetInspectGuildInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,7 +83,6 @@ local PaperDollInfo =
 		{
 			Name = "IsInventorySlotEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

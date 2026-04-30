@@ -12,7 +12,6 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,7 +23,6 @@ local FriendList =
 			Name = "AddIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,7 +38,6 @@ local FriendList =
 			Name = "AddOrDelIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,7 +49,6 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,7 +60,6 @@ local FriendList =
 			Name = "DelIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,7 +75,6 @@ local FriendList =
 			Name = "DelIgnoreByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,7 +86,6 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,7 +102,6 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,7 +117,6 @@ local FriendList =
 			Name = "GetIgnoreName",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,7 +194,6 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,7 +209,6 @@ local FriendList =
 			Name = "IsFriend",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,7 +224,6 @@ local FriendList =
 			Name = "IsIgnored",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,7 +239,6 @@ local FriendList =
 			Name = "IsIgnoredByGuid",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,7 +254,6 @@ local FriendList =
 			Name = "IsOnIgnoredList",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -283,7 +269,6 @@ local FriendList =
 			Name = "RemoveFriend",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -299,7 +284,6 @@ local FriendList =
 			Name = "RemoveFriendByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -311,7 +295,6 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,7 +306,6 @@ local FriendList =
 			Name = "SetFriendNotes",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -340,7 +322,6 @@ local FriendList =
 			Name = "SetFriendNotesByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -352,7 +333,6 @@ local FriendList =
 			Name = "SetSelectedFriend",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -363,7 +343,6 @@ local FriendList =
 			Name = "SetSelectedIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -374,7 +353,6 @@ local FriendList =
 			Name = "SetWhoToUi",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -390,7 +368,6 @@ local FriendList =
 			Name = "SortWho",
 			Type = "Function",
 			RequiresFriendList = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

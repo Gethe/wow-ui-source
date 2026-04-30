@@ -10,7 +10,6 @@ local ActionBarFrame =
 		{
 			Name = "EnableActionRangeCheck",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Used in conjunction with ActionRangeCheckUpdate to inform the UI when an action goes in or out of range with its current target." },
 
 			Arguments =
@@ -34,7 +33,6 @@ local ActionBarFrame =
 			Name = "FindPetActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,7 +48,6 @@ local ActionBarFrame =
 			Name = "FindSpellActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
@@ -67,7 +64,6 @@ local ActionBarFrame =
 			Name = "GetActionAutocast",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,7 +89,6 @@ local ActionBarFrame =
 			Name = "GetActionChargeDuration",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a duration object describing the active recharge time for an action." },
 
 			Arguments =
@@ -110,8 +105,6 @@ local ActionBarFrame =
 			Name = "GetActionCharges",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenCooldownsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,8 +120,6 @@ local ActionBarFrame =
 			Name = "GetActionCooldown",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenCooldownsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,7 +135,6 @@ local ActionBarFrame =
 			Name = "GetActionCooldownDuration",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a duration object describing the active cooldown duration for an action." },
 
 			Arguments =
@@ -162,8 +152,6 @@ local ActionBarFrame =
 			Name = "GetActionDisplayCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenCooldownsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Depending on the action type, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
 
 			Arguments =
@@ -182,7 +170,6 @@ local ActionBarFrame =
 			Name = "GetActionLossOfControlCooldownDuration",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for an action." },
 
 			Arguments =
@@ -199,8 +186,6 @@ local ActionBarFrame =
 			Name = "GetActionLossOfControlCooldownInfo",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenCooldownsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,7 +202,6 @@ local ActionBarFrame =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -233,7 +217,6 @@ local ActionBarFrame =
 			Name = "GetActionTexture",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,8 +232,6 @@ local ActionBarFrame =
 			Name = "GetActionUseCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretWhenCooldownsRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -292,7 +273,6 @@ local ActionBarFrame =
 		{
 			Name = "GetItemActionOnEquipSpellID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -335,7 +315,6 @@ local ActionBarFrame =
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -350,7 +329,6 @@ local ActionBarFrame =
 		{
 			Name = "GetProfessionQuality",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,7 +343,6 @@ local ActionBarFrame =
 		{
 			Name = "GetSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +376,6 @@ local ActionBarFrame =
 			Name = "HasAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if an actionbar slot is populated with an action." },
 
 			Arguments =
@@ -451,7 +427,6 @@ local ActionBarFrame =
 		{
 			Name = "HasPetActionButtons",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,7 +441,6 @@ local ActionBarFrame =
 		{
 			Name = "HasPetActionPetBarIndices",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -482,7 +456,6 @@ local ActionBarFrame =
 			Name = "HasRangeRequirements",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -497,7 +470,6 @@ local ActionBarFrame =
 		{
 			Name = "HasSpellActionButtons",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -531,7 +503,6 @@ local ActionBarFrame =
 			Name = "IsActionInRange",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -547,7 +518,6 @@ local ActionBarFrame =
 		{
 			Name = "IsAssistedCombatAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the given action button contains the Assisted Combat action spell." },
 
 			Arguments =
@@ -564,7 +534,6 @@ local ActionBarFrame =
 			Name = "IsAttackAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -579,7 +548,6 @@ local ActionBarFrame =
 		{
 			Name = "IsAutoCastPetAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -595,7 +563,6 @@ local ActionBarFrame =
 			Name = "IsAutoRepeatAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -611,7 +578,6 @@ local ActionBarFrame =
 			Name = "IsConsumableAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -627,7 +593,6 @@ local ActionBarFrame =
 			Name = "IsCurrentAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -642,7 +607,6 @@ local ActionBarFrame =
 		{
 			Name = "IsEnabledAutoCastPetAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -658,7 +622,6 @@ local ActionBarFrame =
 			Name = "IsEquippedAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -673,7 +636,6 @@ local ActionBarFrame =
 		{
 			Name = "IsEquippedGearOutfitAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -688,7 +650,6 @@ local ActionBarFrame =
 		{
 			Name = "IsHarmfulAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -704,7 +665,6 @@ local ActionBarFrame =
 		{
 			Name = "IsHelpfulAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -721,7 +681,6 @@ local ActionBarFrame =
 			Name = "IsItemAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -736,7 +695,6 @@ local ActionBarFrame =
 		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -761,7 +719,6 @@ local ActionBarFrame =
 			Name = "IsStackableAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -777,7 +734,6 @@ local ActionBarFrame =
 			Name = "IsUsableAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -794,7 +750,6 @@ local ActionBarFrame =
 			Name = "RegisterActionUIButton",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -806,7 +761,6 @@ local ActionBarFrame =
 		{
 			Name = "SetActionBarPage",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -834,7 +788,6 @@ local ActionBarFrame =
 		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -844,7 +797,6 @@ local ActionBarFrame =
 		{
 			Name = "UnregisterActionUIButton",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -855,7 +807,6 @@ local ActionBarFrame =
 			Name = "UsesActionText",
 			Type = "Function",
 			RequiresValidActionSlot = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -23,7 +23,6 @@ local AbbreviateConfigAPI =
 			Name = "SetAbbreviateNumberData",
 			Type = "Function",
 			RequiresRestrictedAbbreviationBreakpoints = true,
-			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{

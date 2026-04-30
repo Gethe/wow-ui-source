@@ -13,7 +13,6 @@ local ArenaTeam =
 		{
 			Name = "ArenaTeamDisband",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,7 +22,6 @@ local ArenaTeam =
 		{
 			Name = "ArenaTeamInviteByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,7 +32,6 @@ local ArenaTeam =
 		{
 			Name = "ArenaTeamLeave",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,7 +41,6 @@ local ArenaTeam =
 		{
 			Name = "ArenaTeamSetLeaderByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,7 +51,6 @@ local ArenaTeam =
 		{
 			Name = "ArenaTeamUninviteByName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

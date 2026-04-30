@@ -30,7 +30,6 @@ local LFGListRoles =
 		{
 			Name = "SetRoles",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

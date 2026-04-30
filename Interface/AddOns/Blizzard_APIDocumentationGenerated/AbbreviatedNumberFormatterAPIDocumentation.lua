@@ -10,7 +10,6 @@ local AbbreviatedNumberFormatterAPI =
 			Name = "AddBreakpoint",
 			Type = "Function",
 			RequiresValidAbbreviationBreakpoints = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adds a new breakpoint to the formatter." },
 
 			Arguments =
@@ -30,7 +29,6 @@ local AbbreviatedNumberFormatterAPI =
 		{
 			Name = "Copy",
 			Type = "Function",
-			ReturnsNeverSecret = true,
 			Documentation = { "Returns a new copy of this formatter." },
 
 			Arguments =
@@ -69,7 +67,6 @@ local AbbreviatedNumberFormatterAPI =
 			Name = "SetBreakpoints",
 			Type = "Function",
 			RequiresValidAbbreviationBreakpoints = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Replaces all breakpoints on the formatter." },
 
 			Arguments =

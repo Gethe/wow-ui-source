@@ -19,7 +19,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "CancelInviteToNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -30,7 +29,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "DemoteToResident",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -118,7 +116,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetNeighborhoodPlotName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,7 +150,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "InvitePlayerToNeighborhood",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -220,7 +216,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "PromoteToManager",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -245,7 +240,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "TransferNeighborhoodOwnership",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -256,7 +250,6 @@ local HousingNeighborhoodUI =
 		{
 			Name = "TryEvictPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =

@@ -9,7 +9,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "AddHistoryLine",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,7 +84,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetCursorPosition",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Cursor, Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -100,7 +98,6 @@ local SimpleEditBoxAPI =
 			Name = "GetDisplayText",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -276,7 +273,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetNumber",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -333,7 +329,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetText",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -379,7 +374,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetUTF8CursorPosition",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Cursor, Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -432,7 +426,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "HighlightText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -443,8 +436,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "Insert",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -558,7 +549,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "IsPassword",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -572,7 +562,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "IsSecureText",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.SecureText },
 
 			Arguments =
 			{
@@ -594,7 +583,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetAlphabeticOnly",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -604,7 +592,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetAltArrowKeyMode",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -614,7 +601,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetAutoFocus",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -624,7 +610,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetBlinkSpeed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -634,7 +619,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetCountInvisibleLetters",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -644,8 +628,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetCursorPosition",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Cursor },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -655,7 +637,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -673,7 +654,8 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
@@ -690,7 +672,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetFontObject",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -700,7 +681,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetHighlightColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -713,7 +693,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetHistoryLines",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -723,7 +702,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetIndentedWordWrap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -733,7 +711,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetJustifyH",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -743,7 +720,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetJustifyV",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -753,7 +729,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetMaxBytes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -763,7 +738,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetMaxLetters",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -773,7 +747,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetMultiLine",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -783,8 +756,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetNumber",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -794,7 +765,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetNumeric",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -804,7 +774,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetNumericFullRange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -814,8 +783,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetPassword",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -825,8 +792,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetSecureText",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.SecureText },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -852,7 +817,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetShadowColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -865,7 +829,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetShadowOffset",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -876,7 +839,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetSpacing",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -886,8 +848,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetText",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -897,7 +857,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetTextColor",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -910,7 +869,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetTextInsets",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -923,7 +881,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetVisibleTextByteLimit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -33,7 +33,6 @@ local CombatLog =
 		{
 			Name = "DoesObjectMatchFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,7 +67,6 @@ local CombatLog =
 			Name = "GetEntryCount",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,7 +109,6 @@ local CombatLog =
 			Name = "SeekToNewestEntry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,7 +124,6 @@ local CombatLog =
 			Name = "SeekToPreviousEntry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +138,6 @@ local CombatLog =
 		{
 			Name = "SetEntryRetentionTime",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,7 +147,6 @@ local CombatLog =
 		{
 			Name = "SetFilteredEventsEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -162,7 +156,6 @@ local CombatLog =
 		{
 			Name = "SetMessageLimit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

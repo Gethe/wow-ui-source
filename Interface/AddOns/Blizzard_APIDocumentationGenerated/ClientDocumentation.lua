@@ -9,7 +9,6 @@ local Client =
 		{
 			Name = "FlashClientIcon",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,7 +27,6 @@ local Client =
 		{
 			Name = "GetFileIDFromPath",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,7 +59,6 @@ local Client =
 		{
 			Name = "ReportBug",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,7 +68,6 @@ local Client =
 		{
 			Name = "ReportSuggestion",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

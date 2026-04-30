@@ -63,8 +63,8 @@ function EclipseBarFrameMixin:UpdateShown()
 end
 
 function EclipseBarFrameMixin:Update()
-	local power = UnitPower( self:GetParent().unit, Enum.PowerType.Balance );
-	local maxPower = UnitPowerMax( self:GetParent().unit, Enum.PowerType.Balance );
+	local power = UnitPower( PlayerFrame.unit, Enum.PowerType.Balance );
+	local maxPower = UnitPowerMax( PlayerFrame.unit, Enum.PowerType.Balance );
 	if maxPower == 0 then
 		return;--catch divide by zero
 	end
@@ -90,6 +90,7 @@ function EclipseBarFrameMixin:OnLoad()
 end
 
 function EclipseBarFrameMixin:OnShow()
+	UIParentManagedFrameMixin.OnShow(self);
 
 	local direction = GetEclipseDirection();
 	if direction then

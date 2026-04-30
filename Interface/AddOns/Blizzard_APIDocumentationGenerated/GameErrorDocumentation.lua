@@ -10,7 +10,6 @@ local GameError =
 			Name = "GetGameMessageInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

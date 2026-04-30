@@ -10,7 +10,6 @@ local EngravingInfo =
 		{
 			Name = "AddCategoryFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,7 +19,6 @@ local EngravingInfo =
 		{
 			Name = "AddExclusiveCategoryFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,7 +28,6 @@ local EngravingInfo =
 		{
 			Name = "CastRune",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,7 +41,6 @@ local EngravingInfo =
 		{
 			Name = "ClearCategoryFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,7 +54,6 @@ local EngravingInfo =
 		{
 			Name = "EnableEquippedFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,7 +90,6 @@ local EngravingInfo =
 		{
 			Name = "GetNumRunesKnown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,7 +105,6 @@ local EngravingInfo =
 		{
 			Name = "GetRuneCategories",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,7 +120,6 @@ local EngravingInfo =
 		{
 			Name = "GetRuneForEquipmentSlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,7 +134,6 @@ local EngravingInfo =
 		{
 			Name = "GetRuneForInventorySlot",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,7 +149,6 @@ local EngravingInfo =
 		{
 			Name = "GetRunesForCategory",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,7 +164,6 @@ local EngravingInfo =
 		{
 			Name = "HasCategoryFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -198,7 +187,6 @@ local EngravingInfo =
 		{
 			Name = "IsEquipmentSlotEngravable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -222,7 +210,6 @@ local EngravingInfo =
 		{
 			Name = "IsInventorySlotEngravable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,7 +225,6 @@ local EngravingInfo =
 		{
 			Name = "IsInventorySlotEngravableByCurrentRuneCast",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -254,7 +240,6 @@ local EngravingInfo =
 		{
 			Name = "IsKnownRuneSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -269,7 +254,6 @@ local EngravingInfo =
 		{
 			Name = "IsRuneEquipped",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,7 +272,6 @@ local EngravingInfo =
 		{
 			Name = "SetEngravingModeEnabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -298,7 +281,6 @@ local EngravingInfo =
 		{
 			Name = "SetSearchFilter",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

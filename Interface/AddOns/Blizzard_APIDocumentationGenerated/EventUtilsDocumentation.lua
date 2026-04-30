@@ -10,7 +10,6 @@ local EventUtils =
 		{
 			Name = "IsCallbackEvent",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,7 +24,6 @@ local EventUtils =
 		{
 			Name = "IsEventValid",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

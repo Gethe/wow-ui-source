@@ -13,13 +13,12 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "size", Type = "vector2", Nilable = false },
 			},
 		},
 		{
 			Name = "GetDefaultGameWindowSize",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,13 +27,12 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "size", Type = "vector2", Nilable = false },
 			},
 		},
 		{
 			Name = "GetGameWindowSizes",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,7 +66,6 @@ local Video =
 		{
 			Name = "SetGameWindowSize",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

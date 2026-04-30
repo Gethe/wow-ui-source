@@ -11,7 +11,6 @@ local CombatAudioAlert =
 			Name = "AddToKnownTargetingList",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,13 +19,12 @@ local CombatAudioAlert =
 
 			Returns =
 			{
-				{ Name = "added", Type = "bool", Nilable = false, SecretValue = true },
+				{ Name = "added", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "GetCategoryVoice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,7 +39,6 @@ local CombatAudioAlert =
 		{
 			Name = "GetCategoryVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +53,6 @@ local CombatAudioAlert =
 		{
 			Name = "GetFormatSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,7 +77,6 @@ local CombatAudioAlert =
 		{
 			Name = "GetSpecSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,7 +91,6 @@ local CombatAudioAlert =
 		{
 			Name = "GetThrottle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,7 +115,6 @@ local CombatAudioAlert =
 			Name = "RemoveFromKnownTargetingList",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,13 +123,12 @@ local CombatAudioAlert =
 
 			Returns =
 			{
-				{ Name = "removed", Type = "bool", Nilable = false, SecretValue = true },
+				{ Name = "removed", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "SetCategoryVoice",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,7 +144,6 @@ local CombatAudioAlert =
 		{
 			Name = "SetCategoryVolume",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,7 +159,6 @@ local CombatAudioAlert =
 		{
 			Name = "SetFormatSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,7 +175,6 @@ local CombatAudioAlert =
 		{
 			Name = "SetSpeakerSpeed",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,7 +189,6 @@ local CombatAudioAlert =
 		{
 			Name = "SetSpecSetting",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,7 +204,6 @@ local CombatAudioAlert =
 		{
 			Name = "SetThrottle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -232,7 +219,6 @@ local CombatAudioAlert =
 		{
 			Name = "SpeakText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

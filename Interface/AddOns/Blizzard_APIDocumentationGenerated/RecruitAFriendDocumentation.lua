@@ -10,7 +10,6 @@ local RecruitAFriend =
 		{
 			Name = "CanSummonFriend",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,7 +25,6 @@ local RecruitAFriend =
 			Name = "ClaimActivityReward",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,7 +41,6 @@ local RecruitAFriend =
 			Name = "ClaimNextReward",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,7 +83,6 @@ local RecruitAFriend =
 		{
 			Name = "GetRecruitActivityRequirementsText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,7 +128,6 @@ local RecruitAFriend =
 		{
 			Name = "IsRecruitAFriendLinked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,7 +152,6 @@ local RecruitAFriend =
 			Name = "RemoveRAFRecruit",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,7 +176,6 @@ local RecruitAFriend =
 		{
 			Name = "SummonFriend",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

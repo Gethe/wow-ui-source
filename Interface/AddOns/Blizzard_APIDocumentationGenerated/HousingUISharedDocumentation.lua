@@ -136,7 +136,7 @@ local HousingUIShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 				{ Name = "plotDataID", Type = "number", Nilable = false },
 				{ Name = "plotID", Type = "number", Nilable = false },
 				{ Name = "ownerType", Type = "HousingPlotOwnerType", Nilable = false, Default = "None" },

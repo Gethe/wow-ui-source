@@ -27,7 +27,6 @@ local ZoneScript =
 		{
 			Name = "GetRealZoneText",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

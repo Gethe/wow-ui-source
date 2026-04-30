@@ -58,6 +58,8 @@ function ChallengesFrame_OnLoad(self)
 	self.RewardRow3.MedalName:SetTextColor(CHALLENGE_GOLD_MEDAL_COLOR:GetRGB());
 	self.RewardRow4.Bg:SetColorTexture(CHALLENGE_PLATINUM_MEDAL_COLOR:GetRGB());
 	self.RewardRow4.MedalName:SetTextColor(CHALLENGE_PLATINUM_MEDAL_COLOR:GetRGB());
+	self.RewardRow5.Bg:SetColorTexture(CHALLENGE_DIAMOND_MEDAL_COLOR:GetRGB());
+	self.RewardRow5.MedalName:SetTextColor(CHALLENGE_DIAMOND_MEDAL_COLOR:GetRGB());
 end
 
 function ChallengesFrame_OnEvent(self, event)
@@ -80,6 +82,13 @@ function ChallengesFrame_Update(self, mapID)
 		if ( CHALLENGE_MEDAL_TEXTURES_SMALL[medal] ) then
 			button.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[medal]);
 			button.MedalIcon:Show();
+
+			-- Hack because we're re-using a medal from something else
+			if medal == CHALLENGE_MEDAL_DIAMOND then
+				button.MedalIcon:SetSize(38, 38);
+				button.MedalIcon:SetPoint("LEFT", 5, 0);
+			end
+
 			button.NoMedal:Hide();
 		else
 			button.MedalIcon:Hide();
@@ -121,6 +130,13 @@ function ChallengesFrame_Update(self, mapID)
 				local rewardsRow = ChallengesFrame["RewardRow"..n];
 				rewardsRow:Show();
 				rewardsRow.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[n]);
+
+				-- Hack because we're re-using a medal from something else
+				if medal == CHALLENGE_MEDAL_DIAMOND then
+					rewardsRow.MedalIcon:SetSize(38, 38);
+					rewardsRow.MedalIcon:SetPoint("LEFT", 8, 0);
+				end
+
 				rewardsRow.MedalName:SetText(_G["CHALLENGE_MODE_MEDAL"..n]);
 				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(times[n]));
 				-- go through the rewards
@@ -158,9 +174,9 @@ function ChallengesFrame_Update(self, mapID)
 					rewardsRow:Hide();
 				elseif n == numMedals then
 					local detailsPanel = rewardsRow:GetParent().details
-					rewardsRow:SetPoint("TOPLEFT", detailsPanel, 0, -246);
+					rewardsRow:SetPoint("TOPLEFT", detailsPanel, 0, -228);
 				else
-					rewardsRow:SetPoint("TOPLEFT", lastRewardsRow, "BOTTOMLEFT", 0, -12);
+					rewardsRow:SetPoint("TOPLEFT", lastRewardsRow, "BOTTOMLEFT", 0, -9);
 				end
 
 			end

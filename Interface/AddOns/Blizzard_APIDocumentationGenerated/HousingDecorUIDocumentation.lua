@@ -40,7 +40,6 @@ local HousingDecorUI =
 			Name = "GetDecorHyperlink",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,7 +55,6 @@ local HousingDecorUI =
 			Name = "GetDecorIcon",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,7 +69,6 @@ local HousingDecorUI =
 		{
 			Name = "GetDecorInstanceInfoForGUID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns info for the placed decor instance associated with the passed Decor GUID, if there is one" },
 
 			Arguments =
@@ -88,7 +85,6 @@ local HousingDecorUI =
 			Name = "GetDecorName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,7 +217,6 @@ local HousingDecorUI =
 		{
 			Name = "IsModeDisabledForPreviewState",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,7 +241,6 @@ local HousingDecorUI =
 			Name = "RemovePlacedDecorEntry",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
@@ -262,7 +256,6 @@ local HousingDecorUI =
 		{
 			Name = "SetGridVisible",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -273,7 +266,6 @@ local HousingDecorUI =
 			Name = "SetPlacedDecorEntryHovered",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
@@ -286,7 +278,6 @@ local HousingDecorUI =
 			Name = "SetPlacedDecorEntrySelected",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =

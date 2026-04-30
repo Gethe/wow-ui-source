@@ -10,7 +10,6 @@ local DeathInfo =
 		{
 			Name = "GetCorpseMapPosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,13 +18,12 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Nilable = true },
 			},
 		},
 		{
 			Name = "GetDeathReleasePosition",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,13 +32,12 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Nilable = true },
 			},
 		},
 		{
 			Name = "GetGraveyardsForMap",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,7 +62,6 @@ local DeathInfo =
 		{
 			Name = "UseSelfResurrectOption",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,7 +197,7 @@ local DeathInfo =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
 				{ Name = "graveyardID", Type = "number", Nilable = false },

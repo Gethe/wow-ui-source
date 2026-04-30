@@ -19,7 +19,6 @@ local LFGListInfo =
 		{
 			Name = "CanCreateQuestGroup",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,7 +50,6 @@ local LFGListInfo =
 			Name = "CreateListing",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -66,7 +64,6 @@ local LFGListInfo =
 		{
 			Name = "DoesEntryTitleMatchPrebuiltTitle",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,7 +82,6 @@ local LFGListInfo =
 			Name = "GetActiveEntryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
 
 			Returns =
 			{
@@ -95,7 +91,6 @@ local LFGListInfo =
 		{
 			Name = "GetActivityFullName",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,7 +108,6 @@ local LFGListInfo =
 			Name = "GetActivityGroupInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,7 +124,6 @@ local LFGListInfo =
 			Name = "GetActivityInfoTable",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,7 +141,6 @@ local LFGListInfo =
 			Name = "GetApplicantDungeonScoreForListing",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -166,8 +158,6 @@ local LFGListInfo =
 			Name = "GetApplicantInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -183,7 +173,6 @@ local LFGListInfo =
 			Name = "GetApplicantPvpRatingInfoForListing",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,7 +189,6 @@ local LFGListInfo =
 		{
 			Name = "GetAvailableActivityGroups",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,7 +226,6 @@ local LFGListInfo =
 			Name = "GetKeystoneForActivity",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -254,7 +241,6 @@ local LFGListInfo =
 			Name = "GetLfgCategoryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -270,7 +256,6 @@ local LFGListInfo =
 			Name = "GetOwnedKeystoneActivityAndGroupAndLevel",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,7 +272,6 @@ local LFGListInfo =
 		{
 			Name = "GetPlaystyleString",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -314,8 +298,6 @@ local LFGListInfo =
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,8 +313,6 @@ local LFGListInfo =
 			Name = "GetSearchResultLeaderInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -348,8 +328,6 @@ local LFGListInfo =
 			Name = "GetSearchResultPlayerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretInChatMessagingLockdown = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,7 +362,6 @@ local LFGListInfo =
 		{
 			Name = "HasSearchResultInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -399,7 +376,6 @@ local LFGListInfo =
 		{
 			Name = "IsPlayerAuthenticatedForLFG",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -432,7 +408,6 @@ local LFGListInfo =
 		{
 			Name = "ListingUsesEndgameEditRestrictions",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,7 +423,6 @@ local LFGListInfo =
 			Name = "ReportGroupAsAdvertisement",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -459,7 +433,6 @@ local LFGListInfo =
 			Name = "Search",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -476,7 +449,6 @@ local LFGListInfo =
 			Name = "SetEntryTitle",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -489,7 +461,6 @@ local LFGListInfo =
 		{
 			Name = "SetSearchToActivity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -499,7 +470,6 @@ local LFGListInfo =
 		{
 			Name = "SetSearchToQuestID",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -510,7 +480,6 @@ local LFGListInfo =
 			Name = "UpdateListing",
 			Type = "Function",
 			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -525,7 +494,6 @@ local LFGListInfo =
 		{
 			Name = "ValidateRequiredDungeonScore",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -540,7 +508,6 @@ local LFGListInfo =
 		{
 			Name = "ValidateRequiredPvpRatingForActivity",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -758,9 +725,9 @@ local LFGListInfo =
 			Fields =
 			{
 				{ Name = "applicantID", Type = "number", Nilable = false },
-				{ Name = "applicationStatus", Type = "cstring", Nilable = false, NeverSecret = true },
-				{ Name = "pendingApplicationStatus", Type = "cstring", Nilable = true, NeverSecret = true },
-				{ Name = "numMembers", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "applicationStatus", Type = "cstring", Nilable = false },
+				{ Name = "pendingApplicationStatus", Type = "cstring", Nilable = true },
+				{ Name = "numMembers", Type = "number", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "displayOrderID", Type = "number", Nilable = false },
@@ -785,7 +752,7 @@ local LFGListInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false, NeverSecret = true },
+				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
 				{ Name = "name", Type = "kstringLfgListApplicant", Nilable = false },
@@ -855,7 +822,7 @@ local LFGListInfo =
 				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },
-				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false, NeverSecret = true },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

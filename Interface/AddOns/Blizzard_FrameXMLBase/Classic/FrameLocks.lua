@@ -40,6 +40,7 @@ local HIDE_MOST = {
 	WorldStateScoreFrame = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 	PetActionBar = "hidden",
+	MultiCastActionBarFrame = "hidden",
 };
 
 --------Data on what locks exist and what frames are ruled by them--------

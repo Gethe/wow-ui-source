@@ -9,7 +9,6 @@ local Locale =
 		{
 			Name = "GetAvailableLocaleInfo",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,7 +23,6 @@ local Locale =
 		{
 			Name = "GetAvailableLocales",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
