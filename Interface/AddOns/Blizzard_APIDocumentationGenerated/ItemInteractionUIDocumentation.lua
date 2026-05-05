@@ -31,7 +31,7 @@ local ItemInteractionUI =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -77,7 +77,7 @@ local ItemInteractionUI =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "item", Type = "ItemLocation", Nilable = true },
 			},
 
 			Returns =
@@ -102,7 +102,7 @@ local ItemInteractionUI =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = true },
 			},
 		},
 	},

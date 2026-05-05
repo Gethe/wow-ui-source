@@ -188,3 +188,13 @@ function AutoCommitTraitFrameMixin:ShouldShowConfirmation(nodeID)
 
 	return showSpendConfirmation;
 end
+
+AutoCommitTraitUtil = { };
+
+local TemplatesByEdgeVisualStyle = {
+	[Enum.TraitEdgeVisualStyle.Straight] = "TalentEdgeArrowTemplate",
+};
+
+function AutoCommitTraitUtil.GetEdgeTemplateType(edgeVisualStyle)
+	return TemplatesByEdgeVisualStyle[edgeVisualStyle];
+end

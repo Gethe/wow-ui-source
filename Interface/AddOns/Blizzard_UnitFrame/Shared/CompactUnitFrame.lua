@@ -704,11 +704,6 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 		end
 	end
 
-	-- Needed until Nameplates can be fully decoupled from CompactUnitFrame.
-	if frame.UpdateIsDead then
-		frame:UpdateIsDead();
-	end
-
 	if frame.background then
 		frame.background:SetVertexColor(CompactUnitFrame_GetOptionCustomHealthBarColorBG(frame):GetRGB());
 	end

@@ -15,7 +15,7 @@ local LuaColorCurveObjectAPI =
 			Arguments =
 			{
 				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
@@ -56,7 +56,7 @@ local LuaColorCurveObjectAPI =
 
 			Returns =
 			{
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
@@ -169,7 +169,7 @@ local LuaColorCurveObjectAPI =
 			Fields =
 			{
 				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "y", Type = "colorRGBA", Nilable = false },
 			},
 		},
 	},

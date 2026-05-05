@@ -12,11 +12,13 @@ function MawBuffsContainerMixin:OnLoad()
 	self:Update();
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("COLOR_OVERRIDE_UPDATED");
+	self:RegisterEvent("COLOR_OVERRIDES_RESET");
 end
 
 function MawBuffsContainerMixin:OnEvent(event, ...)
 	local unit = ...;
-	if event == "UNIT_AURA" then
+	if event == "UNIT_AURA" or event == "COLOR_OVERRIDE_UPDATED" or event == "COLOR_OVERRIDES_RESET" then
 		self:Update();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		if self.List:IsShown() then
@@ -228,22 +230,43 @@ end
 
 MawBuffMixin = {};
 
+local mawPowerRarityIDToItemQuality = {
+	[1] = Enum.ItemQuality.Common,
+	[2] = Enum.ItemQuality.Uncommon,
+	[3] = Enum.ItemQuality.Rare,
+	[4] = Enum.ItemQuality.Epic,
+	[5] = Enum.ItemQuality.Legendary
+};
+
 function MawBuffMixin:SetBuffInfo(buffInfo)
 	self.Icon:SetTexture(buffInfo.icon);
 	self.slot = buffInfo.slot;
 	self.count = buffInfo.count;
 	self.spellID = buffInfo.spellID;
 
-	local rarityAtlas = C_Spell.GetMawPowerBorderAtlasBySpellID(self.spellID);
 	local showCount = buffInfo.count > 1;
-		
-	if (showCount) then
-		self.Count:SetText(buffInfo.count);
-	end 
 
-	if(rarityAtlas) then
-		self.Border:SetAtlas(rarityAtlas, TextureKitConstants.UseAtlasSize);
-	end 
+	if showCount then
+		self.Count:SetText(buffInfo.count);
+	end
+
+	local rarityID, rarityAtlas = C_Spell.GetMawPowerRarityInfoBySpellID(self.spellID);
+	if rarityID then
+		local quality = mawPowerRarityIDToItemQuality[rarityID];
+		local atlasData = ColorManager.GetAtlasDataForMawBuff(quality);
+		if not atlasData.atlas then
+			atlasData.atlas = rarityAtlas;
+		end
+
+		self.Border:SetAtlas(atlasData.atlas, TextureKitConstants.UseAtlasSize);
+
+		local overrideColor = atlasData.overrideColor;
+		if overrideColor then
+			self.Border:SetVertexColor(overrideColor.r, overrideColor.g, overrideColor.b);
+		else
+			self.Border:SetVertexColor(1, 1, 1);
+		end
+	end
 
 	self.Count:SetShown(showCount);
 	self.CountRing:SetShown(showCount);

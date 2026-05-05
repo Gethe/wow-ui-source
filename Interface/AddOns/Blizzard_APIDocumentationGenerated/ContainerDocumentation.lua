@@ -685,7 +685,7 @@ local Container =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{
@@ -696,7 +696,7 @@ local Container =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{

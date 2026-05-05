@@ -161,7 +161,6 @@ function NamePlatePreviewMixin:OnNamePlateThreatDisplayChanged()
 	local explicitValues = {
 		isPlayer = false,
 		isFriend = false,
-		isDead = false,
 		threatSituation = threatStateRed,
 		aggroFlash = true,
 	};
@@ -172,7 +171,6 @@ function NamePlatePreviewMixin:ToggleEnemyNPCAuraDisplay()
 	local explicitValues = {
 		isPlayer = false,
 		isFriend = false,
-		isDead = false,
 	};
 	self:SetExplicitValues(explicitValues);
 end
@@ -200,19 +198,16 @@ function NamePlatePreviewMixin:ToggleSimplifiedType(simplifiedType)
 		explicitValues.isMinion = true;
 		explicitValues.isPlayer = false;
 		explicitValues.isFriend = false;
-		explicitValues.isDead = false;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.MinusMob then
 		explicitValues.isMinusMob = true;
 		explicitValues.isPlayer = false;
 		explicitValues.isFriend = false;
-		explicitValues.isDead = false;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.FriendlyPlayer then
 		explicitValues.isPlayer = true;
 		explicitValues.isFriend = true;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.FriendlyNpc then
 		explicitValues.isPlayer = false;
 		explicitValues.isFriend = true;
-		explicitValues.isDead = false;
 	end
 
 	self:SetExplicitValues(explicitValues);

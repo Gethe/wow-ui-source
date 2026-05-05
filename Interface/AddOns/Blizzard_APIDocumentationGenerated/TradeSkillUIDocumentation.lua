@@ -53,7 +53,7 @@ local TradeSkillUI =
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
 				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
-				{ Name = "itemTarget", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "itemTarget", Type = "ItemLocation", Nilable = true },
 				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
 		},
@@ -81,7 +81,7 @@ local TradeSkillUI =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
 				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
-				{ Name = "itemTarget", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemTarget", Type = "ItemLocation", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
@@ -93,7 +93,7 @@ local TradeSkillUI =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 				{ Name = "recipeID", Type = "number", Nilable = false },
 			},
 

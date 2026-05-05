@@ -29,7 +29,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -46,7 +46,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -61,7 +61,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -76,7 +76,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -91,7 +91,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = true },
 			},
 
 			Returns =
@@ -106,7 +106,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =

@@ -106,8 +106,8 @@ local CharacterCustomizationShared =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "ineligibleChoice", Type = "bool", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false },
-				{ Name = "swatchColor1", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "swatchColor2", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "swatchColor1", Type = "colorRGB", Nilable = true },
+				{ Name = "swatchColor2", Type = "colorRGB", Nilable = true },
 				{ Name = "soundKit", Type = "number", Nilable = true },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
 				{ Name = "lockedText", Type = "string", Nilable = true },
@@ -118,8 +118,8 @@ local CharacterCustomizationShared =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST", Type = "CharCustomizationType", Value = CustomOptionTattoo },
-				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST", Type = "CharCustomizationType", Value = CustomOptionTattooColor },
+				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST", Type = "CharCustomizationType", Value = "CustomOptionTattoo" },
+				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST", Type = "CharCustomizationType", Value = "CustomOptionTattooColor" },
 				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
 				{ Name = "NAME_RESERVATION_DAYS", Type = "number", Value = 30 },
 			},

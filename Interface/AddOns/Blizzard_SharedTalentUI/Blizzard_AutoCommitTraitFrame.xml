@@ -8,6 +8,7 @@
 			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
 			<KeyValue key="purchaseConfirmationString" value="GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE" type="global"/>
 			<KeyValue key="purchaseConfirmationFormatString" value="GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT" type="global"/>
+			<KeyValue key="getEdgeTemplateType" value="AutoCommitTraitUtil.GetEdgeTemplateType" type="global"/>
 		</KeyValues>
 		<Frames>
 			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">

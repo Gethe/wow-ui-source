@@ -77,36 +77,12 @@ local ClickBindings =
 			},
 		},
 		{
-			Name = "GetStringFromModifiers",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "modifiers", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "modifierString", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetTutorialShown",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "tutorialShown", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "MakeModifiers",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 		},
 		{

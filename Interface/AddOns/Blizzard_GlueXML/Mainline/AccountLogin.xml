@@ -514,6 +514,36 @@
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
 						</Anchors>
 					</DropdownButton>
+					<Frame parentKey="BlackBars" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Left">
+									<Size x="1024" y="0"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+								<Texture parentKey="Right">
+									<Size x="1024" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+								<Texture parentKey="Top">
+									<Size x="0" y="768"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Left"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.Right"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

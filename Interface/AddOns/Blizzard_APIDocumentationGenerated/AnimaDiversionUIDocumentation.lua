@@ -27,7 +27,7 @@ local AnimaDiversionUI =
 
 			Returns =
 			{
-				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "normalizedPosition", Type = "vector2", Nilable = true },
 			},
 		},
 		{
@@ -139,7 +139,7 @@ local AnimaDiversionUI =
 				{ Name = "costs", Type = "table", InnerType = "AnimaDiversionCostInfo", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedPosition", Type = "vector2", Nilable = false },
 				{ Name = "state", Type = "AnimaDiversionNodeState", Nilable = false },
 			},
 		},

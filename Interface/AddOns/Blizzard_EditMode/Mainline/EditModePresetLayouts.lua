@@ -763,6 +763,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModePersonalResourceDisplaySetting.ShowClassColor] = 0,
 			[Enum.EditModePersonalResourceDisplaySetting.BarWidth] = 5,
 			[Enum.EditModePersonalResourceDisplaySetting.ShowBarText] = 0,
+			[Enum.EditModePersonalResourceDisplaySetting.HideAltPower] = 0,
 		},
 		anchorInfo = {
 			point = "BOTTOM",

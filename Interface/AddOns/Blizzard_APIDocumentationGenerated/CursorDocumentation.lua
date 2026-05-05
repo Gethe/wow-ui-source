@@ -14,7 +14,7 @@ local Cursor =
 
 			Returns =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 			},
 		},
 	},

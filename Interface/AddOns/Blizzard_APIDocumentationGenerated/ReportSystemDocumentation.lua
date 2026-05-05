@@ -14,7 +14,7 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -29,7 +29,7 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
 			},
 
 			Returns =
@@ -131,8 +131,8 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "reportInfo", Type = "ReportInfo", Mixin = "ReportInfoMixin", Nilable = false },
-				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "reportInfo", Type = "ReportInfo", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = true },
 			},
 		},
 		{

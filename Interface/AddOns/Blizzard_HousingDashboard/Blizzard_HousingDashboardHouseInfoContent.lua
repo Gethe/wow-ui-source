@@ -108,9 +108,7 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 		local houseInfoList = ...;
 		self:OnHouseListUpdated(houseInfoList);
 
-		if self.ContentFrame:GetTab() == self.ContentFrame.endeavorTabID then
-			C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
-		end
+		C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
 		self.LoadingSpinner:Hide();
 	elseif event == "NEIGHBORHOOD_INITIATIVE_UPDATED" or event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" then
 		if self.ContentFrame:GetTab() == self.ContentFrame.endeavorTabID then
@@ -463,7 +461,7 @@ function InitiativesTabMixin:RefreshTrackedTasks()
 	local trackedTaskIDs = initiativeTasksTracked.trackedIDs;
 	local excludeCollapsed = false;
 	local dataProvider = self.InitiativeSetFrame.InitiativeTasks.TaskList:GetDataProvider();
-	if davaProvider then
+	if dataProvider then
 		dataProvider:ForEach(function(elementData)
 		local data = elementData:GetData();
 		data.tracked = tContains(trackedTaskIDs, data.ID);

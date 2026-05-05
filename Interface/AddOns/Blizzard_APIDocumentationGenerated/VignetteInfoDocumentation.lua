@@ -83,7 +83,7 @@ local VignetteInfo =
 
 			Returns =
 			{
-				{ Name = "vignettePosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "vignettePosition", Type = "vector2", Nilable = false },
 				{ Name = "vignetteFacing", Type = "number", Nilable = true },
 			},
 		},

@@ -88,7 +88,7 @@ local SimpleTextureBaseAPI =
 			Returns =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
-				{ Name = "normalizedRotationPoint", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedRotationPoint", Type = "vector2", Nilable = false },
 			},
 		},
 		{
@@ -352,8 +352,8 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "orientation", Type = "Orientation", Nilable = false },
-				{ Name = "minColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "maxColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "minColor", Type = "colorRGBA", Nilable = false },
+				{ Name = "maxColor", Type = "colorRGBA", Nilable = false },
 			},
 		},
 		{
@@ -385,7 +385,7 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
-				{ Name = "normalizedRotationPoint", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "normalizedRotationPoint", Type = "vector2", Nilable = true },
 			},
 		},
 		{

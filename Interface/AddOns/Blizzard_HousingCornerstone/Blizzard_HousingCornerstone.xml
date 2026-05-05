@@ -29,7 +29,11 @@
 				</Anchors>
 			</Frame>
 
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="4" y="6"/>
+				</Anchors>
+			</Button>
 
 			<Frame parentKey="InfoFrame" frameLevel="100" setAllPoints="true" hidden="true">
 				<Layers>
@@ -149,7 +153,7 @@
 				<FontString parentKey="ErrorText" inherits="Game13FontShadow" text="">
 					<Size x="300"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="94"/>
+						<Anchor point="BOTTOM" x="0" y="110"/>
 					</Anchors>
 					<Color color="PURE_RED_COLOR"/>
 				</FontString>
@@ -178,7 +182,7 @@
 			
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors" frameLevel="750">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
 				</Anchors>
 			</Button>
 
@@ -309,12 +313,12 @@
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
 				</Anchors>
 			</Button>
 			<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-5" y="-12"/>
 				</Anchors>
 			</DropdownButton>
 		</Frames>

@@ -14,7 +14,7 @@ local QuestItemUse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "checkRange", Type = "bool", Nilable = true },
 			},

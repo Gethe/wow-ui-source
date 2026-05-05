@@ -300,6 +300,16 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetCommentatorMatchDataState",
+			Type = "Function",
+			RequiresActiveCommentator = true,
+
+			Returns =
+			{
+				{ Name = "state", Type = "CommentatorMatchDataState", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentMapID",
 			Type = "Function",
 			RequiresCommentator = true,
@@ -865,7 +875,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "pos", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "pos", Type = "vector3", Nilable = false },
 			},
 		},
 		{
@@ -880,7 +890,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
@@ -895,7 +905,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
@@ -939,6 +949,7 @@ local CommentatorFrame =
 			Returns =
 			{
 				{ Name = "spells", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "result", Type = "TrackedSpellsResult", Nilable = false },
 			},
 		},
 		{
@@ -956,6 +967,7 @@ local CommentatorFrame =
 			Returns =
 			{
 				{ Name = "spells", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "result", Type = "TrackedSpellsResult", Nilable = false },
 			},
 		},
 		{
@@ -1785,6 +1797,20 @@ local CommentatorFrame =
 	Tables =
 	{
 		{
+			Name = "TrackedSpellsResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Success", Type = "TrackedSpellsResult", EnumValue = 0 },
+				{ Name = "PlayerNotFound", Type = "TrackedSpellsResult", EnumValue = 1 },
+				{ Name = "NoCooldownInfo", Type = "TrackedSpellsResult", EnumValue = 2 },
+				{ Name = "MismatchedCooldownInfo", Type = "TrackedSpellsResult", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "CommentatorHistory",
 			Type = "Structure",
 			Fields =
@@ -1792,6 +1818,17 @@ local CommentatorFrame =
 				{ Name = "series", Type = "table", InnerType = "CommentatorSeries", Nilable = false },
 				{ Name = "teamDirectory", Type = "table", InnerType = "CommentatorTeamDirectoryEntry", Nilable = false },
 				{ Name = "overrideNameDirectory", Type = "table", InnerType = "CommentatorOverrideNameEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorMatchDataState",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "receivedPlayerInfo", Type = "bool", Nilable = false },
+				{ Name = "setInstancePlayers", Type = "bool", Nilable = false },
+				{ Name = "requestedCooldownInfo", Type = "bool", Nilable = false },
+				{ Name = "requestedPlayerCooldowns", Type = "table", InnerType = "TeamPlayerRequestedCooldownInfo", Nilable = false },
 			},
 		},
 		{
@@ -1879,6 +1916,16 @@ local CommentatorFrame =
 			{
 				{ Name = "originalName", Type = "string", Nilable = false },
 				{ Name = "overrideName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TeamPlayerRequestedCooldownInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "cooldownsRequested", Type = "number", Nilable = false },
 			},
 		},
 	},

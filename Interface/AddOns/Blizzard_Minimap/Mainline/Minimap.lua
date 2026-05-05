@@ -916,7 +916,7 @@ function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
 	self:RefreshButton(forceUpdateIcon);
 end
 
-function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize)
+function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize, glowOverrides)
 	local width, height;
 	if useDefaultButtonSize then
 		width = self.defaultWidth;
@@ -933,7 +933,19 @@ function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up
 	self:GetNormalTexture():SetAtlas(up, useAtlasSize);
 	self:GetPushedTexture():SetAtlas(down, useAtlasSize);
 	self:GetHighlightTexture():SetAtlas(highlight, useAtlasSize);
-	self.LoopingGlow:SetAtlas(glow, useAtlasSize);
+
+	local glowUseAtlasSize = useAtlasSize;
+	local glowOffsetX = 0;
+	local glowOffsetY = 0;
+	if glowOverrides then
+		if glowOverrides.size then
+			self.LoopingGlow:SetSize(glowOverrides.size, glowOverrides.size);
+		end
+		glowOffsetX = glowOverrides.offsetX or glowOffsetX;
+		glowOffsetY = glowOverrides.offsetY or glowOffsetY;
+	end
+	self.LoopingGlow:SetPoint("CENTER", glowOffsetX, glowOffsetY);
+	self.LoopingGlow:SetAtlas(glow, glowUseAtlasSize);
 end
 
 function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconOffset(customOffset)
@@ -952,7 +964,7 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
 		if minimapDisplayInfo then
-			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize, minimapDisplayInfo.glowOverrides);
 			self:SetLandingPageIconOffset(minimapDisplayInfo.anchorOffset);
 			self.title = minimapDisplayInfo.title;
 			self.description = minimapDisplayInfo.description;

@@ -31,7 +31,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "duration", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
@@ -98,7 +98,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "duration", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "unitPrice", Type = "BigUInteger", Nilable = false },
@@ -112,7 +112,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "duration", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "bid", Type = "BigUInteger", Nilable = true },
@@ -165,7 +165,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -299,7 +299,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -314,7 +314,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -796,7 +796,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "displayError", Type = "bool", Nilable = false, Default = true },
 			},
 
@@ -852,7 +852,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "duration", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "unitPrice", Type = "BigUInteger", Nilable = false },
@@ -871,7 +871,7 @@ local AuctionHouse =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Nilable = false },
 				{ Name = "duration", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "bid", Type = "BigUInteger", Nilable = true },

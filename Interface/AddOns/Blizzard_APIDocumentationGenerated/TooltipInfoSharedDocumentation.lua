@@ -148,7 +148,7 @@ local TooltipInfoShared =
 			Fields =
 			{
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{
@@ -161,7 +161,7 @@ local TooltipInfoShared =
 				{ Name = "intVal", Type = "number", Nilable = true },
 				{ Name = "floatVal", Type = "number", Nilable = true },
 				{ Name = "boolVal", Type = "bool", Nilable = true },
-				{ Name = "colorVal", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "colorVal", Type = "colorRGB", Nilable = true },
 				{ Name = "guidVal", Type = "WOWGUID", Nilable = true },
 			},
 		},

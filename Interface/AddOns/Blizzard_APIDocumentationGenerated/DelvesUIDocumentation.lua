@@ -207,7 +207,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{

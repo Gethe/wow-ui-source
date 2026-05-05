@@ -117,12 +117,12 @@ local EncounterTimelineConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "EncounterTimelineTankAlertIcons", Type = "EncounterEventIconmask", Value = TankRole },
-				{ Name = "EncounterTimelineHealerAlertIcons", Type = "EncounterEventIconmask", Value = HealerRole },
-				{ Name = "EncounterTimelineDamageAlertIcons", Type = "EncounterEventIconmask", Value = DpsRole },
-				{ Name = "EncounterTimelineDeadlyIcons", Type = "EncounterEventIconmask", Value = DeadlyEffect },
+				{ Name = "EncounterTimelineTankAlertIcons", Type = "EncounterEventIconmask", Value = "TankRole" },
+				{ Name = "EncounterTimelineHealerAlertIcons", Type = "EncounterEventIconmask", Value = "HealerRole" },
+				{ Name = "EncounterTimelineDamageAlertIcons", Type = "EncounterEventIconmask", Value = "DpsRole" },
+				{ Name = "EncounterTimelineDeadlyIcons", Type = "EncounterEventIconmask", Value = "DeadlyEffect" },
 				{ Name = "EncounterTimelineDispelIcons", Type = "EncounterEventIconmask", Value = 124 },
-				{ Name = "EncounterTimelineEnrageIcons", Type = "EncounterEventIconmask", Value = EnrageEffect },
+				{ Name = "EncounterTimelineEnrageIcons", Type = "EncounterEventIconmask", Value = "EnrageEffect" },
 				{ Name = "EncounterTimelineAllIcons", Type = "EncounterEventIconmask", Value = 1023 },
 				{ Name = "EncounterTimelineRoleIcons", Type = "EncounterEventIconmask", Value = 896 },
 				{ Name = "EncounterTimelineOtherIcons", Type = "EncounterEventIconmask", Value = 127 },

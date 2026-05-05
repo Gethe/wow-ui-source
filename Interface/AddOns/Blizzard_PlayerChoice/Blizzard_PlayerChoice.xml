@@ -154,7 +154,7 @@
 					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-90" y="110"/>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-178" y="110"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="OptionButtonsContainer" inherits="PlayerChoiceBaseOptionButtonsContainer">

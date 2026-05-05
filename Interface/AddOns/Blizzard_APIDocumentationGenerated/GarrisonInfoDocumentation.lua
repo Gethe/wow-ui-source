@@ -1423,7 +1423,7 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "buildingPlotInstanceID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 			},

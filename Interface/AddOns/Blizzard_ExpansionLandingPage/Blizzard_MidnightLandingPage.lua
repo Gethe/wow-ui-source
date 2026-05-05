@@ -12,6 +12,7 @@ local minimapDisplayInfo = {
 	["glowAtlas"] = "midnight-landingbutton-circleglow",
 	["title"] = MIDNIGHT_LANDING_PAGE_TITLE,
 	["description"] = MIDNIGHT_LANDING_PAGE_TOOLTIP,
+	glowOverrides = { size = 32, offsetX = 3, offsetY = 2 },
 };
 
 local unlockEvents = {

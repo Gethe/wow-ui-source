@@ -1,5 +1,5 @@
 ## Title: Blizzard Maw Buffs
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 0
-## RequiredDep: Blizzard_UIFrameManager
+## RequiredDep: Blizzard_UIFrameManager, Blizzard_Colors
 Blizzard_MawBuffs.xml

@@ -14,7 +14,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -30,7 +30,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 		{
@@ -40,7 +40,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -97,7 +97,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "AzeritePowerLevel", Nilable = false },
 			},
@@ -130,7 +130,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -145,7 +145,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -160,7 +160,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 
 			Returns =
@@ -231,7 +231,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -247,7 +247,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -263,7 +263,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 	},
@@ -287,7 +287,7 @@ local AzeriteEmpoweredItem =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Nilable = false },
 			},
 		},
 	},

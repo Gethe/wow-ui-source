@@ -475,8 +475,9 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 	if not C_MajorFactions.ShouldUseJourneyRewardTrack(self.majorFactionData.factionID)  then
 		self.DelveRewardProgressBar:Hide();
 	else
-		local totalMax = threshold * self.majorFactionData.maxLevel;
-		local currentTotal = self.actualLevel * threshold + progress;
+		local progressBarStartLevel = 1; -- The progress bar starts at level 1, so don't include progress below that
+		local totalMax = threshold * (self.majorFactionData.maxLevel - progressBarStartLevel);
+		local currentTotal = (self.actualLevel - progressBarStartLevel) * threshold + progress;
 		self.DelveRewardProgressBar:SetMinMaxValues(0, totalMax);
 		self.DelveRewardProgressBar:SetValue(currentTotal);
 		self.DelveRewardProgressBar:Show();
@@ -574,7 +575,7 @@ function JourneyProgressFrameMixin:SetupRewardTrack()
 		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, -15);
 	else
 		self.RenownTrackFrame:Hide();
-		self.EncounterRewardProgressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo);
+		self.EncounterRewardProgressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo, self.DelveRewardProgressBar);
 		self.EncounterRewardProgressFrame:Show();
 		self.track = self.EncounterRewardProgressFrame;
 		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, 0);

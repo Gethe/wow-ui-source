@@ -12,3 +12,16 @@ end
 function MenuUtil.HideTooltip(owner)
 	MenuUtil.HideTooltipEx(owner, GetAppropriateTooltip());
 end
+
+function C_ClickBindings.MakeModifiers(...)
+	return MakeModifiers();
+end
+
+function C_ClickBindings.GetStringFromModifiers(modifiers)
+	return GetStringFromModifiers(modifiers);
+end
+
+function C_Spell.GetMawPowerBorderAtlasBySpellID(spellID)
+	local _rarityID, rarityAtlas = C_Spell.GetMawPowerRarityInfoBySpellID(spellID);
+	return rarityAtlas;
+end

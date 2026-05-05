@@ -643,8 +643,12 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
 
-	local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
-	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
+	if self.forceSteppersHidden then
+		self.Control:HideSteppers();
+	else
+		local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
+		self.Control:SetSteppersShown(hasAnyRadioDescriptions);
+	end
 
 	if initializer.getSelectionTextFunc then
 		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);

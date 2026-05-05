@@ -386,14 +386,14 @@ local Map =
 			Arguments =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Nilable = false },
 				{ Name = "overrideUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 			},
 		},
 		{
@@ -447,7 +447,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Nilable = true },
 			},
 		},
 		{
@@ -499,7 +499,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 			},
 		},
 		{
@@ -511,13 +511,13 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Nilable = false },
 			},
 		},
 		{
@@ -681,7 +681,7 @@ local Map =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "linkedUiMapID", Type = "number", Nilable = false },

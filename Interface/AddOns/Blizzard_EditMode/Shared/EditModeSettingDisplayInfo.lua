@@ -1028,6 +1028,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
+		-- Hide Alternate Power
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideAltPower,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_ALT_POWER_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
 		-- Hide Class Info
 		{
 			setting = Enum.EditModePersonalResourceDisplaySetting.HideClassInfo,

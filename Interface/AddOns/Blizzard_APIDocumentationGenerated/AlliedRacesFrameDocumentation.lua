@@ -78,7 +78,7 @@ local AlliedRacesFrame =
 				{ Name = "raceFileString", Type = "cstring", Nilable = false },
 				{ Name = "crestAtlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "modelBackgroundAtlas", Type = "textureAtlas", Nilable = false },
-				{ Name = "bannerColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "bannerColor", Type = "colorRGB", Nilable = false },
 			},
 		},
 		{

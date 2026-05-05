@@ -45,7 +45,7 @@ local Sound =
 			Arguments =
 			{
 				{ Name = "soundType", Type = "ItemSoundType", Nilable = false },
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
 			},
 		},
 		{

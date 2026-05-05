@@ -31,7 +31,7 @@ local WorldSafeLocsUIInternal =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "continent", Type = "number", Nilable = false },
-				{ Name = "loc", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "loc", Type = "vector3", Nilable = false },
 				{ Name = "facing", Type = "number", Nilable = false },
 			},
 		},

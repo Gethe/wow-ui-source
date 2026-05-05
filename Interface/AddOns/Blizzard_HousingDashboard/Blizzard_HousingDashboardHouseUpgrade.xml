@@ -184,7 +184,8 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.OwnerText" relativePoint="BOTTOMLEFT" x="-10" y="-4"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="AddressText" inherits="GameFontHighlightLarge">
+				<FontString parentKey="AddressText" inherits="GameFontHighlightLarge" wordwrap="true" justifyH="LEFT">
+					<Size x="270"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOMLEFT" x="10" y="-4"/>
 					</Anchors>

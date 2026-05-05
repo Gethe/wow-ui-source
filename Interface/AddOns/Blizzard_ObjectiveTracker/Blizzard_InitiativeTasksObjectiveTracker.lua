@@ -1,6 +1,6 @@
 local settings = {
 	headerText = TRACKER_HEADER_INITIATIVE_TASKS,
-	events = { "INITIATIVE_TASKS_TRACKED_UPDATED", "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" },
+	events = { "INITIATIVE_TASKS_TRACKED_UPDATED", "INITIATIVE_TASKS_TRACKED_LIST_CHANGED", "NEIGHBORHOOD_INITIATIVE_UPDATED", "PLAYER_ENTERING_WORLD" },
 	blockTemplate = "ObjectiveTrackerAnimBlockTemplate",
 	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
 };
@@ -11,8 +11,21 @@ local settings = {
 
 InitiativeTasksObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings);
 
+function InitiativeTasksObjectiveTrackerMixin:RequestInitiativeInfoIfTracking()
+	local trackedTasks = C_NeighborhoodInitiative.GetTrackedInitiativeTasks();
+	if #trackedTasks.trackedIDs > 0 then
+		C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
+	end
+end
+
+function InitiativeTasksObjectiveTrackerMixin:InitModule()
+	self:RequestInitiativeInfoIfTracking();
+end
+
 function InitiativeTasksObjectiveTrackerMixin:OnEvent(event, ...)
-	if event == "INITIATIVE_TASKS_TRACKED_UPDATED" or event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" then
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:RequestInitiativeInfoIfTracking();
+	elseif event == "INITIATIVE_TASKS_TRACKED_UPDATED" or event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" or event == "NEIGHBORHOOD_INITIATIVE_UPDATED" then
 		self:MarkDirty();
 	end
 end

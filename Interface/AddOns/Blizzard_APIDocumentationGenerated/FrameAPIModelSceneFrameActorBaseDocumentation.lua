@@ -24,8 +24,8 @@ local FrameAPIModelSceneFrameActorBase =
 
 			Returns =
 			{
-				{ Name = "boxBottom", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
-				{ Name = "boxTop", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "boxBottom", Type = "vector3", Nilable = false },
+				{ Name = "boxTop", Type = "vector3", Nilable = false },
 			},
 		},
 		{
@@ -103,8 +103,8 @@ local FrameAPIModelSceneFrameActorBase =
 
 			Returns =
 			{
-				{ Name = "boxBottom", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
-				{ Name = "boxTop", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "boxBottom", Type = "vector3", Nilable = false },
+				{ Name = "boxTop", Type = "vector3", Nilable = false },
 			},
 		},
 		{
