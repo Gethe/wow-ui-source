@@ -218,7 +218,7 @@ function MultiCastActionBarFrame_OnLoad(self)
 
 	self.numActiveSlots = 0;
 	self:OnSystemLoad();
-	EventRegistry:RegisterCallback("MainActionBarMixin.UpdateEndCaps", self.OnUpdateEndCaps, self);
+	EventRegistry:RegisterCallback("ActionBarController.MainActionBarStateOverridden", self.MainActionBarStateOverridden, self);
 end
 
 function MultiCastActionBarFrame_OnEvent(self, event, ...)
@@ -319,17 +319,21 @@ end
 
 TotemActionBarMixin = { }
 
+function TotemActionBarMixin:OnLoad()
+	self.inMainActionBarState = true;  -- We expect ValidateActionBarTransition() in ActionBarController to get called on startup that might change this
+end
+
 function TotemActionBarMixin:SetIsInEditMode(isInEditMode)
 	self.isInEditMode = isInEditMode;
 	self:UpdateShownState();
 end
 
 function TotemActionBarMixin:UpdateShownState()
-	self:SetShown((self.isInEditMode or self.numActiveSlots > 0) and self.mainBarIsShown);
+	self:SetShown((self.isInEditMode or self.numActiveSlots > 0) and self.inMainActionBarState);
 end
 
-function TotemActionBarMixin:OnUpdateEndCaps(show)
-	self.mainBarIsShown = show;
+function TotemActionBarMixin:MainActionBarStateOverridden(overridden)
+	self.inMainActionBarState = not overridden;
 	self:UpdateShownState();
 end
 

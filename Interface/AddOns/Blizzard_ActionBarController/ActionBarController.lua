@@ -218,6 +218,8 @@ function ValidateActionBarTransition()
 			MicroMenu:ResetMicroMenuPosition();
 			BeginActionBarTransition(OverrideActionBar, nil);
 		end
+
+		EventRegistry:TriggerEvent("ActionBarController.MainActionBarStateOverridden", false);
 	elseif CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_OVERRIDE then
 		MainActionBar:Hide();
 		StanceBar:Hide();
@@ -225,6 +227,8 @@ function ValidateActionBarTransition()
 		if not OverrideActionBar:IsShown() then
 			BeginActionBarTransition(OverrideActionBar, 1);
 		end
+
+		EventRegistry:TriggerEvent("ActionBarController.MainActionBarStateOverridden", true);
 	end
 
 	MultiActionBar_Update();

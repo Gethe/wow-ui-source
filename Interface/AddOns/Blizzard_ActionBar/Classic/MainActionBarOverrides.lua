@@ -21,7 +21,6 @@ function MainActionBarMixin:UpdateEndCaps(forceHide)
 	if (forceHide) then
 		MainMenuBar:SetShown(false);
 		self.EndCaps:SetShown(false);
-		EventRegistry:TriggerEvent("MainActionBarMixin.UpdateEndCaps", false);
 	else
 		-- In Classic, if the MainActionBar is in the default position, size, etc.
 		--   then we use the MainMenuBar (the large bar at the bottom) as our "end caps".
@@ -30,7 +29,6 @@ function MainActionBarMixin:UpdateEndCaps(forceHide)
 
 		MainMenuBar:SetShown(useMainMenuBarAsEndCaps);
 		self.EndCaps:SetShown(not useMainMenuBarAsEndCaps);
-		EventRegistry:TriggerEvent("MainActionBarMixin.UpdateEndCaps", useMainMenuBarAsEndCaps);
 	end
 
 	-- Positioning
