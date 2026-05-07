@@ -817,7 +817,7 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	if (type(index)== "number") then
+	if (type(questIndex) == "number") then
 		local questID = select(8, GetQuestLogTitle(questIndex));
 		return questID;
 	end
