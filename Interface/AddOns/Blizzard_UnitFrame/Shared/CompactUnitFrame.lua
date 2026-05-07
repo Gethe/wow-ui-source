@@ -273,12 +273,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 
 		frame:UpdatePrivateAuras();
 
-		local clickArgs =
-		{
-			"AnyDown",
-			"RightButtonUp",
-		};
-		SecureUnitButton_OnLoad(frame, unit, CompactUnitFrame_OpenMenu, clickArgs);
+		SecureUnitButton_OnLoad(frame, unit, CompactUnitFrame_OpenMenu);
 		-- Arena frames want to set focus when right clicked instead of opening the unit dropdown menu
 		if CompactUnitFrame_IsPvpFrame(frame) then
 			frame:SetAttribute("*type2", "focus");
@@ -702,11 +697,6 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 		else
 			frame.selectionHighlight:SetVertexColor(1, 1, 1);
 		end
-	end
-
-	-- Needed until Nameplates can be fully decoupled from CompactUnitFrame.
-	if frame.UpdateIsDead then
-		frame:UpdateIsDead();
 	end
 
 	if frame.background then

@@ -145,21 +145,6 @@ function InterfaceOverrides.AdjustNameplateSettings(category, layout)
 		initializer:SetParentInitializer(friendUnitInitializer);
 	end);
 
-	-- Nameplate Motion Type
-	do
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			for index = 1, C_NamePlate.GetNumNamePlateMotionTypes() do
-				local label = _G["UNIT_NAMEPLATES_TYPE_"..index];
-				local tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..index];
-				container:Add(index-1, label, tooltip);
-			end
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
-	end
-
 	if C_CVar.GetCVar("ShowNamePlateLoseAggroFlash") then
 		-- Flash on Agro Loss
 		Settings.SetupCVarCheckbox(category, "ShowNamePlateLoseAggroFlash", SHOW_NAMEPLATE_LOSE_AGGRO_FLASH, OPTION_TOOLTIP_SHOW_NAMEPLATE_LOSE_AGGRO_FLASH);

@@ -36,6 +36,29 @@ local Input =
 			},
 		},
 		{
+			Name = "GetStringFromModifiers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "modifiers", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "modifierString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "MakeModifiers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "modifiers", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCursorPosition",
 			Type = "Function",
 			RequiresLimitedInput = true,

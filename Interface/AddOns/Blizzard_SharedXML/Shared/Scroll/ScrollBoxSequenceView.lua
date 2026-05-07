@@ -18,7 +18,7 @@ function ScrollBoxListSequenceViewMixin:Layout(scrollBox)
 	end
 
 	local scrollTarget = self:GetScrollTarget();
-	local frameLevelCounter = ScrollBoxViewUtil.CreateFrameLevelCounter(self:GetFrameLevelPolicy(), 
+	local frameLevelCounter = self:GetFrameLevelCounter(
 		scrollTarget:GetFrameLevel(), frameCount);
 	
 	local visibleWidth = self:GetVisibleWidth(scrollBox);
@@ -166,6 +166,14 @@ function ScrollBoxListSequenceViewMixin:CalculateDataIndices(scrollBox)
 
 		dataIndexEnd = nextDataIndex;
 		nextDataIndex = nextDataIndex + 1;
+	end
+
+	if dataIndexBegin == nil then
+		dataIndexBegin = math.min(1, size);
+	end
+
+	if dataIndexEnd == nil then
+		dataIndexEnd = dataIndexBegin;
 	end
 
 	return ScrollBoxViewUtil.CheckDataIndicesReturn(dataIndexBegin, dataIndexEnd);

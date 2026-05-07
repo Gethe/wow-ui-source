@@ -162,6 +162,21 @@ local CursorConst =
 				{ Name = "Nameplate", Type = "WorldCursorAnchorType", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "WoWClientCursorSize",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Standard", Type = "WoWClientCursorSize", EnumValue = 0 },
+				{ Name = "Medium", Type = "WoWClientCursorSize", EnumValue = 1 },
+				{ Name = "Large", Type = "WoWClientCursorSize", EnumValue = 2 },
+				{ Name = "ExtraLarge", Type = "WoWClientCursorSize", EnumValue = 3 },
+				{ Name = "Massive", Type = "WoWClientCursorSize", EnumValue = 4 },
+			},
+		},
 	},
 	Predicates =
 	{

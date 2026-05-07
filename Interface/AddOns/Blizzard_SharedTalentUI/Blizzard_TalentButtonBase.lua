@@ -232,11 +232,12 @@ end
 function TalentButtonBaseMixin:AddTooltipCost(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	-- Only show cost if we can refund or increase the rank.
-	if self:CanRefundRank() or not self:IsMaxed() then
-		local traitCurrenciesCost = self:GetTraitCurrenciesCost();
-		self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
+	-- Only show cost if we can increase the rank.
+	if self:IsMaxed() then
+		return;
 	end
+	local traitCurrenciesCost = self:GetTraitCurrenciesCost();
+	self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
 end
 
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)

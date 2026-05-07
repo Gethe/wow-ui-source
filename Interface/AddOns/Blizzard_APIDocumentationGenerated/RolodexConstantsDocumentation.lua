@@ -3,20 +3,6 @@ local RolodexConstants =
 	Tables =
 	{
 		{
-			Name = "RolodexContextIDType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "None", Type = "RolodexContextIDType", EnumValue = 0 },
-				{ Name = "ItemID", Type = "RolodexContextIDType", EnumValue = 1 },
-				{ Name = "AreaID", Type = "RolodexContextIDType", EnumValue = 2 },
-				{ Name = "MapID", Type = "RolodexContextIDType", EnumValue = 3 },
-			},
-		},
-		{
 			Name = "RolodexContextLevelType",
 			Type = "Enumeration",
 			NumValues = 4,

@@ -3,9 +3,6 @@
 	<Script file="Blizzard_Transmog.lua"/>
 
 	<Frame name="TransmogFrame" mixin="TransmogFrameMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
-		<KeyValues>
-			<KeyValue key="collapsedWidth" value="1308" type="number"/>
-		</KeyValues>
 		<Size x="1618" y="883"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-41"/>

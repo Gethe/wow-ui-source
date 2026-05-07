@@ -689,9 +689,9 @@ local ItemConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = Bearclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = Catclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = Obsolete3 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = "Bearclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = "Catclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = "Obsolete3" },
 			},
 		},
 		{

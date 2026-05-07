@@ -138,7 +138,6 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
-	self:UpdateIsDead();
 	self:UpdateIsSimplified();
 	self:UpdateIsTarget();
 	self:UpdateIsFocus();
@@ -180,7 +179,6 @@ function NamePlateUnitFrameMixin:OnUnitCleared()
 	-- the Update functions are called they're not using a stale cached value.
 	self.isPlayer = nil;
 	self.isFriend = nil;
-	self.isDead = nil;
 	self.isSimplified = nil;
 	self.isFocus = nil;
 	self.isTarget = nil;
@@ -314,29 +312,6 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
-end
-
-function NamePlateUnitFrameMixin:IsDead()
-	return self.isDead == true;
-end
-
-function NamePlateUnitFrameMixin:UpdateIsDead()
-	local isDead = false;
-
-	-- Allow special cases (e.g. the Options Preview Nameplate) to control whether the nameplate is displaying for a dead unit.
-	if self.explicitIsDead ~= nil then
-		isDead = self.explicitIsDead;
-	elseif self.unit ~= nil then
-		isDead = UnitIsDead(self.unit);
-	end
-
-	if self.isDead == isDead then
-		return;
-	end
-
-	self.isDead = isDead;
-
-	self.HealthBarsContainer.healthBar:SetIsDead(self.isDead);
 end
 
 function NamePlateUnitFrameMixin:IsMinion()
@@ -790,13 +765,11 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 	self.explicitIsMinusMob = explicitValues.isMinusMob;
 	self.explicitThreatSituation = explicitValues.threatSituation;
 	self.explicitAggroFlash = explicitValues.aggroFlash;
-	self.explicitIsDead = explicitValues.isDead;
 
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsSimplified();
 	self:UpdateNameOverride();
-	self:UpdateIsDead();
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);

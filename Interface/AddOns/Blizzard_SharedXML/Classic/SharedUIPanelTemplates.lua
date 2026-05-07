@@ -1020,6 +1020,12 @@ PanelDragBarMixin = {};
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self:SetTarget(self:GetParent());
+	self.suspendDrag = false;
+end
+
+
+function PanelDragBarMixin:SetDragSuspended(suspendDrag)
+	self.suspendDrag = suspendDrag;
 end
 
 function PanelDragBarMixin:Init(target)
@@ -1031,6 +1037,10 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStart = true;
@@ -1052,6 +1062,10 @@ function PanelDragBarMixin:OnDragStart()
 end
 
 function PanelDragBarMixin:OnDragStop()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStop = true;
@@ -1226,6 +1240,14 @@ end
 
 function PanelResizeButtonMixin:SetMinHeight(minHeight)
 	self.minHeight = minHeight;
+end
+
+function PanelResizeButtonMixin:SetMaxWidth(maxWidth)
+	self.maxWidth = maxWidth;
+end
+
+function PanelResizeButtonMixin:SetMaxHeight(maxHeight)
+	self.maxHeight = maxHeight;
 end
 
 function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)

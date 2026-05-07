@@ -330,9 +330,9 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 
 -- These are purposely different for Classic Era and TBC
 characterCopyRegions = {
-	[41] = NORTH_AMERICA,
-	[42] = KOREA,
-	[43] = EUROPE,
-	[44] = TAIWAN,
-	[45] = CHINA,
+	[191] = NORTH_AMERICA,
+	[192] = KOREA,
+	[193] = EUROPE,
+	[194] = TAIWAN,
+	[195] = CHINA,
 };

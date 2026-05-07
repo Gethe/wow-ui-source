@@ -234,6 +234,15 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "IsDraggingStairwell",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDraggingStairwell", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "MoveDraggedRoom",
 			Type = "Function",
 			Documentation = { "Attempt to move the room currently being dragged to a specific connection point on a specific other room" },

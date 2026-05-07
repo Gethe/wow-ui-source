@@ -132,6 +132,15 @@ local BattleNet =
 			HasRestrictions = true,
 		},
 		{
+			Name = "InviteFriend",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SendGameData",
 			Type = "Function",
 

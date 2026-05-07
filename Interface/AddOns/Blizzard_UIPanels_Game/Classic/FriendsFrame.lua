@@ -430,7 +430,7 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 			return;
 		end
 
-		BNInviteFriend(gameAccountID);
+		C_BattleNet.InviteFriend(gameAccountID);
 	elseif ( inviteType == "REQUEST_INVITE" ) then
 		BNRequestInviteFriend(gameAccountID);
 	end
