@@ -269,7 +269,8 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 	if displayInfo.hasUnknownLicense then
 		CatalogShopFrame.PMTImageContainerFrame:Show();
-		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
+		local showWatermarkLogo = true;
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo, showWatermarkLogo);
 	elseif productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
 	elseif productType == CatalogShopConstants.ProductType.Toy then
@@ -334,9 +335,10 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		CatalogShopFrame.PMTImageContainerFrame:Show();
 		CatalogShopFrame.PMTImageContainerFrame:SetupCarouselImagesAndHide(displayInfo);
 	elseif productType == CatalogShopConstants.ProductType.HousingExteriorType then
-	--SetupCarouselImages
+		--SetupCarouselImages
+		local showWatermarkLogo = displayInfo.hasUnknownLicense;
 		CatalogShopFrame.PMTImageContainerFrame:Show();
-		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo, showWatermarkLogo);
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end
