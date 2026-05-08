@@ -49,7 +49,7 @@ function CooldownSyncRelayMixin:GetSupportedTrackedSpells()
 			local racialSpellID = racialEntry;
 			if type(racialSpellID) == "table" then
 				local _, className = UnitClass("player");
-				racialSpellID = racialEntry[className];
+				racialSpellID = racialEntry[className] or racialEntry.default;
 			end
 			if type(racialSpellID) == "number" then
 				local isKnown = C_SpellBook.IsSpellKnown(racialSpellID);
@@ -69,28 +69,53 @@ function CooldownSyncRelayMixin:GetSupportedTrackedSpells()
 	if type(spellList) ~= "table" then
 		return out, specID;
 	end
+
 	local outLookup = {};
+	local overrideOf = {};  -- overrideSpellID -> baseSpellID
+
+	local function removeFromOut(spellID)
+		outLookup[spellID] = nil;
+		for i = #out, 1, -1 do
+			if out[i] == spellID then
+				table.remove(out, i);
+				return;
+			end
+		end
+	end
+
 	for i = 1, #spellList do
 		local spellID = spellList[i];
-		if C_SpellBook.IsSpellKnown(spellID) then
+		if C_SpellBook.IsSpellKnown(spellID) or overrideOf[spellID] then
 			local baseSpellID = C_SpellBook.FindBaseSpellByID(spellID);
 			local isOverride = baseSpellID and baseSpellID ~= spellID;
+
+			-- Base found via FindBaseSpellByID (e.g. Ice Cold -> Ice Block)
 			if isOverride and outLookup[baseSpellID] then
-				outLookup[baseSpellID] = nil;
-				for j = #out, 1, -1 do
-					if out[j] == baseSpellID then
-						table.remove(out, j);
-						break;
-					end
-				end
+				removeFromOut(baseSpellID);
 			end
+
+			-- Base found via forward override map (e.g. Breath of Eons granted via Maneuverability)
+			local inferredBaseSpellID = overrideOf[spellID];
+			if inferredBaseSpellID and outLookup[inferredBaseSpellID] then
+				removeFromOut(inferredBaseSpellID);
+			end
+
 			if not outLookup[spellID] then
 				out[#out + 1] = spellID;
 				outLookup[spellID] = true;
-				if #out >= MAX_COOLDOWNS then
-					break;
+
+				-- Record forward override so we can deduplicate when we hit it later
+				local overrideSpellID = C_SpellBook.FindSpellOverrideByID(spellID);
+				if overrideSpellID and overrideSpellID ~= spellID then
+					overrideOf[overrideSpellID] = spellID;
 				end
 			end
+		end
+	end
+
+	if #out > MAX_COOLDOWNS then
+		for i = #out, MAX_COOLDOWNS + 1, -1 do
+			out[i] = nil;
 		end
 	end
 

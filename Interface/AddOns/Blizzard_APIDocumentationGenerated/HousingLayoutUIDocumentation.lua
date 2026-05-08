@@ -239,6 +239,15 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "IsDraggingStairwell",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDraggingStairwell", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "MoveDraggedRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
