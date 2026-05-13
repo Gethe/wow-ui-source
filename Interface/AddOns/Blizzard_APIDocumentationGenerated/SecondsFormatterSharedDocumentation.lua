@@ -3,16 +3,16 @@ local SecondsFormatterShared =
 	Tables =
 	{
 		{
-			Name = "SecondsFormatterAbbrevation",
+			Name = "SecondsFormatterAbbreviation",
 			Type = "Enumeration",
 			NumValues = 3,
 			MinValue = 0,
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "None", Type = "SecondsFormatterAbbrevation", EnumValue = 0 },
-				{ Name = "Truncate", Type = "SecondsFormatterAbbrevation", EnumValue = 1 },
-				{ Name = "OneLetter", Type = "SecondsFormatterAbbrevation", EnumValue = 2 },
+				{ Name = "None", Type = "SecondsFormatterAbbreviation", EnumValue = 0 },
+				{ Name = "Truncate", Type = "SecondsFormatterAbbreviation", EnumValue = 1 },
+				{ Name = "OneLetter", Type = "SecondsFormatterAbbreviation", EnumValue = 2 },
 			},
 		},
 		{

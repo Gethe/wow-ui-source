@@ -701,8 +701,8 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "translation", Type = "vector3", Nilable = true },
-				{ Name = "rotation", Type = "vector3", Nilable = true },
+				{ Name = "translation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
+				{ Name = "rotation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
 				{ Name = "scale", Type = "number", Nilable = true },
 			},
 		},
@@ -748,12 +748,12 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "cameraPosition", Type = "vector3", Nilable = false },
+				{ Name = "cameraPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "modelPosition", Type = "vector3", Nilable = false },
+				{ Name = "modelPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 		},
 		{

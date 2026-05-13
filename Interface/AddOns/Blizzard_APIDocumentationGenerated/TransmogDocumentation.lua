@@ -91,7 +91,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -232,7 +232,7 @@ local Transmog =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -242,7 +242,7 @@ local Transmog =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 				{ Name = "action", Type = "cstring", Nilable = true },
 			},
 		},

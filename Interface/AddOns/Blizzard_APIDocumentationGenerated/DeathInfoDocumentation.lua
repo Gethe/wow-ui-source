@@ -19,7 +19,7 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -34,7 +34,7 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "vector2", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -195,7 +195,7 @@ local DeathInfo =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
 				{ Name = "graveyardID", Type = "number", Nilable = false },

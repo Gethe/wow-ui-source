@@ -984,7 +984,7 @@ local Spell =
 			Payload =
 			{
 				{ Name = "successful", Type = "bool", Nilable = false },
-				{ Name = "enchantedItem", Type = "ItemLocation", Nilable = true },
+				{ Name = "enchantedItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
 			},
 		},
 		{

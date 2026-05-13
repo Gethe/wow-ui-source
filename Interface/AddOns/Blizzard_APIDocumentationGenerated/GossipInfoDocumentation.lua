@@ -395,7 +395,7 @@ local GossipInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
-				{ Name = "position", Type = "vector2", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "inBattleMap", Type = "bool", Nilable = false },
 			},
 		},

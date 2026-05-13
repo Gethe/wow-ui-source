@@ -120,7 +120,7 @@
 					<Button parentKey="ResizeButton" alpha="0">
 						<Size x="60" y="60"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-1" y="-8"/>
+							<Anchor point="BOTTOMRIGHT" x="9" y="-8"/>
 						</Anchors>
 						<NormalTexture atlas="damagemeters-scalehandle"/>
 						<HighlightTexture atlas="damagemeters-scalehandle-hover"/>

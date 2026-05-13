@@ -25,3 +25,7 @@ function C_Spell.GetMawPowerBorderAtlasBySpellID(spellID)
 	local _rarityID, rarityAtlas = C_Spell.GetMawPowerRarityInfoBySpellID(spellID);
 	return rarityAtlas;
 end
+
+function GetMerchantCurrencies()
+	return unpack(C_MerchantFrame.GetMerchantCurrencies());
+end

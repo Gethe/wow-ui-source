@@ -23,7 +23,7 @@ local ColorOverrides =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -53,7 +53,7 @@ local ColorOverrides =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -74,7 +74,7 @@ local ColorOverrides =
 			Arguments =
 			{
 				{ Name = "overrideType", Type = "ColorOverride", Nilable = false },
-				{ Name = "color", Type = "colorRGBA", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 	},
@@ -107,7 +107,7 @@ local ColorOverrides =
 			Fields =
 			{
 				{ Name = "overrideType", Type = "ColorOverride", Nilable = false },
-				{ Name = "overrideColor", Type = "colorRGB", Nilable = false },
+				{ Name = "overrideColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "overrideColorString", Type = "string", Nilable = false },
 			},
 		},

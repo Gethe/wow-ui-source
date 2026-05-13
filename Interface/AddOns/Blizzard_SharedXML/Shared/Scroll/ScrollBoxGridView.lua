@@ -39,6 +39,16 @@ function ScrollBoxListGridViewMixin:GetIdenticalStrideExtent()
 end
 
 function ScrollBoxListGridViewMixin:SetStrideExtent(extent)
+	if extent ~= nil then
+		if type(extent) ~= "number" then
+			error("SetStrideExtent expected a numeric extent or nil.");
+		end
+
+		if extent <= 0 then
+			error("SetStrideExtent expected extent > 0.");
+		end
+	end
+
 	self.strideExtent = extent;
 end
 

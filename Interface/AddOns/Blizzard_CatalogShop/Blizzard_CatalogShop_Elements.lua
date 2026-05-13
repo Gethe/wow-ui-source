@@ -601,6 +601,7 @@ function PMTImageContainerFrameMixin:SetupCarouselImages(displayInfo)
 	--self.ImageCarousel:SetShown(numURLs > 1);
 end
 
+
 function PMTImageContainerFrameMixin:SetupCarouselImagesAndHide(displayInfo)
 	self.WatermarkLogoTexture:Hide();
 	self:SetupCarouselImages(displayInfo);
@@ -613,8 +614,10 @@ function PMTImageContainerFrameMixin:SetForFailedModelScene(displayInfo)
 	SetMissingLicenseCaptionText(nil);
 end
 
-function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo)
+function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo, showWatermarkLogo)
 	CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
+	self.WatermarkLogoTexture:SetShown(showWatermarkLogo or false);
+
 	self:SetupCarouselImages(displayInfo)
 	-- SetDisplayInfo is used for child products, and they will want the carousel only if they have enough images.
 	local numURLs = #self.carouselImageURLs;

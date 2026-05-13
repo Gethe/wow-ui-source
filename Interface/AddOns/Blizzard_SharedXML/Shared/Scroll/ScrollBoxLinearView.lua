@@ -18,7 +18,7 @@ function ScrollBoxLinearBaseViewMixin:LayoutInternal(layoutFunction)
 
 	local spacing = self:GetSpacing();
 	local scrollTarget = self:GetScrollTarget();
-	local frameLevelCounter = ScrollBoxViewUtil.CreateFrameLevelCounter(self:GetFrameLevelPolicy(), 
+	local frameLevelCounter = self:GetFrameLevelCounter(
 		scrollTarget:GetFrameLevel(), frameCount);
 	
 	local offset = 0;
@@ -42,11 +42,11 @@ end
 
 function ScrollBoxLinearBaseViewMixin:GetLayoutFunction()
 	local elementStretchDisabled = self:IsElementStretchDisabled();
-	local setPoint = self:IsHorizontal() and ScrollBoxViewUtil.SetHorizontalPoint or ScrollBoxViewUtil.SetVerticalPoint;
+	local isHorizontal = self:IsHorizontal();
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local indent = self:GetElementIndent(frame);
-		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
+		return ScrollBoxViewUtil.SetPoint(frame, offset, indent, elementStretchDisabled, scrollTarget, isHorizontal);
 	end
 	return Layout;
 end
@@ -204,9 +204,12 @@ do
 		return true;
 	end
 
-	local function CalculateExtents(view, tbl, size)
+	local function CalculateExtents(view, tbl, size, scrollBox)
 		for dataIndex, elementData in view:EnumerateDataProvider() do
 			local extent = view:CalculateFrameExtent(dataIndex, elementData);
+			if type(extent) ~= "number" then
+				error(string.format("CalculateFrameExtent expected a numeric result at data index %d.", dataIndex));
+			end
 			table.insert(tbl, extent);
 		end
 	
@@ -227,12 +230,12 @@ do
 		if size > 0 then
 			if self.elementExtentCalculator then
 				self.calculatedElementExtents = {};
-				extent = CalculateExtents(self, self.calculatedElementExtents, size);
+				extent = CalculateExtents(self, self.calculatedElementExtents, size, scrollBox);
 			elseif self:HasIdenticalElementExtent() then
 				extent = self:GetExtentTo(scrollBox, size);
 			else
 				self.templateExtents = {};
-				extent = CalculateExtents(self, self.templateExtents, size);
+				extent = CalculateExtents(self, self.templateExtents, size, scrollBox);
 			end
 		end
 	

@@ -21,7 +21,7 @@ local EncounterEvents =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Nilable = true },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{
@@ -112,7 +112,7 @@ local EncounterEvents =
 			{
 				{ Name = "encounterEventID", Type = "number", Nilable = false },
 				{ Name = "trigger", Type = "EncounterEventColorTrigger", Nilable = false },
-				{ Name = "color", Type = "colorRGBA", Nilable = true },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{

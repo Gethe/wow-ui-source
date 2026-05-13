@@ -110,7 +110,9 @@ namespace.TrackedCooldownsBySpec = {
 	},
 	[1473] = { -- Augmentation Evoker
 		404977, -- Time Skip
+		412713, -- Interwoven Threads (Override)
 		403631, -- Breath of Eons
+		442204, -- Breath of Eons (Maneuverability, Override)
 		363916, -- Obsidian Scales
 		372048, -- Oppressing Roar
 		406732, -- Spatial Paradox
@@ -242,7 +244,6 @@ namespace.TrackedCooldownsBySpec = {
 	[259] = { -- Assassination Rogue
 		360194, -- Deathmark
 		31224, -- Cloak of Shadows
-		31230, -- Cheat Death
 		5277, -- Evasion
 		1856, -- Vanish
 		2094, -- Blind
@@ -253,6 +254,7 @@ namespace.TrackedCooldownsBySpec = {
 		31224, -- Cloak of Shadows
 		5277, -- Evasion
 		1856, -- Vanish
+		2094, -- Blind
 	},
 	[261] = { -- Subtlety Rogue
 		121471, -- Shadow Blades
@@ -260,6 +262,7 @@ namespace.TrackedCooldownsBySpec = {
 		31224, -- Cloak of Shadows
 		5277, -- Evasion
 		1856, -- Vanish
+		2094, -- Blind
 	},
 	[262] = { -- Elemental Shaman
 		114050, -- Ascendance
@@ -371,7 +374,10 @@ namespace.RacialCooldowns = {
 
 	-- Neutral Core
 	Pandaren = 107079, -- Quaking Palm
-	Dracthyr = 357214, -- Wing Buffet
+	Dracthyr = {
+		EVOKER = 368970, -- Tail Swipe
+		default = 357214, -- Wing Buffet
+	},
 
 	-- Horde Allied Races
 	Nightborne         = 260364, -- Arcane Pulse

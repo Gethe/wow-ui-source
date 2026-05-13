@@ -268,7 +268,7 @@ local Bank =
 			Arguments =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
-				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =

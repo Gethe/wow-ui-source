@@ -95,7 +95,7 @@ local ColorUtil =
 
 			Arguments =
 			{
-				{ Name = "color", Type = "colorRGB", Nilable = false, Documentation = { "Color to generate a hex color code from." } },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, Documentation = { "Color to generate a hex color code from." } },
 			},
 
 			Returns =
@@ -112,7 +112,7 @@ local ColorUtil =
 			Arguments =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, Documentation = { "Text to be wrapped in color markup." } },
-				{ Name = "color", Type = "colorRGB", Nilable = false, Documentation = { "Color to apply to the text." } },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, Documentation = { "Color to apply to the text." } },
 			},
 
 			Returns =

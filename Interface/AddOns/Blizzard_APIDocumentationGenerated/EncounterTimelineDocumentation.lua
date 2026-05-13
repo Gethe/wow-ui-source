@@ -93,7 +93,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGBA", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

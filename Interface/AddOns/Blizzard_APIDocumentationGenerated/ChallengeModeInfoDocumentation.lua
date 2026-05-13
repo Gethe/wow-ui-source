@@ -14,7 +14,7 @@ local ChallengeModeInfo =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -101,7 +101,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "scoreColor", Type = "colorRGB", Nilable = false },
+				{ Name = "scoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -127,7 +127,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "levelScore", Type = "colorRGB", Nilable = false },
+				{ Name = "levelScore", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -232,7 +232,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Nilable = false },
+				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -248,7 +248,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonScoreColor", Type = "colorRGB", Nilable = false },
+				{ Name = "specificDungeonScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

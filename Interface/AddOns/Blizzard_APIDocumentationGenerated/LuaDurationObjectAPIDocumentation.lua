@@ -331,6 +331,22 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "HasExpired",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true once the duration has reached its end time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "hasExpired", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSecretValues",
 			Type = "Function",
 			ReturnsNeverSecret = true,
@@ -343,6 +359,38 @@ local LuaDurationObjectAPI =
 			Returns =
 			{
 				{ Name = "hasSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasStarted",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true once the duration has reached its start time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "hasStarted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true while the duration is at or after its start time and before its end time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

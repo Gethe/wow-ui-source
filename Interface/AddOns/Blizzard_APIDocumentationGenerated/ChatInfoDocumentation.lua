@@ -232,7 +232,7 @@ local ChatInfo =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Nilable = true },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{

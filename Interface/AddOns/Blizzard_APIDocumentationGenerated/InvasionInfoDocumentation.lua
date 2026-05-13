@@ -78,7 +78,7 @@ local InvasionInfo =
 			{
 				{ Name = "invasionID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "position", Type = "vector2", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = true },
 			},

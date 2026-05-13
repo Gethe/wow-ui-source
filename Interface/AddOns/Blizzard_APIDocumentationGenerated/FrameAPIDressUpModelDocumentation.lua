@@ -40,7 +40,7 @@ local FrameAPIDressUpModel =
 
 			Returns =
 			{
-				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Nilable = false },
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
 			},
 		},
 		{
@@ -168,7 +168,7 @@ local FrameAPIDressUpModel =
 
 			Arguments =
 			{
-				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Nilable = false },
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
 				{ Name = "inventorySlot", Type = "luaIndex", Nilable = true },
 				{ Name = "ignoreChildItems", Type = "bool", Nilable = false, Default = false },
 			},

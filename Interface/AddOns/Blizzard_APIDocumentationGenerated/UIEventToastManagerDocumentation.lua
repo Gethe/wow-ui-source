@@ -89,7 +89,7 @@ local UIEventToastManager =
 				{ Name = "hideDefaultAtlas", Type = "bool", Nilable = true },
 				{ Name = "showSoundKitID", Type = "number", Nilable = true },
 				{ Name = "hideSoundKitID", Type = "number", Nilable = true },
-				{ Name = "colorTint", Type = "colorRGB", Nilable = true },
+				{ Name = "colorTint", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "flags", Type = "number", Nilable = false },
 			},
 		},

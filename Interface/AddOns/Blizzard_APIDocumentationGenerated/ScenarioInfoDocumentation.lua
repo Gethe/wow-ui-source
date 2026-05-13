@@ -285,7 +285,7 @@ local ScenarioInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "themeColor", Type = "colorRGB", Nilable = false },
+				{ Name = "themeColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

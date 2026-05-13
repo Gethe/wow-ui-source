@@ -62,7 +62,7 @@ local LegendaryCraftingTypes =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "baseItem", Type = "ItemLocation", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
 			},

@@ -73,7 +73,7 @@ local LuaCurveObjectAPI =
 
 			Returns =
 			{
-				{ Name = "point", Type = "vector2", Nilable = true },
+				{ Name = "point", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{

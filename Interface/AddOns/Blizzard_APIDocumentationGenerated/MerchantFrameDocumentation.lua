@@ -40,6 +40,16 @@ local MerchantFrame =
 			},
 		},
 		{
+			Name = "GetMerchantCurrencies",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "currencies", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumJunkItems",
 			Type = "Function",
 

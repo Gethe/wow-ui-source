@@ -875,7 +875,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "pos", Type = "vector3", Nilable = false },
+				{ Name = "pos", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 		},
 		{
@@ -890,7 +890,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -905,7 +905,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

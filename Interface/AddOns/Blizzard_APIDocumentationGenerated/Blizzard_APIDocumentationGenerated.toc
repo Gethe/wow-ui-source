@@ -92,6 +92,7 @@ DeathRecapDocumentation.lua
 DebugToggleDocumentation.lua
 DelvesUIDocumentation.lua
 DuelInfoDocumentation.lua
+DurationTextBindingObjectAPIDocumentation.lua
 DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -443,6 +444,7 @@ DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
+DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_MainlineDocumentation.lua

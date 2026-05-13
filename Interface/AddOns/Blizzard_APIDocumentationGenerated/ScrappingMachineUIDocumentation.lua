@@ -34,7 +34,7 @@ local ScrappingMachineUI =
 
 			Returns =
 			{
-				{ Name = "itemLoc", Type = "ItemLocation", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{

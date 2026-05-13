@@ -705,7 +705,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "ItemLocation", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -916,7 +916,7 @@ local ArtifactUI =
 				{ Name = "failureDescription", Type = "string", Nilable = true },
 				{ Name = "uiCameraID", Type = "number", Nilable = false },
 				{ Name = "altHandCameraID", Type = "number", Nilable = true },
-				{ Name = "swatchColor", Type = "colorRGB", Nilable = false },
+				{ Name = "swatchColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "modelOpacity", Type = "number", Nilable = false },
 				{ Name = "modelSaturation", Type = "number", Nilable = false },
 				{ Name = "obtainable", Type = "bool", Nilable = false },
@@ -940,9 +940,9 @@ local ArtifactUI =
 			{
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "titleName", Type = "string", Nilable = false },
-				{ Name = "titleColor", Type = "colorRGB", Nilable = false },
-				{ Name = "barConnectedColor", Type = "colorRGB", Nilable = false },
-				{ Name = "barDisconnectedColor", Type = "colorRGB", Nilable = false },
+				{ Name = "titleColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "barConnectedColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "barDisconnectedColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
 			},
@@ -993,8 +993,8 @@ local ArtifactUI =
 				{ Name = "isGoldMedal", Type = "bool", Nilable = false },
 				{ Name = "isFinal", Type = "bool", Nilable = false },
 				{ Name = "tier", Type = "luaIndex", Nilable = false },
-				{ Name = "position", Type = "vector2", Nilable = false },
-				{ Name = "offset", Type = "vector2", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "offset", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 				{ Name = "linearIndex", Type = "luaIndex", Nilable = true },
 			},
 		},

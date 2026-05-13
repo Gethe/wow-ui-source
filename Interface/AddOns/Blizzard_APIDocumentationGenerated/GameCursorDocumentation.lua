@@ -139,7 +139,7 @@ local GameCursor =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "ItemLocation", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
