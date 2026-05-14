@@ -36,13 +36,7 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( not C_SpecializationInfo.CanPlayerUseTalentSpecUI() ) then
-			TalentMicroButton:Hide();
-			AchievementMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
-		else
-			TalentMicroButton:Show();
-			AchievementMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -3, 0);
-		end
+		TalentMicroButton:SetShown(C_SpecializationInfo.CanPlayerUseTalentSpecUI())
 		TalentMicroButton:SetButtonState("NORMAL");
 	end
 
