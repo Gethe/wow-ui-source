@@ -5,14 +5,15 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterCombineSessionType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "None", Type = "DamageMeterCombineSessionType", EnumValue = 0 },
 				{ Name = "ChallengeMode", Type = "DamageMeterCombineSessionType", EnumValue = 1 },
 				{ Name = "Arena", Type = "DamageMeterCombineSessionType", EnumValue = 2 },
+				{ Name = "ArenaMultiRound", Type = "DamageMeterCombineSessionType", EnumValue = 3 },
 			},
 		},
 		{

@@ -3950,6 +3950,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_ARENA_COOLDOWNS_UPDATE",
 			SynchronousEvent = true,
+			UniqueEvent = true,
 			Documentation = { "Only signaled when the active player is a commentator or spectator." },
 			Payload =
 			{

@@ -1763,7 +1763,7 @@ local PvpInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false, NeverSecret = true },
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "killingBlows", Type = "number", Nilable = false },
 				{ Name = "honorableKills", Type = "number", Nilable = false },

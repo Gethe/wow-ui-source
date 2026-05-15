@@ -236,6 +236,7 @@ local HouseEditorLayoutFloorSelectShownEvents =
 {
 	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
 	"HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+	"HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
 };
 
 HouseEditorLayoutFloorSelectMixin = {};
@@ -263,7 +264,7 @@ function HouseEditorLayoutFloorSelectMixin:OnHide()
 end
 
 function HouseEditorLayoutFloorSelectMixin:OnEvent(event, ...)
-	if event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" or event == "HOUSING_LAYOUT_NUM_FLOORS_CHANGED" then
+	if event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" or event == "HOUSING_LAYOUT_NUM_FLOORS_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
 		self:UpdateFloorInfo();
 	end
 end
@@ -291,8 +292,9 @@ end
 
 function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	self.currentFloor = C_HousingLayout.GetViewedFloor();
-	self.UpButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
-	self.DownButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));
+	local isDraggingStairwell = C_HousingLayout.IsDraggingStairwell();
+	self.UpButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
+	self.DownButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));
 
 	local dataProvider = CreateDataProvider();
 
