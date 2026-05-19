@@ -26,6 +26,10 @@ local function ShouldShowRunesOfPowerTutorial()
 	return not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RunesOfPower);
 end
 
+local function MarkRunesOfPowerTutorialDone()
+	SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RunesOfPower, true);
+end
+
 function MidnightLandingOverlayMixin.IsOverlayUnlocked()
 	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_MIDNIGHT);
 end
@@ -103,6 +107,9 @@ function RunesOfPowerMixin:OnShow()
 				break;
 			end
 		end
+		if not HelpTip:IsShowing(self, RUNES_OF_POWER_HELPTIP) then
+			MarkRunesOfPowerTutorialDone();
+		end
 	end
 end
 
@@ -119,6 +126,6 @@ function RunesOfPowerMixin:ShowPurchaseVisuals(...)
 
 	if ShouldShowRunesOfPowerTutorial() then
 		HelpTip:Hide(self, RUNES_OF_POWER_HELPTIP);
-		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RunesOfPower, true);
+		MarkRunesOfPowerTutorialDone();
 	end
 end

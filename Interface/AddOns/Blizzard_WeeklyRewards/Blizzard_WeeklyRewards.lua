@@ -61,7 +61,7 @@ function WeeklyRewardsMixin:OnLoad()
 		area = "center",
 		pushable = 0,
 		allowOtherPanels = 1,
-		checkFit = 1,		
+		checkFit = 1,
 	};
 	RegisterUIPanel(WeeklyRewardsFrame, attributes);
 end
@@ -81,7 +81,7 @@ function WeeklyRewardsMixin:OnHide()
 	self.selectedActivity = nil;
 	C_WeeklyRewards.CloseInteraction();
 	StaticPopup_Hide("CONFIRM_SELECT_WEEKLY_REWARD");
-	WeeklyRewardExpirationWarningDialog:Hide(); 
+	WeeklyRewardExpirationWarningDialog:Hide();
 end
 
 function WeeklyRewardsMixin:OnEvent(event)
@@ -309,7 +309,7 @@ function WeeklyRewardsMixin:CheckForTutorials()
 end
 
 function WeeklyRewardsMixin:TryDisplayingClassSetTutorial()
-	local activities = C_WeeklyRewards.GetActivities();	
+	local activities = C_WeeklyRewards.GetActivities();
 	local continuableContainer = ContinuableContainer:Create();
 
 	-- Load relevant items first
@@ -432,12 +432,12 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 			self:ClearActiveEffect();
 			self:SetActiveEffect(GENERATED_REWARD_MODEL_SCENE_EFFECT_DECAY);
 		else
-			if not self.activeEffectInfo or self.activeEffectInfo.effectID ~= GENERATED_REWARD_MODEL_SCENE_EFFECT.effectID then 
+			if not self.activeEffectInfo or self.activeEffectInfo.effectID ~= GENERATED_REWARD_MODEL_SCENE_EFFECT.effectID then
 				self.UncollectedGlow:Show();
 				self.UncollectedGlow.FadeAnim:Play();
 				self:ClearActiveEffect();
 				self:SetActiveEffect(GENERATED_REWARD_MODEL_SCENE_EFFECT);
-			end 
+			end
 			self.ItemGlow:Hide();
 		end
 
@@ -563,7 +563,7 @@ function WeeklyRewardsActivityMixin:OnEnter()
 			local subTitle = nil;
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, subTitle, AddMythicProgressLines);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.World then
-			
+
 			local description = GREAT_VAULT_REWARDS_WORLD_INCOMPLETE;
 			if self.info.index == 2 then
 				description = GREAT_VAULT_REWARDS_WORLD_COMPLETED_FIRST;
@@ -573,7 +573,7 @@ function WeeklyRewardsActivityMixin:OnEnter()
 
 			local formatRemainingProgress = true;
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress)
-			
+
 			if self.info.progress > 0 then
 				self:AddWorldRunsToTooltip();
 			end
@@ -716,7 +716,7 @@ function WeeklyRewardsActivityMixin:AddRaidCompletionInfoToGameTooltip()
 			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
 			if instanceID ~= lastInstanceID then
 				local instanceName = EJ_GetInstanceInfo(instanceID);
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);	
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_ENCOUNTER_LIST, instanceName));
 				lastInstanceID = instanceID;
 			end
@@ -751,7 +751,7 @@ end
 
 function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel)
 	local isHeroicLevel = self:IsCompletedAtHeroicLevel();
-	if isHeroicLevel then		
+	if isHeroicLevel then
 		GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_HEROIC, itemLevel));
 	else
 		GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, self.info.level));
@@ -774,13 +774,13 @@ end
 
 function WeeklyRewardsActivityMixin:HandlePreviewWorldRewardTooltip(itemLevel, upgradeItemLevel, nextLevel)
 	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_WORLD, itemLevel, self.info.level));
-	
+
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	if upgradeItemLevel then
 		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 		GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_WORLD, nextLevel));
 	end
-	
+
 	self:AddWorldRunsToTooltip();
 end
 
@@ -830,11 +830,11 @@ function WeeklyRewardsActivityMixin:AddWorldRunsToTooltip()
 	end
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
-	
+	GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_WORLD_TOP_ACTIVITIES, self.info.threshold));
+
 	-- Comes sorted in descending difficulty
 	local combineSharedDifficulty = true;
-	local activityTierProgress = C_WeeklyRewards.GetSortedProgressForActivity(Enum.WeeklyRewardChestThresholdType.World, combineSharedDifficulty);	
+	local activityTierProgress = C_WeeklyRewards.GetSortedProgressForActivity(Enum.WeeklyRewardChestThresholdType.World, combineSharedDifficulty);
 
 	-- For Delves, difficulty is the tier and numPoints is the number of completions.
 	-- We loop on number of completions and print a line for each, until we hit the desiredRuns or have no remaining progress.
@@ -1151,12 +1151,12 @@ end
 GreatVaultRetirementWarningFrameMixin = { };
 
 function GreatVaultRetirementWarningFrameMixin:OnShow()
-	local title = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT]; 
-	if(title) then 
+	local title = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
+	if(title) then
 		local text = C_WeeklyRewards.ShouldShowFinalRetirementMessage() and GREAT_VAULT_RETIRE_WARNING_FINAL_WEEK:format(title) or GREAT_VAULT_RETIRE_WARNING:format(title);
-		self.Description:SetText(text); 
+		self.Description:SetText(text);
 		local leftPaddingAndIcon = 66;
 		self:SetWidth(self.Description:GetWidth() + leftPaddingAndIcon);
-	end 
-end 
+	end
+end
 

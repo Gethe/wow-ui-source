@@ -165,7 +165,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArtworkBorder" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" font="SystemFont_Med3" justifyV="TOP" justifyH="LEFT" maxLines="1">
+				<FontString parentKey="Text" font="SystemFont_Shadow_Med3" justifyV="TOP" justifyH="LEFT" maxLines="1">
 					<Size y="20"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="22" y="12"/>

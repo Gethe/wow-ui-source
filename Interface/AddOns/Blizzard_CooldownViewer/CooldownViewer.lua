@@ -203,6 +203,9 @@ end
 
 function CooldownViewerItemMixin:OnUnitAuraUpdatedEvent()
 	self:RefreshData();
+
+	-- Because active state may not have changed it's still required to check for pandemic time updates.
+	self:CheckSetPandemicAlertTriggerTime();
 end
 
 function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
@@ -505,7 +508,7 @@ function CooldownViewerItemMixin:TriggerAvailableAlert()
 	self.availableAlertTriggerTime = nil;
 end
 
-function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeNow)
+function CooldownViewerItemMixin:CheckSetPandemicAlertTriggerTime(auraData, timeNow)
 	auraData = auraData or self:GetAuraDataCached();
 	timeNow = timeNow or GetTime();
 	local isActive = auraData and (auraData.expirationTime > timeNow);
@@ -520,7 +523,7 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeN
 			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverToNewCast, auraData.expirationTime);
 		end
 
-		-- LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTiggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
+		-- LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTriggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
 
 		return allowPandemicAlert;
 	end
@@ -853,7 +856,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 				self.cooldownDesaturated = false;
 			end
 
-			self:CheckSetPandemicAlertTiggerTime(auraData, timeNow);
+			self:CheckSetPandemicAlertTriggerTime(auraData, timeNow);
 		end
 	end
 end
@@ -1197,11 +1200,7 @@ end
 
 function CooldownViewerBuffItemMixin:OnActiveStateChanged()
 	CooldownViewerItemMixin.OnActiveStateChanged(self);
-
-	local active = self:IsActive();
-	if active then
-		self:CheckSetPandemicAlertTiggerTime();
-	end
+	self:CheckSetPandemicAlertTriggerTime();
 end
 
 function CooldownViewerBuffItemMixin:GetCooldownValues()
