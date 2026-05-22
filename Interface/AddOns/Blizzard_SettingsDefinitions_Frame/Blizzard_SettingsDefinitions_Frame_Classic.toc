@@ -12,6 +12,7 @@ Classic\SocialOverrides.lua
 Classic\ColorblindOverrides.lua
 Classic\KeybindingsOverrides.lua
 Classic\AccessibilityOverrides.lua
+Classic\NameplatesOverrides.lua
 Controls.xml
 Interface.lua
 Interface.xml
@@ -26,3 +27,5 @@ CombatAudioAlertUtil.lua
 AudioAssist.lua
 AudioAssist.xml
 Subtitles.xml
+Nameplates.lua
+Nameplates.xml

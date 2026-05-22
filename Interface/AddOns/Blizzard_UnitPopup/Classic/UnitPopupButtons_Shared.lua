@@ -487,10 +487,6 @@ function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 	return supportedDifficultyEntries;
 end 
 
-function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
-	return false; 
-end
-
 function UnitPopupConvertToRaidButtonMixin:OnClick(contextData)
 	ConvertToRaid();
 end

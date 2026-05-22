@@ -931,8 +931,8 @@ function UnitPopupPartyInstanceLeaveButtonMixin:GetText(contextData)
 	return C_PartyInfo.IsPartyWalkIn() and INSTANCE_WALK_IN_LEAVE or INSTANCE_PARTY_LEAVE;
 end
 
--- Overwritten in UnitPopupButtons.lua
 function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
+	return PartyUtil.CanLeaveInstance();
 end
 
 function UnitPopupPartyInstanceLeaveButtonMixin:IsEnabled(contextData)

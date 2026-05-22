@@ -193,8 +193,8 @@ local SimpleRegionAPI =
 			Arguments =
 			{
 				{ Name = "value", Type = "bool", Nilable = false },
-				{ Name = "colorIfTrue", Type = "colorRGBA", Nilable = false },
-				{ Name = "colorIfFalse", Type = "colorRGBA", Nilable = false },
+				{ Name = "colorIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "colorIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 	},

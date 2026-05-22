@@ -156,7 +156,9 @@ end
 
 SpellButtonMixin = {};
 
-function SpellButtonMixin:OnLoad() 
+function SpellButtonMixin:OnLoad()
+	FlyoutButtonMixin.OnLoad(self);
+
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
@@ -214,6 +216,8 @@ function SpellButtonMixin:OnHide()
 end
  
 function SpellButtonMixin:OnEnter()
+	FlyoutButtonMixin.OnEnter(self);
+
 	local slot = SpellBook_GetSpellBookSlot(self);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType) ) then
@@ -226,6 +230,7 @@ function SpellButtonMixin:OnEnter()
 end
 
 function SpellButtonMixin:OnLeave()
+	FlyoutButtonMixin.OnLeave(self);
 	GameTooltip:Hide();
 end
 

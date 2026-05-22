@@ -1008,7 +1008,7 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "gradient", Type = "vector2", Nilable = false },
+				{ Name = "gradient", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

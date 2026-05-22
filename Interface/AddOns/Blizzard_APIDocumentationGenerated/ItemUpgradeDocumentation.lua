@@ -13,7 +13,7 @@ local ItemUpgrade =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "ItemLocation", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =

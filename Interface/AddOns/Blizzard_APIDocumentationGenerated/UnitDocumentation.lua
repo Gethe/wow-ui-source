@@ -1203,6 +1203,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsMinion",
+			Type = "Function",
+			Documentation = { "Returns whether the unit is considered a minion of a player, such as a pet, totem, or guardian." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsNPCAsPlayer",
 			Type = "Function",
 

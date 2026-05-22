@@ -295,7 +295,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -431,7 +431,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -502,7 +502,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -667,7 +667,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "muted", Type = "bool", Nilable = false },
 			},
 		},
@@ -678,7 +678,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
@@ -785,7 +785,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 		},
 		{

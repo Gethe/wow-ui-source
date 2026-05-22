@@ -102,7 +102,7 @@ local SecondsFormatterAPI =
 			Arguments =
 			{
 				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
-				{ Name = "abbreviation", Type = "SecondsFormatterAbbrevation", Nilable = true, Documentation = { "Optional abbreviation mode to use in-place of the default." } },
+				{ Name = "abbreviation", Type = "SecondsFormatterAbbreviation", Nilable = true, Documentation = { "Optional abbreviation mode to use in-place of the default." } },
 			},
 
 			Returns =
@@ -117,7 +117,7 @@ local SecondsFormatterAPI =
 
 			Arguments =
 			{
-				{ Name = "abbreviation", Type = "SecondsFormatterAbbrevation", Nilable = true, Documentation = { "Optional abbreviation mode to use in-place of the default." } },
+				{ Name = "abbreviation", Type = "SecondsFormatterAbbreviation", Nilable = true, Documentation = { "Optional abbreviation mode to use in-place of the default." } },
 			},
 
 			Returns =
@@ -164,7 +164,7 @@ local SecondsFormatterAPI =
 
 			Returns =
 			{
-				{ Name = "abbreviation", Type = "SecondsFormatterAbbrevation", Nilable = true },
+				{ Name = "abbreviation", Type = "SecondsFormatterAbbreviation", Nilable = true },
 			},
 		},
 		{
@@ -335,7 +335,7 @@ local SecondsFormatterAPI =
 
 			Arguments =
 			{
-				{ Name = "abbreviation", Type = "SecondsFormatterAbbrevation", Nilable = false },
+				{ Name = "abbreviation", Type = "SecondsFormatterAbbreviation", Nilable = false },
 			},
 		},
 		{

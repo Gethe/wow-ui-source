@@ -74,14 +74,14 @@ end
 
 function NamePlateDriverMixin:OnDebuffPaddingCVarChanged()
 	local namePlateStyle = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.STYLE_CVAR);
-	local namePlateScale = self:GetNamePlateScale();
+	local namePlateScale = self:GetNamePlateScale(namePlateStyle);
 
 	self:UpdateNamePlateSize(namePlateStyle, namePlateScale);
 end
 
 function NamePlateDriverMixin:OnAuraScaleCVarChanged()
 	local namePlateStyle = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.STYLE_CVAR);
-	local namePlateScale = self:GetNamePlateScale();
+	local namePlateScale = self:GetNamePlateScale(namePlateStyle);
 
 	self:UpdateNamePlateSize(namePlateStyle, namePlateScale);
 end
@@ -336,9 +336,10 @@ function NamePlateDriverMixin:IsUsingLargerNamePlateStyle()
 	return namePlateSize > Enum.NamePlateSize.Medium;
 end
 
-function NamePlateDriverMixin:GetNamePlateScale()
+function NamePlateDriverMixin:GetNamePlateScale(namePlateStyle)
 	local namePlateSize = GetCVarNumberOrDefault(NamePlateConstants.SIZE_CVAR);
-	return NamePlateConstants.NAME_PLATE_SCALES[namePlateSize] or NamePlateConstants.NAME_PLATE_SCALES[Enum.NamePlateSize.Medium];
+	local scaleTable = namePlateStyle == Enum.NamePlateStyle.Classic and NamePlateConstants.NAME_PLATE_SCALES_CLASSIC_STYLE or NamePlateConstants.NAME_PLATE_SCALES;
+	return scaleTable[namePlateSize] or scaleTable[Enum.NamePlateSize.Medium];
 end
 
 local function GetAuraFrameHeight(namePlateScale)
@@ -349,7 +350,10 @@ local function GetAuraFrameHeight(namePlateScale)
 end
 
 local function GetHealthBarHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block or namePlateStyle == Enum.NamePlateStyle.HealthFocus then
+	if namePlateStyle == Enum.NamePlateStyle.Classic then
+		local classicHealthBarHeight = NamePlateConstants.CLASSIC_HEALTH_BAR_HEIGHT;
+		return classicHealthBarHeight * namePlateScale.vertical;
+	elseif namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block or namePlateStyle == Enum.NamePlateStyle.HealthFocus then
 		local largeHealthBarHeight = NamePlateConstants.LARGE_HEALTH_BAR_HEIGHT;
 		return largeHealthBarHeight * namePlateScale.vertical;
 	end
@@ -358,12 +362,19 @@ local function GetHealthBarHeight(namePlateStyle, namePlateScale)
 	return smallHealthBarHeight * namePlateScale.vertical;
 end
 
-local function GetHealthBarFontHeight(namePlateScale)
+local function GetHealthBarFontHeight(namePlateStyle, namePlateScale)
+	if namePlateStyle == Enum.NamePlateStyle.Classic then
+		return NamePlateConstants.CLASSIC_HEALTH_BAR_FONT_HEIGHT * namePlateScale.vertical;
+	end
+
 	return NamePlateConstants.HEALTH_BAR_FONT_HEIGHT * namePlateScale.vertical;
 end
 
 local function GetCastBarHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.CastFocus or namePlateStyle == Enum.NamePlateStyle.Block then
+	if namePlateStyle == Enum.NamePlateStyle.Classic then
+		local classicCastBarHeight = NamePlateConstants.CLASSIC_CAST_BAR_HEIGHT;
+		return classicCastBarHeight * namePlateScale.vertical;
+	elseif namePlateStyle == Enum.NamePlateStyle.CastFocus or namePlateStyle == Enum.NamePlateStyle.Block then
 		local largeCastBarHeight = NamePlateConstants.LARGE_CAST_BAR_HEIGHT;
 		return largeCastBarHeight * namePlateScale.vertical;
 	end
@@ -376,16 +387,84 @@ local function GetCastBarFontHeight(namePlateScale)
 	return NamePlateConstants.CAST_BAR_FONT_HEIGHT * namePlateScale.vertical;
 end
 
-local function GetCastBarIconHeight(namePlateScale)
+local function GetCastBarIconHeight(namePlateStyle, namePlateScale)
+	if namePlateStyle == Enum.NamePlateStyle.Classic then
+		return NamePlateConstants.CLASSIC_CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
+	end
+
 	return NamePlateConstants.CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
 end
 
-local function IsUnitNameInsideHealthBar(namePlateStyle)
-	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
-		return true;
+local function ShouldUseClassicHealthBar(namePlateStyle)
+	return namePlateStyle == Enum.NamePlateStyle.Classic;
+end
+
+local function ShouldUseClassicCastBar(namePlateStyle)
+	return namePlateStyle == Enum.NamePlateStyle.Classic;
+end
+
+local function GetHealthBarToNameAboveSpacing(namePlateStyle, namePlateScale)
+	if ShouldUseClassicHealthBar(namePlateStyle) then
+		return NamePlateConstants.CLASSIC_HEALTH_BAR_TO_NAME_ABOVE_SPACING * namePlateScale.vertical;
+	end
+	return NamePlateConstants.HEALTH_BAR_TO_NAME_ABOVE_SPACING * namePlateScale.vertical;
+end
+
+local function GetCastBarToHealthBarSpacing(namePlateStyle, namePlateScale)
+	if ShouldUseClassicCastBar(namePlateStyle) then
+		return NamePlateConstants.CLASSIC_CAST_BAR_TO_HEALTH_BAR_SPACING * namePlateScale.vertical;
+	end
+	return NamePlateConstants.CAST_BAR_TO_HEALTH_BAR_SPACING * namePlateScale.vertical;
+end
+
+local function ShouldHideIconWhenNotInterruptible(namePlateStyle)
+	return not ShouldUseClassicCastBar(namePlateStyle); -- Classic castbar should NOT hide the icon.
+end
+
+local function GetHealthBarBorderSize(namePlateStyle, namePlateScale)
+	if ShouldUseClassicHealthBar(namePlateStyle) then
+		return NamePlateConstants.CLASSIC_BORDER_WIDTH * namePlateScale.horizontal, NamePlateConstants.CLASSIC_BORDER_HEIGHT * namePlateScale.vertical;
 	end
 
-	return false;
+	return 0, 0;
+end
+
+local function GetCastBarBorderSize(namePlateStyle, namePlateScale)
+	if ShouldUseClassicCastBar(namePlateStyle) then
+		return NamePlateConstants.CLASSIC_BORDER_WIDTH * namePlateScale.horizontal, NamePlateConstants.CLASSIC_BORDER_HEIGHT * namePlateScale.vertical;
+	end
+
+	return 0, 0;
+end
+
+local function GetUnitNameAnchorStyle(namePlateStyle)
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
+		return NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar;
+	elseif namePlateStyle == Enum.NamePlateStyle.Classic then
+		return NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar;
+	else
+		return NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar;
+	end
+end
+
+local function GetUnitNameMouseoverColor(namePlateStyle)
+	if ShouldUseClassicCastBar(namePlateStyle) then
+		return YELLOW_FONT_COLOR;
+	end
+
+	return nil; -- No override color.
+end
+
+local function ShouldColorHealthWithExtendedColors(namePlateStyle)
+	return not ShouldUseClassicCastBar(namePlateStyle); -- Modern uses extended colors; Classic does not.
+end
+
+local function ShouldDisplaySelectionHighlight(namePlateStyle)
+	return ShouldUseClassicCastBar(namePlateStyle); -- When targeted, brighten health for Classic Style health bar.
+end
+
+local function IsUnitNameInsideHealthBar(namePlateStyle)
+	return GetUnitNameAnchorStyle(namePlateStyle) == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar;
 end
 
 local function IsUnitNameColored(namePlateStyle)
@@ -397,11 +476,23 @@ local function IsUnitNameColored(namePlateStyle)
 end
 
 local function IsSpellNameInsideCastBar(namePlateStyle)
-	if namePlateStyle == Enum.NamePlateStyle.Block or namePlateStyle == Enum.NamePlateStyle.CastFocus then
+	if namePlateStyle == Enum.NamePlateStyle.Block or namePlateStyle == Enum.NamePlateStyle.CastFocus or namePlateStyle == Enum.NamePlateStyle.Classic then
 		return true;
 	end
 
 	return false;
+end
+
+local function ShouldShowLevel(namePlateStyle)
+	return ShouldUseClassicHealthBar(namePlateStyle); -- Classic health bar border has a space for level.
+end
+
+local function GetLevelFontHeight(namePlateScale)
+	return NamePlateConstants.LEVEL_FONT_HEIGHT * namePlateScale.vertical;
+end
+
+local function GetLevelIconSize(namePlateScale)
+	return NamePlateConstants.LEVEL_ICON_WIDTH * namePlateScale.horizontal, NamePlateConstants.LEVEL_ICON_HEIGHT * namePlateScale.vertical;
 end
 
 function NamePlateDriverMixin:GetNamePlateHeight(namePlateStyle, namePlateScale)
@@ -419,7 +510,7 @@ function NamePlateDriverMixin:GetNamePlateHeight(namePlateStyle, namePlateScale)
 	height = height + CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.DEBUFF_PADDING_CVAR);
 
 	if not IsUnitNameInsideHealthBar(namePlateStyle) then
-		height = height + GetHealthBarFontHeight(namePlateScale);
+		height = height + GetHealthBarFontHeight(namePlateStyle, namePlateScale);
 	end
 
 	height = height + GetHealthBarHeight(namePlateStyle, namePlateScale);
@@ -432,43 +523,75 @@ function NamePlateDriverMixin:GetNamePlateHeight(namePlateStyle, namePlateScale)
 	return height;
 end
 
-function NamePlateDriverMixin:GetNamePlateWidth(namePlateScale)
+function NamePlateDriverMixin:GetNamePlateWidth(namePlateStyle, namePlateScale)
 	if self.baseNamePlateWidth then
 		return self.baseNamePlateWidth;
 	end
 
-	return 230 * namePlateScale.horizontal;
+	if namePlateStyle == Enum.NamePlateStyle.Classic then
+		return NamePlateConstants.CLASSIC_NAMEPLATE_WIDTH * namePlateScale.horizontal;
+	else
+		return NamePlateConstants.NAMEPLATE_WIDTH * namePlateScale.horizontal;
+	end
 end
 
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	local namePlateStyle = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.STYLE_CVAR);
-	local namePlateScale = self:GetNamePlateScale();
+	local namePlateScale = self:GetNamePlateScale(namePlateStyle);
 
 	-- Options for all nameplates.
+	NamePlateSetupOptions.horizontalScale = namePlateScale.horizontal;
+	NamePlateSetupOptions.verticalScale = namePlateScale.vertical;
+
 	NamePlateSetupOptions.healthBarHeight = GetHealthBarHeight(namePlateStyle, namePlateScale);
-	NamePlateSetupOptions.healthBarFontHeight =  GetHealthBarFontHeight(namePlateScale);
+	NamePlateSetupOptions.healthBarFontHeight =  GetHealthBarFontHeight(namePlateStyle, namePlateScale);
+	NamePlateSetupOptions.useClassicHealthBar = ShouldUseClassicHealthBar(namePlateStyle);
+	NamePlateSetupOptions.healthBarToNameAboveSpacing = GetHealthBarToNameAboveSpacing(namePlateStyle, namePlateScale);
 
 	NamePlateSetupOptions.castBarHeight =  GetCastBarHeight(namePlateStyle, namePlateScale);
 	NamePlateSetupOptions.castBarFontHeight = GetCastBarFontHeight(namePlateScale);
+	NamePlateSetupOptions.useClassicCastBar = ShouldUseClassicCastBar(namePlateStyle);
+	NamePlateSetupOptions.castBarToHealthBarSpacing = GetCastBarToHealthBarSpacing(namePlateStyle, namePlateScale);
 
 	NamePlateSetupOptions.castBarShieldWidth = 10 * namePlateScale.vertical;
 	NamePlateSetupOptions.castBarShieldHeight = 12 * namePlateScale.vertical;
 
-	NamePlateSetupOptions.castIconWidth = GetCastBarIconHeight(namePlateScale);
-	NamePlateSetupOptions.castIconHeight = GetCastBarIconHeight(namePlateScale);
+	NamePlateSetupOptions.castIconWidth = GetCastBarIconHeight(namePlateStyle, namePlateScale);
+	NamePlateSetupOptions.castIconHeight = GetCastBarIconHeight(namePlateStyle, namePlateScale);
+	NamePlateSetupOptions.hideIconWhenNotInterruptible = ShouldHideIconWhenNotInterruptible(namePlateStyle);
 
-	NamePlateSetupOptions.unitNameInsideHealthBar = IsUnitNameInsideHealthBar(namePlateStyle);
+	NamePlateSetupOptions.unitNameAnchorStyle = GetUnitNameAnchorStyle(namePlateStyle);
 	NamePlateSetupOptions.spellNameInsideCastBar = IsSpellNameInsideCastBar(namePlateStyle);
 
 	NamePlateSetupOptions.classificationScale = namePlateScale.classification;
 
+	NamePlateSetupOptions.levelFontHeight = GetLevelFontHeight(namePlateScale);
+	NamePlateSetupOptions.levelIconWidth, NamePlateSetupOptions.levelIconHeight = GetLevelIconSize(namePlateScale);
+
+	NamePlateSetupOptions.insetWidth = NamePlateConstants.HORIZONTAL_INSET * namePlateScale.horizontal;
+
+	-- Border option is used by Classic Style.
+	NamePlateSetupOptions.healthBarBorderWidth, NamePlateSetupOptions.healthBarBorderHeight = GetHealthBarBorderSize(namePlateStyle, namePlateScale);
+	NamePlateSetupOptions.castBarBorderWidth, NamePlateSetupOptions.castBarBorderHeight = GetCastBarBorderSize(namePlateStyle, namePlateScale);
+
 	-- Options specific to Enemy nameplates.
 	NamePlateEnemyFrameOptions.useClassColors = GetCVarBool("nameplateShowClassColor");
 	NamePlateEnemyFrameOptions.colorNameBySelection = IsUnitNameColored(namePlateStyle);
+	NamePlateEnemyFrameOptions.nameMouseoverColor = GetUnitNameMouseoverColor(namePlateStyle);
+	NamePlateEnemyFrameOptions.showLevel = ShouldShowLevel(namePlateStyle);
+	NamePlateEnemyFrameOptions.colorHealthWithExtendedColors = ShouldColorHealthWithExtendedColors(namePlateStyle);
+	NamePlateEnemyFrameOptions.displaySelectionHighlight = ShouldDisplaySelectionHighlight(namePlateStyle);
+	NamePlateEnemyFrameOptions.displaySelectionHighlightOnMouseover = ShouldDisplaySelectionHighlight(namePlateStyle);
+	
 
 	-- Options specific to Friendly nameplates.
 	NamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("nameplateShowFriendlyClassColor");
 	NamePlateFriendlyFrameOptions.colorNameBySelection = IsUnitNameColored(namePlateStyle);
+	NamePlateFriendlyFrameOptions.nameMouseoverColor = GetUnitNameMouseoverColor(namePlateStyle);
+	NamePlateFriendlyFrameOptions.showLevel = ShouldShowLevel(namePlateStyle);
+	NamePlateFriendlyFrameOptions.colorHealthWithExtendedColors = ShouldColorHealthWithExtendedColors(namePlateStyle);
+	NamePlateFriendlyFrameOptions.displaySelectionHighlight = ShouldDisplaySelectionHighlight(namePlateStyle);
+	NamePlateFriendlyFrameOptions.displaySelectionHighlightOnMouseover = ShouldDisplaySelectionHighlight(namePlateStyle);
 
 	self:UpdateNamePlateSize(namePlateStyle, namePlateScale);
 
@@ -491,7 +614,7 @@ end
 
 function NamePlateDriverMixin:UpdateNamePlateSize(namePlateStyle, namePlateScale)
 	local namePlateHeight = self:GetNamePlateHeight(namePlateStyle, namePlateScale);
-	local namePlateWidth = self:GetNamePlateWidth(namePlateScale);
+	local namePlateWidth = self:GetNamePlateWidth(namePlateStyle, namePlateScale);
 
 	-- C++ needs to know the size of the nameplates, which depends on the values of various options that can affect size and layout.
 	C_NamePlate.SetNamePlateSize(namePlateWidth, namePlateHeight);

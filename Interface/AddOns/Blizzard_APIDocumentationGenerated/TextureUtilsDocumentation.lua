@@ -198,7 +198,7 @@ local TextureUtils =
 				{ Name = "elementName", Type = "cstring", Nilable = false },
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "rawSize", Type = "vector2", Nilable = false },
+				{ Name = "rawSize", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "leftTexCoord", Type = "number", Nilable = false },
 				{ Name = "rightTexCoord", Type = "number", Nilable = false },
 				{ Name = "topTexCoord", Type = "number", Nilable = false },

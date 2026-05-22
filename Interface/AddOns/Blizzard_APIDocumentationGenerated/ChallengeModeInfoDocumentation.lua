@@ -195,7 +195,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Nilable = false },
+				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

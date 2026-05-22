@@ -12,9 +12,6 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
 
-	-- Nameplates (Hook for Classic. Names and Nameplates options Have been moved to Nameplates.lua for 12.0.)
-	InterfaceOverrides.AdjustNameplateSettings(category, layout);
-
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 

@@ -205,7 +205,8 @@ function SpellButtonMixin:OnIconClick(button)
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if (slotType == "FLYOUT") then
-			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.offSpecID, true);
+			local isActionBar, showFullTooltip, reason = false, true, nil;
+			SpellFlyout:Toggle(self, id, isActionBar, self.offSpecID, showFullTooltip, reason);
 			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		else
 			if ( SpellBookFrame.bookType ~= BOOKTYPE_SPELLBOOK or self.offSpecID == 0 ) then
@@ -285,8 +286,8 @@ function SpellButtonMixin:UpdateButton()
 		self.TrainFrame:Hide();
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
-		self.FlyoutArrow:Hide();
 		self:Disable();
+		self:ClearPopup();
 		return;
 	else
 		self:Enable();
@@ -407,10 +408,9 @@ function SpellButtonMixin:UpdateButton()
 	end
 
 	if (slotType == "FLYOUT") then
-		SetClampedTextureRotation(self.FlyoutArrow, 90);
-		self.FlyoutArrow:Show();
+		self:SetPopup(SpellFlyout);
 	else
-		self.FlyoutArrow:Hide();
+		self:ClearPopup();
 	end
 
 	self:UpdateSelection();

@@ -9,7 +9,7 @@
 			</AnimationGroup>
 		</Animations>
 	</StatusBar>
-	<StatusBar name="CastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" virtual="true">
+	<StatusBar name="CastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="classicStyleCastBar" value="true" type="boolean"/>
 		</KeyValues>
@@ -19,7 +19,7 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size x="256" y="64"/>
 					<Anchors>
@@ -27,7 +27,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size x="256" y="64"/>
 					<Anchors>
@@ -74,7 +74,7 @@
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
-	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" virtual="true">
+	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" virtual="true">
 		<Size x="150" y="10"/>
 		<KeyValues>
 			<KeyValue key="classicStyleCastBar" value="true" type="boolean"/>
@@ -85,7 +85,7 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="0" y="56"/>
 					<Anchors>
@@ -94,7 +94,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size x="0" y="56"/>
 					<Anchors>

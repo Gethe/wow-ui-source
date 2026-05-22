@@ -515,8 +515,9 @@ end
 function CooldownViewerItemDataMixin:RefreshTooltip()
 	local tooltip = GetAppropriateTooltip();
 	local auraInstanceID = self:GetAuraSpellInstanceID();
-	if auraInstanceID then
-		tooltip:SetUnitAuraByAuraInstanceID(self:GetAuraDataUnit(), auraInstanceID);
+	local auraUnit = self:GetAuraDataUnit();
+	if auraInstanceID and auraUnit then
+		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID);
 	else
 		local spellID = self:GetSpellID();
 		if spellID then

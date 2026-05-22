@@ -215,7 +215,7 @@ local UnitAura =
 
 			Returns =
 			{
-				{ Name = "dispelTypeColor", Type = "colorRGBA", Nilable = false },
+				{ Name = "dispelTypeColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

@@ -9,6 +9,7 @@ Blizzard_NamePlateAuras.lua
 Blizzard_NamePlateAuras.xml
 Blizzard_NamePlateHealthBar.lua
 Blizzard_NamePlateCastingBar.lua
+Blizzard_NamePlateCastingBar.xml
 Blizzard_NamePlateClassificationFrame.lua
 Blizzard_NamePlateRaidTarget.lua
 Blizzard_NamePlateUnitFrame.lua

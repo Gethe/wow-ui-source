@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" virtual="true" hidden="true">
+	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<KeyValues>
 			<KeyValue key="classicStyleCastBar" value="true" type="boolean"/>
@@ -11,7 +11,7 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>		
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
 					<Size x="42" y="42"/>
 					<Anchors>

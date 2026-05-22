@@ -346,6 +346,18 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
 	[Enum.EditModeSystem.AuraFrame] = {
 		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
 			settings = {
@@ -838,6 +850,18 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			point = "TOPRIGHT",
 			relativeTo = "UIParent",
 			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
 			offsetY = 0,
 		},

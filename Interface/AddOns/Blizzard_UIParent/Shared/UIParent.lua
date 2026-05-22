@@ -827,6 +827,19 @@ function ConfirmOrLeaveLFGParty()
 	end
 end
 
+function ConfirmOrLeaveParty()
+	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+		return;
+	end
+
+	if ( IsPartyLFG() ) then
+		ConfirmOrLeaveLFGParty();
+	-- If the party is walk-in (aka Delve) let the player leave
+	elseif ( C_PartyInfo.IsPartyWalkIn() ) then
+		LeaveWalkInParty();
+	end
+end
+
 function BuildIconArray(parent, baseName, template, rowSize, numRows, onButtonCreated)
 	local previousButton = CreateFrame("CheckButton", baseName.."1", parent, template);
 	local cornerButton = previousButton;

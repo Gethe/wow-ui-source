@@ -1368,6 +1368,11 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 end
 
 local function initSystemAnchor(index, systemFrame)
+	-- Managed frames don't need to be reset.
+	if (systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame) and systemFrame:IsInDefaultPosition() then
+		return;
+	end
+
 	systemFrame:ClearAllPoints();
 	systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
 end

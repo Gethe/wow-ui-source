@@ -57,7 +57,7 @@ local Console =
 
 			Returns =
 			{
-				{ Name = "color", Type = "colorRGB", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

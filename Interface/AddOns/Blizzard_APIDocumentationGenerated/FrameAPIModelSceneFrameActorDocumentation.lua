@@ -92,7 +92,7 @@ local FrameAPIModelSceneFrameActor =
 
 			Returns =
 			{
-				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Nilable = true },
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
 			},
 		},
 		{
@@ -238,7 +238,7 @@ local FrameAPIModelSceneFrameActor =
 
 			Arguments =
 			{
-				{ Name = "transmogInfo", Type = "ItemTransmogInfo", Nilable = false },
+				{ Name = "transmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
 				{ Name = "inventorySlots", Type = "number", Nilable = true },
 				{ Name = "ignoreChildItems", Type = "bool", Nilable = false, Default = false },
 			},

@@ -78,6 +78,7 @@ DeathInfoDocumentation.lua
 DeathRecapDocumentation.lua
 DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
+DurationTextBindingObjectAPIDocumentation.lua
 DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -350,7 +351,6 @@ AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
 AsyncAssistActionsConstantsDocumentation.lua
 AuctionHouseConstantsDocumentation.lua
-AuctionHouseConstants_ClassicDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 AutoCompleteSharedDocumentation.lua
 AzeriteConstantsDocumentation.lua
@@ -391,6 +391,7 @@ DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
+DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_ClassicDocumentation.lua

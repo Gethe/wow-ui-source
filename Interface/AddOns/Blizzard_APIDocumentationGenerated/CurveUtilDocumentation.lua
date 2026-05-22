@@ -35,13 +35,13 @@ local CurveUtil =
 			Arguments =
 			{
 				{ Name = "boolean", Type = "bool", Nilable = false },
-				{ Name = "valueIfTrue", Type = "colorRGBA", Nilable = false },
-				{ Name = "valueIfFalse", Type = "colorRGBA", Nilable = false },
+				{ Name = "valueIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "valueIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "value", Type = "colorRGBA", Nilable = false },
+				{ Name = "value", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

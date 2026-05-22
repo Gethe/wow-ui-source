@@ -37,7 +37,7 @@ local ColorOverrides =
 			Fields =
 			{
 				{ Name = "overrideType", Type = "ColorOverride", Nilable = false },
-				{ Name = "overrideColor", Type = "colorRGB", Nilable = false },
+				{ Name = "overrideColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "overrideColorString", Type = "string", Nilable = false },
 			},
 		},

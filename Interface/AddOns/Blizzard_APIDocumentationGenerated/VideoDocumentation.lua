@@ -13,7 +13,7 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "vector2", Nilable = false },
+				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -27,7 +27,7 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "vector2", Nilable = false },
+				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

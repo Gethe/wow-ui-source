@@ -14,7 +14,7 @@ local MapExploration =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "normalizedPosition", Type = "vector2", Nilable = false },
+				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 
 			Returns =

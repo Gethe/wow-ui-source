@@ -368,10 +368,6 @@ function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 	}
 end 
 
-function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
-	return PartyUtil.CanLeaveInstance();
-end
-
 function UnitPopupPvpFlagButtonMixin:IsEnabled(contextData)
 	return not UnitPopupSharedUtil.IsInWarModeState(); 
 end

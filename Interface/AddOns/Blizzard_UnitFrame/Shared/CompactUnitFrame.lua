@@ -258,17 +258,19 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		else
 			CompactUnitFrame_UnregisterEvents(frame);
 		end
+
 		if ( unit and not hideCastBar ) then
-			if ( frame.castBar ) then
-				frame.castBar:SetAndUpdateShowCastbar(true);
-				frame.castBar:SetUnit(unit, false, true);
+			if ( frame.CastBarsContainer ) then
+				frame.CastBarsContainer.castBar:SetAndUpdateShowCastbar(true);
+				frame.CastBarsContainer.castBar:SetUnit(unit, false, true);
 			end
 		else
-			if ( frame.castBar ) then
-				frame.castBar:SetAndUpdateShowCastbar(false);
-				frame.castBar:SetUnit(nil, nil, nil);
+			if ( frame.CastBarsContainer ) then
+				frame.CastBarsContainer.castBar:SetAndUpdateShowCastbar(false);
+				frame.CastBarsContainer.castBar:SetUnit(nil, nil, nil);
 			end
 		end
+
 		CompactUnitFrame_UpdateAll(frame);
 
 		frame:UpdatePrivateAuras();
@@ -851,8 +853,9 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( frame.optionTable.highlightNameOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
-			frame.name:SetVertexColor(1.0, 1.0, 0.0);
+		if ( frame.optionTable.nameMouseoverColor and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
+			local nameMouseoverColor = frame.optionTable.nameMouseoverColor;
+			frame.name:SetVertexColor(nameMouseoverColor.r, nameMouseoverColor.g, nameMouseoverColor.b);
 		elseif ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
@@ -889,7 +892,7 @@ function CompactUnitFrame_UpdateSelectionHighlight(frame)
 		frame.selectionHighlight:Hide();
 	else
 		local shouldHighlight = UnitIsUnit(frame.displayedUnit, "target") or -- Highlight on target
-			(frame.optionTable.highlightOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover")); -- Highlight on mouseover
+			(frame.optionTable.displaySelectionHighlightOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover")); -- Highlight on mouseover
 		if shouldHighlight then
 			frame.selectionHighlight:Show();
 		else
@@ -928,8 +931,8 @@ end
 local function SetBorderColor(frame, r, g, b, a)
 	if frame.HealthBarsContainer.border then
 		frame.HealthBarsContainer.border:SetVertexColor(r, g, b, a);
-		if frame.castBar and frame.castBar.border then
-			frame.castBar.border:SetVertexColor(r, g, b, a);
+		if frame.CastBarsContainer and frame.CastBarsContainer.castBar.border then
+			frame.CastBarsContainer.castBar.border:SetVertexColor(r, g, b, a);
 		end
 	end
 end
@@ -937,8 +940,8 @@ end
 local function SetBorderUnderline(frame, r, g, b, a)
 	if frame.HealthBarsContainer.border then
 		frame.HealthBarsContainer.border:SetUnderlineColor(r, g, b, a);
-		if frame.castBar and frame.castBar.border then
-			frame.castBar.border:SetVertexColor(r, g, b, a);
+		if frame.CastBarsContainer and frame.CastBarsContainer.castBar.border then
+			frame.CastBarsContainer.castBar.border:SetVertexColor(r, g, b, a);
 		end
 	end
 end
@@ -1770,35 +1773,31 @@ end
 
 function CompactUnitFrame_UpdateLevel(frame, activePlayerLevel)
 	if ( frame.optionTable.showLevel ) then
+		frame.LevelFrame:Show();
 		local effectiveLevel = UnitLevel(frame.unit);
 
 		if ( effectiveLevel > 0 ) then
 			activePlayerLevel = activePlayerLevel or UnitLevel("player"); -- Optional arg.
 
 			-- Normal level target
-			frame.LevelFrame.levelText:SetText(effectiveLevel);
+			frame.LevelFrame.LevelText:SetText(effectiveLevel);
 			-- Color level number
-			--if ( UnitCanAttack("player", frame.unit) ) then
+			if ( UnitCanAttack("player", frame.unit) ) then
 				local color = GetRelativeDifficultyColor(activePlayerLevel, effectiveLevel);
-				frame.LevelFrame.levelText:SetVertexColor(color.r, color.g, color.b);
-			--else
-				--frame.LevelFrame.levelText:SetVertexColor(1.0, 0.82, 0.0);
-			--end
+				frame.LevelFrame.LevelText:SetVertexColor(color.r, color.g, color.b);
+			else
+				frame.LevelFrame.LevelText:SetVertexColor(UNIT_LEVEL_NON_ATTACKABLE.r, UNIT_LEVEL_NON_ATTACKABLE.g, UNIT_LEVEL_NON_ATTACKABLE.b);
+			end
 
-			frame.LevelFrame.levelText:Show();
-			frame.LevelFrame.highLevelTexture:Hide();
+			frame.LevelFrame.LevelText:Show();
+			frame.LevelFrame.HighLevelTexture:Hide();
 		else
 			-- Target is too high level to tell
-			frame.LevelFrame.levelText:Hide();
-			frame.LevelFrame.highLevelTexture:Show();
+			frame.LevelFrame.LevelText:Hide();
+			frame.LevelFrame.HighLevelTexture:Show();
 		end
-	else
-		if ( frame.LevelFrame and frame.LevelFrame.levelText ) then
-			frame.LevelFrame.levelText:Hide();
-		end
-		if ( frame.LevelFrame and frame.LevelFrame.highLevelTexture ) then
-			frame.LevelFrame.highLevelTexture:Hide();
-		end
+	elseif (frame.LevelFrame) then
+		frame.LevelFrame:Hide();
 	end
 end
 

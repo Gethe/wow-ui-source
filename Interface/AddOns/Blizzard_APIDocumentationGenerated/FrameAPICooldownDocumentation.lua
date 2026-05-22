@@ -498,8 +498,8 @@ local FrameAPICooldown =
 
 			Arguments =
 			{
-				{ Name = "low", Type = "vector2", Nilable = false },
-				{ Name = "high", Type = "vector2", Nilable = false },
+				{ Name = "low", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "high", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

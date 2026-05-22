@@ -54,69 +54,15 @@ IconDataProviderExtraType = {
 	Transmog = 4
 };
 
-local function FillOutExtraIconsMapWithSpells(extraIconsMap)
-	for i = 1, GetNumSpellTabs() do
-		local tab, tabTex, offset, numSpells = GetSpellTabInfo(i);
-		offset = offset + 1;
-		local tabEnd = offset + numSpells;
-		for j = offset, tabEnd - 1 do
-			local spellType, ID = GetSpellBookItemInfo(j, "player");
-			if spellType ~= "FUTURESPELL" then
-				local fileID = GetSpellBookItemTexture(j, "player");
-				if fileID ~= nil then
-					extraIconsMap[fileID] = true;
-				end
-			end
-
-			if spellType == "FLYOUT" then
-				local _, _, numSlots, isKnown = GetFlyoutInfo(ID);
-				if isKnown and (numSlots > 0) then
-					for k = 1, numSlots do
-						local spellID, overrideSpellID, isSlotKnown = GetFlyoutSlotInfo(ID, k)
-						if isSlotKnown then
-							local fileID = GetSpellTexture(spellID);
-							if fileID ~= nil then
-								extraIconsMap[fileID] = true;
-							end
-						end
-					end
-				end
-			end
-		end
-	end
+function IconDataProviderMixin:FillOutExtraIconsMapWithSpells(extraIconsMap)
+	-- Overridden by game families.
 end
 
-local function FillOutExtraIconsMapWithTalents(extraIconsMap)
-	local isInspect = false;
-	for specIndex = 1, GetNumSpecGroups(isInspect) do
-		for tier = 1, Constants.TalentTierConstants.MAX_TALENT_TIERS do
-			for column = 1, Constants.TalentConsts.NumTalentColumns do
-				local talentInfoQuery = {};
-				talentInfoQuery.tier = tier;
-				talentInfoQuery.column = column;
-				talentInfoQuery.specializationIndex = specIndex;
-				local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
-				if talentInfo and talentInfo.icon then
-					extraIconsMap[talentInfo.icon] = true;
-				end
-			end
-		end
-	end
-
-	for pvpTalentSlot = 1, 3 do
-		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(pvpTalentSlot);
-		if slotInfo ~= nil then
-			for i, pvpTalentID in ipairs(slotInfo.availableTalentIDs) do
-				local icon = select(3, GetPvpTalentInfoByID(pvpTalentID));
-				if icon ~= nil then
-					extraIconsMap[icon] = true;
-				end
-			end
-		end
-	end
+function IconDataProviderMixin:FillOutExtraIconsMapWithTalents(extraIconsMap)
+	-- Overridden by game families.
 end
 
-local function FillOutExtraIconsMapWithEquipment(extraIconsMap)
+function IconDataProviderMixin:FillOutExtraIconsMapWithEquipment(extraIconsMap)
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
 		local itemTexture = GetInventoryItemTexture("player", i);
 		if itemTexture ~= nil then
@@ -125,7 +71,7 @@ local function FillOutExtraIconsMapWithEquipment(extraIconsMap)
 	end
 end
 
-local function FillOutExtraIconsMapWithTransmog(extraIconsMap)
+function IconDataProviderMixin:FillOutExtraIconsMapWithTransmog(extraIconsMap)
 	-- Only populate if transmog frame is open. Reference the currently viewed outfit.
 	if TransmogFrame and TransmogFrame:IsShown() then
 		local outfitIcons = TransmogFrame:GetViewedOutfitIcons();
@@ -142,15 +88,16 @@ function IconDataProviderMixin:Init(type, extraIconsOnly, requestedIconTypes)
 
 	if type == IconDataProviderExtraType.Spellbook then
 		local extraIconsMap = {};
-		FillOutExtraIconsMapWithSpells(extraIconsMap);
+		self:FillOutExtraIconsMapWithSpells(extraIconsMap);
+		self:FillOutExtraIconsMapWithTalents(extraIconsMap);
 		self.extraIcons = GetKeysArray(extraIconsMap);
 	elseif type == IconDataProviderExtraType.Equipment then
 		local extraIconsMap = {};
-		FillOutExtraIconsMapWithEquipment(extraIconsMap);
+		self:FillOutExtraIconsMapWithEquipment(extraIconsMap);
 		self.extraIcons = GetKeysArray(extraIconsMap);
 	elseif type == IconDataProviderExtraType.Transmog then
 		local extraIconsMap = {};
-		FillOutExtraIconsMapWithTransmog(extraIconsMap);
+		self:FillOutExtraIconsMapWithTransmog(extraIconsMap);
 		self.extraIcons = GetKeysArray(extraIconsMap);
 	end
 
@@ -207,6 +154,12 @@ function IconDataProviderMixin:GetIconByIndex(index)
 	else
 		return nil;
 	end
+end
+
+function IconDataProviderMixin:GetRandomIcon()
+	local numIcons = self:GetNumIcons();
+	local avoidQuestionMarkIndex = 2;
+	return self:GetIconByIndex(math.random(avoidQuestionMarkIndex, numIcons));
 end
 
 function IconDataProviderMixin:GetIconForSaving(index)

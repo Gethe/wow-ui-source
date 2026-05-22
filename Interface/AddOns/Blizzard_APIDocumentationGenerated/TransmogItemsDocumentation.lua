@@ -206,7 +206,7 @@ local TransmogItems =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
 				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -238,7 +238,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -643,7 +643,7 @@ local TransmogItems =
 				{ Name = "appearanceID", Type = "number", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
-				{ Name = "transmogLocation", Type = "TransmogLocation", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 			},
 
 			Returns =

@@ -23,7 +23,7 @@ local ChatInfo =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "PlayerLocation", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =

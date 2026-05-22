@@ -626,11 +626,13 @@ function CastingBarMixin:UpdateBarFillTexture(isFull)
 	if (self.classicStyleCastBar) then
 		-- For Classic style, set the vertex color based on bar type.
 		local colorInfo = isFull and barTypeInfo.classicFullColor or barTypeInfo.classicFillColor;
+		self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 		self:SetStatusBarColor(colorInfo:GetRGB());
 	else
 		-- Look up the appropriate atlas based on bar type.
 		local texture = isFull and barTypeInfo.full or barTypeInfo.filling;
 		self:SetStatusBarTexture(texture);
+		self:SetStatusBarColor(1, 1, 1);
 	end
 end
 

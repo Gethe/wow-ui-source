@@ -90,7 +90,7 @@ function NamePlatePreviewMixin:ShowPreviewNamePlateCastBar()
 		isSpellTarget = true,
 		castTime = 3.0,
 	};
-	unitFrame.castBar:SimulateCast(castData);
+	unitFrame.CastBarsContainer.castBar:SimulateCast(castData);
 end
 
 function NamePlatePreviewMixin:HidePreviewNamePlateCastBar()
@@ -99,7 +99,7 @@ function NamePlatePreviewMixin:HidePreviewNamePlateCastBar()
 		return;
 	end
 
-	local castBar = unitFrame.castBar;
+	local castBar = unitFrame.CastBarsContainer.castBar;
 	castBar:UpdateShownState(false);
 end
 
@@ -447,7 +447,7 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end);
 
-		-- Enemy Units
+	-- Enemy Units
 	InterfaceOverrides.RunSettingsCallback(function()
 		local enemyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES, "NAMEPLATES");
 		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
@@ -548,12 +548,15 @@ local function Register()
 	if C_CVar.GetCVar("nameplateStyle") then
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
+
+			if (NameplatesOverrides.ShowClassicStyleOption()) then container:Add(Enum.NamePlateStyle.Classic, UNIT_NAMEPLATES_STYLE_CLASSIC); end
 			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
 			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
 			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
 			container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
 			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
 			container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
+
 			return container:GetData();
 		end
 
@@ -611,7 +614,7 @@ local function Register()
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellName, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellIcon, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET_TOOLTIP);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP);
+			if (NameplatesOverrides.ShowHighlightImportantCastsOption()) then container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP); end
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET_TOOLTIP);
 			return container:GetData();
 		end
@@ -786,6 +789,8 @@ local function Register()
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_SIMPLIFIED_NONE);
 		initializer.OnHide = OnDropdownHidden;
 	end
+
+	NameplatesOverrides.AdjustNameplateSettings(category);
 end
 
 SettingsRegistrar:AddRegistrant(Register);
