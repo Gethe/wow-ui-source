@@ -21,6 +21,15 @@
 				<Texture setAllPoints="true" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING">
 					<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" x="5" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="-5" y="5"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="texture"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Scripts>

@@ -292,9 +292,8 @@ end
 
 function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	self.currentFloor = C_HousingLayout.GetViewedFloor();
-	local isDraggingStairwell = C_HousingLayout.IsDraggingStairwell();
-	self.UpButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
-	self.DownButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));
+	self.UpButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor + 1));
+	self.DownButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor - 1));
 
 	local dataProvider = CreateDataProvider();
 

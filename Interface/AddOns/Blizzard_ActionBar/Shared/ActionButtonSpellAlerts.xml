@@ -34,6 +34,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
+			<OnHide method="OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

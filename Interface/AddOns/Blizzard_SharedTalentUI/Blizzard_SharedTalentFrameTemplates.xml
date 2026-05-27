@@ -28,6 +28,8 @@
 		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 

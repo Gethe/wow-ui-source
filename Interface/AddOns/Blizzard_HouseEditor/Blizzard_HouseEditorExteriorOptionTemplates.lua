@@ -52,8 +52,17 @@ function HouseExteriorOptionDropdownMixin:HasAnyLockedChoices()
 	return false;
 end
 
+function HouseExteriorOptionDropdownMixin:HasAnyFailedReqs()
+	for _, option in ipairs(self.options) do
+		if option.isLocked or option.isInvalid then
+			return true;
+		end
+	end
+	return false;
+end
+
 function HouseExteriorOptionDropdownMixin:CanSelectChoice(choiceData)
-	return not choiceData.isLocked;
+	return not choiceData.isLocked and not choiceData.isInvalid;
 end
 
 function HouseExteriorOptionDropdownMixin:IsChoiceSelected(choiceData)
@@ -70,8 +79,8 @@ function HouseExteriorOptionDropdownMixin:ShowOptions(selectedOptionID, options)
 	self.selectedOptionID = selectedOptionID;
 	self.options = options;
 
-	local hasAnyLockedChoices = self:HasAnyLockedChoices();
-	local hasAnyFailedReqs = hasAnyLockedChoices; -- For now we don't display any ineligible choices, just locked
+	local hasALockedChoice = self:HasAnyLockedChoices();
+	local hasAFailedReq = self:HasAnyFailedReqs();
 
 	local defaultLockedTooltip = self:GetDefaultLockedTooltip();
 
@@ -112,13 +121,15 @@ function HouseExteriorOptionDropdownMixin:ShowOptions(selectedOptionID, options)
 		end
 
 		for choiceIndex, choiceData in ipairs(options) do
-			choiceData.ineligibleChoice = choiceData.isLocked;
-			if choiceData.isLocked then
-				if choiceData.lockReasonString and choiceData.lockReasonString ~= "" then
-					choiceData.lockedText = choiceData.lockReasonString;
-				else
-					choiceData.lockedText = defaultLockedTooltip;
+			choiceData.ineligibleChoice = choiceData.isLocked or choiceData.isInvalid;
+			if choiceData.reasonString and choiceData.reasonString ~= "" then
+				if choiceData.isLocked then
+					choiceData.lockedText = choiceData.reasonString;
+				elseif choiceData.isInvalid then
+					choiceData.ineligibleText = choiceData.reasonString;
 				end
+			elseif choiceData.isLocked then
+				choiceData.lockedText = defaultLockedTooltip;
 			end
 
 			local entryDescription = rootDescription:CreateTemplate("HouseExteriorOptionDropdownElementTemplate");
@@ -134,7 +145,7 @@ function HouseExteriorOptionDropdownMixin:ShowOptions(selectedOptionID, options)
 					end
 				end);
 				
-				button:Init(choiceData, choiceIndex, selected, hasAnyFailedReqs, hasAnyLockedChoices);
+				button:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
 
 				--[[
 				We will have 2 Layout() calls. One for the reference width, and another to account
@@ -322,7 +333,7 @@ local FixtureTypeToSoundKit = {
 };
 
 function HouseExteriorOptionElementMixin:OnClick()
-	if not self.choiceData or self.isSelected or self.choiceData.isLocked then
+	if not self.choiceData or self.isSelected or self.choiceData.isInvalid or self.choiceData.isLocked then
 		return;
 	end
 
@@ -414,6 +425,15 @@ function HouseExteriorFixtureOptionListMixin:HasAnyLockedChoices()
 	return false;
 end
 
+function HouseExteriorFixtureOptionListMixin:HasAnyFailedReqs()
+	for _, fixtureOption in ipairs(self.fixturePointInfo.fixtureOptions) do
+		if fixtureOption.isLocked or fixtureOption.isInvalid then
+			return true;
+		end
+	end
+	return false;
+end
+
 function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointInfo)
 	local isSameHookpoint = self.fixturePointInfo and self.fixturePointInfo.ownerHash == fixturePointInfo.ownerHash;
 	self.fixturePointInfo = fixturePointInfo;
@@ -431,8 +451,8 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 		return o1.name < o2.name;
 	end);
 
-	local hasAnyLockedChoices = self:HasAnyLockedChoices();
-	local hasAnyFailedReqs = hasAnyLockedChoices; -- Right now we have no ineligible choices that aren't also just locked
+	local hasALockedChoice = self:HasAnyLockedChoices();
+	local hasAFailedReq = self:HasAnyFailedReqs();
 	
 	local optionElements = {};
 
@@ -442,14 +462,14 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 			name = HOUSING_EXTERIOR_CUSTOMIZATION_FIXTURE_NONE_OPTION,
 			choiceIndex = 1,
 			ineligibleChoice = isRemoveDisabled,
-			isLocked = isRemoveDisabled,
-			lockedText = isRemoveDisabled and HOUSING_EXTERIOR_CUSTOMIZATION_CANT_REMOVE or nil,
+			ineligibleText = isRemoveDisabled and HOUSING_EXTERIOR_CUSTOMIZATION_CANT_REMOVE or nil,
+			isLocked = false,
 			isNoneOption = true,
 		},
 		listStateData = {
 			isSelected = not isAnythingSelected,
-			hasAnyFailedReqs = hasAnyFailedReqs,
-			hasAnyLockedChoices = hasAnyLockedChoices,
+			hasAFailedReq = hasAFailedReq,
+			hasALockedChoice = hasALockedChoice,
 		}
 	};
 	table.insert(optionElements, removeButtonData);
@@ -458,15 +478,19 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 		local elementData = {};
 		elementData.choiceData = fixtureOption;
 		elementData.choiceData.choiceIndex = index + 1;
-		elementData.choiceData.ineligibleChoice = elementData.choiceData.isLocked;
-		if elementData.choiceData.isLocked and elementData.choiceData.lockReasonString then
-			elementData.choiceData.lockedText = elementData.choiceData.lockReasonString;
+		elementData.choiceData.ineligibleChoice = elementData.choiceData.isLocked or elementData.choiceData.isInvalid;
+		if elementData.choiceData.reasonString and elementData.choiceData.reasonString ~= "" then
+			if elementData.choiceData.isLocked then
+				elementData.choiceData.lockedText = elementData.choiceData.reasonString;
+			elseif elementData.choiceData.isInvalid then
+				elementData.choiceData.ineligibleText = elementData.choiceData.reasonString;
+			end
 		end
 
 		elementData.listStateData = {
 			isSelected = elementData.choiceData.fixtureID == self.fixturePointInfo.selectedFixtureID,
-			hasAnyFailedReqs = hasAnyFailedReqs,
-			hasAnyLockedChoices = hasAnyLockedChoices,
+			hasAFailedReq = hasAFailedReq,
+			hasALockedChoice = hasALockedChoice,
 		};
 
 		table.insert(optionElements, elementData);

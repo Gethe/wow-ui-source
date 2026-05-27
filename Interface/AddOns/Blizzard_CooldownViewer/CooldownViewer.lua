@@ -1124,6 +1124,8 @@ function CooldownViewerCooldownItemMixin:RefreshOverlayGlow(desiredShowStateFrom
 		needShow = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
 	end
 
+	-- LogCooldownItem(self, "RefreshOverlayGlow", "desiredShowStateFromEvent: %s, needShow: %s", tostring(desiredShowStateFromEvent), tostring(needShow));
+
 	if needShow then
 		ActionButtonSpellAlertManager:ShowAlert(self, skipBirth);
 	else

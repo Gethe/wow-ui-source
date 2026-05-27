@@ -18,6 +18,7 @@ end
 
 function TalentFrameCurrencyDisplayMixin:OnTreeCurrencyInfoUpdated()
 	self:Update();
+	self:UpdateWidgetSet();
 end
 
 function TalentFrameCurrencyDisplayMixin:Update()
@@ -41,6 +42,21 @@ function TalentFrameCurrencyDisplayMixin:Update()
 
 	self.Text:SetText(text);
 	self:MarkDirty();
+end
+
+function TalentFrameCurrencyDisplayMixin:UpdateWidgetSet()
+	local configID = self.talentFrame and self.talentFrame:GetConfigID();
+	self.uiWidgetSetID = configID and C_Traits.GetTraitSystemWidgetSetID(configID) or nil;
+end
+
+function TalentFrameCurrencyDisplayMixin:OnEnter()
+	if not self.uiWidgetSetID then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddWidgetSet(GameTooltip, self.uiWidgetSetID);
+	GameTooltip:Show();
 end
 
 TalentFrameGateMixin = {};

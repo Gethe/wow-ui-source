@@ -65,6 +65,22 @@ CHAT_FRAME_TEXTURES = {
 
 CHAT_FRAMES = {};
 
+local CHAT_TAB_DOCKED_MAX_WIDTH = 90;
+local CHAT_TAB_UNDOCKED_MAX_WIDTH = 180;
+local CHAT_TAB_SIDES_PADDING = 20;
+
+local function FCF_HasSecretName(frame)
+	return frame.chatTarget and (frame.chatType == "WHISPER" or frame.chatType == "BN_WHISPER");
+end
+
+-- We use a fixed width for tabs that have secret text to avoid propagation of secret values.
+local function FCF_SetTabFixedWidth(tab, width)
+	local padding = tab.sizePadding or 0;
+	local textWidth = width - CHAT_TAB_SIDES_PADDING - padding;
+	tab.Text:SetWidth(textWidth);
+	tab:SetWidth(width);
+end
+
 FloatingChatFrameMixin = CreateFromMixins(ChatFrameMixin);
 
 function FloatingChatFrameMixin:OnLoad()
@@ -813,9 +829,14 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	end
 	local tab = _G[frame:GetName().."Tab"];
 	tab:SetText(name);
-	PanelTemplates_TabResize(tab, tab.sizePadding or 0);
-	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
-	tab.textWidth = tab.Text:GetWidth();
+	if FCF_HasSecretName(frame) then
+		FCF_SetTabFixedWidth(tab, CHAT_TAB_DOCKED_MAX_WIDTH);
+		tab.textWidth = CHAT_TAB_DOCKED_MAX_WIDTH - CHAT_TAB_SIDES_PADDING - (tab.sizePadding or 0);
+	else
+		PanelTemplates_TabResize(tab, tab.sizePadding or 0);
+		-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
+		tab.textWidth = tab.Text:GetWidth();
+	end
 	if ( frame.minFrame ) then
 		frame.minFrame:SetText(name);
 	end
@@ -1962,7 +1983,11 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	chatFrame:SetMovable(true);
 	chatFrame:SetResizable(true);
 	FCFTab_UpdateColors(chatTab, true);
-	PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
+	if FCF_HasSecretName(chatFrame) then
+		FCF_SetTabFixedWidth(chatTab, CHAT_TAB_UNDOCKED_MAX_WIDTH);
+	else
+		PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
+	end
 	if ( FCFDock_GetSelectedWindow(dock) == chatFrame ) then
 		FCFDock_SelectWindow(dock, dock.DOCKED_CHAT_FRAMES[1]);
 	end
@@ -2053,7 +2078,11 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	for index, chatFrame in ipairs(dock.DOCKED_CHAT_FRAMES) do
 		if ( not chatFrame.isStaticDocked ) then
 			local chatTab = _G[chatFrame:GetName().."Tab"];
-			PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, dynTabSize);
+			if FCF_HasSecretName(chatFrame) then
+				FCF_SetTabFixedWidth(chatTab, dynTabSize);
+			else
+				PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, dynTabSize);
+			end
 		end
 	end
 

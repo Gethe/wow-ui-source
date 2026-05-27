@@ -1391,6 +1391,13 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 		if ( GetRaidTargetIndex(target) == marker ) then
 			return;
 		end
+	-- Prefixing with a "~" will prevent setting the marker if the unit already has any marker.
+	elseif ( marker and string.find(marker, "^~") ) then
+		marker = tonumber(string.match(marker, "%d+"));
+
+		if ( GetRaidTargetIndex(target) ~= nil ) then
+			return;
+		end
 	else
 		marker = tonumber(marker);
 	end

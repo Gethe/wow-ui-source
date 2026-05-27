@@ -54,7 +54,7 @@
 					<KeyValue key="basePanOffsetY" value="14" type="number"/>
 				</KeyValues>
 				<Frames>
-					<Frame parentKey="CurrencyDisplay" inherits="TalentFrameCurrencyDisplayTemplate">
+					<Frame parentKey="CurrencyDisplay" inherits="TalentFrameCurrencyDisplayTemplate" frameStrata="HIGH" frameLevel="2000">
 						<KeyValues>
 							<KeyValue key="iconSize" value="16" type="number"/>
 						</KeyValues>

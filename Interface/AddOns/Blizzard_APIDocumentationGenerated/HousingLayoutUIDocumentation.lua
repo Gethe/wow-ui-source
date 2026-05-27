@@ -23,6 +23,21 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "CanSetViewedFloor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "floor", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canSet", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelActiveLayoutEditing",
 			Type = "Function",
 		},
@@ -236,15 +251,6 @@ local HousingLayoutUI =
 			{
 				{ Name = "isDragging", Type = "bool", Nilable = false },
 				{ Name = "isAccessibleDrag", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsDraggingStairwell",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isDraggingStairwell", Type = "bool", Nilable = false },
 			},
 		},
 		{

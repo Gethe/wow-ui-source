@@ -584,6 +584,8 @@ SECURE_ACTIONS.raidtarget =
 		marker = marker or 1;
 		if ( action == "set" and GetRaidTargetIndex(unit) ~= marker ) then
 			SetRaidTarget(unit, marker);
+		elseif ( action == "set-unmarked" and GetRaidTargetIndex(unit) == nil ) then
+			SetRaidTarget(unit, marker);
 		elseif ( action == "clear" ) then
 			SetRaidTarget(unit, 0);
 		elseif ( action == "clear-all" ) then

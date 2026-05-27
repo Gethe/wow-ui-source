@@ -455,9 +455,17 @@ function HouseUpgradeCurrentLevelFrameMixin:OnEnter()
 		return;
 	end
 
+	-- Avoid the the "coming soon" level
+	local isMaxLevel = parent.actualLevel >= (parent.maxLevel - 1);
+
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DASHBOARD_HOUSE_LEVEL, parent.actualLevel));
-	GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	if isMaxLevel then
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(PVP_REWARD_XP_FORMAT, parent.houseFavor));
+	else
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	end
+
 	GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR_TOOLTIP);
 	GameTooltip:Show();
 end

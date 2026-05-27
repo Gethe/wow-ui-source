@@ -118,7 +118,7 @@ function HousingLayoutDoorPinMixin:Update()
 		self:SetShown(showWithAvailableAnim);
 		self.NodeAvailable:SetShown(showWithAvailableAnim);
 	else
-		self:Show();
+		self:SetShown(isDraggingRoom and pin:IsConnectedToDraggingRoom() or pin:IsValidForSelectedFloorplan());
 		self.NodeAvailable:Hide();
 	end
 

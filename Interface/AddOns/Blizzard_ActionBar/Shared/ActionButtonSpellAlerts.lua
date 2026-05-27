@@ -74,6 +74,7 @@ local function HideAlert(actionButton)
 
 	alertFrame:Hide();
 	alertFrame.ProcStartAnim:Stop();
+	alertFrame.playingAnimation = false;
 	self.activeAlerts[actionButton] = nil;
 end
 
@@ -87,6 +88,7 @@ local function ShowAlert(actionButton, alertType, skipBirth)
 	local create = true;
 	local alertFrame = GetAlertFrame(actionButton, create);
 	alertFrame:Show();
+	alertFrame.playingAnimation = true;
 	CheckAndSetArtStyle(actionButton);
 
 	if not skipBirth then
@@ -147,5 +149,11 @@ end
 function ActionButtonSpellAlertMixin:OnHide()
 	if self.ProcLoop:IsPlaying() then
 		self.ProcLoop:Stop();
+	end
+end
+
+function ActionButtonSpellAlertMixin:OnShow()
+	if self.animationPlaying then
+		self.ProcLoop:Play();
 	end
 end
