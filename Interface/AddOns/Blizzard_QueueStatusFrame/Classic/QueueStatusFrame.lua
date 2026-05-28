@@ -884,23 +884,6 @@ function QueueStatus_InActiveBattlefield()
 end
 
 function TogglePVPScoreboardOrResults()
-	if IsAddOnLoaded("Blizzard_PVPMatch") then
-		local isComplete = C_PvP.IsMatchComplete();
-		if isComplete then
-			if PVPMatchResults:IsShown() then
-				HideUIPanel(PVPMatchResults);
-			else
-				PVPMatchResults:BeginShow();
-			end
-		else
-			if PVPMatchScoreboard:IsShown() then
-				HideUIPanel(PVPMatchScoreboard);
-			else
-				local isActive = C_PvP.IsMatchActive();
-				if isActive and (not C_PvP.IsMatchConsideredArena() or C_PvP.IsSoloShuffle()) then
-					PVPMatchScoreboard:BeginShow();
-				end
-			end
-		end
-	end
+	-- For Classic, we just handle this with the WorldStateScoreFrame.
+	ToggleWorldStateScoreFrame();
 end

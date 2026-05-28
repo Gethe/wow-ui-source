@@ -273,6 +273,24 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsBrawlSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBrawlSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBrawlSoloShuffle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBrawlSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsInBrawl",
 			Type = "Function",
 
@@ -297,6 +315,42 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "isRatedMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedSoloShuffle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSoloShuffle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSoloShuffle", Type = "bool", Nilable = false },
 			},
 		},
 		{
