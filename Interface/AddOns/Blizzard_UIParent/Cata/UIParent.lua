@@ -201,23 +201,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
 end
 
-function UIParent_OnShow(self)
-	if ( self.firstTimeLoaded ~= 1 ) then
-		CloseAllWindows();
-		self.firstTimeLoaded = nil;
-	end
-
-	if ( LowHealthFrame ) then
-		LowHealthFrame:EvaluateVisibleState();
-	end
-end
-
-function UIParent_OnHide(self)
-	if ( LowHealthFrame ) then
-		LowHealthFrame:EvaluateVisibleState();
-	end
-end
-
 function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
@@ -285,6 +268,10 @@ function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 
+function Transmog_LoadUI()
+	UIParentLoadAddOn("Blizzard_Transmog");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -303,6 +290,10 @@ function NPETutorial_AttemptToBegin(event)
 end
 
 function ShowMacroFrame()
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
@@ -541,10 +532,9 @@ function UIParent_OnEvent(self, event, ...)
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
 				GetGMLink(lastTalkedToGM, "["..lastTalkedToGM.."]")), info.r, info.g, info.b, info.id);
-			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
-			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
+			GMChatFrameEditBox:SetTellTarget(lastTalkedToGM);
+			GMChatFrameEditBox:SetChatType("WHISPER");
 		end
-		TargetFrame_OnVariablesLoaded();
 
 		StoreFrame_CheckForFree(event);
 		EventUtil.TriggerOnVariablesLoaded();
@@ -682,12 +672,12 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
+	elseif ( event == "SETTINGS_LOADED" ) then
+		-- Get multi-actionbar states
 		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 
@@ -770,7 +760,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
-		RaidOptionsFrame_UpdatePartyFrames();
+		UpdateRaidAndPartyFrames();
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
@@ -978,7 +968,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
 	elseif ( event == "AUCTION_HOUSE_SHOW_NOTIFICATION" or event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION" ) then
 		local auctionHouseNotification, formatArg = ...;
-		Chat_AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
+		ChatFrameUtil.AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
 
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
@@ -1441,6 +1431,8 @@ function ToggleGameMenu()
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
+	elseif ( EditModeManagerFrame:IsShown() ) then
+		EditModeManagerFrame.CloseButton:Click();
 	elseif ( SocialBrowserFrame and SocialBrowserFrame:IsShown() ) then
 		SocialBrowserFrame:Hide();
 	elseif ( SocialPostFrame and Social_IsShown() ) then
@@ -1602,115 +1594,7 @@ function InviteToGroup(name)
 	end
 end
 
-function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
 
-	frame.hasDispellable = nil;
-
-	numBuffs = numBuffs or MAX_PARTY_BUFFS;
-	suffix = suffix or "Buff";
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime;
-
-	local filter;
-	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showCastableBuffs") and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
-	end
-
-	for i=1, numBuffs do
-		name, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
-
-		local buffName = frameName..suffix..i;
-		if ( icon ) then
-			-- if we have an icon to show then proceed with setting up the aura
-
-			-- set the icon
-			local buffIcon = _G[buffName.."Icon"];
-			buffIcon:SetTexture(icon);
-
-			-- setup the cooldown
-			--[[local coolDown = _G[buffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end]]
-
-			-- show the aura
-			_G[buffName]:Show();
-		else
-			-- no icon, hide the aura
-			_G[buffName]:Hide();
-		end
-	end
-end
-
-function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
-
-	frame.hasDispellable = nil;
-
-	numDebuffs = numDebuffs or MAX_PARTY_DEBUFFS;
-	suffix = suffix or "Debuff";
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime, caster;
-	local isEnemy = UnitCanAttack("player", unit);
-
-	local filter;
-	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
-	end
-
-	for i=1, numDebuffs do
-		if ( unit == "party"..i ) then
-			unitStatus = _G[frameName.."Status"];
-		end
-
-		name, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
-
-		local debuffName = frameName..suffix..i;
-		if ( icon and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
-			-- if we have an icon to show then proceed with setting up the aura
-
-			-- set the icon
-			local debuffIcon = _G[debuffName.."Icon"];
-			debuffIcon:SetTexture(icon);
-
-			-- setup the border
-			local debuffBorder = _G[debuffName.."Border"];
-			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
-			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
-
-			-- record interesting data for the aura button
-			statusColor = debuffColor;
-			frame.hasDispellable = 1;
-			debuffTotal = debuffTotal + 1;
-
-			-- setup the cooldown
-			local coolDown = _G[debuffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
-
-			-- show the aura
-			_G[debuffName]:Show();
-		else
-			-- no icon, hide the aura
-			_G[debuffName]:Hide();
-		end
-	end
-
-	frame.debuffTotal = debuffTotal;
-	-- Reset unitStatus overlay graphic timer
-	if ( frame.numDebuffs and debuffTotal >= frame.numDebuffs ) then
-		frame.debuffCountdown = 30;
-	end
-	if ( unitStatus and statusColor ) then
-		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
-	end
-end
 
 function GetQuestDifficultyColor(level, isScaling)
 	if (isScaling) then
@@ -1863,39 +1747,6 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 	end
 end
 
-function GetDisplayedAllyFrames()
-	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
-		return "party";
-	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
-		return "raid";
-	elseif ( IsInGroup() ) then
-		return "party";
-	else
-		return nil;
-	end
-end
-
-NUMBER_ABBREVIATION_DATA = {
-	-- Order these from largest to smallest
-	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
-	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
-	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
-
 function IsInLFDBattlefield()
 	return false;
 end
@@ -1996,27 +1847,6 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 			frame.shakeTicker:Cancel();
 		end
 	end);
-end
-
-function ChatClassColorOverrideShown()
-	local value = GetCVar("chatClassColorOverride");
-	if value == "0" then
-		return true;
-	elseif value == "1" then
-		return false;
-	else
-		return nil;
-	end
-end
-
- -- takes into account the current expansion
- -- NOTE: it's not safe to cache this value as it could change in the middle of the session
-function GetEffectivePlayerMaxLevel()
-	return GetMaxPlayerLevel();
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	return level >= GetEffectivePlayerMaxLevel();
 end
 
 -- From SocialQueue.lua

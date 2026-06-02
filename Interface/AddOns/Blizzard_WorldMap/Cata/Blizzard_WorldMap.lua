@@ -3,6 +3,7 @@ WorldMapMixin = {};
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
 		self.MiniBorderFrame:Hide();
+		self:SetFrameStrata("FULLSCREEN");
 
 		self.WorldMapLevelDropDown:ClearAllPoints();
 
@@ -35,15 +36,9 @@ function WorldMapMixin:SynchronizeDisplayState()
 		MaximizeUIPanel(self);
 	else
 		self.MiniBorderFrame:Show();
-		self:SetMovable("true");
-
-		WorldMapFrame:ClearAllPoints();
+		self:SetFrameStrata("MEDIUM");
 		self.WorldMapLevelDropDown:ClearAllPoints();
-		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
-		WorldMapFrame:SetUserPlaced(true);
-
 		WorldMapFrame_SetOpacity(GetCVar("worldMapOpacity"));
-
 		self:SetSize(self.minimizedWidth, self.minimizedHeight);
 		
 		self.BlackoutFrame:Hide();
@@ -115,7 +110,7 @@ function WorldMapMixin:IsMaximized()
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "top", allowOtherPanels = 1 };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = -16, yoffset = 10, whileDead = 1, minYOffset = 0, maximizePoint = "top", allowOtherPanels = 0 };
 
 	MapCanvasMixin.OnLoad(self);
 	self:SetupMinimizeMaximizeButton();
@@ -395,7 +390,6 @@ end
 
 function WorldMapMixin:AttachQuestLog()
 	QuestMapFrame:SetParent(self);
-	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
 	QuestMapFrame:SetPoint("TOPRIGHT", -34, -64);
 	QuestMapFrame:SetPoint("BOTTOMRIGHT", -34, 26);

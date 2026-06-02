@@ -223,6 +223,9 @@ local vasErrorData = {
 	[Enum.VasTransactionPurchaseResult.DbInvalidName] = {
 		msg = BLIZZARD_STORE_VAS_INVALID_NAME,
 	},
+	[Enum.VasTransactionPurchaseResult.DbHouseOwnerRestriction] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HOUSE_NEIGHBORHOOD_OWNER,
+	},
 };
 
 local storeErrorData = {

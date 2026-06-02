@@ -3,8 +3,8 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
 ## AllowLoad: Game
-## AllowLoadGameType: standard
-Mainline\IconDataProvider.lua
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
 AnimatedStatusBar.xml
 GradualAnimatedStatusBar.xml
@@ -14,4 +14,5 @@ Mainline\FrameLocks.lua
 PlayerMovementFrameFader.lua
 Shared\Constants.lua
 Constants.lua
+[Game]\GameModeConstants.lua [AllowLoadGameType plunderstorm]
 Mainline\Localization.lua

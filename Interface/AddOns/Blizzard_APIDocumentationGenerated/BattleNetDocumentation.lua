@@ -3,6 +3,7 @@ local BattleNet =
 	Name = "BattleNet",
 	Type = "System",
 	Namespace = "C_BattleNet",
+	Environment = "All",
 
 	Functions =
 	{
@@ -130,6 +131,83 @@ local BattleNet =
 			Type = "Function",
 			HasRestrictions = true,
 		},
+		{
+			Name = "InviteFriend",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SendGameData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+				{ Name = "prefix", Type = "stringView", Nilable = false },
+				{ Name = "data", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendWhisper",
+			Type = "Function",
+			HasRestrictions = true,
+			RestrictedForMacroChatMessages = true,
+
+			Arguments =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAFK",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "isAFK", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
+			Name = "SetCustomMessage",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDND",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "isDND", Type = "bool", Nilable = false, Default = true },
+			},
+		},
 	},
 
 	Events =
@@ -177,6 +255,7 @@ local BattleNet =
 				{ Name = "realmID", Type = "number", Nilable = true },
 				{ Name = "factionName", Type = "string", Nilable = true },
 				{ Name = "raceName", Type = "string", Nilable = true },
+				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
 				{ Name = "areaName", Type = "string", Nilable = true },
 				{ Name = "characterLevel", Type = "number", Nilable = true },
@@ -189,6 +268,9 @@ local BattleNet =
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

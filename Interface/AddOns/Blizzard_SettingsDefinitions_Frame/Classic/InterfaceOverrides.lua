@@ -1,19 +1,5 @@
 InterfaceOverrides = {}
 
-function InterfaceOverrides.CreateLargerNameplateSetting(category)
-	--no setting in Classic
-end
-
-function InterfaceOverrides.AdjustNameplateSettings(category)
-	if GetClassicExpansionLevel() > LE_EXPANSION_CLASSIC then
-		-- Nameplate Distance
-		local minValue, maxValue, step = 20, 41, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
-		Settings.SetupCVarSlider(category, "nameplateMaxDistance", options, UNIT_NAMEPLATES_MAX_DISTANCE, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAX_DISTANCE);
-	end
-end
-
 function InterfaceOverrides.AdjustDisplaySettings(category)
 	do
 		-- Show Helm
@@ -99,25 +85,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 
 	do
 		-- Consolidate Buffs
-		local function CVarChangedCB()
-			BuffFrame_Update();
-		end
-
 		Settings.SetupCVarCheckbox(category, "consolidateBuffs", CONSOLIDATE_BUFFS_TEXT, OPTION_TOOLTIP_CONSOLIDATE_BUFFS);
-		CVarCallbackRegistry:RegisterCallback("consolidateBuffs", CVarChangedCB, nil);
-	end
-
-	-- Hide Zone Objective Tracker
-	Settings.SetupCVarCheckbox(category, "hideOutdoorWorldState", HIDE_OUTDOOR_WORLD_STATE_TEXT, OPTION_TOOLTIP_HIDE_OUTDOOR_WORLD_STATE);
-
-	do
-		-- Rotate Minimap
-		local function CVarChangedCB()
-			Minimap_UpdateRotationSetting();
-		end
-
-		Settings.SetupCVarCheckbox(category, "rotateMinimap", ROTATE_MINIMAP, OPTION_TOOLTIP_ROTATE_MINIMAP);
-		CVarCallbackRegistry:RegisterCallback("rotateMinimap", CVarChangedCB, nil);
 	end
 
 	do
@@ -138,32 +106,32 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	-- Loading Screen Tips
 	Settings.SetupCVarCheckbox(category, "showLoadingScreenTips", SHOW_TIPOFTHEDAY_TEXT, OPTION_TOOLTIP_SHOW_TIPOFTHEDAY);
 
-	do
-		-- Display Aggro Warning
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, NEVER, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY1);
-			container:Add(1, AGGRO_WARNING_IN_INSTANCE, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY2);
-			container:Add(2, AGGRO_WARNING_IN_PARTY, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY3);
-			container:Add(3, ALWAYS, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY4);
-			return container:GetData();
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		do
+			-- Display Aggro Warning
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(0, NEVER, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY1);
+				container:Add(1, AGGRO_WARNING_IN_INSTANCE, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY2);
+				container:Add(2, AGGRO_WARNING_IN_PARTY, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY3);
+				container:Add(3, ALWAYS, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY4);
+				return container:GetData();
+			end
+
+			Settings.SetupCVarDropdown(category, "threatWarning", Settings.VarType.Number, GetOptions, AGGRO_WARNING_DISPLAY, nil);
 		end
 
-		Settings.SetupCVarDropdown(category, "threatWarning", Settings.VarType.Number, GetOptions, AGGRO_WARNING_DISPLAY, nil);
+		--Show Aggro Percentages
+		Settings.SetupCVarCheckbox(category, "threatShowNumeric", SHOW_AGGRO_PERCENTAGES, OPTION_TOOLTIP_SHOW_NUMERIC_THREAT);
 	end
-
-	--Show Aggro Percentages
-	Settings.SetupCVarCheckbox(category, "threatShowNumeric", SHOW_AGGRO_PERCENTAGES, OPTION_TOOLTIP_SHOW_NUMERIC_THREAT);
 
 	--Show Enemy Castbars
-	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
-		Settings.SetupCVarCheckbox(category, "showTargetCastbar", SHOW_ENEMY_CASTBARS, OPTION_TOOLTIP_SHOW_ENEMY_CASTBARS);		
-	end
+	Settings.SetupCVarCheckbox(category, "showTargetCastbar", SHOW_ENEMY_CASTBARS, OPTION_TOOLTIP_SHOW_ENEMY_CASTBARS);
 
 	--Show active player debuffs larger on target
-	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
-		Settings.SetupCVarCheckbox(category, "showDynamicBuffSize", SHOW_DYNAMIC_BUFF_SIZE, OPTION_TOOLTIP_SHOW_DYNAMIC_BUFF_SIZE);		
-	end
+	Settings.SetupCVarCheckbox(category, "showDynamicBuffSize", SHOW_DYNAMIC_BUFF_SIZE, OPTION_TOOLTIP_SHOW_DYNAMIC_BUFF_SIZE);
+
+	Settings.SetupCVarCheckbox(category, "unitFramesDisplayIncomingHeals", UNIT_FRAMES_DISPLAY_INCOMING_HEALS, OPTION_TOOLTIP_UNIT_FRAMES_DISPLAY_INCOMING_HEALS);
 
 	if C_Engraving.IsEngravingEnabled() then
 		Settings.SetupCVarCheckbox(category, "alwaysShowRuneIcons", ALWAYS_SHOW_RUNE_ICONS, OPTION_TOOLTIP_ALWAYS_SHOW_RUNE_ICONS);		
@@ -201,624 +169,80 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	end
 end
 
--- RaidProfilesMixin
-RaidProfilesMixin = CreateFromMixins(SettingsDropdownControlMixin);
-
-function RaidProfilesMixin:OnLoad()
-	SettingsDropdownControlMixin.OnLoad(self);
-
-	self.NewButton:ClearAllPoints();
-	self.NewButton:SetPoint("TOPRIGHT", self.Control.Dropdown, "BOTTOM");
-
-	self.DeleteButton:ClearAllPoints();
-	self.DeleteButton:SetPoint("TOPLEFT", self.NewButton, "TOPRIGHT", -10);
-end
-
-function RaidProfilesMixin:Init(initializer)
-	SettingsDropdownControlMixin.Init(self, initializer);
-
-	self.NewButton:SetText(NEW_COMPACT_UNIT_FRAME_PROFILE);
-	self.NewButton:SetScript("OnClick", function()
-		StaticPopup_Show("RAID_PROFILE_NEW", CompactUnitFrameProfiles.selectedProfile, nil, { cbObject = self });
-	end);
-
-	self.DeleteButton:SetText(DELETE);
-	self.DeleteButton:SetScript("OnClick", function()
-		StaticPopup_Show("RAID_PROFILE_DELETION", CompactUnitFrameProfiles.selectedProfile, nil, { profile = CompactUnitFrameProfiles.selectedProfile, cbObject = self } );
-	end);
-
-	self:RefreshSelected();
-	self:EvaluateButtonState();
-end
-
-function RaidProfilesMixin:Release()
-	SettingsDropdownControlMixin.Release(self);
-	self.NewButton:SetScript("OnClick", nil);
-	self.DeleteButton:SetScript("OnClick", nil);
-end
-
-function RaidProfilesMixin:RefreshList()
-	self:InitDropdown();
-	self:SetValue(1);
-	self:EvaluateButtonState();
-end
-
-function RaidProfilesMixin:RefreshSelected()
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		if CompactUnitFrameProfiles.selectedProfile == name then
-			self:SetValue(i);
-		end
-	end
-end
-
-function RaidProfilesMixin:OnAdded(newProfileName)
-	self:InitDropdown();
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		if newProfileName == name then
-			self:SetValue(i);
-			break;
-		end
-	end
-	self:EvaluateButtonState();
-end
-
-function RaidProfilesMixin:OnDeleted()
-	self:RefreshList();
-end
-
-function RaidProfilesMixin:EvaluateButtonState()
-	self.NewButton:SetEnabled(GetNumRaidProfiles() < GetMaxNumCUFProfiles());
-	self.DeleteButton:SetEnabled(GetNumRaidProfiles() > 1 );
-end
-
 local function RevertSetting(name)
 	local setting = Settings.GetSetting(name);
 	securecallfunction(setting.Revert, setting);
 end
 
-function InterfaceOverrides.RefreshRaidOptions()
-	RevertSetting("PROXY_RAID_FRAME_CLASS_COLORS");
-	RevertSetting("PROXY_RAID_FRAME_PETS");
-	RevertSetting("PROXY_RAID_FRAME_TANK_ASSIST");
-	RevertSetting("PROXY_RAID_FRAME_BORDER");
-	RevertSetting("PROXY_RAID_FRAME_SHOW_DEBUFFS");
-	RevertSetting("PROXY_RAID_FRAME_KEEP_GROUPS_TOGETHER");
-	RevertSetting("PROXY_RAID_FRAME_KEEP_HORIZONTAL_GROUPS");
-	RevertSetting("PROXY_RAID_FRAME_SORT_BY");
-	RevertSetting("PROXY_RAID_FRAME_POWER_BAR");
-	RevertSetting("PROXY_RAID_FRAME_DISPELLABLE_DEBUFFS");
-	RevertSetting("PROXY_RAID_HEALTH_TEXT");
-	RevertSetting("PROXY_RAID_FRAME_HEIGHT");
-	RevertSetting("PROXY_RAID_FRAME_WIDTH");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_2");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_3");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_5");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_10");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_15");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_20");
-	RevertSetting("PROXY_RAID_AUTO_ACTIVATE_40");
-end
-
-function InterfaceOverrides.GetRaidProfileOption(option, default)
-	if(CompactUnitFrameProfiles.selectedProfile) then
-		return GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, option);	
-	end
-
-	return default;
-end
-
-function InterfaceOverrides.SetRaidProfileOption(option, value)
-	if(CompactUnitFrameProfiles.selectedProfile) then
-		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, option, value);
-		CompactUnitFrameProfiles_ApplyCurrentSettings();
-	end	
-end
-
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
-	if ( not C_AddOns.IsAddOnLoaded("Blizzard_CUFProfiles") ) then
-		UIParentLoadAddOn("Blizzard_CUFProfiles");
+	-- Raid Frame Preview
+	do
+		local data = { };
+		local initializer = Settings.CreatePanelInitializer("RaidFramePreviewTemplate", data);
+		layout:AddInitializer(initializer);
 	end
 
-	do
-		-- Raid-Style Party Frames
-		local function CVarChangedCB()
-			local compactFrames = C_CVar.GetCVarBool("useCompactPartyFrames");
-			RaidOptionsFrame_UpdatePartyFrames()
-			CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-			InterfaceOverrides.RefreshRaidOptions();
-		end
-
-		Settings.SetupCVarCheckbox(category, "useCompactPartyFrames", USE_RAID_STYLE_PARTY_FRAMES, OPTION_TOOLTIP_USE_RAID_STYLE_PARTY_FRAMES);
-		CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(CVarChangedCB, nil);
+	-- Incoming Heals
+	if C_CVar.GetCVar("raidFramesDisplayIncomingHeals") then
+		Settings.SetupCVarCheckbox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);
 	end
 
-	do
-		-- Profile Drop Down
-		local function GetValue()
-			for i=1, GetNumRaidProfiles() do
-				local name = GetRaidProfileName(i);
-				if CompactUnitFrameProfiles.selectedProfile == name then
-					return i;
-				end
-			end
-			return 0;
-		end
-		
-		local function SetValue(value)
-			if ( RaidProfileHasUnsavedChanges() ) then
-				CompactUnitFrameProfiles_SaveChanges(CompactUnitFrameProfiles);
-			end
+	-- Power Bars
+	local raidFramesDisplayPowerBarsSetting, raidFramesDisplayPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
 
-			CompactUnitFrameProfiles_SetRaidProfile(GetRaidProfileName(value));
-			InterfaceOverrides.RefreshRaidOptions();
-			CompactUnitFrameProfiles_ApplyCurrentSettings();
-		end
+	local _, raidFramesDisplayOnlyHealerPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyHealerPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS);
+	local function EnableRaidFramesDisplayOnlyHealerPowerBarsSetting()
+		return raidFramesDisplayPowerBarsSetting:GetValue();
+	end
+	raidFramesDisplayOnlyHealerPowerBarsInitializer:SetParentInitializer(raidFramesDisplayPowerBarsInitializer, EnableRaidFramesDisplayOnlyHealerPowerBarsSetting);
 
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			for i=1, GetNumRaidProfiles() do
-				local name = GetRaidProfileName(i);
-				container:Add(i, name, nil);
-			end
-			return container:GetData();
-		end
-
-		local defaultValue = 1;
-		local raidProfileSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_PROFILE",
-			Settings.VarType.Number, COMPACT_UNIT_FRAME_PROFILE_LABEL, defaultValue, GetValue, SetValue);
-		local raidProfileData = Settings.CreateSettingInitializerData(raidProfileSetting, GetOptions);
-
-		local raidProfileInitializer = Settings.CreateSettingInitializer("RaidProfilesTemplate", raidProfileData);
-
-		layout:AddInitializer(raidProfileInitializer);
-
+	-- Aggro Highlight
+	if C_CVar.GetCVar("raidFramesDisplayAggroHighlight") then
+		Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
 	end
 
-	do
-		-- Keep Groups Together
-		local keepGroupsTogetherSetting;
-		local keepGroupsInitializer;
+	-- Class Colors
+	Settings.SetupCVarCheckbox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
 
-		do
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("keepGroupsTogether", defaultValue);
-			end
-			
-			local function SetValue(value)
-				local test = InterfaceOverrides.GetRaidProfileOption("keepGroupsTogether", defaultValue);
-				InterfaceOverrides.SetRaidProfileOption("keepGroupsTogether", value);
-			end
-			
-			keepGroupsTogetherSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_KEEP_GROUPS_TOGETHER",
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_KEEPGROUPSTOGETHER, defaultValue, GetValue, SetValue);
-			keepGroupsInitializer = Settings.CreateCheckbox(category, keepGroupsTogetherSetting, OPTION_TOOLTIP_KEEP_GROUPS_TOGETHER);
-		end
+	-- Pets
+	Settings.SetupCVarCheckbox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
 
-		-- Horizontal Groups
-		do
-			local defaultValue = true;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("horizontalGroups", defaultValue);
-			end
-			
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("horizontalGroups", value);
-			end
-
-			local horizontalSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_KEEP_HORIZONTAL_GROUPS", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_HORIZONTALGROUPS, defaultValue, GetValue, SetValue);
-			local horizontalGroupsInitializer = Settings.CreateCheckbox(category, horizontalSetting, nil);
-
-			local function HorizontalShouldShow()
-				return keepGroupsTogetherSetting:GetValue();
-			end
-
-			horizontalGroupsInitializer:SetParentInitializer(keepGroupsInitializer);
-			horizontalGroupsInitializer:AddShownPredicate(HorizontalShouldShow);
-		end
-
-		-- Sort By
-		local defaultValue = "role";
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("sortBy", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("sortBy", value);
-		end
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add("role", RAID_SORT_ROLE, OPTION_RAID_SORT_BY_ROLE);
-			container:Add("group", RAID_SORT_GROUP, OPTION_RAID_SORT_BY_GROUP);
-			container:Add("alphabetical", RAID_SORT_ALPHABETICAL, OPTION_RAID_SORT_BY_ALPHABETICAL);
-			return container:GetData();
-		end
-
-		local sortBySetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_SORT_BY",
-			Settings.VarType.String, COMPACT_UNIT_FRAME_PROFILE_SORTBY, defaultValue, GetValue, SetValue);
-
-		local sortByInitializer = Settings.CreateDropdown(category, sortBySetting, GetOptions, TOOLTIP_TEXT);
-
-		local function SortShouldShow()
-			return not keepGroupsTogetherSetting:GetValue();
-		end
-
-		sortByInitializer:SetParentInitializer(keepGroupsInitializer);
-		sortByInitializer:AddShownPredicate(SortShouldShow);
-	end
+	-- Main Tank and Assist
+	Settings.SetupCVarCheckbox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
 
 	do
-		-- Display Power Bars
-		local defaultValue = false;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("displayPowerBar", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("displayPowerBar", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_POWER_BAR", 
-			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
-	end
-	
-	do
-		-- Use Class Colors
-		local defaultValue = false;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("useClassColors", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("useClassColors", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_CLASS_COLORS", 
-			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
-	end
+		-- Debuffs
+		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
 
-	do
-		-- Display Pets
-		local defaultValue = false;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("displayPets", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("displayPets", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_PETS", 
-			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
-	end
-
-	do
-		-- Display Main Tank and Assist
-		local defaultValue = true;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("displayMainTankAndAssist", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("displayMainTankAndAssist", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_TANK_ASSIST", 
-			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
-	end
-
-	do
-		-- Display Border
-		local defaultValue = true;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("displayBorder", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("displayBorder", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_BORDER", 
-			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_DISPLAYBORDER, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, nil);
-	end
-
-	do
-		-- Show Debuffs
-		local debuffsSetting;
-		local debuffsInitializer;
-
-		do
-			local defaultValue = true;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("displayNonBossDebuffs", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("displayNonBossDebuffs", value);
-			end
-
-			debuffsSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_SHOW_DEBUFFS", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, defaultValue, GetValue, SetValue);
-			debuffsInitializer = Settings.CreateCheckbox(category, debuffsSetting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
-		end
-
-		-- Display Only Dispellable Debuffs
-		do
-			local defaultValue = true;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("displayOnlyDispellableDebuffs", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("displayOnlyDispellableDebuffs", value);
-			end
-
-			local dispellableSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_DISPELLABLE_DEBUFFS", 
-				Settings.VarType.Boolean, DISPLAY_ONLY_DISPELLABLE_DEBUFFS, defaultValue, GetValue, SetValue);
-			local dispellableInitializer = Settings.CreateCheckbox(category, dispellableSetting, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-
-			local function IsModifiable()
-				return debuffsSetting:GetValue();
-			end
-
-			dispellableInitializer:SetParentInitializer(debuffsInitializer, IsModifiable);
-		 end
-	 end
-
-
-	 do
-		-- Display Health Text
-		local defaultValue = "none";
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("healthText", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("healthText", value);
-		end
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, nil);
-			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, nil);
-			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, nil);
-			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, nil);
-			return container:GetData();
-		end
-
-		local healthTextSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_HEALTH_TEXT",
-			Settings.VarType.String, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateDropdown(category, healthTextSetting, GetOptions, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
-	end
-
-	do
-		-- Frame Height
-		local defaultValue = 36;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("frameHeight", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("frameHeight", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_HEIGHT", 
-			Settings.VarType.Number, COMPACT_UNIT_FRAME_PROFILE_FRAMEHEIGHT, defaultValue, GetValue, SetValue);
-
-		local function FormatScaledPercentage(value)
-			return FormatPercentage(value/36);
-		end
-
-		local minValue, maxValue, step = 36, 72, 2;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
-		Settings.CreateSlider(category, setting, options, nil);
-	end
-
-	do
-		-- Frame Width
-		local defaultValue = 36;
-		local function GetValue()
-			return InterfaceOverrides.GetRaidProfileOption("frameWidth", defaultValue);
-		end
-		
-		local function SetValue(value)
-			InterfaceOverrides.SetRaidProfileOption("frameWidth", value);
-		end
-		
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_WIDTH", 
-			Settings.VarType.Number, COMPACT_UNIT_FRAME_PROFILE_FRAMEWIDTH, defaultValue, GetValue, SetValue);
-
-		local function FormatScaledPercentage(value)
-			return FormatPercentage(value/72);
-		end
-
-		local minValue, maxValue, step = 72, 144, 2;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
-		Settings.CreateSlider(category, setting, options, nil);
-	end
-
-	do
-		--Auto Activate PvE/PvP
-		local autoActivateSetting, autoActivateInitializer;
-
-		do
-		local function GetValue()
-			local pvp = InterfaceOverrides.GetRaidProfileOption("autoActivatePvP", false);
-			local pve = InterfaceOverrides.GetRaidProfileOption("autoActivatePvE", false);
-			if ( pvp and pve ) then
-				return 4;
-			elseif ( pvp )  then
-				return 3;
-			elseif ( pve ) then
-				return 2;
-			end
-
-			-- disabled
-			return 1;
-		end
-		
-		local function SetValue(value)
-			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvP", value == 4 or value == 3);
-			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvE", value == 4 or value == 2);
-			CompactUnitFrameProfiles_ApplyCurrentSettings();
-		end
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(1, VIDEO_OPTIONS_DISABLED, nil);
-			container:Add(2, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE, nil);
-			container:Add(3, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP, nil);
-			container:Add(4, PVE_AND_PVP, nil);
-			return container:GetData();
-		end
-
-		local defaultValue = 1;
-			autoActivateSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE",
-			Settings.VarType.Number, AUTO_ACTIVATE_ON, defaultValue, GetValue, SetValue);
-			autoActivateInitializer = Settings.CreateDropdown(category, autoActivateSetting, GetOptions, nil);
-		end
-
-
-		--Auto Activate Player Count
-
+		-- Only Dispellable Debuffs
 		local function IsModifiable()
-			return autoActivateSetting:GetValue() ~= 1;
+			return debuffSetting:GetValue();
 		end
 
-		do
-			-- Auto Activate 2
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate2Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate2Players", value);
-			end
-		
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_2", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE2PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
+		local _, initializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Health Text
+	do 
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
+			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
+			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
+			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
+			return container:GetData();
 		end
 
-		do
-			-- Auto Activate 3
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate3Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate3Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_3", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE3PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
-
-		do
-			-- Auto Activate 5
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate5Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate5Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_5", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE5PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
-
-		do
-			-- Auto Activate 10
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate10Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate10Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_10", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE10PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
-
-		do
-			-- Auto Activate 15
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate15Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate15Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_15", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE15PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
-
-		do
-			-- Auto Activate 20
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate20Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate20Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_20", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE20PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
-
-		do
-			-- Auto Activate 40
-			local defaultValue = false;
-			local function GetValue()
-				return InterfaceOverrides.GetRaidProfileOption("autoActivate40Players", defaultValue);
-			end
-		
-			local function SetValue(value)
-				InterfaceOverrides.SetRaidProfileOption("autoActivate40Players", value);
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_RAID_AUTO_ACTIVATE_40", 
-				Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATE40PLAYERS, defaultValue, GetValue, SetValue);
-			local initializer = Settings.CreateCheckbox(category, setting, nil);
-			initializer:SetParentInitializer(autoActivateInitializer, IsModifiable);
-		end
+		Settings.SetupCVarDropdown(category, "raidFramesHealthText", Settings.VarType.String, GetOptions, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
 	end
 end
 
 function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
+	--No setting in Classic
+end
+
+function InterfaceOverrides.CreateHousingSettings(category, layout)
 	--No setting in Classic
 end
 

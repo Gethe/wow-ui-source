@@ -11,7 +11,7 @@ function TalentButtonSpendMixin:OnClick(button)
 			self:GetTalentFrame():TryPurchaseToNode(self:GetNodeID());
 		elseif IsModifiedClick("CHATLINK") then
 			local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
-			ChatEdit_InsertLink(spellLink);
+			ChatFrameUtil.InsertLink(spellLink);
 		elseif self:CanPurchaseRank() then
 			self:PurchaseRank();
 		end
@@ -37,8 +37,15 @@ function TalentButtonSpendMixin:CanPurchaseRank()
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
-	self:PlaySelectSound();
-	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
+	local talentFrame = self:GetTalentFrame();
+	local nodeID = self:GetNodeID();
+
+	-- If we are showing a confirmation, we want to hold off on playing the sound until they confirm
+	if not talentFrame:ShouldShowConfirmation(nodeID) then
+		self:PlaySelectSound();
+	end
+
+	self:GetTalentFrame():PurchaseRank(nodeID);
 	self:UpdateMouseOverInfo();
 end
 
@@ -76,12 +83,16 @@ end
 
 function TalentButtonSpendMixin:AddTooltipInfo(tooltip)
 	local hasIncreasedRanks = self:HasIncreasedRanks();
-	local rankLine = TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(self.nodeInfo.currentRank, self.nodeInfo.maxRanks);
+	local rankShown = self.nodeInfo.currentRank;
+	local rankColor = hasIncreasedRanks and GREEN_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	rankShown = rankColor:WrapTextInColorCode(rankShown);
+
+	local rankLine = TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(rankShown, self.nodeInfo.maxRanks);
 	if FlagsUtil.IsSet(self.nodeInfo.flags, Enum.TraitNodeFlag.HideMaxRank) then
-		rankLine = TALENT_BUTTON_TOOLTIP_RANK_NO_MAX_FORMAT:format(self.nodeInfo.currentRank);
+		rankLine = TALENT_BUTTON_TOOLTIP_RANK_NO_MAX_FORMAT:format(rankShown);
 	end
 
-	GameTooltip_AddColoredLine(tooltip, rankLine, hasIncreasedRanks and GREEN_FONT_COLOR or HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddHighlightLine(tooltip, rankLine);
 
 	if hasIncreasedRanks then
 		local increasedTraitDataList = C_Traits.GetIncreasedTraitData(self:GetNodeID(), self:GetEntryID());

@@ -2,6 +2,7 @@ local SimpleAnimGroupAPI =
 {
 	Name = "SimpleAnimGroupAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -335,6 +336,9 @@ local SimpleAnimGroupAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

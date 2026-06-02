@@ -94,6 +94,7 @@ function StaticPopup_UpdateSubText(dialog, dialogInfo)
 	end
 end
 
+-- If you're considering using this, consider using FrameUtil's SetAlternateTopLevelParent instead
 function StaticPopup_SetFullScreenFrame(frame)
 	if frame then
 		fullscreenFrameOverride = frame;
@@ -410,7 +411,7 @@ end
 
 function StaticPopup_ResizeShownDialogs()
 	for _, dialog in ipairs(shownDialogFrames) do
-		dialog:Resize(dialog.which);
+		FunctionUtil.SafeInvokeMethod(dialog, "Resize", dialog.which);
 	end
 end
 
@@ -559,9 +560,17 @@ function StaticPopup_OnShow(dialog)
 		dialogInfo.OnShow(dialog, dialog.data);
 	end
 
+	-- The "cover" parameter means use the GlueFrame BlockingFrame (not the Cover frame defined in the dialog itself).
 	if dialogInfo.cover then
 		assert(atGlues); -- No modal frame implementation it glue
 		GlueParent_AddModalFrame(dialog);
+	end
+
+	-- The "fullScreenCover" parameter means use the Cover frame defined in the dialog itself (not the GlueFrame BlockingFrame).
+	-- This is useful for frames such as the CatalogShop, where the CatalogShop is on the FULLSCREEN_DIALOG strata, and the
+	-- GlueFrame BlockingFrame's strata is too low.
+	if (dialog.Cover) then
+		dialog.Cover:SetShown(not not dialogInfo.fullScreenCover);
 	end
 
 	if atGlues or dialogInfo.enterClicksFirstButton then
@@ -989,4 +998,7 @@ end);
 
 EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
 	StaticPopup_ResizeShownDialogs();
+end);
+EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function ()
+	StaticPopup_ReparentDialogs();
 end);

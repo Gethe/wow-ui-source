@@ -2,6 +2,7 @@ local SpecializationShared =
 {
 	Name = "SpecializationShared",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -112,6 +113,9 @@ local SpecializationShared =
 				{ Name = "masterySpell2", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

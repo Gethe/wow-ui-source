@@ -33,7 +33,6 @@ EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
-AnchorUtil.lua
 GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua
@@ -53,6 +52,7 @@ SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml
 
+Shared\Button\CheckButtonTemplates.xml
 Shared\Button\UIButtonTemplate.lua
 Shared\Button\UIButtonTemplate.xml
 Shared\Button\ThreeSliceButtonTemplate.lua
@@ -109,14 +109,21 @@ Shared\Scroll\ScrollTemplates.xml
 Shared\ButtonTray\ButtonTrayUtil.lua
 Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
-Dump.lua
+Dump.lua [AllowLoadEnvironment Global]
 
+Shared\TabSystem\TabSystemTemplates.lua
+Shared\TabSystem\TabSystemTemplates.xml
+Shared\TabSystem\TabSystemOwner.lua
+Shared\TabSystem\TabSystemOwner.xml
 Shared\Selector\Blizzard_SelectorUI.lua
 Shared\Selector\Blizzard_SelectorUI.xml
 Shared\Selector\Blizzard_GridSelectorUI.lua
 Shared\Selector\Blizzard_GridSelectorUI.xml
 Shared\Selector\Blizzard_ScrollBoxSelector.lua
 Classic\Selector\Blizzard_ScrollBoxSelector.xml
+
+HelpTip.lua [AllowLoadEnvironment Global]
+HelpTip.xml [AllowLoadEnvironment Global]
 
 ScrollingMessageFrame.lua
 ScrollingMessageFrame.xml
@@ -145,7 +152,19 @@ Classic\SliderTemplates.xml
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
 ScriptAnimationUtil.lua
-SharedBasicControls.lua
+
+Shared\Button\UIPanelButtonTemplates.lua
+Shared\Button\UIPanelButtonTemplates.xml
+
+Shared\Dialog\DialogTemplates.lua
+Shared\Dialog\DialogTemplates.xml
+Classic\Dialog\DialogTemplates.xml
+DialogUtil.lua
+
+Shared\InputBox\InputBoxTemplates.lua
+Shared\InputBox\InputBoxTemplates.xml
+
+SharedBasicControls.lua [AllowLoadEnvironment Global]
 SharedBasicControls.xml
 Classic\UIDropDownMenu.lua
 Classic\UIDropDownMenuTemplates.lua
@@ -174,9 +193,10 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
+Classic\GameTooltipTemplate.lua
 Classic\GameTooltipTemplate.xml
 MixinUtil.lua
-DebugBarManager.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
 
 PropertyBindingMixin.lua
 PropertyButton.lua
@@ -202,3 +222,4 @@ AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
 Shared\VASErrorLookup.lua
+MoneyFormatter.lua

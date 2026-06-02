@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" enableKeyboard="true">
+	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" mixin="MovieFrameMixin" enableKeyboard="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" setAllPoints="true">
@@ -9,43 +9,67 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CloseDialog">
-				<Size x="320" y="84"/>
+			<Frame parentKey="CloseDialog" inherits="VerticalLayoutFrame">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="topPadding" value="20" type="number"/>
+					<KeyValue key="bottomPadding" value="20" type="number"/>
+					<KeyValue key="leftPadding" value="20" type="number"/>
+					<KeyValue key="rightPadding" value="20" type="number"/>
+					<KeyValue key="spacing" value="16" type="number"/>
+				</KeyValues>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
-							<Size x="290" y="0"/>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BackgroundTile" vertTile="true" horizTile="true">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-16"/>
+								<Anchor point="TOPLEFT" x="8" y="-8" />
+								<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
 							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="UserScaledFontGameHighlight, UserScaledFontStringTemplate" text="CONFIRM_CLOSE_CINEMATIC">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+							<Size x="290" y="0"/>
+						</FontString>
+						<FontString parentKey="Summary" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+							<Size x="468" y="0"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button parentKey="ConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-6" y="16"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								MovieFrame_OnMovieFinished(self:GetParent():GetParent(), true);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button parentKey="ResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="13" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
+					<Frame parentKey="Buttons" inherits="HorizontalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+							<KeyValue key="spacing" value="16" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Button parentKey="ConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+									<KeyValue key="align" value="center" type="string"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="ResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+									<KeyValue key="align" value="center" type="string"/>
+								</KeyValues>
+							</Button>							
+						</Frames>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -58,13 +82,13 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="MovieFrame_OnLoad"/>
-			<OnShow function="MovieFrame_OnShow"/>
-			<OnHide function="MovieFrame_OnHide"/>
-			<OnEvent function="MovieFrame_OnEvent"/>
-			<OnUpdate function="MovieFrame_OnUpdate"/>
-			<OnKeyUp function="MovieFrame_OnKeyUp"/>
-			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyUp method="OnKeyUp"/>
+			<OnUpdate function="nop"/>	<!-- An Update handler is needed for the movie to play (even if it is empty) -->
+			<OnMovieFinished method="OnMovieFinished"/>
 		</Scripts>
 	</MovieFrame>
 </Ui>

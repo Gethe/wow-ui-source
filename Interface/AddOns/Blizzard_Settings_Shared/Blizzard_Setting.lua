@@ -1,18 +1,37 @@
+local function GetOrCallDefaultValue(defaultValue)
+	if type(defaultValue) == "function" then
+		return defaultValue();
+	end
+	return defaultValue;
+end
+
+local function GetDefaultValueType(defaultValue)
+	return type(GetOrCallDefaultValue(defaultValue));
+end
+
+local function GetOrCallName(name)
+	if type(name) == "function" then
+		return name();
+	end
+	return name;
+end
+
+local function GetNameType(name)
+	return type(GetOrCallName(name));
+end
+
 local function EnsureVariableTypeIsValid(variableType, defaultValue)
 	if variableType == nil then
 		assert(defaultValue ~= nil);
-		variableType = type(defaultValue);
+		variableType = GetDefaultValueType(defaultValue);
 	end
 	return variableType;
 end
 
-local function MatchesVariableType(arg1, arg2VariableType)
-	return type(arg1) == arg2VariableType;
-end
-
 local function ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue)
-	if type(name) ~= "string" then
-		error(string.format("'name' for variable '%s' requires string type.", variable));
+	local nameType = GetNameType(name);
+	if nameType ~= "string" then
+		error(string.format("'name' for variable '%s' requires string type or a function that returns a string.", variable));
 	end
 
 	if type(variable) ~= "string" then
@@ -23,13 +42,16 @@ local function ErrorIfInvalidSettingArguments(name, variable, variableType, defa
 		error(string.format("'variableType' for '%s', '%s' requires string type.", name, variable));
 	end
 
-	if (defaultValue ~= nil) and not MatchesVariableType(defaultValue, variableType) then
-		error(string.format("'defaultValue' argument for '%s', '%s' required '%s' type.", name, variable, variableType));
+	if (defaultValue ~= nil) then
+		local defaultVariableType = GetDefaultValueType(defaultValue);
+		if defaultVariableType ~= variableType then
+			error(string.format("'defaultValue' argument for '%s', '%s' variable type '%s' doesn't match default value type '%s'.", name, variable, variableType, defaultVariableType));
+		end
 	end
 end
 
 local function ErrorIfInvalidVariableType(name, value, variableType)
-	if not MatchesVariableType(value, variableType) then
+	if type(value) ~= variableType then
 		error(string.format("SetValue '%s' requires '%s' type, not '%s' type.", name, variableType, type(value)));
 	end
 end
@@ -52,7 +74,7 @@ function SettingMixin:Init(name, variable, variableType)
 end
 
 function SettingMixin:GetName()
-	return self.name;
+	return self:GetNameDerived();
 end
 
 function SettingMixin:GetVariable()
@@ -263,7 +285,11 @@ function CVarSettingMixin:Init(name, cvar, variableType)
 		value = self:TransformValue(value);
 		cvarAccessor:SetValue(value);
 	end
-	
+
+	self.GetNameDerived = function(self)
+		return securecallfunction(GetOrCallName, name);
+	end;
+
 	self.GetDefaultValueDerived = function(self)
 		local value = cvarAccessor:GetDefaultValue();
 		return self:TransformValue(value);
@@ -324,9 +350,13 @@ do
 		self.SetValueDerived = function(self, value)
 			securecallfunction(SecureSetValueDerived, self, value);
 		end;
-	
+
+		self.GetNameDerived = function(self)
+			return securecallfunction(GetOrCallName, name);
+		end;
+
 		self.GetDefaultValueDerived = function(self)
-			return defaultValue;
+			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;
 	end
 end
@@ -344,8 +374,12 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 		SetModifiedClick(modifier, value);
 	end;
 
+	self.GetNameDerived = function(self)
+		return securecallfunction(GetOrCallName, name);
+	end;
+
 	self.GetDefaultValueDerived = function(self)
-		return defaultValue;
+		return securecallfunction(GetOrCallDefaultValue, defaultValue);
 	end;
 
 	self:SetCommitFlags(Settings.CommitFlag.SaveBindings);
@@ -399,9 +433,13 @@ do
 		self.SetValueDerived = function(self, value)
 			securecallfunction(SecureSetValueDerived, self, value);
 		end;
-	
+
+		self.GetNameDerived = function(self)
+			return securecallfunction(GetOrCallName, name);
+		end;
+
 		self.GetDefaultValueDerived = function(self)
-			return defaultValue;
+			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;
 	end
 end

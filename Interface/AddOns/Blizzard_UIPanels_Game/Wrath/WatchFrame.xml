@@ -51,9 +51,7 @@
 	</Texture>
 	
 	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
-		<Size>
-			<AbsDimension x="0" y="16"/>
-		</Size>
+		<Size x="0" y="16"/>
 	</FontString>
 
 	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
@@ -70,15 +68,9 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="LEFT" text="RANGE_INDICATOR">
-					<Size>
-						<AbsDimension x="29" y="10"/>
-					</Size>
+					<Size x="29" y="10"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="16" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="16" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -86,20 +78,12 @@
 				<Texture name="$parentIconTexture"/>
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -108,30 +92,14 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				WatchFrameItem_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				WatchFrameItem_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				WatchFrameItem_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnShow>
-				WatchFrameItem_OnShow(self);
-			</OnShow>
-			<OnHide>
-				WatchFrameItem_OnHide(self);
-			</OnHide>
-			<OnEnter>
-				WatchFrameItem_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnClick>
-				WatchFrameItem_OnClick(self, button, down);
-			</OnClick>
+			<OnLoad> WatchFrameItem_OnLoad(self); </OnLoad>
+			<OnEvent> WatchFrameItem_OnEvent(self, event, ...); </OnEvent>
+			<OnUpdate> WatchFrameItem_OnUpdate(self, elapsed); </OnUpdate>
+			<OnShow> WatchFrameItem_OnShow(self); </OnShow>
+			<OnHide> WatchFrameItem_OnHide(self); </OnHide>
+			<OnEnter> WatchFrameItem_OnEnter(self, motion); </OnEnter>
+			<OnLeave> GameTooltip:Hide(); </OnLeave>
+			<OnClick> WatchFrameItem_OnClick(self, button, down); </OnClick>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="42" y="42"/>
@@ -150,16 +118,12 @@
 				<Texture name="$parentIcon" parentKey="Icon" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT">
-							<Offset x="-3" y="-1"/>
-						</Anchor>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-3" y="-1"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentDash" inherits="WatchFontTemplate" justifyV="TOP" parentKey="dash">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
@@ -174,37 +138,30 @@
 				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
 					<Size x="26" y="26"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				WatchFrameLineTemplate_OnLoad(self);
-			</OnLoad>
+			<OnLoad> WatchFrameLineTemplate_OnLoad(self); </OnLoad>
 		</Scripts>
 	</Frame>
 
-	<Frame name="WatchFrame" parent="UIParent" clampedToScreen="true" hidden="false" frameStrata="LOW">
+	<Frame name="WatchFrame" parent="UIParentRightManagedFrameContainer" clampedToScreen="true" hidden="false" frameStrata="LOW">
 		<Size x="204" y="140"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="10" type="number"/>
+		</KeyValues>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset x="0" y="0"/>
-			</Anchor>
+			<Anchor point="TOPRIGHT" relativeTo="UIParentRightManagedFrameContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
 		</Anchors>
 		<Frames>
 			<Button name="$parentHeader">
-				<Size>
-					<AbsDimension x="160" y="16"/>
-				</Size>
+				<Size x="160" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="0" y="-6"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="0" y="-6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -221,13 +178,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentCollapseExpandButton">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-12" y="-5"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-12" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
@@ -243,21 +196,17 @@
 			</Button>
 			<Frame name="WatchFrameLines" hidden="false">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
-						<Offset x="0" y="-30"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT">
-						<Offset x="-24" y="12"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT" x="0" y="-30"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT" x="-24" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="WatchFrameLinesAutoQuestShadow" inherits="QuestTracker-Shadow" parentKey="AutoQuestShadow" hidden="true">
+						<Texture name="WatchFrameLinesShadow" inherits="QuestTracker-Shadow" parentKey="Shadow" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-40" y="8"/>
 							</Anchors>
 							<Animations>
-								<AnimationGroup name="WatchFrameLinesAutoQuestShadowFadeIn" parentKey="FadeIn">
+								<AnimationGroup name="WatchFrameLinesShadowFadeIn" parentKey="FadeIn">
 									<Alpha duration="0" order="1"/>
 									<Alpha duration="0.5" order="2"/>
 								</AnimationGroup>
@@ -278,6 +227,8 @@
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
 			<OnUpdate function="WatchFrame_OnUpdate"/>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 
@@ -292,9 +243,7 @@
 				end
 				WatchFrameAutoQuest_ClearPopUp(self.questID);
 			</OnMouseUp>
-			<OnLoad>
-				self:SetHorizontalScroll(-28.5);
-			</OnLoad>
+			<OnLoad> self:SetHorizontalScroll(-28.5); </OnLoad>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild" parentKey="ScrollChild">
@@ -406,15 +355,11 @@
 						<Texture name="$parentShine" alphaMode="ADD" alpha="0" hidden="true" parentKey="Shine">
 							<Animations>
 								<AnimationGroup name="$parentFlash" parentKey="Flash">
-									<Alpha startDelay="0" duration="0.25" order="1"/>
-									<Alpha startDelay="0.05" duration="0.25" order="2"/>
+									<Alpha startDelay="0" fromAlpha="0" toAlpha="0.4" duration="0.25" order="1"/>
+									<Alpha startDelay="0.05" fromAlpha="0.4" toAlpha="0" duration="0.25" order="2"/>
 									<Scripts>
-										<OnStop>
-											self:GetParent():Hide();
-										</OnStop>
-										<OnFinished>
-											self:GetParent():Hide();
-										</OnFinished>
+										<OnStop> self:GetParent():Hide(); </OnStop>
+										<OnFinished> self:GetParent():Hide(); </OnFinished>
 									</Scripts>
 								</AnimationGroup>
 							</Animations>
@@ -432,12 +377,10 @@
 							</Anchors>
 							<Animations>
 								<AnimationGroup name="$parentFlash" parentKey="Flash">
-									<Alpha duration="0.25" order="1"/>
-									<Alpha startDelay="0.05" duration="0.25" order="2"/>
+									<Alpha fromAlpha="0" toAlpha="0.9" duration="0.25" order="1"/>
+									<Alpha startDelay="0.05" fromAlpha="0.9" toAlpha="0" duration="0.25" order="2"/>
 									<Scripts>
-										<OnStop>
-											self:GetParent():Hide();
-										</OnStop>
+										<OnStop> self:GetParent():Hide(); </OnStop>
 										<OnFinished>
 											self:GetParent():Hide();
 											if (self:GetParent():GetParent():GetParent().type=="COMPLETED") then
@@ -470,15 +413,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.IconFlash:SetVertexColor(1, 0, 0);
-							</OnLoad>
-							<OnShow>
-								UIFrameFlash(self, 0.75, 0.75, -1, nil);
-							</OnShow>
-							<OnHide>
-								UIFrameFlashStop(self);
-							</OnHide>
+							<OnLoad> self.IconFlash:SetVertexColor(1, 0, 0); </OnLoad>
+							<OnShow> UIFrameFlash(self, 0.75, 0.75, -1, nil); </OnShow>
+							<OnHide> UIFrameFlashStop(self); </OnHide>
 						</Scripts>
 					</Frame>
 				</Frames>

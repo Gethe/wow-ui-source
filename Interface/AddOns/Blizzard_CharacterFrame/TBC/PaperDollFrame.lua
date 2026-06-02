@@ -84,6 +84,10 @@ function PaperDollFrame_OnLoad(self)
 
 	self.TitleDropdown:SetWidth(160);
 	self.TitleDropdown:SetDefaultText(PAPERDOLL_SELECT_TITLE);
+
+	self.TitleDropdown.Text:SetJustifyH("LEFT");
+	self.Attributes.LeftPlayerStatDropdown.Text:SetJustifyH("LEFT");
+	self.Attributes.RightPlayerStatDropdown.Text:SetJustifyH("LEFT");
 end
 
 local function IsTitleSelected(value)
@@ -208,8 +212,8 @@ function PaperDoll_IsEquippedSlot(slot)
 end
 
 function CharacterAttributesFrame_OnLoad(self)
-	self.LeftPlayerStatDropdown:SetWidth(100);
-	self.RightPlayerStatDropdown:SetWidth(100);
+	self.LeftPlayerStatDropdown:SetWidth(114);
+	self.RightPlayerStatDropdown:SetWidth(114);
 end
 
 local function IsLeftStatSelected(value)
@@ -1439,7 +1443,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 	end
 	if ( InRepairMode() and repairCost and (repairCost > 0) ) then
 		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
+		GameTooltip_AddMoneyLine(GameTooltip, repairCost);
 		GameTooltip:Show();
 	else
 		CursorUpdate(self);

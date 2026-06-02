@@ -54,10 +54,10 @@ end
 local function ExecuteCastRandom(actions)
 	if ( not CastRandomManager ) then
 		CastRandomManager = CreateFrame("Frame");
-		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_FAILED");
-		CastRandomManager:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET");
+		CastRandomManager:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+		CastRandomManager:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
+		CastRandomManager:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
+		CastRandomManager:RegisterUnitEvent("UNIT_SPELLCAST_FAILED_QUIET", "player");
 		CastRandomManager:SetScript("OnEvent", CastRandomManager_OnEvent);
 	end
 

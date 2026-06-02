@@ -3,6 +3,7 @@ local AddOnProfiler =
 	Name = "AddOnProfiler",
 	Type = "System",
 	Namespace = "C_AddOnProfiler",
+	Environment = "All",
 
 	Functions =
 	{
@@ -190,6 +191,9 @@ local AddOnProfiler =
 				{ Name = "metricValue", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

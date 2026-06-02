@@ -44,7 +44,7 @@ function SpellPickupIndicatorMixin:UpdateOffensiveReminder(id, itemGUID)
 		return;
 	end
 
-	local hasAction = HasAction(OffensiveSlotOffset + self.spellSlot);
+	local hasAction = C_ActionBar.HasAction(OffensiveSlotOffset + self.spellSlot);
 
 	local newActionType = GetActionInfo(id);
 	local firstActionType, firstID = GetActionInfo(OffensiveSlotOffset + 0);
@@ -63,7 +63,7 @@ function SpellPickupIndicatorMixin:UpdateOffensiveReminder(id, itemGUID)
 	self.PickupArrow:Show();
 	self.KeyIcon:Show();
 	--Change the SlotSpell to be the icon of the spell in that slot.
-	local texture = GetActionTexture(OffensiveSlotOffset + self.spellSlot);
+	local texture = C_ActionBar.GetActionTexture(OffensiveSlotOffset + self.spellSlot);
 	self.BindingAction:SetText(PLUNDERSTORM_INTERACT_SWAP_REMINDER_TEXT);
 	self.SlotSpell:SetTexture(texture);
 	self.SlotSpell:Show();
@@ -111,7 +111,7 @@ function SpellPickupIndicatorMixin:UpdateUtilityReminder(id, itemGUID)
 		return;
 	end
 
-	local hasAction = HasAction(UtilitySlotOffset + self.spellSlot);
+	local hasAction = C_ActionBar.HasAction(UtilitySlotOffset + self.spellSlot);
 	local firstActionType, firstID = GetActionInfo(UtilitySlotOffset + 0);
 	local secondActionType, secondID = GetActionInfo(UtilitySlotOffset + 1);
 
@@ -127,7 +127,7 @@ function SpellPickupIndicatorMixin:UpdateUtilityReminder(id, itemGUID)
 	self.PickupArrow:Show();
 	self.KeyIcon:Show();
 	--Change the SlotSpell to be the icon of the spell in that slot.
-	local texture = GetActionTexture(UtilitySlotOffset + self.spellSlot);
+	local texture = C_ActionBar.GetActionTexture(UtilitySlotOffset + self.spellSlot);
 	self.SlotSpell:SetTexture(texture);
 	self.SlotSpell:Show();
 	self:Layout();
@@ -142,8 +142,8 @@ function SpellPickupIndicatorMixin:UpdateItemReminder()
 end
 
 function SpellPickupIndicatorMixin:HandleEmptyAbilitySlots(baseIndex, buttonMapping)
-	local firstSlotHasAction = HasAction(baseIndex);
-	local secondSlotHasAction = HasAction(baseIndex + 1);
+	local firstSlotHasAction = C_ActionBar.HasAction(baseIndex);
+	local secondSlotHasAction = C_ActionBar.HasAction(baseIndex + 1);
 
 	if(firstSlotHasAction == false) then
 		self.PickupArrow:Hide();

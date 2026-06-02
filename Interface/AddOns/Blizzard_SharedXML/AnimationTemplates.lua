@@ -97,3 +97,47 @@ function AnimateWhileShownMixin:StopAnims()
 		animGroup:Stop();
 	end);
 end
+
+PointsOffsetAnimationMixin = {};
+
+function PointsOffsetAnimationMixin:OnUpdate()
+	self:GetTarget():SetPointsOffset(self:GetSmoothOffsets());
+end
+
+function PointsOffsetAnimationMixin:GetCustomEasingFunction()
+	return self.customEasingFunction;
+end
+
+function PointsOffsetAnimationMixin:GetOffsetFrom()
+	return self.offsetFromX, self.offsetFromY;
+end
+
+function PointsOffsetAnimationMixin:GetOffsetTo()
+	return self.offsetToX, self.offsetToY;
+end
+
+function PointsOffsetAnimationMixin:SetCustomEasingFunction(easingFunction)
+	self.customEasingFunction = easingFunction;
+end
+
+function PointsOffsetAnimationMixin:SetOffsetFrom(offsetX, offsetY)
+	self.offsetFromX, self.offsetFromY = offsetX, offsetY;
+end
+
+function PointsOffsetAnimationMixin:SetOffsetTo(offsetX, offsetY)
+	self.offsetToX, self.offsetToY = offsetX, offsetY;
+end
+
+function PointsOffsetAnimationMixin:GetSmoothOffsets()
+	local progress = self:GetSmoothProgress();
+	local customEasingFunction = self:GetCustomEasingFunction();
+
+	if customEasingFunction then
+		progress = customEasingFunction(progress);
+	end
+
+	local offsetX = Lerp(self.offsetFromX, self.offsetToX, progress);
+	local offsetY = Lerp(self.offsetFromY, self.offsetToY, progress);
+
+	return offsetX, offsetY;
+end

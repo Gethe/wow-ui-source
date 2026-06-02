@@ -273,7 +273,7 @@ function WorldStateScoreFrame_Update()
 
 		if ( index <= numScores ) then
 			scoreButton.index = index;
-			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone, ratingChange = GetBattlefieldScore(index);
 
 			if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
 				honorGained = honorGained / 100;
@@ -314,14 +314,17 @@ function WorldStateScoreFrame_Update()
 						scoreButton.team:SetText(teamName);
 						scoreButton.name.teamName = teamName;
 						scoreButton.team:Show();
+
+						if ( teamDataFailed == 1 ) then
+							scoreButton.honorGained:SetText("-------");
+						else
+							local delta = newTeamRating - teamRating;
+							scoreButton.honorGained:SetText(TEAM_RATING_CHANGE:format(delta, newTeamRating));
+						end
+					else
+						scoreButton.honorGained:SetText(ratingChange);
 					end
 
-					if ( teamDataFailed == 1 ) then
-						scoreButton.honorGained:SetText("-------");
-					else
-						local delta = newTeamRating - teamRating;
-						scoreButton.honorGained:SetText(TEAM_RATING_CHANGE:format(delta, newTeamRating));
-					end
 					scoreButton.honorGained:Show();
 				else
 					scoreButton.honorGained:Hide();
@@ -599,8 +602,8 @@ function ScorePlayer_OnMouseUp(self, mouseButton)
 
 			UnitPopup_OpenMenu("WORLD_STATE_SCORE", contextData);
 		end
-	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		ChatEdit_InsertLink(self.text:GetText());
+	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
+		ChatFrameUtil.InsertLink(self.text:GetText());
 	end
 end
 

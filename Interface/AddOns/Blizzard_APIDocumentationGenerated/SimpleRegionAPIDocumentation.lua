@@ -2,6 +2,7 @@ local SimpleRegionAPI =
 {
 	Name = "SimpleRegionAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -124,6 +125,17 @@ local SimpleRegionAPI =
 			},
 		},
 		{
+			Name = "SetAlphaFromBoolean",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "alphaIfTrue", Type = "SingleColorValue", Nilable = false, Default = 255 },
+				{ Name = "alphaIfFalse", Type = "SingleColorValue", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "SetDrawLayer",
 			Type = "Function",
 
@@ -174,6 +186,17 @@ local SimpleRegionAPI =
 				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
+		{
+			Name = "SetVertexColorFromBoolean",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "colorIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "colorIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -181,6 +204,9 @@ local SimpleRegionAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

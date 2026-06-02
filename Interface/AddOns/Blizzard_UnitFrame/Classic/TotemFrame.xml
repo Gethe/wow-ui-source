@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="TotemButtonTemplate" virtual="true" mixin="TotemButtonMixin" hidden="true">
+		<Size x="37" y="37"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.6"/>
+				</Texture>
+				<FontString name="$parentDuration" parentKey="Duration" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIcon" parentKey="Icon">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" parentKey="Texture"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentBorder">
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\CharacterFrame\TotemBorder"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" inherits="HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" mixin="TotemFrameMixin" hidden="true">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="50" type="number"/> 
+			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+			<KeyValue key="leftPadding" value="38" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="spacing" value="-6" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" y="20"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

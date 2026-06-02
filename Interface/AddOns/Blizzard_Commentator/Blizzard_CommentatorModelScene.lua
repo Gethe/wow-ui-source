@@ -2,7 +2,7 @@ CommentatorModelSceneMixin = {}
 
 local CommentatorModelSceneEvents =
 {
-	"COMBAT_LOG_EVENT_UNFILTERED",
+	"COMMENTATOR_COMBAT_EVENT",
 };
 
 local MODEL_SCENE_OFFENSIVE_EFFECT_AURA = 36;
@@ -26,8 +26,8 @@ end
 
 function CommentatorModelSceneMixin:OnEvent(event, ...)
 	ScriptAnimatedModelSceneMixin.OnEvent(self, event, ...);
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		self:OnUnfilteredCombatLogEvent(CombatLogGetCurrentEventInfo());
+	if event == "COMMENTATOR_COMBAT_EVENT" then
+		self:OnCommentatorCombatEvent(C_Commentator.GetCombatEventInfo());
 	end
 end
 
@@ -46,7 +46,7 @@ function CommentatorModelSceneMixin:IsInitialized()
 	return self.unitToken and self.effectTarget;
 end
 
-function CommentatorModelSceneMixin:OnUnfilteredCombatLogEvent(...)
+function CommentatorModelSceneMixin:OnCommentatorCombatEvent(...)
 	local event = select(2, ...);
 	if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
 		local destGuid = select(8, ...);

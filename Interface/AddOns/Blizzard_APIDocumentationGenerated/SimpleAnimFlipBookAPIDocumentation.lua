@@ -2,6 +2,7 @@ local SimpleAnimFlipBookAPI =
 {
 	Name = "SimpleAnimFlipBookAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -122,6 +123,9 @@ local SimpleAnimFlipBookAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

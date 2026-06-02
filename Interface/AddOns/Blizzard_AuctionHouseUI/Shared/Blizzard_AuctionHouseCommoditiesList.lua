@@ -89,6 +89,12 @@ function AuctionHouseCommoditiesListMixin:RefreshScrollFrame()
 		return;
 	end
 
+	-- Attempt to select 1 if quantity was previously forced to 0 (to fix cases where data was not present and it was changed via SetQuantitySelected).
+	if self.quantityCappedAtZero then
+		self.quantitySelected = 1;
+		self.quantityCappedAtZero = false;
+	end
+
 	self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelected);
 
 	if C_AuctionHouse.HasFullCommoditySearchResults(self.itemID) then
@@ -106,7 +112,7 @@ AuctionHouseCommoditiesBuyListMixin = CreateFromMixins(AuctionHouseCommoditiesLi
 
 function AuctionHouseCommoditiesBuyListMixin:OnLoad()
 	AuctionHouseItemListMixin.OnLoad(self);
-	
+
 	local function CommoditiesListGetTotalQuantity()
 		return self.itemID and C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID) or 0;
 	end
@@ -172,8 +178,14 @@ function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 	self.quantitySelected = quantity;
 	if canUseSearchResults then
 		local totalItemQuantity = C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID);
-		self.quantitySelected = math.min(totalItemQuantity, quantity);
-	else 
+		if totalItemQuantity < quantity then
+			self.quantitySelected = totalItemQuantity;
+
+			if self.quantitySelected == 0 then
+				self.quantityCappedAtZero = true;
+			end
+		end
+	else
 		return;
 	end
 

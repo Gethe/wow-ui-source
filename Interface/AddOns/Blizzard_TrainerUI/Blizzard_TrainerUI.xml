@@ -181,7 +181,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT"  x="-44" y="-67"/>
 				</Anchors>

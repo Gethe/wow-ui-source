@@ -51,7 +51,7 @@ function GenerateBuildString(buildNumber)
 end
 
 function CharacterSelectLockedButtonMixin:OnEnter()
-	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
+	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeToCurrentExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
 
     local tooltipFooter = nil;
 
@@ -92,7 +92,7 @@ end
 function CharacterSelectLockedButtonMixin:OnClick()
     local isAccountLocked = self.characterSelectButton.isAccountLocked;
 
-	if not isAccountLocked and IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() then
+	if not isAccountLocked and IsExpansionTrialCharacter(self.guid) and CanUpgradeToCurrentExpansion() then
 		ToggleStoreUI();
 		StoreFrame_SetGamesCategory();
 		return;
@@ -274,9 +274,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 				return;
 			end
 
-            if (IsKioskGlueEnabled()) then
-                GlueParent_SetScreen("kioskmodesplash");
-            elseif not IsWowTokenLimitedModeEnabled() then
+			if KioskFrame and KioskFrame:HandleCharacterListUpdate() then
+				return;
+			end
+
+            if not IsWowTokenLimitedModeEnabled() then
                 GlueParent_SetScreen("charcreate");
             end
             return;
@@ -318,10 +320,9 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_NAME_RESERVATION" ) then
 		CharacterSelect_UpdateButtonState();
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-        StaticPopup_Hide();
-        local message = ...;
-        CharacterRenameDialog:Show();
-        CharacterRenameText1:SetText(_G[message]);
+		StaticPopup_Hide();
+		local message = ...;
+		StaticPopup_Show("FORCE_RENAME_CHARACTER", CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]));
     elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
         StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
     elseif ( event == "STORE_STATUS_CHANGED" ) then
@@ -559,7 +560,7 @@ function CharacterSelect_OnShow(self)
 	AccountUpgradePanel_Update();
 
     if( IsKioskGlueEnabled() ) then
-        CharacterSelectUI:Hide();
+		KioskFrame:HandleCharacterSelectShown();
     end
 
     -- character templates
@@ -608,7 +609,7 @@ function CharacterSelect_OnHide(self)
     end
     CharacterSelect_SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
-    CharacterRenameDialog:Hide();
+	StaticPopup_Hide("FORCE_RENAME_CHARACTER");
     AccountReactivate_CloseDialogs();
 
     if ( DeclensionFrame ) then
@@ -677,9 +678,7 @@ function CharacterSelect_UpdateState(fromLoginState)
     if (fromLoginState == REALM_CHANGE_IS_AUTO) then
         if ( connected ) then
             if (fromLoginState) then
-                if (IsKioskGlueEnabled()) then
-                    GlueParent_SetScreen("kioskmodesplash");
-                else
+				if not (KioskFrame and KioskFrame:HandleAutoLoginToRealm()) then
                     CharacterSelectUI:Hide();
                     CharacterSelectUI:Show();
                 end
@@ -841,7 +840,7 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
         padlock.tooltipText = CHARACTER_SELECT_ACCOUNT_LOCKED;
         padlock.tooltipTextColor = RED_FONT_COLOR;
 	elseif isExpansionTrialCharacter then
-		if IsExpansionTrial() or CanUpgradeExpansion() then
+		if IsExpansionTrial() or CanUpgradeToCurrentExpansion() then
 			-- Player has to upgrade to unlock this character
 			padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
 			padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
@@ -1096,7 +1095,7 @@ function UpdateCharacterList(skipSelect)
 						else
 							locationText:SetText(nil);
 						end
-					elseif CanUpgradeExpansion() then
+					elseif CanUpgradeToCurrentExpansion() then
 						locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 					else
 						locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
@@ -1334,7 +1333,7 @@ function UpdateCharacterList(skipSelect)
         CharacterSelectCharacterFrame:SetWidth(260);
         CharacterSelectCharacterFrame.scrollBar:Hide();
     end
-	
+
 	if not CharacterSelect.undeleting then
 		if ( CharacterSelect_UseSpecialCreateButtons() ) then
 			CreateCharacterButtonSpecial:Show();
@@ -1528,6 +1527,7 @@ function CharacterSelect_Exit()
     CharacterSelect_SaveCharacterOrder();
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
     C_Login.DisconnectFromServer();
+	ClearOutage();
 end
 
 function CharacterSelect_AccountOptions()
@@ -2011,7 +2011,7 @@ function CharacterTemplatesFrame_OnShow(self)
 
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CHARACTER_SELECT_TEMPLATE");
-		
+
 		for characterIndex = 1, C_CharacterCreation.GetNumCharacterTemplates() do
 		    local name, description = C_CharacterCreation.GetCharacterTemplateInfo(characterIndex);
 			local radio = rootDescription:CreateRadio(name, IsSelected, SetSelected, characterIndex);
@@ -2097,7 +2097,7 @@ function CharacterSelect_ActivateFactionChange()
 end
 
 function CharacterSelect_IsStoreAvailable()
-    return C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not CharacterSelect_IsAccountLocked();
+	return C_StorePublic.IsEnabled() and GetNumCharacters() > 0 and not CharacterSelect_IsAccountLocked();
 end
 
 function CharacterSelect_UpdateStoreButton()
@@ -2151,7 +2151,7 @@ function CharacterSelect_UpdateButtonState()
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
-    local inCompetitiveMode = IsCompetitiveModeEnabled();
+    local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
 	local canCreateCharacter = CanCreateCharacter();
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
@@ -2289,22 +2289,9 @@ function KioskMode_IsWaitingOnTrial()
 end
 
 function KioskMode_CheckEnterWorld()
-    if (not Kiosk.IsEnabled()) then
-        return;
-    end
-
-	if (not KioskMode_IsWaitingOnTrial()) then
-        if (KioskModeSplash:GetAutoEnterWorld()) then
-            EnterWorld();
-        else
-			if (not IsGMClient()) then
-            KioskDeleteAllCharacters();
-			end
-            if (IsKioskGlueEnabled()) then
-                GlueParent_SetScreen("kioskmodesplash");
-            end
-        end
-    end
+   if KioskFrame then
+		KioskFrame:HandleCheckEnterWorld();
+	end
 end
 
 local function GetCharacterServiceDisplayOrder()
@@ -2390,8 +2377,8 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
 		frame.remainingTime = upgradeInfo.remainingTime;
 
         if charUpgradeDisplayData.icon then
-		    SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
-		    SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+		    frame.Icon:SetTexture(charUpgradeDisplayData.icon);
+		    frame.Highlight.Icon:SetTexture(charUpgradeDisplayData.icon);
         end
 		frame.Highlight.IconBorder:SetAtlas(charUpgradeDisplayData.iconBorderAtlas);
 
@@ -2544,8 +2531,8 @@ local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
 	frame.remainingTime = upgradeInfo.remainingTime;
 
     if charUpgradeDisplayData.icon then
-	    SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
-	    SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+	    frame.Icon:SetTexture(charUpgradeDisplayData.icon);
+	    frame.Highlight.Icon:SetTexture(charUpgradeDisplayData.icon);
     end
 	frame.Highlight.IconBorder:SetAtlas(charUpgradeDisplayData.iconBorderAtlas);
 
@@ -2885,7 +2872,10 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
             StaticPopup_Show("BOOST_FACTION_CHANGE_IN_PROGRESS");
             return;
         end
-        StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+
+		local errorCode = ...;
+		local errorText = VASAssignErrorData_GetMessage(errorCode);
+		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", errorText);
     end
 end
 
@@ -2947,7 +2937,7 @@ function CharacterServicesMaster_SetFlow(self, flow)
     flow:Initialize(self);
 
     if flow.data.icon then
-        SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
+        self:GetParent().Icon:SetTexture(flow.data.icon);
     end
     self:GetParent().TitleText:SetText(flow.data.flowTitle);
 
@@ -3514,7 +3504,7 @@ function CopyCharacterFrame_OnShow(self)
 
 	local regions = C_CharacterServices.GetLiveRegionCharacterCopySourceRegions();
 	self.selectedRegion = regions[1];
-	
+
 	local function IsSelected(regionID)
 		return self.selectedRegion == regionID;
 	end

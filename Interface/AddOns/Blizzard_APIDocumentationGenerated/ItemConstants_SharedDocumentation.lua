@@ -2,13 +2,9 @@ local ItemConstants_Shared =
 {
 	Tables =
 	{
-		{
-			Name = "ClassicInclude",
-			Type = "Structure",
-			Fields =
-			{
-			},
-		},
+	},
+	Predicates =
+	{
 	},
 };
 

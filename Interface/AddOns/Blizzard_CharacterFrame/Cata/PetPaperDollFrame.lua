@@ -31,7 +31,7 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PET_SPELL_POWER_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 
-	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
+	PetPaperDollFrameExpBar:SetBarTextPrefix(XP);
 end
 
 function PetPaperDollFrame_UpdateIsAvailable()

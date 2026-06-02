@@ -84,6 +84,51 @@ function RegionUtil.GetRegionPointFromCursor(region, invertY)
 	return RegionUtil.GetRegionPoint(region, x, y, invertY);
 end
 
+function RegionUtil.GetPointsArray(region)
+	local points = {};
+	for i = 1, region:GetNumPoints() do
+		table.insert(points, AnchorUtil.CreateAnchorFromPoint(region, i));
+	end
+
+	return points;
+end
+
+function RegionUtil.ApplyRegionPoints(region, points)
+	if not points or #points == 0 then
+		return;
+	end
+
+	region:ClearAllPoints();
+	for _i, anchor in ipairs(points) do
+		anchor:SetPoint(region);
+	end
+end
+
+function RegionUtil.GetBounds(region)
+	local l = region:GetLeft();
+	local r = region:GetRight();
+	local t = region:GetTop();
+	local b = region:GetBottom();
+	return l, r, t, b;
+end
+
+local ALLOWED_KEYBIND_SET = {
+	["FSTACK"] = true,
+	["RELOADUI"] = true,
+	["TOGGLEGAMEMENU"] = true,
+	["TOGGLEMUSIC"] = true,
+	["TOGGLESOUND"] = true,
+	["SCREENSHOT"] = true,
+};
+
+-- For use with "OnKeyDown" scripts that are blocking keyboard input.
+function RegionUtil.RunStandardKeybind(key)
+	local keybind = GetBindingFromInput(key);
+	if ALLOWED_KEYBIND_SET[keybind] then
+		RunBinding(keybind);
+	end
+end
+
 function enumerate_regions(frame)
 	return ipairs({frame:GetRegions()});
 end

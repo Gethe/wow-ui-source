@@ -190,7 +190,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		-- money
 		local money = GetQuestLogRewardMoney(questID);
 		if ( money > 0 ) then
-			SetTooltipMoney(tooltip, money, nil);
+			GameTooltip_AddMoneyLine(tooltip, money);
 			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID)) then
 				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
 			end
@@ -284,14 +284,24 @@ function GameTooltip_OnLoad(self)
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
 end
 
+function GameTooltip_AddColoredMoneyLine(self, rawCopper, color)
+	local text = MoneyFormatterUtil.FormatMoney(rawCopper, GameTooltipMoneyFormat);
+	GameTooltip_AddColoredLine(self, text, color);
+end
+
+function GameTooltip_AddMoneyLine(self, rawCopper, useRedLineColor)
+	local color = useRedLineColor and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	GameTooltip_AddColoredMoneyLine(self, rawCopper, color);
+end
+
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
-	if( not maxcost ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
+	if( not maxcost or maxcost < 1 ) then --We just have 1 price to display
+		GameTooltip_AddHighlightLine(self, string.format("%s: %s", SELL_PRICE, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
 	else
 		GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
 		local indent = string.rep(" ",4)
-		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MINIMUM, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MAXIMUM, MoneyFormatterUtil.FormatMoney(maxcost, GameTooltipMoneyFormat)));
 	end
 end
 
@@ -324,7 +334,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	else
 		xOffset = 0;
 	end
-	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", xOffset, 0);
+	moneyFrame:SetPoint("LEFT", frame:GetLeftLine(numLines), "LEFT", xOffset, 0);
 	moneyFrame:Show();
 	if ( not frame.shownMoneyFrames ) then
 		frame.shownMoneyFrames = 1;
@@ -370,13 +380,13 @@ end
 
 function GameTooltip_InsertFrame(tooltipFrame, frame)
 	local textSpacing = 2;
-	local textHeight = envTable[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
+	local textHeight = tooltipFrame:GetLeftLine(2):GetLineHeight();
 	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
 	frame:SetParent(tooltipFrame);
 	frame:ClearAllPoints();
-	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, 0);
+	frame:SetPoint("TOPLEFT", tooltipFrame:GetLeftLine(currentLine + 1), "TOPLEFT", 0, 0);
 	if ( not tooltipFrame.insertedFrames ) then
 		tooltipFrame.insertedFrames = { };
 	end
@@ -435,7 +445,7 @@ function GameTooltip_OnUpdate(self, elapsed)
 	end
 
 	-- Only update every TOOLTIP_UPDATE_TIME seconds
-	self.updateTooltip = self.updateTooltip - elapsed;
+	self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
 	if ( self.updateTooltip > 0 ) then
 		return;
 	end
@@ -487,7 +497,7 @@ end
 
 function GameTooltip_OnTooltipSetUnit(self)
 	if self:IsUnit("mouseover") then
-		envTable[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
+		self:GetLeftLine(1):SetTextColor(GameTooltip_UnitColor("mouseover"));
 	end
 	GameTooltip_HideBattlePetTooltip();
 end
@@ -716,7 +726,7 @@ function GameTooltip_AddStatusBar(self, min, max, value, text)
 	statusBar:SetMinMaxValues(min, max);
 	statusBar:SetValue(value);
 	statusBar:Show();
-	statusBar:SetPoint("LEFT", self:GetName().."TextLeft"..numLines, "LEFT", 0, -2);
+	statusBar:SetPoint("LEFT", self:GetLeftLine(numLines), "LEFT", 0, -2);
 	statusBar:SetPoint("RIGHT", self, "RIGHT", -9, 0);
 	statusBar:Show();
 	self:SetMinimumWidth(140);

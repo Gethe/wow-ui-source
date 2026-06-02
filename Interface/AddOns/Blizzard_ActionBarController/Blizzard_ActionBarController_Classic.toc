@@ -1,8 +1,0 @@
-## Title: Blizzard_ActionBarController
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar
-## AllowLoad: Game
-## AllowLoadGameType: classic
-Classic\ActionBarController.lua
-Classic\ActionBarController.xml

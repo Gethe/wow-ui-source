@@ -80,11 +80,17 @@
   
   
   
-	<Frame name="MonkHarmonyBar" parent="PlayerFrame" mixin="MonkHarmonyBarMixin">
+	<Frame name="MonkHarmonyBar" parent="PlayerFrame" inherits="PlayerFrameBottomManagedFrameTemplate" mixin="MonkHarmonyBarMixin">
 		<Size x="1" y="60"/>
 		<Anchors>
-			<Anchor point="TOP" x="49" y="-46"/>
+			<Anchor point="TOP" x="31" y="-50"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="4" type="number"/>
+			<KeyValue key="leftPadding" value="46" type="number"/>
+			<KeyValue key="topPadding" value="-14" type="number"/>
+			<KeyValue key="bottomPadding" value="-10" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentGlow" inherits="MonkUI-background-shadow">

@@ -3,6 +3,7 @@ local UIGenericWidgetDisplay =
 	Name = "GenericWidgetDisplay",
 	Type = "System",
 	Namespace = "C_GenericWidgetDisplay",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,7 @@ local UIGenericWidgetDisplay =
 			Name = "GenericWidgetDisplayShow",
 			Type = "Event",
 			LiteralName = "GENERIC_WIDGET_DISPLAY_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "info", Type = "GenericWidgetDisplayFrameInfo", Nilable = false },
@@ -45,6 +47,9 @@ local UIGenericWidgetDisplay =
 				{ Name = "closeButtonText", Type = "string", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

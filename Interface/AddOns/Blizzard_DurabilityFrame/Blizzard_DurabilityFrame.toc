@@ -1,0 +1,6 @@
+## Title: Blizzard_DurabilityFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_Minimap, Blizzard_EditMode
+DurabilityFrame.lua
+DurabilityFrame.xml

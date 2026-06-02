@@ -1,0 +1,46 @@
+## Title: Blizzard_FrameXMLUtil
+## Dep: Blizzard_SharedXMLGame
+## Dep: Blizzard_Colors
+## Dep: Blizzard_StaticPopup
+## AllowLoad: Game
+ArenaUtil.lua
+[Family]\ArenaUtil.lua [AllowLoadGameType classic]
+PartyUtil.lua
+[Family]\QuestUtils.lua
+AchievementUtil.lua [AllowLoadGameType mainline]
+[Family]\MapUtil.lua
+AzeriteUtil.lua [AllowLoadGameType mainline]
+AzeriteEssenceUtil.lua [AllowLoadGameType mainline]
+AuraUtil.lua
+[Family]\AuraUtil.lua
+EditModeAuraDataProvider.lua
+CalendarUtil.lua
+CommunitiesUtil.lua
+RuneforgeUtil.lua [AllowLoadGameType mainline]
+RuneforgeUtil.xml [AllowLoadGameType mainline]
+ItemUtil.lua
+PVPUtil.lua [AllowLoadGameType mainline]
+AnimationSystem.lua
+CurrencyContainer.lua
+DifficultyUtil.lua
+RenownRewardUtil.lua [AllowLoadGameType mainline]
+TitleUtil.lua [AllowLoadGameType mainline]
+AdventureGuideUtil.lua
+ProfessionsUtil.lua [AllowLoadGameType mainline]
+CampaignUtil.lua [AllowLoadGameType mainline]
+CollectionsUtil.lua
+CurrencyUtil.lua [AllowLoadGameType mainline]
+[Family]\RAFUtil.lua [AllowLoadGameType mainline]
+[Family]\PlayerSpellsUtil.lua [AllowLoadGameType mainline]
+[Family]\ExpansionUtil.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_QuestSuperTracking.lua [AllowLoadGameType mainline]
+FadingFrame.lua
+[Family]\RaidWarning.lua
+Cooldown.lua
+[Family]\Cooldown.xml
+DragonridingUtil.lua [AllowLoadGameType mainline]
+[Family]\MinimapUtil.lua [AllowLoadGameType mainline]
+AreaPoiUtil.lua [AllowLoadGameType mainline]
+[Family]\ReputationUtil.lua [AllowLoadGameType mainline]
+[Family]\TraitUtil.lua [AllowLoadGameType mainline]
+Localization.lua

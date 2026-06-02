@@ -3,6 +3,7 @@ local EngravingInfo =
 	Name = "EngravingInfo",
 	Type = "System",
 	Namespace = "C_Engraving",
+	Environment = "All",
 
 	Functions =
 	{
@@ -294,6 +295,7 @@ local EngravingInfo =
 			Name = "EngravingModeChanged",
 			Type = "Event",
 			LiteralName = "ENGRAVING_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -303,6 +305,7 @@ local EngravingInfo =
 			Name = "EngravingTargetingModeChanged",
 			Type = "Event",
 			LiteralName = "ENGRAVING_TARGETING_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -312,6 +315,7 @@ local EngravingInfo =
 			Name = "RuneUpdated",
 			Type = "Event",
 			LiteralName = "RUNE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rune", Type = "EngravingData", Nilable = true },
@@ -335,6 +339,9 @@ local EngravingInfo =
 				{ Name = "learnedAbilitySpellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -1,17 +1,40 @@
+local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+timeFormatter:SetStripIntervalWhitespace(true);
+
+local function SetLockDeclineTimeText(button, originalText, timeleft)
+	local timeText = timeFormatter:Format(timeleft);
+	button:SetText(("%s (%s)"):format(originalText, timeText));
+end
+
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	local button2 = dialog:GetButton2();
+	local originalButtonText = button2:GetText();
+	button2:Disable();
+
+	dialog.originalHideOnEscape = dialog.hideOnEscape;
+	dialog.hideOnEscape = false;
 	dialog.declineTimeLeft = declineTimeLeft or .5;
-	dialog:GetButton2():SetButtonState("NORMAL", true);
+
+	SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
+
 	dialog.ticker = C_Timer.NewTicker(.5, function()
 		dialog.declineTimeLeft = dialog.declineTimeLeft - .5;
-		if (dialog.declineTimeLeft == 0) then
+
+		if dialog.declineTimeLeft <= 0 then
 			dialog.ticker:Cancel();
-			dialog:GetButton2():SetButtonState("NORMAL", false);
-			return;
+			button2:Enable();
+			button2:SetText(originalButtonText);
+
+			dialog.hideOnEscape = dialog.originalHideOnEscape;
+			dialog.declineTimeLeft = nil;
+			dialog.ticker = nil;
+			dialog.originalHideOnEscape = nil;
 		else
-			dialog:GetButton2():SetButtonState("NORMAL", true);
+			button2:Disable();
+			SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
 		end
 	end);
-	dialog.hideOnEscape = false;
 end
 
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
@@ -64,6 +87,12 @@ StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	wide = 1, -- Always wide to accomodate the alert icon if it is present.
 };
 
+StaticPopupDialogs["OKAY"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+};
+
 StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	text = "",		-- supplied dynamically.
 	button1 = "",	-- supplied dynamically.
@@ -99,7 +128,7 @@ StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1,
 	timeout = 0,
-	exclusive = 1,
+	multiple = 1,
 	whileDead = 1,
 };
 
@@ -764,7 +793,7 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -890,7 +919,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 	OnAccept = function(dialog, data)
 		local channel = dialog:GetEditBox():GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -898,7 +927,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 		local dialog = editBox:GetParent();
 		local channel = editBox:GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		editBox:SetText("");
 		dialog:Hide();
 	end,
@@ -911,12 +940,12 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	button1 = ACCEPT_ALT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.CHANINVITE.include, AUTOCOMPLETE_LIST.CHANINVITE.exclude },
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -943,7 +972,7 @@ StaticPopupDialogs["CHANNEL_PASSWORD"] = {
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -1495,7 +1524,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
 	maxLetters = 12 + 1 + 64,
 	OnAccept = function(dialog, data)
@@ -1505,7 +1534,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1535,7 +1564,7 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1565,7 +1594,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1599,7 +1628,7 @@ StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
 	OnShow = function(dialog, data)
 		local currentNote = data.interactionData.note;
 		dialog:GetEditBox():SetText(currentNote or "");
-		
+
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
@@ -1633,7 +1662,7 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1717,7 +1746,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.IGNORE.include, AUTOCOMPLETE_LIST.IGNORE.exclude },
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(dialog, data)
@@ -1727,7 +1756,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1771,20 +1800,21 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-		dialog:GetEditBox():SetText(select(7, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = true;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
@@ -1801,21 +1831,21 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	hasEditBox = 1,
 	maxLetters = 31,
 	OnAccept = function(dialog, data)
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), dialog:GetEditBox():GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, dialog:GetEditBox():GetText(), isPublic);
 	end,
 	OnShow = function(dialog, data)
-		local fullName, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-
-		dialog:GetEditBox():SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
+		dialog:GetEditBox():SetText(data.currentNote);
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), editBox:GetText());
+		local isPublic = false;
+		C_GuildInfo.SetNote(data.guid, editBox:GetText(), isPublic);
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
@@ -1841,7 +1871,7 @@ StaticPopupDialogs["SET_GUILD_COMMUNITIY_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -2403,7 +2433,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -2564,7 +2594,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 	maxLetters = 64,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		UninviteUnit(data, editBox:GetText());
+		C_PartyInfo.UninviteUnit(data, editBox:GetText());
 		dialog:Hide();
 	end,
 	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
@@ -2572,7 +2602,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 		dialog:GetButton1():Disable();
 	end,
 	OnAccept = function(dialog, data)
-		UninviteUnit(data, dialog:GetEditBox():GetText());
+		C_PartyInfo.UninviteUnit(data, dialog:GetEditBox():GetText());
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2850,7 +2880,7 @@ StaticPopupDialogs["SAVED_VARIABLES_TOO_LARGE"] = {
 };
 
 StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
-	text = PRODUCT_CLAIMING_FAILED,
+	text = "",
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,
@@ -2886,12 +2916,20 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 	whileDead = 1,
 };
 
-StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_NAME,
+-- data (can be nil):
+-- name - Starting text for the edit box.
+-- customSetID - Set if editing an existing custom set, nil if new custom set flow.
+-- itemTransmogInfoList - Transmog info list to populate any custom set with (overriding existing or adding a new custom set).
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_NAME"] = {
+	text = TRANSMOG_CUSTOM_SET_NAME,
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		WardrobeOutfitManager:NameOutfit(dialog:GetEditBox():GetText(), data);
+		local customSetID = nil;
+		if data then
+			customSetID = data.customSetID;
+		end
+		WardrobeCustomSetManager:NameCustomSet(dialog:GetEditBox():GetText(), customSetID, data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2902,31 +2940,49 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 		dialog:GetButton1():Disable();
 		dialog:GetButton2():Enable();
 		dialog:GetEditBox():SetFocus();
+
+		if data then
+			WardrobeCustomSetManager:SetItemTransmogInfoList(data.itemTransmogInfoList);
+			dialog:GetEditBox():SetText(data.name);
+		end
 	end,
 	OnHide = function(dialog, data)
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
-		if ( editBox:GetParent():GetButton1():IsEnabled() ) then
+		if editBox:GetParent():GetButton1():IsEnabled() then
 			StaticPopup_OnClick(editBox:GetParent(), 1);
 		end
 	end,
-	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
+	EditBoxOnTextChanged = function(editBox, data)
+		local dialog = editBox:GetParent();
+		local button1 = dialog:GetButton1();
+
+		local enabled = UserEditBoxNonEmpty(editBox);
+		if data then
+			enabled = editBox:GetText() ~= data.name;
+		end
+		button1:SetEnabled(enabled);
+	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
-StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
+-- data:
+-- name - Starting text for TRANSMOG_CUSTOM_SET_NAME's edit box if cancelled.
+-- customSetID - What custom set to override if accepted.
+-- itemTransmogInfoList - Transmog info list to pass back to TRANSMOG_CUSTOM_SET_NAME if cancelled.
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE"] = {
+	text = TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(dialog, data) WardrobeOutfitManager:OverwriteOutfit(data.outfitID) end,
+	OnAccept = function(dialog, data)
+		WardrobeCustomSetManager:OverwriteCustomSet(data.customSetID);
+	end,
 	OnCancel = function(dialog, data)
-		local name = data.name;
 		dialog:Hide();
-		local outfitDialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
-		if ( outfitDialog ) then
-			dialog:GetEditBox():SetText(name);
-		end
+		-- Clear customSetID when going back, as we no longer want to override that existing custom set.
+		local nameData = { name = data.name, customSetID = nil, itemTransmogInfoList = data.itemTransmogInfoList };
+		StaticPopup_Show("TRANSMOG_CUSTOM_SET_NAME", nil, nil, nameData);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -2934,73 +2990,32 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	noCancelOnEscape = 1,
 };
 
-StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(dialog, data)
-		C_TransmogCollection.DeleteOutfit(data);
-	end,
-	OnCancel = function(dialog, data) end,
-	hideOnEscape = 1,
-	timeout = 0,
-	whileDead = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_OUTFIT_CHECKING_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_CHECKING_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES,
 	button1 = CANCEL,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
 };
 
-StaticPopupDialogs["TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_ALL_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_ALL_INVALID_APPEARANCES,
 	button1 = OKAY,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
 };
 
-StaticPopupDialogs["TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_SOME_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_SOME_INVALID_APPEARANCES,
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		WardrobeOutfitManager:ContinueWithSave();
+		WardrobeCustomSetManager:ContinueWithSave();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
-	text = "%s",
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		return WardrobeTransmogFrame:ApplyPending(data.warningIndex);
-	end,
-	OnHide = function(dialog, data)
-		WardrobeTransmogFrame:UpdateApplyButton();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-	hasItemFrame = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
-	text = TRANSMOG_FAVORITE_LOSE_REFUND_AND_TRADE,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		local setFavorite = true;
-		local confirmed = true;
-		WardrobeCollectionFrameModelDropdown_SetFavorite(data, setFavorite, confirmed);
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
@@ -3137,6 +3152,19 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	exclusive = 1,
 };
 
+StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_CUSTOM_SET"] = {
+	text = TRANSMOG_CUSTOM_SET_CONFIRM_DELETE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		C_TransmogCollection.DeleteCustomSet(data);
+	end,
+	OnCancel = function(dialog, data) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	text = GROUP_FINDER_DELIST_WARNING_TITLE,
 	GetExpirationSubText = function(dialog, data, timeleft)
@@ -3174,3 +3202,16 @@ StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	whileDead = 1,
 	showAlert = 1,
 }
+
+StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
+	text = "%s",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	fullScreenCover = true,
+	hideOnEscape = 1,
+	OnShow = function(dialog, data)
+		dialog:SetFrameStrata("FULLSCREEN_DIALOG");
+		dialog:SetFrameLevel(3000);
+	end,
+};

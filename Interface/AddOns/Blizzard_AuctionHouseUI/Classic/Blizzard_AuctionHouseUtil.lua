@@ -35,11 +35,6 @@ function GetAHFilterCategoryName(category)
 	return AUCTION_HOUSE_FILTER_CATEGORY_STRINGS[category] or "";
 end
 
-function AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey)
-	--Classic does not have this concept
-	return nil;
-end
-
 local AuctionHouseTooltipType = {
 	BucketPetLink = 1,
 	ItemLink = 2,

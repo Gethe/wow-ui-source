@@ -37,7 +37,7 @@ RACE_ICON_TCOORDS = {
 };
 
 function CharacterCreateRaceButton_OnEnter(self)
-	if(self:IsEnabled() or self.tooltip == nil) then
+	if(self.raceID and CharacterCreate.selectedRace and self.raceID == CharacterCreate.selectedRace) then
 		return;
 	end
 	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, -8);
@@ -133,10 +133,12 @@ function UpdateCharacterRaceLabelText()
 	for i=1, CharacterCreate.numRaces, 1 do
 		local button = _G["CharacterCreateRaceButton"..i];
 		if ( button.raceID == CharacterCreate.selectedRace ) then
-			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.tooltip);
+			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.raceName);
 			button:SetChecked(1);
+			button:LockHighlight();
 		else
 			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText("");
+			button:UnlockHighlight();
 			button:SetChecked(nil);
 		end
 	end
@@ -192,18 +194,14 @@ function SetCharacterGender(sex)
 	C_CharacterCreation.SetSelectedSex(sex);
 	if ( sex == Enum.UnitSex.Male ) then
 		gender = "MALE";
-		CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
 		CharacterCreateGenderButtonMale:SetChecked(1);
 		CharacterCreateGenderButtonMale:LockHighlight();
-		CharacterCreateGenderButtonFemaleHighlightText:SetText("");
 		CharacterCreateGenderButtonFemale:SetChecked(nil);
 		CharacterCreateGenderButtonFemale:UnlockHighlight();
 	else
 		gender = "FEMALE";
-		CharacterCreateGenderButtonMaleHighlightText:SetText("");
 		CharacterCreateGenderButtonMale:SetChecked(nil);
 		CharacterCreateGenderButtonMale:UnlockHighlight();
-		CharacterCreateGenderButtonFemaleHighlightText:SetText(FEMALE);
 		CharacterCreateGenderButtonFemale:SetChecked(1);
 		CharacterCreateGenderButtonFemale:LockHighlight();
 	end

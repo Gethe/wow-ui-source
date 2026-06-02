@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
 ## AllowLoadGameType: classic
-Classic\GameMenuFrame.lua
-Classic\GameMenuFrame.xml
-Classic\Localization.lua
+Shared\GameMenuFrame.lua
+Classic\GameMenuFrameOverrides.lua
+Shared\GameMenuFrame.xml
+Shared\Localization.lua

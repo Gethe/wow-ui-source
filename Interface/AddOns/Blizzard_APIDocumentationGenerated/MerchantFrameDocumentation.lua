@@ -3,6 +3,7 @@ local MerchantFrame =
 	Name = "MerchantFrame",
 	Type = "System",
 	Namespace = "C_MerchantFrame",
+	Environment = "All",
 
 	Functions =
 	{
@@ -29,11 +30,13 @@ local MerchantFrame =
 			Name = "MerchantClosed",
 			Type = "Event",
 			LiteralName = "MERCHANT_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MerchantFilterItemUpdate",
 			Type = "Event",
 			LiteralName = "MERCHANT_FILTER_ITEM_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -43,11 +46,13 @@ local MerchantFrame =
 			Name = "MerchantShow",
 			Type = "Event",
 			LiteralName = "MERCHANT_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MerchantUpdate",
 			Type = "Event",
 			LiteralName = "MERCHANT_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -71,6 +76,9 @@ local MerchantFrame =
 				{ Name = "isQuestStartItem", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

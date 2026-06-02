@@ -18,416 +18,242 @@
 			</Layer>
 		</Layers>
 	</GameTooltip>
-	
-	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" virtual="true">
+
+	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" mixin="GameTooltipMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTextLeft1" inherits="GameTooltipHeaderText" hidden="true">
+				<FontString name="$parentTextLeft1" parentKey="TextLeft1" inherits="GameTooltipHeaderText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight1" inherits="GameTooltipHeaderText" hidden="true">
+				<FontString name="$parentTextRight1" parentKey="TextRight1" inherits="GameTooltipHeaderText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft1" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft1" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft2" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft2" parentKey="TextLeft2" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft1" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight2" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight2" parentKey="TextRight2" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft2" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft2" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft3" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft3" parentKey="TextLeft3" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight3" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight3" parentKey="TextRight3" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft3" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft4" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft4" parentKey="TextLeft4" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight4" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight4" parentKey="TextRight4" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft4" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft5" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft5" parentKey="TextLeft5" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft4" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft4" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight5" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight5" parentKey="TextRight5" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft5" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft5" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft6" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft6" parentKey="TextLeft6" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft5" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft5" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight6" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight6" parentKey="TextRight6" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft6" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft6" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft7" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft7" parentKey="TextLeft7" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft6" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight7" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight7" parentKey="TextRight7" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft7" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft7" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft8" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextLeft8" parentKey="TextLeft8" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft7" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft7" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight8" inherits="GameTooltipText" hidden="true">
+				<FontString name="$parentTextRight8" parentKey="TextRight8" inherits="GameTooltipText" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft8" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft8" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentTexture1" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture2" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture3" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture4" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture5" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture6" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture7" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture8" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture9" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture10" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar name="$parentStatusBar" hidden="true">
-				<Size>
-					<AbsDimension x="0" y="8"/>
-				</Size>
+			<StatusBar name="$parentStatusBar" mixin="GameTooltipStatusBarMixin" hidden="true">
+				<Size x="0" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="2" y="-1"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="2" y="-1"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="-1"/>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged>
-						HealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
+					<OnValueChanged method="OnValueChanged"/>
 				</Scripts>
 				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend">
-				GameTooltip_OnLoad(self);
-				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-			</OnLoad>
-			<OnHide>
-				GameTooltip_OnHide(self);
-			</OnHide>
-			<OnTooltipSetDefaultAnchor>
-				GameTooltip_SetDefaultAnchor(self, UIParent);
-			</OnTooltipSetDefaultAnchor>
-			<OnTooltipAddMoney>
-				GameTooltip_OnTooltipAddMoney(self, cost, maxcost);
-			</OnTooltipAddMoney>
-			<OnTooltipCleared>
-				GameTooltip_ClearMoney(self);
-				GameTooltip_ClearInsertedFrames(self);
-			</OnTooltipCleared>
+			<OnLoad method="OnLoadGameTooltip" inherit="prepend"/>
+			<OnHide method="OnHide"/>
+			<OnTooltipSetDefaultAnchor method="OnTooltipSetDefaultAnchor"/>
+			<OnTooltipAddMoney method="OnTooltipAddMoney"/>
+			<OnTooltipCleared method="OnTooltipCleared"/>
 		</Scripts>
 	</GameTooltip>
-	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" virtual="true">
+	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" mixin="ShoppingTooltipMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTextLeft1" inherits="GameFontNormalSmall" hidden="true">
+				<FontString name="$parentTextLeft1" parentKey="TextLeft1" inherits="GameFontNormalSmall" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight1" inherits="GameFontNormal" hidden="true">
+				<FontString name="$parentTextRight1" parentKey="TextRight1" inherits="GameFontNormal" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft1" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft1" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft2" inherits="GameFontNormal" hidden="true">
+				<FontString name="$parentTextLeft2" parentKey="TextLeft2" inherits="GameFontNormal" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft1" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight2" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextRight2" parentKey="TextRight2" inherits="GameFontHighlightSmall" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft2" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft2" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft3" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextLeft3" parentKey="TextLeft3" inherits="GameFontHighlightSmall" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight3" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextRight3" parentKey="TextRight3" inherits="GameFontHighlightSmall" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft3" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft4" inherits="GameTooltipTextSmall" hidden="true">
+				<FontString name="$parentTextLeft4" parentKey="TextLeft4" inherits="GameTooltipTextSmall" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextLeft3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight4" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextRight4" parentKey="TextRight4" inherits="GameFontHighlightSmall" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.TextLeft4" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentTexture1" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture2" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 				<Texture name="$parentTexture3" hidden="true">
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
+					<Size x="12" y="12"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
-			<OnTooltipCleared>
-				GameTooltip_ClearMoney(self);
-				GameTooltip_ClearInsertedFrames(self);
-				GameTooltip_UpdateStyle(self);
-			</OnTooltipCleared>
+			<OnTooltipCleared method="OnTooltipCleared"/>
 		</Scripts>
 	</GameTooltip>
-	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="13"/>
-		</Size>
+	<Frame name="TooltipMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" mixin="" virtual="true">
+		<Size x="128" y="13"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentPrefixText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="-4" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSuffixText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<StatusBar name="TooltipStatusBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="0" y="12"/>
-		</Size>
+	<StatusBar name="TooltipStatusBarTemplate" mixin="TooltipStatusBarMixin" virtual="true">
+		<Size x="0" y="12"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="5" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture file="Interface\Tooltips\UI-StatusBar-Border">
-					<Size>
-						<AbsDimension x="128" y="16"/>
-					</Size>
+					<Size x="128" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-2" y="2"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset x="2" y="-2"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="TOPRIGHT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:SetStatusBarColor(0, 1.0, 0);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 	</StatusBar>

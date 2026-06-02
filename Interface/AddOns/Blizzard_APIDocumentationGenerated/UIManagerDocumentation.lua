@@ -3,6 +3,7 @@ local UIManager =
 	Name = "UI",
 	Type = "System",
 	Namespace = "C_UI",
+	Environment = "All",
 
 	Functions =
 	{
@@ -64,15 +65,20 @@ local UIManager =
 			Name = "NotchedDisplayModeChanged",
 			Type = "Event",
 			LiteralName = "NOTCHED_DISPLAY_MODE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UiScaleChanged",
 			Type = "Event",
 			LiteralName = "UI_SCALE_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

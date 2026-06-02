@@ -39,16 +39,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	PetJournal:SetShown(selected == 2);
 	ToyBox:SetShown(selected == 3);
 	HeirloomsJournal:SetShown(selected == 4);
-
-	-- don't touch the wardrobe frame if it's used by the transmogrifier
-	if ( WardrobeCollectionFrame and WardrobeCollectionFrame:GetParent() == self or not WardrobeCollectionFrame:GetParent():IsShown() ) then
-		if ( selected == 5 ) then
-			HideUIPanel(WardrobeFrame);
-			WardrobeCollectionFrame:SetContainer(self);
-		else
-			WardrobeCollectionFrame:Hide();
-		end
-	end
+	WardrobeCollectionFrame:SetShown(selected == 5);
 
 	self:SetTitle(GetTitleText(selected));
 
@@ -60,7 +51,6 @@ function CollectionsJournal_HideTabHelpTips()
 end
 
 function CollectionsJournal_OnShow(self)
-	HideUIPanel(WardrobeFrame);
 	MicroButtonPulseStop(CollectionsMicroButton);
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);

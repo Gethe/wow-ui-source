@@ -1028,7 +1028,7 @@ TRAVEL PASS
 					</Frame>
 					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-27"/>
+							<Anchor point="TOPLEFT" x="56" y="-27"/>
 						</Anchors>
 					</DropdownButton>
 					<EditBox name="FriendsFrameBroadcastInput" letters="127" countInvisibleLetters="true" autoFocus="false" hidden="true">
@@ -3386,7 +3386,7 @@ TRAVEL PASS
 						</Frames>
 						<Scripts>
 							<OnShow>
-								local guildInfoText = GetGuildInfoText();
+								local guildInfoText = C_GuildInfo.GetInfoText();
 								if ( not guildInfoText ) then
 									guildInfoText = "";
 								end
@@ -3430,7 +3430,7 @@ TRAVEL PASS
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								SetGuildInfoText(GuildInfoEditBox:GetText());
+								C_GuildInfo.SetInfoText(GuildInfoEditBox:GetText());
 								GuildInfoFrame:Hide();
 							</OnClick>
 						</Scripts>
@@ -3750,7 +3750,10 @@ TRAVEL PASS
 						<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
 						<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
 					</Button>
-					<Frame name="GuildMemberNoteBackground" inherits="TooltipBackdropTemplate" enableMouse="true">
+					<Frame name="GuildMemberNoteBackground" mixin="GuildFrameMemberNoteMixin" inherits="TooltipBackdropTemplate" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="isPublicNote" value="true" type="boolean"/>
+						</KeyValues>
 						<Size>
 							<AbsDimension x="181" y="40"/>
 						</Size>
@@ -3778,12 +3781,13 @@ TRAVEL PASS
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnMouseUp>
-								StaticPopup_Show("SET_GUILDPLAYERNOTE");
-							</OnMouseUp>
+							<OnMouseUp method="OnMouseUp"/>
 						</Scripts>
 					</Frame>
-					<Frame name="GuildMemberOfficerNoteBackground" inherits="TooltipBackdropTemplate">
+					<Frame name="GuildMemberOfficerNoteBackground" mixin="GuildFrameMemberNoteMixin" inherits="TooltipBackdropTemplate">
+						<KeyValues>
+							<KeyValue key="isPublicNote" value="false" type="boolean"/>
+						</KeyValues>
 						<Size>
 							<AbsDimension x="181" y="40"/>
 						</Size>
@@ -3811,9 +3815,7 @@ TRAVEL PASS
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnMouseUp>
-								StaticPopup_Show("SET_GUILDOFFICERNOTE");
-							</OnMouseUp>
+							<OnMouseUp method="OnMouseUp"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -4361,7 +4363,7 @@ TRAVEL PASS
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
+								AutoCompleteEditBox_SetAutoCompleteSource(self, C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
 								self.addHighlightedText = true;
 							</OnLoad>
 							<OnEnterPressed>

@@ -1,0 +1,626 @@
+local HousingCatalogUI =
+{
+	Name = "HousingCatalogUI",
+	Type = "System",
+	Namespace = "C_HousingCatalog",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "CreateCatalogSearcher",
+			Type = "Function",
+			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays" },
+
+			Returns =
+			{
+				{ Name = "searcher", Type = "HousingCatalogSearcher", Nilable = false },
+			},
+		},
+		{
+			Name = "DeletePreviewCartDecor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "DestroyEntry",
+			Type = "Function",
+			Documentation = { "Attempt to delete the entry from storage" },
+
+			Arguments =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
+				{ Name = "destroyAll", Type = "bool", Nilable = false, Documentation = { "If true, deletes all entries within the stack; If false, will only delete one" } },
+			},
+		},
+		{
+			Name = "GetAllFilterTagGroups",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filterTagGroups", Type = "table", InnerType = "HousingCatalogFilterTagGroupInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllVariantInfosForEntry",
+			Type = "Function",
+			Documentation = { "Returns variant info for all variants of a given catalog entry; Variants represent different visual modifications of the same base entry (ex: dyed versions)" },
+
+			Arguments =
+			{
+				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "variantInfos", Type = "table", InnerType = "HousingCatalogEntryVariantInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBundleInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bundleInfo", Type = "HousingBundleInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCartSizeLimit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cartSizeLimit", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCatalogCategoryAndSubcategoryNames",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "If found, returns the names of the parent category and the specified subcategory" },
+
+			Arguments =
+			{
+				{ Name = "subcategoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryName", Type = "string", Nilable = false },
+				{ Name = "subcategoryName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCatalogCategoryInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogCategoryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryInfoByItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false, Documentation = { "ItemID, name, or link of an item that grants/corresponds to a particular type of housing catalog object (ex: decor)" } },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryInfoByRecordID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "recordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryRefundTimeStampByRecordID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "recordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "refundTimeStamp", Type = "time_t", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryVariantInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryVariantInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogSubcategoryInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "subcategoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogSubcategoryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDecorMaxOwnedCount",
+			Type = "Function",
+			Documentation = { "Returns the maximum total number of decor that can be in storage/in the house chest; Note that not all decor entries in storage count towards this limit (see GetDecorTotalOwnedCount)" },
+
+			Returns =
+			{
+				{ Name = "maxOwnedCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDecorTotalOwnedCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalOwnedCount", Type = "number", Nilable = false, Documentation = { "The total number of owned decor in storage, including both exempt and non-exempt decor" } },
+				{ Name = "exemptDecorCount", Type = "number", Nilable = false, Documentation = { "The number of decor that do not count against the max storage limit" } },
+			},
+		},
+		{
+			Name = "GetDestroyableInstanceCount",
+			Type = "Function",
+			Documentation = { "Returns the number of instances that can be to be destroyed in storage; These instances count towards the max storage limit" },
+
+			Arguments =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "destroyableInstanceCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFeaturedBundles",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bundleInfos", Type = "table", InnerType = "HousingBundleInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFeaturedSmallProducts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "infos", Type = "table", InnerType = "HousingFeaturedSmallProductInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMarketInfoForDecor",
+			Type = "Function",
+			Documentation = { "Returns market info for a specific decor. This is decor-only for now but should be extended to support entry type and recordID generically" },
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "HasFeaturedEntries",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasEntries", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionAddToCart",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "withPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionClearCart",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "HousingMarketActionRemoveFromCart",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionViewBundle",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketActionViewInStore",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPreviewCartItemShown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PromotePreviewDecor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+				{ Name = "previewDecorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestHousingMarketInfoRefresh",
+			Type = "Function",
+		},
+		{
+			Name = "RequestHousingMarketRefundInfo",
+			Type = "Function",
+		},
+		{
+			Name = "SearchCatalogCategories",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "searchParams", Type = "HousingCategorySearchInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SearchCatalogSubcategories",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "searchParams", Type = "HousingCategorySearchInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "subcategoryIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPreviewCartItemShown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "HousingCatalogCategoryUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_CATALOG_CATEGORY_UPDATED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingCatalogSubcategoryUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_CATALOG_SUBCATEGORY_UPDATED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "subcategoryID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorAddToPreviewList",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_ADD_TO_PREVIEW_LIST",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "previewItemData", Type = "HousingPreviewItemData", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorPreviewListRemoveFromWorld",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorPreviewListUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "HousingRefundListUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_REFUND_LIST_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "HousingStorageEntryUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_STORAGE_ENTRY_UPDATED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingStorageUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_STORAGE_UPDATED",
+			UniqueEvent = true,
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "HousingBundleDecorEntryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingBundleInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
+				{ Name = "nonDecorProducts", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "decorEntries", Type = "table", InnerType = "HousingBundleDecorEntryInfo", Nilable = false },
+				{ Name = "canPreview", Type = "bool", Nilable = false, Default = true, Documentation = { "Bundles containing non-decor items cannot be previewed" } },
+			},
+		},
+		{
+			Name = "HousingCatalogCategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "icon", Type = "textureAtlas", Nilable = true },
+				{ Name = "subcategoryIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "anyStoredEntries", Type = "bool", Nilable = false, Documentation = { "True if the player owns anything that falls under this category" } },
+			},
+		},
+		{
+			Name = "HousingCatalogEntryInfo",
+			Type = "Structure",
+			Documentation = { "Base information about an object in the Catalog; For info for a specific owned stack of this object, see HousingCatalogEntryVariantInfo" },
+			Fields =
+			{
+				{ Name = "recordID", Type = "number", Nilable = false },
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "asset", Type = "ModelAsset", Nilable = true, Documentation = { "3D model asset for displaying in the UI; May be nil if the entry doesn't have a model, or has one that isn't supported by UI model scenes" } },
+				{ Name = "iconTexture", Type = "FileAsset", Nilable = true, Documentation = { "Entry icon in the form of a texture file; Catalog entries should have either this OR an iconAtlas set" } },
+				{ Name = "iconAtlas", Type = "textureAtlas", Nilable = true, Documentation = { "Entry icon in the form a texture atlas element; Catalog entries should have either this OR an iconTexture set" } },
+				{ Name = "uiModelSceneID", Type = "number", Nilable = true, Documentation = { "Specific UI model scene ID to use when previewing this entry's 3D model; If not set, the default catalog model scene is used" } },
+				{ Name = "categoryIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "subcategoryIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "dataTagsByID", Type = "LuaValueVariant", Nilable = false, Documentation = { "Simple localized 'tag' strings that are primarily used for things like categorization and filtering" } },
+				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
+				{ Name = "placementCost", Type = "number", Nilable = false, Documentation = { "How much of the applicable budget placing this entry would cost (if any)" } },
+				{ Name = "totalNumStored", Type = "number", Nilable = false, Documentation = { "The total number of instances of this entry that exist in storage across all variants; Does not include unredeemed instances (see remainingRedeemable)" } },
+				{ Name = "remainingRedeemable", Type = "number", Nilable = false, Documentation = { "The number of unredeemed instances of this entry that exist in storage; Some auto-awarded housing objects are granted in this 'lazily-instantiated' way, and will be 'redeemed' on first being placed" } },
+				{ Name = "totalNumPlaced", Type = "number", Nilable = false, Documentation = { "The total number of instances of this entry that have been placed across all of the player's houses and plots, across all variants" } },
+				{ Name = "destroyableInstanceCount", Type = "number", Nilable = false, Documentation = { "The number of instances that can be destroyed for this entry." } },
+				{ Name = "isUniqueTrophy", Type = "bool", Nilable = false, Documentation = { "This decor is flagged to display as a unique trophy item." } },
+				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that is allowed to be placed outside, within a plot" } },
+				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that is allowed to be placed indoors, within a house interior" } },
+				{ Name = "canCustomize", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that can be customized; Kinds of customization vary depending on the entry type" } },
+				{ Name = "isPrefab", Type = "bool", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = true },
+				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false, Documentation = { "House XP that can be gained upon acquiring this entry for the first time" } },
+				{ Name = "sourceText", Type = "cstring", Nilable = false, Documentation = { "Describes specific sources this entry may be gained from; Faction-specific sources may or may not be included based on the current player's faction" } },
+			},
+		},
+		{
+			Name = "HousingCatalogEntryVariantInfo",
+			Type = "Structure",
+			Documentation = { "Represents a single stack of instances of an object in the Catalog, that are all of a specific variation; For example, a stack of undyed chairs, or blue-dyed tables" },
+			Fields =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = false },
+				{ Name = "numStored", Type = "number", Nilable = false, Documentation = { "The number of instances of this specific variant that exist in storage" } },
+				{ Name = "dyeSlots", Type = "table", InnerType = "HousingDecorDyeSlot", Nilable = false, Documentation = { "Dye slot information for this variant; Empty for entries that can't be dyed" } },
+			},
+		},
+		{
+			Name = "HousingCatalogSubcategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "parentCategoryID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "icon", Type = "textureAtlas", Nilable = true },
+				{ Name = "anyStoredEntries", Type = "bool", Nilable = false, Documentation = { "True if the player owns anything that falls under this subcategory" } },
+			},
+		},
+		{
+			Name = "HousingCategorySearchInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "withStoredEntriesOnly", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, search will only return categories/subcategories that the player has something stored under" } },
+				{ Name = "includeFeaturedCategory", Type = "bool", Nilable = false, Default = false },
+				{ Name = "editorModeContext", Type = "HouseEditorMode", Nilable = true, Documentation = { "If set, will restrict results to only categories associated with/used by this Editor Mode" } },
+			},
+		},
+		{
+			Name = "HousingFeaturedSmallProductInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "entryVariantID", Type = "HousingCatalogEntryVariantID", Nilable = true },
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
+				{ Name = "canPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingMarketInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "bundleIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingPreviewItemData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "productID", Type = "number", Nilable = true },
+				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = true },
+				{ Name = "isBundleParent", Type = "bool", Nilable = false },
+				{ Name = "isBundleChild", Type = "bool", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "decorID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "salePrice", Type = "number", Nilable = true },
+			},
+		},
+	},
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(HousingCatalogUI);

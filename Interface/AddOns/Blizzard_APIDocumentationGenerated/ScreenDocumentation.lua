@@ -2,6 +2,7 @@ local Screen =
 {
 	Name = "Screen",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,9 @@ local Screen =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

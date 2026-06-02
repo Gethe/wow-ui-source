@@ -1027,8 +1027,7 @@ function StoreFrame_OnLoad(self)
 
 	self.TitleText:SetText(BLIZZARD_STORE);
 
-	--SetPortraitToTexture(self.portrait, "Interface\\Icons\\WoW_Store");
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\Inv_Misc_Note_02");
+	self.portrait:SetTexture("Interface\\Icons\\Inv_Misc_Note_02");
 	StoreFrame_UpdateBuyButton();
 
 	if ( C_Glue.IsOnGlueScreen() ) then
@@ -1854,7 +1853,7 @@ end
 function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, productDecorator)
 	local currency = C_StoreSecure.GetCurrencyID();
 
-	SetPortraitToTexture(self.Icon, icon);
+	self.Icon:SetTexture(icon);
 
 	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);
@@ -2095,7 +2094,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	SetPortraitToTexture(self.Icon, finalIcon);
+	self.Icon:SetTexture(finalIcon);
 	self.ProductName:SetText(productInfo.sharedData.name);
 	self.ProductDescription:SetText(productInfo.sharedData.description);
 
@@ -2844,7 +2843,7 @@ function StoreProductCard_ShowIcon(self, displayData)
 			self.Icon:SetPoint("TOPLEFT", 88, -99);
 		end
 		self.Icon:SetSize(64, 64);
-		SetPortraitToTexture(self.Icon, icon);
+		self.Icon:SetTexture(icon);
 		self.IconBorder:Show();
 	else
 		self.Icon:SetAtlas(overrideTexture, true);

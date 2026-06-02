@@ -302,4 +302,6 @@ Enum.BattlepayCardType = nil;
 Enum.BattlepayBannerType = nil;
 SecureMixin = nil;
 CreateFromSecureMixins = nil;
+CreateSecureDelegate = nil;
 loadstring_untainted = nil;
+secretunwrap = nil;

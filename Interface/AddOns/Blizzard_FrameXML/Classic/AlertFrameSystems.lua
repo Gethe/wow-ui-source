@@ -108,7 +108,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 		GameTooltip:SetHyperlink(self.itemLink);
 	elseif self.money then
 		GameTooltip:AddLine(YOU_RECEIVED);
-		SetTooltipMoney(GameTooltip, self.money, nil);
+		GameTooltip_AddMoneyLine(GameTooltip, self.money);
 	elseif self.xp then
 		GameTooltip:AddLine(YOU_RECEIVED);
 		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -119,7 +119,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 end
 
 local function SetRewardInternal(frame, texture, rewardID)
-	SetPortraitToTexture(frame.texture, texture);
+	frame.texture:SetTexture(texture);
 	frame.rewardID = rewardID;
 end
 
@@ -211,7 +211,7 @@ function DungeonCompletionAlertFrameReward_OnEnter(self)
 		end
 
 		if ( rewardData.moneyAmount > 0 ) then
-			SetTooltipMoney(GameTooltip, rewardData.moneyAmount, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, rewardData.moneyAmount);
 		end
 	elseif ( self.reward.rewardItemLink ) then
 		TooltipSetLFGCompletionReward(GameTooltip, self.reward.rewardItemLink, self.reward.bonusQuantity);
@@ -990,7 +990,7 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 	if questData.currencyRewards then
 		for currencyIndex, currencyTexture in ipairs(questData.currencyRewards) do
 			local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
-			SetPortraitToTexture(rewardFrame.texture, currencyTexture);
+			rewardFrame.texture:SetTexture(currencyTexture);
 			rewardFrame.currencyIndex = currencyIndex;
 		end
 	end
@@ -1154,7 +1154,7 @@ function ChallengeModeAlertFrameMixin:SetReward(index, rewardData)
 		icon = C_Item.GetItemIconByID(rewardData.rewardID);
 	end
 
-	SetPortraitToTexture(frame.texture, icon);
+	frame.texture:SetTexture(icon);
 	frame.itemID = rewardData.rewardID;
 	frame.isCurrency = rewardData.isCurrency;
 	frame:Show();
@@ -1170,7 +1170,7 @@ function ChallengeModeAlertFrameMixin:SetUp(mapID, medal, completionTime, moneyA
 	local rewardsOffset = 0;
 
 	if ( moneyAmount > 0 ) then
-		SetPortraitToTexture(self.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
+		self.reward1.texture:SetTexture("Interface\\Icons\\inv_misc_coin_02");
 		self.reward1.itemID = 0;
 		self.reward1.moneyAmount = moneyAmount
 		self.reward1:Show();
@@ -1222,7 +1222,7 @@ function ChallengeModeAlertFrameRewardMixin:OnEnter()
 	if ( self.itemID == 0 and self.moneyAmount ) then
 		if ( self.moneyAmount > 0 ) then
 			GameTooltip:AddLine(YOU_RECEIVED);
-			SetTooltipMoney(GameTooltip, self.moneyAmount, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, self.moneyAmount);
 		end
 	elseif ( self.isCurrency ) then
 		GameTooltip:SetCurrencyByID(self.itemID);

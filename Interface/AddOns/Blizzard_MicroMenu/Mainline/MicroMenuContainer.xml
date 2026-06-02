@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="MicroButtonAndBagsBar" parent="UIParent">
+		<Size x="232" y="80"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuContainerMixin">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MicroButtonAndBagsBar"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MicroMenu" inherits="GridLayoutFrame" parent="MicroMenuContainer" flattenRenderLayers="true" mixin="MicroMenuMixin">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="childXPadding" value="-5" type="number"/>
+			<KeyValue key="childYPadding" value="-5" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -387,25 +387,43 @@
 	</Font>
 
 	<Font name="NumberFontNormal" inherits="NumberFont_Outline_Med" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
+		<Color color="HIGHLIGHT_FONT_COLOR"/>
+	</Font>
+
+	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
+		<Color color="HIGHLIGHT_FONT_COLOR"/>
+	</Font>
+
+	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true">
+		<Color color="DARKYELLOW_FONT_COLOR"/>
 	</Font>
 
 	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
-
-	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.1" b="0.1"/>
+	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true">
+		<Color color="RED_FONT_COLOR"/>
+	</Font>
+	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true">
+		<Color color="DARKYELLOW_FONT_COLOR"/>
+	</Font>
+	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true">
+		<Color color="LIGHTGRAY_FONT_COLOR"/>
+	</Font>
+	<Font name="NumberFontNormalRightGreen" inherits="NumberFontNormalRight" virtual="true">
+		<Color color="GREEN_FONT_COLOR"/>
 	</Font>
 
-	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.82" b="0"/>
+	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
+	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true">
+		<Color color="RED_FONT_COLOR"/>
 	</Font>
-
-	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="0.6" g="0.6" b="0.6"/>
+	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true">
+		<Color color="DARKYELLOW_FONT_COLOR"/>
 	</Font>
-
-	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
-		<Color r="1.0" g="0.82" b="0"/>
+	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true">
+		<Color color="LIGHTGRAY_FONT_COLOR"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightGreen" inherits="NumberFontNormalLargeRight" virtual="true">
+		<Color color="GREEN_FONT_COLOR"/>
 	</Font>
 
 	<!-- The user-scaled styles should be last because they will likely inherit from existing styles -->
@@ -439,4 +457,5 @@
 	<Font name="UserScaledFontNumberNormalRightRed" inherits="NumberFontNormalRightRed" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontNumberNormalRightYellow" inherits="NumberFontNormalRightYellow" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontNumberNormalRightGray" inherits="NumberFontNormalRightGray" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontNumberNormalRightGreen" inherits="NumberFontNormalRightGreen" canBeUserScaled="true" virtual="true"/>
 </Ui>

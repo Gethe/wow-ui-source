@@ -16,6 +16,9 @@ local WorldElapsedTimerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(WorldElapsedTimerConstants);

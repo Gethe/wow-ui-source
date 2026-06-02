@@ -20,6 +20,9 @@ local AsyncAssistActionsConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AsyncAssistActionsConstants);

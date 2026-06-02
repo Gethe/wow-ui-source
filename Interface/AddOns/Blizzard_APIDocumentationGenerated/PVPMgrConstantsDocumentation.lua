@@ -15,6 +15,9 @@ local PVPMgrConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PVPMgrConstants);

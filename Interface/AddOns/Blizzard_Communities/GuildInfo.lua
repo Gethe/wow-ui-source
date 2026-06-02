@@ -58,8 +58,8 @@ function CommunitiesGuildInfoFrame_UpdatePermissions(self)
 end
 
 function CommunitiesGuildInfoFrame_UpdateText(self, infoText)
-	self.MOTDScrollFrame.MOTD:SetText(GetGuildRosterMOTD(), true); --Extra argument ignores markup.
-	self.DetailsFrame:GetScrollChild().Details:SetText(infoText or GetGuildInfoText());
+	self.MOTDScrollFrame.MOTD:SetText(C_GuildInfo.GetMOTD(), true); --Extra argument ignores markup.
+	self.DetailsFrame:GetScrollChild().Details:SetText(infoText or C_GuildInfo.GetInfoText());
 	self.DetailsFrame:SetVerticalScroll(0);
 end
 
@@ -128,13 +128,13 @@ function CommunitiesGuildTextEditFrame_SetType(self, editType, guildInfoFrame)
 	if ( editType == "motd" ) then
 		self:SetHeight(200);
 		self.Container.ScrollFrame.EditBox:SetMaxLetters(255);
-		self.Container.ScrollFrame.EditBox:SetText(GetGuildRosterMOTD());
+		self.Container.ScrollFrame.EditBox:SetText(C_GuildInfo.GetMOTD());
 		self.Title:SetText(GUILD_MOTD_EDITLABEL);
 		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", CommunitiesGuildTextEditFrame_OnAccept);
 	elseif ( editType == "info" ) then
 		self:SetHeight(295);
 		self.Container.ScrollFrame.EditBox:SetMaxLetters(499);
-		self.Container.ScrollFrame.EditBox:SetText(GetGuildInfoText());
+		self.Container.ScrollFrame.EditBox:SetText(C_GuildInfo.GetInfoText());
 		self.Title:SetText(GUILD_INFO_EDITLABEL);
 		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", nil);
 	end
@@ -150,7 +150,7 @@ function CommunitiesGuildTextEditFrame_OnAccept()
 		C_GuildInfo.SetMOTD(CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText());
 	elseif ( CommunitiesGuildTextEditFrame.type == "info" ) then
 		local infoText = CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText();
-		SetGuildInfoText(infoText);
+		C_GuildInfo.SetInfoText(infoText);
 		CommunitiesGuildInfoFrame_UpdateText(CommunitiesGuildTextEditFrame.guildInfoFrame, infoText);
 	end
 	HideUIPanel(CommunitiesGuildTextEditFrame);

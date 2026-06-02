@@ -16,6 +16,15 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" parentKey="name">
 					<Size x="115" y="0"/>
 					<Anchors>
@@ -281,6 +290,15 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" x="0" y="0" />
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.specIcon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.specIcon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="specIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
 				<FontString name="$parentSpecName" inherits="GameFontNormal" parentKey="specName">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="TOPRIGHT" x="-5" y="-30" />
@@ -707,6 +725,15 @@
 										<Anchor point="CENTER" relativeTo="$parentRing" x="-1" y="1" />
 									</Anchors>
 								</Texture>
+								<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.specIcon" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.specIcon" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<MaskedTextures>
+										<MaskedTexture childKey="specIcon"/>
+									</MaskedTextures>
+								</MaskTexture>
 								<Texture parentKey="Seperator" alpha="0.6">					
 									<Size x="360" y="2"/>
 									<Color r="0.35" g="0.2" b="0.0"/>

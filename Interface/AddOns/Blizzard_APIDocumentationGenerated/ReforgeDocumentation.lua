@@ -3,6 +3,7 @@ local Reforge =
 	Name = "Reforge",
 	Type = "System",
 	Namespace = "C_Reforge",
+	Environment = "All",
 
 	Functions =
 	{
@@ -110,11 +111,13 @@ local Reforge =
 			Name = "ForgeMasterClosed",
 			Type = "Event",
 			LiteralName = "FORGE_MASTER_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ForgeMasterItemChanged",
 			Type = "Event",
 			LiteralName = "FORGE_MASTER_ITEM_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -124,11 +127,13 @@ local Reforge =
 			Name = "ForgeMasterOpened",
 			Type = "Event",
 			LiteralName = "FORGE_MASTER_OPENED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ForgeMasterSetItem",
 			Type = "Event",
 			LiteralName = "FORGE_MASTER_SET_ITEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -169,6 +174,9 @@ local Reforge =
 				{ Name = "statReduction", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

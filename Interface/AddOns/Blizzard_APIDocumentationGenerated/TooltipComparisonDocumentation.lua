@@ -3,6 +3,7 @@ local TooltipComparison =
 	Name = "TooltipComparison",
 	Type = "System",
 	Namespace = "C_TooltipComparison",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,18 @@ local TooltipComparison =
 
 	Events =
 	{
+		{
+			Name = "TooltipShowItemComparison",
+			Type = "Event",
+			LiteralName = "TOOLTIP_SHOW_ITEM_COMPARISON",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "comparisonItem", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "tooltip", Type = "Tooltip", Nilable = false },
+				{ Name = "anchorFrame", Type = "SimpleFrame", Nilable = true },
+			},
+		},
 	},
 
 	Tables =
@@ -38,6 +51,9 @@ local TooltipComparison =
 				{ Name = "additionalItems", Type = "table", InnerType = "TooltipComparisonItem", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

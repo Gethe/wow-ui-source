@@ -15,7 +15,7 @@ function ArenaEnemyFrames_OnLoad(self)
 		castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
 		castFrame:SetPoint("RIGHT", _G["ArenaEnemyFrame"..i], "LEFT", -32, -3);
 		castFrame.showCastbar = showCastbars;
-		CastingBarFrame_UpdateIsShown(castFrame);
+		castFrame:UpdateIsShown();
 	end
 	
 	UpdateArenaEnemyBackground();
@@ -35,7 +35,7 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 		for i = 1, MAX_ARENA_ENEMIES do
 			castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
 			castFrame.showCastbar = showCastbars;
-			CastingBarFrame_UpdateIsShown(castFrame);
+			castFrame:UpdateIsShown();
 		end
 		for i=1, MAX_ARENA_ENEMIES do
 			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i);
@@ -113,7 +113,7 @@ function ArenaEnemyFrame_OnLoad(self)
 			nil, nil, nil,
 			nil, _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
 			_G[prefix.."HealAbsorbBarRightShadow"]);
-	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+	_G[prefix.."HealthBar"]:SetBarTextZeroText(DEAD);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -164,7 +164,7 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	if (specID and specID > 0) then 
 		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
 		self.specBorder:Show();
-		SetPortraitToTexture(self.specPortrait, specIcon);
+		self.specPortrait:SetTexture(specIcon);
 	else
 		self.specPortrait:SetTexture(nil);
 		self.specBorder:Hide();
@@ -183,7 +183,7 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		self:SetPoint("RIGHT", self:GetParent(), "RIGHT", -2, 0);
 	end
 
-	CastingBarFrame_SetUnit(self.castBar, self.unit, false, true);
+	self.castBar:SetUnit(self.unit, false, true);
 	
 	ArenaEnemyFrames_UpdateVisible();
 end
@@ -458,7 +458,7 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	local unit = "arenapet"..id;
 	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
-	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+	_G[prefix.."HealthBar"]:SetBarTextZeroText(DEAD);
 	_G[prefix.."Name"]:Hide();
 	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);
@@ -580,7 +580,7 @@ function ArenaPrepFrames_UpdateFrames()
 					prepFrame.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 					prepFrame.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 				end
-				SetPortraitToTexture(prepFrame.specPortrait, specIcon);
+				prepFrame.specPortrait:SetTexture(specIcon);
 				prepFrame:Show();
 			else
 				prepFrame:Hide();

@@ -3,6 +3,7 @@ local PetBattles =
 	Name = "PetBattles",
 	Type = "System",
 	Namespace = "C_PetBattles",
+	Environment = "All",
 
 	Functions =
 	{
@@ -79,6 +80,9 @@ local PetBattles =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

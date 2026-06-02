@@ -2,6 +2,7 @@ local SimpleCheckboxAPI =
 {
 	Name = "SimpleCheckboxAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -78,6 +79,9 @@ local SimpleCheckboxAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

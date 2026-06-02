@@ -86,6 +86,23 @@ function tContains(tbl, item)
 	return false;
 end
 
+function TableUtil.SafeCountTable(tbl, isIndexTable)
+	if tbl == nil then
+		return 0;
+	end
+
+	if isIndexTable then
+		return #tbl;
+	end
+
+	return CountTable(tbl);
+end
+
+function TableUtil.SafeCountIndexTable(tbl)
+	local isIndexTable = true;
+	return TableUtil.SafeCountTable(tbl, isIndexTable);
+end
+
 function TableUtil.ContainsAllKeys(lhsTable, rhsTable)
 	for key, _ in pairs(lhsTable) do
 		if rhsTable[key] == nil then
@@ -143,6 +160,16 @@ function tInvert(tbl)
 		inverted[v] = k;
 	end
 	return inverted;
+end
+
+function tInvertToArray(tbl)
+	local index = 1;
+	local copy = {};
+	for k in pairs(tbl) do
+		copy[k] = index;
+		index = index + 1;
+	end
+	return tInvert(copy);
 end
 
 function TableUtil.TrySet(tbl, key)
@@ -476,6 +503,17 @@ function GetOrCreateTableEntryByCallback(table, key, callback)
 	return currentValue, isNewValue;
 end
 
+function GetOrCreateTableEntryByMethod(table, key, method, owner)
+	local currentValue = table[key];
+	local isNewValue = (currentValue == nil);
+	if isNewValue then
+		currentValue = method(owner, key);
+		table[key] = currentValue;
+	end
+
+	return currentValue, isNewValue;
+end
+
 function GetRandomArrayEntry(array)
 	return array[math.random(1, #array)];
 end
@@ -555,6 +593,80 @@ function TableUtil.GetHighestNumericalValueInTable(table)
 	return highestValue;
 end
 
+-- Useful for debugging the differences between two tables.
+function CollectTableDifferences(actual, expected, path, differences, depth)
+	path = path or "";
+	differences = differences or {};
+	depth = depth or 10;
+
+	if depth <= 0 then
+		return differences;
+	end
+
+	-- Check if types match
+	local actualType = type(actual);
+	local expectedType = type(expected);
+
+	if actualType ~= expectedType then
+		table.insert(differences, {
+			path = path == "" and "root" or path,
+			actual = actual,
+			expected = expected,
+			reason = "type mismatch"
+		});
+		return differences;
+	end
+
+	-- If not tables, do direct comparison
+	if actualType ~= "table" then
+		if actual ~= expected then
+			table.insert(differences, {
+				path = path == "" and "root" or path,
+				actual = actual,
+				expected = expected,
+				reason = "value mismatch"
+			});
+		end
+		return differences;
+	end
+
+	-- Both are tables, compare recursively
+	local checkedKeys = {};
+
+	-- Check all keys in expected
+	for key, expectedValue in pairs(expected) do
+		checkedKeys[key] = true;
+		local actualValue = actual[key];
+		local keyPath = path == "" and tostring(key) or (path .. "." .. tostring(key));
+
+		if actualValue == nil then
+			table.insert(differences, {
+				path = keyPath,
+				actual = nil,
+				expected = expectedValue,
+				reason = "missing in actual"
+			});
+		else
+			CollectTableDifferences(actualValue, expectedValue, keyPath, differences, depth - 1);
+		end
+	end
+
+	-- Check for extra keys in actual
+	for key, actualValue in pairs(actual) do
+		if not checkedKeys[key] then
+			local keyPath = path == "" and tostring(key) or (path .. "." .. tostring(key));
+			table.insert(differences, {
+				path = keyPath,
+				actual = actualValue,
+				expected = nil,
+				reason = "extra in actual"
+			});
+		end
+	end
+
+	return differences;
+end
+
 --[[
 This utility creates and returns a table of elements that are sorted by value "priority".
 
@@ -624,9 +736,16 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 
 	local t = {};
 
+	local function GetKey(k)
+		if isAssociative then
+			return keyToPosMap[k];
+		end
+		return k;
+	end
+
 	function t:Get(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		return sortedArray[key];
+		local key = GetKey(k);
+		return key and sortedArray[key] or nil;
 	end
 
 	if not isAssociative then
@@ -636,12 +755,14 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 	end
 
 	function t:Remove(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		tRemove(sortedArray, key);
-		if isAssociative then
-			keyToPosMap[k] = nil;
-			local shiftUp = false;
-			ShiftPositionMap(key, shiftUp);
+		local key = GetKey(k);
+		if key then
+			tRemove(sortedArray, key);
+			if isAssociative then
+				keyToPosMap[k] = nil;
+				local shiftUp = false;
+				ShiftPositionMap(key, shiftUp);
+			end
 		end
 	end
 

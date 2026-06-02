@@ -39,6 +39,11 @@ function GameTimeFrame_OnLoad(self)
 	self.hour = 0;
 	self.flashTimer = 0.0;
 	GameTimeFrame_OnUpdate(self);
+
+	-- Moves the mail frame to be lower since otherwise it overlaps with this frame
+	if MiniMapMailFrame then
+		MiniMapMailFrame:SetPoint("TOPRIGHT", 22, -50);
+	end
 end
 
 function GameTimeFrame_OnEnter(self)

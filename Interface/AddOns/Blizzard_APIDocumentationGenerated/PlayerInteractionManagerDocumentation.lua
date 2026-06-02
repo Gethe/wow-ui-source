@@ -3,6 +3,7 @@ local PlayerInteractionManager =
 	Name = "PlayerInteractionManager",
 	Type = "System",
 	Namespace = "C_PlayerInteractionManager",
+	Environment = "All",
 
 	Functions =
 	{
@@ -91,6 +92,7 @@ local PlayerInteractionManager =
 			Name = "PlayerInteractionManagerFrameHide",
 			Type = "Event",
 			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
@@ -100,6 +102,7 @@ local PlayerInteractionManager =
 			Name = "PlayerInteractionManagerFrameShow",
 			Type = "Event",
 			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
@@ -108,6 +111,9 @@ local PlayerInteractionManager =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

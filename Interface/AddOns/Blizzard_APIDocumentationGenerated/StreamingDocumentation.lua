@@ -2,6 +2,7 @@ local Streaming =
 {
 	Name = "Streaming",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -48,6 +49,9 @@ local Streaming =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

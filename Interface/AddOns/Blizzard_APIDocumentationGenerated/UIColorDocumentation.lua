@@ -3,6 +3,7 @@ local UIColor =
 	Name = "UIColor",
 	Type = "System",
 	Namespace = "C_UIColor",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,9 @@ local UIColor =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -2,6 +2,7 @@ local FrameAPIModelSceneFrameActorBase =
 {
 	Name = "FrameAPIModelSceneFrameActorBase",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -260,6 +261,19 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "IsPreferringModelCollisionBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "preferringCollisionBounds", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsShown",
 			Type = "Function",
 
@@ -350,6 +364,29 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetGradientMask",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gradientIndex0", Type = "number", Nilable = false },
+				{ Name = "gradientIndex1", Type = "number", Nilable = false },
+				{ Name = "gradientIndex2", Type = "number", Nilable = false },
+				{ Name = "gradientIndex3", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetGradientMaskWithDyes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "grad0DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad1DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad2DyeColorID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetModelByCreatureDisplayID",
 			Type = "Function",
 
@@ -397,6 +434,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 
 			Arguments =
 			{
@@ -460,6 +498,16 @@ local FrameAPIModelSceneFrameActorBase =
 				{ Name = "positionX", Type = "number", Nilable = false },
 				{ Name = "positionY", Type = "number", Nilable = false },
 				{ Name = "positionZ", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPreferModelCollisionBounds",
+			Type = "Function",
+			Documentation = { "If true, will try to use the collision bounds of models for sizing and centering. Will fall back to default model bounds if set to False, or if collision bounds are unavailable." },
+
+			Arguments =
+			{
+				{ Name = "preferCollisionBounds", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -558,6 +606,9 @@ local FrameAPIModelSceneFrameActorBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

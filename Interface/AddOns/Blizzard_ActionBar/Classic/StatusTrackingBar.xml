@@ -1,0 +1,177 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="StatusTrackingBarContainerTemplate" mixin="StatusTrackingBarContainerMixin" parentArray="barContainers" virtual="true" hidden="true" alpha="0">
+		<Size x="1024" y="13"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!--
+					For Classic, these bars have two texture options:
+						1. MainMenuBar uses UI-MainMenuBar-Dwarf and blends nicely with the Classic MainMenuBar.
+						2. Standalone uses UI-ReputationWatchBar and looks better when the bar is not attached to the MainMenuBar
+							(e.g., EditMode moving).
+				-->
+				
+				<!-- Border for a status bar (XP, rep, etc.) that's sitting on top of the Classic MainMenuBar. -->
+				<Texture parentArray="MainMenuBarTextures" parentKey="MainMenuBarFrameTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf" hidden="true">
+					<Size x="256" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+				</Texture>
+				<Texture parentArray="MainMenuBarTextures" parentKey="MainMenuBarFrameTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf" hidden="true">
+					<Size x="256" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MainMenuBarFrameTexture1" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+				</Texture>
+				<Texture parentArray="MainMenuBarTextures" parentKey="MainMenuBarFrameTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf" hidden="true">
+					<Size x="256" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MainMenuBarFrameTexture2" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+				</Texture>
+				<Texture parentArray="MainMenuBarTextures" parentKey="MainMenuBarFrameTexture4" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf" hidden="true">
+					<Size x="256" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MainMenuBarFrameTexture3" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+				</Texture>
+
+				<!-- Border for a standalone status bar (XP, rep, etc.) using Classic assets. -->
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+					<!-- Note: The Classic textures for this bar span 1024 units. However, the edges (particularly on the left)
+							are not "cut" in an aesthetically pleasing way. As such, I took the first 16 units of the asset on the left,
+							chopped off 3 of them, and then stretched out the remaining 13 over 16 units.
+							Hacky... but it looks better and better matches the right side.
+					-->
+					<Size x="16" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01171875" right="0.0625" top="0.03125" bottom="0.171875"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+					<Size x="240" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StandaloneFrameTexture1" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="1.0" top="0.03125" bottom="0.171875"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+					<Size x="256" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StandaloneFrameTexture2" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.203125" bottom="0.34375"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTexture4" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+					<Size x="256" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StandaloneFrameTexture3" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.375" bottom="0.515625"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTexture5" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+					<Size x="256" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StandaloneFrameTexture4" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.546875" bottom="0.6875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+					<!-- To further cover up the left and right edges of the bar, adding some creatively stitched-together end caps. -->
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTextureLeftCapTop" file="Interface\MainMenuBar\UI-ExhaustionTickNormal">
+					<Size x="9" y="9"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StandaloneFrameTexture1" relativePoint="TOPLEFT" x="1" y="3"/>
+					</Anchors>
+					<TexCoords left="0.28125" right="0.6875" top="0.09375" bottom="0.5"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTextureLeftCapBottom" file="Interface\MainMenuBar\UI-ExhaustionTickNormal">
+					<Size x="9" y="9"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StandaloneFrameTextureLeftCapTop" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.28125" right="0.6875" top="0.5" bottom="0.09375"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTextureRightCapTop" file="Interface\MainMenuBar\UI-ExhaustionTickNormal">
+					<Size x="9" y="9"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StandaloneFrameTexture5" relativePoint="TOPRIGHT" x="-1" y="3"/>
+					</Anchors>
+					<TexCoords left="0.28125" right="0.6875" top="0.09375" bottom="0.5"/>
+				</Texture>
+				<Texture parentArray="StandaloneTextures" parentKey="StandaloneFrameTextureRightCapBottom" file="Interface\MainMenuBar\UI-ExhaustionTickNormal">
+					<Size x="9" y="9"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StandaloneFrameTextureRightCapTop" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.28125" right="0.6875" top="0.5" bottom="0.09375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<!-- For Classic, these are "instant" 0.01s animations. -->
+			<AnimationGroup parentKey="FadeInAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerAnimationMixin">
+				<Alpha startDelay="0" smoothing="IN_OUT" target="$parent" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerFadeOutAnimationMixin">
+				<Alpha startDelay="0" smoothing="IN_OUT" target="$parent" duration="0.01" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="MaxLevelFadeOutAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerFadeOutAnimationMixin">
+				<Alpha startDelay="1" smoothing="IN_OUT" target="$parent" duration="0.01" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="StatusTrackingBarContainer_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
+		<Size x="1024" y="23"/>
+		<KeyValues>
+			<!-- Used in StatusTrackingBarContainerMixin:InitializeBars to set container scale-->
+			<KeyValue key="ClassicScale" value="1" type="number"/>
+			<KeyValue key="WrathScale" value="1.015" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-13"/>
+		</Anchors>
+		<Frames>
+			<Frame name="MainStatusTrackingBarContainer" parentKey="MainStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeStatusTrackingBar1SystemTemplate" mixin="EditModeStatusTrackingBarContainerMixin" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame name="SecondaryStatusTrackingBarContainer" parentKey="SecondaryStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeStatusTrackingBar2SystemTemplate" mixin="EditModeStatusTrackingBarContainerMixin" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

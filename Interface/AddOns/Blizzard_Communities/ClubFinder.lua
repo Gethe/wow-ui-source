@@ -11,6 +11,8 @@ local LAYOUT_TYPE_PENDING_LIST = 2;
 local POSTING_EXPIRATION_DAYS = 30;
 local APPLICATION_EXPIRATION_DAYS = 7;
 
+CLUB_FINDER_SEARCH_BUTTON_MIN_TEXT_LENGTH = 3; -- Localization.lua
+
 ClubFinderDropdownMixin = {};
 
 function ClubFinderDropdownMixin:OnLoad()
@@ -1012,7 +1014,7 @@ function ClubFinderSearchButtonMixin:ShouldBeEnabled()
 	end
 
 	local searchTextLen = strlenutf8(self.searchBox:GetText());
-	return searchTextLen == 0 or searchTextLen >= 3;
+	return searchTextLen == 0 or searchTextLen >= CLUB_FINDER_SEARCH_BUTTON_MIN_TEXT_LENGTH;
 end
 
 function ClubFinderSearchButtonMixin:OnEnter()

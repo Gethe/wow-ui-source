@@ -3,6 +3,7 @@ local Loot =
 	Name = "Loot",
 	Type = "System",
 	Namespace = "C_Loot",
+	Environment = "All",
 
 	Functions =
 	{
@@ -23,6 +24,7 @@ local Loot =
 			Name = "AzeriteEmpoweredItemLooted",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_LOOTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -32,21 +34,25 @@ local Loot =
 			Name = "BonusRollActivate",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_ACTIVATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BonusRollDeactivate",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_DEACTIVATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BonusRollFailed",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BonusRollResult",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
@@ -64,11 +70,13 @@ local Loot =
 			Name = "BonusRollStarted",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CancelLootRoll",
 			Type = "Event",
 			LiteralName = "CANCEL_LOOT_ROLL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rollID", Type = "number", Nilable = false },
@@ -78,6 +86,7 @@ local Loot =
 			Name = "ConfirmLootRoll",
 			Type = "Event",
 			LiteralName = "CONFIRM_LOOT_ROLL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rollID", Type = "number", Nilable = false },
@@ -89,6 +98,7 @@ local Loot =
 			Name = "ItemPush",
 			Type = "Event",
 			LiteralName = "ITEM_PUSH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bagSlot", Type = "luaIndex", Nilable = false },
@@ -96,9 +106,20 @@ local Loot =
 			},
 		},
 		{
+			Name = "LegacyLootRulesChanged",
+			Type = "Event",
+			LiteralName = "LEGACY_LOOT_RULES_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LootBindConfirm",
 			Type = "Event",
 			LiteralName = "LOOT_BIND_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "lootSlot", Type = "luaIndex", Nilable = false },
@@ -108,11 +129,13 @@ local Loot =
 			Name = "LootClosed",
 			Type = "Event",
 			LiteralName = "LOOT_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LootHistoryAutoShow",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_AUTO_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rollID", Type = "number", Nilable = false },
@@ -123,11 +146,13 @@ local Loot =
 			Name = "LootHistoryFullUpdate",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_FULL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LootHistoryRollChanged",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_ROLL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "historyIndex", Type = "number", Nilable = false },
@@ -138,11 +163,13 @@ local Loot =
 			Name = "LootHistoryRollComplete",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_ROLL_COMPLETE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LootItemAvailable",
 			Type = "Event",
 			LiteralName = "LOOT_ITEM_AVAILABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemTooltip", Type = "cstring", Nilable = false },
@@ -153,6 +180,7 @@ local Loot =
 			Name = "LootItemRollWon",
 			Type = "Event",
 			LiteralName = "LOOT_ITEM_ROLL_WON",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -166,6 +194,7 @@ local Loot =
 			Name = "LootOpened",
 			Type = "Event",
 			LiteralName = "LOOT_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "autoLoot", Type = "bool", Nilable = false },
@@ -175,6 +204,7 @@ local Loot =
 			Name = "LootReady",
 			Type = "Event",
 			LiteralName = "LOOT_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "autoloot", Type = "bool", Nilable = false },
@@ -184,6 +214,7 @@ local Loot =
 			Name = "LootRollsComplete",
 			Type = "Event",
 			LiteralName = "LOOT_ROLLS_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "lootHandle", Type = "number", Nilable = false },
@@ -193,6 +224,7 @@ local Loot =
 			Name = "LootSlotChanged",
 			Type = "Event",
 			LiteralName = "LOOT_SLOT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "lootSlot", Type = "luaIndex", Nilable = false },
@@ -202,6 +234,7 @@ local Loot =
 			Name = "LootSlotCleared",
 			Type = "Event",
 			LiteralName = "LOOT_SLOT_CLEARED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "lootSlot", Type = "luaIndex", Nilable = false },
@@ -211,11 +244,13 @@ local Loot =
 			Name = "OpenMasterLootList",
 			Type = "Event",
 			LiteralName = "OPEN_MASTER_LOOT_LIST",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetBattleLootReceived",
 			Type = "Event",
 			LiteralName = "PET_BATTLE_LOOT_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
@@ -227,11 +262,13 @@ local Loot =
 			Name = "PlayerLootSpecUpdated",
 			Type = "Event",
 			LiteralName = "PLAYER_LOOT_SPEC_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowLootToast",
 			Type = "Event",
 			LiteralName = "SHOW_LOOT_TOAST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
@@ -250,6 +287,7 @@ local Loot =
 			Name = "ShowLootToastLegendaryLooted",
 			Type = "Event",
 			LiteralName = "SHOW_LOOT_TOAST_LEGENDARY_LOOTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -259,6 +297,7 @@ local Loot =
 			Name = "ShowLootToastUpgrade",
 			Type = "Event",
 			LiteralName = "SHOW_LOOT_TOAST_UPGRADE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -274,6 +313,7 @@ local Loot =
 			Name = "ShowPvpFactionLootToast",
 			Type = "Event",
 			LiteralName = "SHOW_PVP_FACTION_LOOT_TOAST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
@@ -289,6 +329,7 @@ local Loot =
 			Name = "ShowRatedPvpRewardToast",
 			Type = "Event",
 			LiteralName = "SHOW_RATED_PVP_REWARD_TOAST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
@@ -304,6 +345,7 @@ local Loot =
 			Name = "StartLootRoll",
 			Type = "Event",
 			LiteralName = "START_LOOT_ROLL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rollID", Type = "number", Nilable = false },
@@ -315,15 +357,20 @@ local Loot =
 			Name = "TrialCapReachedMoney",
 			Type = "Event",
 			LiteralName = "TRIAL_CAP_REACHED_MONEY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateMasterLootList",
 			Type = "Event",
 			LiteralName = "UPDATE_MASTER_LOOT_LIST",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -12,6 +12,7 @@ local UnitConstants =
 				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
 				{ Name = "showCountdownFrame", Type = "bool", Nilable = false },
 				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
+				{ Name = "isContainer", Type = "bool", Nilable = false },
 				{ Name = "iconInfo", Type = "PrivateAuraIconInfo", Nilable = true },
 				{ Name = "durationAnchor", Type = "AnchorBinding", Nilable = true },
 			},
@@ -24,6 +25,7 @@ local UnitConstants =
 				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = false },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{
@@ -49,6 +51,9 @@ local UnitConstants =
 				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
+				{ Name = "isContainer", Type = "bool", Nilable = true },
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
 			},
 		},
 		{
@@ -63,6 +68,9 @@ local UnitConstants =
 				{ Name = "outputChannel", Type = "string", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

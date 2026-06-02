@@ -341,6 +341,9 @@ local CalendarConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CalendarConstants);

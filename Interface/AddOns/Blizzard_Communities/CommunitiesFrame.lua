@@ -317,9 +317,9 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
 			self.Chat:RequestInitialMessages(clubId, streamId);
 		end
-	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then 
-		local applicantGUID = ...; 
-		ChatFrame_SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
+	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then
+		local applicantGUID = ...;
+		ChatFrameUtil.SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
 	end
 end
 
@@ -351,7 +351,7 @@ end
 
 function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 	-- When you add a new club we want to add the general stream to your chat window.
-	if not ChatFrame_CanAddChannel() then
+	if not ChatFrameUtil.CanAddChannel() then
 		return;
 	end
 
@@ -362,7 +362,7 @@ function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 				for i, stream in ipairs(streams) do
 					if stream.streamType == Enum.ClubStreamType.General then
 						local DEFAULT_CHAT_FRAME_INDEX = 1;
-						ChatFrame_AddNewCommunitiesChannel(DEFAULT_CHAT_FRAME_INDEX, clubId, stream.streamId);
+						ChatFrameUtil.AddNewCommunitiesChannel(DEFAULT_CHAT_FRAME_INDEX, clubId, stream.streamId);
 						table.remove(self.newClubIds, i);
 						break;
 					end
@@ -1246,7 +1246,7 @@ function CommunitiesFrameMixin:UpdatePortrait()
 	self.PortraitOverlay.TabardBorder:SetShown(isGuildCommunity);
 
 	if clubInfo == nil then
-		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\achievement_guildperk_havegroup willtravel");
+		self.PortraitOverlay.Portrait:SetTexture("Interface\\Icons\\achievement_guildperk_havegroup willtravel");
 	elseif isGuildCommunity then
 		SetLargeGuildTabardTextures("player", self.PortraitOverlay.TabardEmblem, self.PortraitOverlay.TabardBackground, self.PortraitOverlay.TabardBorder);
 	else
@@ -1328,7 +1328,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			end
 			self.CommunitiesControlFrame:SetShown(displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
 		else
-			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
+			self.PortraitOverlay.Portrait:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 			local invitationInfo = C_Club.GetInvitationInfo(clubId);
 			if invitationInfo then
 				self.InvitationFrame:DisplayInvitation(invitationInfo);

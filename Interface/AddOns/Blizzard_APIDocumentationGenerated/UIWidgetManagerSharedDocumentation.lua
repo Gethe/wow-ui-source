@@ -5,13 +5,14 @@ local UIWidgetManagerShared =
 		{
 			Name = "MapIconUIWidgetSetType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Tooltip", Type = "MapIconUIWidgetSetType", EnumValue = 0 },
 				{ Name = "BehindIcon", Type = "MapIconUIWidgetSetType", EnumValue = 1 },
+				{ Name = "AdventureMapDetails", Type = "MapIconUIWidgetSetType", EnumValue = 2 },
 			},
 		},
 		{
@@ -72,6 +73,19 @@ local UIWidgetManagerShared =
 			},
 		},
 		{
+			Name = "UIWidgetModelSceneLayer",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "UIWidgetModelSceneLayer", EnumValue = 0 },
+				{ Name = "Front", Type = "UIWidgetModelSceneLayer", EnumValue = 1 },
+				{ Name = "Back", Type = "UIWidgetModelSceneLayer", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIWidgetScale",
 			Type = "Enumeration",
 			NumValues = 16,
@@ -113,9 +127,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 32,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 31,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -130,9 +144,31 @@ local UIWidgetManagerShared =
 				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
 				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
 				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
-				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "TextureAndText", Type = "UIWidgetVisualizationType", EnumValue = 12 },
+				{ Name = "SpellDisplay", Type = "UIWidgetVisualizationType", EnumValue = 13 },
+				{ Name = "DoubleStateIconRow", Type = "UIWidgetVisualizationType", EnumValue = 14 },
+				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
+				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
+				{ Name = "CaptureZone", Type = "UIWidgetVisualizationType", EnumValue = 17 },
+				{ Name = "TextureWithAnimation", Type = "UIWidgetVisualizationType", EnumValue = 18 },
+				{ Name = "DiscreteProgressSteps", Type = "UIWidgetVisualizationType", EnumValue = 19 },
+				{ Name = "ScenarioHeaderTimer", Type = "UIWidgetVisualizationType", EnumValue = 20 },
+				{ Name = "TextColumnRow", Type = "UIWidgetVisualizationType", EnumValue = 21 },
+				{ Name = "Spacer", Type = "UIWidgetVisualizationType", EnumValue = 22 },
+				{ Name = "UnitPowerBar", Type = "UIWidgetVisualizationType", EnumValue = 23 },
+				{ Name = "FillUpFrames", Type = "UIWidgetVisualizationType", EnumValue = 24 },
+				{ Name = "TextWithSubtext", Type = "UIWidgetVisualizationType", EnumValue = 25 },
+				{ Name = "MapPinAnimation", Type = "UIWidgetVisualizationType", EnumValue = 26 },
+				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
+				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
+				{ Name = "ScenarioHeaderDelves", Type = "UIWidgetVisualizationType", EnumValue = 29 },
+				{ Name = "ButtonHeader", Type = "UIWidgetVisualizationType", EnumValue = 30 },
+				{ Name = "PreyHuntProgress", Type = "UIWidgetVisualizationType", EnumValue = 31 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -122,9 +122,7 @@ function ToyBox_InitFilterDropdown(self)
 		sourceSubmenu:CreateButton(CHECK_ALL, SetAllSourceTypeFilters, true);
 		sourceSubmenu:CreateButton(UNCHECK_ALL, SetAllSourceTypeFilters, false);
 
-		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TOYS", toySourceOrderPriorities);
-		for index = 1, C_PetJournal.GetNumPetSources() do
-			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
 			if C_ToyBoxInfo.IsToySourceValid(filterIndex) then
 				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
 			end
@@ -291,7 +289,7 @@ function ToySpellButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local itemLink = C_ToyBox.GetToyLink(self.itemID);
 		if ( itemLink ) then
-			ChatEdit_InsertLink(itemLink);
+			ChatFrameUtil.InsertLink(itemLink);
 		end
 	end
 end

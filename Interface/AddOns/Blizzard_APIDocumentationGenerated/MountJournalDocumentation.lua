@@ -3,6 +3,7 @@ local MountJournal =
 	Name = "MountJournal",
 	Type = "System",
 	Namespace = "C_MountJournal",
+	Environment = "All",
 
 	Functions =
 	{
@@ -198,7 +199,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
 			},
 
 			Returns =
@@ -517,16 +518,19 @@ local MountJournal =
 			Name = "MountJournalSearchUpdated",
 			Type = "Event",
 			LiteralName = "MOUNT_JOURNAL_SEARCH_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MountJournalUsabilityChanged",
 			Type = "Event",
 			LiteralName = "MOUNT_JOURNAL_USABILITY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NewMountAdded",
 			Type = "Event",
 			LiteralName = "NEW_MOUNT_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mountID", Type = "number", Nilable = false },
@@ -536,35 +540,6 @@ local MountJournal =
 
 	Tables =
 	{
-		{
-			Name = "MountType",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Ground", Type = "MountType", EnumValue = 0 },
-				{ Name = "Flying", Type = "MountType", EnumValue = 1 },
-				{ Name = "Aquatic", Type = "MountType", EnumValue = 2 },
-				{ Name = "Dragonriding", Type = "MountType", EnumValue = 3 },
-				{ Name = "RideAlong", Type = "MountType", EnumValue = 4 },
-			},
-		},
-		{
-			Name = "MountTypeFlag",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
-			MaxValue = 8,
-			Fields =
-			{
-				{ Name = "IsFlyingMount", Type = "MountTypeFlag", EnumValue = 1 },
-				{ Name = "IsAquaticMount", Type = "MountTypeFlag", EnumValue = 2 },
-				{ Name = "IsDragonRidingMount", Type = "MountTypeFlag", EnumValue = 4 },
-				{ Name = "IsRideAlongMount", Type = "MountTypeFlag", EnumValue = 8 },
-			},
-		},
 		{
 			Name = "MountCreatureDisplayInfo",
 			Type = "Structure",
@@ -609,6 +584,9 @@ local MountJournal =
 				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -2,6 +2,7 @@ local SimpleFontAPI =
 {
 	Name = "SimpleFontAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -193,6 +194,8 @@ local SimpleFontAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
@@ -297,6 +300,9 @@ local SimpleFontAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

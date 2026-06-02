@@ -2,6 +2,7 @@ local SimpleFrameAPI =
 {
 	Name = "SimpleFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -314,6 +315,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetEffectiveAlpha",
 			Type = "Function",
+			RequiresScriptObjectAlphaAccess = true,
 
 			Arguments =
 			{
@@ -654,7 +656,7 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "isRegistered", Type = "bool", Nilable = false },
-				{ Name = "units", Type = "string", Nilable = true, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = true, StrideIndex = 1 },
 			},
 		},
 		{
@@ -707,6 +709,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsIgnoringChildrenForBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -901,6 +916,21 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "RegisterEventCallback",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "cb", Type = "FrameEventCallbackType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "registered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterForDrag",
 			Type = "Function",
 
@@ -916,7 +946,23 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "eventName", Type = "cstring", Nilable = false },
-				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "units", Type = "UnitTokenType", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "registered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RegisterUnitEventCallback",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "cb", Type = "FrameEventCallbackType", Nilable = false },
+				{ Name = "units", Type = "UnitTokenType", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =
@@ -942,6 +988,17 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAlphaFromBoolean",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "alphaIfTrue", Type = "SingleColorValue", Nilable = false, Default = 255 },
+				{ Name = "alphaIfFalse", Type = "SingleColorValue", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -1146,6 +1203,15 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetIgnoringChildrenForBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetIsFrameBuffer",
 			Type = "Function",
 
@@ -1328,6 +1394,13 @@ local SimpleFrameAPI =
 	},
 
 	Tables =
+	{
+		{
+			Name = "FrameEventCallbackType",
+			Type = "CallbackType",
+		},
+	},
+	Predicates =
 	{
 	},
 };

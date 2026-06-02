@@ -2,6 +2,7 @@ local Client =
 {
 	Name = "Client",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -92,6 +93,9 @@ local Client =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

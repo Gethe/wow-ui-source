@@ -3,6 +3,7 @@ local ScenarioInfo =
 	Name = "ScenarioInfo",
 	Type = "System",
 	Namespace = "C_ScenarioInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -38,6 +39,16 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "GetDisplayInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "info", Type = "ScenarioDisplayInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetJailersTowerTypeString",
 			Type = "Function",
 
@@ -49,6 +60,21 @@ local ScenarioInfo =
 			Returns =
 			{
 				{ Name = "typeString", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetScenarioIconInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scenarioInfos", Type = "table", InnerType = "ScenarioIconInfo", Nilable = false },
 			},
 		},
 		{
@@ -76,6 +102,42 @@ local ScenarioInfo =
 				{ Name = "scenarioStepInfo", Type = "ScenarioStepInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetTieredEntranceActiveSpells",
+			Type = "Function",
+			Documentation = { "Returns list of active challenge spells if inside a tiered entrance scenario" },
+
+			Returns =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitCriteriaProgressValues",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "actualValue", Type = "number", Nilable = false },
+				{ Name = "percentValue", Type = "number", Nilable = false },
+				{ Name = "percentValueString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTieredEntranceScenario",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isTieredEntrance", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -84,6 +146,7 @@ local ScenarioInfo =
 			Name = "JailersTowerLevelUpdate",
 			Type = "Event",
 			LiteralName = "JAILERS_TOWER_LEVEL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
@@ -94,6 +157,7 @@ local ScenarioInfo =
 			Name = "ScenarioBonusObjectiveComplete",
 			Type = "Event",
 			LiteralName = "SCENARIO_BONUS_OBJECTIVE_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bonusObjectiveID", Type = "number", Nilable = false },
@@ -103,11 +167,13 @@ local ScenarioInfo =
 			Name = "ScenarioBonusVisibilityUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_BONUS_VISIBILITY_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioCompleted",
 			Type = "Event",
 			LiteralName = "SCENARIO_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
@@ -119,6 +185,7 @@ local ScenarioInfo =
 			Name = "ScenarioCriteriaShowStateUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_CRITERIA_SHOW_STATE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "show", Type = "bool", Nilable = false },
@@ -128,6 +195,7 @@ local ScenarioInfo =
 			Name = "ScenarioCriteriaUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_CRITERIA_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "criteriaID", Type = "number", Nilable = false },
@@ -137,16 +205,19 @@ local ScenarioInfo =
 			Name = "ScenarioPoiUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_POI_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioSpellUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_SPELL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newStep", Type = "bool", Nilable = true },
@@ -203,6 +274,25 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "ScenarioDisplayInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "themeColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "ScenarioIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "ScenarioInformation",
 			Type = "Structure",
 			Fields =
@@ -249,6 +339,9 @@ local ScenarioInfo =
 				{ Name = "icon", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -10,7 +10,9 @@ end
 function ScrollBoxSelectorMixin:Init()
 	local view = CreateScrollBoxListGridView(self:GetStride());
 
-	view:SetElementExtent(self:GetButtonHeight());
+	local buttonWidth = self:GetButtonWidth();
+	local buttonHeight = self:GetButtonHeight();
+	view:SetElementSize(buttonWidth, buttonHeight);
 	view:SetPadding(self:GetPadding());
 
 	local function InitializeGridSelectorScrollButton(button, selectionIndex)
@@ -48,6 +50,14 @@ end
 
 function ScrollBoxSelectorMixin:SetCustomButtonHeight(customButtonHeight)
 	self.customButtonHeight = customButtonHeight;
+end
+
+function ScrollBoxSelectorMixin:SetCustomButtonWidth(customButtonWidth)
+	self.customButtonWidth = customButtonWidth;
+end
+
+function ScrollBoxSelectorMixin:GetButtonWidth()
+	return self.customButtonWidth or self:GetButtonHeight();
 end
 
 function ScrollBoxSelectorMixin:GetButtonHeight()

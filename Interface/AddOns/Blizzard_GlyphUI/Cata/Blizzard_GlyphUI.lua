@@ -66,6 +66,7 @@ end
 function GlyphFrame_SetupFilterDropdown (self)
 	self.FilterDropdown:SetWidth(170);
 	self.FilterDropdown:SetDefaultText(ALL_GLYPHS);
+	self.FilterDropdown.Text:SetJustifyH("LEFT");
 
 	local function IsSelected(filter)
 		return IsGlyphFlagSet(filter);
@@ -221,7 +222,7 @@ function GlyphFrame_Update (self)
 			local specIcon = GlyphFrame.specIcon;
 			GlyphFrame.specRing:Show();
 			specIcon:Show();
-			SetPortraitToTexture(specIcon, icon);
+			specIcon:SetTexture(icon);
 			SetDesaturation(specIcon, true);
 			SetDesaturation(GlyphFrame.specRing, not isActiveTalentGroup);
 		else
@@ -487,7 +488,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.spell = glyphSpell;
 		self.glyph:Show();
 		if ( iconFilename ) then
-			SetPortraitToTexture(self.glyph, iconFilename);
+			self.glyph:SetTexture(iconFilename);
 		else
 			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
 		end
@@ -533,10 +534,10 @@ function GlyphFrameGlyph_OnClick (self, button)
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 	local _, _, _, glyphSpell = GetGlyphSocketInfo(glyphSlotIndex, talentGroup);
 
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local link = C_GlyphInfo.GetGlyphLink(glyphSlotIndex, self.glyphID);
 		if link then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif talentGroup == C_SpecializationInfo.GetActiveSpecGroup()  then
 		local glyphName;
@@ -587,7 +588,7 @@ function GlyphFrameSpell_OnClick (self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local _, _, _, _, _, link = GetGlyphInfo(self.glyphIndex);
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	else
 		if self.disabledBG:IsShown() then

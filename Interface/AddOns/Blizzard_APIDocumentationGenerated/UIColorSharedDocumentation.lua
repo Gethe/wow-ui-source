@@ -12,6 +12,9 @@ local UIColorShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(UIColorShared);

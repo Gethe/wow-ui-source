@@ -20,14 +20,13 @@ Vanilla\RealmList.lua
 Vanilla\RealmList.xml
 Vanilla\CharacterSelectConstants.lua
 Classic\CharacterServicesPatchwerk.xml
+Shared\CharacterSelect\CharacterSelectUtil.lua
 Classic\CharacterSelect\CharacterSelectUI.lua
 Classic\CharacterSelect\CharacterSelectUI.xml
 Classic\CharacterSelect.lua
 Classic\CharacterSelect.xml
 Shared\AccountReactivate.lua
 Shared\AccountReactivate.xml
-Classic\KioskModeSplash.lua
-Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
 Classic\CharacterServicesTemplatesUtil.lua
 Shared\CharacterServicesTemplates.lua
@@ -37,6 +36,8 @@ Classic\CharacterServices.lua
 Classic\CharacterServices.xml
 Classic\CharacterServicesPaidCharacterTransfer.lua
 Classic\CharacterServicesPaidCharacterTransfer.xml
+Classic\CharacterServicesFreeCharacterTransfer.lua
+Classic\CharacterServicesFreeCharacterTransfer.xml
 Classic\CharacterServicesPaidFactionChange.lua
 Classic\CharacterServicesPaidFactionChange.xml
 Classic\CharacterServicesPaidRaceChange.lua

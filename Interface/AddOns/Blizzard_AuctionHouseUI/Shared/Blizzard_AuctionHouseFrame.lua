@@ -431,13 +431,13 @@ function AuctionHouseFrameMixin:OnEvent(event, ...)
 		-- Clear the cached values.
 		self.maxUnitPriceWidth = {};
 	elseif event == "AUCTION_HOUSE_AUCTION_CREATED" then
-		Chat_AddSystemMessage(ERR_AUCTION_STARTED);
+		ChatFrameUtil.AddSystemMessage(ERR_AUCTION_STARTED);
 	elseif event == "AUCTION_HOUSE_SHOW_ERROR" then
 		local auctionHouseError = ...;
 		UIErrorsFrame:AddExternalErrorMessage(AuctionHouseUtil.GetErrorText(auctionHouseError));
 	elseif event == "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION" then
 		local commodityName, commodityQuantity = ...;
-		Chat_AddSystemMessage(ERR_AUCTION_COMMODITY_WON_S:format(commodityName, commodityQuantity));
+		ChatFrameUtil.AddSystemMessage(ERR_AUCTION_COMMODITY_WON_S:format(commodityName, commodityQuantity));
 	elseif event == "AUCTION_HOUSE_POST_WARNING" then
 		self:ShowPostConfirmationDialog("AUCTION_HOUSE_POST_WARNING");
 	elseif event == "AUCTION_HOUSE_POST_ERROR" then

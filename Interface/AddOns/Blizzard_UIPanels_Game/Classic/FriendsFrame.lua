@@ -281,7 +281,7 @@ function FriendsFrame_OnLoad(self)
 	GuildFrame.selectedGuildMember = 0;
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	SetGuildRosterSelection(0);
-	local currentGuildMOTD = GetGuildRosterMOTD();
+	local currentGuildMOTD = C_GuildInfo.GetMOTD();
 	GuildFrameNotesText:SetText(currentGuildMOTD);
 	GuildMemberDetailRankText:SetPoint("RIGHT", GuildFramePromoteButton, "LEFT");
 	-- friends list
@@ -426,11 +426,11 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	local inviteType = GetDisplayedInviteType(guid);
 	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
 		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
-			ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 			return;
 		end
 
-		BNInviteFriend(gameAccountID);
+		C_BattleNet.InviteFriend(gameAccountID);
 	elseif ( inviteType == "REQUEST_INVITE" ) then
 		BNRequestInviteFriend(gameAccountID);
 	end
@@ -540,12 +540,12 @@ function FriendsTabHeaderMixin:OnLoad()
 			self.bnStatus = status;
 
 			if status == FRIENDS_TEXTURE_ONLINE then
-				BNSetAFK(false);
-				BNSetDND(false);
+				C_BattleNet.SetAFK(false);
+				C_BattleNet.SetDND(false);
 			elseif status == FRIENDS_TEXTURE_AFK then
-				BNSetAFK(true);
+				C_BattleNet.SetAFK(true);
 			elseif status == FRIENDS_TEXTURE_DND then
-				BNSetDND(true);
+				C_BattleNet.SetDND(true);
 			end
 		end
 	end
@@ -556,7 +556,7 @@ function FriendsTabHeaderMixin:OnLoad()
 		radio:SetResponder(SetSelected);
 	end
 
-	self.StatusDropdown:SetWidth(61);
+	self.StatusDropdown:SetWidth(48);
 	self.StatusDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_FRIENDS_STATUS");
 
@@ -995,6 +995,8 @@ function WhoList_Update()
 		WhoFrameDropdown:SetWidth(95);
 	end
 
+	WhoFrameDropdown.Text:SetJustifyH("LEFT");
+
 	-- ScrollFrame update
 	FauxScrollFrame_Update(WhoListScrollFrame, numWhos, WHOS_TO_DISPLAY, FRIENDS_FRAME_WHO_HEIGHT );
 
@@ -1117,10 +1119,10 @@ function FriendsFrameSendMessageButton_OnClick(self)
 	local name;
 	if ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW ) then
 		name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-		ChatFrame_SendTell(name);
+		ChatFrameUtil.SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local bnetIDAccount, tokenizedName = BNGetFriendInfo(FriendsFrame.selectedFriend);
-		ChatFrame_SendBNetTell(tokenizedName);
+		ChatFrameUtil.SendBNetTell(tokenizedName);
 	end
 	if ( name ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -1173,7 +1175,7 @@ end
 
 function FriendsFrame_SendMessage()
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-	ChatFrame_SendTell(name);
+	ChatFrameUtil.SendTell(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
@@ -1577,7 +1579,7 @@ end
 
 function FriendsFrameBroadcastInput_OnEnterPressed(self)
 	local broadcastText = self:GetText()
-	BNSetCustomMessage(broadcastText);
+	C_BattleNet.SetCustomMessage(broadcastText);
 	FriendsFrameBroadcastInput_UpdateDisplay(self, broadcastText);
 end
 
@@ -1586,7 +1588,7 @@ function FriendsFrameBroadcastInput_OnEscapePressed(self)
 end
 
 function FriendsFrameBroadcastInput_OnClearPressed(self)
-	BNSetCustomMessage("");
+	C_BattleNet.SetCustomMessage("");
 	FriendsFrameBroadcastInput_UpdateDisplay(nil, "");
 end
 
@@ -1650,7 +1652,7 @@ function FriendsFrameBattlenetFrame_SetBroadcast()
 	local newBroadcastText = FriendsFrameBattlenetFrame.BroadcastFrame.ScrollFrame.EditBox:GetText();
 	local _, _, _, broadcastText = BNGetInfo();
 	if ( newBroadcastText ~= broadcastText ) then
-		BNSetCustomMessage(newBroadcastText);
+		C_BattleNet.SetCustomMessage(newBroadcastText);
 	end
 	FriendsFrameBattlenetFrame_HideBroadcastFrame();
 end
@@ -2694,6 +2696,7 @@ function GuildControlPopupFrameDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
 	self:SetWidth(110);
+	self.Text:SetJustifyH("LEFT");
 
 	local function IsSelected(i)
 		return GuildControlGetRank() == i;
@@ -2998,7 +3001,7 @@ function GuildStatus_Update()
 	end
 	
 	-- Message of the day stuff
-	local guildMOTD = GetGuildRosterMOTD();
+	local guildMOTD = C_GuildInfo.GetMOTD();
 	if ( CanEditMOTD() ) then
 		if ( (not guildMOTD) or (guildMOTD == "") ) then
 			--guildMOTD = GUILD_MOTD_EDITLABEL; -- A bug in the 1.12 lua code caused this to never actually appear.
@@ -3366,5 +3369,32 @@ function GuildFrame_CheckName()
 	else
 		GuildNameChangeAlertFrame:Hide();
 		GuildNameChangeFrame:Hide();
+	end
+end
+
+GuildFrameMemberNoteMixin = {};
+
+function GuildFrameMemberNoteMixin:GetStaticPopupDialog()
+	if self:IsPublicNote() then
+		return "SET_GUILDPLAYERNOTE";
+	else
+		return "SET_GUILDOFFICERNOTE";
+	end
+end
+
+function GuildFrameMemberNoteMixin:IsPublicNote()
+	return self.isPublicNote;
+end
+
+function GuildFrameMemberNoteMixin:OnMouseUp()
+	local _fullName, _rank, _rankIndex, _level, _class, _zone, publicNote, officerNote, _online, _status, _classFile, _achievementPoints, _achievementRank, _deprecated1, _deprecated2, _guildRepStanding, memberGUID = GetGuildRosterInfo(GetGuildRosterSelection());
+	local which = self:GetStaticPopupDialog();
+
+	if which and memberGUID then
+		local arg1 = nil;
+		local arg2 = nil;
+		local currentNote = self:IsPublicNote() and publicNote or officerNote;
+		local data = { currentNote = currentNote, guid = memberGUID };
+		StaticPopup_Show(which, arg1, arg2, data);
 	end
 end

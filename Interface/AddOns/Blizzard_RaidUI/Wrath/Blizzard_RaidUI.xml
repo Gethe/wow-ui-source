@@ -506,6 +506,27 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								RaidPulloutButton_OnLoad(self);
+							</OnLoad>
+							<OnEnter>
+								if ( self.unit ) then
+									UnitFrame_UpdateTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel()+2);
@@ -773,7 +794,7 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				DoReadyCheck();
+				C_PartyInfo.DoReadyCheck();
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>

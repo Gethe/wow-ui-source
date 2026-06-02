@@ -11,7 +11,7 @@ function AlternatePowerBar_OnLoad(self)
 	end
 
 	AlternatePowerBar_Initialize(self);
-	TextStatusBar_Initialize(self);
+	self:InitializeTextStatusBar();
 end
 
 function AlternatePowerBar_Initialize(self)
@@ -26,7 +26,7 @@ function AlternatePowerBar_Initialize(self)
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
+	self:SetBarText(_G[self:GetName().."Text"])
 	
 	local info = PowerBarColor[self.powerName];
 	self:SetStatusBarColor(info.r, info.g, info.b);
@@ -100,7 +100,7 @@ function AlternatePowerBar_SetLook(self)
 	local specialization = C_SpecializationInfo.GetSpecialization();
 	if ( class == "MONK" and (specialization == SPEC_MONK_MISTWEAVER or specialization == SPEC_MONK_BREWMASTER)) then
 		self:SetWidth(94);
-		self:SetPoint("BOTTOMLEFT", 118, 4);
+		self:SetPoint("BOTTOMLEFT", 100, 0);
 		self.DefaultBackground:Hide();
 		self.DefaultBorder:Hide();
 		self.DefaultBorderLeft:Hide();

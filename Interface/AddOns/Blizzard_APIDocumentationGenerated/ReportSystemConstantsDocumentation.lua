@@ -3,25 +3,39 @@ local ReportSystemConstants =
 	Tables =
 	{
 		{
+			Name = "ReportEvidenceType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "ReportEvidenceType", EnumValue = 0 },
+				{ Name = "HouseScreenshot", Type = "ReportEvidenceType", EnumValue = 1 },
+				{ Name = "HouseLayoutJson", Type = "ReportEvidenceType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ReportMajorCategory",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "InappropriateCommunication", Type = "ReportMajorCategory", EnumValue = 0 },
 				{ Name = "GameplaySabotage", Type = "ReportMajorCategory", EnumValue = 1 },
 				{ Name = "Cheating", Type = "ReportMajorCategory", EnumValue = 2 },
 				{ Name = "InappropriateName", Type = "ReportMajorCategory", EnumValue = 3 },
+				{ Name = "InappropriateDecor", Type = "ReportMajorCategory", EnumValue = 4 },
 			},
 		},
 		{
 			Name = "ReportMinorCategory",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 1,
-			MaxValue = 262144,
+			MaxValue = 524288,
 			Fields =
 			{
 				{ Name = "TextChat", Type = "ReportMinorCategory", EnumValue = 1 },
@@ -43,6 +57,7 @@ local ReportSystemConstants =
 				{ Name = "Disruption", Type = "ReportMinorCategory", EnumValue = 65536 },
 				{ Name = "TerroristAndViolentExtremistContent", Type = "ReportMinorCategory", EnumValue = 131072 },
 				{ Name = "ChildSexualExploitationAndAbuse", Type = "ReportMinorCategory", EnumValue = 262144 },
+				{ Name = "NeighborhoodName", Type = "ReportMinorCategory", EnumValue = 524288 },
 			},
 		},
 		{
@@ -58,11 +73,24 @@ local ReportSystemConstants =
 			},
 		},
 		{
+			Name = "ReportThrottleType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "ReportThrottleType", EnumValue = 0 },
+				{ Name = "General", Type = "ReportThrottleType", EnumValue = 1 },
+				{ Name = "Expensive", Type = "ReportThrottleType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 18,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 17,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -83,14 +111,30 @@ local ReportSystemConstants =
 				{ Name = "PvPGroupMember", Type = "ReportType", EnumValue = 15 },
 				{ Name = "CraftingOrder", Type = "ReportType", EnumValue = 16 },
 				{ Name = "RecentAlly", Type = "ReportType", EnumValue = 17 },
+				{ Name = "HousingDecor", Type = "ReportType", EnumValue = 18 },
+				{ Name = "Neighborhood", Type = "ReportType", EnumValue = 19 },
+				{ Name = "NeighborhoodRoster", Type = "ReportType", EnumValue = 20 },
+			},
+		},
+		{
+			Name = "ScreenshotSource",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Automatic", Type = "ScreenshotSource", EnumValue = 0 },
+				{ Name = "PlayerReport", Type = "ScreenshotSource", EnumValue = 1 },
+				{ Name = "Cheat", Type = "ScreenshotSource", EnumValue = 2 },
 			},
 		},
 		{
 			Name = "SendReportResult",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Success", Type = "SendReportResult", EnumValue = 0 },
@@ -98,8 +142,12 @@ local ReportSystemConstants =
 				{ Name = "TooManyReports", Type = "SendReportResult", EnumValue = 2 },
 				{ Name = "RequiresChatLine", Type = "SendReportResult", EnumValue = 3 },
 				{ Name = "RequiresChatLineOrVoice", Type = "SendReportResult", EnumValue = 4 },
+				{ Name = "RequiresScreenshot", Type = "SendReportResult", EnumValue = 5 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

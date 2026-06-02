@@ -2,6 +2,7 @@ local SimpleMessageFrameAPI =
 {
 	Name = "SimpleMessageFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -285,6 +286,8 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
@@ -397,6 +400,9 @@ local SimpleMessageFrameAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

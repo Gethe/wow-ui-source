@@ -3,6 +3,7 @@ local ConsoleScriptCollection =
 	Name = "ConsoleScriptCollection",
 	Type = "System",
 	Namespace = "C_ConsoleScriptCollection",
+	Environment = "All",
 
 	Functions =
 	{
@@ -110,6 +111,9 @@ local ConsoleScriptCollection =
 				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 
