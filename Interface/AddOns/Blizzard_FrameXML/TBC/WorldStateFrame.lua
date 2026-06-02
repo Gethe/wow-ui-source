@@ -79,6 +79,7 @@ function WorldStateScoreFrame_Update()
 		local firstColumnOffset = 100;
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameKB", "RIGHT", 0, 0);
 		if ( isRanked ) then
+			WorldStateScoreFrameMatchmakingRating:Show();
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
 
 			if ( GetCurrentArenaSeasonUsesTeams() ) then
@@ -89,6 +90,7 @@ function WorldStateScoreFrame_Update()
 				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", firstColumnOffset, 0);
 			end
 		else
+			WorldStateScoreFrameMatchmakingRating:Hide();
 			WorldStateScoreFrameHonorGained:Hide();
 			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", firstColumnOffset, 0);
 		end
@@ -105,6 +107,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGainedText:SetText(SCORE_HONOR_GAINED);
 		WorldStateScoreFrameHKText:SetText(SCORE_HONORABLE_KILLS);
 		WorldStateScoreFrameHonorGained:Show();
+		WorldStateScoreFrameMatchmakingRating:Hide();
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameHK", "RIGHT", 0, 0);
 		WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 0, 0);
@@ -273,7 +276,7 @@ function WorldStateScoreFrame_Update()
 
 		if ( index <= numScores ) then
 			scoreButton.index = index;
-			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone, ratingChange = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone, ratingChange, preMatchMMR = GetBattlefieldScore(index);
 
 			if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
 				honorGained = honorGained / 100;
@@ -326,7 +329,10 @@ function WorldStateScoreFrame_Update()
 					end
 
 					scoreButton.honorGained:Show();
+					scoreButton.matchmakingRating:SetText(preMatchMMR);
+					scoreButton.matchmakingRating:Show();
 				else
+					scoreButton.matchmakingRating:Hide();
 					scoreButton.honorGained:Hide();
 					scoreButton.team:Hide();
 				end
@@ -336,6 +342,7 @@ function WorldStateScoreFrame_Update()
 				scoreButton.honorableKills:SetText(honorableKills);
 				scoreButton.deaths:SetText(deaths);
 				scoreButton.honorGained:SetText(honorGained);
+				scoreButton.matchmakingRating:Hide();
 				scoreButton.team:Hide();
 				scoreButton.honorableKills:Show();
 				scoreButton.deaths:Show();
@@ -517,6 +524,7 @@ function WorldStateScoreFrame_Resize()
 		
 		if ( i == 1 ) then
 			scoreButton.team:SetPoint("LEFT", "WorldStateScoreFrameTeam", "LEFT", 0, SCORE_BUTTON_TEXT_OFFSET);
+			scoreButton.matchmakingRating:SetPoint("CENTER", "WorldStateScoreFrameMatchmakingRating", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreFrameHK", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreFrameKB", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreFrameDeaths", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
@@ -529,6 +537,7 @@ function WorldStateScoreFrame_Resize()
 		else
 			local offset = SCORE_BUTTON_HEIGHT - 1;
 			scoreButton.team:SetPoint("LEFT", "WorldStateScoreButton"..(i-1).."Team", "LEFT", 0, -offset);
+			scoreButton.matchmakingRating:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."MatchmakingRating", "CENTER", 0, -offset);
 			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -offset);
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -offset);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -offset);
