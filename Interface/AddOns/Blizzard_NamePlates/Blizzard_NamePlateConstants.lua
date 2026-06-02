@@ -20,6 +20,7 @@ NamePlateConstants =
 	SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR = "nameplateShowOnlyNameForFriendlyPlayerUnits";
 	USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR = "nameplateUseClassColorForFriendlyPlayerUnitNames";
 	SHOW_ALL_PERSONAL_AURAS_CVAR = "nameplateShowAllPersonalAuras";
+	FORCE_SHOW_UNIT_NAME_CVAR = "nameplateForceShowUnitName";
 
 	PREVIEW_UNIT_TOKEN = "preview";
 

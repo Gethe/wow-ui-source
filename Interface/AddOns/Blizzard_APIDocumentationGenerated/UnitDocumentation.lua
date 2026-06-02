@@ -587,6 +587,26 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDetailedThreatSituation",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobGUID", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTanking", Type = "bool", Nilable = false },
+				{ Name = "status", Type = "number", Nilable = false },
+				{ Name = "scaledPercentage", Type = "number", Nilable = false },
+				{ Name = "rawPercentage", Type = "number", Nilable = false },
+				{ Name = "rawThreat", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDistanceSquared",
 			Type = "Function",
 
@@ -1853,6 +1873,52 @@ local Unit =
 			Returns =
 			{
 				{ Name = "targetName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitThreatLeadSituation",
+			Type = "Function",
+			Documentation = { "Returns a threat state (0-3; representing none, yellow, orange, red) that indicates how far the provided unit is above the secondmost threat on the provided mob. If the unit is not first on threat, will always return red. Can return nil if the provided mob does not exist." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobGUID", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitThreatPercentageOfLead",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobGUID", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitThreatSituation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobGUID", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
 			},
 		},
 		{

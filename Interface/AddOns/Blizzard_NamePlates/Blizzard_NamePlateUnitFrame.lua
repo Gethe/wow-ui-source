@@ -6,6 +6,7 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.THREAT_DISPLAY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.DEBUFF_PADDING_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR);
+CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVAR);
 
 local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
 
@@ -119,6 +120,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self.UpdateAnchors, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self.UpdateShowOnlyName, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self.UpdateNameClassColor, self);
+	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVAR, self.UpdateForceShowUnitName, self);
 
 	self:RegisterUnitEvent("UNIT_AURA", self.unit);
 	self:RegisterUnitEvent("UNIT_FACTION", self.unit);
@@ -139,6 +141,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	self:UpdateBehindCamera();
 	self:UpdateWidgetsOnlyMode();
 	self:UpdateShowOnlyName();
+	self:UpdateForceShowUnitName();
 	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetActive(not C_Commentator.IsSpectating());
@@ -159,6 +162,7 @@ function NamePlateUnitFrameMixin:OnUnitCleared()
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self);
+	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVAR, self);
 
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("UNIT_FACTION");
@@ -176,6 +180,7 @@ function NamePlateUnitFrameMixin:OnUnitCleared()
 	self.isTarget = nil;
 	self.widgetsOnlyMode = nil;
 	self.showOnlyName = nil;
+	self.forceShowUnitName = nil;
 
 	self.aggroHighlightShown = nil;
 	self.isBehindCamera = nil;
@@ -607,6 +612,13 @@ function NamePlateUnitFrameMixin:UpdateThreatDisplay()
 	CompactUnitFrame_UpdateAggroFlash(self);
 	CompactUnitFrame_UpdateAggroHighlight(self);
 	CompactUnitFrame_UpdateHealthColor(self);
+end
+
+function NamePlateUnitFrameMixin:UpdateForceShowUnitName()
+	self.forceShowUnitName = CVarCallbackRegistry:GetCVarValueBool(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVAR);
+
+	-- This will reevaluate self:ShouldShowName().
+	CompactUnitFrame_UpdateName(self);
 end
 
 function NamePlateUnitFrameMixin:ShouldShowName()

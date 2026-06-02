@@ -1206,9 +1206,11 @@
 		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
 		if ( showFriends ) then
 			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
 			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
 			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -1222,6 +1224,7 @@
 		if ( not showEnemies or not showFriends ) then
 			Settings.SetValue("nameplateShowEnemies", true);
 			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
 			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -1230,6 +1233,7 @@
 		else
 			Settings.SetValue("nameplateShowEnemies", false);
 			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
