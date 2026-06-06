@@ -1190,7 +1190,7 @@ function IconTrainMixin:SetupIconTrainScrollView()
 
 	view:SetElementInitializer("IconTrainFrameChildTemplate", InitializeFrame);
 	view:SetElementExtentCalculator(function(dataIndex, sectionInfo)
-		return 100;
+		return 110;
 	end);
 	self.IconTrainScrollBox:Init(view);
 end

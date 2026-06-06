@@ -31,6 +31,10 @@ function ControlsOverrides.SetupAutoDismountSetting(category)
 	end
 end
 
+function ControlsOverrides.SetupCombinedBagsSetting(category)
+	-- Combined bags are not enabled in classic.
+end
+
 function ControlsOverrides.RunSettingsCallback(callback)
 	callback();
 end

@@ -2588,12 +2588,13 @@ end
 function UpdateColorClassCheckboxes(baseName, value)
 	local colorClasses = _G[baseName.."ColorClasses"];
 	if ( colorClasses ) then
+		colorClasses:SetShown(not value.isBlank);
 		colorClasses:SetChecked(IsClassColoringMessageType(value.type));
 	end
 end
 
 function HideClassColors(value, checkBoxName)
-	if ( value.noClassColor ) then
+	if ( value.noClassColor or value.isBlank ) then
 		_G[checkBoxName.."ColorClasses"]:Hide();
 	end
 end

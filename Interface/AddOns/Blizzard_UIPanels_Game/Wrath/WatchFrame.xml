@@ -149,89 +149,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WatchFrame" parent="UIParentRightManagedFrameContainer" clampedToScreen="true" hidden="false" frameStrata="LOW">
-		<Size x="204" y="140"/>
-		<KeyValues>
-			<KeyValue key="layoutIndex" value="10" type="number"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="UIParentRightManagedFrameContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
-		</Anchors>
-		<Frames>
-			<Button name="$parentHeader">
-				<Size x="160" y="16"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-6"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
-							<Anchors>
-								<Anchor point="TOPLEFT" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
-					<OnClick function="WatchFrameHeader_OnClick" />
-				</Scripts>
-			</Button>
-			<Button name="$parentCollapseExpandButton">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-5"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
-					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
-				</PushedTexture>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
-				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
-			</Button>
-			<Frame name="WatchFrameLines" hidden="false">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT" x="0" y="-30"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT" x="-24" y="12"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="WatchFrameLinesShadow" inherits="QuestTracker-Shadow" parentKey="Shadow" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-40" y="8"/>
-							</Anchors>
-							<Animations>
-								<AnimationGroup name="WatchFrameLinesShadowFadeIn" parentKey="FadeIn">
-									<Alpha duration="0" order="1"/>
-									<Alpha duration="0.5" order="2"/>
-								</AnimationGroup>
-							</Animations>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameStrata("LOW");
-						self.updateFunctions = {};
-						self.numFunctions = 0;
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="WatchFrame_OnLoad"/>
-			<OnEvent function="WatchFrame_OnEvent"/>
-			<OnUpdate function="WatchFrame_OnUpdate"/>
-			<OnShow function="UIParent_ManageFramePositions"/>
-			<OnHide function="UIParent_ManageFramePositions"/>
-		</Scripts>
-	</Frame>
-
 	<ScrollFrame name="WatchFrameAutoQuestPopUpTemplate" enableMouse="true" virtual="true">
 		<Size x="224" y="72"/>
 		<Scripts>
@@ -384,7 +301,7 @@
 										<OnFinished>
 											self:GetParent():Hide();
 											if (self:GetParent():GetParent():GetParent().type=="COMPLETED") then
-											self:GetParent():GetParent().Flash:Show();
+												self:GetParent():GetParent().Flash:Show();
 											end
 										</OnFinished>
 									</Scripts>
@@ -422,4 +339,88 @@
 			</Frame>
 		</ScrollChild>
 	</ScrollFrame>
+
+	<Frame name="WatchFrame" parent="UIParentRightManagedFrameContainer" clampedToScreen="true" hidden="false" frameStrata="LOW">
+		<Size x="204" y="140"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="10" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="UIParentRightManagedFrameContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parentHeader">
+				<Size x="160" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
+					<OnClick function="WatchFrameHeader_OnClick" />
+				</Scripts>
+			</Button>
+			<Button name="$parentCollapseExpandButton">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-12" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+			</Button>
+			<Frame name="WatchFrameLines" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT" x="0" y="-30"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT" x="-24" y="12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="WatchFrameLinesShadow" inherits="QuestTracker-Shadow" parentKey="Shadow" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-40" y="8"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="WatchFrameLinesShadowFadeIn" parentKey="FadeIn">
+									<Alpha duration="0" order="1"/>
+									<Alpha duration="0.5" order="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameStrata("LOW");
+						self.updateFunctions = {};
+						self.numFunctions = 0;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="WatchFrame_OnLoad"/>
+			<OnEvent function="WatchFrame_OnEvent"/>
+			<OnUpdate function="WatchFrame_OnUpdate"/>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
+		</Scripts>
+	</Frame>
+
 </Ui>
