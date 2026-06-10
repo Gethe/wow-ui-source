@@ -54,7 +54,7 @@ local function CheckAndSetArtStyle(actionButton)
 		return;
 	end
 
-	if AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
+	if AssistedCombatManager and AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
 		alertFrame.ProcStartFlipbook:Hide();
 		alertFrame.ProcLoopFlipbook:Hide();
 		alertFrame.ProcAltGlow:Show();

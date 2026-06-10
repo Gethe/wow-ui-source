@@ -150,7 +150,7 @@ function TradeSkillFrame_Update(self)
 	local name, rank, maxRank = GetTradeSkillLine();
 	-- If no tradeskills
 	if ( numTradeSkills == 0 ) then
-		TradeSkillFrameTitleText:SetText(format(TRADE_SKILL_TITLE, GetTradeSkillLine()));
+		TradeSkillFrameTitleText:SetFormattedText(TRADE_SKILL_TITLE, GetTradeSkillLine());
 		TradeSkillSkillName:Hide();
 --		TradeSkillSkillLineName:Hide();
 		TradeSkillSkillIcon:Hide();
@@ -158,7 +158,7 @@ function TradeSkillFrame_Update(self)
 		TradeSkillRequirementText:SetText("");
 		TradeSkillCollapseAllButton:Disable();
 		for i=1, MAX_TRADE_SKILL_REAGENTS, 1 do
-			getglobal("TradeSkillReagent"..i):Hide();
+			_G["TradeSkillReagent"..i]:Hide();
 		end
 	else
 		TradeSkillSkillName:Show();
@@ -177,10 +177,13 @@ function TradeSkillFrame_Update(self)
 	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
 
 	TradeSkillHighlightFrame:Hide();
+
+	local skillName, skillType, numAvailable, isExpanded, altVerb;
+	local skillNamePrefix = " ";
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
 		local skillIndex = i + skillOffset;
-		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
-		local skillButton = getglobal("TradeSkillSkill"..i);
+		skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
+		local skillButton = _G["TradeSkillSkill"..i];
 		if ( skillIndex <= numTradeSkills ) then
 			-- Set button widths if scrollbar is shown or hidden
 			if ( TradeSkillListScrollFrame:IsVisible() ) then
@@ -203,27 +206,29 @@ function TradeSkillFrame_Update(self)
 				else
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				end
-				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-				getglobal("TradeSkillSkill"..i):UnlockHighlight();
+				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				_G["TradeSkillSkill"..i]:UnlockHighlight();
+			-- Handle skill entries
 			else
 				if ( not skillName ) then
 					return;
 				end
 				skillButton:ClearNormalTexture();
-				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
+				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("");
+				-- None creatable, no brackets needed
 				if ( numAvailable == 0 ) then
-					skillButton:SetText(" "..skillName);
+					skillButton:SetText(skillNamePrefix..skillName);
 				else
-					skillButton:SetText(" "..skillName.." ["..numAvailable.."]");
+					skillButton:SetText(skillNamePrefix..skillName.." ["..numAvailable.."]");
 				end
 
 				-- Place the highlight and lock the highlight state
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
 					TradeSkillHighlightFrame:Show();
-					getglobal("TradeSkillSkill"..i):LockHighlight();
+					skillButton:LockHighlight();
 				else
-					getglobal("TradeSkillSkill"..i):UnlockHighlight();
+					skillButton:UnlockHighlight();
 				end
 			end
 
@@ -236,7 +241,7 @@ function TradeSkillFrame_Update(self)
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numTradeSkills, 1 do
-		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(i);
+		skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(i);
 		if ( skillName and skillType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then
@@ -245,7 +250,7 @@ function TradeSkillFrame_Update(self)
 		end
 		if ( GetTradeSkillSelectionIndex() == i ) then
 			-- Set the max makeable items for the create all button
-			TradeSkillFrame.numAvailable = numAvailable;
+			TradeSkillFrame.numAvailable = math.abs(numAvailable);
 		end
 	end
 	-- If all headers are not expanded then show collapse button, otherwise show the expand button
@@ -260,6 +265,10 @@ end
 
 function TradeSkillFrame_SetSelection(id)
 	local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(id);
+	local creatable = 1;
+	if( not skillName ) then
+		creatable = nil;
+	end
 	TradeSkillHighlightFrame:Show();
 	if ( skillType == "header" ) then
 		TradeSkillHighlightFrame:Hide();
@@ -282,7 +291,7 @@ function TradeSkillFrame_SetSelection(id)
 
 	-- General Info
 	local skillLineName, skillLineRank, skillLineMaxRank = GetTradeSkillLine();
-	TradeSkillFrameTitleText:SetText(format(TRADE_SKILL_TITLE, skillLineName));
+	TradeSkillFrameTitleText:SetFormattedText(TRADE_SKILL_TITLE, skillLineName);
 	-- Set statusbar info
 	TradeSkillRankFrameSkillName:SetText(skillLineName);
 	TradeSkillRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
@@ -318,7 +327,6 @@ function TradeSkillFrame_SetSelection(id)
 	end
 
 	-- Reagents
-	local creatable = 1;
 	local numReagents = GetTradeSkillNumReagents(id);
 
 	if(numReagents > 0) then
@@ -329,9 +337,9 @@ function TradeSkillFrame_SetSelection(id)
 
 	for i=1, numReagents, 1 do
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i);
-		local reagent = getglobal("TradeSkillReagent"..i)
-		local name = getglobal("TradeSkillReagent"..i.."Name");
-		local count = getglobal("TradeSkillReagent"..i.."Count");
+		local reagent = _G["TradeSkillReagent"..i]
+		local name = _G["TradeSkillReagent"..i.."Name"];
+		local count = _G["TradeSkillReagent"..i.."Count"];
 		if ( not reagentName or not reagentTexture ) then
 			reagent:Hide();
 		else
@@ -360,7 +368,7 @@ function TradeSkillFrame_SetSelection(id)
 	end
 
 	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
-		getglobal("TradeSkillReagent"..i):Hide();
+		_G["TradeSkillReagent"..i]:Hide();
 	end
 
 	local spellFocus = BuildColoredListString(GetTradeSkillTools(id));
@@ -381,7 +389,6 @@ function TradeSkillFrame_SetSelection(id)
 		TradeSkillCreateButton:Disable();
 		TradeSkillCreateAllButton:Disable();
 	end
-
 	TradeSkillDetailScrollFrame:UpdateScrollChildRect();
 
 	-- Reset the number of items to be created
@@ -461,4 +468,12 @@ function TradeSkillFrameDecrement_OnClick(self)
 	if ( TradeSkillInputBox:GetNumber() > 0 ) then
 		TradeSkillInputBox:SetNumber(TradeSkillInputBox:GetNumber() - 1);
 	end
+end
+
+function TradeSkillItem_OnEnter(self)
+	if ( TradeSkillFrame.selectedSkill ~= 0 ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
+	end
+	CursorUpdate(self);
 end

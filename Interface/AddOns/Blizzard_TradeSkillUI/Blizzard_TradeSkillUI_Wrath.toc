@@ -1,7 +1,0 @@
-## Title: Blizzard_TradeSkillUI
-## LoadOnDemand: 1
-## AllowLoad: game
-## AllowLoadGameType: wrath
-Wrath\Blizzard_TradeSkillUI.lua
-Wrath\Blizzard_TradeSkillUI.xml
-Localization.lua

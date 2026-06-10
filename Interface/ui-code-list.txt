@@ -2307,11 +2307,7 @@ Interface\AddOns\Blizzard_TokenUI\Blizzard_TokenUI_Mists.toc
 Interface\AddOns\Blizzard_TokenUI\Cata\Blizzard_TokenUI.lua
 Interface\AddOns\Blizzard_TokenUI\Cata\Blizzard_TokenUI.xml
 Interface\AddOns\Blizzard_TokenUI\Localization.lua
-Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Cata.toc
-Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Mists.toc
-Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_TBC.toc
-Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Vanilla.toc
-Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Wrath.toc
+Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Classic.toc
 Interface\AddOns\Blizzard_TradeSkillUI\Localization.lua
 Interface\AddOns\Blizzard_TradeSkillUI\Mists\Blizzard_TradeSkillUI.lua
 Interface\AddOns\Blizzard_TradeSkillUI\Mists\Blizzard_TradeSkillUI.xml

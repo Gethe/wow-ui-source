@@ -180,7 +180,8 @@ function QueueStatusFrameMixin:Update()
 
 	--Update the size of this frame to fit everything
 	self:SetHeight(totalHeight);
-	self:SetPoint("TOPRIGHT", LFGMinimapFrame, "BOTTOMLEFT", 0, -totalHeight + 20);
+	self:ClearAllPoints();
+	self:SetPoint("TOPRIGHT", LFGMinimapFrame, "BOTTOMLEFT", 0, 6);
 end
 
 function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
@@ -883,7 +884,7 @@ function QueueStatus_InActiveBattlefield()
 end
 
 function TogglePVPScoreboardOrResults()
-	if IsAddOnLoaded("Blizzard_PVPMatch") then
+	if C_AddOns.IsAddOnLoaded("Blizzard_PVPMatch") then
 		local isComplete = C_PvP.IsMatchComplete();
 		if isComplete then
 			if PVPMatchResults:IsShown() then
