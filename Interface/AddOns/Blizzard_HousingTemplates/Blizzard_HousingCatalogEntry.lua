@@ -492,13 +492,16 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local displayContext = self:GetDisplayContext();
 
 	if entryInfo.isUniqueTrophy then
-		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP);
+		GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP, LIGHTBLUE_FONT_COLOR);
 	end
 
 	if entryInfo.subcategoryIDs then
 		for _, subcategoryID in ipairs(entryInfo.subcategoryIDs) do
 			local categoryName, subcategoryName = C_HousingCatalog.GetCatalogCategoryAndSubcategoryNames(subcategoryID);
-			if categoryName and subcategoryName then
+			if string.gmatch(subcategoryName, categoryName)() then
+				-- If the subcategory name includes the full name of the category, only display the subcategory name
+				GameTooltip_AddHighlightLine(tooltip, subcategoryName);
+			else
 				GameTooltip_AddHighlightLine(tooltip, string.format(HOUSING_DECOR_CATEGORIES_TOOLTIP, categoryName, subcategoryName));
 			end
 		end

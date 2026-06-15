@@ -8,6 +8,11 @@ local function SetLockDeclineTimeText(button, originalText, timeleft)
 end
 
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	if dialog.ticker then
+		dialog.ticker:Cancel();
+		dialog.ticker = nil;
+	end
+
 	local button2 = dialog:GetButton2();
 	local originalButtonText = button2:GetText();
 	button2:Disable();

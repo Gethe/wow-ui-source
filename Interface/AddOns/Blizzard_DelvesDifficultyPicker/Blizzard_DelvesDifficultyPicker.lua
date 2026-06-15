@@ -640,7 +640,6 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	if not selectedTierInfo then
 		return; 
 	end
-	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 	C_DelvesUI.SelectDelveEntranceTier(selectedTierInfo.tier);
 end 
 

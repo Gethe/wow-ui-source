@@ -288,9 +288,9 @@ function WorldQuestDataProviderMixin:GetPinTemplate()
 	return "WorldQuestPinTemplate";
 end
 
-function WorldQuestDataProviderMixin:ShouldShowExpirationIcon(questID, worldQuestType)
+function WorldQuestDataProviderMixin:ShouldShowExpirationIcon(questID)
 	if QuestUtils_ShouldDisplayExpirationWarning(questID) then
-		if worldQuestType == Enum.QuestTagType.FactionAssault or worldQuestType == Enum.QuestTagType.Invasion then
+		if C_QuestInfoSystem.GetQuestHasShortExpirationWarning(questID) then
 			if QuestUtils_IsQuestWithinCriticalTimeThreshold(questID) then
 				return true;
 			end
@@ -384,7 +384,7 @@ end
 function WorldQuestPinMixin:RefreshVisuals()
 	self:UpdateSelected();
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.NormalTexture);
-	self.TimeLowFrame:SetShown(self.dataProvider:ShouldShowExpirationIcon(self.questID, self.tagInfo.worldQuestType));
+	self.TimeLowFrame:SetShown(self.dataProvider:ShouldShowExpirationIcon(self.questID));
 end
 
 function WorldQuestPinMixin:GetHighlightType() -- override
