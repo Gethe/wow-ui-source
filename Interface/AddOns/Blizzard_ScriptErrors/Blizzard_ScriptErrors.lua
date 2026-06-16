@@ -39,6 +39,12 @@ end
 ScriptErrors = CreateFromMixins(ScriptErrorsMixin);
 ScriptErrors:Init();
 
+local function RemoveKStrings(str)
+	return (string.gsub(str, "|([kK])", "%1"));
+end
+
+local RemoveKStringsDelegate = CreateSecureDelegate(RemoveKStrings);
+
 local function GetErrorData()
 	-- Example of how debug stack level is calculated
 	-- Current stack: [1, 2, 3, 4, 5] (current function is at 1, total current height is 5)
@@ -52,7 +58,7 @@ local function GetErrorData()
 
 	local stack = debugstack(debugStackLevel);
 	local locals = debuglocals(debugStackLevel, skipFunctionsAndUserdata);
-	locals = string.gsub(locals, "|([kK])", "%1");
+	locals = RemoveKStringsDelegate(locals);
 
 	return stack, locals;
 end
@@ -65,11 +71,17 @@ end
 local function HandleLuaError(errorMessage)
 	local stack, locals = GetErrorData();
 	local formattedMessage = string.format("Lua Error: %s\n%s", errorMessage, stack);
-	addframetext(formattedMessage);
 
-	-- Eventually remove this from Lua. Stack information should be obtainable from
-	-- the native error handler.
-	C_Log.LogErrorMessage(formattedMessage);
+	-- If execution is tainted then we can't pass secret messages into logging
+	-- APIs. Note that we still want to execute error handler callbacks so we
+	-- can actually show the error.
+	if canaccessvalue(formattedMessage) then
+		addframetext(formattedMessage);
+
+		-- Eventually remove this from Lua. Stack information should be obtainable from
+		-- the native error handler.
+		C_Log.LogErrorMessage(formattedMessage);
+	end
 
 	if #errorHandlers > 0 then
 		for index, handler in ipairs(errorHandlers) do

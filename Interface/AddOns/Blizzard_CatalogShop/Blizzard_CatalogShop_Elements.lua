@@ -467,6 +467,7 @@ end
 PMTImageContainerFrameMixin = {};
 function PMTImageContainerFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.OnCarouselSelectionSet, self);
+	self:RegisterEvent("URL_TEXTURE_REQUEST_RESULT");
 	self.carouselImageURLs = {};
 end
 
@@ -476,6 +477,19 @@ function PMTImageContainerFrameMixin:OnShow()
 end
 
 function PMTImageContainerFrameMixin:OnHide()
+end
+
+function PMTImageContainerFrameMixin:OnEvent(event, ...)
+	if event == "URL_TEXTURE_REQUEST_RESULT" then
+		local texture, result = ...;
+		if texture == self.PMTImageForNoModel then
+			if result == Enum.UrlTextureResult.Requested then
+				self.Spinner:Show();
+			else
+				self.Spinner:Hide();
+			end
+		end
+	end
 end
 
 local function SetMissingModelProductURLImage(productPMTURL)
@@ -805,6 +819,7 @@ function ImageCarouselElementTemplateMixin:Init(data, isSelected)
 	local function SetPMTURLImage(url)
 		local texture = self.Image;
 		if url then
+			self:RegisterEvent("URL_TEXTURE_REQUEST_RESULT");
 			C_Texture.SetURLTexture(texture, url);
 		end
 	end
@@ -815,6 +830,20 @@ function ImageCarouselElementTemplateMixin:Init(data, isSelected)
 		print("ImageCarouselElementTemplateMixin:OnClick");
 	end);
 	SetPMTURLImage(data.url);
+end
+
+function ImageCarouselElementTemplateMixin:OnEvent(event, ...)
+	if event == "URL_TEXTURE_REQUEST_RESULT" then
+		local texture, result = ...;
+		if texture == self.Image then
+			if result == Enum.UrlTextureResult.Requested then
+				self.Spinner:Show();
+			else
+				self.Spinner:Hide();
+				self:UnregisterEvent("URL_TEXTURE_REQUEST_RESULT");
+			end
+		end
+	end
 end
 
 function ImageCarouselElementTemplateMixin:UpdateVisuals()
@@ -1139,5 +1168,123 @@ function ProductDescriptionMixin:OnEnter()
 end
 
 function ProductDescriptionMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
+end
+
+----------------------------------------------------------------------------------
+-- IconTrainMixin
+----------------------------------------------------------------------------------
+IconTrainMixin = {};
+
+function IconTrainMixin:SetupIconTrainScrollView()
+	local DefaultPad = 0;
+	local DefaultSpacing = 0;
+
+	local function InitializeFrame(frame, info)
+		frame:Init(info);
+	end
+
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, -0.05);
+	view:SetVirtualized(false);
+	view:SetHorizontal(true);
+
+	view:SetElementInitializer("IconTrainFrameChildTemplate", InitializeFrame);
+	view:SetElementExtentCalculator(function(dataIndex, sectionInfo)
+		return 100;
+	end);
+	self.IconTrainScrollBox:Init(view);
+end
+
+function IconTrainMixin:SetupIconTrainData(infos)
+	local dataProvider = CreateDataProvider();
+
+	for i, info in ipairs(infos) do
+		dataProvider:Insert(info);
+	end
+	self.IconTrainScrollBox:SetDataProvider(dataProvider);
+end
+
+function IconTrainMixin:GetIconTrainChildren(bundleChildInfos)
+	local iconChildren = {};
+	for _, childInfo in ipairs(bundleChildInfos) do
+		local productInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
+		if productInfo and (not productInfo.isHidden) then
+			productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
+			productInfo.isBundleChild = true;
+			productInfo.displayOrder = childInfo.displayOrder;
+			productInfo.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childInfo.childProductID);
+			productInfo.quantityInBundle = childInfo.quantityInBundle;
+
+			local displayInfo = productInfo.displayInfo;
+			local productType = displayInfo.productType;			
+			if productType == CatalogShopConstants.ProductType.Subscription or productType == CatalogShopConstants.ProductType.GameTime then
+				-- Both sub time and game time have the same display type, but their Atlases are distinct
+				local timeTexture = CatalogShopUtil.GetTimeTexture(productInfo, productType);
+				if timeTexture then
+					table.insert(iconChildren, {atlas = timeTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.TradersTenders then
+				local quantity = displayInfo and displayInfo.quantity or nil;
+				if quantity then
+					local subTexture;
+					subTexture = "tender-"..quantity;
+					table.insert(iconChildren, {atlas = subTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.Access then
+				if productInfo.previewIconTexture then
+					table.insert(iconChildren, {atlas = productInfo.previewIconTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.Services then
+				if displayInfo.iconTextureKit then
+					local formattedIcon = ("%s-large"):format(displayInfo.iconTextureKit);
+					table.insert(iconChildren, {atlas = formattedIcon, productType = productType, name = productInfo.name, description = productInfo.description});
+				elseif displayInfo.iconFileDataID then
+					table.insert(iconChildren, {texture = displayInfo.iconFileDataID, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productInfo.isMystery then
+				if productType == CatalogShopConstants.ProductType.Mount then
+					table.insert(iconChildren, {atlas = CatalogShopConstants.MysteryTypes.Mount, productType = productType, name = productInfo.name, description = productInfo.description});
+				elseif productType == CatalogShopConstants.ProductType.Pet then
+					table.insert(iconChildren, {atlas = CatalogShopConstants.MysteryTypes.Pet, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			end
+		end
+	end
+	return iconChildren;
+end
+
+function IconTrainMixin:Init(childInfos)
+	local iconChildren = self:GetIconTrainChildren(childInfos);
+	if #iconChildren < 1 then
+		self:Hide();
+		return;
+	end
+	
+	self:SetupIconTrainScrollView();
+	self:SetupIconTrainData(iconChildren);
+	self:Show();
+end
+
+----------------------------------------------------------------------------------
+-- IconTrainFrameChildMixin
+----------------------------------------------------------------------------------
+IconTrainFrameChildMixin = {};
+function IconTrainFrameChildMixin:Init(info)
+	if info.atlas then
+		self.Icon:SetAtlas(info.atlas);
+	elseif info.texture then
+		self.Icon:SetTexture(info.texture);
+	end
+
+	self.name = info.name;
+	self.description = info.description;
+	self.Icon:SetSize(120, 120);
+end
+
+function IconTrainFrameChildMixin:OnEnter()
+	CatalogShopFrame:ShowTooltip(self, CATALOG_SHOP_ALSO_INCLUDES, self.name);
+end
+
+function IconTrainFrameChildMixin:OnLeave()
 	CatalogShopFrame:HideTooltip();
 end

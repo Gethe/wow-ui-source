@@ -24,6 +24,19 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "CurrencyConversionResult",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "NoConversion", Type = "CurrencyConversionResult", EnumValue = 0 },
+				{ Name = "Conversion", Type = "CurrencyConversionResult", EnumValue = 1 },
+				{ Name = "SkippedAccountCurrency", Type = "CurrencyConversionResult", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "CurrencyFilterType",
 			Type = "Enumeration",
 			NumValues = 3,

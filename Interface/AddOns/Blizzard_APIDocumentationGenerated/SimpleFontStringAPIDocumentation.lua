@@ -488,12 +488,14 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "fontFile", Type = "FontAsset", Nilable = false },
-				{ Name = "fontHeight", Type = "number", Nilable = false },
+				{ Name = "fontHeight", Type = "uiFontHeight", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = true },
 			},
 

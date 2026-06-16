@@ -133,8 +133,31 @@ EditModeSettingCheckboxMixin = {};
 function EditModeSettingCheckboxMixin:SetupSetting(settingData)
 	self.setting = settingData.displayInfo.setting;
 	self.checked = (settingData.currentValue == 1);
+	self.disabledTooltipText = settingData.displayInfo.disabledTooltipText;
+
+	local isDisabled = settingData.displayInfo.disabled;
+
 	self.Label:SetText(settingData.settingName);
+	self.Label:SetFontObject(isDisabled and "GameFontDisableMed2" or "GameFontHighlightMedium");
+
 	self.Button:SetChecked(self.checked);
+	self.Button:SetEnabled(not isDisabled);
+end
+
+function EditModeSettingCheckboxMixin:OnEnter()
+	if self.disabledTooltipText and not self.Button:IsEnabled() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(tooltip, self.disabledTooltipText);
+		tooltip:Show();
+	end
+end
+
+function EditModeSettingCheckboxMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self.Button then
+		tooltip:Hide();
+	end
 end
 
 function EditModeSettingCheckboxMixin:OnCheckButtonClick()

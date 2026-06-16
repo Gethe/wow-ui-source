@@ -21,6 +21,7 @@
 			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="16" type="number"/>
 		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="Button">
@@ -47,7 +48,7 @@
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="-34"/>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-31"/>
 					</Anchors>
 				</FontString>
 			</Layer>

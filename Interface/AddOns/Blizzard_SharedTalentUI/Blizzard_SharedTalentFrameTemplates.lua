@@ -1,7 +1,6 @@
 
 -- A simple limit to avoid infinite loops
 local MAX_DISPLAYED_CURRENCIES = 10;
-local CURRENCY_DISPLAY_ICON_SIZE = 24;
 
 TalentFrameCurrencyDisplayMixin = {};
 
@@ -19,6 +18,7 @@ end
 
 function TalentFrameCurrencyDisplayMixin:OnTreeCurrencyInfoUpdated()
 	self:Update();
+	self:UpdateWidgetSet();
 end
 
 function TalentFrameCurrencyDisplayMixin:Update()
@@ -29,7 +29,7 @@ function TalentFrameCurrencyDisplayMixin:Update()
 
 	local text = "";
 	for i = 1, MAX_DISPLAYED_CURRENCIES do
-		local currencyText = self.talentFrame:GetTreeCurrencyTextByIndex(i, CURRENCY_DISPLAY_ICON_SIZE, CURRENCY_DISPLAY_ICON_SIZE);
+		local currencyText = self.talentFrame:GetTreeCurrencyTextByIndex(i, self.iconSize, self.iconSize);
 		if currencyText then
 			if i > 1 then
 				text = " " .. text;
@@ -42,6 +42,21 @@ function TalentFrameCurrencyDisplayMixin:Update()
 
 	self.Text:SetText(text);
 	self:MarkDirty();
+end
+
+function TalentFrameCurrencyDisplayMixin:UpdateWidgetSet()
+	local configID = self.talentFrame and self.talentFrame:GetConfigID();
+	self.uiWidgetSetID = configID and C_Traits.GetTraitSystemWidgetSetID(configID) or nil;
+end
+
+function TalentFrameCurrencyDisplayMixin:OnEnter()
+	if not self.uiWidgetSetID then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddWidgetSet(GameTooltip, self.uiWidgetSetID);
+	GameTooltip:Show();
 end
 
 TalentFrameGateMixin = {};

@@ -78,6 +78,7 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	hideOnEscape = 1
 };
 
+
 TransmogFrameMixin = {
 	DYNAMIC_EVENTS = {
 		"TRANSMOG_OUTFITS_CHANGED",
@@ -384,6 +385,7 @@ function TransmogFrameMixin:ToggleSheathe()
 	self.CharacterPreview:ToggleSheathe();
 end
 
+
 TransmogOutfitCollectionMixin = {
 	DYNAMIC_EVENTS = {
 		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
@@ -562,8 +564,8 @@ function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutfit)
 end
 
 function TransmogOutfitCollectionMixin:Collapse()
-		self:Hide();
-		self.CollapsedCallback();
+	self:Hide();
+	self.CollapsedCallback();
 end
 
 function TransmogOutfitCollectionMixin:RefreshUsableDiscountText()
@@ -690,6 +692,7 @@ end
 function TransmogOutfitCollectionMixin:SetCostModifierTooltip(tooltip)
 	self.costModifierTooltip = tooltip;
 end
+
 
 ShowEquippedGearSpellFrameMixin = {};
 
@@ -944,7 +947,7 @@ function TransmogCharacterMixin:OnHide()
 	self:UnregisterEvent("UNIT_FORM_CHANGED");
 	FrameUtil.UnregisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
-	self.selectedSlotData = nil;
+	self:SetSelectedSlotData(nil);
 end
 
 function TransmogCharacterMixin:OnEvent(event, ...)
@@ -1015,6 +1018,10 @@ function TransmogCharacterMixin:SetupSlots()
 	self.CharacterIllusionSlotFramePool:ReleaseAll();
 
 	local slotGroupData = C_TransmogOutfitInfo.GetSlotGroupInfo();
+	if not slotGroupData then
+		return;
+	end
+
 	for _index, groupData in ipairs(slotGroupData) do
 		self:SetupSlotSection(groupData);
 	end
@@ -1032,7 +1039,7 @@ function TransmogCharacterMixin:SetupSlots()
 
 		if not slotFrameFound then
 			-- Whatever slot we were selecting is no longer present (split slot that is now hidden).
-			self.selectedSlotData = nil;
+			self:SetSelectedSlotData(nil);
 		end
 	end
 end
@@ -1178,7 +1185,7 @@ function TransmogCharacterMixin:RefreshSlots()
 		local selectedSlotTransmogLocation = self.selectedSlotData and self.selectedSlotData.transmogLocation or nil;
 		local appearanceSlotTransmogLocation = slotFrame:GetTransmogLocation();
 		if appearanceSlotTransmogLocation and selectedSlotTransmogLocation and appearanceSlotTransmogLocation:IsEqual(selectedSlotTransmogLocation) and not slotFrame:IsEnabled() then
-			self.selectedSlotData = nil;
+			self:SetSelectedSlotData(nil);
 		end
 
 		local illusionSlotFrame = slotFrame:GetIllusionSlotFrame();
@@ -1187,7 +1194,7 @@ function TransmogCharacterMixin:RefreshSlots()
 
 			local illusionSlotTransmogLocation = illusionSlotFrame:GetTransmogLocation();
 			if illusionSlotTransmogLocation and selectedSlotTransmogLocation and illusionSlotTransmogLocation:IsEqual(selectedSlotTransmogLocation) and not illusionSlotFrame:IsEnabled() then
-				self.selectedSlotData = nil;
+				self:SetSelectedSlotData(nil);
 			end
 		end
 
@@ -1331,7 +1338,7 @@ end
 
 function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 	if not slotData then
-		self.selectedSlotData = nil;
+		self:SetSelectedSlotData(nil);
 		return;
 	end
 
@@ -1343,7 +1350,7 @@ function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 
 		forceRefresh = self:ShouldForceRefreshOnSlotUpdate(slotData);
 
-		self.selectedSlotData = slotData;
+		self:SetSelectedSlotData(slotData);
 		local showHelptip = self.selectedSlotData.transmogLocation:IsEitherHand() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogWeaponOptions);
 		for slotFrame in self.CharacterAppearanceSlotFramePool:EnumerateActive() do
 			local selected = slotFrame.slotData.transmogLocation and self.selectedSlotData.transmogLocation and slotFrame.slotData.transmogLocation:IsEqual(self.selectedSlotData.transmogLocation);
@@ -1364,7 +1371,7 @@ function TransmogCharacterMixin:UpdateSlot(slotData, forceRefresh)
 			self:RefreshSlots();
 		end
 	elseif forceRefresh then
-		self.selectedSlotData = slotData;
+		self:SetSelectedSlotData(slotData);
 		-- Refresh the visuals on the actor.
 		self:RefreshSlots();
 	end
@@ -1372,6 +1379,10 @@ end
 
 function TransmogCharacterMixin:GetSelectedSlotData()
 	return self.selectedSlotData;
+end
+
+function TransmogCharacterMixin:SetSelectedSlotData(slotData)
+	self.selectedSlotData = slotData;
 end
 
 function TransmogCharacterMixin:GetSlotFrame(slot, type)

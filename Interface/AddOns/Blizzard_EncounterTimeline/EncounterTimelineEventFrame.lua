@@ -15,6 +15,7 @@ function EncounterTimelineEventFrameMixin:OnLoad()
 	self.eventTrack = nil;
 	self.eventTrackSortIndex = nil;
 	self.eventBlocked = nil;
+	self.eventColor = nil;
 end
 
 function EncounterTimelineEventFrameMixin:OnShow()
@@ -35,6 +36,11 @@ function EncounterTimelineEventFrameMixin:OnLeave()
 	self:HideTooltip();
 end
 
+function EncounterTimelineEventFrameMixin:OnEventColorChanged(_color)
+	-- Override in a derived mixin to be notified when the color for this
+	-- event has changed.
+end
+
 function EncounterTimelineEventFrameMixin:OnEventStateChanged(_state)
 	-- Override in a derived mixin to be notified when the state for this
 	-- event has changed.
@@ -50,13 +56,14 @@ function EncounterTimelineEventFrameMixin:OnEventBlockStateChanged(_blocked)
 	-- this event has changed.
 end
 
-function EncounterTimelineEventFrameMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked)
+function EncounterTimelineEventFrameMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked, color)
 	self.eventInfo = eventInfo;
 	self.eventTimer = timer;
 	self.eventState = state;
 	self.eventTrack = track;
 	self.eventTrackSortIndex = trackSortIndex;
 	self.eventBlocked = blocked;
+	self.eventColor = color;
 end
 
 function EncounterTimelineEventFrameMixin:Reset()
@@ -66,6 +73,7 @@ function EncounterTimelineEventFrameMixin:Reset()
 	self.eventTrack = nil;
 	self.eventTrackSortIndex = nil;
 	self.eventBlocked = nil;
+	self.eventColor = nil;
 end
 
 function EncounterTimelineEventFrameMixin:HighlightFrame()
@@ -102,6 +110,10 @@ function EncounterTimelineEventFrameMixin:GetEventInfo()
 	return self.eventInfo;
 end
 
+function EncounterTimelineEventFrameMixin:GetEventColor()
+	return self.eventColor;
+end
+
 function EncounterTimelineEventFrameMixin:GetEventState()
 	return self.eventState;
 end
@@ -131,6 +143,13 @@ function EncounterTimelineEventFrameMixin:SetEventBlocked(blocked)
 		self.eventBlocked = blocked;
 		self:OnEventBlockStateChanged(blocked);
 	end
+end
+
+function EncounterTimelineEventFrameMixin:SetEventColor(color)
+	-- Expected to be a structure which is expensive to difference; assume
+	-- all calls are going to invalidate it.
+	self.eventColor = color;
+	self:OnEventColorChanged(color);
 end
 
 function EncounterTimelineEventFrameMixin:SetEventFrameManager(eventFrameManager)

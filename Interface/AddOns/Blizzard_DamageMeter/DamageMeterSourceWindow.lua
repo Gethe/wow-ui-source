@@ -20,9 +20,14 @@ function DamageMeterSourceWindowMixin:GetBackground()
 	return self.Background;
 end
 
+function DamageMeterSourceWindowMixin:GetCloseButton()
+	return self.CloseButton;
+end
+
 function DamageMeterSourceWindowMixin:OnLoad()
 	self:InitializeScrollBox();
 	self:InitializeResizeButton();
+	self:InitializeCloseButton();
 end
 
 function DamageMeterSourceWindowMixin:OnShow()
@@ -39,7 +44,7 @@ end
 
 function DamageMeterSourceWindowMixin:OnEvent(event, ...)
 	if event == "GLOBAL_MOUSE_DOWN" then
-		if not DoesAncestryIncludeAny(self, GetMouseFoci()) then
+		if not self:IsSticky() and not DoesAncestryIncludeAny(self, GetMouseFoci()) then
 			self:Hide();
 		end
 	end
@@ -98,6 +103,21 @@ function DamageMeterSourceWindowMixin:InitializeScrollBox()
 		CreateAnchor("BOTTOMRIGHT", bottomRightX, bottomRightY);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self:GetScrollBox(), self:GetScrollBar(), scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
+end
+
+function DamageMeterSourceWindowMixin:IsSticky()
+	return self.isSticky;
+end
+
+function DamageMeterSourceWindowMixin:SetSticky(sticky)
+	self.isSticky = sticky;
+	self:GetCloseButton():SetShown(sticky);
+end
+
+function DamageMeterSourceWindowMixin:InitializeCloseButton()
+	self:GetCloseButton():SetScript("OnClick", function()
+		self:Hide();
+	end);
 end
 
 function DamageMeterSourceWindowMixin:InitializeResizeButton()

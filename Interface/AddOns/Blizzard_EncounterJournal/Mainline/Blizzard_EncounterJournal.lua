@@ -688,9 +688,8 @@ function EncounterJournal_GetLootJournalPanels(view)
 end
 
 function EncounterJournal_EnableExpansionDropdown(xOffset, yOffset, relativeKey)
-	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
-	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);
 	EncounterJournal.instanceSelect.ExpansionDropdown:Enable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
 end
 
 function EncounterJournal_ShowGreatVaultButton()
@@ -703,6 +702,12 @@ end
 
 function EncounterJournal_DisableExpansionDropdown()
 	EncounterJournal.instanceSelect.ExpansionDropdown:Disable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
+end
+
+function EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey)
+	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
+	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);	
 end
 
 function EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID)
@@ -2244,7 +2249,6 @@ function EncounterJournal_LootUpdate()
 	local extremelyRareLoot = {};
 	local seasonalLoot = {};
 	local currentSeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
-	local currentSeasonExpansion = C_SeasonInfo.GetCurrentDisplaySeasonExpansion();
 
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
@@ -2269,9 +2273,8 @@ function EncounterJournal_LootUpdate()
 	end
 
 	local seasonalHeaderTitle;
-	local uiSeason = PVPUtil.GetCurrentSeasonNumber();
-	if #seasonalLoot > 0 and currentSeason and currentSeasonExpansion then
-		seasonalHeaderTitle = EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
+	if #seasonalLoot > 0 and currentSeason then
+		seasonalHeaderTitle = PVPUtil.GetCurrentSeasonText();
 	end
 
 	local lootCategories = {
@@ -2775,7 +2778,6 @@ function EJ_ContentTab_Select(id)
 		EJ_HideTutorialsPanel();
 		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(EncounterJournal);
 		EJ_ShowLootJournalPanel();
-		EncounterJournal_EnableExpansionDropdown();
 		EncounterJournal_HideGreatVaultButton();
 	elseif showDungeons or showRaid then
 		EJ_HideNonInstancePanels();

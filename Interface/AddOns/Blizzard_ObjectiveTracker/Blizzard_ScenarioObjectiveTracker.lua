@@ -479,7 +479,7 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
-			SetTooltipMoney(GameTooltip, money, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, money);
 		end
 
 		GameTooltip:Show();
@@ -497,6 +497,7 @@ local textureKitOffsets = {
 	["evergreen-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = -4, finalBGY = 2},
 	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
 	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
+	["midnight-scenario"] = {normalBGX = -6, normalBGY = 0, finalBGX = -22, finalBGY = 0},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};

@@ -77,48 +77,83 @@ local function RegisterWithScrollBar(scrollBox, scrollBar)
 	end;
 	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, scrollBox);
 
-	local onScollBarAllowScroll = function(o, allowScroll)
+	local onScrollBarAllowScroll = function(o, allowScroll)
 		scrollBox:SetScrollAllowed(allowScroll);
 	end;
 
-	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnAllowScrollChanged, onScollBarAllowScroll, scrollBox);
+	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnAllowScrollChanged, onScrollBarAllowScroll, scrollBox);
 end
 
-local function InitScrollBar(scrollBox, scrollBar)
-	scrollBar:Init(scrollBox:GetVisibleExtentPercentage(), scrollBox:CalculatePanExtentPercentage());
-end
+local function EnsureScrollBoxRegistration(scrollBox, scrollBar)
+	if scrollBox.registeredScrollBar and scrollBox.registeredScrollBar ~= scrollBar then
+		error("ScrollUtil.RegisterScrollBoxWithScrollBar expected a 1:1 pairing, but this ScrollBox is already registered with another ScrollBar.");
+	end
 
--- ScrollBoxList variant intended for the majority of registration and initialization cases.
-function ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, scrollBoxView)
-	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar);
-	scrollBox:Init(scrollBoxView);
-	InitScrollBar(scrollBox, scrollBar);
-end
+	if scrollBox.registeredScrollBar == scrollBar then
+		return;
+	end
 
--- ScrollBox variant intended for the majority of registration and initialization cases.
--- Currently implemented identically to InitScrollBoxListWithScrollBar but allows for
--- changes to be made easier without public deprecation problems.
-function ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, scrollBoxView)
-	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar);
-	scrollBox:Init(scrollBoxView);
-	InitScrollBar(scrollBox, scrollBar);
-end
-
--- Rarely used in cases where the ScrollBox was previously initialized.
-function ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar)
 	RegisterWithScrollBox(scrollBox, scrollBar);
-	RegisterWithScrollBar(scrollBox, scrollBar);
+	scrollBox.registeredScrollBar = scrollBar;
+end
 
+local function EnsureScrollBarRegistration(scrollBox, scrollBar)
+	if scrollBar.registeredScrollBox and scrollBar.registeredScrollBox ~= scrollBox then
+		error("ScrollUtil.RegisterScrollBoxWithScrollBar expected a 1:1 pairing, but this ScrollBar is already registered with another ScrollBox.");
+	end
+
+	if scrollBar.registeredScrollBox == scrollBox then
+		return;
+	end
+
+	RegisterWithScrollBar(scrollBox, scrollBar);
+	scrollBar.registeredScrollBox = scrollBox;
+end
+
+local function ApplyInterpolationCompatibility(scrollBox, scrollBar)
 	if not scrollBar:CanInterpolateScroll() or not scrollBox:CanInterpolateScroll() then
 		scrollBar:SetInterpolateScroll(false);
 		scrollBox:SetInterpolateScroll(false);
 	end
 end
 
+local function BindScrollBoxWithScrollBar(scrollBox, scrollBar)
+	EnsureScrollBoxRegistration(scrollBox, scrollBar);
+	EnsureScrollBarRegistration(scrollBox, scrollBar);
+	ApplyInterpolationCompatibility(scrollBox, scrollBar);
+end
+
+local function InitializeScrollBar(scrollBox, scrollBar)
+	scrollBar:Init(scrollBox:GetVisibleExtentPercentage(), scrollBox:CalculatePanExtentPercentage());
+end
+
+local function InitScrollBoxWithScrollBarInternal(scrollBox, scrollBar, scrollBoxView)
+	BindScrollBoxWithScrollBar(scrollBox, scrollBar);
+	scrollBox:Init(scrollBoxView);
+	InitializeScrollBar(scrollBox, scrollBar);
+end
+
+-- ScrollBoxList variant intended for the majority of registration and initialization cases.
+function ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, scrollBoxView)
+	InitScrollBoxWithScrollBarInternal(scrollBox, scrollBar, scrollBoxView);
+end
+
+-- ScrollBox variant intended for the majority of registration and initialization cases.
+-- Currently implemented identically to InitScrollBoxListWithScrollBar but allows for
+-- changes to be made easier without public deprecation problems.
+function ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, scrollBoxView)
+	InitScrollBoxWithScrollBarInternal(scrollBox, scrollBar, scrollBoxView);
+end
+
+-- Rarely used in cases where the ScrollBox was previously initialized.
+function ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar)
+	BindScrollBoxWithScrollBar(scrollBox, scrollBar);
+end
+
 -- Rarely used in cases where a ScrollBox was previously initialized.
 function ScrollUtil.InitScrollBar(scrollBox, scrollBar)
-	RegisterWithScrollBar(scrollBox, scrollBar);
-	InitScrollBar(scrollBox, scrollBar);
+	EnsureScrollBarRegistration(scrollBox, scrollBar);
+	InitializeScrollBar(scrollBox, scrollBar);
 end
 
 local function ConvertScrollPercentage(messageFrame, scrollPercentage)

@@ -54,7 +54,7 @@ local function CheckAndSetArtStyle(actionButton)
 		return;
 	end
 
-	if AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
+	if AssistedCombatManager and AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
 		alertFrame.ProcStartFlipbook:Hide();
 		alertFrame.ProcLoopFlipbook:Hide();
 		alertFrame.ProcAltGlow:Show();
@@ -74,6 +74,7 @@ local function HideAlert(actionButton)
 
 	alertFrame:Hide();
 	alertFrame.ProcStartAnim:Stop();
+	alertFrame.playingAnimation = false;
 	self.activeAlerts[actionButton] = nil;
 end
 
@@ -87,6 +88,7 @@ local function ShowAlert(actionButton, alertType, skipBirth)
 	local create = true;
 	local alertFrame = GetAlertFrame(actionButton, create);
 	alertFrame:Show();
+	alertFrame.playingAnimation = true;
 	CheckAndSetArtStyle(actionButton);
 
 	if not skipBirth then
@@ -107,6 +109,7 @@ do
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetUseAssistedHighlight", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.RotationSpellsUpdated", RefreshArtStyles);
+	CVarCallbackRegistry:RegisterCallback("assistedCombatReduceHighlights", RefreshArtStyles);
 end
 
 -- public functions
@@ -146,5 +149,11 @@ end
 function ActionButtonSpellAlertMixin:OnHide()
 	if self.ProcLoop:IsPlaying() then
 		self.ProcLoop:Stop();
+	end
+end
+
+function ActionButtonSpellAlertMixin:OnShow()
+	if self.animationPlaying then
+		self.ProcLoop:Play();
 	end
 end

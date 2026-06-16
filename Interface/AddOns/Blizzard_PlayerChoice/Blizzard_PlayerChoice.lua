@@ -1,8 +1,26 @@
+local gridOptionsMax = 6;
+
 PlayerChoiceFrameMixin = {};
 
 function PlayerChoiceFrameMixin:OnLoad()
 	self.optionPools = CreateFramePoolCollection();
 	self.onCloseCallback = GenerateClosure(self.OnCloseUIFromExitButton, self);
+
+	self:SetupGridFrames();
+end
+
+function PlayerChoiceFrameMixin:SetupGridFrames()
+	self.optionFrames = {};
+
+	self.GridNoSelectionHeader:SetTextToFit(PLAYER_CHOICE_GRID_HEADER);
+	self.GridNoSelectionDescription:SetTextToFit(PLAYER_CHOICE_GRID_DESC);
+
+	-- Container for grid does not support list buttons. Only one template type here is expected.
+	self.OptionButtonsContainer.buttonFrameTemplate = "PlayerChoiceBaseOptionButtonFrameTemplate";
+
+	self.WidgetContainer:SetScript("OnHide", function()
+		self.WidgetContainer:UnregisterForWidgetSet();
+	end);
 end
 
 function PlayerChoiceFrameMixin:OnEvent(event, ...)
@@ -131,6 +149,7 @@ local customTextureKitInfo = {
 
 local defaultTextureKitInfo = {
 	optionFrameTemplate = "PlayerChoiceNormalOptionTemplate",
+	optionFrameTemplateGrid = "PlayerChoiceNormalOptionGridTemplate",
 	closeButtonX = 1,
 	closeButtonY = 2,
 	closeBorderX = -1,
@@ -302,6 +321,20 @@ function PlayerChoiceFrameMixin:SetupFrame()
 	self.Background:SetShown(showExtraFrames);
 	self:EnableMouse(showExtraFrames);
 
+	local showChoicesAsGrid = self.choiceInfo.showChoicesAsGrid;
+	self.GridDivider:SetShown(showChoicesAsGrid);
+	self.GridNoSelectionHeader:SetShown(showChoicesAsGrid);
+	self.GridNoSelectionDescription:SetShown(showChoicesAsGrid);
+
+	-- Selection header and description visibility controled by option selection.
+	self.GridSelectionHeader:SetShown(false);
+	self.GridSelectionDescription:SetShown(false);
+	self.OptionButtonsContainer:SetShown(false);
+	self.WidgetContainer:SetShown(false);
+
+	-- Visibility controled by option count in SetupOptionsAsGrid().
+	self.PagingControls:Hide();
+
 	-- Using the negation here guarantees useOldNineSlice is a bool instead of nil
 	local usesNewNineSlice = not self.textureKitInfo.useOldNineSlice;
 	self.NineSlice:SetShown(showExtraFrames and not usesNewNineSlice);
@@ -362,6 +395,27 @@ function PlayerChoiceFrameMixin:GetPlayerChoiceOptionHeightData()
 	return self.alignedSectionMaxHeights;
 end
 
+function PlayerChoiceFrameMixin:GetOptionDataForOptionFrame(optionFrame)
+	-- Each option frame has an index from 1 to gridOptionsMax that is used to find
+	-- the adjusted data index as the page number changes.
+	local currentPage = self.PagingControls:GetCurrentPage();
+	local dataIndex = optionFrame.index + ((currentPage - 1) * gridOptionsMax);
+	return self.choiceInfo.options[dataIndex];
+end
+
+-- Called from PagingControlsMixin as an expected function on the paging control's parent.
+function PlayerChoiceFrameMixin:OnPageChanged()
+	for index, optionFrame in ipairs(self.optionFrames) do
+		local optionInfo = self:GetOptionDataForOptionFrame(optionFrame);
+		if optionInfo then
+			optionFrame:Setup(optionInfo, self.uiTextureKit);
+			optionFrame:Show();
+		else
+			optionFrame:Hide();
+		end
+	end
+end
+
 function PlayerChoiceFrameMixin:SetupOptions()
 	self.optionsAligned = false;
 
@@ -374,21 +428,134 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self.optionPools:ReleaseAll();
 	self:ResetPlayerChoiceOptionHeightData();
 
-	self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
-	self.optionPools:GetOrCreatePool("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
-
-	local showAsList = self.choiceInfo.showChoicesAsList;
-	local soloOption = showAsList or (#self.choiceInfo.options == 1);
-
-	-- First create and call Setup on all the options.
-	-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
-	for optionIndex, optionInfo in ipairs(self.choiceInfo.options) do
-		local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
-		optionFrame.layoutIndex = optionIndex;
-		optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption, showAsList);
+	local choiceInfo = self.choiceInfo;
+	local showChoicesAsGrid = choiceInfo.showChoicesAsGrid;
+	if showChoicesAsGrid then
+		self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplateGrid;
+	else
+		self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
 	end
 
-	self:AlignOptionHeights(soloOption);
+	local templateInfo = C_XMLUtil.GetTemplateInfo(self.optionFrameTemplate);
+	self.optionPools:GetOrCreatePool(templateInfo.type, self, self.optionFrameTemplate, HideAndAnchorTopLeft);
+
+	if showChoicesAsGrid then
+		self:SetupOptionsAsGrid();
+	else
+		local showAsList = choiceInfo.showChoicesAsList;
+		local soloOption = showAsList or (#choiceInfo.options == 1);
+
+		-- First create and call Setup on all the options.
+		-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
+
+		for optionIndex, optionInfo in ipairs(choiceInfo.options) do
+			local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
+			optionFrame.layoutIndex = optionIndex;
+			optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption, showAsList);
+		end
+
+		self:AlignOptionHeights(soloOption);
+	end
+end
+
+function PlayerChoiceFrameMixin:SetupOptionsAsGrid()
+	local function OnEnter(button)
+		button.ArtworkAdditive:Show();
+	end
+
+	local function OnLeave(button)
+		button.ArtworkAdditive:Hide();
+	end
+
+	local choiceInfo = self.choiceInfo;
+	local optionCount = #choiceInfo.options;
+	local requiresPages = optionCount > gridOptionsMax;
+	self.PagingControls:SetMaxPages(math.ceil(optionCount / gridOptionsMax));
+	self.PagingControls:SetCurrentPage(1);
+	self.PagingControls:SetShown(requiresPages);
+
+	self.optionFrames = {};
+
+	local optionFrameCount = math.min(gridOptionsMax, optionCount);
+	for index = 1, optionFrameCount do
+		local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate)
+		optionFrame.index = index;
+		table.insert(self.optionFrames, optionFrame);
+
+		local optionInfo = choiceInfo.options[index];
+		optionFrame:Setup(optionInfo, self.uiTextureKit);
+
+		optionFrame:SetScript("OnEnter", OnEnter);
+
+		optionFrame:SetScript("OnLeave", OnLeave);
+
+		optionFrame:SetScript("OnClick", function(button)
+			local optionInfo = self:GetOptionDataForOptionFrame(button);
+			if optionInfo.selected then
+				return;
+			end
+
+			self.WidgetContainer:SetShown(true);
+			self.OptionButtonsContainer:SetShown(true);
+
+			-- Deselect the previous option.
+			for index, otherOptionInfo in ipairs(choiceInfo.options) do
+				otherOptionInfo.selected = false;
+			end
+
+			-- Force all visible frames to deselect.
+			for index, otherOptionFrame in ipairs(self.optionFrames) do
+				otherOptionFrame:SetSelected(false);
+			end
+
+			-- Select this.
+			local newSelected = not optionInfo.selected;
+			optionInfo.selected = newSelected;
+			button:SetSelected(newSelected);
+
+			-- Hide the text displayed when no selection is present.
+			self.GridNoSelectionHeader:SetShown(false);
+			self.GridNoSelectionDescription:SetShown(false);
+
+			-- Show the text in response to having a selection.
+			local optionFontInfo = optionFrame:GetOptionFontInfo();
+			self.GridSelectionHeader:SetTextToFit(optionInfo.header);
+			self.GridSelectionHeader:SetTextColor(optionFontInfo.headerColor:GetRGB());
+			self.GridSelectionHeader:SetShown(true);
+
+			self.GridSelectionDescription:SetTextToFit(optionInfo.description);
+			self.GridSelectionDescription:SetTextColor(optionFontInfo.descriptionColor:GetRGB());
+			self.GridSelectionDescription:SetShown(true);
+
+			local function WidgetsLayout(widgetContainer, sortedWidgets)
+				PlayerChoice_WidgetsLayout(widgetContainer, sortedWidgets, optionInfo.consolidateWidgets);
+			end
+
+			local function WidgetInit(widgetFrame)
+				PlayerChoice_WidgetInit(widgetFrame, button:GetOptionFontInfo());
+			end
+
+			PlayerChoice_SetupWidgets(optionInfo, self.WidgetContainer, WidgetsLayout, WidgetInit);
+
+			local showAsList = false;
+			self.OptionButtonsContainer:Setup(optionInfo, showAsList, optionFrame);
+			self.OptionButtonsContainer:Layout();
+		end);
+
+		optionFrame:Show();
+	end
+
+	local stride = 2;
+	local spacing = 16;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing);
+
+	-- Frames are repositioned depending on if the paging control is visible.
+	local yOffset = requiresPages and -142 or -185;
+	local anchor = CreateAnchor("TOPLEFT", self, "TOPLEFT", 50, yOffset);
+	AnchorUtil.GridLayout(self.optionFrames, anchor, layout);
+
+	self:SetFixedSize(910, 671);
+	self:Layout();
 end
 
 function PlayerChoiceFrameMixin:AlignOptionHeights(skipAlignSections)

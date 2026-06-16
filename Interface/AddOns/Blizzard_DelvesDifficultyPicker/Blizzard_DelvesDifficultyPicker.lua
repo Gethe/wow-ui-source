@@ -134,18 +134,12 @@ function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
 	local dropdown = self.Dropdown;
 
 	if displayMode == DelvesDisplayMode.Traits then
-		self.ScenarioLabel:SetText(RITUAL_SITE_LABEL);
-		if self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing() then 
-			self.ModifiersLabel:Show();
-			self.DividingLine:Show();
-		end
-
 		local width = dropdown.Text:GetUnboundedStringWidthForText(self.longestDropdownString) + TIER_SELECT_DROPDOWN_DYNAMIC_PADDING;
 		dropdown:SetWidth(Clamp(width, TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH, TIER_SELECT_DROPDOWN_MAX_WIDTH));
 
 		modifiersContainer:ClearAllPoints();
 		modifiersContainer:SetPoint("CENTER", self.Title);
-		modifiersContainer:SetPoint("TOP", self.ModifiersLabel, "BOTTOM", 0, -10);
+		modifiersContainer:SetPoint("TOP", self.Dropdown, "BOTTOM", 0, -41);
 
 		enterButton:ClearAllPoints();
 		enterButton:SetPoint("BOTTOMRIGHT", -49, 34);
@@ -170,10 +164,6 @@ function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
 		self:RegisterEvent("TRAIT_CONFIG_UPDATED");
 		challengesContainer:RegisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self.OnChallengesCommitStatusChanged, self);
 	else
-		self.ScenarioLabel:SetText(DELVE_LABEL);
-		self.ModifiersLabel:Hide();
-		self.DividingLine:Hide();
-
 		dropdown:SetWidth(TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH);
 
 		modifiersContainer:ClearAllPoints();
@@ -340,6 +330,10 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	end
 
 	self:CheckAndSetDisplayMode();
+
+	-- update the DividingLine here, has to be done after widgets are updated and displayMode is set
+	local hasAnyWidgetsShowing = self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing();
+	self.DividingLine:SetShown(hasAnyWidgetsShowing and self.displayMode == DelvesDisplayMode.Traits);
 end
 
 function DelvesDifficultyPickerFrameMixin:SetupDropdown()
@@ -528,15 +522,8 @@ function DelvesDifficultyPickerFrameMixin:UpdateWidgets()
 		self.DelveModifiersWidgetContainer:RegisterForWidgetSet(self.selectedTierInfo.modifierUIWidgetSetID);
 	end
 
-	if self.displayMode == DelvesDisplayMode.Traits then
-		if self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing() then
-			self.DividingLine:Show();
-			self.ModifiersLabel:Show();
-		else
-			self.DividingLine:Hide();
-			self.ModifiersLabel:Hide();			
-		end
-	end
+	local hasAnyWidgetsShowing = self.DelveModifiersWidgetContainer:HasAnyWidgetsShowing();
+	self.DelveModifiersWidgetContainer.ModifiersLabel:SetShown(hasAnyWidgetsShowing);
 
 	self:UpdateBountifulWidgetVisualization();
 end
@@ -580,7 +567,8 @@ function CustomGossipFrameBaseMixin:SetupTiers()
 end
 
 function DelvesDifficultyPickerFrameMixin:TryShow(textureKit) 
-	self.textureKit = textureKit; 
+	self.textureKit = textureKit;
+	self.ScenarioLabel:SetText(C_DelvesUI.GetDelveEntranceTitleString() or DELVE_LABEL);
 	self.Title:SetText(C_DelvesUI.GetDelveEntranceHeaderString());
 	self.Description:SetText(C_DelvesUI.GetDelveEntranceDescriptionString());
 	self:SetupTiers();
@@ -652,7 +640,6 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	if not selectedTierInfo then
 		return; 
 	end
-	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 	C_DelvesUI.SelectDelveEntranceTier(selectedTierInfo.tier);
 end 
 

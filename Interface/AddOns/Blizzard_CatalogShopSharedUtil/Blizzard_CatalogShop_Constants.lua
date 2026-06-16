@@ -14,6 +14,14 @@ CatalogShopConstants =
 		Product = 2,
 	},
 
+	DefaultWoWAtlas = "tokens-wow-generic-large";
+
+	MysteryTypes =
+	{
+		Pet = "mystery-pet",
+		Mount = "mystery-mount",
+	},
+
 	Default =
 	{
 		PreviewBackgroundTexture = "shop-bg-map-blue",

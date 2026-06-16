@@ -92,3 +92,11 @@ NewSettings["12.0.1"] = {
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
 	return C_PhotoSharing.IsEnabled();
 end
+
+NewSettings["12.0.7"] = {
+	"assistedCombatReduceHighlights",
+};
+
+NewSettingsPredicates["assistedCombatReduceHighlights"] = function()
+	return C_AssistedCombat.IsAvailable();
+end;

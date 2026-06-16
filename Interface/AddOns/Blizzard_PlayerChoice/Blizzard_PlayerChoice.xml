@@ -21,6 +21,41 @@
 						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="GridDivider" atlas="playerchoice-gold-divider" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-334" y="-32"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="GridNoSelectionHeader" font="GameFontHighlightHuge2" justifyV="TOP" justifyH="CENTER" hidden="true">
+					<Size x="288" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.GridDivider" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="CENTER"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GridNoSelectionDescription" font="GameFontNormal" justifyV="TOP" justifyH="CENTER" hidden="true">
+					<Size x="100" y="300"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GridNoSelectionHeader" relativePoint="BOTTOMLEFT" x="30" y="-20"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GridNoSelectionHeader" relativePoint="BOTTOMRIGHT" x="-30" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GridSelectionHeader" font="GameFontHighlightHuge2" justifyV="TOP" justifyH="CENTER" hidden="true">
+					<Size x="288" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.GridDivider" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+						<Anchor point="TOP" x="0" y="-160"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GridSelectionDescription" font="GameFontNormal" justifyV="TOP" justifyH="CENTER" hidden="true">
+					<Size x="100" y="300"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GridSelectionHeader" relativePoint="BOTTOMLEFT" x="30" y="-20"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GridNoSelectionHeader" relativePoint="BOTTOMRIGHT" x="-30" y="-20"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -107,6 +142,26 @@
 				</Anchors>
 			</Button>
 			<ModelScene parentKey="BorderLayerModelScene" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" alpha="0.5" setAllPoints="true"/>
+
+			<!--Frames below this point are used for the Grid layout.-->
+			<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="-150" y="63"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" mixin="PlayerChoiceWidgetContainerMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-178" y="110"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="OptionButtonsContainer" inherits="PlayerChoiceBaseOptionButtonsContainer">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.WidgetContainer" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

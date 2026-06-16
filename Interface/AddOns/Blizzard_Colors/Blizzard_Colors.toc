@@ -1,8 +1,8 @@
 ## Title: Blizzard_Colors
+## Author: Blizzard Entertainment
 ## AllowLoad: Both
-## AllowLoadGameType: mainline
 ## Dependencies: Blizzard_SharedXMLBase
 Shared\ColorConstants.lua
 Shared\MaterialColors.lua
-[Family]\ColorConstants.lua
+[Family]\ColorConstants.lua [AllowLoadGameType mainline]
 [Family]\ColorManager.lua

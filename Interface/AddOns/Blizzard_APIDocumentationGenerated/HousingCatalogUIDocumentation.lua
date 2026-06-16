@@ -89,6 +89,24 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetCatalogCategoryAndSubcategoryNames",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If found, returns the names of the parent category and the specified subcategory" },
+
+			Arguments =
+			{
+				{ Name = "subcategoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryName", Type = "string", Nilable = false },
+				{ Name = "subcategoryName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

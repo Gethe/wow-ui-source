@@ -34,6 +34,15 @@ function ScrollBoxListBiaxalViewMixin:ResizeFrame(scrollBox, frame, dataIndex, e
 	frame:SetSize(width, height);
 end
 
+function ScrollBoxListBiaxalViewMixin:SetElementExtent(extent)
+	error("SetElementExtent is unsupported in ScrollBoxListBiaxalViewMixin. Use SetElementSize(width, height) or SetElementSizeCalculator().");
+end
+
+function ScrollBoxListBiaxalViewMixin:SetElementSize(width, height)
+	self:ClearElementSizeData();
+	self.elementSize = {math.max(width, 1), math.max(height, 1)};
+end
+
 function ScrollBoxListBiaxalViewMixin:SetElementSizeCalculator(elementSizeCalculator)
 	self:ClearElementSizeData();
 	self.elementSizeCalculator = elementSizeCalculator;
@@ -45,6 +54,7 @@ end
 
 function ScrollBoxListBiaxalViewMixin:ClearElementSizeData()
 	self:ClearCachedData();
+	self.elementSize = nil;
 	ScrollBoxListViewMixin.ClearElementExtentData(self);
 end
 
@@ -58,11 +68,18 @@ function ScrollBoxListBiaxalViewMixin:HasIdenticalElementSize()
 		return false;
 	end
 
+	if self.elementSize then
+		return true;
+	end
+
 	return self.hasIdenticalTemplateSize;
 end
 
 function ScrollBoxListBiaxalViewMixin:GetIdenticalElementSize()
 	assert(self:HasIdenticalElementSize());
+	if self.elementSize then
+		return unpack(self.elementSize);
+	end
 
 	local info = self:GetFirstTemplateInfo();
 	return info.width, info.height;
@@ -79,6 +96,10 @@ function ScrollBoxListBiaxalViewMixin:GetTemplateSizeFromElementData(elementData
 end
 
 function ScrollBoxListBiaxalViewMixin:CalculateFrameSize(dataIndex, elementData)
+	if self.elementSize then
+		return unpack(self.elementSize);
+	end
+
 	if self.elementSizeCalculator then
 		return self.elementSizeCalculator(dataIndex, elementData);
 	end
@@ -103,7 +124,7 @@ function ScrollBoxListBiaxalViewMixin:GetElementSize(dataIndex)
 end
 
 function ScrollBoxListBiaxalViewMixin:HasAnyExtentOrSizeCalculator()
-	return self.elementSizeCalculator ~= nil;
+	return self.elementSize ~= nil or self.elementSizeCalculator ~= nil;
 end
 
 function ScrollBoxListBiaxalViewMixin:CalculateFrameExtent(dataIndex, elementData)
@@ -145,6 +166,9 @@ do
 	local function CalculateSizes(scrollBox, view, tbl, size)
 		for dataIndex, elementData in view:EnumerateDataProvider() do
 			local frameWidth, frameHeight = view:CalculateFrameSize(dataIndex, elementData);
+			if type(frameWidth) ~= "number" or type(frameHeight) ~= "number" then
+				error(string.format("CalculateFrameSize expected numeric width and height at data index %d.", dataIndex));
+			end
 			table.insert(tbl, {frameWidth, frameHeight});
 		end
 		

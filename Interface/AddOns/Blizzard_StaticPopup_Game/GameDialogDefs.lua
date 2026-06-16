@@ -8,6 +8,11 @@ local function SetLockDeclineTimeText(button, originalText, timeleft)
 end
 
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	if dialog.ticker then
+		dialog.ticker:Cancel();
+		dialog.ticker = nil;
+	end
+
 	local button2 = dialog:GetButton2();
 	local originalButtonText = button2:GetText();
 	button2:Disable();
@@ -2594,7 +2599,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 	maxLetters = 64,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		UninviteUnit(data, editBox:GetText());
+		C_PartyInfo.UninviteUnit(data, editBox:GetText());
 		dialog:Hide();
 	end,
 	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
@@ -2602,7 +2607,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 		dialog:GetButton1():Disable();
 	end,
 	OnAccept = function(dialog, data)
-		UninviteUnit(data, dialog:GetEditBox():GetText());
+		C_PartyInfo.UninviteUnit(data, dialog:GetEditBox():GetText());
 	end,
 	timeout = 0,
 	whileDead = 1,

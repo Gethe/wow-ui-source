@@ -371,6 +371,9 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_PERSONAL_RESOURCE_DISPLAY_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_PERSONAL_RESOURCE_DISPLAY_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="nameplateShowSelf" type="string"/>
+									<KeyValue key="allowAutoEnableCVar" value="true" type="boolean"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="EncounterEvents" inherits="EditModeManagerSettingCheckButtonTemplate">

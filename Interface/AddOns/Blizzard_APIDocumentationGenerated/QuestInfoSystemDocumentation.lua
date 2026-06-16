@@ -24,6 +24,21 @@ local QuestInfoSystem =
 			},
 		},
 		{
+			Name = "GetQuestHasShortExpirationWarning",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasShortExpirationWarning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestLogRewardFavor",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

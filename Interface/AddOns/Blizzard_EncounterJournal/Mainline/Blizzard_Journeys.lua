@@ -13,7 +13,7 @@ local MAX_REWARD_CARDS_TO_DISPLAY = 4;
 
 local function ShowRenownRewardsTooltip(frame, factionID)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
-	RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(ShowRenownRewardsTooltip, frame));
+	RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(ShowRenownRewardsTooltip, frame, factionID));
 	GameTooltip_AddColoredLine(GameTooltip, JOURNEYS_TOOLTIP_VIEW_JOURNEY, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end
@@ -475,8 +475,9 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 	if not C_MajorFactions.ShouldUseJourneyRewardTrack(self.majorFactionData.factionID)  then
 		self.DelveRewardProgressBar:Hide();
 	else
-		local totalMax = threshold * self.majorFactionData.maxLevel;
-		local currentTotal = self.actualLevel * threshold + progress;
+		local progressBarStartLevel = 1; -- The progress bar starts at level 1, so don't include progress below that
+		local totalMax = threshold * (self.majorFactionData.maxLevel - progressBarStartLevel);
+		local currentTotal = (self.actualLevel - progressBarStartLevel) * threshold + progress;
 		self.DelveRewardProgressBar:SetMinMaxValues(0, totalMax);
 		self.DelveRewardProgressBar:SetValue(currentTotal);
 		self.DelveRewardProgressBar:Show();
@@ -574,7 +575,7 @@ function JourneyProgressFrameMixin:SetupRewardTrack()
 		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, -15);
 	else
 		self.RenownTrackFrame:Hide();
-		self.EncounterRewardProgressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo);
+		self.EncounterRewardProgressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo, self.DelveRewardProgressBar);
 		self.EncounterRewardProgressFrame:Show();
 		self.track = self.EncounterRewardProgressFrame;
 		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, 0);
@@ -697,6 +698,15 @@ end
 
 -------------------------------------[[ Journey "Progress" Locked State Frame ]]-------------------------------------------------------
 JourneysLockedStateMixin = {};
+
+function JourneysLockedStateMixin:OnLoad()
+	self:SetLockedTextWidth();
+end
+
+function JourneysLockedStateMixin:SetLockedTextWidth()
+	local bestLockedTextStringWidth = math.min(self.JourneyLockedText:GetUnboundedStringWidth(), self:GetWidth());
+	self.JourneyLockedText:SetWidth(bestLockedTextStringWidth);
+end
 
 function JourneysLockedStateMixin:OnShow()
 	self.JourneyLockedText:SetScript("OnEnter", self.ShowUnlockDescriptionTooltip);

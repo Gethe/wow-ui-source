@@ -945,7 +945,7 @@ function LFGDungeonReadyDialogReward_OnEnter(self, dungeonID)
 			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
 		end
 		if ( moneyAmount > 0 ) then
-			SetTooltipMoney(GameTooltip, moneyAmount, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, moneyAmount);
 		end
 	elseif ( self.rewardType == "reward" ) then
 		GameTooltip:SetLFGDungeonReward(LFGDungeonReadyPopup.dungeonID, self.rewardID);

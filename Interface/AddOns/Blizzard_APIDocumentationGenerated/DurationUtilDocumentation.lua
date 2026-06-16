@@ -18,13 +18,23 @@ local DurationUtil =
 			},
 		},
 		{
-			Name = "GetCurrentTime",
+			Name = "CreateDurationTextBinding",
 			Type = "Function",
-			Documentation = { "Returns the current time used by duration objects. Equivalent to GetTime() in public builds." },
+			Documentation = { "Creates a duration text binding, which automatically updates a font string with formatted text derived from a duration object." },
 
 			Returns =
 			{
-				{ Name = "currentTime", Type = "FrameTime", Nilable = false },
+				{ Name = "binding", Type = "DurationTextBinding", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateManualClock",
+			Type = "Function",
+			Documentation = { "Creates a manually driven time source for use with duration objects." },
+
+			Returns =
+			{
+				{ Name = "clock", Type = "LuaDurationManualClock", Nilable = false },
 			},
 		},
 	},

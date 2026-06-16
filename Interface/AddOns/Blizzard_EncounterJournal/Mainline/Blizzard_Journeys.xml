@@ -365,27 +365,27 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="LockedStateFrame" mixin="JourneysLockedStateMixin" hidden="true">
-						<Size x="170" y="25"/>
+						<Size x="500" y="25"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.JourneyName" relativePoint="BOTTOM" y="-10"/>
-							<Anchor point="CENTER"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="true">
+								<FontString parentKey="JourneyLockedText" inherits="GameFontHighlightLarge" text="JOURNEYS_JOURNEY_LOCKED_LABEL" justifyH="CENTER" maxLines="1">
+									<Size y="25"/>
 									<Anchors>
-										<Anchor point="LEFT"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="JourneyLockedText" inherits="GameFontHighlightLarge" text="JOURNEYS_JOURNEY_LOCKED_LABEL" justifyH="LEFT">
-									<Size x="135" y="25"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.LockIcon" relativePoint="RIGHT"/>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</FontString>
+								<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.JourneyLockedText" relativePoint="LEFT"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
 						</Scripts>
 					</Frame>

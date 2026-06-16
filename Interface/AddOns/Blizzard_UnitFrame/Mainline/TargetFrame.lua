@@ -78,7 +78,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 
 	healthBar:SetBarText(targetFrameContentMain.HealthBarsContainer.HealthBarText, targetFrameContentMain.HealthBarsContainer.LeftText, targetFrameContentMain.HealthBarsContainer.RightText);
 
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
 
 	local healthBarTexture = healthBar:GetStatusBarTexture();
 	healthBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);

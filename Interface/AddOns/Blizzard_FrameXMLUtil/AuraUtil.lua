@@ -170,7 +170,6 @@ AuraUtil.AuraFilters =
 	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
 	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
 	BigDefensive = "BIG_DEFENSIVE",
-	Important = "IMPORTANT",
 };
 
 function AuraUtil.CreateFilterString(...)

@@ -867,11 +867,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNINVITE, SLASH_COMMAND_CATE
 		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	UninviteUnit(msg);
+	C_PartyInfo.UninviteUnit(msg);
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.PROMOTE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
-	PromoteToLeader(msg);
+	C_PartyInfo.PromoteToLeader(msg);
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REPLY, SLASH_COMMAND_CATEGORY.CHAT_COMMAND, function(msg, editBox)
@@ -1213,7 +1213,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.READYCHECK, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		DoReadyCheck();
+		C_PartyInfo.DoReadyCheck();
 	end
 end);
 
@@ -1389,6 +1389,13 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 		marker = tonumber(string.match(marker, "%d+"));
 
 		if ( GetRaidTargetIndex(target) == marker ) then
+			return;
+		end
+	-- Prefixing with a "~" will prevent setting the marker if the unit already has any marker.
+	elseif ( marker and string.find(marker, "^~") ) then
+		marker = tonumber(string.match(marker, "%d+"));
+
+		if ( GetRaidTargetIndex(target) ~= nil ) then
 			return;
 		end
 	else

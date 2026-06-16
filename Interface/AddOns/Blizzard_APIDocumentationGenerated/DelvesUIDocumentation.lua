@@ -144,6 +144,15 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetDelveEntranceTitleString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "title", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDelvesAffixSpellsForSeason",
 			Type = "Function",
 
@@ -198,7 +207,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -287,7 +296,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "entranceType", Type = "number", Nilable = false },
+				{ Name = "entranceType", Type = "TieredEntranceType", Nilable = false },
 			},
 		},
 		{
@@ -319,6 +328,15 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "unseenCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldTierDifficultyForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "difficulty", Type = "WorldTierDifficulty", Nilable = false },
 			},
 		},
 		{

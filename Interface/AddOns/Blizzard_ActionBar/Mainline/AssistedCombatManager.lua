@@ -136,9 +136,12 @@ function AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton)
 		return false;
 	end
 
-	local usingAssistedCombat = self:IsAssistedHighlightActive() or C_ActionBar.HasAssistedCombatActionButtons();
-	if not usingAssistedCombat then
-		return false;
+	-- AssistedHighlight means always downgrade, but if SBA is active then it depends on cvar
+	if not self:IsAssistedHighlightActive() then
+		local downgradeSpellsAlerts = CVarCallbackRegistry:GetCVarValueBool("assistedCombatReduceHighlights");
+		if not downgradeSpellsAlerts or not C_ActionBar.HasAssistedCombatActionButtons() then
+			return false;
+		end
 	end
 
 	-- Only spells that are part of the rotation should have downgrade spell alerts

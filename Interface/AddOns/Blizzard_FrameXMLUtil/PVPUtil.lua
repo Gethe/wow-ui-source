@@ -27,3 +27,15 @@ end
 function PVPUtil.GetCurrentSeasonNumber()
 	return C_PvP.GetUIDisplaySeason();
 end
+
+function PVPUtil.GetCurrentSeasonText()
+	local uiSeason = C_PvP.GetUIDisplaySeason();
+	if uiSeason > 0 then
+		local currentSeasonExpansion = C_SeasonInfo.GetCurrentDisplaySeasonExpansion();
+		if currentSeasonExpansion then
+			return EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
+		end
+	end
+
+	return nil;
+end

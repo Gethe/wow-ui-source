@@ -4,7 +4,7 @@ function EncounterTimelineTrackLayoutMixin:OnLoad()
 	self.tracksByID = {};
 	self.tracksByIndex = {};
 
-	self.primaryAxisPaddingStart = EncounterTimelineTrackLayoutDefaults.PrimaryAxisStartPadding
+	self.primaryAxisPaddingStart = EncounterTimelineTrackLayoutDefaults.PrimaryAxisStartPadding;
 	self.primaryAxisPaddingEnd = EncounterTimelineTrackLayoutDefaults.PrimaryAxisEndPadding;
 	self.sortedEventExtent = EncounterTimelineTrackLayoutDefaults.SortedEventExtent;
 

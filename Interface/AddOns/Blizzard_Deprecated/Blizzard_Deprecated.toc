@@ -3,3 +3,4 @@
 
 11_0_0_SpellBookAPITransitionGuide.lua
 Deprecated_12_0_1.lua
+Deprecated_12_0_7.lua

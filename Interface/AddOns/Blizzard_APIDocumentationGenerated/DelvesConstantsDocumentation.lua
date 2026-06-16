@@ -51,7 +51,20 @@ local DelvesConstants =
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
 				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
-				{ Name = "Reserved", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "WorldTierDifficulty",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Normal", Type = "WorldTierDifficulty", EnumValue = 1 },
+				{ Name = "Heroic", Type = "WorldTierDifficulty", EnumValue = 2 },
+				{ Name = "Mythic", Type = "WorldTierDifficulty", EnumValue = 3 },
 			},
 		},
 		{
@@ -85,6 +98,7 @@ local DelvesConstants =
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_TIER_LEVEL", Type = "number", Value = 1 },
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_MAP_ID", Type = "number", Value = 3 },
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_PLAYER_CONDITION_ID", Type = "number", Value = 6 },
+				{ Name = "TIERED_ENTRANCE_INFO_WORLD_TIER_DIFFICULTY_CHARACTER_ELEMENT_ID", Type = "number", Value = 522 },
 			},
 		},
 	},

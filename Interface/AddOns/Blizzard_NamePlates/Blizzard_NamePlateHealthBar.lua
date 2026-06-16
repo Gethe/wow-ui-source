@@ -116,16 +116,6 @@ function NamePlateHealthBarMixin:SetIsPlayer(isPlayer)
 	self:UpdateShownState();
 end
 
-function NamePlateHealthBarMixin:IsDead()
-	return self.isDead == true;
-end
-
-function NamePlateHealthBarMixin:SetIsDead(isDead)
-	self.isDead = isDead;
-
-	self:UpdateShownState();
-end
-
 function NamePlateHealthBarMixin:IsSimplified()
 	return self.isSimplified;
 end
@@ -163,11 +153,6 @@ function NamePlateHealthBarMixin:ShouldBeShown()
 	end
 
 	if self:IsWidgetsOnlyMode() then
-		return false;
-	end
-
-	-- Health bars for dead NPCs are hidden.
-	if self:IsPlayer() == false and self:IsDead() then
 		return false;
 	end
 

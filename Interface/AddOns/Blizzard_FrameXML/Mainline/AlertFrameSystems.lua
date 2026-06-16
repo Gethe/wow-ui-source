@@ -117,7 +117,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 		GameTooltip:SetHyperlink(self.itemLink);
 	elseif self.money then
 		GameTooltip:AddLine(YOU_RECEIVED);
-		SetTooltipMoney(GameTooltip, self.money, nil);
+		GameTooltip_AddMoneyLine(GameTooltip, self.money);
 	elseif self.xp then
 		GameTooltip:AddLine(YOU_RECEIVED);
 		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -225,7 +225,7 @@ function DungeonCompletionAlertFrameReward_OnEnter(self)
 		end
 
 		if ( rewardData.moneyAmount > 0 ) then
-			SetTooltipMoney(GameTooltip, rewardData.moneyAmount, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, rewardData.moneyAmount);
 		end
 	elseif ( self.reward.rewardItemLink ) then
 		TooltipSetLFGCompletionReward(GameTooltip, self.reward.rewardItemLink, self.reward.bonusQuantity);

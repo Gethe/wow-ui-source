@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ClassTrial.lua"/>
-
 	<Frame name="ClassTrialThanksForPlayingDialog" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" parent="UIParent" setAllPoints="true" mixin="ClassTrialDialogMixin" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -139,7 +137,7 @@
 			<OnKeyUp function="nop"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ClassTrialTimerDisplay" enableMouse="true" parent="UIParent" mixin="ClassTrialTimerDisplayMixin" hidden="true">
 		<Size x="304" y="81"/>
 		<Anchors>

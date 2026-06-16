@@ -70,6 +70,7 @@ local SimpleButtonAPI =
 		{
 			Name = "GetButtonState",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ButtonState },
 
 			Arguments =
 			{
@@ -254,6 +255,7 @@ local SimpleButtonAPI =
 		{
 			Name = "IsEnabled",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ButtonState },
 
 			Arguments =
 			{
@@ -289,6 +291,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetButtonState",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.ButtonState },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -331,7 +334,8 @@ local SimpleButtonAPI =
 			Name = "SetEnabled",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "NotAllowed",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.ButtonState },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

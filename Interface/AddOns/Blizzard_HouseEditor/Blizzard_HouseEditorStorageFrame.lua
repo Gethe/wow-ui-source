@@ -189,7 +189,10 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 		self:CheckCloseMarketInteraction();
 		self:SetTab(self.storageTabID);
 	elseif event == "CATALOG_SHOP_FETCH_SUCCESS" then
-		self:RefreshMarketData();
+		-- We want to avoid picking up updates from the catalog shop so only update when we're interacting.
+		if self.catalogShopInteractionStarted then
+			self:RefreshMarketData();
+		end
 	elseif event == "CATALOG_SHOP_DATA_REFRESH" then
 		-- We want to avoid picking up updates from the catalog shop so only update when we're interacting.
 		if self.catalogShopInteractionStarted then

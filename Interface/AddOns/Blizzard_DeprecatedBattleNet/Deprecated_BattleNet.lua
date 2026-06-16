@@ -17,3 +17,7 @@ end
 BNSetCustomMessage = function(text)
 	C_BattleNet.SetCustomMessage(text);
 end
+
+BNInviteFriend = function(gameAccountID)
+	return C_BattleNet.InviteFriend(gameAccountID);
+end

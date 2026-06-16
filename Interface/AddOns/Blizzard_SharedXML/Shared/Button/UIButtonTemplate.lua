@@ -9,15 +9,6 @@ function UIButtonMixin:InitButton()
 	self:SetDisabledTooltip(self.disabledTooltip);
 end
 
-function UIButtonMixin:SetDisabledTooltip(disabledTooltip)
-	self.disabledTooltip = disabledTooltip;
-
-	-- NOTE: Remains on to preserve previous behavior
-	if self.disabledTooltip then
-		self:SetMotionScriptsWhileDisabled(true);
-	end
-end
-
 function UIButtonMixin:OnClick(...)
 	PlaySound(self.onClickSoundKit or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
@@ -160,5 +151,9 @@ function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor
 	self.disabledTooltipAnchor = disabledTooltipAnchor;
 	self.disabledTooltipOffsetX = disabledTooltipOffsetX;
 	self.disabledTooltipOffsetY = disabledTooltipOffsetY;
-	self:SetMotionScriptsWhileDisabled(disabledTooltip ~= nil);
+
+	-- NOTE: Remains on to preserve previous behavior
+	if self.disabledTooltip then
+		self:SetMotionScriptsWhileDisabled(true);
+	end
 end

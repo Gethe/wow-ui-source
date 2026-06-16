@@ -92,6 +92,7 @@ DeathRecapDocumentation.lua
 DebugToggleDocumentation.lua
 DelvesUIDocumentation.lua
 DuelInfoDocumentation.lua
+DurationTextBindingObjectAPIDocumentation.lua
 DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -197,6 +198,8 @@ LossOfControlDocumentation.lua
 LuaColorCurveObjectAPIDocumentation.lua
 LuaCurveObjectAPIDocumentation.lua
 LuaCurveObjectBaseAPIDocumentation.lua
+LuaDurationClockAPIDocumentation.lua
+LuaDurationManualClockAPIDocumentation.lua
 LuaDurationObjectAPIDocumentation.lua
 LuaTableUtilDocumentation.lua
 MacOptionsDocumentation.lua
@@ -358,6 +361,7 @@ UIManagerDocumentation.lua
 UIActionDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
+UIFileAssetAPIDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIMacrosDocumentation.lua
 UIModifiedInstanceDocumentation.lua
@@ -440,6 +444,7 @@ DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
+DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_MainlineDocumentation.lua
@@ -449,6 +454,7 @@ EncounterJournalConstantsDocumentation.lua
 EncounterTimelineConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
 ExpansionConstantsDocumentation.lua
+ExpansionLandingPageConstantsDocumentation.lua
 ExpansionLevelConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua

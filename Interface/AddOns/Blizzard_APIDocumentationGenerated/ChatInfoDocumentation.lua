@@ -1328,7 +1328,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatFactionChange",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_FACTION_CHANGE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1355,7 +1354,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatHonorGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_HONOR_GAIN",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1382,7 +1380,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatMiscInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_MISC_INFO",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1409,7 +1406,6 @@ local ChatInfo =
 			Name = "ChatMsgCombatXpGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_XP_GAIN",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1463,7 +1459,6 @@ local ChatInfo =
 			Name = "ChatMsgCurrency",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CURRENCY",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1544,7 +1539,6 @@ local ChatInfo =
 			Name = "ChatMsgFiltered",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_FILTERED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1731,7 +1725,6 @@ local ChatInfo =
 			Name = "ChatMsgLoot",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_LOOT",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1758,7 +1751,6 @@ local ChatInfo =
 			Name = "ChatMsgMoney",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONEY",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2268,7 +2260,6 @@ local ChatInfo =
 			Name = "ChatMsgRestricted",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RESTRICTED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

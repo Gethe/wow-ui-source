@@ -923,17 +923,143 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	},
 
 	[Enum.EditModeSystem.PersonalResourceDisplay] = {
-		-- Hide Health and Power
+		-- Size
 		{
-			setting = Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower,
-			name = NAMEPLATE_HIDE_HEALTH_AND_POWER,
+			setting = Enum.EditModePersonalResourceDisplaySetting.Size,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 70,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Bar Width
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.BarWidth,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_BAR_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Health Bar Height
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HealthBarHeight,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HEALTH_BAR_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 10,
+			maxValue = 30,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Power Bar Height
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.PowerBarHeight,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_POWER_BAR_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 10,
+			maxValue = 30,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Padding
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 10,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visible Setting
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.VisibleSetting,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.PersonalResourceDisplayVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.PersonalResourceDisplayVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.PersonalResourceDisplayVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_HIDDEN},
+			},
+		},
+
+		-- Hide Health
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideHealth,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_HEALTH_BAR,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
-		-- Only Show In Combat
+		-- Hide Power
 		{
-			setting = Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat,
-			name = PERSONAL_RESOURCE_DISPLAY_ONLY_SHOW_IN_COMBAT,
+			setting = Enum.EditModePersonalResourceDisplaySetting.HidePower,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_POWER_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Alternate Power
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideAltPower,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_ALT_POWER_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Class Info
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideClassInfo,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_CLASS_INFO,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Class Info On Player Frame
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideClassInfoOnPlayerFrame,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_CLASS_INFO_ON_PLAYER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Class Color
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.ShowClassColor,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SHOW_CLASS_COLOR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Bar Text
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.ShowBarText,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SHOW_BAR_TEXT,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
@@ -1127,7 +1253,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeDamageMeterSetting.FrameWidth,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_WIDTH,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 300,
+			minValue = 200,
 			maxValue = 600,
 			stepSize = 1,
 			ConvertValue = ConvertValueDiffFromMin,
@@ -1223,6 +1349,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{value = Enum.DamageMeterVisibility.Always, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_ALWAYS},
 				{value = Enum.DamageMeterVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_COMBAT},
 				{value = Enum.DamageMeterVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_HIDDEN},
+				{value = Enum.DamageMeterVisibility.InGroup, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_GROUP},
 			},
 		},
 

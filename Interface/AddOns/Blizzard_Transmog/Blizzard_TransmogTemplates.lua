@@ -27,7 +27,7 @@ function TransmogOutfitEntryMixin:OnLoad()
 		if buttonName == "LeftButton" then
 			PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 			self:SelectEntry();
-		elseif buttonName == "RightButton" then
+		elseif buttonName == "RightButton" and not C_TransmogOutfitInfo.InTransmogEvent() then
 			MenuUtil.CreateContextMenu(self, function(_owner, rootDescription)
 				rootDescription:SetTag("MENU_TRANSMOG_OUTFIT_ENTRY");
 

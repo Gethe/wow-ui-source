@@ -416,18 +416,18 @@ local CUSTOMIZATION_LOCK_WIDTH = 24;
 CustomizationElementDetailsMixin = {};
 
 function CustomizationElementDetailsMixin:GetTooltipText()
-	local name;
-	if self.lockedText or (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
-		name = self.name;
+	if not self.lockedText and not self.ineligibleText and not (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
+		return nil;
 	end
 
-	if not self.lockedText then
-		return name;
+	local disabledText = nil;
+	if self.lockedText then
+		disabledText = self.skipLockedTextFormat and self.lockedText or BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+	elseif self.ineligibleText then
+		disabledText = self.ineligibleText;
 	end
 
-	local lockedText = self.skipLockedTextFormat and self.lockedText or BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
-
-	return name, lockedText;
+	return self.name, disabledText;
 end
 
 function CustomizationElementDetailsMixin:SetOverrideWidth(overrideWidth)
@@ -567,7 +567,7 @@ end
 --[[
 Expected choiceData members
 	Standard/required: id, name, choiceIndex
-	Optional: isLocked, lockedText, isNew, ineligibleChoice, disabled, swatchColor1, swatchColor2, soundKit
+	Optional: isLocked, lockedText, isNew, ineligibleChoice, ineligibleText, disabled, swatchColor1, swatchColor2, soundKit
 ]]--
 
 function CustomizationElementDetailsMixin:Init(choiceData, index, isSelected, hasAFailedReq, hasALockedChoice, clampNameSize)
@@ -589,6 +589,7 @@ function CustomizationElementDetailsMixin:Init(choiceData, index, isSelected, ha
 	self.name = choiceData.name;
 	self.index = index;
 	self.lockedText = choiceData.isLocked and choiceData.lockedText;
+	self.ineligibleText = choiceData.ineligibleChoice and choiceData.ineligibleText;
 
 	local color1 = choiceData.swatchColor1 or choiceData.swatchColor2;
 	local color2 = choiceData.swatchColor1 and choiceData.swatchColor2;

@@ -1,3 +1,5 @@
+local scanUnits = { "player", "target" };
+
 CooldownViewerItemDataMixin = {};
 
 function CooldownViewerItemDataMixin:SetCooldownID(cooldownID, forceSet)
@@ -7,12 +9,12 @@ function CooldownViewerItemDataMixin:SetCooldownID(cooldownID, forceSet)
 	end
 end
 
-function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras()
+function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras(unit)
 	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
 		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
-			local auraData = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+			local auraData = C_UnitAuras.GetUnitAuraBySpellID(unit, spellID);
 			if auraData then
-				return spellID;
+				return spellID, auraData;
 			end
 		end
 	end
@@ -20,20 +22,33 @@ function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras()
 	return nil;
 end
 
+function CooldownViewerItemDataMixin:RefreshLinkedSpell()
+	-- If one of the item's linked spells currenly has an active aura, it needs to be linked now because
+	-- the UNIT_AURA event for it may have already happened and there might not be another one. e.g. the
+	-- case of an infinite duration aura.
+	-- This could also happen if the remaining duration on an aura expires (but the aura is somehow not removed via UNIT_AURA)
+	-- and there's still an active aura on the player that hasn't expired so the expiration of the current linked spell
+	-- needs to cause the cooldown item to update its linked spells.
+	local linkedSpellChanged;
+	for _index, unit in ipairs(scanUnits) do
+		local linkedSpellID, auraData = self:FindLinkedSpellForCurrentAuras(unit);
+		linkedSpellChanged = self:SetLinkedSpell(linkedSpellID) or linkedSpellChanged;
+
+		if auraData then
+			self:SetAuraInstanceInfo(auraData);
+			return linkedSpellChanged;
+		end
+	end
+
+	return linkedSpellChanged;
+end
+
 function CooldownViewerItemDataMixin:OnCooldownIDSet()
 	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self:GetCooldownID());
 	self.validAlertTypes = nil;
 
 	self:ClearEditModeData();
-
-	-- If one of the item's linked spells currenly has an active aura, it needs to be linked now because
-	-- the UNIT_AURA event for it may have already happened and there might not be another one. e.g. the
-	-- case of an infinite duration aura.
-	local linkedSpellID = self:FindLinkedSpellForCurrentAuras();
-	if linkedSpellID then
-		self:SetLinkedSpell(linkedSpellID);
-	end
-
+	self:RefreshLinkedSpell();
 	self:RefreshData();
 	self:UpdateShownState();
 end
@@ -228,6 +243,8 @@ end
 function CooldownViewerItemDataMixin:SetAuraInstanceInfo(auraInfo)
 	local auraSpellID, auraInstanceID = auraInfo.spellId, auraInfo.auraInstanceID;
 	if self.auraInstanceID ~= auraInstanceID or self.auraSpellID ~= auraSpellID then
+		self:ClearAuraInstanceInfo();
+
 		self.auraInstanceID = auraInstanceID;
 		self.auraSpellID = auraSpellID;
 
@@ -315,7 +332,7 @@ function CooldownViewerItemDataMixin:GetNameText()
 		return totemData.name;
 	end
 
-	local auraData = self:GetAuraData();
+	local auraData = self:GetAuraDataCached();
 	if auraData then
 		return auraData.name;
 	end
@@ -332,21 +349,42 @@ function CooldownViewerItemDataMixin:GetNameText()
 	return "";
 end
 
-local targetAuraCacheTime;
-local targetAuraCache;
-local function GetTargetAurasCached()
-	local now = GetTime();
-	if not targetAuraCache or not targetAuraCacheTime or now ~= targetAuraCacheTime then
-		targetAuraCache = C_UnitAuras.GetUnitAuras("target", "HARMFUL|PLAYER") or {};
-		targetAuraCacheTime = now;
+local function GetTargetAurasFilterString(unit)
+	if UnitExists(unit) then
+		if UnitIsFriend("player", unit) then
+			return "HELPFUL|PLAYER";
+		end
 	end
 
-	return targetAuraCache;
+	-- If there's no unit or it's not a friend, assume we want debuffs.
+	return "HARMFUL|PLAYER";
 end
 
-function CooldownViewerItemDataMixin:GetTargetRelatedAuraInfo()
-	for _, aura in ipairs(GetTargetAurasCached()) do
-		if self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
+local targetAuraCacheTime = {};
+local targetAuraCache = {};
+local function GetUnitAurasCached(unit, timeNow)
+	local now = timeNow or GetTime();
+	if not targetAuraCacheTime[unit] or now ~= targetAuraCacheTime[unit] then
+		targetAuraCacheTime[unit] = now;
+
+		local filterString = GetTargetAurasFilterString(unit);
+		if filterString then
+			targetAuraCache[unit] = C_UnitAuras.GetUnitAuras(unit, filterString) or {};
+		else
+			targetAuraCache[unit] = {};
+		end
+	end
+
+	return targetAuraCache[unit];
+end
+
+local function IsAuraActive(aura, timeNow)
+	return aura.expirationTime == nil or aura.expirationTime == 0 or aura.expirationTime > timeNow;
+end
+
+function CooldownViewerItemDataMixin:GetUnitRelatedAuraInfo(unit, timeNow)
+	for _, aura in ipairs(GetUnitAurasCached(unit, timeNow)) do
+		if IsAuraActive(aura, timeNow) and self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
 			return aura;
 		end
 	end
@@ -355,26 +393,23 @@ function CooldownViewerItemDataMixin:GetTargetRelatedAuraInfo()
 end
 
 function CooldownViewerItemDataMixin:GetAuraData()
-	-- TODO: Cache these results.
-
-	-- TODO: If we get enough cases where having the aura means "it's active" then there are some other checks that can be nuked
-	local spellID = self:GetSpellID();
-	if spellID then
-		local selfAura = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
-		if selfAura then
-			self.auraDataUnit = "player";
-			return selfAura;
+	local timeNow = GetTime();
+	for _index, unit in ipairs(scanUnits) do
+		local auraData = self:GetUnitRelatedAuraInfo(unit, timeNow);
+		if auraData then
+			self.auraDataCached = auraData;
+			self.auraDataUnit = unit;
+			return auraData;
 		end
 	end
 
-	local targetAura = self:GetTargetRelatedAuraInfo();
-	if targetAura then
-		self.auraDataUnit = "target";
-		return targetAura;
-	end
-
 	self.auraDataUnit = nil;
+	self.auraDataCached = nil;
 	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetAuraDataCached()
+	return self.auraDataCached;
 end
 
 function CooldownViewerItemDataMixin:GetAuraDataUnit()
@@ -480,8 +515,9 @@ end
 function CooldownViewerItemDataMixin:RefreshTooltip()
 	local tooltip = GetAppropriateTooltip();
 	local auraInstanceID = self:GetAuraSpellInstanceID();
-	if auraInstanceID then
-		tooltip:SetUnitAuraByAuraInstanceID(self:GetAuraDataUnit(), auraInstanceID);
+	local auraUnit = self:GetAuraDataUnit();
+	if auraInstanceID and auraUnit then
+		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID);
 	else
 		local spellID = self:GetSpellID();
 		if spellID then

@@ -1532,7 +1532,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
+	<!--This was originally a Frame. Existing Frame instances will continue to function as expected.-->
+	<Button name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
 		<KeyValues>
 			<!-- If true, will show the move cursor when hovering the bar, rather than only when dragged -->
 			<KeyValue key="showCursorOnHover" value="false" type="boolean"/>
@@ -1544,7 +1545,7 @@
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
 		<Size x="16" y="16"/>

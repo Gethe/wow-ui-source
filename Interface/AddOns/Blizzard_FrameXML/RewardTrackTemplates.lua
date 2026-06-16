@@ -35,11 +35,12 @@ function RewardTrackFrameMixin:OnHide()
 	end
 end
 
-function RewardTrackFrameMixin:Init(elementList, paragonInfo)
+function RewardTrackFrameMixin:Init(elementList, paragonInfo, progressBar)
 	self.elementPool:ReleaseAll();
 
 	self.numElements = #elementList;
 	self.Elements = { };
+	local firstFrame;
 	local lastFrame;
 	for i = 1, #elementList do
 		local frame = self.elementPool:Acquire();
@@ -52,6 +53,9 @@ function RewardTrackFrameMixin:Init(elementList, paragonInfo)
 			frame:SetPoint("CENTER");
 		end
 		frame:Show();
+		if not firstFrame then
+			firstFrame = frame;
+		end
 		lastFrame = frame;
 	end
 
@@ -91,6 +95,13 @@ function RewardTrackFrameMixin:Init(elementList, paragonInfo)
 	else
 		self.ClipFrame.ParagonLevelFrame:ClearAllPoints();
 		self.ClipFrame.ParagonLevelFrame:Hide();
+	end
+
+	-- Progress bar should be anchored between the first and last reward frames
+	if progressBar and firstFrame and lastFrame and firstFrame ~= lastFrame then
+		progressBar:ClearAllPoints();
+		progressBar:SetPoint("LEFT", firstFrame.LevelSquare, "TOP", 0, -5);
+		progressBar:SetPoint("RIGHT", lastFrame.LevelSquare, "TOP", 0, -5);
 	end
 end
 
@@ -363,6 +374,7 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	local maskAtlas = "ui-journeys-delve-rewardicon-%s-mask";
 	local borderAtlas;
 	local rectangleFrameAtlas;
+	local levelSquareFrameAtlas;
 	local backgroundFrameAtlas;
 
 	local reward = self.info.rewardInfo[1];
@@ -392,10 +404,13 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 
 	if lastEarned then
 		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-green";
+		levelSquareFrameAtlas = "ui-journeys-delve-level-square-green";
 	elseif earned then
 		backgroundFrameAtlas = "ui-journeys-delve-reward-bar";
+		levelSquareFrameAtlas = "ui-journeys-delve-level-square";
 	else
 		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-grey";
+		levelSquareFrameAtlas = "ui-journeys-delve-level-square-grey";
 	end
 
 	if self.IconMask then
@@ -410,6 +425,10 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 
 	if self.LevelRectangle then
 		self.LevelRectangle:SetAtlas(rectangleFrameAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
+	if self.LevelSquare then
+		self.LevelSquare:SetAtlas(levelSquareFrameAtlas, TextureKitConstants.UseAtlasSize);
 	end
 
 	if self.RewardCardBG then

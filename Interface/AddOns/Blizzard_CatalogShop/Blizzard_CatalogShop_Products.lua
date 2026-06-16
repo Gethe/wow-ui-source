@@ -265,9 +265,21 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	end
 
 	CatalogShopFrame.PMTImageContainerFrame:Hide();-- by default we hide it
+	if productInfo.isMystery then
+		CatalogShopFrame.ServicesContainerFrame:Show();
+		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
+		local atlas = CatalogShopConstants.DefaultWoWAtlas;
+		if productType == CatalogShopConstants.ProductType.Mount then
+			atlas = CatalogShopConstants.MysteryTypes.Mount;
+		elseif productType == CatalogShopConstants.ProductType.Pet then
+			atlas = CatalogShopConstants.MysteryTypes.Pet;
+		end
+		iconFrame.Icon:SetAtlas(atlas);
+		iconFrame.IconBorder:Hide();
+		iconFrame.Icon:SetSize(224, 224);
+	elseif displayInfo.hasUnknownLicense then
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
-	if displayInfo.hasUnknownLicense then
 		CatalogShopFrame.PMTImageContainerFrame:Show();
 		local showWatermarkLogo = true;
 		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo, showWatermarkLogo);

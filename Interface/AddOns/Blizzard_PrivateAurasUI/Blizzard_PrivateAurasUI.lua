@@ -18,8 +18,6 @@ local dispelAtlases =
 	["Bleed"] = "RaidFrame-Icon-DebuffBleed",
 };
 
-AddTooltipDataAccessor(GameTooltipDataMixin, "SetUnitPrivateAura", "GetUnitPrivateAura");
-
 local PrivateAuraFramePool = CreateFramePool("FRAME", nil, "PrivateAuraTemplate", function(pool, frame) frame:Reset(); end);
 local PrivateAuraEventFramePool = CreateFramePool("FRAME", nil, "PrivateAuraUnitWatcherTemplate"); -- TODO: Maybe this isn't required, but something has to maintain a list
 local PrivateAuraDispelOverlayFramePool = CreateFramePool("Frame", nil, "CompactUnitFrameDispelOverlayTemplate");
@@ -57,11 +55,7 @@ function PrivateAuraMixin:Reset()
 end
 
 function PrivateAuraMixin:ShowTooltip()
-	if self.auraInfo.isPrivate then
-		PrivateAurasTooltip:SetUnitPrivateAura(self.unit, self.auraInfo.auraInstanceID);
-	else
-		PrivateAurasTooltip:SetUnitAuraByAuraInstanceID(self.unit, self.auraInfo.auraInstanceID);
-	end
+	PrivateAurasTooltip:ShowAuraTooltip(self.unit, self.auraInfo);
 end
 
 function PrivateAuraMixin:OnEnter()

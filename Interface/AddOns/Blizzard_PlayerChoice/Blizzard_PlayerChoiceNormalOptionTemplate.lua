@@ -1,18 +1,6 @@
-PlayerChoiceNormalOptionTemplateMixin = CreateFromMixins(PlayerChoiceBaseOptionTemplateMixin);
+local BaseMixin = {};
 
-local MIN_OPTION_HEIGHT_DEFAULT = 439;
-local MIN_OPTION_HEIGHT_NO_HEADER = 410;
-
-function PlayerChoiceNormalOptionTemplateMixin:GetMinOptionHeight()
-	return self.Header:IsShown() and MIN_OPTION_HEIGHT_DEFAULT or MIN_OPTION_HEIGHT_NO_HEADER;
-end
-
-local textureKitRegions = {
-	ArtworkBorder = "UI-Frame-%s-Portrait",
-	Background = "UI-Frame-%s-CardParchment",
-};
-
-function PlayerChoiceNormalOptionTemplateMixin:GetTextureKitRegionTable()
+function BaseMixin:GetTextureKitRegionTable(textureKitRegions)
 	local useTextureRegions = {};
 
 	for key, value in pairs(textureKitRegions) do
@@ -26,33 +14,100 @@ function PlayerChoiceNormalOptionTemplateMixin:GetTextureKitRegionTable()
 	return useTextureRegions;
 end
 
+local customFontInfo = {
+	alliance = {
+		titleColor = CreateColor(0.008, 0.051, 0.192),
+		descriptionColor = CreateColor(0.082, 0.165, 0.373),
+	},
+
+	horde = {
+		titleColor = CreateColor(0.192, 0.051, 0.008),
+		descriptionColor = CreateColor(0.412, 0.020, 0.020),
+	},
+
+	marine = {
+		titleColor = CreateColor(0.192, 0.051, 0.008),
+		descriptionColor = CreateColor(0.192, 0.051, 0.008),
+	},
+
+	mechagon = {
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.969, 0.855, 0.667),
+		descriptionColor = CreateColor(0.969, 0.855, 0.667),
+	},
+
+	Kyrian = {
+		titleColor = CreateColor(0.008, 0.051, 0.192),
+		descriptionColor = CreateColor(0.082, 0.165, 0.373),
+	},
+
+	thewarwithin = {
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.972, 0.812, 0.706),
+		descriptionColor = CreateColor(0.972, 0.812, 0.706),
+	},
+
+	midnight = {
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.807, 0.772, 0.941),
+		descriptionColor = CreateColor(0.807, 0.772, 0.941),
+	},
+};
+
+local defaultOptionFontInfo = {
+	titleFont = "SystemFont_Med3",
+	titleColor = BLACK_FONT_COLOR,
+	descriptionColor = WARBOARD_OPTION_TEXT_COLOR,
+};
+
+function BaseMixin:GetOptionFontInfo()
+	return customFontInfo[self:GetTextureKit()] or defaultOptionFontInfo;
+end
+
+-- Mixin order is important as BaseMixin provides overrides to PlayerChoiceBaseOptionTemplateMixin
+PlayerChoiceNormalOptionTemplateMixin = CreateFromMixins(PlayerChoiceBaseOptionTemplateMixin, BaseMixin);
+
+local MIN_OPTION_HEIGHT_DEFAULT = 439;
+local MIN_OPTION_HEIGHT_NO_HEADER = 410;
+
+function PlayerChoiceNormalOptionTemplateMixin:GetMinOptionHeight()
+	return self.Header:IsShown() and MIN_OPTION_HEIGHT_DEFAULT or MIN_OPTION_HEIGHT_NO_HEADER;
+end
+
 local STANDARD_SIZE_WIDTH = 240;
 local WIDE_SIZE_WIDTH = 501;
 
-function PlayerChoiceNormalOptionTemplateMixin:SetupFrame()
-	self.fixedWidth = self.soloOption and WIDE_SIZE_WIDTH or STANDARD_SIZE_WIDTH;
+do
+	local textureKitRegions = {
+		ArtworkBorder = "UI-Frame-%s-Portrait",
+		Background = "UI-Frame-%s-CardParchment",
+	};
 
-	self.Artwork:SetTexture(self.optionInfo.choiceArtID);
+	function PlayerChoiceNormalOptionTemplateMixin:SetupFrame()
+		self.fixedWidth = self.soloOption and WIDE_SIZE_WIDTH or STANDARD_SIZE_WIDTH;
 
-	self.Artwork:ClearAllPoints();
-	if PlayerChoiceFrame:IsLegacy() then
-		-- Legacy player choice options used textures with the frame built into it
-		self.Artwork:SetPoint("CENTER", self.ArtworkBorder, "CENTER", 0, 0);
+		self.Artwork:SetTexture(self.optionInfo.choiceArtID);
 
-		-- Using alpha here instead of hiding it because we still want ArtworkBorder to be used for the layout process
-		self.ArtworkBorder:SetAlpha(0);
-	else
-		self.Artwork:SetPoint("TOPLEFT", self.ArtworkBorder, "TOPLEFT", 10, -9);
-		self.Artwork:SetPoint("BOTTOMRIGHT", self.ArtworkBorder, "BOTTOMRIGHT", -10, 9);
-		self.ArtworkBorder:SetAlpha(1);
+		self.Artwork:ClearAllPoints();
+		if PlayerChoiceFrame:IsLegacy() then
+			-- Legacy player choice options used textures with the frame built into it
+			self.Artwork:SetPoint("CENTER", self.ArtworkBorder, "CENTER", 0, 0);
+
+			-- Using alpha here instead of hiding it because we still want ArtworkBorder to be used for the layout process
+			self.ArtworkBorder:SetAlpha(0);
+		else
+			self.Artwork:SetPoint("TOPLEFT", self.ArtworkBorder, "TOPLEFT", 10, -9);
+			self.Artwork:SetPoint("BOTTOMRIGHT", self.ArtworkBorder, "BOTTOMRIGHT", -10, 9);
+			self.ArtworkBorder:SetAlpha(1);
+		end
+
+		local useTextureRegions = self:GetTextureKitRegionTable(textureKitRegions);
+		self:SetupTextureKitOnRegions(self, useTextureRegions)
+
+		self.Background:SetDesaturated(self.optionInfo.disabledOption);
+		self.Artwork:SetDesaturated(self.optionInfo.disabledOption or self.optionInfo.desaturatedArt);
+		self.ArtworkBorder:SetDesaturated(not self.optionInfo.desaturatedArt and self.optionInfo.disabledOption);
 	end
-
-	local useTextureRegions = self:GetTextureKitRegionTable();
-	self:SetupTextureKitOnRegions(self, useTextureRegions)
-
-	self.Background:SetDesaturated(self.optionInfo.disabledOption);
-	self.Artwork:SetDesaturated(self.optionInfo.disabledOption or self.optionInfo.desaturatedArt);
-	self.ArtworkBorder:SetDesaturated(not self.optionInfo.desaturatedArt and self.optionInfo.disabledOption);
 end
 
 local headerTextureKitRegions = {
@@ -127,56 +182,6 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupSubHeader()
 	end
 end
 
-local customFontInfo = {
-	alliance = {
-		titleColor = CreateColor(0.008, 0.051, 0.192),
-		descriptionColor = CreateColor(0.082, 0.165, 0.373),
-	},
-
-	horde = {
-		titleColor = CreateColor(0.192, 0.051, 0.008),
-		descriptionColor = CreateColor(0.412, 0.020, 0.020),
-	},
-
-	marine = {
-		titleColor = CreateColor(0.192, 0.051, 0.008),
-		descriptionColor = CreateColor(0.192, 0.051, 0.008),
-	},
-
-	mechagon = {
-		titleFont = "SystemFont_Shadow_Med3",
-		titleColor = CreateColor(0.969, 0.855, 0.667),
-		descriptionColor = CreateColor(0.969, 0.855, 0.667),
-	},
-
-	Kyrian = {
-		titleColor = CreateColor(0.008, 0.051, 0.192),
-		descriptionColor = CreateColor(0.082, 0.165, 0.373),
-	},
-
-	thewarwithin = {
-		titleFont = "SystemFont_Shadow_Med3",
-		titleColor = CreateColor(0.972, 0.812, 0.706),
-		descriptionColor = CreateColor(0.972, 0.812, 0.706),
-	},
-
-	midnight = {
-		titleFont = "SystemFont_Shadow_Med3",
-		titleColor = CreateColor(0.807, 0.772, 0.941),
-		descriptionColor = CreateColor(0.807, 0.772, 0.941),
-	},
-};
-
-local defaultOptionFontInfo = {
-	titleFont = "SystemFont_Med3",
-	titleColor = BLACK_FONT_COLOR,
-	descriptionColor = WARBOARD_OPTION_TEXT_COLOR,
-};
-
-function PlayerChoiceNormalOptionTemplateMixin:GetOptionFontInfo()
-	return customFontInfo[self:GetTextureKit()] or defaultOptionFontInfo;
-end
-
 function PlayerChoiceNormalOptionTemplateMixin:SetupTextFonts()
 	local fontInfo = self:GetOptionFontInfo();
 	self.Header.Contents.Text:SetFontObject(fontInfo.titleFont);
@@ -206,4 +211,66 @@ end
 function PlayerChoiceNormalOptionTemplateMixin:SetupRewards()
 	local fontInfo = self:GetOptionFontInfo();
 	self.Rewards:Setup(self.optionInfo, fontInfo.descriptionColor);
+end
+
+PlayerChoiceNormalOptionGridTemplateMixin = CreateFromMixins(PlayerChoiceBaseOptionTemplateMixin, BaseMixin);
+
+function PlayerChoiceNormalOptionGridTemplateMixin:Setup(optionInfo, frameTextureKit)
+	self.optionInfo = optionInfo;
+	self.uiTextureKit = optionInfo.uiTextureKit;
+	self.frameTextureKit = frameTextureKit;
+
+	self:SetupFrame();
+end
+
+do
+	local textureKitRegions = {
+		ArtworkBorder = "UI-Frame-%s-Portrait",
+	};
+	
+	function PlayerChoiceNormalOptionGridTemplateMixin:SetupFrame()
+		local optionInfo = self.optionInfo;
+		self.Text:SetText(optionInfo.header);
+
+		if self.optionInfo.subHeader then
+			self.Text:SetPoint("BOTTOMLEFT", 22, 26);
+			self.SubHeaderText:SetText(self.optionInfo.subHeader);
+			self.SubHeaderText:Show();
+			self.TextBackground:SetAtlas("playerchoice-text-gradient-tall", TextureKitConstants.UseAtlasSize);
+		else
+			self.Text:SetPoint("BOTTOMLEFT", 22, 12);
+			self.SubHeaderText:Hide();
+			self.TextBackground:SetAtlas("playerchoice-text-gradient-short", TextureKitConstants.UseAtlasSize);
+		end
+
+		local useTextureRegions = self:GetTextureKitRegionTable(textureKitRegions);
+		self:SetupTextureKitOnRegions(self, useTextureRegions);
+
+		local artID = optionInfo.choiceArtID;
+		local desaturated = optionInfo.disabledOption or optionInfo.desaturatedArt;
+		self.ArtworkAdditive:SetTexture(artID);
+		self.ArtworkAdditive:SetDesaturated(desaturated);
+		self.Artwork:SetTexture(artID);
+		self.Artwork:SetDesaturated(desaturated);
+		self.ArtworkBorder:SetDesaturated(not optionInfo.desaturatedArt and optionInfo.disabledOption);
+
+		self.Selected:SetShown(optionInfo.selected);
+	end
+end
+
+local defaultGridOptionFontInfo = {
+	widgetColor = HIGHLIGHT_FONT_COLOR,
+	descriptionColor = NORMAL_FONT_COLOR,
+	headerColor = HIGHLIGHT_FONT_COLOR,
+};
+
+function PlayerChoiceNormalOptionGridTemplateMixin:GetOptionFontInfo()
+	return customFontInfo[self:GetTextureKit()] or defaultGridOptionFontInfo;
+end
+
+function PlayerChoiceNormalOptionGridTemplateMixin:SetSelected(selected)
+	self.Selected:SetShown(selected);
+end
+
+function PlayerChoiceNormalOptionGridTemplateMixin:Reset()
 end

@@ -48,6 +48,15 @@ local Connection =
 			},
 		},
 		{
+			Name = "GetProtocolTypes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "protocolTypes", Type = "ConnectionProtocol", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
 			Name = "GetRealmID",
 			Type = "Function",
 

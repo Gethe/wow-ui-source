@@ -761,6 +761,7 @@ local CatalogShop =
 				{ Name = "licenseTermDuration", Type = "number", Nilable = false },
 				{ Name = "virtualCurrencies", Type = "table", InnerType = "CatalogShopVirtualCurrency", Nilable = false },
 				{ Name = "isHidden", Type = "bool", Nilable = false },
+				{ Name = "isMystery", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
 				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },

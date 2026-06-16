@@ -180,6 +180,38 @@ function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 	end
 end
 
+function InterfaceOverrides.CreateHousingSettings(category, layout)
+	-----Housing 
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(HOUSING_SETTINGS_LABEL));
+
+	--Decor Light Radius indicators
+	do
+		local lightRadiusIndicatorSetting, lightRadiusIndicatorInitializer = Settings.SetupCVarCheckbox(category, "housingDecorLightRadiusIndicatorsEnabled", DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_ENABLED);
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.LightRadiusIndicatorType.Always, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS);
+			container:Add(Enum.LightRadiusIndicatorType.Overlap, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP);
+			container:Add(Enum.LightRadiusIndicatorType.Never, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER);
+			return container:GetData();
+		end
+
+		local _, selectedDecorInitializer = Settings.SetupCVarDropdown(category, "housingSelectedDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+		local _, otherDecorInitializer = Settings.SetupCVarDropdown(category, "housingOtherDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+
+		lightRadiusIndicatorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, BINDING_TAG_HOUSE);
+		selectedDecorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, BINDING_TAG_HOUSE);
+		otherDecorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, BINDING_TAG_HOUSE);
+
+		local function IsModifiable()
+			return lightRadiusIndicatorSetting:GetValue();
+		end
+
+		selectedDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
+		otherDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
+	end
+end
+
 -- These popups have a "Don't show this again" checkbox that the player can click to skip them in the future.
 local function ResetConfirmationPopups()
 	SetCVar("bankConfirmTabCleanUp", true);

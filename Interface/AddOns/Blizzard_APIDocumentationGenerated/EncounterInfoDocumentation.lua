@@ -46,6 +46,7 @@ local EncounterInfo =
 				{ Name = "difficultyID", Type = "number", Nilable = false },
 				{ Name = "groupSize", Type = "number", Nilable = false },
 				{ Name = "success", Type = "number", Nilable = false },
+				{ Name = "encounterUnitStatus", Type = "table", InnerType = "EncounterUnitStatus", Nilable = false, Documentation = { "List of all boss units engaged during this encounter." } },
 			},
 		},
 		{
@@ -95,6 +96,16 @@ local EncounterInfo =
 
 	Tables =
 	{
+		{
+			Name = "EncounterUnitStatus",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "creatureName", Type = "string", Nilable = false },
+				{ Name = "remainingHealthPercent", Type = "number", Nilable = false },
+			},
+		},
 	},
 	Predicates =
 	{

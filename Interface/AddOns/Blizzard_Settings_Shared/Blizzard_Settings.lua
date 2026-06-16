@@ -633,7 +633,10 @@ function Settings.LoadAddOnCVarWatcher(cvar, addOn)
 		UIParentLoadAddOn(addOn);
 	else
 		local function OnValueChanged(o, setting, value)
-			UIParentLoadAddOn(addOn);
+			-- Only load addons for CVars that are being turned on, not off, to avoid unnecessary loading.
+			if value then
+				UIParentLoadAddOn(addOn);
+			end
 		end
 		Settings.SetOnValueChangedCallback(cvar, OnValueChanged);
 	end

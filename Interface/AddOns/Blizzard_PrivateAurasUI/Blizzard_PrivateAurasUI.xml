@@ -47,21 +47,5 @@
 		</Frame>
 
 		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidBossEmoteFrameTemplate" frameStrata="HIGH"/>
-
-		<GameTooltip name="PrivateAurasTooltip" mixin="GameTooltipDataMixin" inherits="SharedTooltipArtTemplate" parent="UIParent">
-			<KeyValues>
-				<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
-			</KeyValues>
-			<Scripts>
-				<OnLoad>
-					GameTooltip_OnLoad(self);
-					SharedTooltip_OnLoad(self);
-				</OnLoad>
-				<OnShow function="GameTooltip_OnShow"/>
-				<OnHide function="SharedTooltip_OnHide"/>
-				<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
-				<OnEvent method="OnEvent"/>
-			</Scripts>
-		</GameTooltip>
 	</ScopedModifier>
 </Ui>

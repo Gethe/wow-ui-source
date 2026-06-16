@@ -4,7 +4,7 @@
 		<Size x="400" y="200"/>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="300" y="120"/>
+				<AbsDimension x="200" y="120"/>
 			</minResize>
 			<maxResize>
 				<AbsDimension x="600" y="400"/>
@@ -23,7 +23,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="SessionTimer" inherits="GameFontNormalMed1" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="15" y="-9"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="1" y="-9"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -31,7 +31,7 @@
 		<Frames>
 			<Button parentKey="MinimizeButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-17" y="-6"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-3" y="-5"/>
 				</Anchors>
 				<Size x="18" y="19"/>
 				<NormalTexture atlas="ui-questtrackerbutton-collapse-all" useAtlasSize="true"/>
@@ -40,7 +40,7 @@
 			</Button>
 			<DropdownButton parentKey="SettingsDropdown" inherits="DamageMeterSettingsDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-5" y="-1"/>
+					<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-2" y="-2"/>
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="SessionDropdown" inherits="WowStyle2DropdownTemplate">
@@ -50,7 +50,7 @@
 				</KeyValues>
 				<Size y="18"/> <!-- Width set dynamically in lua-->
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-7" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-2" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -74,8 +74,8 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="TypeName" inherits="GameFontNormalMed1" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="5" y="2"/>
-								<Anchor point="RIGHT" relativeKey="$parent.$parent.SessionDropdown" relativePoint="LEFT" x="-15" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="0" y="3"/>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.SessionDropdown" relativePoint="LEFT" x="-5" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -86,8 +86,8 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="10"/>
-								<Anchor point="BOTTOMRIGHT" x="-10"/>
+								<Anchor point="TOPLEFT" x="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -113,14 +113,14 @@
 					</Button>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" alpha="0.3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="8"/>
 						</Anchors>
 					</EventFrame>
 					<Button parentKey="ResizeButton" alpha="0">
 						<Size x="60" y="60"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-1" y="-8"/>
+							<Anchor point="BOTTOMRIGHT" x="9" y="-8"/>
 						</Anchors>
 						<NormalTexture atlas="damagemeters-scalehandle"/>
 						<HighlightTexture atlas="damagemeters-scalehandle-hover"/>

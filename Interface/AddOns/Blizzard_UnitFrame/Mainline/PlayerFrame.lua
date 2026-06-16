@@ -35,7 +35,7 @@ function PlayerFrame_OnLoad(self)
 	healthLossTexture:SetTexelSnappingBias(0);
 	healthLossTexture:SetSnapToPixelGrid(false);
 	
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
 	
 	local tempMaxHPLossTexture = tempMaxHealthLossBar:GetStatusBarTexture();
 	tempMaxHPLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);

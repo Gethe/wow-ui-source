@@ -76,11 +76,6 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.Title" relativePoint="TOP" y="5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ModifiersLabel" inherits="Game16Font" text="TIERED_ENTRANCE_AFFIXES" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-50"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="EntranceErrorText" inherits="GameFontNormal, TruncatedTooltipFontStringTemplate" maxLines="1">
 					<Size x="200" y="0"/>
 					<Anchors>
@@ -90,7 +85,7 @@
 				</FontString>			
 				<Texture parentKey="DividingLine" atlas="ritual-sites-line" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.ModifiersLabel" relativePoint="BOTTOM" x="0" y="-74"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-140"/>
 					</Anchors>					
 				</Texture>
 			</Layer>
@@ -144,6 +139,18 @@
 					<Anchor point="CENTER" relativeKey="$parent.Title"/>
 					<Anchor point="BOTTOM" y="75"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ModifiersLabel" inherits="Game16Font" text="TIERED_ENTRANCE_AFFIXES">
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" y="9"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 
 			<!-- Delve Background -->
@@ -217,6 +224,8 @@
 					<KeyValue key="getTemplateType" value="DelveChallengesContainerFrameMixin.GetTemplateForTalentType" type="global"/>
 					<KeyValue key="refreshOnShow" value="true" type="boolean"/>
 					<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+					<KeyValue key="defaultSelectSound" value="SOUNDKIT.TIERED_ENTRANCE_CHALLENGE_SELECT" type="global"/>
+					<KeyValue key="defaultDeselectSound" value="SOUNDKIT.TIERED_ENTRANCE_CHALLENGE_DESELECT" type="global"/>
 				</KeyValues>
 				<Size x="296" y="140"/>
 				<Anchors>

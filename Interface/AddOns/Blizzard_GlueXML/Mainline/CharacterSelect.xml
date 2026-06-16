@@ -1010,7 +1010,7 @@
 			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CharacterDeleteDialog" mixin="CharacterDeletionDialogMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame parentKey="Background">
@@ -1086,107 +1086,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
-		<Frames>
-			<Frame name="CharacterRenameBackground">
-				<Size x="512" y="256"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">
-							<Size x="400" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-16"/>
-							</Anchors>
-						</FontString>
-						<FontString name="CharacterRenameText2" inherits="GlueFontNormalSmall" text="CHAR_RENAME_INSTRUCTIONS">
-							<Size x="400" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterRenameText1" relativePoint="BOTTOM" x="0" y="-20"/>
-							</Anchors>
-						</FontString>
-						<Texture name="CharacterRenameAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size x="48" y="48"/>
-							<Anchors>
-								<Anchor point="LEFT" x="24" y="10"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button name="CharacterRenameButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterRenameBackground" relativePoint="BOTTOM" x="-6" y="16"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( RenameCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
-									CharacterRenameDialog:Hide();
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="CharacterRenameButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterRenameButton1" relativePoint="RIGHT" x="13" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterRenameDialog:Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-			<EditBox name="CharacterRenameEditBox" letters="12" historyLines="1">
-				<Size x="130" y="32"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterRenameText2" relativePoint="BOTTOM" x="0" y="-5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size x="75" y="32"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-10" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size x="75" y="32"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="10" y="0"/>
-							</Anchors>
-							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnterPressed>
-						if ( RenameCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
-							CharacterRenameDialog:Hide();
-						end
-					</OnEnterPressed>
-					<OnEscapePressed>
-						CharacterRenameDialog:Hide();
-					</OnEscapePressed>
-				</Scripts>
-				<FontString inherits="GlueFontHighlight"/>
-			</EditBox>
-		</Frames>
-		<Scripts>
-			<OnShow>
-				self:Raise();
-			</OnShow>
-			<OnHide>
-				CharacterRenameEditBox:SetText("");
-			</OnHide>
 		</Scripts>
 	</Frame>
 

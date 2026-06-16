@@ -1548,9 +1548,9 @@ function WardrobeItemModelMixin:GetSourceInfoForTracking()
 	if transmogLocation:IsIllusion() then
 		return nil;
 	else
-		local sourceIndex = itemsCollectionFrame.tooltipSourceIndex or 1;
+		local tooltipSourceIndex = itemsCollectionFrame:GetTooltipSourceIndex() or 1;
 		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), transmogLocation);
-		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(sourceIndex, #sources);
+		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(tooltipSourceIndex, #sources);
 		return sources[index];
 	end
 end

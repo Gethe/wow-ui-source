@@ -15,6 +15,8 @@ EncounterTimelineTimerEventDirtyFlag = {
 	TimerBar = bit.lshift(1, 6),
 	-- Triggers update of status-based spell icon bordering.
 	IconBorder = bit.lshift(1, 7),
+	-- Triggers update of timer bar color.
+	TimerColor = bit.lshift(1, 8),
 };
 
 EncounterTimelineTimerEventDirtyFlag.All = Flags_CreateMaskFromTable(EncounterTimelineTimerEventDirtyFlag);
@@ -49,8 +51,8 @@ function EncounterTimelineTimerEventMixin:OnLoad()
 	self.lastTrackAlpha = 1.0;
 end
 
-function EncounterTimelineTimerEventMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked)
-	EncounterTimelineEventFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked);
+function EncounterTimelineTimerEventMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked, color)
+	EncounterTimelineEventFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked, color);
 
 	self.timerSortIndex = math.huge;
 
@@ -65,6 +67,7 @@ function EncounterTimelineTimerEventMixin:Init(eventInfo, timer, state, track, t
 	self:UpdateIndicatorIcons();
 	self:UpdateNameText();
 	self:UpdateTimerBar();
+	self:UpdateTimerColor();
 	self:UpdateTimerSpark();
 end
 
@@ -119,6 +122,10 @@ function EncounterTimelineTimerEventMixin:OnUpdate(_elapsedTime)
 	self:UpdateAlpha();
 	self:UpdateCountdownText();
 	self:UpdateTimerSpark();
+end
+
+function EncounterTimelineTimerEventMixin:OnEventColorChanged(_color)
+	self:MarkDirty(EncounterTimelineTimerEventDirtyFlag.TimerColor);
 end
 
 function EncounterTimelineTimerEventMixin:OnEventStateChanged(state)
@@ -542,6 +549,10 @@ function EncounterTimelineTimerEventMixin:UpdateDirty()
 		self:UpdateTimerBar();
 	end
 
+	if dirtyFlags:IsSet(EncounterTimelineTimerEventDirtyFlag.TimerColor) then
+		self:UpdateTimerColor();
+	end
+
 	if dirtyFlags:IsSet(EncounterTimelineTimerEventDirtyFlag.IconBorder) then
 		self:UpdateIconBorder();
 	end
@@ -729,7 +740,6 @@ function EncounterTimelineTimerEventMixin:UpdatePosition()
 end
 
 function EncounterTimelineTimerEventMixin:UpdateTimerBar()
-	local eventInfo = self:GetEventInfo();
 	local timerBar = self:GetTimerStatusBar();
 	local timerFillDirection = self:GetTimerFillDirection();
 	local timerDuration = self:GetEventTimer();
@@ -743,9 +753,19 @@ function EncounterTimelineTimerEventMixin:UpdateTimerBar()
 	-- event frame settings change.
 
 	timerBar:SetTimerDuration(timerDuration, timerInterpolation, timerFillDirection);
-	timerBar:SetStatusBarColor(eventInfo.color:GetRGB());
 
 	self:MarkClean(EncounterTimelineTimerEventDirtyFlag.TimerBar);
+end
+
+function EncounterTimelineTimerEventMixin:UpdateTimerColor()
+	local color = self:GetEventColor();
+
+	if color == nil then
+		color = ENCOUNTER_TIMELINE_TIMER_COLOR;
+	end
+
+	self:GetTimerStatusBar():SetStatusBarColor(color:GetRGB());
+	self:MarkClean(EncounterTimelineTimerEventDirtyFlag.TimerColor);
 end
 
 function EncounterTimelineTimerEventMixin:UpdateTimerSpark()

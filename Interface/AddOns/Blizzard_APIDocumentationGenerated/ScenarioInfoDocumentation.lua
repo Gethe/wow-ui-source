@@ -66,6 +66,22 @@ local ScenarioInfo =
 			},
 		},
 		{
+			Name = "GetScenarioIconInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scenarioInfos", Type = "table", InnerType = "ScenarioIconInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetScenarioInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -270,6 +286,17 @@ local ScenarioInfo =
 			Fields =
 			{
 				{ Name = "themeColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "ScenarioIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{

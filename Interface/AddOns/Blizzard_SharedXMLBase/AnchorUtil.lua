@@ -422,6 +422,10 @@ local function DebugAnchorGraph(frame, indent, visited, output)
 	output = output or {};
 	visited = visited or {};
 
+	if frame.GetWindowSize then
+		return output;
+	end
+
 	if visited[frame] then
 		return output;
 	end

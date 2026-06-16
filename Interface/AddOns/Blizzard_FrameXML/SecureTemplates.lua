@@ -584,6 +584,8 @@ SECURE_ACTIONS.raidtarget =
 		marker = marker or 1;
 		if ( action == "set" and GetRaidTargetIndex(unit) ~= marker ) then
 			SetRaidTarget(unit, marker);
+		elseif ( action == "set-unmarked" and GetRaidTargetIndex(unit) == nil ) then
+			SetRaidTarget(unit, marker);
 		elseif ( action == "clear" ) then
 			SetRaidTarget(unit, 0);
 		elseif ( action == "clear-all" ) then
@@ -834,31 +836,48 @@ function SecureUnitButton_OnLoad(self, unit, menufunc, clickArgs)
 end
 
 function SecureUnitButton_OnClick(self, button, down)
-	if (C_ClickBindings) then -- NOTE: If Classic has ClickBindings someday, remove this.
-		local modifiers = C_ClickBindings.MakeModifiers();
+	local type;
+
+	if C_ClickBindings then -- NOTE: If Classic has ClickBindings someday, remove this.
+		local modifiers = MakeModifiers();
 		local bindingType = C_ClickBindings.GetBindingType(button, modifiers);
-		if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) or (bindingType == Enum.ClickBindingType.PetAction) ) then
+
+		local allowExecute = bindingType == Enum.ClickBindingType.Spell or
+			bindingType == Enum.ClickBindingType.Macro or
+			bindingType == Enum.ClickBindingType.PetAction;
+		if allowExecute then
 			local unit = SecureButton_GetModifiedUnit(self);
 			C_ClickBindings.ExecuteBinding(unit, button, modifiers);
-		else
-			local effectiveButton = (bindingType == Enum.ClickBindingType.Interaction) and C_ClickBindings.GetEffectiveInteractionButton(button, modifiers) or button;
-			local type = SecureButton_GetModifiedAttribute(self, "type", effectiveButton);
-			if ( type == "menu" or type == "togglemenu" ) then
-				if ( SpellIsTargeting() ) then
-					SpellStopTargeting();
-					return;
-				end
-			end
-			OnActionButtonClick(self, effectiveButton, down, false);
+			return;
+		end
+
+		-- If this is an interaction binding, find the default button so that we can retrieve
+		-- the desired 'type' from the frame attributes. We need the default because the
+		-- attribute data is unaware of the click binding system.
+		if bindingType == Enum.ClickBindingType.Interaction then
+			button = C_ClickBindings.GetEffectiveInteractionButton(button, modifiers);
+		end
+
+		type = SecureButton_GetModifiedAttribute(self, "type", button);
+
+		-- If the 'type' can correlate with any interaction, then it can only proceed if the
+		-- interaction binding existed. If it doesn't exist, it's because another click cast
+		-- binding unbound it in conflict.
+		local expectBinding = type == "target" or type == "menu" or type == "togglemenu";
+		if expectBinding and bindingType == Enum.ClickBindingType.None then
+			return;
 		end
 	else
-	    local type = SecureButton_GetModifiedAttribute(self, "type", button);
-		if ( type == "menu" or type == "togglemenu" ) then
-			if ( SpellIsTargeting() ) then
-				SpellStopTargeting();
-				return;
-			end
-		end
-		OnActionButtonClick(self, button, down, false);
+		 type = SecureButton_GetModifiedAttribute(self, "type", button);
 	end
+
+	if type == "menu" or type == "togglemenu" then
+		if SpellIsTargeting() then
+			SpellStopTargeting();
+			return;
+		end
+	end
+
+	local isKeyPress = false;
+	OnActionButtonClick(self, button, down, isKeyPress);
 end

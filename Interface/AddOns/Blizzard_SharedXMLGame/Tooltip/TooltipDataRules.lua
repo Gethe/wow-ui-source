@@ -153,7 +153,7 @@ function TooltipDataRules.FinalizeItemTooltip(tooltip, tooltipData)
 	local repairCost = tooltipData.repairCost;
 	if repairCost and InRepairMode() then
 		tooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(tooltip, repairCost);
+		GameTooltip_AddMoneyLine(tooltip, repairCost);
 	end
 
 	-- style

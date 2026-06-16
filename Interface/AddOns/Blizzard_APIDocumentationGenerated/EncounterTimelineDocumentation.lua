@@ -78,6 +78,25 @@ local EncounterTimeline =
 			},
 		},
 		{
+			Name = "GetEventColor",
+			Type = "Function",
+			RequiresValidTimelineEvent = true,
+			SecretWhenEncounterEvent = true,
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns the current color used to render timeline event." },
+
+			Arguments =
+			{
+				{ Name = "eventID", Type = "EncounterTimelineEventID", Nilable = false },
+				{ Name = "overrideTrigger", Type = "EncounterEventColorTrigger", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEventCountBySource",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -457,6 +476,17 @@ local EncounterTimeline =
 			},
 		},
 		{
+			Name = "EncounterTimelineEventColorChanged",
+			Type = "Event",
+			LiteralName = "ENCOUNTER_TIMELINE_EVENT_COLOR_CHANGED",
+			UniqueEvent = true,
+			Documentation = { "Fired when an event has met a condition that should trigger a color change." },
+			Payload =
+			{
+				{ Name = "eventID", Type = "EncounterTimelineEventID", Nilable = false },
+			},
+		},
+		{
 			Name = "EncounterTimelineEventHighlight",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_HIGHLIGHT",
@@ -565,7 +595,6 @@ local EncounterTimeline =
 				{ Name = "maxQueueDuration", Type = "DurationSeconds", Nilable = false, NeverSecret = true, Documentation = { "Hold duration for this event after it reaches the end of the timeline. During this period, the event will sit in the queued track of the timeline until manually finished or this added duration expires." } },
 				{ Name = "icons", Type = "EncounterEventIconmask", Nilable = false, Documentation = { "Bitmask of active icon states for this event." } },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false, Documentation = { "Severity of this event." } },
-				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false, Documentation = { "Color to use for displaying this event. May be overridden by C_EncounterEvents APIs, else will default to an appropriate color for the current view mode." } },
 				{ Name = "isApproximate", Type = "bool", Nilable = false, Documentation = { "If true, this event is an approximation and may not occur exactly when the timeline suggests it will." } },
 			},
 		},

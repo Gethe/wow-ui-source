@@ -75,16 +75,18 @@ function DamageMeterMixin:OnLoad()
 
 	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
 
 	self.windowDataList = {};
 	self.sessionType = Enum.DamageMeterSessionType.Overall;
-	self.sessionID = nill;
+	self.sessionID = nil;
 
 	self:InitializeWindowDataList();
 end
 
 function DamageMeterMixin:OnEvent(event, ...)
-	if event == "PLAYER_IN_COMBAT_CHANGED" or event == "PLAYER_LEVEL_CHANGED" then
+	if event == "PLAYER_IN_COMBAT_CHANGED" or event == "PLAYER_LEVEL_CHANGED" or event == "GROUP_JOINED" or event == "GROUP_LEFT" then
 		self:UpdateShownState();
 	end
 end
@@ -157,6 +159,10 @@ function DamageMeterMixin:IsPlayerInCombat()
 	return isInCombat;
 end
 
+function DamageMeterMixin:IsPlayerInGroup()
+	return IsInGroup();
+end
+
 function DamageMeterMixin:ShouldBeShown()
 	if self:IsEditing() then
 		return true;
@@ -178,6 +184,8 @@ function DamageMeterMixin:ShouldBeShown()
 			return self:IsPlayerInCombat();
 		elseif self.visibility == Enum.DamageMeterVisibility.Hidden then
 			return false;
+		elseif self.visibility == Enum.DamageMeterVisibility.InGroup then
+			return self:IsPlayerInGroup();
 		else
 			assertsafe(false, "Unknown value for visible setting: " .. self.visibleSetting);
 		end
@@ -360,7 +368,7 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 			windowData.nonInteractive = savedWindowData.nonInteractive;
 			windowData.minimized = savedWindowData.minimized;
 
-			if savedWindowData.shown then
+			if savedWindowData.shown or i == PRIMARY_SESSION_WINDOW_INDEX then
 				self:SetupSessionWindow(i, windowData);
 			end
 		end

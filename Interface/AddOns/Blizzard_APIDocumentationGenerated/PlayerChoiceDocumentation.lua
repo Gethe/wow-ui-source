@@ -110,6 +110,7 @@ local PlayerChoice =
 				{ Name = "keepOpenAfterChoice", Type = "bool", Nilable = false },
 				{ Name = "showChoicesAsList", Type = "bool", Nilable = false },
 				{ Name = "requiresSelection", Type = "bool", Nilable = false },
+				{ Name = "showChoicesAsGrid", Type = "bool", Nilable = false },
 				{ Name = "options", Type = "table", InnerType = "PlayerChoiceOptionInfo", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
 				{ Name = "closeUISoundKitID", Type = "number", Nilable = true },

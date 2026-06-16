@@ -563,20 +563,6 @@
 				</Scripts>
 			</Frame>
 			<Frame parentKey="ZoneChoiceFrame" mixin="CharacterCreateZoneChoiceMixin" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BlackOverlay" setAllPoints="true">
-							<Color r="0" g="0" b="0" a="0.5"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFont72NormalShadow" text="CHOOSE_STARTING_ZONE">
-							<Anchors>
-								<Anchor point="TOP" y="-100"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame parentKey="NPEZone" inherits="CharacterCreateStartingZoneTemplate">
 						<Anchors>
@@ -595,6 +581,21 @@
 						</KeyValues>
 					</Frame>
 				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BlackOverlay" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFont72NormalShadow" text="CHOOSE_STARTING_ZONE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.NPEZone" relativePoint="TOPLEFT" y="60"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalStartingZone" relativePoint="TOPRIGHT" y="60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 						<Alpha childKey="BlackOverlay" duration="0.25" fromAlpha="0" toAlpha="1"/>

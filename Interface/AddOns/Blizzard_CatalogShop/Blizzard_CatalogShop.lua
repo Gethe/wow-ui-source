@@ -676,6 +676,13 @@ function CatalogShopMixin:OnProductSelected(data)
 		end
 	end
 
+	if data.isBundle then
+		local bundleChildInfo = C_CatalogShop.GetProductIDsForBundle(data.catalogShopProductID);
+		self.IconTrainFrame:Init(bundleChildInfo);
+	else
+		self.IconTrainFrame:Hide();
+	end
+
 	local smallOverrideURL = data and data.previewSmallBGOverrideProductURL;
 	if smallOverrideURL then
 		-- do we want to show the small PMT image frame?

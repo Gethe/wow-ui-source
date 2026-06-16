@@ -1266,7 +1266,7 @@
 						if ( GameTooltip:IsOwned(self) ) then
 							if ( OpenMailFrame.money ) then
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								SetTooltipMoney(GameTooltip, OpenMailFrame.money);
+								GameTooltip_AddMoneyLine(GameTooltip, OpenMailFrame.money);
 								GameTooltip:Show();
 							end
 						end
@@ -1278,7 +1278,7 @@
 					<OnEnter>
 						if ( OpenMailFrame.money ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							SetTooltipMoney(GameTooltip, OpenMailFrame.money);
+							GameTooltip_AddMoneyLine(GameTooltip, OpenMailFrame.money);
 							GameTooltip:Show();
 						end
 					</OnEnter>

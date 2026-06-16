@@ -33,7 +33,11 @@ TextStatusBarMixin = {};
 function TextStatusBarMixin:InitializeTextStatusBar()
 	self:RegisterEvent("CVAR_UPDATE");
 	self.lockShow = 0;
-	self.controlsShownState = true;
+
+	-- Default to controlling own shown state unless the field was already set by the KeyValues.
+	if self.controlsShownState == nil then
+		self.controlsShownState = true;
+	end
 
 	local function OnStatusTextSettingChanged()
 		self:UpdateTextString();
@@ -203,7 +207,8 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 		textString:SetText("");
 		if ( not self.alwaysShow and self.controlsShownState == true ) then
 			self:Hide();
-		else
+		elseif self:GetValue() ~= 0 then
+			-- To avoid tripping the stack recursion checks, only set the value if it's not already zero, because secret values still dispatch the changed event.
 			self:SetValue(0);
 		end
 	end
@@ -276,6 +281,10 @@ function TextStatusBarMixin:HideStatusBarText()
 	end
 end
 
+function TextStatusBarMixin:SetForceShow(forceShow)
+	self.forceShow = forceShow;
+	self:UpdateTextString();
+end
 
 -- Optional spark frame, shows at the end of a TextStatusBar's fill texture
 -- Essentially an endcap whose position follows current fill amount

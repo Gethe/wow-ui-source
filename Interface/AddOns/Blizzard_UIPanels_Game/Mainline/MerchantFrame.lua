@@ -956,7 +956,7 @@ function MerchantFrame_UpdateRepairButtons()
 end
 
 function MerchantFrame_UpdateCurrencies()
-	local currencies = { GetMerchantCurrencies() };
+	local currencies = C_MerchantFrame.GetMerchantCurrencies();
 
 	if ( #currencies == 0 ) then	-- common case
 		MerchantFrame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
@@ -975,7 +975,8 @@ function MerchantFrame_UpdateCurrencies()
 			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -169, 8);
 			MerchantMoneyFrame:Show();
 		end
-		for index = 1, MerchantFrame.numCurrencies do
+		local maxVisibleCurrencies = math.min(MerchantFrame.numCurrencies, MAX_MERCHANT_CURRENCIES);
+		for index = 1, maxVisibleCurrencies do
 			local tokenButton = _G["MerchantToken"..index];
 			-- if this button doesn't exist yet, create it and anchor it
 			if ( not tokenButton ) then

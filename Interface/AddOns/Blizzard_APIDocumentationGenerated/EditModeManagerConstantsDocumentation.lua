@@ -187,14 +187,15 @@ local EditModeManagerConstants =
 		{
 			Name = "DamageMeterVisibility",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Always", Type = "DamageMeterVisibility", EnumValue = 0 },
 				{ Name = "InCombat", Type = "DamageMeterVisibility", EnumValue = 1 },
 				{ Name = "Hidden", Type = "DamageMeterVisibility", EnumValue = 2 },
+				{ Name = "InGroup", Type = "DamageMeterVisibility", EnumValue = 3 },
 			},
 		},
 		{
@@ -533,13 +534,26 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModePersonalResourceDisplaySetting",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 14,
 			Fields =
 			{
-				{ Name = "HideHealthAndPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
-				{ Name = "OnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+				{ Name = "HideHealth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
+				{ Name = "DeprecatedOnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+				{ Name = "HidePower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 2 },
+				{ Name = "HideClassInfo", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 3 },
+				{ Name = "HealthBarHeight", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 4 },
+				{ Name = "PowerBarHeight", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 5 },
+				{ Name = "Padding", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 6 },
+				{ Name = "Opacity", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 7 },
+				{ Name = "VisibleSetting", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 8 },
+				{ Name = "Size", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 9 },
+				{ Name = "HideClassInfoOnPlayerFrame", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 10 },
+				{ Name = "ShowClassColor", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 11 },
+				{ Name = "BarWidth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 12 },
+				{ Name = "ShowBarText", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 13 },
+				{ Name = "HideAltPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 14 },
 			},
 		},
 		{
@@ -786,6 +800,19 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Horizontal", Type = "MicroMenuOrientation", EnumValue = 0 },
 				{ Name = "Vertical", Type = "MicroMenuOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "PersonalResourceDisplayVisibleSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 0 },
+				{ Name = "InCombat", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 1 },
+				{ Name = "Hidden", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 2 },
 			},
 		},
 		{

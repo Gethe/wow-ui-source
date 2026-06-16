@@ -6,6 +6,8 @@ function MovePadMixin:OnLoad()
 	end
 
 	if Settings then
+		self:SetShown(Settings.GetValue("enableMovePad"));
+
 		Settings.SetOnValueChangedCallback("enableMovePad", OnValueChanged);
 	end
 

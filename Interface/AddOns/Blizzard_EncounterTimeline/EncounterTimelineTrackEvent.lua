@@ -1,4 +1,12 @@
-EncounterTimelineTrackFrameMixin = CreateFromMixins(EncounterTimelineEventFrameMixin, EncounterTimelineTrackSettingsMixin);
+local function SetPointWithHorizontalFlip(region, point, relativeTo, relativePoint, x, y, flipped)
+	if flipped then
+		AnchorUtil.SetMirroredPointAlongHorizontalAxis(region, point, relativeTo, relativePoint, x, y);
+	else
+		region:SetPoint(point, relativeTo, relativePoint, x, y);
+	end
+end
+
+EncounterTimelineTrackFrameMixin = CreateFromMixins(EncounterTimelineEventFrameMixin, EncounterTimelineScriptedAnimatableMixin, EncounterTimelineTrackSettingsMixin);
 
 function EncounterTimelineTrackFrameMixin:OnLoad()
 	EncounterTimelineEventFrameMixin.OnLoad(self);
@@ -9,11 +17,11 @@ function EncounterTimelineTrackFrameMixin:OnLoad()
 	self.trackLayoutManager = nil;
 end
 
-function EncounterTimelineTrackFrameMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked)
-	EncounterTimelineEventFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked);
+function EncounterTimelineTrackFrameMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked, color)
+	EncounterTimelineEventFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked, color);
 
-	self.primaryAxisInterpolator:Reset();
-	self.crossAxisInterpolator:Reset();
+	self.primaryAxisInterpolator:Init(timer);
+	self.crossAxisInterpolator:Init(timer);
 end
 
 function EncounterTimelineTrackFrameMixin:Reset()
@@ -163,12 +171,13 @@ EncounterTimelineTrackEventDirtyFlag = {
 	FrameLevel = bit.lshift(1, 1),
 	IconAlpha = bit.lshift(1, 2),
 	NameText = bit.lshift(1, 3),
-	Orientation = bit.lshift(1, 4),
+	Layout = bit.lshift(1, 4),
 	PulseAnimation = bit.lshift(1, 5),
 	StatusText = bit.lshift(1, 6),
-	TextAnchors = bit.lshift(1, 7),
-	Iconography = bit.lshift(1, 8),
-	BorderStyle = bit.lshift(1, 9),
+	TextLayout = bit.lshift(1, 7),
+	IndicatorIcons = bit.lshift(1, 8),
+	IconBorder = bit.lshift(1, 9),
+	IconTexture = bit.lshift(1, 10),
 };
 
 EncounterTimelineTrackEventDirtyFlag.All = Flags_CreateMaskFromTable(EncounterTimelineTrackEventDirtyFlag);
@@ -181,15 +190,19 @@ end
 
 function EncounterTimelineTrackEventMixin:OnUpdate()
 	if self:IsDirty() then
-		self:OnDirtyUpdate();
+		self:UpdateDirty();
 	end
 
-	self:UpdatePointOffsets();
+	self:UpdatePosition();
 	self:UpdateTrailAlpha();
 end
 
-function EncounterTimelineTrackEventMixin:OnDirtyUpdate()
+function EncounterTimelineTrackEventMixin:UpdateDirty()
 	local dirtyFlags = self.dirtyFlags;
+
+	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.Layout) then
+		self:UpdateLayout();
+	end
 
 	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.Countdown) then
 		self:UpdateCountdown();
@@ -207,10 +220,6 @@ function EncounterTimelineTrackEventMixin:OnDirtyUpdate()
 		self:UpdateNameText();
 	end
 
-	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.Orientation) then
-		self:UpdateOrientation();
-	end
-
 	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.PulseAnimation) then
 		self:UpdatePulseAnimation();
 	end
@@ -222,16 +231,20 @@ function EncounterTimelineTrackEventMixin:OnDirtyUpdate()
 	-- Ordering dependency; text anchor updates can be flagged by changes to
 	-- name or status text, so this must be done after both of those.
 
-	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.TextAnchors) then
-		self:UpdateTextAnchors();
+	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.TextLayout) then
+		self:UpdateTextLayout();
 	end
 
-	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.Iconography) then
-		self:UpdateIconography();
+	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.IndicatorIcons) then
+		self:UpdateIndicatorIcons();
 	end
 
-	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.BorderStyle) then
-		self:UpdateBorderStyle();
+	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.IconBorder) then
+		self:UpdateIconBorder();
+	end
+
+	if dirtyFlags:IsSet(EncounterTimelineTrackEventDirtyFlag.IconTexture) then
+		self:UpdateIconTexture();
 	end
 end
 
@@ -240,7 +253,7 @@ function EncounterTimelineTrackEventMixin:OnEventStateChanged(state)
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.FrameLevel);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.PulseAnimation);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.StatusText);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.BorderStyle);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.IconBorder);
 
 	if state == Enum.EncounterTimelineEventState.Canceled then
 		self:PlayCancelAnimation();
@@ -253,7 +266,7 @@ function EncounterTimelineTrackEventMixin:OnEventTrackChanged(track, trackSortIn
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.IconAlpha);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.PulseAnimation);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.StatusText);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.BorderStyle);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.IconBorder);
 
 	-- Events transitioning off the timeline for reasons other than cancelation
 	-- should play the same outro (eg. pushed off because it can't fit in the
@@ -283,12 +296,15 @@ function EncounterTimelineTrackEventMixin:OnHighlightTimeChanged(_highlightTime)
 end
 
 function EncounterTimelineTrackEventMixin:OnIconScaleChanged(_iconScale)
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Orientation);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Layout);
 end
 
 function EncounterTimelineTrackEventMixin:OnIndicatorIconMaskChanged(_indicatorIconMask)
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Iconography);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.IndicatorIcons);
+end
+
+function EncounterTimelineTrackEventMixin:OnFlipHorizontallyChanged(_flipHorizontally)
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Layout);
 end
 
 function EncounterTimelineTrackEventMixin:OnShowCountdownChanged(_showCountdown)
@@ -302,12 +318,12 @@ end
 
 function EncounterTimelineTrackEventMixin:OnTrackOrientationChanged(_trackOrientation)
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.NameText);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Orientation);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.Layout);
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.StatusText);
 end
 
-function EncounterTimelineTrackEventMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked)
-	EncounterTimelineTrackFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked);
+function EncounterTimelineTrackEventMixin:Init(eventInfo, timer, state, track, trackSortIndex, blocked, color)
+	EncounterTimelineTrackFrameMixin.Init(self, eventInfo, timer, state, track, trackSortIndex, blocked, color);
 
 	-- The base Init method directly assigns fields without invoking the
 	-- change callbacks which we rely on to kick off animations and set
@@ -325,12 +341,12 @@ function EncounterTimelineTrackEventMixin:Init(eventInfo, timer, state, track, t
 	-- Longer term, replace the fade animations with scripted animations as
 	-- used by the timer display.
 
-	self:SetIcon(eventInfo.iconFileID);
-	self:UpdateBorderStyle();
+	self:UpdateIconTexture();
+	self:UpdateIconBorder();
 	self:UpdateCountdown();
 	self:UpdateFrameLevel();
 	self:UpdateIconAlpha();
-	self:UpdateIconography();
+	self:UpdateIndicatorIcons();
 	self:UpdateNameText();
 	self:UpdateStatusText();
 
@@ -380,7 +396,7 @@ function EncounterTimelineTrackEventMixin:GetSeverityFrameLevelCurve()
 	return EncounterTimelineSeverityFrameLevelCurve;
 end
 
-function EncounterTimelineTrackEventMixin:GetIconFrame()
+function EncounterTimelineTrackEventMixin:GetIconContainer()
 	return self.IconContainer;
 end
 
@@ -403,8 +419,17 @@ function EncounterTimelineTrackEventMixin:GetIndicatorGridLayout()
 		offsetX, offsetY = offsetY, offsetX;
 		paddingX, paddingY = paddingY, paddingX;
 		horizontalSpacing, verticalSpacing = verticalSpacing, horizontalSpacing;
-		initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self:GetIndicatorContainer(), "TOPLEFT", offsetX, offsetY);
-		direction = GridLayoutMixin.Direction.TopLeftToBottomRight;
+	end
+
+	if orientation:IsVertical() then
+		if self:ShouldFlipHorizontally() then
+			offsetX = -offsetX;
+			initialAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", self:GetIndicatorContainer(), "TOPRIGHT", offsetX, offsetY);
+			direction = GridLayoutMixin.Direction.TopRightToBottomLeft;
+		else
+			initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self:GetIndicatorContainer(), "TOPLEFT", offsetX, offsetY);
+			direction = GridLayoutMixin.Direction.TopLeftToBottomRight;
+		end
 	else
 		initialAnchor = AnchorUtil.CreateAnchor("BOTTOMLEFT", self:GetIndicatorContainer(), "BOTTOMLEFT", offsetX, offsetY);
 		direction = GridLayoutMixin.Direction.BottomLeftToTopRightVertical;
@@ -445,52 +470,58 @@ function EncounterTimelineTrackEventMixin:GetTrailAtlas()
 	return "combattimeline-line-icontrail";
 end
 
-function EncounterTimelineTrackEventMixin:CanShowCountdownDuration(duration)
-	return duration ~= nil and duration > 0 and self:ShouldShowCountdown();
+function EncounterTimelineTrackEventMixin:GetAppropriateStatusText()
+	if self:GetEventState() == Enum.EncounterTimelineEventState.Paused then
+		return COMBAT_WARNINGS_EVENT_STATUS_PAUSED;
+	elseif self:IsEventBlocked() then
+		return COMBAT_WARNINGS_EVENT_STATUS_BLOCKED;
+	elseif self:GetEventTrack() == Enum.EncounterTimelineTrack.Queued then
+		return COMBAT_WARNINGS_EVENT_STATUS_QUEUED;
+	end
+
+	return nil;
 end
 
-function EncounterTimelineTrackEventMixin:CanShowNameText(nameText)
-	return nameText ~= nil and nameText ~= "" and self:ShouldShowText() and self:GetTrackOrientation():IsVertical();
+function EncounterTimelineTrackEventMixin:ShouldPlayPulseAnimation()
+	if self:GetEventState() ~= Enum.EncounterTimelineEventState.Active then
+		-- Paused or finalizing events shouldn't play the looping pulse anim.
+		return false;
+	end
+
+	if self:GetEventTrack() ~= Enum.EncounterTimelineTrack.Short then
+		-- Only play the looping pulse anim on the short track; we don't want
+		-- it playing for queued events in particular.
+		return false;
+	end
+
+	if self:GetEventTimeRemaining() > self:GetHighlightTime() then
+		-- Pulsing begins only when we've reached the pip highlight point.
+		return false;
+	end
+
+	return true;
 end
 
-function EncounterTimelineTrackEventMixin:CanShowStatusText(statusText)
-	return statusText ~= nil and statusText ~= "" and self:ShouldShowText() and self:GetTrackOrientation():IsVertical();
+function EncounterTimelineTrackEventMixin:ShouldShowCountdownElement(timeRemaining)
+	return timeRemaining ~= nil and timeRemaining > 0 and self:ShouldShowCountdown();
 end
 
-function EncounterTimelineTrackEventMixin:SetIcon(iconFileID)
-	-- Visibility of the icon frame must be forced as we have animations that
-	-- hide it due to the use of TargetsHiddenOnFinishedAnimGroupTemplate.
+function EncounterTimelineTrackEventMixin:ShouldShowTextElement(text)
+	if text == nil or text == "" then
+		return false;
+	end
 
-	local iconFrame = self:GetIconFrame();
-	iconFrame:SetIcon(iconFileID);
-	iconFrame:Show();
-end
+	if not self:ShouldShowText() then
+		-- Text display has been disabled in settings.
+		return false;
+	end
 
-function EncounterTimelineTrackEventMixin:ClearNameText()
-	local fontString = self:GetNameFontString();
-	fontString:ClearText();
-	fontString:Hide();
+	if not self:GetTrackOrientation():IsVertical() then
+		-- Text display is only supported in vertical orientation.
+		return false;
+	end
 
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
-end
-
-function EncounterTimelineTrackEventMixin:SetNameText(text, color)
-	local fontString = self:GetNameFontString();
-	fontString:SetText(text or "");
-	fontString:SetTextColor(color:GetRGB());
-	fontString:SetShown(self:CanShowNameText(text));
-
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.NameText);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
-end
-
-function EncounterTimelineTrackEventMixin:SetStatusText(text)
-	local fontString = self:GetStatusFontString();
-	fontString:SetText(text or "");
-	fontString:SetShown(self:CanShowStatusText(text));
-
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.StatusText);
-	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
+	return true;
 end
 
 function EncounterTimelineTrackEventMixin:HighlightFrame()
@@ -556,7 +587,7 @@ function EncounterTimelineTrackEventMixin:PlayFinishAnimation()
 	-- here too to prevent it from interfering with our control of the glow.
 
 	self:StopHighlightAnimation();
-	self:GetIconFrame():SetHighlightGlowAlpha(1.0);
+	self:GetIconContainer():SetHighlightGlowAlpha(1.0);
 	self:GetFinishAnimation():Play();
 
 	-- Freeze any translations for the primary axis so that the event remains
@@ -576,7 +607,7 @@ function EncounterTimelineTrackEventMixin:PlayHighlightAnimation()
 		return;
 	end
 
-	self:GetIconFrame():PlayHighlightAnimation();
+	self:GetIconContainer():PlayHighlightAnimation();
 end
 
 function EncounterTimelineTrackEventMixin:PlayPulseAnimation()
@@ -596,22 +627,22 @@ function EncounterTimelineTrackEventMixin:StopFinishAnimation()
 end
 
 function EncounterTimelineTrackEventMixin:StopHighlightAnimation()
-	self:GetIconFrame():StopHighlightAnimation();
+	self:GetIconContainer():StopHighlightAnimation();
 end
 
 function EncounterTimelineTrackEventMixin:StopPulseAnimation()
 	self:GetPulseAnimation():Stop();
 end
 
-function EncounterTimelineTrackEventMixin:UpdateBorderStyle()
+function EncounterTimelineTrackEventMixin:UpdateIconBorder()
 	local eventInfo = self:GetEventInfo();
-	local iconFrame = self:GetIconFrame();
+	local iconContainer = self:GetIconContainer();
 
-	iconFrame:SetDeadlyEffect(FlagsUtil.IsSet(eventInfo.icons, Enum.EncounterEventIconmask.DeadlyEffect));
-	iconFrame:SetPaused(self:GetEventState() == Enum.EncounterTimelineEventState.Paused);
-	iconFrame:SetQueued(self:GetEventTrack() == Enum.EncounterTimelineTrack.Queued);
+	iconContainer:SetDeadlyEffect(FlagsUtil.IsSet(eventInfo.icons, Enum.EncounterEventIconmask.DeadlyEffect));
+	iconContainer:SetPaused(self:GetEventState() == Enum.EncounterTimelineEventState.Paused);
+	iconContainer:SetQueued(self:GetEventTrack() == Enum.EncounterTimelineTrack.Queued);
 
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.BorderStyle);
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.IconBorder);
 end
 
 function EncounterTimelineTrackEventMixin:UpdateCountdown()
@@ -619,13 +650,13 @@ function EncounterTimelineTrackEventMixin:UpdateCountdown()
 	local countdownFrame = self:GetCountdownFrame();
 	local eventState = self:GetEventState();
 
-	if self:CanShowCountdownDuration(timeRemaining) and eventState == Enum.EncounterTimelineEventState.Active then
+	if self:ShouldShowCountdownElement(timeRemaining) and eventState == Enum.EncounterTimelineEventState.Active then
 		-- Don't allow the countdown to be enabled if the icon container is
 		-- showing a paused or queued icon. We return here to keep the
 		-- dirty flag set so that we can poll this state and properly show
 		-- the countdown when the icon has finished animating.
 
-		if self:GetIconFrame():IsAnyIconShown() then
+		if self:GetIconContainer():IsAnyIconShown() then
 			return;
 		end
 
@@ -657,7 +688,7 @@ function EncounterTimelineTrackEventMixin:UpdateFrameLevel()
 
 	local frameLevelAdjusted = self:GetFrameLevel() + frameLevelOffset;
 
-	self:GetIconFrame():SetFrameLevel(frameLevelAdjusted);
+	self:GetIconContainer():SetFrameLevel(frameLevelAdjusted);
 	self:GetCountdownFrame():SetFrameLevel(frameLevelAdjusted);
 
 	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.FrameLevel);
@@ -673,65 +704,130 @@ function EncounterTimelineTrackEventMixin:UpdateIconAlpha()
 		alpha = 1.0;
 	end
 
-	self:GetIconFrame():SetAlpha(alpha);
+	self:GetIconContainer():SetAlpha(alpha);
 	self:GetCountdownFrame():SetAlpha(alpha);
 
 	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.IconAlpha);
 end
 
-function EncounterTimelineTrackEventMixin:UpdateIconography()
+function EncounterTimelineTrackEventMixin:UpdateIconTexture()
+	local iconContainer = self:GetIconContainer();
+	local eventInfo = self:GetEventInfo();
+
+	-- Visibility of the icon frame must be forced as we have animations that
+	-- hide it due to the use of TargetsHiddenOnFinishedAnimGroupTemplate.
+	iconContainer:SetIcon(eventInfo and eventInfo.iconFileID or nil);
+	iconContainer:Show();
+
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.IconTexture);
+end
+
+function EncounterTimelineTrackEventMixin:UpdateIndicatorIcons()
 	local indicators = self:GetIndicatorContainer();
 	indicators:SetTexturesForEvent(self:GetEventID(), self:GetIndicatorIconMask());
 
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.Iconography);
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.IndicatorIcons);
 end
 
 function EncounterTimelineTrackEventMixin:UpdateNameText()
+	local nameFontString = self:GetNameFontString();
 	local eventInfo = self:GetEventInfo();
+	local text = eventInfo and eventInfo.spellName or nil;
 
-	if eventInfo ~= nil then
-		self:SetNameText(eventInfo.spellName or "", eventInfo.color);
-	else
-		self:ClearNametext();
-	end
+	nameFontString:SetText(text);
+	nameFontString:SetShown(self:ShouldShowTextElement(text));
+
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextLayout);
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.NameText);
 end
 
-function EncounterTimelineTrackEventMixin:UpdateOrientation()
+function EncounterTimelineTrackEventMixin:UpdateIconLayout()
+	local iconScale = self:GetIconScale();
+	self:GetIconContainer():SetScale(iconScale);
+	self:GetCountdownFrame():SetScale(iconScale);
+end
+
+function EncounterTimelineTrackEventMixin:UpdateIndicatorLayout()
+	local orientation = self:GetTrackOrientation();
+	local indicators = self:GetIndicatorContainer();
+
+	indicators:ClearAllPoints();
+
+	if orientation:IsVertical() then
+		local flipped = self:ShouldFlipHorizontally();
+		local offsetX = 0;
+		local offsetY = 0;
+		SetPointWithHorizontalFlip(indicators, "LEFT", self:GetIconContainer(), "RIGHT", offsetX, offsetY, flipped);
+	else
+		indicators:SetPoint("BOTTOM", self:GetIconContainer(), "TOP");
+	end
+
+	indicators:ApplyLayout(self:GetIndicatorGridLayout());
+end
+
+function EncounterTimelineTrackEventMixin:UpdateTrailLayout()
 	local orientation = self:GetTrackOrientation();
 	local trailTexture = self:GetTrailTexture();
-	local iconScale = self:GetIconScale();
 
 	trailTexture:ClearAllPoints();
 	trailTexture:SetOrientedAtlas(orientation, self:GetTrailAtlas(), TextureKitConstants.UseAtlasSize);
 	trailTexture:SetOrientedTexCoordToDefaults(orientation);
 	trailTexture:SetOrientedPoint(orientation, "END", self, "START", 10, 0);
-
-	local indicators = self:GetIndicatorContainer();
-	indicators:ClearAllPoints();
-
-	if orientation:IsVertical() then
-		indicators:SetPoint("LEFT", self:GetIconFrame(), "RIGHT");
-	else
-		indicators:SetPoint("BOTTOM", self:GetIconFrame(), "TOP");
-	end
-
-	indicators:ApplyLayout(self:GetIndicatorGridLayout());
-
-	-- Not really orientation-based, but it's not worth the hassle of making
-	-- another dirty flag just for these two bits of state.
-
-	self:GetIconFrame():SetScale(iconScale);
-	self:GetCountdownFrame():SetScale(iconScale);
-
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.Orientation);
 end
 
-function EncounterTimelineTrackEventMixin:UpdatePointOffsets()
+function EncounterTimelineTrackEventMixin:UpdateTextLayout()
+	local nameFontString = self:GetNameFontString();
+	local statusFontString = self:GetStatusFontString();
+	local iconScale = self:GetIconScale();
+	local offsetX = -10 * iconScale;
+	local flipped = self:ShouldFlipHorizontally();
+
+	nameFontString:ClearAllPoints();
+	statusFontString:ClearAllPoints();
+
+	if nameFontString:IsShown() and statusFontString:IsShown() then
+		local offsetY = 2;
+		SetPointWithHorizontalFlip(nameFontString, "BOTTOMRIGHT", self, "LEFT", offsetX, offsetY, flipped);
+		SetPointWithHorizontalFlip(statusFontString, "TOPRIGHT", self, "LEFT", offsetX, -offsetY, flipped);
+	elseif nameFontString:IsShown() then
+		local offsetY = 0;
+		SetPointWithHorizontalFlip(nameFontString, "RIGHT", self, "LEFT", offsetX, offsetY, flipped);
+	elseif statusFontString:IsShown() then
+		local offsetY = 0;
+		SetPointWithHorizontalFlip(statusFontString, "RIGHT", self, "LEFT", offsetX, offsetY, flipped);
+	end
+
+	-- Force-resolve rects before setting justification as sometimes the
+	-- fontstrings get stuck with the old alignment.
+
+	nameFontString:GetRect();
+	statusFontString:GetRect();
+
+	if flipped then
+		nameFontString:SetJustifyH("LEFT");
+		statusFontString:SetJustifyH("LEFT");
+	else
+		nameFontString:SetJustifyH("RIGHT");
+		statusFontString:SetJustifyH("RIGHT");
+	end
+
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.TextLayout);
+end
+
+function EncounterTimelineTrackEventMixin:UpdateLayout()
+	self:UpdateIconLayout();
+	self:UpdateIndicatorLayout();
+	self:UpdateTrailLayout();
+	self:UpdateTextLayout();
+
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.Layout);
+end
+
+function EncounterTimelineTrackEventMixin:UpdatePosition()
 	local orientation = self:GetTrackOrientation();
-	local eventID = self:GetEventID();
 
 	local primaryAxisInterpolator = self:GetPrimaryAxisInterpolator();
-	local primaryAxisOffset = primaryAxisInterpolator:Update(eventID);
+	local primaryAxisOffset = primaryAxisInterpolator:Update();
 
 	self:SetPointsOffset(orientation:GetOrientedOffsets(primaryAxisOffset, self:GetCrossAxisOffset()));
 
@@ -741,20 +837,19 @@ function EncounterTimelineTrackEventMixin:UpdatePointOffsets()
 	-- and generally looking silly.
 
 	local crossAxisInterpolator = self:GetCrossAxisInterpolator();
-	local crossAxisOffset = crossAxisInterpolator:Update(eventID);
+	local crossAxisOffset = crossAxisInterpolator:Update();
 
-	self:GetIconFrame():SetOrientedPointsOffset(orientation, 0, crossAxisOffset);
+	if orientation:IsVertical() and self:ShouldFlipHorizontally() then
+		crossAxisOffset = -crossAxisOffset;
+	end
+
+	self:GetIconContainer():SetOrientedPointsOffset(orientation, 0, crossAxisOffset);
 
 	-- No dirty flag; this is updated every game tick.
 end
 
 function EncounterTimelineTrackEventMixin:UpdatePulseAnimation()
-	local state = self:GetEventState();
-	local track = self:GetEventTrack();
-	local timeRemaining = self:GetEventTimeRemaining();
-	local pulseDuration = self:GetHighlightTime();
-
-	if state == Enum.EncounterTimelineEventState.Active and track == Enum.EncounterTimelineTrack.Short and timeRemaining ~= nil and timeRemaining <= pulseDuration then
+	if self:ShouldPlayPulseAnimation() then
 		self:PlayPulseAnimation();
 	else
 		self:StopPulseAnimation();
@@ -764,42 +859,14 @@ function EncounterTimelineTrackEventMixin:UpdatePulseAnimation()
 end
 
 function EncounterTimelineTrackEventMixin:UpdateStatusText()
-	local state = self:GetEventState();
-	local track = self:GetEventTrack();
-	local text;
-
-	if state == Enum.EncounterTimelineEventState.Paused then
-		text = COMBAT_WARNINGS_EVENT_STATUS_PAUSED;
-	elseif self:IsEventBlocked() then
-		text = COMBAT_WARNINGS_EVENT_STATUS_BLOCKED;
-	elseif track == Enum.EncounterTimelineTrack.Queued then
-		text = COMBAT_WARNINGS_EVENT_STATUS_QUEUED;
-	else
-		text = "";
-	end
-
-	self:SetStatusText(text);
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.StatusText);
-end
-
-function EncounterTimelineTrackEventMixin:UpdateTextAnchors()
-	local nameFontString = self:GetNameFontString();
 	local statusFontString = self:GetStatusFontString();
-	local iconScale = self:GetIconScale();
+	local text = self:GetAppropriateStatusText();
 
-	nameFontString:ClearAllPoints();
-	statusFontString:ClearAllPoints();
+	statusFontString:SetText(text);
+	statusFontString:SetShown(self:ShouldShowTextElement(text));
 
-	if nameFontString:IsShown() and statusFontString:IsShown() then
-		nameFontString:SetPoint("BOTTOMRIGHT", self, "LEFT", -10 * iconScale, 2);
-		statusFontString:SetPoint("TOPRIGHT", self, "LEFT", -10 * iconScale, -2);
-	elseif nameFontString:IsShown() then
-		nameFontString:SetPoint("RIGHT", self, "LEFT", -10 * iconScale, 0);
-	elseif statusFontString:IsShown() then
-		statusFontString:SetPoint("RIGHT", self, "LEFT", -10 * iconScale, 0);
-	end
-
-	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextLayout);
+	self:MarkClean(EncounterTimelineTrackEventDirtyFlag.StatusText);
 end
 
 function EncounterTimelineTrackEventMixin:UpdateTrailAlpha()

@@ -11,11 +11,11 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="NameText" inherits="SystemFont_Shadow_Med3" mixin="AutoScalingFontStringMixin" hidden="true" wordwrap="false" nonspacewrap="false" justifyH="RIGHT">
 					<!-- Anchors managed dynamically. -->
-					<Size x="200"/>
+					<Size x="250"/>
 				</FontString>
 				<FontString parentKey="StatusText" inherits="SystemFont_Shadow_Med3" mixin="AutoScalingFontStringMixin" hidden="true" wordwrap="false" nonspacewrap="false" justifyH="RIGHT">
 					<!-- Anchors managed dynamically. -->
-					<Size x="200"/>
+					<Size x="250"/>
 				</FontString>
 			</Layer>
 		</Layers>

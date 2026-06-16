@@ -1399,18 +1399,14 @@ function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
 end
 
 function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
-	return C_CharacterServices.IsTrialBoostEnabled() and
-		not IsKioskGlueEnabled() and
-		not C_CharacterCreation.IsNewPlayerRestricted() and
-		not C_CharacterCreation.IsTrialAccountRestricted() and
+	return CharacterServices_CanTrialBoostCharacter() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
 		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	local showTrialBoost = self:CanTrialBoostCharacter() and not fullCharacterCreateDisabled;
+	local showTrialBoost = self:CanTrialBoostCharacter();
 	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
 
 	self.ClassTrialCheckButton:SetShown(showTrialBoost);
@@ -2225,6 +2221,8 @@ function CharacterCreateZoneChoiceMixin:Setup()
 
 	-- If there is more than one choice, the normal starting zone will always be first
 	self.NormalStartingZone:SetZoneInfo(firstZoneChoiceInfo.zoneName, firstZoneChoiceInfo.zoneImageAtlas);
+
+	self:UpdateForScale();
 end
 
 function CharacterCreateZoneChoiceMixin:ShouldShow()
@@ -2243,6 +2241,25 @@ end
 function CharacterCreateZoneChoiceMixin:SetUseNPE(useNPE)
 	self.useNPE = useNPE;
 	self:UpdateButtons();
+end
+
+function CharacterCreateZoneChoiceMixin:UpdateForScale()
+	-- reset
+	self:SetScale(1);
+	-- negative room means something is offscreen
+	-- multiply by 2 because only 1 side is being measured
+	local horizontalRoom = 2 * self.NPEZone:GetLeft();
+	local verticalRoom = 2 * (GlueParent:GetHeight() - self.Title:GetTop());
+
+	local desiredScale = 1;
+	-- pick the worst one and scale based on that
+	if verticalRoom < 0 and verticalRoom <= horizontalRoom then
+		-- adding to 1 because room is negative
+		desiredScale = 1 + (verticalRoom / self:GetHeight());
+	elseif horizontalRoom < 0 and horizontalRoom <= verticalRoom then
+		desiredScale = 1 + (horizontalRoom / self:GetWidth());
+	end
+	self:SetScale(desiredScale);
 end
 
 CharacterCreateStartingZoneMixin = {};

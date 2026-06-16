@@ -711,7 +711,7 @@ local function Register()
 	end
 
 	-- Notch Mode
-	if (C_UI.DoesAnyDisplayHaveNotch()) then
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(0, NOTCH_MODE_OVERLAP, VIDEO_OPTIONS_NOTCH_MODE_OVERLAP);
@@ -726,7 +726,8 @@ local function Register()
 			Settings.VarType.Number, NOTCH_MODE, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected, Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow);
 
-		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
+		initializer:AddShownPredicate(C_UI.DoesAnyDisplayHaveNotch);
 	end
 
 	-- Low Latency Mode
@@ -844,6 +845,7 @@ local function Register()
 				return value == AA_IMAGE or value == AA_ADVANCED;
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample
@@ -888,6 +890,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample Alpha Test
@@ -913,6 +916,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 	end
 

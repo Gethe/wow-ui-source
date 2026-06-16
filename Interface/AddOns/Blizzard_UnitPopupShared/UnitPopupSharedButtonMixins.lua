@@ -542,7 +542,7 @@ end
 function UnitPopupUninviteButtonMixin:OnClick(contextData)
 	local exactMatch = true;
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	UninviteUnit(fullName, nil, exactMatch);
+	C_PartyInfo.UninviteUnit(fullName, nil, exactMatch);
 end
 
 UnitPopupFriendsButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -799,7 +799,7 @@ function UnitPopupVoteToKickButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	local reason = nil;
 	local exactMatch = true;
-	UninviteUnit(fullName, reason, exactMatch);
+	C_PartyInfo.UninviteUnit(fullName, reason, exactMatch);
 end
 
 UnitPopupPromoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -830,7 +830,7 @@ function UnitPopupPromoteButtonMixin:IsEnabled(contextData)
 end
 
 function UnitPopupPromoteButtonMixin:OnClick(contextData)
-	PromoteToLeader(contextData.unit, 1);
+	C_PartyInfo.PromoteToLeader(contextData.unit, true);
 end
 
 UnitPopupPromoteGuideButtonMixin = CreateFromMixins(UnitPopupPromoteButtonMixin);
@@ -1479,7 +1479,7 @@ function UnitPopupDungeonDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:GetDifficultyID()
-	return 1;
+	return DifficultyUtil.ID.DungeonNormal;
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:IsSupported()
@@ -1510,7 +1510,7 @@ function UnitPopupDungeonDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupDungeonDifficulty2ButtonMixin:GetDifficultyID()
-	return 2;
+	return DifficultyUtil.ID.DungeonHeroic;
 end
 
 UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
@@ -1520,7 +1520,7 @@ function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupDungeonDifficulty3ButtonMixin:GetDifficultyID()
-	return 8;
+	return DifficultyUtil.ID.DungeonChallenge;
 end
 
 -- Raid Difficulty Buttons
@@ -1569,7 +1569,7 @@ function UnitPopupRaidDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupRaidDifficulty1ButtonMixin:GetDifficultyID()
-	return 14;
+	return DifficultyUtil.ID.PrimaryRaidNormal;
 end
 
 UnitPopupRaidDifficulty2ButtonMixin = CreateFromMixins(UnitPopupRaidDifficulty1ButtonMixin);
@@ -1579,7 +1579,7 @@ function UnitPopupRaidDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupRaidDifficulty2ButtonMixin:GetDifficultyID()
-	return 15;
+	return DifficultyUtil.ID.PrimaryRaidHeroic;
 end
 
 function UnitPopupRaidDifficulty2ButtonMixin:IsEnabled(contextData)
@@ -1601,7 +1601,7 @@ function UnitPopupRaidDifficulty3ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupRaidDifficulty3ButtonMixin:GetDifficultyID()
-	return 16;
+	return DifficultyUtil.ID.PrimaryRaidMythic;
 end
 
 function UnitPopupRaidDifficulty3ButtonMixin:IsEnabled(contextData)
@@ -1628,7 +1628,7 @@ function UnitPopupLegacyRaidDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupLegacyRaidDifficulty1ButtonMixin:GetDifficultyID()
-	return 3;
+	return DifficultyUtil.ID.Raid10Normal;
 end
 
 function UnitPopupLegacyRaidDifficulty1ButtonMixin:IsChecked(contextData)
@@ -1702,7 +1702,7 @@ function UnitPopupLegacyRaidDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupLegacyRaidDifficulty2ButtonMixin:GetDifficultyID()
-	return 4;
+	return DifficultyUtil.ID.Raid25Normal;
 end
 
 UnitPopupPvpFlagButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1916,7 +1916,7 @@ end
 
 function UnitPopupSetRaidLeaderButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	PromoteToLeader(fullName, true)
+	C_PartyInfo.PromoteToLeader(fullName, true)
 end
 
 UnitPopupSetRaidAssistButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1943,7 +1943,7 @@ end
 
 function UnitPopupSetRaidAssistButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	PromoteToAssistant(fullName, true);
+	C_PartyInfo.PromoteToAssistant(fullName, true);
 end
 
 UnitPopupSetRaidMainTankButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2040,7 +2040,7 @@ end
 function UnitPopupSetRaidDemoteButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	if UnitIsGroupLeader("player") and UnitIsGroupAssistant(contextData.unit) then
-		DemoteAssistant(fullName, true);
+		C_PartyInfo.DemoteAssistant(fullName, true);
 	end
 
 	if GetPartyAssignment("MAINTANK", fullName, true) then
@@ -2096,7 +2096,7 @@ end
 function UnitPopupSetRaidRemoveButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	local reason = nil;
-	UninviteUnit(fullName, reason, true);
+	C_PartyInfo.UninviteUnit(fullName, reason, true);
 end
 
 UnitPopupPvpReportAfkButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

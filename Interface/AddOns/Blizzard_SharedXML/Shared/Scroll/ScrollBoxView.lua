@@ -16,6 +16,36 @@ function ScrollBoxViewMixin:SetFrameLevelPolicy(frameLevelPolicy)
 	self.frameLevelPolicy = frameLevelPolicy;
 end
 
+-- Returns a callable that produces the next frame level on each invocation.
+-- The counter object is allocated once and reused across layout passes; only
+-- the starting level and direction are reset, avoiding a closure allocation
+-- every time layout runs.
+function ScrollBoxViewMixin:GetFrameLevelCounter(referenceFrameLevel, range)
+	local policy = self:GetFrameLevelPolicy();
+	if policy == ScrollBoxViewMixin.FrameLevelPolicy.Default then
+		return nil;
+	end
+
+	if not self.frameLevelCounter then
+		local counter = { value = 0, step = 0 };
+		counter.next = function()
+			counter.value = counter.value + counter.step;
+			return counter.value;
+		end;
+		self.frameLevelCounter = counter;
+	end
+
+	local counter = self.frameLevelCounter;
+	if policy == ScrollBoxViewMixin.FrameLevelPolicy.Ascending then
+		counter.value = referenceFrameLevel + 1;
+		counter.step = 1;
+	else
+		counter.value = referenceFrameLevel + 1 + range;
+		counter.step = -1;
+	end
+	return counter.next;
+end
+
 function ScrollBoxViewMixin:IsElementStretchDisabled()
 	return self.elementStretchDisabled;
 end

@@ -6,10 +6,6 @@ local HouseFinderFrameShownEvents =
 	"HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED",
 	"B_NET_NEIGHBORHOOD_LIST_UPDATED",
 	"DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
-};
-
-local HouseFinderLoadedEvents = 
-{
 	"FORCE_REFRESH_HOUSE_FINDER",
 };
 
@@ -33,7 +29,6 @@ function HouseFinderFrameMixin:OnLoad()
 	self.HouseFinderMapCanvasFrame:SetShouldZoomInstantly(true);
 
 	self.NeighborhoodListFrame:SetScript("OnShow", function() EventRegistry:TriggerEvent("HouseFinder.NeighborhoodListShown"); end);
-	FrameUtil.RegisterFrameForEvents(self, HouseFinderLoadedEvents);
 end
 
 function HouseFinderFrameMixin:OnRefreshClicked()
@@ -82,7 +77,6 @@ function HouseFinderFrameMixin:PopulateNeighborhoodList(neighborhoodInfoVector)
 	self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 	self.NeighborhoodListFrame.ScrollFrame:UpdateScrollChildRect();
 	self.NeighborhoodListFrame.LoadingSpinnerList:Hide();
-	self.hasNeighborhoodList = true;
 end
 
 function HouseFinderFrameMixin:PopulateBNetNeighborhoodList(neighborhoodInfoVector)
@@ -234,14 +228,7 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 		end
 		self.pendingDeclineInviteNeighborhoodButton = nil;
 	elseif event == "FORCE_REFRESH_HOUSE_FINDER" then
-		if self:IsShown() then
-			self:OnRefreshClicked();
-		else
-			--clear saved data and set flag to request new info on show
-			local emptyList = {};
-			self:PopulateNeighborhoodList(emptyList);
-			self.hasNeighborhoodList = nil;
-		end
+		self:OnRefreshClicked();
 	end
 end
 
@@ -249,9 +236,11 @@ function HouseFinderFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, HouseFinderFrameShownEvents);
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_OPEN);
 
-	if not self.hasNeighborhoodList then
-		C_Housing.HouseFinderRequestNeighborhoods();
-	end
+	--Refresh house finder list every time the UI is opened
+	C_Housing.HouseFinderRequestNeighborhoods();
+	HouseFinderFrame.NeighborhoodListFrame.LoadingSpinnerList:Show();
+	HouseFinderFrame.LoadingSpinnerMap:Show();
+	HouseFinderFrame.HouseFinderMapCanvasFrame:Hide();
 end
 
 function HouseFinderFrameMixin:OnHide()

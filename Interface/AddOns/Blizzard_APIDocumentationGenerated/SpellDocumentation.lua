@@ -110,22 +110,6 @@ local Spell =
 			},
 		},
 		{
-			Name = "GetMawPowerBorderAtlasBySpellID",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -139,6 +123,23 @@ local Spell =
 			Returns =
 			{
 				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMawPowerRarityInfoBySpellID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rarityID", Type = "number", Nilable = false },
+				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
