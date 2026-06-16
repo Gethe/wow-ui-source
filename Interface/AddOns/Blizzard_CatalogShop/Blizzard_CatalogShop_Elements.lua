@@ -514,7 +514,7 @@ local function SetMissingLicenseCaptionText(displayInfo)
 		local gameNameStr = nil;
 		if displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Classic then
 			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Classic;
-		elseif displayInfo.otherProfuctGameType == CatalogShopConstants.GameTypes.Modern then
+		elseif displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Modern then
 			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Modern;
 		end
 		-- At this point gameNameStr should be nil (no special name format), "%s Classic", or "World of Warcraft: %s"

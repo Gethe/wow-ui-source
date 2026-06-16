@@ -2594,8 +2594,9 @@ function UpdateColorClassCheckboxes(baseName, value)
 end
 
 function HideClassColors(value, checkBoxName)
-	if ( value.noClassColor or value.isBlank ) then
-		_G[checkBoxName.."ColorClasses"]:Hide();
+	local colorClasses = _G[checkBoxName.."ColorClasses"];
+	if ( colorClasses and (value.noClassColor or value.isBlank) ) then
+		colorClasses:Hide();
 	end
 end
 

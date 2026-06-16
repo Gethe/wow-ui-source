@@ -1424,6 +1424,7 @@ Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.xml
 Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.lua
 Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Mists\TalentFrameBase.lua
+Interface\AddOns\Blizzard_FrameXML\Mists\WorldStateFrame.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\WorldStateFrame.xml
 Interface\AddOns\Blizzard_FrameXML\MovieFrame.lua
 Interface\AddOns\Blizzard_FrameXML\MovieFrame.xml

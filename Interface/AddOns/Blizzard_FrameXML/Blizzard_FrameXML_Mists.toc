@@ -45,6 +45,7 @@ Shared\CinematicFrame.xml
 Classic\ColorPickerFrame.lua
 Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua
+Mists\WorldStateFrame.lua
 Mists\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Mists\TalentFrameBase.lua

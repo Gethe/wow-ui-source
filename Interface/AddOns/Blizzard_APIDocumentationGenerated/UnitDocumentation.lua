@@ -2479,6 +2479,16 @@ local Unit =
 			UniqueEvent = true,
 		},
 		{
+			Name = "ProvingGroundsScoreUpdate",
+			Type = "Event",
+			LiteralName = "PROVING_GROUNDS_SCORE_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "points", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpTimerUpdate",
 			Type = "Event",
 			LiteralName = "PVP_TIMER_UPDATE",
