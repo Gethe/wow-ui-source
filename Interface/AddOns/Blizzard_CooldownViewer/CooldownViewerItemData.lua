@@ -13,7 +13,7 @@ function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras(unit)
 	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
 		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
 			local auraData = C_UnitAuras.GetUnitAuraBySpellID(unit, spellID);
-			if auraData then
+			if auraData and auraData.sourceUnit == "player" then
 				return spellID, auraData;
 			end
 		end
@@ -352,7 +352,7 @@ end
 local function GetTargetAurasFilterString(unit)
 	if UnitExists(unit) then
 		if UnitIsFriend("player", unit) then
-			return "HELPFUL|PLAYER";
+			return "HELPFUL|PLAYER|INCLUDE_NAME_PLATE_ONLY";
 		end
 	end
 
@@ -517,7 +517,7 @@ function CooldownViewerItemDataMixin:RefreshTooltip()
 	local auraInstanceID = self:GetAuraSpellInstanceID();
 	local auraUnit = self:GetAuraDataUnit();
 	if auraInstanceID and auraUnit then
-		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID);
+		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID, "INCLUDE_NAME_PLATE_ONLY");
 	else
 		local spellID = self:GetSpellID();
 		if spellID then
