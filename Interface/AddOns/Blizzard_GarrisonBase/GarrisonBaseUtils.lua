@@ -332,6 +332,26 @@ function GetPrimaryGarrisonFollowerType(garrTypeID)
 	return nil;
 end
 
+function GetGarrisonMissionFrameNameForFollowerType(followerTypeID)
+	local followerOptions = GarrisonFollowerOptions[followerTypeID];
+	if not followerOptions then
+		GMError("Unknown follower type");
+		return nil;
+	end
+
+	return followerOptions.missionFrame;
+end
+
+function GetGarrisonTypeForFollowerType(followerTypeID)
+	local followerOptions = GarrisonFollowerOptions[followerTypeID];
+	if not followerOptions then
+		GMError("Unknown follower type");
+		return nil;
+	end
+
+	return followerOptions.garrisonType;
+end
+
 function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo)
 	return GarrisonFollowerOptions[followerTypeID].showSpikyBordersOnSpecializationAbilities and abilityInfo.isSpecialization;
 end

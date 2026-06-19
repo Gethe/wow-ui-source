@@ -6,6 +6,8 @@
 # Data only
 Housing/Config.lua
 
+Blizzard_Kiosk_Bootstrap.lua [Bootstrap]
+
 Kiosk.lua
 Kiosk.xml
 

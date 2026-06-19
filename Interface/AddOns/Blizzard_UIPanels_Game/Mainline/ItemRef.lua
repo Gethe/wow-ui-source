@@ -119,6 +119,15 @@ function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, e
 	return LinkUtil.FormatLink(LinkTypes.PlayerCommunity, linkDisplayText, playerName, clubId, streamId, epoch, position);
 end
 
+function GetDiscordUserLink(linkDisplayText, bnetIDAccount, discordUserID, lineID, chatGroup, chatTarget)
+	return LinkUtil.FormatLink(LinkTypes.DiscordUser, linkDisplayText, bnetIDAccount, discordUserID, lineID or 0, chatGroup, chatTarget or "");
+end
+
+function GetDiscordUserCommunityLink(linkDisplayText, bnetIDAccount, discordUserID, clubId, streamId, epoch, position)
+	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink(LinkTypes.DiscordUserCommunity, linkDisplayText, bnetIDAccount, discordUserID, clubId, streamId, epoch, position);
+end
+
 function GetClubTicketLink(ticketId, clubName, clubType)
 	local link = LinkUtil.FormatLink(LinkTypes.ClubTicket, CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
 	if clubType == Enum.ClubType.BattleNet then

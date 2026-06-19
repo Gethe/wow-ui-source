@@ -141,10 +141,10 @@
 	</Frame>
 
 	<Button name="HelpOpenWebTicketButton" parent="CharacterMicroButton" hidden="true">
-		<Size x="34" y="35"/>
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="20"/>
 		</Anchors>
+		<Size x="34" y="35"/>
 		<Scripts>
 			<OnLoad>
 				self.refreshTime = 0;
@@ -159,6 +159,7 @@
 				end
 			</OnClick>
 			<OnEvent function="HelpOpenWebTicketButton_OnEvent"/>
+			<OnUpdate function="HelpOpenWebTicketButton_OnUpdate"/>
 			<OnEnter function="HelpOpenWebTicketButton_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
@@ -182,7 +183,7 @@
 		<Size>
 			<AbsDimension x="208" y="75"/>
 		</Size>
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+		<!-- This frame gets positioned in StatusTrayManager.UpdateTrayAndBuffFrameLayout() -->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">

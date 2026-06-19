@@ -266,8 +266,18 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	self:HideCardVisuals();
 	container.RectIcon:SetSize(85.0,85.0);		-- Resetting the size since certain element types want to change it
 
-	-- An unknown license implies a product from another Game (Classic, etc.)
-	if displayInfo.hasUnknownLicense then
+	if self.productInfo.isMystery then
+		container.RectIcon:Show();
+		container.RectIcon:SetSize(140, 140);
+
+		if productType == CatalogShopConstants.ProductType.Mount then
+			container.RectIcon:SetAtlas(CatalogShopConstants.MysteryTypes.Mount);
+		elseif productType == CatalogShopConstants.ProductType.Pet then
+			container.RectIcon:SetAtlas(CatalogShopConstants.MysteryTypes.Pet);
+		else
+			container.RectIcon:SetAtlas(CatalogShopConstants.DefaultWoWAtlas);
+		end
+	elseif displayInfo.hasUnknownLicense then -- An unknown license implies a product from another Game (Classic, etc.)
 		container.RectIcon:Show();
 		container.RectIcon:SetSize(140, 140);
 		CatalogShopUtil.SetAlternateProductIcon(container.RectIcon, displayInfo);

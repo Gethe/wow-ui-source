@@ -23,7 +23,7 @@ function ItemUpgradeMixin:OnLoad()
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
 
-	ItemUpgradeFramePortrait:SetPortraitToAsset("Interface\\Icons\\Spell_Shaman_SpectralTransformation");
+	self:SetPortraitToAsset("Interface\\Icons\\Spell_Shaman_SpectralTransformation");
 	self.LeftStat[1].BG:Show();
 	self.RightStat[1].BG:Show();
 	ItemUpgradeFrameTitleText:SetText(ITEM_UPGRADE);

@@ -62,25 +62,10 @@ function HousingCatalogFrameMixin:OnShow()
 
 	FrameUtil.RegisterFrameForEvents(self, CatalogWhileVisibleEvents);
 	EventRegistry:RegisterCallback("HousingCatalogEntry.OnInteract", function(owner, catalogEntry, button, isDrag)
-		if button == "LeftButton" and not isDrag then
-			if ContentTrackingUtil.IsTrackingModifierDown() then
-				if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID) then
-					C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID, Enum.ContentTrackingStopType.Manual);
-					PlaySound(SOUNDKIT.CONTENT_TRACKING_STOP_TRACKING);
-				else
-					local error = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.recordID);
-					if error then
-						ContentTrackingUtil.DisplayTrackingError(error);
-					else 
-						PlaySound(SOUNDKIT.CONTENT_TRACKING_START_TRACKING);
-						PlaySound(SOUNDKIT.CONTENT_TRACKING_OBJECTIVE_TRACKING_START);
-					end
-				end
-			else
-				PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
-				self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo, catalogEntry.variantInfo);
-				self.PreviewFrame:Show();
-			end
+		if button == "LeftButton" and not isDrag and not IsModifiedClick() then
+			PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
+			self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo, catalogEntry.variantInfo);
+			self.PreviewFrame:Show();
 		end
 	end, self);
 

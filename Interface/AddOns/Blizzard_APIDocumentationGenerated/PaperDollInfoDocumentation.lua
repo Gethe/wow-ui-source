@@ -140,6 +140,43 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInventorySlotInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotName", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "invSlot", Type = "number", Nilable = false },
+				{ Name = "slotTexture", Type = "fileID", Nilable = false },
+				{ Name = "checkRelic", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInventorySlotInfoForInvSlot",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "invSlotValue", Type = "number", Nilable = false, Documentation = { "This is the Lua version of the INVSLOT enum, not a luaIndex" } },
+			},
+
+			Returns =
+			{
+				{ Name = "invSlot", Type = "number", Nilable = false },
+				{ Name = "slotTexture", Type = "fileID", Nilable = false },
+				{ Name = "checkRelic", Type = "bool", Nilable = false },
+				{ Name = "slotName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 

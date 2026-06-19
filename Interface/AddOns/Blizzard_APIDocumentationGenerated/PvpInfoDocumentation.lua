@@ -64,6 +64,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanSurrenderArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "CanSurrenderArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanToggleWarMode",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

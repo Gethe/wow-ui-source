@@ -132,9 +132,9 @@ function AchievementDisplayOverviewBulletMixin:OnMouseUp()
 		-- see if it's an achievement, otherwise use main achievement
 		if self.criteriaIndex and AchievementUtil.IsCriteriaAchievementEarned(self.achievementID, self.criteriaIndex) then
 			local assetID = select(8, GetAchievementCriteriaInfo(self.achievementID, self.criteriaIndex));
-			OpenAchievementFrameToAchievement(assetID);
+			ShowAchievementFrameForAchievement(assetID);
 		else
-			OpenAchievementFrameToAchievement(self.achievementID);
+			ShowAchievementFrameForAchievement(self.achievementID);
 		end
 	end
 end

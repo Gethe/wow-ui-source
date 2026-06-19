@@ -133,8 +133,31 @@ EditModeSettingCheckboxMixin = {};
 function EditModeSettingCheckboxMixin:SetupSetting(settingData)
 	self.setting = settingData.displayInfo.setting;
 	self.checked = (settingData.currentValue == 1);
+	self.disabledTooltipText = settingData.displayInfo.disabledTooltipText;
+
+	local isDisabled = settingData.displayInfo.disabled;
+
 	self.Label:SetText(settingData.settingName);
+	self.Label:SetFontObject(isDisabled and "GameFontDisableMed2" or "GameFontHighlightMedium");
+
 	self.Button:SetChecked(self.checked);
+	self.Button:SetEnabled(not isDisabled);
+end
+
+function EditModeSettingCheckboxMixin:OnEnter()
+	if self.disabledTooltipText and not self.Button:IsEnabled() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(tooltip, self.disabledTooltipText);
+		tooltip:Show();
+	end
+end
+
+function EditModeSettingCheckboxMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self.Button then
+		tooltip:Hide();
+	end
 end
 
 function EditModeSettingCheckboxMixin:OnCheckButtonClick()
@@ -169,7 +192,7 @@ MagnetismPreviewLineMixin = {};
 local magnetismPreviewLinePixelWidth = 1.5;
 
 function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
-	local uiParentWidth, uiParentHeight, uiParentCenterX, uiParentCenterY = EditModeMagnetismManager.uiParentWidth, EditModeMagnetismManager.uiParentHeight, EditModeMagnetismManager.uiParentCenterX, EditModeMagnetismManager.uiParentCenterY;
+	local topLevelParentWidth, topLevelParentHeight, topLevelParentCenterX, topLevelParentCenterY = EditModeMagnetismManager.topLevelParentWidth, EditModeMagnetismManager.topLevelParentHeight, EditModeMagnetismManager.topLevelParentCenterX, EditModeMagnetismManager.topLevelParentCenterY;
 	local relativeTo = magneticFrameInfo.frame;
 	local isLineAnchoringHorizontally = lineAnchor == "Top" or lineAnchor == "Bottom" or lineAnchor == "CenterHorizontal";
 
@@ -182,7 +205,7 @@ function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 
 	local offsetX, offsetY = 0, 0;
 	if relativeTo == UIParent then
-		-- RelativeTo is UIParent
+		-- RelativeTo is the top-level parent
 		-- We have to adjust offsets to put line on top of the grid line we're anchoring to
 		if lineAnchor == "CenterHorizontal" then
 			offsetY = magneticFrameInfo.offset;
@@ -190,18 +213,18 @@ function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 			offsetX = magneticFrameInfo.offset;
 		elseif lineAnchor == "Top" or lineAnchor == "Bottom" then
 			if lineAnchor == "Top" then
-				offsetY = uiParentHeight + magneticFrameInfo.offset;
+				offsetY = topLevelParentHeight + magneticFrameInfo.offset;
 			else -- Bottom
 				offsetY = magneticFrameInfo.offset;
 			end
-			offsetY = offsetY - uiParentCenterY;
+			offsetY = offsetY - topLevelParentCenterY;
 		elseif lineAnchor == "Right" or lineAnchor == "Left" then
 			if lineAnchor == "Right" then
-				offsetX = uiParentWidth + magneticFrameInfo.offset;
+				offsetX = topLevelParentWidth + magneticFrameInfo.offset;
 			else -- Left
 				offsetX = magneticFrameInfo.offset;
 			end
-			offsetX = offsetX - uiParentCenterX;
+			offsetX = offsetX - topLevelParentCenterX;
 		end
 	else
 		-- RelativeTo is an edit mode frame
@@ -213,19 +236,19 @@ function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 
 		if isLineAnchoringHorizontally then
 			if lineAnchor == "Top" then
-				offsetY = relativeToTop - uiParentCenterY;
+				offsetY = relativeToTop - topLevelParentCenterY;
 			elseif lineAnchor == "Bottom" then
-				offsetY = relativeToBottom - uiParentCenterY;
+				offsetY = relativeToBottom - topLevelParentCenterY;
 			else -- CenterHorizontal
-				offsetY = relativeToCenterY - uiParentCenterY;
+				offsetY = relativeToCenterY - topLevelParentCenterY;
 			end
 		else -- isVerticalAnchor
 			if lineAnchor == "Left" then
-				offsetX = relativeToLeft - uiParentCenterX;
+				offsetX = relativeToLeft - topLevelParentCenterX;
 			elseif lineAnchor == "Right" then
-				offsetX = relativeToRight - uiParentCenterX;
+				offsetX = relativeToRight - topLevelParentCenterX;
 			else -- CenterVertical
-				offsetX = relativeToCenterX - uiParentCenterX;
+				offsetX = relativeToCenterX - topLevelParentCenterX;
 			end
 		end
 	end

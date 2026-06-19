@@ -13,7 +13,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="MicroButtonAndBagsBar" parent="UIParent">
+	<Frame name="MicroButtonAndBagsBar" parent="UIParent" roleset="microMenu">
 		<Size x="232" y="80"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
@@ -282,7 +282,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
 

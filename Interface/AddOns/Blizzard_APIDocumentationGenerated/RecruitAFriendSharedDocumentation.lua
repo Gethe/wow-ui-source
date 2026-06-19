@@ -17,6 +17,27 @@ local RecruitAFriendShared =
 			},
 		},
 		{
+			Name = "RecruitAFriendFailure",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "Success", Type = "RecruitAFriendFailure", EnumValue = 0 },
+				{ Name = "NotLinked", Type = "RecruitAFriendFailure", EnumValue = 1 },
+				{ Name = "NotNow", Type = "RecruitAFriendFailure", EnumValue = 2 },
+				{ Name = "NoTarget", Type = "RecruitAFriendFailure", EnumValue = 3 },
+				{ Name = "NotInParty", Type = "RecruitAFriendFailure", EnumValue = 4 },
+				{ Name = "SummonLevelMax", Type = "RecruitAFriendFailure", EnumValue = 5 },
+				{ Name = "SummonCooldown", Type = "RecruitAFriendFailure", EnumValue = 6 },
+				{ Name = "InsufExpanLvl", Type = "RecruitAFriendFailure", EnumValue = 7 },
+				{ Name = "Offline", Type = "RecruitAFriendFailure", EnumValue = 8 },
+				{ Name = "MapIncomingTransferNotAllowed", Type = "RecruitAFriendFailure", EnumValue = 9 },
+				{ Name = "NotInClassic", Type = "RecruitAFriendFailure", EnumValue = 10 },
+			},
+		},
+		{
 			Name = "RecruitAFriendRewardsVersion",
 			Type = "Enumeration",
 			NumValues = 4,

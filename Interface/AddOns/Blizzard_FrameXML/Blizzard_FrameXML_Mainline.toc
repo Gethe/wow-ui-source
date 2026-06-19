@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Colors, Blizzard_TransmogShared
+## Dependencies: Blizzard_ObjectAPI, Blizzard_FrameXMLBase, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_RaidWarning, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Colors, Blizzard_TransmogShared, Blizzard_LFGUtil, Blizzard_ManagedFrameSystem
 ## LoadFirst: 1
 ## AllowLoad: Game
 Shared\Localization.lua
@@ -47,12 +47,9 @@ Mainline\ReadyCheck.xml
 Mainline\InstanceAbandon.lua
 Mainline\InstanceAbandon.xml
 CustomizationDebugFrame.xml
-Mainline\RaidWarning.xml
 Shared\CinematicFrame.lua
 Mainline\CinematicFrameButton.xml
 Shared\CinematicFrame.xml
-Mainline\ColorPickerFrame.lua
-Mainline\ColorPickerFrame.xml
 Mainline\RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
@@ -85,7 +82,6 @@ LossOfControlFrame.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml
 AzeriteIslandsToast.xml
-SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
 QuestSession.xml
 TalkingHeadUI.xml

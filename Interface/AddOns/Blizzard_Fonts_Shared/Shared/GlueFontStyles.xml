@@ -77,7 +77,19 @@
 	<Font name="GlueEditBoxFont" inherits="EditBoxFont_Large" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-		<Font name="NumberFontNormalSmall" inherits="NumberFont_OutlineThick_Med1" virtual="true">
+	<Font name="GlueLoginEditBoxFont" inherits="EditBoxFont_25" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GlueFontNormalLogin" inherits="SystemFont_Shadow_Outline_Login" spacing="2" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+	<Font name="GlueFontHighlightLogin" inherits="GlueFontNormalLogin" spacing="2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GlueFontDisableLogin" inherits="GlueFontNormalLogin" spacing="2" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="NumberFontNormalSmall" inherits="NumberFont_OutlineThick_Med1" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="NumberFontNormalSmallGray" inherits="NumberFontNormalSmall" outline="THICK" virtual="true">

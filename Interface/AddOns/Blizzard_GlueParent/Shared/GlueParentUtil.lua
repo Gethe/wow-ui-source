@@ -55,6 +55,24 @@ function GlueParent_CheckPhotosensitivity()
 	return false;
 end
 
+function GlueParent_CheckScreenNarrator()
+	if not GetCVarBool("showScreenNarrationDialog") then
+		return false;
+	end
+
+	-- Always set the var to false even if the below check prevents the popup from showing.
+	SetCVar("showScreenNarrationDialog", false);
+
+	-- If screen narration has already been disabled don't display the popup. This can only happen
+	-- if the default value is conditionally changed for different versions or builds.
+	if not CVarCallbackRegistry:GetCVarValueBool("accessibilityScreenNarrationEnabled") then
+		return false;
+	end
+
+	StaticPopup_Show("SCREEN_NARRATOR_CHOICE");
+	return true;
+end
+
 function GetLogoReleaseType()
 	if(GetCNLogoReleaseType) then
 		return GetCNLogoReleaseType();

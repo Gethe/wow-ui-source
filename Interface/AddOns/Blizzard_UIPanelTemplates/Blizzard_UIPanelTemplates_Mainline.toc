@@ -8,5 +8,6 @@ Mainline\AutoCastTemplates.lua
 Mainline\AutoCastTemplates.xml
 Shared\UIPanelSpellButtonFrame.lua
 Shared\UIPanelSpellButtonFrame.xml
+Shared\UIPanelTemplatesShared.lua
 Mainline\UIPanelTemplates.lua
 Mainline\UIPanelTemplates.xml

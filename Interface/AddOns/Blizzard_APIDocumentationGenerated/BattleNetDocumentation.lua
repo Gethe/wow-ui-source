@@ -8,6 +8,24 @@ local BattleNet =
 	Functions =
 	{
 		{
+			Name = "AreFriendTagsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areFriendTagsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreTitleFriendsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areTitleFriendsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "BNCheckBattleTagInviteToRecentAlly",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -15,6 +33,16 @@ local BattleNet =
 			Arguments =
 			{
 				{ Name = "recentAllyGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "BNCheckTitleFriendInviteToUnit",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -81,6 +109,21 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "GetFriendInviteInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inviteInfo", Type = "BNetFriendInviteInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetFriendNumGameAccounts",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -131,6 +174,34 @@ local BattleNet =
 			HasRestrictions = true,
 		},
 		{
+			Name = "InviteFriend",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBattleNetFriendsListEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBattleNetFriendsListEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBattleNetFriendsListSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBattleNetFriendsListSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SendGameData",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -146,6 +217,10 @@ local BattleNet =
 			{
 				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
 			},
+		},
+		{
+			Name = "SendVerifiedBattleNetFriendInvite",
+			Type = "Function",
 		},
 		{
 			Name = "SendWhisper",
@@ -203,6 +278,17 @@ local BattleNet =
 				{ Name = "isDND", Type = "bool", Nilable = false, Default = true },
 			},
 		},
+		{
+			Name = "SetFriendTags",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "friendTags", Type = "table", InnerType = "BattleNetFriendTag", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -221,16 +307,29 @@ local BattleNet =
 				{ Name = "battleTag", Type = "string", Nilable = false },
 				{ Name = "isFriend", Type = "bool", Nilable = false },
 				{ Name = "isBattleTagFriend", Type = "bool", Nilable = false },
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = true },
 				{ Name = "lastOnlineTime", Type = "number", Nilable = false },
 				{ Name = "isAFK", Type = "bool", Nilable = false },
 				{ Name = "isDND", Type = "bool", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "friendTags", Type = "table", InnerType = "BattleNetFriendTag", Nilable = false },
 				{ Name = "appearOffline", Type = "bool", Nilable = false },
 				{ Name = "customMessage", Type = "string", Nilable = false },
 				{ Name = "customMessageTime", Type = "number", Nilable = false },
 				{ Name = "note", Type = "string", Nilable = false },
 				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
 				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "BNetFriendInviteInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "inviteID", Type = "number", Nilable = false },
+				{ Name = "accountName", Type = "kstringAuroraName", Nilable = false },
+				{ Name = "creationTimestamp", Type = "number", Nilable = false },
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = true },
 			},
 		},
 		{
@@ -252,6 +351,7 @@ local BattleNet =
 				{ Name = "raceName", Type = "string", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
+				{ Name = "classFilename", Type = "cstring", Nilable = true },
 				{ Name = "areaName", Type = "string", Nilable = true },
 				{ Name = "characterLevel", Type = "number", Nilable = true },
 				{ Name = "richPresence", Type = "string", Nilable = true },

@@ -1,12 +1,12 @@
 
 TempMaxHealthLossMixin = {};
 
-function TempMaxHealthLossMixin:InitalizeMaxHealthLossBar(healthBarsContainer, healthBar, optionalTempMaxHealthLossDivider)
+function TempMaxHealthLossMixin:InitializeMaxHealthLossBar(healthBarsContainer, healthBar, optionalTempMaxHealthLossDivider)
 	self.myHealthBarContainer = healthBarsContainer;
 	self.healthBar = healthBar;
 	self:SetFillStyle(Enum.StatusBarFillStyle.Reverse);
 	self:SetMinMaxValues(0, 1);
-	
+
 	if(optionalTempMaxHealthLossDivider) then
 		self.tempMaxHealthLossDivider = optionalTempMaxHealthLossDivider;
 		--Added 1px height stretch on the mask to remove a gap at the bottom of the divider, Remove this if this atlas changes: "UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider"
@@ -26,7 +26,7 @@ function TempMaxHealthLossMixin:OnMaxHealthModifiersChanged(value)
 	--current UI implementation only cares about showing max health loss, not gain
 	local clampedValue = Clamp(value, 0, 1);
 	--disable / enable all tempMaxHealth loss bars with CVar
-	if (GetCVarBool("showTempMaxHealthLoss")) then
+	if (CVarCallbackRegistry:GetCVarValueBool("showTempMaxHealthLoss")) then
 
 		self:Update_MaxHealthLoss(clampedValue);
 	end

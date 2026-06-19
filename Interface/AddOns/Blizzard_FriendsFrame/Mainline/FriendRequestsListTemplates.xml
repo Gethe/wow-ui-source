@@ -1,0 +1,192 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="FriendRequestsListRealIDWarningTemplate" mixin="FriendRequestsListRealIDWarningMixin" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color color="BLACK_FONT_COLOR" a="0.85"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PlayerIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
+					<Anchors>
+						<Anchor point="TOP" y="-55"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BattleNetIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PlayerIcon" relativePoint="TOP" x="-11" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ContinueButton" inherits="SocialUIActionButtonTemplate" text="CONTINUE">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="100" type="number"/>
+					<KeyValue key="maxWidth" value="400" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="95"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="ScrollableWarningText" inherits="ScrollingFontTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.PlayerIcon" relativePoint="BOTTOM" y="-20"/>
+					<Anchor point="LEFT" x="30"/>
+					<Anchor point="RIGHT" x="-30"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.ContinueButton" relativePoint="TOP" y="20"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="fontName" value="UserScaledFontGameHighlight" type="string"/>
+				</KeyValues>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollableWarningText" relativePoint="TOPRIGHT" x="17"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollableWarningText" relativePoint="BOTTOMRIGHT" x="17"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel function="nop"/>
+		</Scripts>
+	</Frame> 
+
+	<Frame name="FriendRequestsListSocialViewTemplate" inherits="SocialUIContactsFrameTemplate" mixin="FriendRequestsListSocialViewMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="RealIDWarning" inherits="FriendRequestsListRealIDWarningTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopDivider" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomDivider" y="5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="FriendRequestsListSocialCardAcceptButtonTemplate" virtual="true" mixin="FriendRequestsListSocialCardAcceptButtonMixin" inherits="UserScaledFrameTemplate">
+		<Size x="90" y="34"/>
+		<KeyValues>
+			<KeyValue key="baseWidth" value="90" type="number"/>
+			<KeyValue key="baseHeight" value="34" type="number"/>
+			<KeyValue key="maxWidth" value="110" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="UserScaledFontGameHighlight" justifyH="CENTER" justifyV="MIDDLE" maxLines="1" wordwrap="false" text="ACCEPT">
+					<Anchors>
+						<Anchor point="LEFT" x="8"/>
+						<Anchor point="RIGHT" x="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-tertiary-normal"/>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-tertiary-pressed"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-normal" alphaMode="ADD" alpha="0.6"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<DropdownButton name="FriendRequestsListSocialCardDeclineButtonTemplate" virtual="true" mixin="FriendRequestsListSocialCardDeclineButtonMixin" inherits="UserScaledFrameTemplate">
+		<Size x="23" y="23"/>
+		<KeyValues>
+			<KeyValue key="baseWidth" value="23" type="number"/>
+			<KeyValue key="baseHeight" value="23" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+		</KeyValues>
+		<NormalTexture atlas="auctionhouse-ui-filter-redx" setAllPoints="true"/>
+		<HighlightTexture atlas="auctionhouse-ui-filter-redx" setAllPoints="true" alphaMode="ADD" alpha="0.4"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</DropdownButton>
+
+	<Button name="FriendRequestsListSocialCardTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="FriendRequestsListSocialCardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="70" type="number"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+
+			<KeyValue key="textHolderTopLeftXOffset" value="10" type="number"/>
+			<KeyValue key="textHolderTopLeftYOffset" value="-11" type="number"/>
+			<KeyValue key="textHolderRightXOffset" value="-6" type="number"/>
+			<KeyValue key="textHolderBottomYOffset" value="8" type="number"/>
+
+			<KeyValue key="acceptButtonXOffset" value="-4" type="number"/>
+			<KeyValue key="acceptButtonYOffset" value="-11" type="number"/>
+
+			<KeyValue key="declineButtonXOffset" value="5" type="number"/>
+			<KeyValue key="declineButtonYOffset" value="3" type="number"/>
+
+			<!-- For the text lines on the card -->
+			<KeyValue key="lineSpacing" value="4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="AcceptButton" inherits="FriendRequestsListSocialCardAcceptButtonTemplate">
+				<!-- Anchored dynamically in LayoutScaledContent -->
+			</Button>
+
+			<DropdownButton parentKey="DeclineButton" inherits="FriendRequestsListSocialCardDeclineButtonTemplate">
+				<!-- Anchored dynamically in LayoutScaledContent -->
+			</DropdownButton>
+
+			<Frame parentKey="TextHolder">
+				<!-- Anchored dynamically in LayoutScaledContent -->
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="friends-card-default" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="RequestTimestamp" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextHolder"/>
+						<Anchor point="RIGHT" relativeKey="$parent.TextHolder"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="UserScaledFontHeader" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RequestTimestamp" relativePoint="BOTTOMLEFT" y="-4"/>
+						<Anchor point="RIGHT" relativeKey="$parent.TextHolder"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="FriendType" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+						<Anchor point="RIGHT" relativeKey="$parent.TextHolder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="friends-card-selected" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+</Ui>

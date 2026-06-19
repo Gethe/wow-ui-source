@@ -132,6 +132,9 @@ function AutoComplete_OnLoad(self)
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	EventRegistry:RegisterCallback("UI.QueryStickyFocusFrames", function(owner, request)
+		request:AddFrame(owner);
+	end, self);
 end
 
 local function CheckRequestGuildRoster(canRequestGuildRoster )

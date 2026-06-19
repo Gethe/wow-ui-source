@@ -273,6 +273,40 @@ function HousingFramesUtil.ShowFixtureDecorActionConfirmation(callback)
 	StaticPopup_Show("HOUSING_FIXTURE_DECOR_ACTION_CONFIRM", nil, nil, { callback = callback });
 end
 
+function HousingFramesUtil.IsBlueprintOperationInProgress()
+	if not HousingBlueprintImportFrame then
+		return false;
+	end
+
+	return HousingBlueprintImportFrame:IsOperationInProgress() 
+		or HousingBlueprintExportFrame:IsOperationInProgress() 
+		or HousingBlueprintRenameFrame:IsOperationInProgress();
+end
+
+function HousingFramesUtil.ShowBlueprintExport()
+	if not HousingBlueprintExportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintExportFrame:StartExportFlow();
+end
+
+function HousingFramesUtil.ShowBlueprintRoomExport(roomGUID)
+	if not HousingBlueprintExportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintExportFrame:StartRoomExportFlow(roomGUID);
+end
+
+function HousingFramesUtil.ShowBlueprintImport(optionalShareCode)
+	if not HousingBlueprintImportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintImportFrame:StartImportFlow(optionalShareCode);
+end
+
 -- Handler for events that may fire while relevant Housing addons may not be loaded
 HousingEventHandlerMixin = {}
 
@@ -428,6 +462,16 @@ function HousingEventHandlerMixin:ShowHousingItemAcquiredAlert(itemType, itemNam
 	HousingItemEarnedAlertFrameSystem:AddAlert(rewardData);
 end
 
+function HousingEventHandlerMixin:OnResetHouseFailed(result)
+	local errorMessage = ERR_HOUSE_RESET_FAILED;
+
+	local resultText = HousingResultToErrorText[result];
+	if resultText and resultText ~= "" then
+		errorMessage = ERR_HOUSE_RESET_FAILED_FMT:format(resultText);
+	end
+	UIErrorsFrame:AddExternalErrorMessage(errorMessage);
+end
+
 local HousingEventHandler = CreateAndInitFromMixin(HousingEventHandlerMixin);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_PLOT_ENTERED", HousingEventHandler.OnPlotEntered, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGED", HousingEventHandler.OnEditorModeChanged, HousingEventHandler);
@@ -442,3 +486,4 @@ EventRegistry:RegisterFrameEventAndCallback("SHOW_PLAYER_EVICTED_DIALOG", Housin
 EventRegistry:RegisterFrameEventAndCallback("SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG", HousingEventHandler.ShowOwnershipTransferRequestConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_STAIR_DIRECTION_CONFIRMATION", HousingEventHandler.ShowStairDirectionConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("NEW_HOUSING_ITEM_ACQUIRED", HousingEventHandler.ShowHousingItemAcquiredAlert, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("HOUSE_RESET_FAILED", HousingEventHandler.OnResetHouseFailed, HousingEventHandler);

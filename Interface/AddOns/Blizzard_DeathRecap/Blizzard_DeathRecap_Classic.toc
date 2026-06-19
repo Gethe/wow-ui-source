@@ -1,0 +1,5 @@
+## Title: Blizzard DeathRecap
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\Blizzard_DeathRecap_Bootstrap.lua [Bootstrap]

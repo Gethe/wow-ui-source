@@ -143,7 +143,7 @@ local FrameAPIModelSceneFrameActorBase =
 
 			Returns =
 			{
-				{ Name = "guid", Type = "WOWGUID", Nilable = false, ConditionalSecret = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

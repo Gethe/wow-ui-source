@@ -2,6 +2,7 @@ local UnitHealPredictionCalculatorAPI =
 {
 	Name = "UnitHealPredictionCalculatorAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

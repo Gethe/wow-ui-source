@@ -1,5 +1,13 @@
 REQUIRED_REST_HOURS = 5;
 
+local function PlayerFrame_UpdateForClientScene(self, sceneType)
+	if sceneType == Enum.ClientSceneType.MinigameSceneType then
+		self:Hide();
+	else
+		self:SetShown(not C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerFrameDisabled));
+	end
+end
+
 function PlayerFrame_OnLoad(self)
 	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
@@ -35,7 +43,7 @@ function PlayerFrame_OnLoad(self)
 	healthLossTexture:SetTexelSnappingBias(0);
 	healthLossTexture:SetSnapToPixelGrid(false);
 	
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
 	
 	local tempMaxHPLossTexture = tempMaxHealthLossBar:GetStatusBarTexture();
 	tempMaxHPLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
@@ -61,6 +69,8 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("CLIENT_SCENE_OPENED");
+	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
@@ -76,7 +86,7 @@ function PlayerFrame_OnLoad(self)
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		local which = nil;
@@ -151,6 +161,11 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdateReadyCheck();
+	elseif (event == "CLIENT_SCENE_OPENED") then
+		local sceneType = ...;
+		PlayerFrame_UpdateForClientScene(self, sceneType);
+	elseif (event == "CLIENT_SCENE_CLOSED") then
+		PlayerFrame_UpdateForClientScene(self, nil);
 	elseif (event == "PLAYTIME_CHANGED") then
 		PlayerFrame_UpdatePlaytime();
 	elseif (event == "READY_CHECK" or event == "READY_CHECK_CONFIRM") then
@@ -646,9 +661,10 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
 	PlayerLevelText:Hide();
 
-	PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
-	if PlayerFrameBottomManagedFramesContainer:IsShown() then
-		PlayerFrameBottomManagedFramesContainer:Layout();
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
+	playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+	if playerBottomManagedFrameContainer:IsShown() then
+		playerBottomManagedFrameContainer:Layout();
 	end
 end
 
@@ -751,15 +767,16 @@ function PlayerFrame_ToPlayerArt(self)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -29);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
 
 	if alternatePowerBar then
-		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
+		playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
 	else
-		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+		playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
 	end
 
-	if PlayerFrameBottomManagedFramesContainer:IsShown() then
-		PlayerFrameBottomManagedFramesContainer:Layout();
+	if playerBottomManagedFrameContainer:IsShown() then
+		playerBottomManagedFrameContainer:Layout();
 	end
 end
 

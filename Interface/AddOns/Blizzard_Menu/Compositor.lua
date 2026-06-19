@@ -6,6 +6,11 @@ local function PoolReset(pool, region, new)
 
 	-- The anchors were already cleared in SetToDefaults(), so we only need to hide the frame.
 	region:Hide();
+
+	if not new then
+		-- Set to dummy parent to avoid it remaining on screen when unused.
+		region:SetParent(frameDummy);
+	end
 end
 
 local function TemplatePoolReset(pool, region, new, template)

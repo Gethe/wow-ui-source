@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	
-	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="SharedTooltipTemplate" enableKeyboard="true">
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" roleset="alwaysIncluded" inherits="SharedTooltipTemplate" enableKeyboard="true">
 		<Scripts>
 			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>

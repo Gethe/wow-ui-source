@@ -2,7 +2,7 @@
 ..\Blizzard_SharedXML\UI.xsd">
 <Script file="ArchaeologyProgressBar.lua"/>
 
-<Frame name="ArcheologyDigsiteProgressBar" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeArchaeologyBarSystemTemplate" mixin="ArcheologyDigsiteProgressBarMixin" hidden="true">
+<Frame name="ArcheologyDigsiteProgressBar" parent="UIParent" inherits="BottomManagedFrameTemplate, EditModeArchaeologyBarSystemTemplate" mixin="ArcheologyDigsiteProgressBarMixin" hidden="true">
 	<Size x="200" y="30"/>
 	<KeyValues>
 		<KeyValue key="layoutIndex" value="7" type="number"/>

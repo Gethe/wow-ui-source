@@ -534,7 +534,7 @@
 			<OnUpdate function="GroupLootFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<ContainedAlertFrame name="GroupLootContainer" inherits="UIParentBottomManagedFrameTemplate" parent="UIParent" hidden="true">
+	<ContainedAlertFrame name="GroupLootContainer" inherits="BottomManagedFrameTemplate" parent="UIParent" hidden="true">
 		<Size x="256" y="1"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="3" type="number"/>

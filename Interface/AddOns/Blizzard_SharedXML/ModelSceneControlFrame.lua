@@ -153,8 +153,8 @@ function ModelSceneControlButtonMixin:OnEnter()
 	self:GetParent():SetAlpha(1);
 	if ( GetCVar("UberTooltips") == "1" ) then
 		local tooltip = GetAppropriateTooltip();
-		local uiParent = GetAppropriateTopLevelParent();
-		GameTooltip_SetDefaultAnchor(tooltip, uiParent);
+		local topLevelParent = GetAppropriateTopLevelParent();
+		GameTooltip_SetDefaultAnchor(tooltip, topLevelParent);
 		GameTooltip_SetTitle(tooltip, self.tooltip);
 		if ( self.tooltipText ) then
 			GameTooltip_AddBodyLine(tooltip, self.tooltipText);

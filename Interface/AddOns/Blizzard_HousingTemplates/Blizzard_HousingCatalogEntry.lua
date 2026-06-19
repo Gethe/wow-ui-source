@@ -1,7 +1,6 @@
 local ModelSceneID = 691;
 local ActorTag = "decor";
 local QuestionMarkIconFileDataID = 134400;
-local ContentTrackingAtlasMarkup = CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0);
 
 -- This is decor-only for now but should be extended to support entry type and recordID generically
 local function GetMarketInfoIfDecor(entryVariantID)
@@ -402,9 +401,15 @@ function HousingCatalogEntryMixin:OnInteract(button, isDrag)
 
 	EventRegistry:TriggerEvent("HousingCatalogEntry.OnInteract", self, button, isDrag);
 
-	if IsModifiedClick("CHATLINK") then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local decorLink = C_HousingDecor.GetDecorHyperlink(self.entryVariantID.recordID);
 		ChatFrameUtil.InsertLink(decorLink);
+	elseif self:GetDisplayContext().showTrackingOptions and self:IsTrackable() and ContentTrackingUtil.IsTrackingModifierDown() then
+		self:TypeSpecificTrackEntry();
+		-- Update tooltip after tracking click since that changes the text
+		if GameTooltip:GetOwner() == self then
+			self:OnEnter();
+		end
 	elseif button == "RightButton" then
 		self:ShowContextMenu();
 	else
@@ -465,6 +470,16 @@ function HousingCatalogEntryMixin:AddTooltipTrackingLines(tooltip)
 	-- Optional override
 end
 
+function HousingCatalogEntryMixin:IsTrackable()
+	-- Optional override
+	return false;
+end
+
+function HousingCatalogEntryMixin:TypeSpecificTrackEntry()
+	-- Optional override
+	return false;
+end
+
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
 function HousingCatalogDecorEntryMixin:GetEntryData()
@@ -492,7 +507,19 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local displayContext = self:GetDisplayContext();
 
 	if entryInfo.isUniqueTrophy then
-		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP);
+		GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP, LIGHTBLUE_FONT_COLOR);
+	end
+
+	if entryInfo.subcategoryIDs then
+		for _, subcategoryID in ipairs(entryInfo.subcategoryIDs) do
+			local categoryName, subcategoryName = C_HousingCatalog.GetCatalogCategoryAndSubcategoryNames(subcategoryID);
+			if string.gmatch(subcategoryName, categoryName)() then
+				-- If the subcategory name includes the full name of the category, only display the subcategory name
+				GameTooltip_AddHighlightLine(tooltip, subcategoryName);
+			else
+				GameTooltip_AddHighlightLine(tooltip, string.format(HOUSING_DECOR_CATEGORIES_TOOLTIP, categoryName, subcategoryName));
+			end
+		end
 	end
 
 	local stored = Blizzard_HousingCatalogUtil.GetEntryNumStored(entryInfo);
@@ -549,20 +576,23 @@ function HousingCatalogDecorEntryMixin:AddTooltipTrackingLines(tooltip)
 		return;
 	end
 
-	if not ContentTrackingUtil.IsContentTrackingEnabled() then
-		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
-		return;
-	end
+	Blizzard_HousingCatalogUtil.AddDecorEntryTooltipTrackingText(tooltip, self.entryVariantID.recordID);
+end
 
-	if C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Decor, self.entryVariantID.recordID) then
-		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, self.entryVariantID.recordID) then
-			GameTooltip_AddColoredLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
-		else
-			GameTooltip_AddInstructionLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+function HousingCatalogDecorEntryMixin:GetTypeSpecificIsValid()
+	local isValid, invalidTooltip, invalidError = true, nil, nil;
+
+	local canAttachPet = C_HousingDecor.GetDecorCanAttachPet(self.entryVariantID.recordID);
+	if canAttachPet then
+		local spentPetPlacementBudget = C_HousingDecor.GetSpentPetPlacementBudget();
+		local maxPetPlacementBudget = C_HousingDecor.GetMaxPetPlacementBudget();
+		local isAtBudgetMax = C_HousingDecor.HasMaxPlacementBudget() and spentPetPlacementBudget and maxPetPlacementBudget and spentPetPlacementBudget >= maxPetPlacementBudget;
+		if isAtBudgetMax then
+			isValid = false;
+			invalidTooltip = PLACED_PET_DECOR_LIMIT_REACHED;
 		end
-	else
-		GameTooltip_AddDisabledLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 	end
+	return isValid, invalidTooltip, invalidError;
 end
 
 function HousingCatalogDecorEntryMixin:UpdateTypeSpecificVisuals()
@@ -587,12 +617,24 @@ StaticPopupDialogs["HOUSING_MAX_DECOR_REACHED"] = {
 	button2 = nil
 };
 
+function HousingCatalogDecorEntryMixin:IsTrackable()
+	return self:HasValidData() and not self:IsBundleItem();
+end
+
+function HousingCatalogDecorEntryMixin:TypeSpecificTrackEntry()
+	Blizzard_HousingCatalogUtil.TrackHousingDecorID(self.entryInfo.recordID);
+end
+
 function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
+	if not self:HasValidData() then
+		return;
+	end
+
 	if not C_HouseEditor.IsHouseEditorActive() then
 		return;
 	end
 
-	if not self:HasValidData() or (not C_HousingDecor.IsPreviewState() and Blizzard_HousingCatalogUtil.GetEntryNumStored(self.entryInfo) <= 0) then
+	if not C_HousingDecor.IsPreviewState() and Blizzard_HousingCatalogUtil.GetEntryNumStored(self.entryInfo) <= 0 then
 		return;
 	end
 
@@ -603,21 +645,25 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 		end
 	end
 
-	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
-	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
-	local hasMaxDecor = C_HousingDecor.HasMaxPlacementBudget();
-
-	if hasMaxDecor and decorPlaced >= maxDecor then
-		StaticPopup_Show("HOUSING_MAX_DECOR_REACHED");
-		return;
-	end
-
 	local isValid, invalidTooltip, invalidError = self:GetIsValid();
 	if not isValid then
 		local errorMessage = invalidError or invalidTooltip;
 		if errorMessage then
-			UIErrorsFrame:AddMessage(errorMessage, RED_FONT_COLOR:GetRGBA());
+			UIErrorsFrame:AddExternalErrorMessage(errorMessage);
 		end
+		return;
+	end
+
+	local placedDecor = C_HousingDecor.GetSpentPlacementBudget();
+	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
+	local hasMaxDecor = C_HousingDecor.HasMaxPlacementBudget();
+	-- If budget counts aren't available, we're not in a situation where we should be attempting to place decor
+	if not maxDecor or not placedDecor then
+		return;
+	end
+
+	if hasMaxDecor and placedDecor >= maxDecor then
+		StaticPopup_Show("HOUSING_MAX_DECOR_REACHED");
 		return;
 	end
 
@@ -826,7 +872,18 @@ end
 function HousingCatalogRoomEntryMixin:GetTypeSpecificIsValid()
 	local isValid, invalidTooltip, invalidError = true, nil, nil;
 
-	local isAtBudgetMax = C_HousingLayout.HasRoomPlacementBudget() and C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = false;
+	if C_HousingLayout.HasRoomPlacementBudget() then
+		local spentBudget = C_HousingLayout.GetSpentPlacementBudget();
+		local maxBudget = C_HousingLayout.GetRoomPlacementBudget();
+		if not spentBudget or not maxBudget then
+			-- If budgets aren't available, fallback to acting as if they're insufficient just in case
+			isAtBudgetMax = true;
+		else
+			isAtBudgetMax = spentBudget >= maxBudget;
+		end
+	end
+	
 	if isAtBudgetMax then
 		isValid = false;
 		invalidTooltip = ERR_PLACED_ROOM_LIMIT_REACHED;
@@ -903,7 +960,7 @@ function HousingCatalogRoomEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	if not isValid then
 		local errorMessage = invalidError or invalidTooltip;
 		if errorMessage then
-			UIErrorsFrame:AddMessage(errorMessage, RED_FONT_COLOR:GetRGBA());
+			UIErrorsFrame:AddExternalErrorMessage(errorMessage);
 		end
 		return;
 	end

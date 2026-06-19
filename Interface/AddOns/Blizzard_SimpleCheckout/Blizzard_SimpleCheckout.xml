@@ -9,10 +9,7 @@
 		<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 	</Line>
 	<ScopedModifier forbidden="true">
-		<Checkout name="SimpleCheckout" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" IMEFont="ChatFontNormal" toplevel="true" hidden="true" mixin="SimpleCheckoutMixin">
-			<Anchors>
-				<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent"/>
-			</Anchors>
+		<Checkout name="SimpleCheckout" frameStrata="FULLSCREEN_DIALOG" IMEFont="ChatFontNormal" toplevel="true" hidden="true" mixin="SimpleCheckoutMixin">
 			<Size x="800" y="600"/>
 			<Frames>
 				<Button parentKey="CloseButton">

@@ -144,6 +144,15 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetDelveEntranceTitleString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "title", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDelvesAffixSpellsForSeason",
 			Type = "Function",
 
@@ -187,6 +196,36 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetFlavorNodeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFlavorNodeNameForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLockedTextForCompanion",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -198,7 +237,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -287,7 +326,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "entranceType", Type = "number", Nilable = false },
+				{ Name = "entranceType", Type = "TieredEntranceType", Nilable = false },
 			},
 		},
 		{
@@ -319,6 +358,15 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "unseenCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldTierDifficultyForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "difficulty", Type = "WorldTierDifficulty", Nilable = false },
 			},
 		},
 		{
@@ -522,11 +570,13 @@ local DelvesUI =
 			{
 				{ Name = "tier", Type = "number", Nilable = false },
 				{ Name = "suggestedILvl", Type = "number", Nilable = false },
+				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = false },
 				{ Name = "unlocked", Type = "bool", Nilable = false },
 				{ Name = "tierDescription", Type = "string", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "TieredEntranceRewardInfo", Nilable = false },
 				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
 				{ Name = "lockedReason", Type = "cstring", Nilable = true },
+				{ Name = "isLFG", Type = "bool", Nilable = false },
 			},
 		},
 	},

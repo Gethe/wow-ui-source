@@ -163,6 +163,22 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetPetInfoTableBySpeciesID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "petInfo", Type = "PetJournalPetInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetLoadOutInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -469,23 +485,25 @@ local PetJournalInfo =
 			Fields =
 			{
 				{ Name = "speciesID", Type = "number", Nilable = false },
-				{ Name = "customName", Type = "string", Nilable = true },
-				{ Name = "petLevel", Type = "number", Nilable = false },
-				{ Name = "xp", Type = "number", Nilable = false },
-				{ Name = "maxXP", Type = "number", Nilable = false },
-				{ Name = "displayID", Type = "number", Nilable = false },
-				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "customName", Type = "cstring", Nilable = true },
+				{ Name = "petLevel", Type = "number", Nilable = true },
+				{ Name = "xp", Type = "number", Nilable = true },
+				{ Name = "maxXP", Type = "number", Nilable = true },
+				{ Name = "displayID", Type = "number", Nilable = true },
+				{ Name = "isFavorite", Type = "bool", Nilable = true },
 				{ Name = "icon", Type = "fileID", Nilable = false },
-				{ Name = "petType", Type = "number", Nilable = false },
+				{ Name = "petType", Type = "luaIndex", Nilable = false },
 				{ Name = "creatureID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "sourceText", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "isWild", Type = "bool", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "sourceText", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "isWild", Type = "bool", Nilable = true },
 				{ Name = "canBattle", Type = "bool", Nilable = false },
 				{ Name = "tradable", Type = "bool", Nilable = false },
 				{ Name = "unique", Type = "bool", Nilable = false },
 				{ Name = "obtainable", Type = "bool", Nilable = false },
+				{ Name = "canAttachToDecor", Type = "bool", Nilable = false },
+				{ Name = "creatureModelScale", Type = "number", Nilable = true },
 			},
 		},
 	},

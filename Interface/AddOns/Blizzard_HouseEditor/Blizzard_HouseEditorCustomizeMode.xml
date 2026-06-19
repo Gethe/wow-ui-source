@@ -1,5 +1,108 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="DecorCustomizationsPaneTemplate" mixin="DecorCustomizationsPaneMixin" inherits="ResizeLayoutFrame" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="270" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
+					<Size y="40"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="6" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DecorName" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-10"/>
+						<Anchor point="TOPRIGHT" x="-30" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="CustomizeComponentContainer" inherits="VerticalLayoutFrame">
+				<Size y="144"/>
+				<KeyValues>
+					<KeyValue key="spacing" value="3" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.WoodHeader" relativePoint="BOTTOMLEFT" y="10"/>
+					<Anchor point="TOPRIGHT"  relativeKey="$parent.WoodHeader" relativePoint="BOTTOMRIGHT" y="10"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PetPane" inherits="DecorPetCustomizationTemplate">
+						<Size x="270" y="150"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="DyePane" inherits="HousingDyePaneTemplate">
+						<Size x="250" y="200"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="ButtonFrame">
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="TOP" relativeKey="$parent.CustomizeComponentContainer" relativePoint="BOTTOM" x="0" y="-15"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CustomizeComponentContainer" relativePoint="BOTTOM" x="0" y="-45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Divider" atlas="perks-divider-short">
+							<Size y="4"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="15" y="45"/>
+								<Anchor point="BOTTOMRIGHT" x="-15" y="45"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x ="100" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" x="20" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="15"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="APPLY" motionScriptsWhileDisabled="true">
+						<Size x ="100" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="-20" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="15"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="HouseEditorCustomizeModeTemplate" mixin="HouseEditorCustomizeModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
@@ -15,12 +118,45 @@
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="DecorCustomizationsPane" inherits="HousingDyePaneTemplate" hidden="true">
+			<Frame parentKey="DecorCustomizationsPane" inherits="DecorCustomizationsPaneTemplate" hidden="true">
 				<Size x="250" y="290"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-125" y="135"/> 
 				</Anchors>
 			</Frame>
+
+			<Frame parentKey="PetCustomizationsPane" inherits="CustomizeDecorPetFrameTemplate" hidden="true">
+		
+			</Frame>
+
+			<Button parentKey="PetCustomizationsPaneExpandButton" mixin="PetCustomizationsPaneExpandButtonMixin" clampedToScreen="true" hidden="true">
+				<Size x="64" y="72"/>
+				<Anchors>
+					<Anchor point="LEFT" y="150"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="house-chest-open-drawer-button-pets">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4"/>
+								<Anchor point="BOTTOMRIGHT" x="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="OverlayIcon" atlas="house-chest-open-drawer-button-pets" alphaMode="ADD" alpha="0.5" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
 
 			<Frame name="DyeSelectionPopout" frameStrata="HIGH" inherits="HousingDecorDyeSlotPopoutTemplate" hidden="true">
 				<Size x="250" y="450"/>
@@ -36,6 +172,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent" inherit="prepend"/>
 			<OnShow method="OnShow" inherit="prepend"/>
 			<OnHide method="OnHide" inherit="prepend"/>

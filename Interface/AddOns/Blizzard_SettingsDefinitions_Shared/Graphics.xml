@@ -240,21 +240,25 @@
 					<Anchor point="BOTTOMRIGHT" x="-6" y="-16"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="RaidTab" inherits="MinimalTabTemplate">
+			<Button parentKey="RaidTab" inherits="MinimalTabTemplate" mixin="SettingsTabNarrationMixin">
 				<Size y="37"/>
 				<KeyValues>
 					<KeyValue key="tabText" value="RAID_SETTINGS" type="global"/>
 					<KeyValue key="categorySet" value="Settings.CategorySet.AddOns" type="global"/>
+					<KeyValue key="tabIndex" value="2" type="number"/>
+					<KeyValue key="numTabs" value="2" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-30" y="10"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="BaseTab" inherits="MinimalTabTemplate">
+			<Button parentKey="BaseTab" inherits="MinimalTabTemplate" mixin="SettingsTabNarrationMixin">
 				<Size y="37"/>
 				<KeyValues>
 					<KeyValue key="tabText" value="BASE_SETTINGS_TAB" type="global"/>
 					<KeyValue key="categorySet" value="Settings.CategorySet.Game" type="global"/>
+					<KeyValue key="tabIndex" value="1" type="number"/>
+					<KeyValue key="numTabs" value="2" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.RaidTab" relativePoint="TOPLEFT" x="0" y="0"/>

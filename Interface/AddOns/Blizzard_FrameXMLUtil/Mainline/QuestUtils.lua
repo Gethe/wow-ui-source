@@ -806,7 +806,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- money
 	local money = GetQuestLogRewardMoney(questID);
 	if ( money > 0 ) then
-		SetTooltipMoney(tooltip, money, nil);
+		GameTooltip_AddMoneyLine(tooltip, money);
 		if (isWarModeDesired and QuestUtils_IsQuestWorldQuest(questID) and questHasWarModeBonus) then
 			tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(C_PvP.GetWarModeRewardBonus()));
 		end

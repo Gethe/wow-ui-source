@@ -98,23 +98,36 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" text="RAF_REWARDS">
-					<Size x="350"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Background" y="-27"/>
-					</Anchors>
-					<Color color="NORMAL_FONT_COLOR" />
-				</FontString>
-				<FontString parentKey="Description" inherits="FriendsFont_11" text="RAF_REWARDS_DESC">
-					<Size x="330"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Title" inherits="TruncatedTooltipScriptTemplate">
+				<Size y="20" x="350"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Background" y="-27"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="UserScaledFontGameHighlight" text="RAF_REWARDS">
+							<Size x="350"/>
+							<Color color="NORMAL_FONT_COLOR" />
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Description" inherits="TruncatedTooltipScriptTemplate">
+				<Size y="40" x="330"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="UserScaledFontGameNormalSmall" maxLines="2" text="RAF_REWARDS_DESC">
+							<Size x="330"/>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate"/>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -190,6 +203,10 @@
 	</CheckButton>
 
 	<Button name="RecruitAFriendRewardButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitAFriendRewardButtonMixin">
+		<KeyValues>
+			<KeyValue key="Icon_RingClaimed" value="RecruitAFriend_ClaimPane_GoldRing" type="string"/>
+			<KeyValue key="Icon_RingUnclaimed" value="RecruitAFriend_ClaimPane_SepiaRing" type="string"/>
+		</KeyValues>
 		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -230,16 +247,21 @@
 				</Layers>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
+			<Frame parentKey="Months" inherits="TruncatedTooltipScriptTemplate">
+				<Size x="150" y="12"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="UserScaledFontGameNormal" justifyH="LEFT">
+							<Size x="150" y="12"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Months" inherits="FriendsFont_Normal" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="7"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+
 	</Frame>
 
 	<Frame name="RecruitAFriendRecruitmentFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="RecruitAFriendRecruitmentFrameMixin">
@@ -340,6 +362,13 @@
 	</FontString>
 
 	<Button name="RecruitActivityButtonTemplate" registerForClicks="LeftButtonUp" virtual="true" mixin="RecruitActivityButtonMixin">
+		<KeyValues>
+			<KeyValue key="Icon_CursorOverChecked" value="RecruitAFriend_RecruitedFriends_CursorOverChecked" type="string"/>
+			<KeyValue key="Icon_CursorOver" value="RecruitAFriend_RecruitedFriends_CursorOver" type="string"/>
+			<KeyValue key="Icon_ActiveChest" value="RecruitAFriend_RecruitedFriends_ActiveChest" type="string"/>
+			<KeyValue key="Icon_OpenChest" value="RecruitAFriend_RecruitedFriends_OpenChest" type="string"/>
+			<KeyValue key="Icon_ClaimedChest" value="RecruitAFriend_RecruitedFriends_ClaimedChest" type="string"/>
+		</KeyValues>
 		<Size x="35" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -404,6 +433,9 @@
 	</Button>
 
 	<Button name="RecruitListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonMixin">
+		<KeyValues>
+			<KeyValue key="dynamicBackground" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -463,193 +495,201 @@
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" />
 	</Button>
 
-	<Frame name="RecruitAFriendFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="RecruitAFriendFrameMixin" inherits="CallbackRegistrantTemplate">
+	<Frame name="RewardClaimingTemplate" virtual="true" mixin="RewardClaimingMixin">
+		<KeyValues>
+			<KeyValue key="legacyBackgroundAtlas" value="RecruitAFriend_ClaimPane_Parchment" type="string"/>
+			<KeyValue key="backgroundAtlas" value="recruitafriend_claimpane_parchment_generic" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Background" x="-7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="230" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-33"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Frame parentKey="RewardClaiming" useParentLevel="true">
-				<Size x="330" y="100"/>
-				<KeyValues>
-					<KeyValue key="legacyBackgroundAtlas" value="RecruitAFriend_ClaimPane_Parchment" type="string"/>
-					<KeyValue key="backgroundAtlas" value="recruitafriend_claimpane_parchment_generic" type="string"/>
-				</KeyValues>
+			<Frame parentKey="MonthCount" inherits="TruncatedTooltipFontStringWrapperTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-83"/>
-					<Anchor point="TOPRIGHT" x="-7" y="-83"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-15"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="false">
-							<Anchors>
-								<Anchor point="TOPLEFT" y="-3"/>
-								<Anchor point="BOTTOMRIGHT" y="3"/>
-							</Anchors>
-						</Texture>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
+							<Size x="230" y="14"/>
+							<Color color="NORMAL_FONT_COLOR" />
+						</FontString>
 					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="Bracket_TopLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftTop" useAtlasSize="true">
+				</Layers>
+			</Frame>
+			<Frame parentKey="NextRewardName" inherits="TruncatedTooltipFontStringWrapperTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-48"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
+							<Size x="230" y="12"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="NextRewardInfoButton" inherits="RAFInfoButtonTemplate" mixin="RecruitAFriendNextRewardInfoButtonMixin">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="-2" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
+				<Size x="49" y="49"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="46" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
 							<Anchors>
-								<Anchor relativeKey="$parent.Background" point="TOPLEFT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Bracket_TopRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightTop" useAtlasSize="true">
+						<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.5">
 							<Anchors>
-								<Anchor relativeKey="$parent.Background" point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Bracket_BottomRight" atlas="RecruitAFriend_ClaimPane_CornerBracket_RightBottom" useAtlasSize="true">
-							<Anchors>
-								<Anchor relativeKey="$parent.Background" point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Bracket_BottomLeft" atlas="RecruitAFriend_ClaimPane_CornerBracket_LeftBottom" useAtlasSize="true">
-							<Anchors>
-								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Background" x="-7" y="-7"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
-							<Size x="230" y="12"/>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+								<MaskedTexture childKey="IconOverlay"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="IconBorder" atlas="RecruitAFriend_ClaimPane_SepiaRing">
+							<Size x="64" y="64"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-33"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-						</FontString>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="ClaimFlash" atlas="azsharawards-fullglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ClaimFlashStar" atlas="azsharawards-starglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="MonthCount" inherits="TruncatedTooltipFontStringWrapperTemplate">
+					<ModelScene parentKey="ModelScene" inherits="NonInteractableWrappedModelSceneTemplate" frameStrata="HIGH" hidden="true">
+						<Size x="125" y="125"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-15"/>
+							<Anchor point="CENTER" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
-									<KeyValues>
-										<KeyValue key="minLineHeight" value="12" type="number"/>
-									</KeyValues>
-									<Size x="230" y="14"/>
-									<Color color="NORMAL_FONT_COLOR" />
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Frame parentKey="NextRewardName" inherits="TruncatedTooltipFontStringWrapperTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-48"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
-									<KeyValues>
-										<KeyValue key="minLineHeight" value="10" type="number"/>
-									</KeyValues>
-									<Size x="230" y="12"/>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Button parentKey="NextRewardInfoButton" inherits="RAFInfoButtonTemplate" mixin="RecruitAFriendNextRewardInfoButtonMixin">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="-2" y="2"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
-						<Size x="49" y="49"/>
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="46" />
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.5">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
-									<MaskedTextures>
-										<MaskedTexture childKey="Icon"/>
-										<MaskedTexture childKey="IconOverlay"/>
-									</MaskedTextures>
-								</MaskTexture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="3">
-								<Texture parentKey="IconBorder" atlas="RecruitAFriend_ClaimPane_SepiaRing" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="4">
-								<Texture parentKey="ClaimFlash" atlas="azsharawards-fullglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="ClaimFlashStar" atlas="azsharawards-starglow" useAtlasSize="true" ignoreParentAlpha="true" alphaMode="ADD" alpha="0">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<ModelScene parentKey="ModelScene" inherits="NonInteractableWrappedModelSceneTemplate" frameStrata="HIGH" hidden="true">
-								<Size x="125" y="125"/>
-								<Anchors>
-									<Anchor point="CENTER" relativePoint="BOTTOMRIGHT"/>
-								</Anchors>
-							</ModelScene>
-						</Frames>
-						<Animations>
-							<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
-								<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
-							</AnimationGroup>
-							<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
-								<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration=".4"/>
-								<Alpha childKey="ClaimGlowSpin" fromAlpha="0" toAlpha="0.3" duration=".4"/>
-							</AnimationGroup>
-							<AnimationGroup parentKey="ClaimGlowOutAnim" setToFinalAlpha="true">
-								<Alpha childKey="ClaimGlow" fromAlpha="0.8" toAlpha="0" duration=".4"/>
-								<Alpha childKey="ClaimGlowSpin" fromAlpha="0.3" toAlpha="0" duration=".4"/>
-							</AnimationGroup>
-							<AnimationGroup parentKey="ClaimFlashAnim" setToFinalAlpha="true">
-								<Alpha childKey="ClaimFlash" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
-								<Alpha childKey="ClaimFlash" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
-								<Alpha childKey="ClaimFlashStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
-								<Alpha childKey="ClaimFlashStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
-							</AnimationGroup>
-						</Animations>
-						<Scripts>
-							<OnLoad method="OnLoad" />
-						</Scripts>
-					</Button>
-					<Frame parentKey="Inset" inherits="InsetFrameTemplate" frameStrata="MEDIUM" setAllPoints="true" />
-					<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate, RAFClaimRewardButtonBaseTemplate" text="RAF_VIEW_ALL_REWARDS" motionScriptsWhileDisabled="true" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
-						<Size x="155" y="21"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="7" y="10"/>
-						</Anchors>
-						 <Scripts>
-							 <OnLoad method="OnLoad" />
-							 <OnClick method="OnClick" />
-						 </Scripts>
-					 </Button>
+					</ModelScene>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
+						<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
+						<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration=".4"/>
+						<Alpha childKey="ClaimGlowSpin" fromAlpha="0" toAlpha="0.3" duration=".4"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ClaimGlowOutAnim" setToFinalAlpha="true">
+						<Alpha childKey="ClaimGlow" fromAlpha="0.8" toAlpha="0" duration=".4"/>
+						<Alpha childKey="ClaimGlowSpin" fromAlpha="0.3" toAlpha="0" duration=".4"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ClaimFlashAnim" setToFinalAlpha="true">
+						<Alpha childKey="ClaimFlash" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+						<Alpha childKey="ClaimFlash" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+						<Alpha childKey="ClaimFlashStar" fromAlpha="0" toAlpha="1" order="0" duration=".4"/>
+						<Alpha childKey="ClaimFlashStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+				</Scripts>
+			</Button>
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate" frameStrata="MEDIUM" setAllPoints="true" />
+			<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate, RAFClaimRewardButtonBaseTemplate" text="RAF_VIEW_ALL_REWARDS" motionScriptsWhileDisabled="true" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
+				<Size x="155" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="7" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="RecruitAFriendFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="RecruitAFriendFrameMixin" inherits="CallbackRegistrantTemplate">
+		<KeyValues>
+			<KeyValue key="fractionString" value="RAF_RECRUITED_FRIENDS_COUNT" type="global"/>
+			<KeyValue key="scrollContentsTemplate" value="RecruitListButtonTemplate" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="RewardClaiming" inherits="RewardClaimingTemplate" useParentLevel="true">
+				<Size x="330" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-83"/>
+					<Anchor point="TOPRIGHT" x="-7" y="-83"/>
+				</Anchors>
 			</Frame>
 			<Frame parentKey="RecruitList" useParentLevel="true">
 				<Anchors>
@@ -838,6 +878,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>

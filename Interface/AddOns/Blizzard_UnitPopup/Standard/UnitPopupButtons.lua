@@ -16,6 +16,10 @@ function UnitPopupAchievementButtonMixin:CanShow(contextData)
 end		
 
 function UnitPopupAchievementButtonMixin:OnClick(contextData)
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	InspectAchievements(contextData.unit);
 end
 
@@ -53,6 +57,125 @@ function UnitPopupBnetRemoveFavoriteButtonMixin:CanShow(contextData)
 	return contextData.friendsList and UnitPopupSharedUtil.IsPlayerFavorite(contextData);
 end 
 
+UnitPopupBnetFriendTagsButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupBnetFriendTagsButtonMixin:GetText(contextData)
+	local accountInfo = contextData.accountInfo;
+	local tagCount = accountInfo and accountInfo.friendTags and #accountInfo.friendTags or 0;
+	return SOCIAL_UI_BATTLE_NET_FRIEND_TAGS_LABEL:format(tagCount);
+end
+
+function UnitPopupBnetFriendTagsButtonMixin:CanShow(contextData)
+	return contextData.friendsList and C_BattleNet.AreFriendTagsEnabled();
+end
+
+local function AddTagButtonEntries(entries, friendTags)
+	for _index, friendTag in ipairs(friendTags) do
+		local tagButtonMixin = CreateFromMixins(UnitPopupBnetFriendTagButtonBaseMixin);
+		tagButtonMixin.friendTag = friendTag;
+		table.insert(entries, tagButtonMixin);
+	end
+end
+
+local function AddInterestsFriendTagButtons(entries)
+	table.insert(entries, UnitPopupBnetFriendTagInterestsSubsectionTitleMixin);
+	AddTagButtonEntries(entries, SocialUIUtil.GetBattleNetFriendTagInterestsUIOrder());
+end
+
+local function AddRolesFriendTagButtons(entries)
+	table.insert(entries, UnitPopupBnetFriendTagRolesSubsectionTitleMixin);
+	AddTagButtonEntries(entries, SocialUIUtil.GetBattleNetFriendTagRoleUIOrder());
+end
+
+function UnitPopupBnetFriendTagsButtonMixin:GetEntries()
+	local friendTagEntries = {};
+	AddInterestsFriendTagButtons(friendTagEntries);
+	AddRolesFriendTagButtons(friendTagEntries);
+
+	return friendTagEntries;
+end
+
+function UnitPopupBnetFriendTagsButtonMixin:CreateMenuDescription(rootDescription, contextData)
+	local description = UnitPopupButtonBaseMixin.CreateMenuDescription(self, rootDescription, contextData);
+
+	contextData.friendTagsDirty = false;
+	rootDescription:AddMenuReleasedCallback(function()
+		if not contextData.friendTagsDirty then
+			return;
+		end
+
+		local bnetIDAccount = contextData.bnetIDAccount;
+		local accountInfo = contextData.accountInfo;
+		if bnetIDAccount and accountInfo then
+			C_BattleNet.SetFriendTags(bnetIDAccount, accountInfo.friendTags or {});
+		end
+
+		contextData.friendTagsDirty = false;
+	end);
+
+	return description;
+end
+
+UnitPopupBnetFriendTagButtonBaseMixin = CreateFromMixins(UnitPopupCheckboxButtonMixin);
+
+function UnitPopupBnetFriendTagButtonBaseMixin:GetText(_contextData)
+	return SocialUIUtil.GetLabelForBattleNetFriendTag(self.friendTag);
+end
+
+function UnitPopupBnetFriendTagButtonBaseMixin:IsChecked(contextData)
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo or not accountInfo.friendTags then
+		return false;
+	end
+
+	return tContains(accountInfo.friendTags, self.friendTag);
+end
+
+function UnitPopupBnetFriendTagButtonBaseMixin:OnClick(contextData)
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return;
+	end
+
+	local friendTag = self.friendTag;
+	contextData.friendTagsDirty = true;
+
+	if self:IsChecked(contextData) then
+		tDeleteItem(accountInfo.friendTags, friendTag);
+	else
+		if not accountInfo.friendTags then
+			accountInfo.friendTags = {};
+		end
+		table.insert(accountInfo.friendTags, friendTag);
+	end
+
+	return MenuResponse.Refresh;
+end
+
+UnitPopupBnetFriendTagInterestsSubsectionTitleMixin = CreateFromMixins(UnitPopupSubsectionTitleMixin);
+
+function UnitPopupBnetFriendTagInterestsSubsectionTitleMixin:GetText(_contextData)
+	return SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_INTERESTS;
+end
+
+function UnitPopupBnetFriendTagInterestsSubsectionTitleMixin:GetColor()
+	return NORMAL_FONT_COLOR:GetRGB();
+end
+
+function UnitPopupBnetFriendTagInterestsSubsectionTitleMixin:ShouldQueueDivider()
+	return false;
+end
+
+UnitPopupBnetFriendTagRolesSubsectionTitleMixin = CreateFromMixins(UnitPopupSubsectionTitleMixin);
+
+function UnitPopupBnetFriendTagRolesSubsectionTitleMixin:GetText(_contextData)
+	return SOCIAL_UI_BATTLE_NET_FRIEND_TAG_ROLES_LABEL;
+end
+
+function UnitPopupBnetFriendTagRolesSubsectionTitleMixin:GetColor()
+	return NORMAL_FONT_COLOR:GetRGB();
+end
+
 UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
 
 function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)
@@ -85,13 +208,7 @@ function UnitPopupGuildSettingButtonMixin:GetText(contextData)
 end 
 
 function UnitPopupGuildSettingButtonMixin:OnClick(contextData)
-	if not GuildControlUI then
-		UIParentLoadAddOn("Blizzard_GuildControlUI");
-	end
-
-	if not GuildControlUI:IsShown() then
-		ShowUIPanel(GuildControlUI);
-	end
+	GuildControlUI_Show();
 end 
 
 function UnitPopupGuildSettingButtonMixin:CanShow(contextData)
@@ -222,7 +339,7 @@ function UnitPopupAddGuildBtagFriendButtonMixin:CanShow(contextData)
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	local hasBattleTag = UnitPopupSharedUtil.HasBattleTag();
 	local isAPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
-	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isAPlayer);
+	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isAPlayer, Enum.BattleNetFriendLevel.BattleTag);
 end	
 
 function UnitPopupBnetInviteButtonMixin:CanShow(contextData)

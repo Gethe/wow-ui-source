@@ -1,275 +1,172 @@
+local registeredInteractionManagerFrameInfo = { };
+local registeredInteractionManagerConditions = { };
+
+local function ValidateInteractionFrameInfo(interactionType, frameInfo)
+	if type(interactionType) ~= "number" then
+		error("RegisterPlayerInteraction expected interactionType to be a number.");
+	end
+
+	if type(frameInfo) ~= "table" then
+		error("RegisterPlayerInteraction expected frameInfo to be a table.");
+	end
+
+	if type(frameInfo.frame) ~= "string" then
+		error("RegisterPlayerInteraction expected frameInfo.frame to be a string.");
+	end
+
+	if frameInfo.loadFunc and type(frameInfo.loadFunc) ~= "function" then
+		error("RegisterPlayerInteraction expected frameInfo.loadFunc to be a function.");
+	end
+
+	if frameInfo.showFunc and type(frameInfo.showFunc) ~= "function" then
+		error("RegisterPlayerInteraction expected frameInfo.showFunc to be a function.");
+	end
+
+	if frameInfo.hideFunc and type(frameInfo.hideFunc) ~= "function" then
+		error("RegisterPlayerInteraction expected frameInfo.hideFunc to be a function.");
+	end
+	
+	return frameInfo;
+end
+
+local function ValidateInteractionConditions(interactionType, conditions)
+	if type(interactionType) ~= "number" then
+		error("AddPlayerInteractionConditions expected interactionType to be a number.");
+	end
+
+	if type(conditions) ~= "table" then
+		error("AddPlayerInteractionConditions expected conditions to be a table.");
+	end
+
+	if conditions.loadCondition and type(conditions.loadCondition) ~= "function" then
+		error("AddPlayerInteractionConditions expected conditions.loadCondition to be a function.");
+	end
+
+	if conditions.showCondition and type(conditions.showCondition) ~= "function" then
+		error("AddPlayerInteractionConditions expected conditions.showCondition to be a function.");
+	end
+
+	if conditions.hideCondition and type(conditions.hideCondition) ~= "function" then
+		error("AddPlayerInteractionConditions expected conditions.hideCondition to be a function.");
+	end
+
+	return conditions;
+end
+
 --[[
-frame = [REQUIRED][FRAME] - The frame that is intended to open
-showFunc = [OPTIONAL][FUNCTION] - This will happen when we recieve the event with this type.. If none is specified ShowUIPanel will be called by default.
-hideFunc = [OPTIONAL][FUNCTION] - This happens on PLAYER_INTERACTION_FRAME_HIDE. If nothing is specified, HideUIPanel will be called.
-loadFunc = [OPTIONAL][FUNCTION] - Only need to specify if the frame requires to be loaded before used.
-]]
-local InteractionManagerFrameInfo = {
-	[Enum.PlayerInteractionType.Merchant] =
-	{
-		frame = "MerchantFrame",
-		showFunc = "MerchantFrame_MerchantShow",
-		hideFunc = "MerchantFrame_MerchantClosed"
-	},
-	[Enum.PlayerInteractionType.Banker] =
-	{
-		frame = "BankFrame",
-		showFunc = "BankFrame_Open"
-	},
-	[Enum.PlayerInteractionType.CharacterBanker] =
-	{
-		frame = "BankFrame",
-		showFunc = "BankFrame_Open"
-	},
-	[Enum.PlayerInteractionType.AccountBanker] =
-	{
-		frame = "BankFrame",
-		showFunc = "BankFrame_Open"
-	},
-	[Enum.PlayerInteractionType.Trainer] =
+Registers frame behavior for a player interaction type.
+
+frame = [REQUIRED][STRING] - Global frame name. The frame may not be loaded yet.
+showFunc = [OPTIONAL][FUNCTION] - Called when the interaction is shown. If omitted, ShowUIPanel is called for frame.
+hideFunc = [OPTIONAL][FUNCTION] - Called when the interaction is hidden. If omitted, HideUIPanel is called for frame.
+loadFunc = [OPTIONAL][FUNCTION] - Called before show when the frame is not loaded yet.
+
+Example:
+RegisterPlayerInteraction(Enum.PlayerInteractionType.Trainer,
 	{
 		frame = "ClassTrainerFrame",
-		showFunc = "ClassTrainerFrame_Show",
-		hideFunc = "ClassTrainerFrame_Hide",
-		loadFunc = ClassTrainerFrame_LoadUI
-	},
-	[Enum.PlayerInteractionType.AlliedRaceDetailsGiver] =
-	{
-		frame = "AlliedRacesFrame",
-		loadFunc = AlliedRaces_LoadUI,
-		showFunc = nop;
-	},
-	[Enum.PlayerInteractionType.HousingBulletinBoard] =
-	{
-		frame = "HousingBulletinBoardFrame",
-		loadFunc = function()
-            if not HousingBulletinBoardFrame then
-                C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
-            end
-        end,
-	},
-	[Enum.PlayerInteractionType.RenameNeighborhood] = 
-	{
-		frame = "NeighborhoodChangeNameDialog",
-		loadFunc = function() 
-			if not HousingBulletinBoardFrame then
-				C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
-			end
-		end,
-		showFunc = function()
-			if not C_HousingNeighborhood.IsNeighborhoodManager() then
-				UIErrorsFrame:AddExternalErrorMessage(ERR_HOUSING_RESULT_PERMISSION_DENIED);
-				C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.RenameNeighborhood);
-				return;
-			end
+		loadFunc = ClassTrainerFrame_LoadUI,
+		showFunc = ShowTrainerFrame,
+		hideFunc = HideTrainerFrame,
+	});
+]]
+function RegisterPlayerInteraction(interactionType, frameInfo)
+	if registeredInteractionManagerFrameInfo[interactionType] then
+		error("RegisterPlayerInteraction received a duplicate registration for interactionType "..interactionType..".");
+	end
 
-			StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
-			NeighborhoodChangeNameDialog.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
+	registeredInteractionManagerFrameInfo[interactionType] = ValidateInteractionFrameInfo(interactionType, frameInfo);
+end
+
+--[[
+Registers optional gating logic for a player interaction type. Use this for game-state checks that should control whether load, show, or hide are allowed.
+
+loadCondition = [OPTIONAL][FUNCTION] - Must return true before loadFunc is called.
+showCondition = [OPTIONAL][FUNCTION] - Must return true before the interaction is shown.
+hideCondition = [OPTIONAL][FUNCTION] - Must return true before the interaction is hidden.
+
+Example:
+AddPlayerInteractionConditions(Enum.PlayerInteractionType.Auctioneer,
+	{
+		showCondition = function()
+			return not GameLimitedMode_IsActive();
 		end,
-	},
-	[Enum.PlayerInteractionType.OpenHouseFinder] =
-	{
-		frame = "HouseFinderFrame",
-		loadFunc = function()
-			if not HouseFinderFrame then
-				C_AddOns.LoadAddOn("Blizzard_HousingHouseFinder");
-			end
-			ShowUIPanel(HouseFinderFrame);
-		end,
-	},
-	[Enum.PlayerInteractionType.GuildBanker] =
-	{
-		frame = "GuildBankFrame",
-		loadFunc = GuildBankFrame_LoadUI,
-	},
-	[Enum.PlayerInteractionType.Registrar] =
-	{
-		frame = "GuildRegistrarFrame"
-	},
-	[Enum.PlayerInteractionType.GuildTabardVendor] =
-	{
-		frame = "TabardFrame",
-		showFunc = "TabardFrame_Open"
-	},
-	[Enum.PlayerInteractionType.PersonalTabardVendor] =
-	{
-		frame = "TabardFrame",
-		showFunc = "TabardFrame_Open"
-	},
-	[Enum.PlayerInteractionType.MailInfo] =
-	{
-		frame = "MailFrame",
-		showFunc = "MailFrame_Show",
-		hideFunc = "MailFrame_Hide"
-	},
-	[Enum.PlayerInteractionType.Auctioneer] =
-	{
-		frame = "AuctionHouseFrame",
-		showFunc = function()
-			if ( GameLimitedMode_IsActive() ) then
-				UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
-				C_AuctionHouse.CloseAuctionHouse();
-			else
-				ShowUIPanel(AuctionHouseFrame);
-			end
-		end;
-	},
-	[Enum.PlayerInteractionType.Transmogrifier] =
-	{
-		frame = "TransmogFrame",
-		loadFunc = Transmog_LoadUI,
-	},
-	[Enum.PlayerInteractionType.BlackMarketAuctioneer] = {
-		frame = "BlackMarketFrame",
-		showFunc = "BlackMarketFrame_Show",
-		hideFunc = "BlackMarketFrame_Hide",
-		loadFunc = BlackMarket_LoadUI,
-	},
-	[Enum.PlayerInteractionType.WorldMap] = {
-		frame = "WorldMapFrame",
-		showFunc = nop;
-	},
-	[Enum.PlayerInteractionType.GarrArchitect] = {
-		frame = "GarrisonBuildingFrame",
-		loadFunc = Garrison_LoadUI,
-	},
-	[Enum.PlayerInteractionType.Trophy] = {
-		frame = "GarrisonMonumentFrame",
-		showFunc = function() if C_Trophy and C_Trophy.MonumentLoadList then C_Trophy.MonumentLoadList() end end,
-		loadFunc = Garrison_LoadUI
-	},
-	[Enum.PlayerInteractionType.ObliterumForge] = {
-		frame = "ObliterumForgeFrame",
-		loadFunc = ObliterumForgeFrame_LoadUI
-	},
-	[Enum.PlayerInteractionType.ScrappingMachine] = {
-		frame = "ScrappingMachineFrame",
-		loadFunc = ScrappingMachineFrame_LoadUI,
-	},
-	[Enum.PlayerInteractionType.ContributionCollector] = {
-		frame = "ContributionCollectionFrame",
-		loadFunc = function() UIParentLoadAddOn("Blizzard_Contribution") end;
-	},
-	[Enum.PlayerInteractionType.AzeriteRespec] = {
-		frame = "AzeriteRespecFrame",
-		loadFunc = AzeriteRespecFrame_LoadUI
-	},
-	[Enum.PlayerInteractionType.IslandQueue] = {
-		frame = "IslandsQueueFrame",
-		loadFunc = IslandsQueue_LoadUI
-	},
-	[Enum.PlayerInteractionType.ItemInteraction] = {
-		frame = "ItemInteractionFrame",
-		loadFunc = ItemInteraction_LoadUI
-	},
-	[Enum.PlayerInteractionType.ChromieTime] = {
-		frame = "ChromieTimeFrame",
-		loadFunc = ChromieTimeFrame_LoadUI
-	},
-	[Enum.PlayerInteractionType.WeeklyRewards] = {
-		frame = "WeeklyRewardsFrame",
-		loadFunc = WeeklyRewards_LoadUI,
-		forceShow = true
-	},
-	[Enum.PlayerInteractionType.Soulbind] = {
-		frame = "SoulbindViewer",
-		loadFunc = function() C_AddOns.LoadAddOn("Blizzard_Soulbinds"); end;
-		showFunc = function() SoulbindViewer:Open(); end;
-	},
-	[Enum.PlayerInteractionType.CovenantSanctum] = {
-		frame = "CovenantSanctumFrame",
-		loadFunc = CovenantSanctum_LoadUI,
-		showFunc = function() CovenantSanctumFrame:InteractionStarted(); end;
-	},
-	[Enum.PlayerInteractionType.Renown] = {
-		frame = "CovenantRenownFrame",
-		loadFunc = CovenantRenown_LoadUI
-	},
-	[Enum.PlayerInteractionType.ItemUpgrade] = {
-		frame = "ItemUpgradeFrame",
-		loadFunc = ItemUpgrade_LoadUI,
-		showFunc = "ItemUpgradeFrame_Show",
-		hideFunc = "ItemUpgradeFrame_Hide"
-	},
-	[Enum.PlayerInteractionType.AzeriteForge] = {
-		frame = "AzeriteEssenceUI",
-		loadFunc = function() UIParentLoadAddOn("Blizzard_AzeriteEssenceUI"); end;
-		showFunc = function() if AzeriteEssenceUI:TryShow() and AzeriteEssenceUI:ShouldOpenBagsOnShow() then OpenAllBags(AzeriteEssenceUI); end; end;
-	},
-	[Enum.PlayerInteractionType.AdventureJournal] = {
-		frame = "EncounterJournal",
-		loadFunc = EncounterJournal_LoadUI,
-		showFunc = function () if (C_AdventureJournal.CanBeShown()) then ShowUIPanel(EncounterJournal); EJSuggestFrame_OpenFrame(); end; end;
-	},
-	[Enum.PlayerInteractionType.MajorFactionRenown] = {
-		frame = "EncounterJournal",
-		loadFunc = EncounterJournal_LoadUI,
-		showFunc = function()
-						local majorFactionID = C_MajorFactions.GetRenownNPCFactionID();
-						HideUIPanel(EncounterJournal);
-						if majorFactionID > 0 then
-							ShowUIPanel(EncounterJournal);
-							EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
-							EncounterJournalJourneysFrame:ResetView(nil, majorFactionID);
-						end
-					end,
-	},
-	[Enum.PlayerInteractionType.GuildRename] = {
-		frame = "GuildRenameFrame",
-		loadFunc = function() UIParentLoadAddOn("Blizzard_GuildRename"); end,
-		showFunc = function() GuildRenameFrame:BeginInteraction(); end,
-	},
-	[Enum.PlayerInteractionType.TieredEntrance] = {
-		frame = "DelvesDifficultyPickerFrame",
-		loadFunc = function() C_AddOns.LoadAddOn("Blizzard_DelvesDifficultyPicker"); end;
-		showFunc = function() DelvesDifficultyPickerFrame:TryShow(textureKit); end;
-	}
-};
+	});
+]]
+function AddPlayerInteractionConditions(interactionType, conditions)
+	if registeredInteractionManagerConditions[interactionType] then
+		error("AddPlayerInteractionConditions received duplicate conditions for interactionType "..interactionType..".");
+	end
+
+	registeredInteractionManagerConditions[interactionType] = ValidateInteractionConditions(interactionType, conditions);
+end
 
 PlayerInteractionFrameManagerMixin = { };
 
+local function GetFrameInfo(interactionType)
+	return registeredInteractionManagerFrameInfo[interactionType];
+end
+
+local function GetInteractionConditions(interactionType)
+	return registeredInteractionManagerConditions[interactionType];
+end
+
+local function GetInteractionFrame(frameInfo)
+	return _G[frameInfo.frame];
+end
+
+local function CheckCondition(conditionFunc)
+	return not conditionFunc or conditionFunc();
+end
+
 function PlayerInteractionFrameManagerMixin:ShowFrame(interactionType)
-	local frameInfo = InteractionManagerFrameInfo[interactionType];
+	local frameInfo = GetFrameInfo(interactionType);
 	if not frameInfo then
 		return;
 	end
 
-	if frameInfo.loadFunc and not _G[frameInfo.frame] then
+	local conditions = GetInteractionConditions(interactionType);
+	local interactionFrame = GetInteractionFrame(frameInfo);
+
+	if frameInfo.loadFunc and not interactionFrame and CheckCondition(conditions and conditions.loadCondition) then
 		frameInfo.loadFunc();
+		interactionFrame = GetInteractionFrame(frameInfo);
+	end
+
+	if not CheckCondition(conditions and conditions.showCondition) then
+		return;
 	end
 
 	if frameInfo.showFunc then
-		if type(frameInfo.showFunc) == "string" then
-			frameInfo.showFunc = _G[frameInfo.showFunc];
-		end
-		if frameInfo.showFunc then
-			frameInfo.showFunc();
-		end
+		frameInfo.showFunc();
 	else
-		ShowUIPanel(_G[frameInfo.frame], frameInfo.forceShow);
+		ShowUIPanel(interactionFrame, frameInfo.forceShow);
 	end
 end
 
 function PlayerInteractionFrameManagerMixin:HideFrame(interactionType)
-	local frameInfo = InteractionManagerFrameInfo[interactionType];
+	local frameInfo = GetFrameInfo(interactionType);
 	if not frameInfo then
 		return;
 	end
 
+	local interactionFrame = GetInteractionFrame(frameInfo);
+
 	-- The frame isn't loaded, so nothing to hide.
-	if not _G[frameInfo.frame] then
+	if not interactionFrame then
+		return;
+	end
+
+	local conditions = GetInteractionConditions(interactionType);
+
+	if not CheckCondition(conditions and conditions.hideCondition) then
 		return;
 	end
 
 	if frameInfo.hideFunc then
-		if type(frameInfo.hideFunc) == "string" then
-			frameInfo.hideFunc = _G[frameInfo.hideFunc];
-		end
-		if frameInfo.hideFunc then
-			frameInfo.hideFunc();
-		end
+		frameInfo.hideFunc();
 	else
-		HideUIPanel(_G[frameInfo.frame]);
+		HideUIPanel(interactionFrame);
 	end
 end
 
@@ -287,3 +184,8 @@ function PlayerInteractionFrameManagerMixin:OnEvent(event, ...)
 		self:HideFrame(interactionType);
 	end
 end
+
+local frame = CreateFrame("Frame");
+Mixin(frame, PlayerInteractionFrameManagerMixin);
+frame:SetScript("OnEvent", PlayerInteractionFrameManagerMixin.OnEvent);
+frame:OnLoad();

@@ -1,6 +1,16 @@
 ----------------- Enum to Global String Lookups -----------------
 HousingResultToErrorText = {
 	[Enum.HousingResult.ActionLockedByCombat] = ERR_HOUSING_RESULT_LOCKED_BY_COMBAT,
+	[Enum.HousingResult.BlueprintCodeInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_CODE_INVALID,
+	[Enum.HousingResult.BlueprintGenericExportError] = ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_EXPORT_ERROR,
+	[Enum.HousingResult.BlueprintGenericImportError] = ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_IMPORT_ERROR,
+	[Enum.HousingResult.BlueprintLocationInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_LOCATION_INVALID,
+	[Enum.HousingResult.BlueprintNameInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_NAME_INVALID,
+	[Enum.HousingResult.BlueprintNotFound] = ERR_HOUSING_RESULT_BLUEPRINT_NOT_FOUND,
+	[Enum.HousingResult.BlueprintTypeInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_TYPE_INVALID,
+	[Enum.HousingResult.BlueprintRequirementsUnmet] = ERR_HOUSING_RESULT_BLUEPRINT_REQUIREMENTS_UNMET,
+	[Enum.HousingResult.BlueprintStorageLimit] = ERR_HOUSING_RESULT_BLUEPRINT_STORAGE_LIMIT,
+	[Enum.HousingResult.BlueprintVersionInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_VERSION_INVALID,
 	[Enum.HousingResult.BoundsFailureChildren] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT,
 	[Enum.HousingResult.BoundsFailurePlot] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_PLOT,
 	[Enum.HousingResult.BoundsFailureRoom] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ROOM,
@@ -38,8 +48,10 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.IncorrectFaction] = ERR_HOUSING_RESULT_INCORRECT_FACTION,
 	[Enum.HousingResult.InvalidDecorItem] = ERR_HOUSING_RESULT_INVALID_DECOR_ITEM,
 	[Enum.HousingResult.InvalidDistance] = ERR_HOUSING_RESULT_INVALID_DISTANCE,
+	[Enum.HousingResult.InvalidExteriorDocument] = ERR_HOUSING_RESULT_INVALID_EXTERIOR_DOCUMENT,
 	[Enum.HousingResult.InvalidGuild] = ERR_HOUSING_RESULT_INVALID_GUILD,
 	[Enum.HousingResult.InvalidHouse] = ERR_HOUSING_RESULT_INVALID_HOUSE,
+	[Enum.HousingResult.InvalidInteriorDocument] = ERR_HOUSING_RESULT_INVALID_INTERIOR_DOCUMENT,
 	[Enum.HousingResult.InvalidInstance] = ERR_HOUSING_RESULT_INVALID_INSTANCE,
 	[Enum.HousingResult.InvalidInteraction] = ERR_HOUSING_RESULT_INVALID_INTERACTION,
 	[Enum.HousingResult.InvalidMap] = ERR_HOUSING_RESULT_INVALID_MAP,
@@ -73,6 +85,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.PlotReservationCooldown] = ERR_HOUSING_RESULT_PLOT_RESERVATION_COOLDOWN,
 	[Enum.HousingResult.PlotReserved] = ERR_HOUSING_RESULT_PLOT_RESERVED,
 	[Enum.HousingResult.RoomNotFound] = ERR_HOUSING_RESULT_ROOM_NOT_FOUND,
+	[Enum.HousingResult.RoomPlacementOutOfBounds] = ERR_HOUSING_RESULT_ROOM_PLACEMENT_OUT_OF_BOUNDS,
 	[Enum.HousingResult.RoomUpdateFailed] = ERR_HOUSING_RESULT_ROOM_UPDATE_FAILED,
 	[Enum.HousingResult.RpcFailure] = ERR_HOUSING_RESULT_RPC_FAILURE,
 	[Enum.HousingResult.ServiceNotAvailable] = ERR_HOUSING_RESULT_SERVICE_NOT_AVAILABLE,
@@ -105,6 +118,10 @@ HousingAccessTypeStrings = {
 	[Enum.HouseSettingFlags.PlotAccessGuild] = HOUSING_HOUSE_SETTINGS_ACCESS_GUILD,
 	[Enum.HouseSettingFlags.PlotAccessFriends] = HOUSING_HOUSE_SETTINGS_ACCESS_FRIENDS,
 	[Enum.HouseSettingFlags.PlotAccessParty] = HOUSING_HOUSE_SETTINGS_ACCESS_PARTY,
+	[Enum.HouseSettingFlags.BlueprintExportNeighbors] = HOUSING_HOUSE_SETTINGS_ACCESS_NEIGHBORS,
+	[Enum.HouseSettingFlags.BlueprintExportGuild] = HOUSING_HOUSE_SETTINGS_ACCESS_GUILD,
+	[Enum.HouseSettingFlags.BlueprintExportFriends] = HOUSING_HOUSE_SETTINGS_ACCESS_FRIENDS,
+	[Enum.HouseSettingFlags.BlueprintExportParty] = HOUSING_HOUSE_SETTINGS_ACCESS_PARTY,
 
 };
 
@@ -154,4 +171,38 @@ HousingExpertSubmodeRestrictionStrings = {
 	[Enum.HousingExpertSubmodeRestriction.NotInExpertMode] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_NOT_IN_EXPERT,
 	[Enum.HousingExpertSubmodeRestriction.NoHouseExteriorScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_HOUSE_EXTERIOR_SCALE,
 	[Enum.HousingExpertSubmodeRestriction.NoWMOScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_WMO_SCALE,
+};
+
+HousingBlueprintTypeStrings = {
+	[Enum.HousingBlueprintType.House] = HOUSING_BLUEPRINT_TYPE_HOUSE,
+	[Enum.HousingBlueprintType.Room] = HOUSING_BLUEPRINT_TYPE_ROOM,
+	[Enum.HousingBlueprintType.Interior] = HOUSING_BLUEPRINT_TYPE_INTERIOR,
+	[Enum.HousingBlueprintType.Exterior] = HOUSING_BLUEPRINT_TYPE_EXTERIOR,
+};
+
+HousingBlueprintTypeOptionStrings = {
+	[Enum.HousingBlueprintType.House] = HOUSING_BLUEPRINT_TYPE_OPTION_HOUSE,
+	[Enum.HousingBlueprintType.Room] = HOUSING_BLUEPRINT_TYPE_OPTION_ROOM,
+	[Enum.HousingBlueprintType.Interior] = HOUSING_BLUEPRINT_TYPE_OPTION_INTERIOR,
+	[Enum.HousingBlueprintType.Exterior] = HOUSING_BLUEPRINT_TYPE_OPTION_EXTERIOR,
+};
+
+HousingBlueprintUnmetRequirementStrings = {
+	[Enum.HousingBlueprintUnmetRequirementFlags.InsufficientBudget] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGETS,
+	[Enum.HousingBlueprintUnmetRequirementFlags.MissingRoom] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_ROOM,
+	[Enum.HousingBlueprintUnmetRequirementFlags.MissingFixture] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_FIXTURE,
+	[Enum.HousingBlueprintUnmetRequirementFlags.MissingDecor] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_DECOR,
+	[Enum.HousingBlueprintUnmetRequirementFlags.MissingDye] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_DYE,
+	[Enum.HousingBlueprintUnmetRequirementFlags.MismatchedExteriorFaction] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_EXTERIOR_FACTION,
+	[Enum.HousingBlueprintUnmetRequirementFlags.HouseTypeLocked] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_HOUSE_TYPE,
+	[Enum.HousingBlueprintUnmetRequirementFlags.HouseSizeLocked] = ERR_HOUSING_BLUEPRINT_REQUIREMENT_HOUSE_SIZE,
+};
+
+HousingBlueprintContentTypeStrings = {
+	[Enum.HousingBlueprintContentType.HouseType] = HOUSING_BLUEPRINT_CONTENT_TYPE_HOUSE_TYPE,
+	[Enum.HousingBlueprintContentType.Room] = HOUSING_BLUEPRINT_CONTENT_TYPE_ROOM,
+	[Enum.HousingBlueprintContentType.Decor] = HOUSING_BLUEPRINT_CONTENT_TYPE_DECOR,
+	[Enum.HousingBlueprintContentType.Dye] = HOUSING_BLUEPRINT_CONTENT_TYPE_DYE,
+	[Enum.HousingBlueprintContentType.Fixture] = HOUSING_BLUEPRINT_CONTENT_TYPE_FIXTURE,
+	[Enum.HousingBlueprintContentType.Other] = HOUSING_BLUEPRINT_CONTENT_TYPE_OTHER,
 };

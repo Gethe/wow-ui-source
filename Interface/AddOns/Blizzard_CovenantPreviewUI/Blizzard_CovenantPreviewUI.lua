@@ -1,5 +1,16 @@
 local PLAYER_CHOICE_TEXTURE_KIT = "Oribos";
 
+local function CovenantPreviewFrame_EscapePressed()
+	if CovenantPreviewFrame:IsShown() then
+		CovenantPreviewFrame:HandleEscape();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, CovenantPreviewFrame_EscapePressed);
+
 
 local closeButtonBorder = {
 	["NightFae"] = {

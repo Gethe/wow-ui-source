@@ -258,7 +258,7 @@
 		<Scripts>
 			<OnLoad>
 				self.icon:SetAlpha(0.6)
-				SetDesaturation(self.icon, true);
+				self.icon:SetDesaturation(1);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -369,7 +369,7 @@
 							<OnLoad>
 								self.missingHeader:SetText(PROFESSIONS_SECOND_PROFESSION);
 								self.icon:SetAlpha(0.6)
-								SetDesaturation(self.icon, true);
+								self.icon:SetDesaturation(1);
 							</OnLoad>
 						</Scripts>
 					</Frame>

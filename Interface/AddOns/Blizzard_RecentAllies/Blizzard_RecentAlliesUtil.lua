@@ -119,3 +119,15 @@ function RecentAlliesUtil.GenerateContextStringForInteraction(interactionData)
 	local contextStringGenerator = GetContextStringGeneratorForInteractionType(interactionData.type);
 	return contextStringGenerator and contextStringGenerator(interactionData) or "";
 end
+
+function RecentAlliesUtil.GetBestSocialUIPresenceTypeForStateData(stateData)
+	if not stateData.isOnline then
+		return Enum.SocialUIPresenceType.Offline;
+	elseif stateData.isAFK then
+		return Enum.SocialUIPresenceType.Away;
+	elseif stateData.isDND then
+		return Enum.SocialUIPresenceType.Busy;
+	end
+
+	return Enum.SocialUIPresenceType.Online;
+end

@@ -33,7 +33,7 @@ function ArcheologyDigsiteProgressBarMixin:OnShow()
 	self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	self:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE");
 	self:RegisterEvent("ARTIFACT_DIGSITE_COMPLETE");
-	UIParentManagedFrameMixin.OnShow(self);
+	ManagedFrameMixin.OnShow(self);
 end
 
 function ArcheologyDigsiteProgressBarMixin:OnHide()
@@ -41,7 +41,7 @@ function ArcheologyDigsiteProgressBarMixin:OnHide()
 	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	self:UnregisterEvent("ARCHAEOLOGY_FIND_COMPLETE");
 	self:UnregisterEvent("ARTIFACT_DIGSITE_COMPLETE");
-	UIParentManagedFrameMixin.OnHide(self);
+	ManagedFrameMixin.OnHide(self);
 end
 
 function ArcheologyDigsiteProgressBarMixin:OnEvent(event, ...)
@@ -114,7 +114,7 @@ ArcheologyDigsiteProgressFillBarMixin = {};
 
 function ArcheologyDigsiteProgressFillBarMixin:OnUpdate(elapsed)
 	if ( self:GetValue() ~= self.actualFill ) then
-		self:SetValue(GetSmoothProgressChange(self.actualFill, self:GetValue(), self.fillBarMax, elapsed, MIN_FILL_BAR_PROGRESS, MAX_FILL_BAR_PROGRESS));
+		self:SetValue(InterpolatorUtil.GetSmoothProgressChange(self.actualFill, self:GetValue(), self.fillBarMax, elapsed, MIN_FILL_BAR_PROGRESS, MAX_FILL_BAR_PROGRESS));
 	else
 		self:SetScript("OnUpdate", nil);
 	end

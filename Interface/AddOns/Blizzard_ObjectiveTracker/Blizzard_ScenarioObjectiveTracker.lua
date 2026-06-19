@@ -121,7 +121,7 @@ function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
     	self:SetShouldShowCriteria(show);
 	elseif event == "SCENARIO_COMPLETED" then
 		local rewardQuestID, xp, money = ...;
-		if (xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel()) or (money and money > 0) then
+		if (xp and xp > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel()) or (money and money > 0) then
 			ScenarioRewardsFrame:DisplayRewards(xp, money);
 		end
 	elseif event == "ACTIVE_DELVE_DATA_UPDATE" then
@@ -469,7 +469,7 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, description);
 
 		local blankLineAdded = false;
-		if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
+		if xp > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp));
 			blankLineAdded = true;
@@ -479,7 +479,7 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
-			SetTooltipMoney(GameTooltip, money, nil);
+			GameTooltip_AddMoneyLine(GameTooltip, money);
 		end
 
 		GameTooltip:Show();
@@ -497,6 +497,7 @@ local textureKitOffsets = {
 	["evergreen-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = -4, finalBGY = 2},
 	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
 	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
+	["midnight-scenario"] = {normalBGX = -6, normalBGY = 0, finalBGX = -22, finalBGY = 0},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};
@@ -990,7 +991,7 @@ function ScenarioRewardsFrameMixin:DisplayRewards(xp, money)
 	self.framePool:ReleaseAll();
 	self.lastFrame = nil;
 
-	if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
+	if xp > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 		self:AddReward(xp, "Interface\\Icons\\XP_Icon", "NumberFontNormal");
 	end	
 	if money > 0 then
@@ -1045,7 +1046,7 @@ function ScenarioTrackerProgressBarMixin:OnGet(isNew, criteriaIndex)
 				texture = "Interface\\Icons\\inv_misc_coin_02";
 			end
 			-- xp
-			if not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and not IsPlayerAtEffectiveMaxLevel() then
+			if not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 				texture = "Interface\\Icons\\xp_icon";
 			end
 			if texture then

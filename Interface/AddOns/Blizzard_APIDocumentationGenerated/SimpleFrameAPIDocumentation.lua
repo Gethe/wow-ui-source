@@ -15,6 +15,18 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "AddRoleset",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Adds a roleset tag to this frame without removing existing ones." },
+
+			Arguments =
+			{
+				{ Name = "roleset", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CanChangeAttribute",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
@@ -131,6 +143,24 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateVectorGraphics",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
+				{ Name = "subLevel", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "vectorGraphics", Type = "SimpleVectorGraphics", Nilable = false },
 			},
 		},
 		{
@@ -503,6 +533,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetOnUpdateMode",
+			Type = "Function",
+			Documentation = { "Returns the currently configured OnUpdate script execution mode." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "onUpdateMode", Type = "OnUpdateMode", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPropagateKeyboardInput",
 			Type = "Function",
 
@@ -556,6 +600,20 @@ local SimpleFrameAPI =
 				{ Name = "minHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "maxWidth", Type = "uiUnit", Nilable = false },
 				{ Name = "maxHeight", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRolesetNames",
+			Type = "Function",
+			Documentation = { "Returns the roleset tags assigned to this frame. Returns a list containing 'roleless' if none are assigned." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "rolesets", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
 		{
@@ -1014,6 +1072,18 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "RemoveRoleset",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Removes a roleset tag from this frame." },
+
+			Arguments =
+			{
+				{ Name = "roleset", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "RotateTextures",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1305,6 +1375,17 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetOnUpdateMode",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Changes when OnUpdate scripts are executed for this object." },
+
+			Arguments =
+			{
+				{ Name = "onUpdateMode", Type = "OnUpdateMode", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPropagateKeyboardInput",
 			Type = "Function",
 			HasRestrictions = true,
@@ -1336,6 +1417,18 @@ local SimpleFrameAPI =
 				{ Name = "minHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "maxWidth", Type = "uiUnit", Nilable = true },
 				{ Name = "maxHeight", Type = "uiUnit", Nilable = true },
+			},
+		},
+		{
+			Name = "SetRolesets",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets the roleset tags for this frame, used by the UI mode system to gate visibility. Supports comma-separated names to assign multiple rolesets. Pass nil to clear." },
+
+			Arguments =
+			{
+				{ Name = "rolesetsString", Type = "cstring", Nilable = true },
 			},
 		},
 		{

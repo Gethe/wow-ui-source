@@ -79,21 +79,15 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
 				</Anchors>
 			</EventFrame>
-			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true">
+			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true" mixin="JoinQueueButtonMixin">
 				<Size x="135" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="QuickJoin_JoinQueueButtonOnClick"/>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 		</Frames>

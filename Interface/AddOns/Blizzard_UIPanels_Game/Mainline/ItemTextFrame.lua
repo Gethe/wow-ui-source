@@ -193,3 +193,9 @@ function ItemTextFrame_OnUpdate(self, elapsed)
 		self.translationElapsed = elapsed;
 	end
 end
+
+EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
+	if ItemTextFrame:IsShown() and not ItemTextFrame:IsVisible() then
+		ItemTextFrame_OnUpdate(ItemTextFrame, elapsed);
+	end
+end);

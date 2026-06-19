@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup, Blizzard_TransmogShared
+## Dependencies: Blizzard_ObjectAPI, Blizzard_FrameXMLBase, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup, Blizzard_TransmogShared, Blizzard_RaidWarning, Blizzard_LFGUtil, Blizzard_ManagedFrameSystem, Blizzard_MirrorTimer
 ## LoadFirst: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mists
@@ -24,8 +24,6 @@ Classic\AlertFrames.lua
 Classic\AlertFrames.xml
 Classic\AlertFrameSystems.lua
 Classic\AlertFrameSystems.xml
-Classic\MirrorTimer.lua
-Classic\MirrorTimer.xml
 Classic\CoinPickupFrame.lua
 Classic\CoinPickupFrame.xml
 Classic\StackSplitFrame.lua
@@ -38,13 +36,11 @@ Classic\TutorialFrame.xml
 Shared\LowHealthFrame.lua
 Classic\LowHealthFrame.xml
 Classic\CombatFeedback.lua
-Classic\RaidWarning.xml
 Shared\CinematicFrame.lua
 Classic\CinematicFrameButton.xml
 Shared\CinematicFrame.xml
-Classic\ColorPickerFrame.lua
-Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua
+Mists\WorldStateFrame.lua
 Mists\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Mists\TalentFrameBase.lua

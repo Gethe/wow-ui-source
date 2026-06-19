@@ -9,40 +9,30 @@ local function LocalizeFriendsFrame_zh()
 	end
 end
 
-local function AdjustFriendsFrameDropdown_132()
-	FriendsFriendsFrameDropdown:SetWidth(132);
-end
-
-local function AdjustFriendsFrameDropdown_136()
-	FriendsFriendsFrameDropdown:SetWidth(136);
+local function AdjustFriendsFrameDropdownWidth(overrideWidth)
+	if overrideWidth then
+		FriendsFriendsFrameDropdown.baseWidth = overrideWidth;
+	end
 end
 
 local l10nTable = {
 	deDE = {
-		localizeFrames = function()
-			FriendsFriendsFrameDropdown:SetWidth(146);
-		end
+		localizeFrames = function() AdjustFriendsFrameDropdownWidth(180) end,
 	},
 	enGB = {},
 	enUS = {},
-	esES = {
-		localizeFrames = AdjustFriendsFrameDropdown_132,
-	},
-	esMX = {
-		localizeFrames = AdjustFriendsFrameDropdown_132,
-	},
+	esES = {},
+	esMX = {},
 	frFR = {
-		localizeFrames = AdjustFriendsFrameDropdown_136,
+		localizeFrames = function() AdjustFriendsFrameDropdownWidth(180) end,
 	},
-	itIT = {
-		localizeFrames = AdjustFriendsFrameDropdown_136,
-	},
+	itIT = {},
 	koKR = {},
 	ptBR = {
-		localizeFrames = AdjustFriendsFrameDropdown_132,
+		localizeFrames = function() AdjustFriendsFrameDropdownWidth(180) end,
 	},
 	ptPT = {
-		localizeFrames = AdjustFriendsFrameDropdown_132,
+		localizeFrames = function() AdjustFriendsFrameDropdownWidth(180) end,
 	},
 	ruRU = {},
 	zhCN = {

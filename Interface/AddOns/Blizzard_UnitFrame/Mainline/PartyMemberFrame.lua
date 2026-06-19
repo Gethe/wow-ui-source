@@ -188,7 +188,7 @@ function PartyMemberFrameMixin:Setup()
 	myHealthbar:SetBarText(self.HealthBarContainer.CenterText, self.HealthBarContainer.LeftText, self.HealthBarContainer.RightText);
 
 	local tempMaxHealthLossBar = self.HealthBarContainer.TempMaxHealthLoss;
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar( self.HealthBarContainer, myHealthbar);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar( self.HealthBarContainer, myHealthbar);
 
 	if PARTY_FRAME_SHOW_BUFFS then
 		self.showBuffs = true;
@@ -576,12 +576,12 @@ function PartyMemberFrameMixin:UpdateOnlineStatus()
 
 		healthBar:SetValue(unitHPMax);
 		healthBar:SetStatusBarDesaturated(true);
-		SetDesaturation(self.Portrait, true);
+		self.Portrait:SetDesaturated(true);
 		self.PartyMemberOverlay.Disconnect:Show();
 		self.PetFrame:Hide();
 	else
 		healthBar:SetStatusBarDesaturated(false);
-		SetDesaturation(self.Portrait, false);
+		self.Portrait:SetDesaturated(false);
 		self.PartyMemberOverlay.Disconnect:Hide();
 	end
 end

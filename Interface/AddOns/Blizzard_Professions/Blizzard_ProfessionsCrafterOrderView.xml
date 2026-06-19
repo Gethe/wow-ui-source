@@ -433,7 +433,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="7"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="StartRecraftButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_CRAFTING_RECRAFT" motionScriptsWhileDisabled="true">

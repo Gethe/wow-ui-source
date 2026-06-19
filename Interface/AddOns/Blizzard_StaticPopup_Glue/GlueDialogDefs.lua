@@ -295,3 +295,15 @@ StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
 		dialog:SetFrameLevel(3000);
 	end,
 };
+
+StaticPopupDialogs["SCREEN_NARRATOR_CHOICE"] = {
+	text = SCREEN_NARRATOR_DIALOG_TEXT,
+	button1 = SCREEN_NARRATOR_DIALOG_ENABLE,
+	button2 = SCREEN_NARRATOR_DIALOG_DISABLE,
+	OnAccept = function(dialog, data)
+		SetCVar("accessibilityScreenNarrationEnabled", true);
+	end,
+	OnCancel = function(dialog, data)
+		SetCVar("accessibilityScreenNarrationEnabled", false);
+	end,
+};

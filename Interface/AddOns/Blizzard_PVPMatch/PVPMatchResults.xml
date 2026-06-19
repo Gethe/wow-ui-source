@@ -47,7 +47,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="HIGH" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="HIGH" parent="UIParent" enableMouse="true" hidden="true" roleset="pvp">
 		<Size x="1024" y="620"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

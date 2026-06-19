@@ -1,0 +1,235 @@
+## Title: Blizzard_SharedXML
+## AllowLoad: Both
+## Dependencies: Blizzard_ProjectConstants, Blizzard_Fonts_Shared, Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_Narration
+Shared\LocalizationMachinery.lua
+SharedConstants.lua
+ColorUtil.lua
+AddOnUtil.lua
+Classic\GlueCheck.lua [AllowLoadGameType classic]
+Classic\Stubs.lua [AllowLoadGameType classic]
+Classic\Stubs.xml [AllowLoadGameType classic]
+Classic\ClassicCvarUtil.lua [AllowLoadGameType classic]
+ClassColors.lua
+SharedColorConstants.lua [AllowLoadGameType mainline]
+LinkUtil.lua
+InterfaceUtil.lua
+UnitUtil.lua
+AccountUtil.lua
+GameRulesUtil.lua
+Mainline\GameRulesUtil.lua [AllowLoadGameType mainline]
+FormattingUtil.lua
+TabGroup.lua
+SmoothStatusBar.lua
+PredictedSetting.lua
+SecureUtil.lua
+Classic\SecureCurrencyUtil.lua [AllowLoadGameType classic]
+TimeUtil.lua
+BenchmarkUtil.lua
+VectorLib.xml
+[Family]\NineSliceLayouts.lua
+NineSlice.lua
+EasingUtil.lua
+BindingUtil.lua
+InputUtil.lua
+EventUtil.lua
+RegionUtil.lua
+SortUtil.lua [AllowLoadGameType mainline]
+GridLayoutUtil.lua
+ScriptAnimationUtil.lua
+StringUtil.lua
+TypeUtil.lua
+CircularBuffer.lua
+FontableFrameMixin.lua
+Spline.lua
+LayoutFrame.lua
+LayoutFrame.xml
+ManagedLayoutFrame.lua
+ManagedLayoutFrame.xml
+SpaceToFitLayoutFrame.lua [AllowLoadGameType mainline]
+SpaceToFitLayoutFrame.xml [AllowLoadGameType mainline]
+ScaleToFitFrame.lua [AllowLoadGameType mainline]
+ScaleToFitFrame.xml [AllowLoadGameType mainline]
+BulletPoint.lua
+BulletPoint.xml
+KeyCommand.lua
+PixelUtilSecure.lua
+PixelUtil.lua
+TableBuilder.lua [ExcludeLoadGameType vanilla tbc wrath]
+NewFeatureLabel.xml
+Shared\VASErrorLookup.lua
+SelectableButton.lua
+SelectableButton.xml
+ButtonGroup.lua
+Shared\Button\CheckButtonTemplates.xml
+Shared\Button\UIButtonTemplate.lua
+Shared\Button\UIButtonTemplate.xml
+Shared\Button\ThreeSliceButtonTemplate.lua
+Shared\Button\ThreeSliceButtonTemplate.xml
+Shared\Button\IconButtonTemplate.lua
+Shared\Button\IconButtonTemplate.xml
+Shared\Frame\EventFrame.lua
+Shared\Frame\EventFrame.xml
+Shared\Frame\EventButton.lua
+Shared\Frame\EventButton.xml
+Shared\Frame\EventScrollFrame.lua
+Shared\Frame\EventScrollFrame.xml
+Shared\Frame\EventEditBox.lua
+Shared\Frame\EventEditBox.xml
+Shared\FrameTemplate\RingedFrameTemplate.lua
+Shared\FrameTemplate\RingedFrameTemplate.xml
+ScriptedAnimations\ScriptedAnimationEffects.lua
+ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+ScriptedAnimations\ScriptAnimatedEffectController.lua
+ScriptedAnimations\ScriptAnimatedModelScene.lua
+ScriptedAnimations\ScriptAnimatedModelScene.xml
+DataProvider.lua
+IndexRangeDataProvider.lua
+TreeListDataProvider.lua
+Interpolator.lua
+Sequencer.lua [AllowLoadGameType mainline]
+Shared\Slider\MinimalSlider.lua
+Shared\Slider\MinimalSlider.xml
+Shared\Scroll\ScrollUtil.lua
+Shared\Scroll\ScrollController.lua
+Shared\Scroll\ScrollBoxPadding.lua
+Shared\Scroll\ScrollBoxViewUtil.lua
+Shared\Scroll\ScrollBoxStride.lua
+Shared\Scroll\ScrollBoxView.lua
+Shared\Scroll\ScrollBoxListView.lua
+Shared\Scroll\ScrollBoxLinearView.lua
+Shared\Scroll\ScrollBoxBiaxalView.lua
+Shared\Scroll\ScrollBoxTreeView.lua
+Shared\Scroll\ScrollBoxSequenceView.lua
+Shared\Scroll\ScrollBoxGridView.lua
+Shared\Scroll\ScrollBox.lua
+Shared\Scroll\ScrollBox.xml
+Shared\Scroll\ScrollBar.lua
+Shared\Scroll\ScrollBar.xml
+Shared\Scroll\ScrollTemplates.lua
+Shared\Scroll\ScrollTemplates.xml
+Shared\Scroll\TrimScrollBar.lua
+Shared\Scroll\TrimScrollBar.xml
+Classic\Scroll\TrimScrollBar.xml [AllowLoadGameType classic]
+Mainline\Scroll\OribosScrollBar.lua [AllowLoadGameType mainline]
+Mainline\Scroll\OribosScrollBar.xml [AllowLoadGameType mainline]
+Shared\Scroll\MinimalScrollBar.lua
+Shared\Scroll\MinimalScrollBar.xml
+Shared\ButtonTray\ButtonTrayUtil.lua
+Shared\ButtonTray\ButtonTray.lua
+Shared\ButtonTray\ButtonTray.xml
+Dump.lua [AllowLoadEnvironment Global]
+MixinUtil.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
+ScrollableTabsContainer.lua [AllowLoadGameType mainline]
+ScrollableTabsContainer.xml [AllowLoadGameType mainline]
+Shared\TabSystem\TabSystemTemplates.lua [ExcludeLoadGameType vanilla tbc]
+Shared\TabSystem\TabSystemTemplates.xml [ExcludeLoadGameType vanilla tbc]
+Shared\TabSystem\TabSystemOwner.lua [ExcludeLoadGameType vanilla tbc]
+Shared\TabSystem\TabSystemOwner.xml [ExcludeLoadGameType vanilla tbc]
+Shared\Selector\Blizzard_SelectorUI.lua
+Shared\Selector\Blizzard_SelectorUI.xml
+Shared\Selector\Blizzard_GridSelectorUI.lua
+Shared\Selector\Blizzard_GridSelectorUI.xml
+Shared\Selector\Blizzard_ScrollBoxSelector.lua
+[Family]\Selector\Blizzard_ScrollBoxSelector.xml
+HelpTip.lua [AllowLoadEnvironment Global] [ExcludeLoadGameType vanilla tbc]
+HelpTip.xml [AllowLoadEnvironment Global] [ExcludeLoadGameType vanilla tbc]
+ScrollingMessageFrame.lua
+ScrollingMessageFrame.xml
+DropDownToggleButton.lua
+DropDownToggleButton.xml
+AnimationTemplates.lua
+AnimationTemplates.xml
+ModelSceneTemplates.lua [ExcludeLoadGameType vanilla tbc]
+ModelSceneControlFrame.lua
+ModelSceneControlFrame.xml
+ModelSceneTemplates.xml
+Shared\ModelSceneCameras\CameraRegistry.lua
+Shared\ModelSceneCameras\CameraBaseMixin.lua
+Shared\ModelSceneCameras\OrbitCameraMixin.lua
+ModelSceneMixin.lua
+ModelSceneMixin.xml
+ModelSceneActorMixin.lua
+ModelSceneActorMixin.xml
+SharedTooltipTemplates.lua
+SharedTooltipTemplates.xml
+LoopingSoundEffect.lua
+[Family]\SoundKitConstants.lua
+[Game]\SoundKitConstants.lua [AllowLoadGameType vanilla tbc]
+Wrath\SoundKitConstants.lua [AllowLoadGameType wrath cata mists]
+PropertyBindingMixin.lua
+PropertyButton.lua
+PropertyButton.xml
+PropertyFontString.lua
+PropertyFontString.xml
+PropertySlider.lua
+PropertySlider.xml
+PingAttributes.xml [AllowLoadGameType mainline]
+PingableType.lua [AllowLoadGameType mainline]
+Blizzard_RadialWheel.lua [AllowLoadGameType mainline]
+Blizzard_RadialWheel.xml [AllowLoadGameType mainline]
+Backdrop.xml
+Shared\LoadSystem\LoadSystemTemplates.lua [AllowLoadGameType vanilla tbc mainline]
+Shared\LoadSystem\LoadSystemTemplates.xml [AllowLoadGameType vanilla tbc mainline]
+TemplatedList.xml [AllowLoadGameType mainline]
+PagedList.xml [AllowLoadGameType mainline]
+[Family]\ScrollDefine.lua
+[Family]\ScrollDefine.xml
+SecureScrollTemplates.lua
+SecureScrollTemplates.xml
+SecureUIPanelTemplates.lua
+SecureUIPanelTemplates.xml
+Spinner.lua
+Spinner.xml
+[Family]\SharedUIPanelTemplates.lua
+PortraitFrame.lua
+[Family]\SharedUIPanelTemplates.xml
+Mainline\SharedCollectionUtil.lua [AllowLoadGameType mainline]
+Mainline\SharedCollectionTemplates.lua [AllowLoadGameType mainline]
+Mainline\SharedCollectionTemplates.xml [AllowLoadGameType mainline]
+CustomBindingButtonMixin.lua
+CustomBindingButtonTemplate.xml
+Classic\SliderTemplates.xml [AllowLoadGameType classic]
+Shared\Tabs\MinimalTab.lua
+Shared\Tabs\MinimalTab.xml
+Shared\Button\UIPanelButtonTemplates.lua
+Shared\Button\UIPanelButtonTemplates.xml
+Shared\Dialog\DialogTemplates.lua
+Shared\Dialog\DialogTemplates.xml
+Classic\Dialog\DialogTemplates.xml [AllowLoadGameType classic]
+DialogUtil.lua
+Shared\InputBox\InputBoxTemplates.lua
+Shared\InputBox\InputBoxTemplates.xml
+SharedBasicControls.lua [AllowLoadEnvironment Global]
+SharedBasicControls.xml
+[Family]\UIDropDownMenu.lua
+[Family]\UIDropDownMenuTemplates.lua
+[Family]\UIDropDownMenuTemplates.xml
+[Family]\UIDropDownMenu.xml
+Shared\Frame\MainMenuFrameTemplates.lua [ExcludeLoadGameType cata]
+[Family]\Frame\MainMenuFrameTemplates.xml [ExcludeLoadGameType cata]
+[Family]\Sound.lua
+[Family]\GameTooltipTemplate.lua [AllowLoadGameType classic]
+[Family]\GameTooltipTemplate.xml [AllowLoadGameType classic]
+[Family]\ModelFrames.lua
+Mainline\ModelFrameMixin.lua [AllowLoadGameType mainline]
+Mainline\ModelControlButtonMixin.lua [AllowLoadGameType mainline]
+ModelFrameTemplates.xml [AllowLoadGameType mainline]
+[Family]\ModelFrames.xml
+ModelPreviewFrame.lua
+ModelPreviewFrame.xml
+CharacterModelFrameMixin.lua [ExcludeLoadGameType vanilla tbc wrath]
+Classic\SharedUtils.lua [AllowLoadGameType classic]
+ToolWindowOwnerMixin.lua
+AlertFrameIntrinsic.lua
+AlertFrameIntrinsic.xml
+Mainline\MajorFactionRenownSharedTemplates.lua [AllowLoadGameType mainline]
+Mainline\MajorFactionRenownSharedTemplates.xml [AllowLoadGameType mainline]
+CommonUIPanelTemplates.xml [ExcludeLoadGameType vanilla tbc wrath cata]
+## HybridScrollFrame is deprecated. Retained only for addons and legacy content
+HybridScrollFrame.lua
+HybridScrollFrame.xml
+Shared\Localization.lua [AllowLoadGameType mainline]
+ListTemplates.lua
+ListTemplates.xml
+MoneyFormatter.lua

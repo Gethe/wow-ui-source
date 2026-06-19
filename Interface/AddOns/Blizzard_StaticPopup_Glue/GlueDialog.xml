@@ -52,7 +52,7 @@
 								</Layer>
 							</Layers>
 						</Frame>
-						<SimpleHTML parentKey="HtmlText" inherits="UserScaledFrameTemplate" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
+						<SimpleHTML parentKey="HtmlText" inherits="UserScaledFrameTemplate" mixin="NarrationHTMLMixin" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
 							<KeyValues>
 								<KeyValue key="baseWidth" value="450" type="number"/>
 								<KeyValue key="useScaleWeight" value="true" type="boolean"/>

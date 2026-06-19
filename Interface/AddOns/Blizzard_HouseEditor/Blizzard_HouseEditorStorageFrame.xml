@@ -59,7 +59,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="HeaderBackground" atlas="house-chest-header-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="HeaderBackground" atlas="house-chest-header-bg" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="CatalogElements">
 					<Size x="404" y="68"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -68,7 +68,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="CornerBorder" atlas="house-chest-corbel-topright" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="CornerBorder" atlas="house-chest-corbel-topright" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="CatalogElements">
 					<Size x="74" y="49"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-2.5" y="-2.5"/>
@@ -80,7 +80,7 @@
 			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the storage frame -->
 			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true"/>
 
-			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate">
+			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate" parentArray="CatalogElements">
 				<Size y="30"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-20"/>
@@ -88,7 +88,7 @@
 				</Anchors>
 			</EditBox>
 
-			<Frame parentKey="Filters" inherits="HousingCatalogFiltersTemplate">
+			<Frame parentKey="Filters" inherits="HousingCatalogFiltersTemplate" parentArray="CatalogElements">
 				<Size y="20"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="10" y="0"/>
@@ -96,7 +96,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="Categories" inherits="HousingCatalogCategoriesTemplate">
+			<Frame parentKey="Categories" inherits="HousingCatalogCategoriesTemplate" parentArray="CatalogElements">
 				<KeyValues>
 					<KeyValue key="fixedWidth" value="75" type="number"/>
 					<KeyValue key="topPadding" value="5" type="number"/>
@@ -107,7 +107,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="OptionsContainer" inherits="ScrollingHousingCatalogTemplate">
+			<Frame parentKey="OptionsContainer" inherits="ScrollingHousingCatalogTemplate" parentArray="CatalogElements">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="85" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
@@ -127,6 +127,13 @@
 						</FontString>
 					</Layer>
 				</Layers>
+			</Frame>
+
+			<Frame parentKey="BlueprintCollection" inherits="HousingBlueprintCollectionTemplate" parentArray="BlueprintElements">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
 			</Frame>
 
 			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">

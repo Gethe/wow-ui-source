@@ -162,7 +162,7 @@ function UnitPopupSharedUtil.IsInGroupWithPlayer(contextData)
 
 	local guid = contextData.guid;
 	if guid then
-		return IsGUIDInGroup(guid);
+		return C_PartyInfo.IsGUIDInGroup(guid);
 	end
 
 	return false;
@@ -173,7 +173,16 @@ function UnitPopupSharedUtil.IsBNetFriend(contextData)
 	return nil; 
 end
 
-function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer)
+function UnitPopupSharedUtil.IsFriendshipUpgrade(contextData, requestedFriendLevel)
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo or not accountInfo.friendLevel then
+		return false;
+	end
+
+	return not BNet_IsFriendLevelEqualOrHigher(accountInfo.friendLevel, requestedFriendLevel);
+end
+
+function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer, requestedFriendLevel)
 	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end

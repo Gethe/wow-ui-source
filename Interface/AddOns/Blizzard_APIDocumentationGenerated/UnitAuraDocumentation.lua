@@ -329,6 +329,24 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetGroupBuffVisualAlerts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHiddenGroupBuffs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
@@ -464,6 +482,28 @@ local UnitAura =
 			Type = "Function",
 		},
 		{
+			Name = "SetGroupBuffVisualAlerts",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false, NeverSecretContents = true },
+			},
+		},
+		{
+			Name = "SetHiddenGroupBuffs",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false, NeverSecretContents = true },
+			},
+		},
+		{
 			Name = "SetPrivateWarningTextAnchor",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -477,16 +517,6 @@ local UnitAura =
 		{
 			Name = "SwitchAuraDataProvider",
 			Type = "Function",
-		},
-		{
-			Name = "TriggerPrivateAuraShowDispelType",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "show", Type = "bool", Nilable = false },
-			},
 		},
 		{
 			Name = "WantsAlteredForm",
@@ -515,6 +545,26 @@ local UnitAura =
 			Payload =
 			{
 				{ Name = "useRealDataProvider", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GroupBuffVisualAlertsChanged",
+			Type = "Event",
+			LiteralName = "GROUP_BUFF_VISUAL_ALERTS_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "HiddenGroupBuffsChanged",
+			Type = "Event",
+			LiteralName = "HIDDEN_GROUP_BUFFS_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

@@ -5,14 +5,15 @@ local DelvesConstants =
 		{
 			Name = "CompanionConfigSlotTypes",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Role", Type = "CompanionConfigSlotTypes", EnumValue = 0 },
 				{ Name = "Utility", Type = "CompanionConfigSlotTypes", EnumValue = 1 },
 				{ Name = "Combat", Type = "CompanionConfigSlotTypes", EnumValue = 2 },
+				{ Name = "Flavor", Type = "CompanionConfigSlotTypes", EnumValue = 3 },
 			},
 		},
 		{
@@ -41,17 +42,42 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "TieredEntranceTierFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IsLFG", Type = "TieredEntranceTierFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TieredEntranceType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
 				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
-				{ Name = "Reserved", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "Lairs", Type = "TieredEntranceType", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "WorldTierDifficulty",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Normal", Type = "WorldTierDifficulty", EnumValue = 1 },
+				{ Name = "Heroic", Type = "WorldTierDifficulty", EnumValue = 2 },
+				{ Name = "Mythic", Type = "WorldTierDifficulty", EnumValue = 3 },
 			},
 		},
 		{
@@ -85,6 +111,7 @@ local DelvesConstants =
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_TIER_LEVEL", Type = "number", Value = 1 },
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_MAP_ID", Type = "number", Value = 3 },
 				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_PLAYER_CONDITION_ID", Type = "number", Value = 6 },
+				{ Name = "TIERED_ENTRANCE_INFO_WORLD_TIER_DIFFICULTY_CHARACTER_ELEMENT_ID", Type = "number", Value = 522 },
 			},
 		},
 	},

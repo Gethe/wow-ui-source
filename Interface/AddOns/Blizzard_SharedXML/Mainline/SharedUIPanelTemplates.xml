@@ -131,7 +131,7 @@
 		<Size x="9" y="14"/>
 	</Texture>
 
-	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" virtual="true">
+	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" mixin="UIPanelCloseButtonNarrationMixin" virtual="true">
 		<Size x="24" y="24"/>
 		<DisabledTexture atlas="RedButton-Exit-Disabled"/>
 		<NormalTexture atlas="RedButton-Exit"/>
@@ -982,7 +982,7 @@
 		<Size x="43" y="55"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="questlog-tab-side" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="common-sidetab" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -996,20 +996,31 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" atlas="QuestLog-Tab-side-Glow-select" useAtlasSize="true">
+				<Texture parentKey="SelectedTexture" atlas="common-sidetab-selected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TabGlow" atlas="common-sidetab-selected" useAtlasSize="true" alpha="0" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture atlas="QuestLog-Tab-side-Glow-hover" useAtlasSize="true">
+				<Texture parentKey="HighlightTexture" atlas="common-sidetab-hover" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TabGlowAnimation" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="TabGlow" duration="0.9" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TabGlow" duration="0.9" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
@@ -1334,7 +1345,7 @@
 		</Scripts>
 	</Frame>
 
-	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
+	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin, NarrationEditBoxMixin" virtual="true">
 		<Size x="343" y="48"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1532,7 +1543,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
+	<!--This was originally a Frame. Existing Frame instances will continue to function as expected.-->
+	<Button name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
 		<KeyValues>
 			<!-- If true, will show the move cursor when hovering the bar, rather than only when dragged -->
 			<KeyValue key="showCursorOnHover" value="false" type="boolean"/>
@@ -1544,7 +1556,7 @@
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
 		<Size x="16" y="16"/>
@@ -2140,7 +2152,7 @@
 	<Button name="ExpandBarTemplate" mixin="ExpandBarMixin" virtual="true">
 		<Size x="280" y="44"/>
 		<Frames>
-			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate">
+			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin, NarrationForwardToParentMixin" inherits="UIButtonTemplate">
 				<Size x="28" y="28"/>
 				<KeyValues>
 					<!--Default values, override as needed.-->

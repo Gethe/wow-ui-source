@@ -1,3 +1,16 @@
+local interfaceActionBlockedCount = 0;
+
+function DisplayInterfaceActionBlockedMessage()
+	if ( interfaceActionBlockedCount > 50000 ) then
+		interfaceActionBlockedCount = 0;
+	end
+	interfaceActionBlockedCount = interfaceActionBlockedCount + 1;
+
+	if ( interfaceActionBlockedCount == 1 ) then
+		ChatFrameUtil.AddSystemMessage(INTERFACE_ACTION_BLOCKED);
+	end
+end
+
 function ChatFrameUtil.InsertLink(text)
 	if ( not text ) then
 		return false;

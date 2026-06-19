@@ -2,6 +2,7 @@ local AbbreviatedNumberFormatterAPI =
 {
 	Name = "AbbreviatedNumberFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

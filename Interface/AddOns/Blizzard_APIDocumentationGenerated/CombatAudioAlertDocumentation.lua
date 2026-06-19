@@ -232,6 +232,7 @@ local CombatAudioAlert =
 		{
 			Name = "SpeakText",
 			Type = "Function",
+			MayReturnNothing = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -239,6 +240,11 @@ local CombatAudioAlert =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "category", Type = "CombatAudioAlertCategory", Nilable = false },
 				{ Name = "allowOverlap", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "utteranceID", Type = "number", Nilable = false },
 			},
 		},
 	},

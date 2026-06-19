@@ -178,6 +178,18 @@ function FrameUtil.UpdateScaleForFitSpecific(frame, specificWidth, specificHeigh
 	end
 end
 
+function LowerFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()-1);
+end
+
+function RaiseFrameLevel(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+end
+
+function RaiseFrameLevelByTwo(frame)
+	frame:SetFrameLevel(frame:GetFrameLevel()+2);
+end
+
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
 		local currentFrame = frame;
@@ -550,7 +562,10 @@ end
 function FrameUtil.SetParentMaintainRenderLayering(frame, parent)
 	local origStrata = frame:GetFrameStrata();
 	local origFrameLevel = frame:GetFrameLevel();
+	local origWindow = frame:GetWindow();
+
 	frame:SetParent(parent);
+	frame:SetWindow(origWindow);
 	frame:SetFrameStrata(origStrata);
 	frame:SetFrameLevel(origFrameLevel);
 end

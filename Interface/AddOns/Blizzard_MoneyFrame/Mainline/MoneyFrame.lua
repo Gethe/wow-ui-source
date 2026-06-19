@@ -84,7 +84,7 @@ function MoneyFrame_OnEnter(moneyFrame)
 		local copperButton = moneyFrame.CopperButton;
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(copperButton, "ANCHOR_TOPRIGHT", 20, 2);
-		SetTooltipMoney(tooltip, moneyFrame.staticMoney, "TOOLTIP", "");
+		GameTooltip_AddHighlightLine(tooltip, MoneyFormatterUtil.FormatMoney(moneyFrame.staticMoney, MoneyFormatterPresets.ShowLowerWithZero));
 		tooltip:Show();
 	end
 end

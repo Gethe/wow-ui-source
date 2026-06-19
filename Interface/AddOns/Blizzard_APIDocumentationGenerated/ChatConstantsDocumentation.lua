@@ -52,18 +52,6 @@ local ChatConstants =
 			},
 		},
 		{
-			Name = "ChatMessagingLockdownRestriction",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 1,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "DropIncomingAddonMessages", Type = "ChatMessagingLockdownRestriction", EnumValue = 1 },
-				{ Name = "DropOutgoingAddonMessages", Type = "ChatMessagingLockdownRestriction", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "ChatToxityFilterOptOut",
 			Type = "Enumeration",
 			NumValues = 4,

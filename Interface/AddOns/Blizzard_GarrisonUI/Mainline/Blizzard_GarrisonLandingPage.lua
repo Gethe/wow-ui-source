@@ -166,9 +166,11 @@ end
 
 function GarrisonLandingPageMixin:SetupCovenantCallings()
 	if not self.CovenantCallings then
-		if UIParentLoadAddOn("Blizzard_CovenantCallings") then
+		if CovenantCallings_LoadUI() then
 			self.CovenantCallings = CovenantCallings.Create(self.Report.Sections);
 			self.CovenantCallings.topPadding = -10;
+		else
+			return;
 		end
 	end
 
@@ -178,7 +180,9 @@ end
 
 function GarrisonLandingPageMixin:SetupCovenantTopPanel()
 	if not self.SoulbindPanel then
-		UIParentLoadAddOn("Blizzard_LandingSoulbinds");
+		if not LandingSoulbinds_LoadUI() then
+			return;
+		end
 		self.SoulbindPanel = LandingSoulbind.Create(self.Report.Sections);
 	end
 
@@ -190,7 +194,7 @@ function GarrisonLandingPageMixin:SetupGardenweald()
 	if C_ArdenwealdGardening.IsGardenAccessible() then
 		if self.ArdenwealdGardeningPanel then
 			self.ArdenwealdGardeningPanel:Show();
-		elseif UIParentLoadAddOn("Blizzard_ArdenwealdGardening") then
+		elseif ArdenwealdGardening_LoadUI() then
 			self.ArdenwealdGardeningPanel = ArdenwealdGardening.Create(self.Report.Sections);
 		end
 	elseif self.ArdenwealdGardeningPanel then

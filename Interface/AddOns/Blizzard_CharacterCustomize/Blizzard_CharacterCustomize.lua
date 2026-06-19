@@ -2,6 +2,8 @@
 
 CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
 
+local MAX_ALTERED_FORMS_DROPDOWN_HEIGHT = 625;
+
 ----------------- Char-Specific Base Parent Frame -----------------
 
 CharCustomizeParentFrameBaseMixin = CreateFromMixins(CustomizationParentFrameBaseMixin);
@@ -153,6 +155,125 @@ function CharCustomizeBodyTypeButtonMixin:OnClick()
 	self:GetCustomizationFrame():SetCharacterSex(self.sexID);
 end
 
+----------------- Altered Form Icon -----------------
+-- For use with CharCustomizeAlteredFormDropdownItemMixin/Template.
+
+CharCustomizeAlteredFormDropdownItemIconMixin = {};
+
+function CharCustomizeAlteredFormDropdownItemIconMixin:SetIconAtlas(atlasStr)
+	self.Icon:SetAtlas(atlasStr);
+end
+
+function CharCustomizeAlteredFormDropdownItemIconMixin:SetSelected(isSelected)
+	self.RingHighlight:SetShown(isSelected);
+end
+
+----------------- Altered Form Dropdown Item -----------------
+-- For use with CharCustomizeAlteredFormsDropdownMixin/Template.
+
+CharCustomizeAlteredFormDropdownItemMixin = {};
+
+function CharCustomizeAlteredFormDropdownItemMixin:Init(categoryData, isSelected, isLastItem)
+	self.Text:SetText(categoryData.name);
+	self.IconFrame:SetIconAtlas(categoryData.icon);
+	self.IconFrame:SetSelected(isSelected);
+	self.Separator:SetShown(not isLastItem);
+	self.isSelected = isSelected;
+	self:SetBaseTextColor();
+end
+
+function CharCustomizeAlteredFormDropdownItemMixin:OnEnter()
+	if not self.isSelected then
+		self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+
+	if self.Text:IsTruncated() then
+		CustomizationNoHeaderTooltip:SetOwner(self, "ANCHOR_LEFT");
+		CustomizationNoHeaderTooltip:SetText(self.Text:GetText());
+		CustomizationNoHeaderTooltip:Show();
+	end
+end
+
+function CharCustomizeAlteredFormDropdownItemMixin:OnLeave()
+	self:SetBaseTextColor();
+	CustomizationNoHeaderTooltip:Hide();
+end
+
+function CharCustomizeAlteredFormDropdownItemMixin:SetBaseTextColor()
+	local color = self.isSelected and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+	self.Text:SetTextColor(color:GetRGB());
+end
+
+----------------- Altered Forms Dropdown -----------------
+
+CharCustomizeAlteredFormsDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
+
+function CharCustomizeAlteredFormsDropdownMixin:OnLoad()
+	ButtonStateBehaviorMixin.OnLoad(self);
+	DropdownSelectionTextMixin.OnLoad(self);
+
+	self:SetSelectionTranslator(function(selection)
+		local data = selection:GetData();
+		return data and data.name;
+	end);
+
+	self:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self, "BOTTOMRIGHT", 13, -25));
+
+	self.Text:SetScript("OnEnter", function(_text)
+		self:OnEnter();
+	end);
+
+	self.Text:SetScript("OnLeave", function(_text)
+		self:OnLeave();
+	end);
+
+	self.Text:SetScript("OnMouseDown", function(_text)
+		self:SetMenuOpen(not self:IsMenuOpen());
+	end);
+
+	self.Text.HandlesGlobalMouseEvent = function(_text, ...)
+		return self:HandlesGlobalMouseEvent(...);
+	end;
+
+	self:UpdateArrow();
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:OnEnter()
+	DropdownSelectionTextMixin.OnEnter(self);
+	self.HighlightTexture:Show();
+	self.ArrowHighlight:Show();
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:OnLeave()
+	DropdownSelectionTextMixin.OnLeave(self);
+	self.HighlightTexture:Hide();
+	self.ArrowHighlight:Hide();
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:OnMenuOpened(menu)
+	DropdownButtonMixin.OnMenuOpened(self, menu);
+	self:UpdateArrow();
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
+	self:UpdateArrow();
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:UpdateArrow()
+	local rotation = self:IsMenuOpen() and (math.pi * 1.5) or (math.pi * 0.5);
+	self.Arrow:SetRotation(rotation);
+	self.ArrowHighlight:SetRotation(rotation);
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:SetIconAtlas(atlasStr)
+	self.Icon:SetAtlas(atlasStr);
+end
+
+function CharCustomizeAlteredFormsDropdownMixin:SetCount(count)
+	self.Count:SetText(ALTERED_FORMS_COUNT_FORMAT:format(count));
+end
+
 ----------------- Character Customize Frame -----------------
 
 CharCustomizeMixin = CreateFromMixins(CustomizationFrameBaseMixin);
@@ -169,6 +290,7 @@ function CharCustomizeMixin:OnLoad()
 
 	self.Categories:SetFixedMaxSpace(400);
 	self.AlteredForms:SetRefreshCallback(GenerateClosure(self.UpdateAlteredFormsMaxWidth, self));
+	self.alteredFormsUseDropdown = false;
 end
 
 function CharCustomizeMixin:OnShow()
@@ -185,6 +307,14 @@ function CharCustomizeMixin:GetAlteredFormsButtonPool()
 		return self.alteredFormsPools:GetPool("CharCustomizeAlteredFormSmallButtonTemplate");
 	else
 		return self.alteredFormsPools:GetPool("CharCustomizeAlteredFormButtonTemplate");
+	end
+end
+
+function CharCustomizeMixin:UpdateAlteredForms()
+	if self.alteredFormsUseDropdown then
+		self:UpdateAlteredFormsDropdown();
+	else
+		self:UpdateAlteredFormButtons();
 	end
 end
 
@@ -218,11 +348,92 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	self.AlteredForms:Layout();
 end
 
+function CharCustomizeMixin:SetAlteredFormsUseDropdown(useDropdown)
+	self.alteredFormsUseDropdown = useDropdown;
+	self.AlteredForms:SetShown(not useDropdown);
+	self.FormsDropdown:SetShown(useDropdown);
+end
+
+function CharCustomizeMixin:UpdateAlteredFormsDropdown()
+	local chrModelCategories = {};
+	for _, categoryData in ipairs(self:GetCategories()) do
+		if categoryData.chrModelID and not categoryData.subcategory and not self.needsNativeFormCategory then
+			table.insert(chrModelCategories, categoryData);
+		end
+	end
+
+	table.sort(chrModelCategories, function(a, b) return a.orderIndex < b.orderIndex; end);
+
+	local customizationFrame = self;
+
+	local function IsSelected(categoryData)
+		if customizationFrame.viewingChrModelID then
+			return customizationFrame.viewingChrModelID == categoryData.chrModelID;
+		else
+			return categoryData.chrModelID == customizationFrame.firstChrModelID;
+		end
+	end
+
+	local function SetSelected(categoryData)
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
+		customizationFrame:SetSelectedCategory(categoryData);
+		customizationFrame:SetSelectedSubcategory(nil);
+	end
+
+	self.FormsDropdown:SetupMenu(function(_dropdown, rootDescription)
+		rootDescription:SetScrollMode(MAX_ALTERED_FORMS_DROPDOWN_HEIGHT);
+
+		for index, categoryData in ipairs(chrModelCategories) do
+			local isLastItem = (index == #chrModelCategories);
+
+			local itemDescription = rootDescription:CreateTemplate("CharCustomizeAlteredFormDropdownItemTemplate");
+			itemDescription:SetData(categoryData);
+			itemDescription:SetOnEnter(CharCustomizeAlteredFormDropdownItemMixin.OnEnter);
+			itemDescription:SetOnLeave(CharCustomizeAlteredFormDropdownItemMixin.OnLeave);
+			itemDescription:SetIsSelected(IsSelected);
+			itemDescription:SetResponder(SetSelected);
+			itemDescription:SetRadio(true);
+			itemDescription:AddInitializer(function(button, description, _menu)
+				local isSelected = IsSelected(categoryData);
+				button:Init(categoryData, isSelected, isLastItem);
+				button:SetScript("OnClick", function(_button, buttonName)
+					description:Pick(MenuInputContext.MouseButton, buttonName);
+				end);
+			end);
+		end
+	end);
+
+	local selectedIcon = nil;
+	if self.viewingChrModelID then
+		for _, categoryData in ipairs(chrModelCategories) do
+			if categoryData.chrModelID == self.viewingChrModelID then
+				selectedIcon = categoryData.selectedIcon or categoryData.icon;
+				break;
+			end
+		end
+	else
+		local firstCategory = chrModelCategories[1];
+		if firstCategory then
+			selectedIcon = firstCategory.selectedIcon or firstCategory.icon;
+		end
+	end
+
+	if selectedIcon then
+		self.FormsDropdown:SetIconAtlas(selectedIcon);
+	end
+
+	self.FormsDropdown:SetCount(#chrModelCategories);
+end
+
 function CharCustomizeMixin:GetAlteredFormsUnsafeLeftSpace()
 	return self.SmallButtons:GetRight() - self:GetLeft();
 end
 
 function CharCustomizeMixin:UpdateAlteredFormsMaxWidth()
+	if self.alteredFormsUseDropdown then
+		return;
+	end
+
 	local totalScreenWidth = UIParent:GetWidth();
 	local _point, _relativeTo, _relativePoint, alteredFormsRightOffset = self.AlteredForms:GetPoint(1);
 	local alteredFormsMaxWidth = totalScreenWidth - self:GetAlteredFormsUnsafeLeftSpace() + alteredFormsRightOffset;	-- alteredFormsRightOffset is negative, so add it
@@ -342,7 +553,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	local raceAlteredFormsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.RaceAlteredFormsDisabled);
 	if not raceAlteredFormsDisabled then
-		self:UpdateAlteredFormButtons();
+		self:UpdateAlteredForms();
 	end
 end
 

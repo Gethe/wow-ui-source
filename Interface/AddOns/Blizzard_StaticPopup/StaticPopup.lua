@@ -33,6 +33,28 @@ function StaticPopup_SetButtonText(which, buttonIndex, text)
 	StaticPopupDialogs[which]["button"..buttonIndex] = text;
 end
 
+StaticPopupDialogNarrationMixin = {};
+
+function StaticPopupDialogNarrationMixin:NarrationShouldIgnoreFocus()
+	-- We don't want static popups to narrate on mouse over.
+	return true;
+end
+
+function StaticPopupDialogNarrationMixin:NarrationGetContext()
+	return NARRATION_REGION_TYPE_DIALOG;
+end
+
+function StaticPopupDialogNarrationMixin:NarrationGetDescription()
+	if self.SubText then
+		local subText = self.SubText:GetText();
+		if subText and subText ~= "" then
+			return subText;
+		end
+	end
+
+	return nil;
+end
+
 function StaticPopup_AddDialog(dialog)
 	table.insert(dialogFrames, dialog);
 end
@@ -544,6 +566,10 @@ function StaticPopup_UpdateAll(elapsed)
 	end
 end
 
+EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
+	StaticPopup_UpdateAll(elapsed);
+end);
+
 function StaticPopup_ReleaseInsertedFrame(dialog)
 	if dialog.insertedFrame then
 		dialog.insertedFrame:Hide();
@@ -575,6 +601,13 @@ function StaticPopup_OnShow(dialog)
 
 	if atGlues or dialogInfo.enterClicksFirstButton then
 		dialog:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
+	end
+
+	if NarrationUtil then
+		local narrationInfo = NarrationUtil.RegionToNarrationInfo(dialog, NarrationUtil.TriggerType.Notification);
+		if narrationInfo then
+			EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+		end
 	end
 end
 

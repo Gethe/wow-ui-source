@@ -46,3 +46,12 @@ function CreateFromSecureMixins(...)
 
 	return SecureMixinPrivate({}, ...)
 end
+
+function ApplySecureDelegatesToTable(tbl)
+	for key, value in pairs(tbl) do
+		if type(value) == "function" then
+			local originalFunction = value;
+			tbl[key] = CreateSecureDelegate(originalFunction);
+		end
+	end
+end

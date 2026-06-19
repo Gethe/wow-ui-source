@@ -1,0 +1,578 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="SocialUITabTemplate" mixin="SocialUITabMixin" inherits="LargeSideTabButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="32" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="-2" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<DropdownButton name="SocialUIOnlineStatusDropdownTemplate" mixin="SocialUIOnlineStatusDropdownMixin" inherits="WowStyle1DropdownTemplate" virtual="true">
+		<KeyValues>
+			<!-- The icon size may change based on locale (See Localization.lua) -->
+			<KeyValue key="presenceIconSizeForDropdown" value="19" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</DropdownButton>
+
+	<DropdownButton name="SocialUIBattleNetMenuButtonTemplate" mixin="SocialUIBattleNetMenuButtonMixin" virtual="true">
+		<Size x="34" y="34"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" atlas="friends-icon-menu" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-tertiary-square-normal"/>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-tertiary-square-pressed"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-square-normal" alphaMode="ADD"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</DropdownButton>
+
+	<Frame name="SocialUIPersonalBattleTagDisplayTemplate" mixin="SocialUIPersonalBattleTagDisplayMixin" virtual="true">
+		<Size y="29"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DisplayText" inherits="UserScaledFontBody, TruncatedTooltipScriptTemplate" justifyH="CENTER" justifyV="MIDDLE" maxLines="1"/>	
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CopyBattleTagToClipboardButton" inherits="SocialUICopyBattleTagToClipboardButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DisplayText" relativePoint="RIGHT" x="8"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="BattleNetUnavailableNoticeButton" inherits="SocialUIBattleNetUnavailableNoticeButtonTemplate" propagateMouseInput="Motion">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DisplayText" relativePoint="RIGHT" x="8"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="SocialUICopyBattleTagToClipboardButtonTemplate" mixin="SocialUICopyBattleTagToClipboardButtonMixin" virtual="true">
+		<Size x="13" y="13"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon" atlas="friends-icon-battlenet-copy" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture parentKey="HighlightTexture" atlas="friends-icon-battlenet-copy" alphaMode="ADD" alpha="0.5"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SocialUIBattleNetUnavailableNoticeButtonTemplate" mixin="SocialUIBattleNetUnavailableNoticeButtonMixin" inherits="UIPanelInfoButton" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SocialUIBattleNetControlsContainerTemplate" mixin="SocialUIBattleNetControlsContainerMixin" virtual="true">
+		<Size y="32"/>
+		<Frames>
+			<DropdownButton parentKey="OnlineStatusDropdown" inherits="SocialUIOnlineStatusDropdownTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="65"/>
+				</Anchors>
+			</DropdownButton>
+
+			<DropdownButton parentKey="BattleNetMenuButton" inherits="SocialUIBattleNetMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-8"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="PersonalBattleTagDisplay" inherits="SocialUIPersonalBattleTagDisplayTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OnlineStatusDropdown" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.BattleNetMenuButton" relativePoint="LEFT" x="-7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BattleNetBackground" file="Interface\FriendsFrame\battlenet-friends-main">
+					<Size y="29"/>
+					<TexCoords left="0.00390625" right="0.74609375" top="0.00195313" bottom="0.05859375"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.OnlineStatusDropdown"/>
+						<Anchor point="RIGHT" relativeKey="$parent.BattleNetMenuButton" relativePoint="LEFT" x="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SocialUIBattleNetBarTemplate" virtual="true">
+		<Size x="413" y="50"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="friends-frame-infobg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ControlsContainer" inherits="SocialUIBattleNetControlsContainerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" y="4"/>
+					<Anchor point="RIGHT" y="4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="SocialUIBattleNetUnavailableNoticeFrameTemplate" inherits="ResizeLayoutFrame" mixin="SocialUIBattleNetUnavailableNoticeFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="40" type="number"/>
+			<KeyValue key="heightPadding" value="30" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+
+			<Frame parentKey="Header" inherits="ResizeLayoutFrame">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="1" type="number"/>
+					<KeyValue key="minimumHeight" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" y="-20"/>
+				</Anchors>	
+				<Frames>
+					<Frame parentKey="IconHolder" inherits="UserScaledFrameTemplate">
+						<KeyValues>
+							<KeyValue key="baseWidth" value="32" type="number"/> 
+							<KeyValue key="baseHeight" value="32" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon" file="Interface\FriendsFrame\PlusManz-BattleNet" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="HeaderText" inherits="UserScaledFontBody" text="BATTLENET_UNAVAILABLE" spacing="4">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.IconHolder" relativePoint="RIGHT" x="2"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="UserScaledFontGameHighlight" text="SOCIAL_UI_BATTLENET_UNAVAILABLE_ALERT" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="2" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="-2" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SocialUIBattleNetBroadcastFrameTemplate" inherits="ResizeLayoutFrame" mixin="SocialUIBattleNetBroadcastFrameMixin, SocialUISystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="40" type="number"/>
+			<KeyValue key="heightPadding" value="24" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" text="SOCIAL_UI_BATTLENET_BROADCAST_FRAME_HEADER" inherits="UserScaledFontBody">
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderOpaqueTemplate"/>
+
+			<EditBox parentKey="EditBox" mixin="SocialUIBattleNetBroadcastEditBoxMixin" inherits="UserScaledFrameTemplate" multiLine="false" letters="127" countInvisibleLetters="true" autoFocus="false">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="256" type="number"/>
+					<KeyValue key="baseHeight" value="30" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="TopLeftBorder" file="Interface\Common\Common-Input-Border-TL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRightBorder" file="Interface\Common\Common-Input-Border-TR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopBorder" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBorder" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightBorder" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomLeftBorder" file="Interface\Common\Common-Input-Border-BL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-4" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomRightBorder" file="Interface\Common\Common-Input-Border-BR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomBorder" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftBorder" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LeftBorder" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBorder" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftBorder" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightBorder" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopRightBorder" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="MiddleBorder" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.LeftBorder" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBorder" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString parentKey="PromptText" inherits="UserScaledFontGameDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_UI_BATTLENET_BROADCAST_FRAME_PROMPT">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged method="OnTextChanged"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+				</Scripts>
+				<FontString inherits="UserScaledFontGameHighlightSmall" spacing="2" justifyH="LEFT" justifyV="MIDDLE"/>
+			</EditBox>
+
+			<Button parentKey="UpdateButton" inherits="UIPanelButtonUserScaledTemplate" text="SOCIAL_UI_BATTLENET_BROADCAST_UPDATE_BUTTON_LABEL">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EditBox" relativePoint="BOTTOMLEFT" x="-21" y="-20"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CancelButton" inherits="UIPanelButtonUserScaledTemplate" text="SOCIAL_UI_BATTLENET_BROADCAST_CANCEL_BUTTON_LABEL">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.EditBox" relativePoint="BOTTOMRIGHT" x="21" y="-20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SocialUIIgnoreListHeaderTemplate" mixin="SocialUIIgnoreListHeaderMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="UserScaledFontGameHighlight, TruncatedTooltipFontStringTemplate" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false" propagateMouseInput="Both">
+					<Anchors>
+						<Anchor point="LEFT" x="5"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SocialUIIgnoreListEntryTemplate" mixin="SocialUIIgnoreListEntryMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="UserScaledFontGameNormal, TruncatedTooltipFontStringTemplate" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false" propagateMouseInput="Both">
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="SocialUIIgnoreListFrameTemplate" inherits="ButtonFrameTemplate, UserScaledFrameTemplate" mixin="SocialUIIgnoreListMixin, SocialUISystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="320" type="number"/>
+			<KeyValue key="baseHeight" value="292" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="BlockButton" inherits="UIPanelButtonUserScaledTemplate" text="SOCIAL_UI_IGNORE_LIST_BLOCK_BUTTON_LABEL">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" relativePoint="BOTTOM" x="-10" y="8"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="UnblockButton" inherits="UIPanelButtonUserScaledTemplate" text="SOCIAL_UI_IGNORE_LIST_REMOVE_BUTTON_LABEL">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" relativePoint="BOTTOM" x="10" y="8"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="-20"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="3"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="SocialUIRaidInfoContentFrameTemplate" virtual="true" mixin="SocialUIRaidInfoContentFrameMixin">
+		<Size x="300" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="friends-card-raidBG" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="150"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="difficulty" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="150"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="reset" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="extended" inherits="GameFontHighlightSmall" text="EXTENDED">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-10" y="-2"/>
+				<Anchor point="BOTTOMRIGHT" x="10" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="SocialUIRaidInfoFrameTemplate" virtual="true" mixin="SocialUIRaidInfoFrameMixin, SocialUISystemMixin">
+		<Size x="345" y="250"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="TOPRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.9"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TopInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="-21" relativeKey="$parent.TopInset"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="-21" relativeKey="$parent.TopInset"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="7" relativeKey="$parent.BottomInset"/>
+						<Anchor point="TOPRIGHT" x="-6" y="7" relativeKey="$parent.BottomInset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" text="INSTANCE" >
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlight" text="LOCK_EXPIRE" >
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-40" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" frameLevel="2" setAllPoints="true"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="290" y="157"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="16" y="-48"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="10" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="10" y="4"/>
+				</Anchors>
+			</EventFrame>
+			<Button parentKey="ExtendButton" inherits="SharedButtonTemplate" mixin="SocialUIRaidInfoExtendMixin"  text="EXTEND_RAID_LOCK">
+				<Size x="200" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

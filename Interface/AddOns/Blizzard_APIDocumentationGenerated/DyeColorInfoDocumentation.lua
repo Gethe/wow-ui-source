@@ -47,36 +47,6 @@ local DyeColorInfo =
 			},
 		},
 		{
-			Name = "GetDyeColorForItem",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "itemLinkOrID", Type = "ItemInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "dyeColorID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetDyeColorForItemLocation",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "dyeColorID", Type = "number", Nilable = true },
-			},
-		},
-		{
 			Name = "GetDyeColorInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -89,6 +59,36 @@ local DyeColorInfo =
 			Returns =
 			{
 				{ Name = "dyeColorInfo", Type = "DyeColorDisplayInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDyeColorsForItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLinkOrID", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dyeColorIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDyeColorsForItemLocation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dyeColorIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

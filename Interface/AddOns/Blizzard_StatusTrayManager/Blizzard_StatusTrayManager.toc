@@ -1,0 +1,6 @@
+## Title: Blizzard_StatusTrayManager
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## LoadFirst: 1
+## AllowLoad: Game
+StatusTrayManager.lua

@@ -143,6 +143,8 @@ SLASH_COMMAND = {
 	DISMISSBATTLEPET = "DISMISSBATTLEPET",
 	USE_TOY = "USE_TOY",
 	PING = "PING",
+	PING_SPELL = "PING_SPELL",
+	PING_ITEM = "PING_ITEM",
 	ABANDON = "ABANDON",
 	INVITE = "INVITE",
 	REQUEST_INVITE = "REQUEST_INVITE",
@@ -867,11 +869,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNINVITE, SLASH_COMMAND_CATE
 		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
-	UninviteUnit(msg);
+	C_PartyInfo.UninviteUnit(msg);
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.PROMOTE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
-	PromoteToLeader(msg);
+	C_PartyInfo.PromoteToLeader(msg);
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REPLY, SLASH_COMMAND_CATEGORY.CHAT_COMMAND, function(msg, editBox)
@@ -1200,7 +1202,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RANDOM, SLASH_COMMAND_CATEGO
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.MACRO, SLASH_COMMAND_CATEGORY.MACRO, function(msg)
-	if Kiosk.IsEnabled() then
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
 		return;
 	end
 
@@ -1213,7 +1219,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.READYCHECK, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		DoReadyCheck();
+		C_PartyInfo.DoReadyCheck();
 	end
 end);
 
@@ -1243,7 +1249,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.STOPWATCH, SLASH_COMMAND_CATEGORY.CHAT_COMMAND, function(msg)
 	if ( not C_AddOns.IsAddOnLoaded("Blizzard_TimeManager") ) then
-		UIParentLoadAddOn("Blizzard_TimeManager");
+		TimeManager_LoadUI();
 	end
 	if ( StopwatchFrame ) then
 		local text = strmatch(msg, "%s*([^%s]+)%s*");
@@ -1297,6 +1303,15 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.ACHIEVEMENTUI, SLASH_COMMAND
 	if Kiosk.IsEnabled() then
 		return;
 	end
+
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if not ((HasCompletedAnyAchievement() or IsInGuild()) and CanShowAchievementUI()) then
+		return;
+	end
+
 	ToggleAchievementFrame();
 end);
 
@@ -1312,7 +1327,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UI_ERRORS_ON, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.EVENTTRACE, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
-	UIParentLoadAddOn("Blizzard_EventTrace");
+	EventTrace_LoadUI();
 	EventTrace:ProcessChatCommand(msg);
 end);
 
@@ -1321,7 +1336,7 @@ if IsGMClient() then
 	SLASH_TEXELVIS1 = "/texelvis";
 	SLASH_TEXELVIS2 = "/tvis";
 	SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXELVIS, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
-		UIParentLoadAddOn("Blizzard_DebugTools");
+		DebugTools_LoadUI();
 		TexelSnappingVisualizer:Show();
 	end);
 end
@@ -1336,7 +1351,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TABLEINSPECT, SLASH_COMMAND_
 		return;
 	end
 	forceinsecure();
-	UIParentLoadAddOn("Blizzard_DebugTools");
+	DebugTools_LoadUI();
 
 	local focusedTable = nil;
 	if msg ~= "" and msg ~= " " then
@@ -1363,7 +1378,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DUMP, SLASH_COMMAND_CATEGORY
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
 		end
-		UIParentLoadAddOn("Blizzard_DebugTools");
+		DebugTools_LoadUI();
 		DevTools_DumpCommand(msg);
 	end
 end);
@@ -1389,6 +1404,13 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TARGET_MARKER, SLASH_COMMAND
 		marker = tonumber(string.match(marker, "%d+"));
 
 		if ( GetRaidTargetIndex(target) == marker ) then
+			return;
+		end
+	-- Prefixing with a "~" will prevent setting the marker if the unit already has any marker.
+	elseif ( marker and string.find(marker, "^~") ) then
+		marker = tonumber(string.match(marker, "%d+"));
+
+		if ( GetRaidTargetIndex(target) ~= nil ) then
 			return;
 		end
 	else
@@ -1568,7 +1590,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COM
 		end
 	else
 		if not failureText then
-			failureText, failureTextNarrated = CAACommands:GetCommandHelpText(cmd);
+			local failureTextInfo = CAACommands:GetCommandHelpText(cmd);
+			if not TableIsEmpty(failureTextInfo) then
+				failureText = failureTextInfo[1].displayText;
+				failureTextNarrated = failureTextInfo[1].narratedText;
+			end
 		end
 
 		if failureText then

@@ -65,7 +65,27 @@ CHAT_FRAME_TEXTURES = {
 
 CHAT_FRAMES = {};
 
+local CHAT_TAB_DOCKED_MAX_WIDTH = 90;
+local CHAT_TAB_UNDOCKED_MAX_WIDTH = 180;
+local CHAT_TAB_SIDES_PADDING = 20;
+
+local function FCF_HasSecretName(frame)
+	return frame.chatTarget and (frame.chatType == "WHISPER" or frame.chatType == "BN_WHISPER");
+end
+
+-- We use a fixed width for tabs that have secret text to avoid propagation of secret values.
+local function FCF_SetTabFixedWidth(tab, width)
+	local padding = tab.sizePadding or 0;
+	local textWidth = width - CHAT_TAB_SIDES_PADDING - padding;
+	tab.Text:SetWidth(textWidth);
+	tab:SetWidth(width);
+end
+
 FloatingChatFrameMixin = CreateFromMixins(ChatFrameMixin);
+
+EventRegistry:RegisterForOnUpdate(FloatingChatFrameMixin, function(_, elapsed)
+	FCF_OnUpdate(elapsed);
+end);
 
 function FloatingChatFrameMixin:OnLoad()
 	--IMPORTANT NOTE: This function isn't run by ChatFrame1.
@@ -82,13 +102,12 @@ function FloatingChatFrameMixin:OnLoad()
 	chatTab.mouseOverAlpha = CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA;
 	chatTab.noMouseAlpha = CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA;
 
-	if FRAMELOCK_STATES then
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName()] = "hidden";
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName().."Editbox"] = "hidden";
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[chatTab:GetName()] = "hidden";
-		UpdateFrameLock(self);
-		UpdateFrameLock(chatTab);
+	self:SetRolesets("chat");
+	local editbox = _G[self:GetName().."Editbox"];
+	if editbox then
+		editbox:SetRolesets("chat");
 	end
+	chatTab:SetRolesets("chat");
 
 	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
 	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollToBottomButton, "TOPLEFT", 0, 2);
@@ -813,9 +832,14 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	end
 	local tab = _G[frame:GetName().."Tab"];
 	tab:SetText(name);
-	PanelTemplates_TabResize(tab, tab.sizePadding or 0);
-	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
-	tab.textWidth = tab.Text:GetWidth();
+	if FCF_HasSecretName(frame) then
+		FCF_SetTabFixedWidth(tab, CHAT_TAB_DOCKED_MAX_WIDTH);
+		tab.textWidth = CHAT_TAB_DOCKED_MAX_WIDTH - CHAT_TAB_SIDES_PADDING - (tab.sizePadding or 0);
+	else
+		PanelTemplates_TabResize(tab, tab.sizePadding or 0);
+		-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
+		tab.textWidth = tab.Text:GetWidth();
+	end
 	if ( frame.minFrame ) then
 		frame.minFrame:SetText(name);
 	end
@@ -1028,11 +1052,12 @@ end
 
 function FCF_FadeInChatFrame(chatFrame)
 	local frameName = chatFrame:GetName();
+	local oldAlpha = chatFrame.oldAlpha or DEFAULT_CHATFRAME_ALPHA;
 	chatFrame.hasBeenFaded = true;
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
 		local object = _G[frameName..value];
 		if ( object:IsShown() ) then
-			UIFrameFadeIn(object, CHAT_FRAME_FADE_TIME, object:GetAlpha(), max(chatFrame.oldAlpha, DEFAULT_CHATFRAME_ALPHA));
+			UIFrameFadeIn(object, CHAT_FRAME_FADE_TIME, object:GetAlpha(), max(oldAlpha, DEFAULT_CHATFRAME_ALPHA));
 		end
 	end
 	if ( chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ) then
@@ -1059,12 +1084,13 @@ end
 
 function FCF_FadeOutChatFrame(chatFrame)
 	local frameName = chatFrame:GetName();
+	local oldAlpha = chatFrame.oldAlpha or DEFAULT_CHATFRAME_ALPHA;
 	chatFrame.hasBeenFaded = nil;
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
 		-- Fade out chat frame
 		local object = _G[frameName..value];
 		if ( object:IsShown() ) then
-			UIFrameFadeOut(object, CHAT_FRAME_FADE_OUT_TIME, max(object:GetAlpha(), chatFrame.oldAlpha), chatFrame.oldAlpha);
+			UIFrameFadeOut(object, CHAT_FRAME_FADE_OUT_TIME, max(object:GetAlpha(), oldAlpha), oldAlpha);
 		end
 	end
 	if ( chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ) then
@@ -1110,7 +1136,7 @@ function FCF_OnUpdate(elapsed)
 				end
 			--Things that will cause the frame to fade in if the mouse is stationary.
 			elseif (chatFrame:IsMouseOver(topOffset, -2, -2, 2) or	--This should be slightly larger than the hit rect insets to give us some wiggle room.
-				(chatFrame.isDocked and QuickJoinToastButton:IsMouseOver()) or
+				(chatFrame.isDocked and (QuickJoinToastButton and QuickJoinToastButton:IsMouseOver())) or
 				(chatFrame.ScrollBar and (chatFrame.ScrollBar:IsThumbMouseDown() or chatFrame.ScrollBar:IsMouseOver())) or
 				(chatFrame.ScrollToBottomButton and chatFrame.ScrollToBottomButton:IsMouseOver()) or
 				(chatFrame.buttonFrame:IsMouseOver())) then
@@ -1962,7 +1988,11 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	chatFrame:SetMovable(true);
 	chatFrame:SetResizable(true);
 	FCFTab_UpdateColors(chatTab, true);
-	PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
+	if FCF_HasSecretName(chatFrame) then
+		FCF_SetTabFixedWidth(chatTab, CHAT_TAB_UNDOCKED_MAX_WIDTH);
+	else
+		PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
+	end
 	if ( FCFDock_GetSelectedWindow(dock) == chatFrame ) then
 		FCFDock_SelectWindow(dock, dock.DOCKED_CHAT_FRAMES[1]);
 	end
@@ -2053,7 +2083,11 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	for index, chatFrame in ipairs(dock.DOCKED_CHAT_FRAMES) do
 		if ( not chatFrame.isStaticDocked ) then
 			local chatTab = _G[chatFrame:GetName().."Tab"];
-			PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, dynTabSize);
+			if FCF_HasSecretName(chatFrame) then
+				FCF_SetTabFixedWidth(chatTab, dynTabSize);
+			else
+				PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, dynTabSize);
+			end
 		end
 	end
 
@@ -2251,16 +2285,6 @@ function FCFDockScrollFrame_JumpToTab(scrollFrame, leftTab)
 end
 
 --Dock list related functions
-function FCFDockOverflow_CloseLists()
-	local list = GENERAL_CHAT_DOCK.overflowButton.list;
-	if ( list:IsShown() ) then
-		list:Hide();
-		return true;
-	else
-		return false;
-	end
-end
-
 function FCFDockOverflowButton_UpdatePulseState(self)
 	local dock = self:GetParent();
 	local shouldPulse = false;

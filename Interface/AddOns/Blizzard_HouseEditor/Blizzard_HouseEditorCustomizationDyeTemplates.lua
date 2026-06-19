@@ -4,26 +4,6 @@ function HousingDyePaneMixin:OnLoad()
 	ClickToDragMixin.OnLoad(self);
 	self.dyeSlotPool = CreateFramePool("FRAME", self.DyeSlotContainer, "HousingDecorDyeSlotTemplate", HousingDecorDyeSlotMixin.Reset);
 
-	local function CloseDyePane()
-		-- This will clear the preview dyes and close this pane by deselecting the decor
-		C_HousingCustomizeMode.CancelActiveEditing();
-	end
-
-	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
-		local anyChanges = C_HousingCustomizeMode.CommitDyesForSelectedDecor();
-		if anyChanges then
-			PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_APPLY_CHANGED);
-		else
-			PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_APPLY_NO_CHANGE);
-		end
-
-		DyeSelectionPopout:SetDyeSlotInfo(DyeSelectionPopout.dyeSlotInfo);
-		CloseDyePane();
-	end);
-
-	self.ButtonFrame.CancelButton:SetScript("OnClick", CloseDyePane);
-	self.CloseButton:SetScript("OnClick", CloseDyePane);
-
 	self.dyeCostIcons = {};
 	self.dyeCostFramePool = CreateFramePool("FRAME", self.DyeCostContainer, "HousingDyeCostIconTemplate");
 end
@@ -37,11 +17,32 @@ function HousingDyePaneMixin:OnHide()
 	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
 end
 
+function HousingDyePaneMixin:DyeCostIsValid()
+	local canAffordDyes = true;
+	local dyesToSpend = self:GetPreviewDyeInfos();
+	local dyeCounts = {};
+	for i, dyeCostIcon in ipairs(self.dyeCostIcons) do
+		local dyeInfo = dyesToSpend[i];
+		if dyeInfo then
+			dyeCounts[dyeInfo.itemID] = (dyeCounts[dyeInfo.itemID] or 0) + 1;
+
+			local dyeIsValid = dyeCounts[dyeInfo.itemID] <= dyeInfo.numOwned;
+			if not dyeIsValid then
+				canAffordDyes = false;
+			end
+
+			dyeCostIcon:Init(dyeInfo.itemID, dyeInfo.numOwned, not dyeIsValid);
+		else
+			dyeCostIcon:Hide();
+		end
+	end
+
+	return canAffordDyes;
+end
+
 function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 	self.decorGUID = decorInstanceInfo.decorGUID;
 
-	self.DecorName:SetText(decorInstanceInfo.name);
-	local numDyesToSpend = C_HousingCustomizeMode.GetNumDyesToSpendOnSelectedDecor();
 	local numDyesToRemove = C_HousingCustomizeMode.GetNumDyesToRemoveOnSelectedDecor();
 	self.DyeRemoveWarning:SetText(numDyesToRemove == 0 and "" or string.format(HOUSING_DECOR_CUSTOMIZATION_REMOVE_DYE_WARNING, numDyesToRemove));
 
@@ -79,30 +80,36 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 		self.dyeSlotFramesByChannel[dyeSlotEntry.channel] = dyeSlotFrame;
 	end
 
-	local canAffordDyes = true;
 	local dyesToSpend = self:GetPreviewDyeInfos();
-	local dyeCounts = {};
-	for i, dyeCostIcon in ipairs(self.dyeCostIcons) do
-		local dyeInfo = dyesToSpend[i];
-		if dyeInfo then
-			dyeCounts[dyeInfo.itemID] = (dyeCounts[dyeInfo.itemID] or 0) + 1;
-
-			local dyeIsValid = dyeCounts[dyeInfo.itemID] <= dyeInfo.numOwned;
-			if not dyeIsValid then
-				canAffordDyes = false;
-			end
-
-			dyeCostIcon:Init(dyeInfo.itemID, dyeInfo.numOwned, not dyeIsValid);
-		else
-			dyeCostIcon:Hide();
-		end
-	end
+	--helper function to update dye cost icons, return isn't needed here
+	self:DyeCostIsValid();
 
 	self.DyeCostContainer:SetShown(#dyesToSpend > 0);
 	self.DyeCostContainer:Layout();
 
-	self.ButtonFrame.ApplyButton:SetEnabled((numDyesToRemove > 0 or #dyesToSpend > 0) and canAffordDyes);
-	self.ButtonFrame.ApplyButton.disabledTooltip = not canAffordDyes and HOUSING_DECOR_DYE_NOT_ENOUGH_DYE or nil;
+	if self.applyButton then
+		self:UpdateApplyButton(self.applyButton);
+	end
+end
+
+function HousingDyePaneMixin:UpdateApplyButton(applyButton)
+	self.applyButton = applyButton;
+	local canAffordDyes = self:DyeCostIsValid();
+	--local dyesToSpend = self:GetPreviewDyeInfos();
+	--local numDyesToRemove = C_HousingCustomizeMode.GetNumDyesToRemoveOnSelectedDecor();
+
+	applyButton:SetEnabled(canAffordDyes);
+	applyButton.disabledTooltip = not canAffordDyes and HOUSING_DECOR_DYE_NOT_ENOUGH_DYE or nil;
+end
+
+function HousingDyePaneMixin:OnApply()
+	local anyChanges = C_HousingCustomizeMode.CommitDyesForSelectedDecor();
+	if anyChanges then
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_APPLY_CHANGED);
+		DyeSelectionPopout:SetDyeSlotInfo(DyeSelectionPopout.dyeSlotInfo);
+	else
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_APPLY_NO_CHANGE);
+	end
 end
 
 function HousingDyePaneMixin:UpdateDecorInfo(decorInstanceInfo)
@@ -118,7 +125,7 @@ function HousingDyePaneMixin:UpdateDecorInfo(decorInstanceInfo)
 end
 
 function HousingDyePaneMixin:GetPreviewDyeInfos()
-	if not self.ButtonFrame.CurrentDyeIcons then
+	if not self.CurrentDyeIcons then
 		return;
 	end
 	

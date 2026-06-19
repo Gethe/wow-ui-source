@@ -1,5 +1,16 @@
 HousingInspectModeManagerMixin = {};
 
+local function HousingInspectMode_EscapePressed()
+	if HousingInspectModeManagerFrame:IsInspectModeActive() then
+		HousingInspectModeManagerFrame:ExitInspectMode();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, HousingInspectMode_EscapePressed);
+
 local HousingInspectModeManagerEvents =
 {
 	"HOUSING_INSPECT_MODE_DECOR_HOVERED_CHANGED",
@@ -53,7 +64,7 @@ function HousingInspectModeManagerMixin:OnUpdateInspectModeActive()
 end
 
 function HousingInspectModeManagerMixin:OnInspectModeActivated()
-	EventRegistry:TriggerEvent("HousingInspectMode.Activated");
+	EventRegistry:TriggerEvent("HousingInspectMode.Toggled", true);
 
 	self:SetPoint("TOPLEFT");
 	self:SetPoint("BOTTOMRIGHT");
@@ -62,7 +73,7 @@ function HousingInspectModeManagerMixin:OnInspectModeActivated()
 end
 
 function HousingInspectModeManagerMixin:OnInspectModeDeactivated()	
-	EventRegistry:TriggerEvent("HousingInspectMode.Deactivated");
+	EventRegistry:TriggerEvent("HousingInspectMode.Toggled", false);
 
 	self:Hide();
 

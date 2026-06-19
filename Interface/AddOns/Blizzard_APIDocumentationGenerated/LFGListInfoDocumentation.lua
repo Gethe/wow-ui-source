@@ -59,6 +59,10 @@ local LFGListInfo =
 			Type = "Function",
 		},
 		{
+			Name = "ConfirmCensoredActiveEntry",
+			Type = "Function",
+		},
+		{
 			Name = "CopyActiveEntryInfoToCreationFields",
 			Type = "Function",
 		},
@@ -95,6 +99,22 @@ local LFGListInfo =
 			Returns =
 			{
 				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesCensoredTextMatch",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "comment", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMatch", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -457,6 +477,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsCensoredActiveEntryUnresolved",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUnresolved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerAuthenticatedForLFG",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -508,6 +537,20 @@ local LFGListInfo =
 			Name = "ReportGroupAsAdvertisement",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RevealCensoredActiveEntry",
+			Type = "Function",
+		},
+		{
+			Name = "RevealCensoredSearchResult",
+			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -699,6 +742,16 @@ local LFGListInfo =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "LfgListCensoredActiveEntryUpdate",
+			Type = "Event",
+			LiteralName = "LFG_LIST_CENSORED_ACTIVE_ENTRY_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isCensored", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LfgListEntryCreationFailed",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ENTRY_CREATION_FAILED",
@@ -726,6 +779,12 @@ local LFGListInfo =
 				{ Name = "searchResultID", Type = "number", Nilable = false },
 				{ Name = "groupName", Type = "kstringLfgListChat", Nilable = false },
 			},
+		},
+		{
+			Name = "LfgListRevealedCensoredActiveEntry",
+			Type = "Event",
+			LiteralName = "LFG_LIST_REVEALED_CENSORED_ACTIVE_ENTRY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListSearchFailed",
@@ -871,6 +930,7 @@ local LFGListInfo =
 				{ Name = "name", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "voiceChat", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "censored", Type = "bool", Nilable = false },
 				{ Name = "duration", Type = "time_t", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
 				{ Name = "privateGroup", Type = "bool", Nilable = false },
@@ -912,6 +972,7 @@ local LFGListInfo =
 				{ Name = "name", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "voiceChat", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "censored", Type = "bool", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
 				{ Name = "hasSelf", Type = "bool", Nilable = false },

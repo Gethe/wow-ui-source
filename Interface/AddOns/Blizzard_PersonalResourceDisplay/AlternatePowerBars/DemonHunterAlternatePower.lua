@@ -11,10 +11,6 @@ function DemonHunterAlternatePowerBarMixin:Initialize()
 
 	self.inVoidMetamorphosis = false;
 
-	local statusBarTexture = self:GetStatusBarTexture();
-	statusBarTexture:SetTexelSnappingBias(0);
-	statusBarTexture:SetSnapToPixelGrid(false);
-
 	self:EvaluateUnit();
 end
 
@@ -89,6 +85,7 @@ function DemonHunterAlternatePowerBarMixin:GetCurrentMinMaxPower()
 end
 
 function DemonHunterAlternatePowerBarMixin:UpdateArt()
+	local barTextureAtlas = self.barTextureAtlas;
 	local artInfo = PowerBarColor[self.powerName];
 	if self.inVoidMetamorphosis then
 		self.overrideArtInfo = artInfo.collapsingStarProgess;
@@ -97,10 +94,10 @@ function DemonHunterAlternatePowerBarMixin:UpdateArt()
 	end
 
 	if self.overrideArtInfo then
-		self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
 		self:SetStatusBarColor(self.overrideArtInfo.r, self.overrideArtInfo.g, self.overrideArtInfo.b);
 	else
-		self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
 		self:SetStatusBarColor(1, 1, 1);
 	end
 end

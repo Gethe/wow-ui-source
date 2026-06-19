@@ -1,0 +1,7 @@
+## Title: Blizzard_DebugUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## LoadFirst: 1
+## AllowLoad: Game
+DebugUtil.lua

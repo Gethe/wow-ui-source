@@ -4,7 +4,7 @@
 	<Frame name="EditModeSystemTemplate" mixin="EditModeSystemMixin" virtual="true" clampedToScreen="true">
 		<Scripts>
 			<OnLoad method="OnSystemLoad"/>
-			<OnHide method="OnSystemHide"/>
+			<OnHide method="OnSystemHide" inherit="append" />
 		</Scripts>
 	</Frame>
 
@@ -387,6 +387,17 @@
 				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
 				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
 			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeRaidWarningSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeRaidWarningSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.RaidWarning" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_RAID_WARNING_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 

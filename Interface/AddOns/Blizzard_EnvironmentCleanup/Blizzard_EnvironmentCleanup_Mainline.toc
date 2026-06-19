@@ -1,7 +1,7 @@
 ## Title: Blizzard_EnvironmentCleanup
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_UnitFrame, Blizzard_UIPanels_Game, Blizzard_ChatFrame
+## Dependencies: Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_UnitFrame, Blizzard_UIPanels_Game, Blizzard_ChatFrame, Blizzard_ScriptErrorsFrame
 ## OptionalDeps: Blizzard_RestrictedAddOnEnvironment
 ## LoadFirst: 1
 ## AllowLoad: Game

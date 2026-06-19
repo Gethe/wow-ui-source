@@ -1,3 +1,55 @@
+DecorCustomizationsPaneMixin = {};
+
+function DecorCustomizationsPaneMixin:OnLoad()
+	local function CloseDecorCustomizationsPane()
+		-- This will clear the preview dyes and close this pane by deselecting the decor
+		C_HousingCustomizeMode.CancelActiveEditing();
+	end
+
+	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
+		self.CustomizeComponentContainer.DyePane:OnApply();
+		self.CustomizeComponentContainer.PetPane:OnApply();
+		CloseDecorCustomizationsPane();
+	end);
+
+	self.ButtonFrame.CancelButton:SetScript("OnClick", CloseDecorCustomizationsPane);
+	self.CloseButton:SetScript("OnClick", CloseDecorCustomizationsPane);
+end
+
+function DecorCustomizationsPaneMixin:GetPetPane()
+	return self.CustomizeComponentContainer.PetPane;
+end
+
+function DecorCustomizationsPaneMixin:OnShow()
+
+end
+
+function DecorCustomizationsPaneMixin:OnHide()
+
+end
+
+function DecorCustomizationsPaneMixin:SetDecorInfo(decorInstanceInfo)
+	self.decorGUID = decorInstanceInfo.decorGUID;
+
+	self.DecorName:SetText(decorInstanceInfo.name);
+	
+	self.CustomizeComponentContainer.DyePane:SetDecorInfo(decorInstanceInfo);
+	self.CustomizeComponentContainer.DyePane:SetShown(#decorInstanceInfo.dyeSlots > 0);
+	self.CustomizeComponentContainer.PetPane:SetShown(decorInstanceInfo.canAttachPet);
+
+	self.CustomizeComponentContainer:Layout();
+	self:Layout();
+	self.CustomizeComponentContainer.DyePane:UpdateApplyButton(self.ButtonFrame.ApplyButton);
+end
+
+function DecorCustomizationsPaneMixin:UpdateDecorInfo(decorInstanceInfo)
+	self.CustomizeComponentContainer.DyePane:UpdateDecorInfo(decorInstanceInfo);
+end
+
+function DecorCustomizationsPaneMixin:ClearDecorInfo()
+	self.CustomizeComponentContainer.DyePane:ClearDecorInfo();
+end
+
 local CustomizeModeShownEvents = {
 	"HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED",
 	"HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED",
@@ -10,6 +62,11 @@ local CustomizeModeShownEvents = {
 };
 
 HouseEditorCustomizeModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
+
+function HouseEditorCustomizeModeMixin:OnLoad()
+	self.PetCustomizationsPane:SetCustomizationPetPane(self.DecorCustomizationsPane:GetPetPane());
+	self.PetCustomizationsPane:SetExpandButton(self.PetCustomizationsPaneExpandButton);
+end
 
 function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED" then
@@ -106,12 +163,22 @@ function HouseEditorCustomizeModeMixin:ShowSelectedDecorInfo()
 
 		self.DecorCustomizationsPane:SetDecorInfo(info);
 		self.DecorCustomizationsPane:Show();
+
+		if info.canAttachPet then
+			if self.PetCustomizationsPane:IsCollapsed() then
+				self.PetCustomizationsPaneExpandButton:Show();
+			else
+				self.PetCustomizationsPane:Show();
+			end
+		end
 	else
 		self:HideSelectedDecorInfo();
 	end
 end
 
 function HouseEditorCustomizeModeMixin:HideSelectedDecorInfo()
+	self.PetCustomizationsPane:Hide();
+	self.PetCustomizationsPaneExpandButton:Hide();
 	if self.DecorCustomizationsPane:IsShown() then
 		self.DecorCustomizationsPane:ClearDecorInfo();
 		self.DecorCustomizationsPane:Hide();
@@ -160,6 +227,16 @@ end
 function HouseEditorCustomizeModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+
+	if decorInstanceInfo.canAttachPet then
+		local petName = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(DECOR_INSTANCE_TOOLTIP_PET_BED_UNASSIGNED);
+		local assignedPetName = C_HousingDecor.GetDecorAssignedPetName(decorInstanceInfo.decorGUID);
+		if assignedPetName then
+			petName = assignedPetName;
+		end
+		GameTooltip_AddNormalLine(GameTooltip, string.format(DECOR_INSTANCE_TOOLTIP_PET_BED, petName));
+	end
+
 	if decorInstanceInfo.isLocked then
 		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
  	elseif decorInstanceInfo.canBeCustomized then	
@@ -224,3 +301,13 @@ function HouseEditorCustomizeModeMixin:HideSelectedRoomComponentInfo()
 		self.RoomComponentCustomizationsPane:Hide();
 	end
 end 
+
+PetCustomizationsPaneExpandButtonMixin = {}
+
+function PetCustomizationsPaneExpandButtonMixin:OnEnter()
+	self.OverlayIcon:Show();
+end
+
+function PetCustomizationsPaneExpandButtonMixin:OnLeave()
+	self.OverlayIcon:Hide();
+end

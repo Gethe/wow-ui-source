@@ -3,7 +3,12 @@
 ## Dep: Blizzard_SharedXMLGame
 ## Dep: Blizzard_FrameXMLUtil
 ## Dep: Blizzard_GameTooltip
+## Dep: Blizzard_RaidWarning
+## Dep: Blizzard_VisualAlerts
 ## AllowLoad: game
+Shared\PrivateAurasTooltip.lua
+[Family]\PrivateAurasTooltip.lua
+[Family]\PrivateAurasTooltip.xml
 Blizzard_PrivateAurasUI.lua
 Blizzard_PrivateAurasUI.xml
 PrivateAuraInit.lua

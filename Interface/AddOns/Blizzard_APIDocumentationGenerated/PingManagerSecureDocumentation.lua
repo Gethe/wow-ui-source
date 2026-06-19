@@ -8,7 +8,7 @@ local PingManagerSecure =
 	Functions =
 	{
 		{
-			Name = "ClearPendingPingInfo",
+			Name = "ClearHitTestPingInfo",
 			Type = "Function",
 			HasRestrictions = true,
 		},
@@ -46,7 +46,73 @@ local PingManagerSecure =
 			},
 		},
 		{
-			Name = "GetTargetWorldPing",
+			Name = "SendHitTestPing",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "PingSubjectType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendPlayerItemPing",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendPlayerSpellPing",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendUnitPing",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "target", Type = "WOWGUID", Nilable = false },
+				{ Name = "type", Type = "PingSubjectType", Nilable = true },
+				{ Name = "isPlayerResource", Type = "bool", Nilable = true, Documentation = { "Player unit frame contextual pings have the optional ability to call out the player's health and in some cases mana. This field does nothing for non player pings." } },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHitTestPingTarget",
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
@@ -55,38 +121,22 @@ local PingManagerSecure =
 			{
 				{ Name = "mousePosX", Type = "number", Nilable = false },
 				{ Name = "mousePosY", Type = "number", Nilable = false },
+				{ Name = "forcePointPing", Type = "bool", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "foundTarget", Type = "bool", Nilable = false },
+				{ Name = "state", Type = "PingSetTargetState", Nilable = false },
 			},
 		},
 		{
-			Name = "GetTargetWorldPingAndSend",
+			Name = "SetHitTestTargetAndSendPing",
 			Type = "Function",
 			HasRestrictions = true,
 
 			Returns =
 			{
-				{ Name = "result", Type = "ContextualWorldPingResult", Nilable = false },
-			},
-		},
-		{
-			Name = "SendPing",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "type", Type = "PingSubjectType", Nilable = false },
-				{ Name = "target", Type = "WOWGUID", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "PingResult", Nilable = false },
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
 			},
 		},
 		{
@@ -181,10 +231,62 @@ local PingManagerSecure =
 
 	Events =
 	{
+		{
+			Name = "UnitPingPinAdded",
+			Type = "Event",
+			LiteralName = "UNIT_PING_PIN_ADDED",
+			HasRestrictions = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPingPinRemoved",
+			Type = "Event",
+			LiteralName = "UNIT_PING_PIN_REMOVED",
+			HasRestrictions = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "PingActionCooldownUIInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "durationMs", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "remainingMs", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "PingActionUIInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "textureFileDataID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "cooldownInfo", Type = "PingActionCooldownUIInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "SendPingResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "PingSubjectType", Nilable = true },
+				{ Name = "result", Type = "PingResult", Nilable = false },
+			},
+		},
 		{
 			Name = "PendingPingOffScreenCallback",
 			Type = "CallbackType",
@@ -207,6 +309,7 @@ local PingManagerSecure =
 				{ Name = "region", Type = "ScriptRegion", Nilable = false },
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isWorldPoint", Type = "bool", Nilable = false },
+				{ Name = "actionInfo", Type = "PingActionUIInfo", Nilable = true },
 			},
 		},
 		{
@@ -243,8 +346,7 @@ local PingManagerSecure =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "PingSubjectType", Nilable = true },
-				{ Name = "targetToken", Type = "cstring", Nilable = true },
+				{ Name = "macroInfo", Type = "PingMacroInfo", Nilable = false },
 			},
 		},
 		{

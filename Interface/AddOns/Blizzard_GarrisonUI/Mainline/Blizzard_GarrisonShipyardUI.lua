@@ -7,6 +7,12 @@ local FOLLOWER_BUTTON_HEIGHT = 80;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
 
+local function GarrisonShipyardFrame_EscapePressed()
+	return GarrisonShipyardFrame:EscapePressed();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, GarrisonShipyardFrame_EscapePressed);
+
 
 ---------------------------------------------------------------------------------
 --- Static Popups                                                             ---
@@ -429,11 +435,27 @@ function GarrisonShipyardFrame_ClearMouse()
 		GarrisonShipFollowerPlacer:Hide();
 		GarrisonFollowerPlacerFrame:Hide();
 		GarrisonShipFollowerPlacer.info = nil;
+		return true;
 	end
+
+	return false;
 end
 
 function GarrisonShipyardMission:ClearMouse()
-	GarrisonShipyardFrame_ClearMouse();
+	return GarrisonShipyardFrame_ClearMouse();
+end
+
+function GarrisonShipyardMission:EscapePressed()
+	if self:ClearMouse() then
+		return true;
+	end
+
+	if self.MissionTab and self.MissionTab.MissionPage and self.MissionTab.MissionPage:IsVisible() then
+		self.MissionTab.MissionPage.CloseButton:Click();
+		return true;
+	end
+
+	return false;
 end
 
 function GarrisonShipyardMission:UpdateMissions()
@@ -1781,7 +1803,7 @@ end
 
 function GarrisonShipyardFollowerList:HideThreatCountersFrame()
 	self.followerTab.ThreatCountersFrame:Hide();
-end 
+end
 
 function GarrisonShipyardFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)
 	local followerTab = self.followerTab;
@@ -1996,7 +2018,7 @@ function GarrisonShipyardFollowerList_InitButton(button, elementData)
 		button.XPBar:Show();
 		button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
 	end
-	
+
 	if elementData.expanded then
 		elementData.followerList:ExpandButton(button, self);
 	else
@@ -2038,7 +2060,7 @@ function GarrisonShipyard_CalculateExpandedButtonHeight(elementData)
 			abilityHeight = abilityHeight + abilityExtent;
 		end
 	end
-	
+
 	if abilityHeight > 0 then
 		local backgroundPadding = 8;
 		abilityHeight = abilityHeight + backgroundPadding;
@@ -2057,7 +2079,7 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 
 	if (button == "LeftButton") then
 		GarrisonShipyardFrame.selectedFollower = self.id;
-		
+
 		local nowExpanded = GarrisonFollowerList_ToggleExpansion(self:GetElementData(), followerList.ScrollBox);
 		if nowExpanded then
 			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_OPEN);
@@ -2070,7 +2092,7 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 			GarrisonShipyardFollowerList_InitButton(button, button:GetElementData());
 		end);
 		followerList.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
-		
+
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
 	elseif (button == "RightButton" and not followerList.isLandingPage) then
@@ -2078,7 +2100,7 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 			rootDescription:SetTag("MENU_GARRISON_SHIP_FOLLOWER");
 
 			local followerID = self.id;
-			
+
 			rootDescription:CreateButton(GARRISON_SHIP_RENAME, function()
 				StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, followerID);
 			end);

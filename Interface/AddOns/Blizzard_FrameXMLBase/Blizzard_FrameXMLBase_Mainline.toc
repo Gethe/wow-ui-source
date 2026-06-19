@@ -2,16 +2,16 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
+## OptionalDeps: Blizzard_Plunderstorm
 ## AllowLoad: Game
-Mainline\IconDataProvider.lua
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
 AnimatedStatusBar.xml
 GradualAnimatedStatusBar.xml
 PowerDependencyLine.xml
 FlowContainer.lua
-Mainline\FrameLocks.lua
 PlayerMovementFrameFader.lua
 Shared\Constants.lua
 Constants.lua
-[Game]\GameModeConstants.lua [AllowLoadGameType plunderstorm]
 Mainline\Localization.lua

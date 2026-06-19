@@ -50,10 +50,18 @@ function InstanceDifficultyMixin:IsInDelve()
 	return C_DelvesUI.HasActiveDelve(mapID);
 end
 
-function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, displayChallengeMode, displayMythic, displayHeroic)
+function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, displayChallengeMode, displayMythic, displayHeroic, hasWorldTier)
 	if ( not difficultyTextureFrame) then
 		return nil;
-	elseif ( difficultyTextureFrame.ChallengeModeTexture and displayChallengeMode ) then
+	end
+
+	if ( hasWorldTier ) then
+		local worldTierDifficulty = C_DelvesUI.GetWorldTierDifficultyForActivePlayer();
+		displayHeroic = worldTierDifficulty == Enum.WorldTierDifficulty.Heroic;
+		displayMythic = worldTierDifficulty == Enum.WorldTierDifficulty.Mythic;
+	end
+
+	if ( difficultyTextureFrame.ChallengeModeTexture and displayChallengeMode ) then
 		return difficultyTextureFrame.ChallengeModeTexture;
 	elseif ( difficultyTextureFrame.MythicTexture and displayMythic ) then
 		return difficultyTextureFrame.MythicTexture;
@@ -87,7 +95,7 @@ end
 
 function InstanceDifficultyMixin:Update()
 	local instanceDifficultyBannerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceDifficultyBannerDisabled);
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, _, hasWorldTier = GetInstanceInfo();
 	if instanceDifficultyBannerDisabled or instanceType == "interior" or instanceType == "neighborhood" then
 		for _, frame in ipairs(self.ContentModes) do
 			frame:Hide();
@@ -113,6 +121,13 @@ function InstanceDifficultyMixin:Update()
 		instanceFrame = guildFrame.Instance;
 	elseif ( isChallengeMode ) then
 		contentFrame = challengeModeFrame;
+	elseif ( hasWorldTier) then
+		-- no frame for Normal world tier
+		local worldTierDifficulty = C_DelvesUI.GetWorldTierDifficultyForActivePlayer();
+		if ( worldTierDifficulty ~= Enum.WorldTierDifficulty.Normal) then
+			contentFrame = defaultFrame;
+			instanceFrame = defaultFrame;
+		end
 	elseif (instanceType ~= "none") then
 		contentFrame = defaultFrame;
 		instanceFrame = defaultFrame;
@@ -127,16 +142,15 @@ function InstanceDifficultyMixin:Update()
 
 		SetSmallGuildTabardTextures("player", guildFrame.Emblem, guildFrame.Background, guildFrame.Border);
 	elseif ( contentFrame == defaultFrame ) then
-		if ( self:IsInDelve() ) then
+		if ( instanceGroupSize == 0 or self:IsInDelve() ) then
 			instanceFrame.Text:SetText("");
 		else
 			instanceFrame.Text:SetText(instanceGroupSize);
 		end
 	end
-	
-	if (instanceFrame) then
-		local difficultyTexture = self:GetDifficultyTexture(instanceFrame, isChallengeMode, displayMythic, isHeroic or displayHeroic);
 
+	if (instanceFrame) then
+		local difficultyTexture = self:GetDifficultyTexture(instanceFrame, isChallengeMode, displayMythic, isHeroic or displayHeroic, hasWorldTier);
 		-- Only one difficulty texture should ever be shown.
 		for _, texture in ipairs(instanceFrame.DifficultyTextures) do
 			texture:SetShown(difficultyTexture == texture);
@@ -155,19 +169,22 @@ function InstanceDifficultyMixin:OnEnter()
 	if ( not self.Default:IsShown() ) then
 		return;
 	end
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID, hasWorldTier = GetInstanceInfo();
 	local isLFR = select(8, GetDifficultyInfo(difficulty))
 
-	if (not DifficultyUtil.GetDifficultyName(difficulty)) then
+	local difficultyName = hasWorldTier and DifficultyUtil.GetWorldTierDifficultyName() or DifficultyUtil.GetDifficultyName(difficulty);
+	if (not difficultyName) then
 		return;
 	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(difficultyName));
 	if (isLFR and lfgID) then
 		GameTooltip_SetTitle(GameTooltip, RAID_FINDER);
 	end
-	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
+	if maxPlayers > 0 then
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
+	end
 	GameTooltip:Show();
 end
 

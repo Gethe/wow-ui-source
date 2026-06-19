@@ -16,6 +16,7 @@ local PING_RESULT_STRINGS = {
     [Enum.PingResult.FailedOutOfPingArea] = PING_FAILED_OUT_OF_PING_AREA,
 	[Enum.PingResult.FailedSquelched] = PING_FAILED_SQUELCHED,
     [Enum.PingResult.FailedUnspecified] = PING_FAILED_UNSPECIFIED,
+	[Enum.PingResult.FailedSilent] = "",
 };
 
 local function GetPingNameString(type)
@@ -31,16 +32,17 @@ local function SortWedges(a, b)
 end
 
 function PingManager:Initialize()
-    self:SetupDefaultPingOptions();
+	self:SetupDefaultPingOptions();
 
-    local function PingPinReset(framePool, frame)
-        frame:ClearAllPoints();
-        frame:Hide();
+	local function PingPinReset(_framePool, frame)
+		frame:Reset();
+		frame:ClearAllPoints();
+		frame:Hide();
 	end
-    self.pingPinPool = CreateFramePool("FRAME", nil, "PingPinFrameTemplate", PingPinReset);
-    self.activePinFrames = {};
+	self.pingPinPool = CreateFramePool("FRAME", nil, "PingPinFrameTemplate", PingPinReset);
+	self.activePinFrames = {};
 
-    self.pingSpotPool = CreateFramePool("FRAME", nil, "PingSpotFrameTemplate");
+	self.pingSpotPool = CreateFramePool("FRAME", nil, "PingSpotFrameTemplate");
 
 	C_PingSecure.SetPingPinFrameAddedCallback(function(...) self:OnPingPinFrameAdded(...) end);
 	C_PingSecure.SetPingPinFrameRemovedCallback(function(...) self:OnPingPinFrameRemoved(...) end);
@@ -66,7 +68,7 @@ function PingManager:SetupDefaultPingOptions()
     end
 end
 
-function PingManager:OnPingPinFrameAdded(frame, uiTextureKit, isWorldPoint)
+function PingManager:OnPingPinFrameAdded(frame, uiTextureKit, isWorldPoint, actionInfo)
     local existingPin = self.activePinFrames[frame];
     if existingPin then
         return;
@@ -75,7 +77,7 @@ function PingManager:OnPingPinFrameAdded(frame, uiTextureKit, isWorldPoint)
     local pin = self.pingPinPool:Acquire();
     pin:SetParent(frame);
     pin:SetPoint("CENTER", frame);
-    pin:SetPinStyle(uiTextureKit, isWorldPoint);
+	pin:SetPinStyle(uiTextureKit, isWorldPoint, actionInfo);
     pin:AnimateIntro();
 
     self.activePinFrames[frame] = pin;
@@ -104,134 +106,167 @@ function PingManager:OnPingPinFrameScreenClampStateUpdated(frame, state)
     end
 end
 
--- Returns: frameFound, isPingable, contextualPingType, targetPingGUID
 local function GetTargetPingReceiverInfo_Insecure(posX, posY)
+	local pingInfo = {
+		frameFound = false,
+		isPingable = false,
+		allowRadialWheel = false,
+		uiTargetInfo = {}
+	};
+
 	local pingFrame = C_PingSecure.GetTargetPingReceiver(posX, posY);
 	if pingFrame then
-		local frameFound = true;
-		return frameFound, pingFrame.IsPingable, pingFrame.GetContextualPingType and pingFrame:GetContextualPingType(), pingFrame.GetTargetPingGUID and pingFrame:GetTargetPingGUID();
+		pingInfo.frameFound = true;
+
+		-- If this frame implements PingableTypeMixin.
+		if pingFrame.GetIsPingable then
+			pingInfo.isPingable = pingFrame:GetIsPingable();
+			pingInfo.allowRadialWheel = pingFrame:GetAllowRadialWheel();
+			pingInfo.uiTargetInfo = pingFrame:GetTargetInfo();
+		end
 	end
-	return false, nil, nil, nil;
+
+	return pingInfo;
 end
 
--- Used for ping wheel.
+-- Used for radial wheel.
 function PingManager:DeterminePingTarget(posX, posY)
-    local result = {
-        hasTarget = false,
-        hasUITarget = false,
-        wedgeInfo = {},
-        overrideTargetGUID = nil,
-    };
+	local result = {
+		targetState = Enum.PingSetTargetState.Failed,
+		hasUITarget = false,
+		allowRadialWheel = false,
+		wedgeInfo = {},
+		uiTargetInfo = {}
+	};
 
-    -- First, see if the cursor is over any valid pingable UI (either as a blocking frame, or a pingable target).
-    -- Frames marked as topLevel are marked as valid, usually for being ping blockers.  If marked with the ping-top-level-pass-through attribute, they will no longer be considered valid.
-    -- Frames specifically marked with the ping-receiver attribute are also caught here.
-	local frameFound, isPingable, contextualPingType, targetPingGUID = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
-    if frameFound then
-        -- If not pingable, then this is a blocking UI dialog for the ping system, do not make further checks.
-        if isPingable then
-            result.hasTarget = true;
-            result.hasUITarget = true;
-            result.wedgeInfo = self.defaultWedgeInfo;
-            result.overrideTargetGUID = targetPingGUID;
-        end
-    elseif C_PingSecure.GetTargetWorldPing(posX, posY) then
-        -- Valid object or world point target found.
-        result.hasTarget = true;
-        result.wedgeInfo = self.defaultWedgeInfo;
-    end
+	-- First, see if the cursor is over any valid pingable UI (either as a blocking frame, or a pingable target).
+	-- Frames marked as topLevel are marked as valid, usually for being ping blockers.  If marked with the ping-top-level-pass-through attribute, they will no longer be considered valid.
+	-- Frames specifically marked with the ping-receiver attribute are also caught here.
+	local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
+	if pingInfo.frameFound then
+		-- If not pingable, then this is blocking UI for the ping system, do not make further checks.
+		if pingInfo.isPingable then
+			result.targetState = Enum.PingSetTargetState.Ok;
+			result.hasUITarget = true;
 
-    return result;
+			-- This frame is a valid target, but might only accept contextual pings and not radial wheel pinging. Check for that.
+			if pingInfo.allowRadialWheel then
+				result.allowRadialWheel = pingInfo.allowRadialWheel;
+				result.wedgeInfo = self.defaultWedgeInfo;
+				result.uiTargetInfo = pingInfo.uiTargetInfo;
+			end
+		end
+	else
+		result.targetState = C_PingSecure.SetHitTestPingTarget(posX, posY);
+		if result.targetState == Enum.PingSetTargetState.Ok then
+			-- Valid object or world point target found.
+			result.allowRadialWheel = true;
+			result.wedgeInfo = self.defaultWedgeInfo;
+		end
+	end
+
+	return result;
 end
 
 -- Used for contextual ping.
 function PingManager:DeterminePingTargetAndSend(posX, posY, spotX, spotY)
-	local frameFound, isPingable, contextualPingType, targetPingGUID = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
-    if frameFound then
-        if isPingable then
-            local pingResult = C_PingSecure.SendPing(contextualPingType, targetPingGUID);
-            if pingResult ~= Enum.PingResult.Success then
-				C_PingSecure.DisplayError(GetPingResultString(pingResult));
-            else
-                self:ShowPingSpot(contextualPingType, spotX, spotY);
-            end
-        else
-            -- This is a blocking UI dialog for the ping system, do not make further checks.
+	local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
+	if pingInfo.frameFound then
+		if pingInfo.isPingable then
+			-- pingType is contextual here, we figure out the type later.
+			self:SendPing(nil, pingInfo.uiTargetInfo, spotX, spotY);
+		else
+			-- This is a blocking UI dialog for the ping system, do not make further checks.
 			C_PingSecure.DisplayError(PING_FAILED_GENERIC);
-        end
-    else
-        self:SendContextualWorldPing(spotX, spotY);
-    end
+		end
+	else
+		self:SendContextualWorldPing(spotX, spotY);
+	end
 end
 
 function PingManager:SendContextualWorldPing(spotX, spotY)
-    local pingResult = C_PingSecure.GetTargetWorldPingAndSend();
+	local pingResult = C_PingSecure.SetHitTestTargetAndSendPing();
 
     if pingResult.result ~= Enum.PingResult.Success then
 		C_PingSecure.DisplayError(GetPingResultString(pingResult.result));
         return;
     end
 
-    if pingResult.contextualPingType and spotX and spotY then
-        self:ShowPingSpot(pingResult.contextualPingType, spotX, spotY);
+	if pingResult.type and spotX and spotY then
+		self:ShowPingSpot(pingResult.type, spotX, spotY);
     end
 end
 
-function PingManager:SendMacroPing(type, targetUnitToken)
-    local targetGUID;
-    local spotX, spotY;
+function PingManager:SendMacroPing(macroInfo)
+	local type = macroInfo.type;
+	local uiTargetInfo = {};
+	local spotX, spotY; -- Spot should only be set if we are dynamically determining our target.
+	local setTargetState = Enum.PingSetTargetState.Ok;
 
-    if targetUnitToken then
-        targetGUID = UnitGUID(targetUnitToken);
+	if macroInfo.spellID then
+		uiTargetInfo.spellID = macroInfo.spellID;
+	elseif macroInfo.itemID then
+		uiTargetInfo.itemID = macroInfo.itemID;
+	elseif macroInfo.targetToken then
+		-- Unique to macros. Should target be the cursor, pass through all UI and ignore units, only targetting the environment (also ignores Ping Target setting).
+		local forcePointPing = macroInfo.targetToken == "cursor";
+		if forcePointPing then
+			local cursorX, cursorY = GetCursorPosition();
+			spotX, spotY = securecallfunction(GetScaledCursorPosition_Insecure);
+			setTargetState = C_PingSecure.SetHitTestPingTarget(cursorX, cursorY, forcePointPing);
+		else
+			uiTargetInfo.guid = UnitGUID(macroInfo.targetToken);
+		end
+	else
+		local cursorX, cursorY = GetCursorPosition();
+		spotX, spotY = securecallfunction(GetScaledCursorPosition_Insecure);
 
-        if not type then
-            type = PingUtil:GetContextualPingTypeForUnit(targetGUID);
-        end
-    else
-        local cursorX, cursorY = GetCursorPosition();
-        spotX, spotY = securecallfunction(GetScaledCursorPosition_Insecure); -- Only set spot if we are dynamically determining our target
+		local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, cursorX, cursorY);
+		if pingInfo.frameFound then
+			if pingInfo.isPingable then
+				uiTargetInfo = pingInfo.uiTargetInfo;
+			else
+				-- This is a blocking UI dialog for the ping system, do not make further checks.
+				setTargetState = Enum.PingSetTargetState.Failed;
+			end
+		else
+			setTargetState = C_PingSecure.SetHitTestPingTarget(cursorX, cursorY);
+		end
+	end
 
-		local frameFound, isPingable, contextualPingType, targetPingGUID = securecallfunction(GetTargetPingReceiverInfo_Insecure, cursorX, cursorY);
-        if frameFound then
-            if isPingable then
-                targetGUID = targetPingGUID;
-                if not type then
-                    type = contextualPingType;
-                end
-            else
-                -- This is a blocking UI dialog for the ping system, do not make further checks.
-				C_PingSecure.DisplayError(PING_FAILED_GENERIC);
-                return;
-            end
-        else
-            if not type then
-                self:SendContextualWorldPing(spotX, spotY);
-                return;
-            end
-
-            C_PingSecure.GetTargetWorldPing(cursorX, cursorY);
-        end
-    end
-
-    self:SendPing(type, targetGUID, spotX, spotY);
+	if setTargetState == Enum.PingSetTargetState.Ok then
+		self:SendPing(type, uiTargetInfo, spotX, spotY);
+	elseif setTargetState == Enum.PingSetTargetState.Failed then
+		C_PingSecure.DisplayError(PING_FAILED_GENERIC);
+	end
 end
 
-function PingManager:SendPing(type, overrideTargetGUID, spotX, spotY)
-    -- overrideTargetGUID can be nil.
-    local pingResult = C_PingSecure.SendPing(type, overrideTargetGUID);
+function PingManager:SendPing(type, uiTargetInfo, spotX, spotY)
+	-- There are several different kinds of pings that a player could be trying to send, each with a different set of params.
+	local pingResult;
+	if uiTargetInfo.spellID then
+		pingResult = C_PingSecure.SendPlayerSpellPing(uiTargetInfo.spellID);
+	elseif uiTargetInfo.itemID then
+		pingResult = C_PingSecure.SendPlayerItemPing(uiTargetInfo.itemID);
+	elseif uiTargetInfo.guid then
+		pingResult = C_PingSecure.SendUnitPing(uiTargetInfo.guid, type, uiTargetInfo.isPlayerResource);
+	else
+		-- Fallback UI ping, also used for all non-UI pings.
+		pingResult = C_PingSecure.SendHitTestPing(type);
+	end
 
-    if pingResult ~= Enum.PingResult.Success then
-		C_PingSecure.DisplayError(GetPingResultString(pingResult));
-        return;
-    end
+	if pingResult.result ~= Enum.PingResult.Success then
+		C_PingSecure.DisplayError(GetPingResultString(pingResult.result));
+		return;
+	end
 
-    if spotX and spotY then
-        self:ShowPingSpot(type, spotX, spotY);
-    end
+	if spotX and spotY then
+		self:ShowPingSpot(pingResult.type, spotX, spotY);
+	end
 end
 
 function PingManager:CancelPendingPing()
-    C_PingSecure.ClearPendingPingInfo();
+	C_PingSecure.ClearHitTestPingInfo();
 end
 
 function PingManager:ShowPingSpot(type, posX, posY)

@@ -11,7 +11,7 @@ local orderTypeTabTitles =
 
 local function SetTabTitleWithCount(tabButton, type, count)
 	local title = orderTypeTabTitles[type];
-	if type == Enum.CraftingOrderType.Public then
+	if not count or (type == Enum.CraftingOrderType.Public) then
 		tabButton.Text:SetText(title);
 		return;
 	end
@@ -163,7 +163,7 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 		end);
 
 		typeTab:HandleRotation();
-		local count = 0;
+		local count = nil;
 		SetTabTitleWithCount(typeTab, typeTab.orderType, count);
 		local minWidth = 150;
 		local bufferWidth = 100;
@@ -574,8 +574,8 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 		end
 
 		-- For Patron orders, we want the count to align with the orders filtered by expansion. Until these
-		-- orders arrive, set the count to 0.
-		local count = 0;
+		-- orders arrive, don't show the count.
+		local count = nil;
 		SetTabTitleWithCount(self.BrowseFrame.NpcOrdersButton, Enum.CraftingOrderType.Npc, count);
 	end
 

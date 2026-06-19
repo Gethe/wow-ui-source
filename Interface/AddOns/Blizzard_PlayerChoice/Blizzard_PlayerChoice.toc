@@ -1,10 +1,9 @@
 ## Title: Blizzard_PlayerChoice
 ## LoadOnDemand: 1
 ## RequiredDeps: Blizzard_UIWidgets
-## Dependencies: Blizzard_Colors
+## Dependencies: Blizzard_Colors, Blizzard_GameMenuEsc
 
-Blizzard_PlayerChoice.lua
-Blizzard_PlayerChoice.xml
+Blizzard_PlayerChoice_Bootstrap.lua [Bootstrap]
 Blizzard_PlayerChoiceToggleButton.lua
 Blizzard_PlayerChoiceToggleButton.xml
 Blizzard_PlayerChoiceOptionBase.lua
@@ -21,5 +20,7 @@ Blizzard_PlayerChoiceCypherOptionTemplate.lua
 Blizzard_PlayerChoiceCypherOptionTemplate.xml
 Blizzard_PlayerChoiceGenericPowerChoiceOptionTemplate.lua
 Blizzard_PlayerChoiceGenericPowerChoiceOptionTemplate.xml
+Blizzard_PlayerChoice.lua
+Blizzard_PlayerChoice.xml
 Blizzard_PlayerChoiceTimer.lua
 Blizzard_PlayerChoiceTimer.xml

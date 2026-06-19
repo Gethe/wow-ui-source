@@ -91,7 +91,9 @@ DeathInfoDocumentation.lua
 DeathRecapDocumentation.lua
 DebugToggleDocumentation.lua
 DelvesUIDocumentation.lua
+DiscordDocumentation.lua
 DuelInfoDocumentation.lua
+DurationTextBindingObjectAPIDocumentation.lua
 DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -148,6 +150,7 @@ HeirloomInfoDocumentation.lua
 HouseEditorUIDocumentation.lua
 HouseExteriorUIDocumentation.lua
 HousingBasicModeUIDocumentation.lua
+HousingBlueprintUIDocumentation.lua
 HousingCatalogSearcherAPIDocumentation.lua
 HousingCatalogUIDocumentation.lua
 HousingCleanupModeUIDocumentation.lua
@@ -197,6 +200,8 @@ LossOfControlDocumentation.lua
 LuaColorCurveObjectAPIDocumentation.lua
 LuaCurveObjectAPIDocumentation.lua
 LuaCurveObjectBaseAPIDocumentation.lua
+LuaDurationClockAPIDocumentation.lua
+LuaDurationManualClockAPIDocumentation.lua
 LuaDurationObjectAPIDocumentation.lua
 LuaTableUtilDocumentation.lua
 MacOptionsDocumentation.lua
@@ -260,6 +265,7 @@ ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
+RolesetSystemDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScreenDocumentation.lua
@@ -276,6 +282,7 @@ SimpleAnimAlphaAPIDocumentation.lua
 SimpleAnimFlipBookAPIDocumentation.lua
 SimpleAnimGroupAPIDocumentation.lua
 SimpleAnimPathAPIDocumentation.lua
+SimpleAnimRadialProgressAPIDocumentation.lua
 SimpleAnimRotationAPIDocumentation.lua
 SimpleAnimScaleAPIDocumentation.lua
 SimpleAnimScaleLineAPIDocumentation.lua
@@ -312,10 +319,13 @@ SimpleSliderAPIDocumentation.lua
 SimpleStatusBarAPIDocumentation.lua
 SimpleTextureAPIDocumentation.lua
 SimpleTextureBaseAPIDocumentation.lua
+SimpleVectorGraphicsAPIDocumentation.lua
 SkillInfoDocumentation.lua
 SlashCommandDocumentation.lua
 SocialQueueDocumentation.lua
+SocialQueueSystemStatusDocumentation.lua
 SocialRestrictionsDocumentation.lua
+SocialUIDocumentation.lua
 SoulbindsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
@@ -358,6 +368,7 @@ UIManagerDocumentation.lua
 UIActionDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
+UIFileAssetAPIDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIMacrosDocumentation.lua
 UIModifiedInstanceDocumentation.lua
@@ -399,6 +410,7 @@ AutoCompleteSharedDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua
 BaseDocumentation.lua
+BattleNetSharedDocumentation.lua
 BattlePetConstantsDocumentation.lua
 BattlepayConstantsDocumentation.lua
 BountySharedDocumentation.lua
@@ -439,7 +451,9 @@ CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
+DiscordConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
+DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_MainlineDocumentation.lua
@@ -449,7 +463,9 @@ EncounterJournalConstantsDocumentation.lua
 EncounterTimelineConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
 ExpansionConstantsDocumentation.lua
+ExpansionLandingPageConstantsDocumentation.lua
 ExpansionLevelConstantsDocumentation.lua
+ForbiddenAspectConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
@@ -463,6 +479,7 @@ GroupFinderConstantsDocumentation.lua
 GuildConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 HouseExteriorConstantsDocumentation.lua
+HousingBlueprintConstantsDocumentation.lua
 HousingCatalogConstantsDocumentation.lua
 HousingDecorSharedDocumentation.lua
 HousingLayoutUITypesDocumentation.lua
@@ -483,6 +500,7 @@ LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
 LuaDurationObjectSharedDocumentation.lua
+MacroConstantsDocumentation.lua
 MajorFactionsConstantsDocumentation.lua
 MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
@@ -502,6 +520,7 @@ PetBattleConstantsDocumentation.lua
 PetConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
+PingManagerSharedDocumentation.lua
 PlayerDocumentation.lua
 PlayerDataConstantsDocumentation.lua
 PlayerHousingConstantsDocumentation.lua
@@ -536,6 +555,7 @@ SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectNamePlateFrameDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
+SimpleFrameScriptObjectConstantsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
 SimpleStatusBarConstantsDocumentation.lua
 SocialConstantsDocumentation.lua
@@ -578,6 +598,7 @@ UITextureConstantsDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
 UiModelSceneConstantsDocumentation.lua
 UiRpcRequestManagerConstantsDocumentation.lua
+UnitAuraConstantsDocumentation.lua
 UnitAuraSharedDocumentation.lua
 UnitConstantsDocumentation.lua
 UnitHealPredictionCalculatorSharedDocumentation.lua
@@ -586,6 +607,7 @@ UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
+VisualAlertConstantsDocumentation.lua
 WarbandSceneInfoConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 WorldElapsedTimerConstantsDocumentation.lua

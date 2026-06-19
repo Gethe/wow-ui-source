@@ -1,10 +1,11 @@
 ## Title: Blizzard Garrison UI
 ## Author: Blizzard Entertainment
 ## Version: 1.0
-## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_AdventureMap, Blizzard_Colors, Blizzard_HelpPlate
+## RequiredDep: Blizzard_GarrisonBase, Blizzard_GarrisonTemplates, Blizzard_AdventureMap, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil, Blizzard_GameMenuEsc
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Mainline\Blizzard_GarrisonUI_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_GarrisonBuildingUI.lua
 Mainline\Blizzard_GarrisonBuildingUI.xml
 Mainline\Blizzard_GarrisonMissionUI.lua

@@ -244,8 +244,8 @@
 			<Frame parentKey="Flipbook" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="flipbook" alphaMode="ADD" atlas="hearthsteel-icon-xxl-fx-flipbook">
-							<Size x="120" y="120"/>
+						<Texture parentKey="flipbook" alphaMode="ADD" atlas="hearthsteel-icon-lg-fx-flipbook">
+							<Size x="120" y="80"/>
 							<Anchors>
 								<Anchor point="CENTER" x="20" y="120"/>
 							</Anchors>

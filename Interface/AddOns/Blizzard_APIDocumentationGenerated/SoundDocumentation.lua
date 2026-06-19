@@ -61,6 +61,24 @@ local Sound =
 				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
 				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
 				{ Name = "overridePriority", Type = "number", Nilable = true },
+				{ Name = "volumeOverride", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "soundHandle", Type = "SoundHandle", Nilable = false },
+			},
+		},
+		{
+			Name = "PlaySoundWithOptions",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "params", Type = "PlaySoundParams", Nilable = false },
 			},
 
 			Returns =
@@ -113,6 +131,7 @@ local Sound =
 				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
 				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
 				{ Name = "overridePriority", Type = "number", Nilable = true },
+				{ Name = "volumeOverride", Type = "number", Nilable = true },
 			},
 		},
 		{

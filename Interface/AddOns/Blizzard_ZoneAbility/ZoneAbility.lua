@@ -227,7 +227,7 @@ function ZoneAbilityFrameMixin:CheckShowZoneAbilityTutorial(zoneAbilityButton)
 	HelpTip:Show(self, helpTipInfo, zoneAbilityButton);
 end
 
-ZoneAbilityFrameSpellButtonMixin = CreateFromMixins(ContentFrameMixin);
+ZoneAbilityFrameSpellButtonMixin = CreateFromMixins(ContentFrameMixin, BaseActionButtonInfoMixin);
 
 local ZoneAbilityFrameSpellButtonEvents = {
 	"SPELL_UPDATE_COOLDOWN",
@@ -318,4 +318,18 @@ function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)
 	self.zoneAbilityInfo = zoneAbilityInfo;
 	self:SetSpellID(zoneAbilityInfo.spellID);
 	self:CheckForTutorial();
+end
+
+-- Override for BaseActionButtonInfoMixin. 
+function ZoneAbilityFrameSpellButtonMixin:HasAction()
+	return true;
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function ZoneAbilityFrameSpellButtonMixin:GetActionButtonInfo()
+	local info = {
+		id = self:GetOverrideSpellID()
+	};
+
+	return info;
 end

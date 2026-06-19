@@ -107,7 +107,7 @@ ArcheologyDigsiteProgressFillBarMixin = {};
 
 function ArcheologyDigsiteProgressFillBarMixin:OnUpdate(elapsed)
 	if ( self:GetValue() ~= self.actualFill ) then
-		self:SetValue(GetSmoothProgressChange(self.actualFill, self:GetValue(), self.fillBarMax, elapsed, MIN_FILL_BAR_PROGRESS, MAX_FILL_BAR_PROGRESS));
+		self:SetValue(InterpolatorUtil.GetSmoothProgressChange(self.actualFill, self:GetValue(), self.fillBarMax, elapsed, MIN_FILL_BAR_PROGRESS, MAX_FILL_BAR_PROGRESS));
 	else
 		self:SetScript("OnUpdate", nil);
 	end

@@ -1,0 +1,128 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="HousingBlueprintCollectionEntryTemplate" mixin="HousingBlueprintCollectionEntryMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Size y="20" />
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HighlightBackground" atlas="common-dropdown-customize-mouseover" alpha="0.15" hidden="true" setAllPoints="true"/>
+				<Texture parentKey="SelectedBackground" atlas="common-dropdown-customize-mouseover" alpha="0.25" hidden="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="LEFT" wordwrap="false">
+					<Size y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HousingBlueprintCollectionGroupTemplate" mixin="HousingBlueprintCollectionGroupMixin" virtual="true">
+		<Size y="36"/>
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="Header" inherits="ListHeaderThreeSliceTemplate" registerForClicks="LeftButtonUp">
+				<Size y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingBlueprintCollectionTemplate" mixin="HousingBlueprintCollectionMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="rightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SlotCountText" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="RIGHT" enableMouseMotion="true">
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-20" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="housing-dashboard-divider-horz-tile">
+					<Size y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-40"/>
+						<Anchor point="TOPRIGHT" x="-16" y="-40"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="ResetButton" inherits="ResizeLayoutFrame">
+				<Size y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="common-icon-undo">
+							<Size x="24" y="24"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" text="HOUSING_BLUEPRINT_COLLECTION_RESET" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="LEFT">
+							<Size y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="HoverIcon"  atlas="common-icon-undo" alphaMode="ADD" alpha="0.4" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</DropdownButton>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<KeyValues>
+					<!-- How many rows are scrolled past at once via scroll wheel -->
+					<KeyValue key="wheelPanScalar" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="16" y="-50"/>
+					<Anchor point="BOTTOMRIGHT" x="-34" y="50"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="hideIfUnscrollable" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

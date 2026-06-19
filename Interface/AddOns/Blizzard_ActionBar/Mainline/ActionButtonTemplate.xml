@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 
-	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate, FlyoutButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
+	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate, FlyoutButtonTemplate, PingableActionButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="enableSpellFX" value="true" type="boolean"/>
 			<KeyValue key="enableLOCCooldown" value="true" type="boolean"/>
@@ -114,7 +114,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
 				</Anchors>
 				<SwipeTexture>
-					<Color r="0" g="0" b="0" a="0.8"/>
+					<Color r="0" g="0" b="0" a="0.64"/>
 				</SwipeTexture>
 			</Cooldown>
 			<Cooldown parentKey="lossOfControlCooldown" inherits="CooldownFrameTemplate" drawBling="false" hideCountdownNumbers="true" useParentLevel="true">
@@ -123,7 +123,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
 				</Anchors>
 				<SwipeTexture>
-					<Color r="0.17" g="0" b="0" a="0.8"/>
+					<Color r="0.17" g="0" b="0" a="0.64"/>
 				</SwipeTexture>
 				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
 			</Cooldown>
@@ -205,5 +205,4 @@
 			<OnLoad method="SmallActionButtonMixin_OnLoad"/>
 		</Scripts>
 	</CheckButton>
-
 </Ui>

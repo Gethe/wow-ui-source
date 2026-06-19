@@ -27,34 +27,6 @@ StaticPopupDialogs["RESET_COOLDOWN_LAYOUT_TO_DEFAULT"] = {
 	hideOnEscape = 1
 };
 
-CooldownViewerSettingsDraggedItemMixin = {};
-function CooldownViewerSettingsDraggedItemMixin:SetToCursor(cooldownItem)
-	self.Icon:SetTexture(cooldownItem:GetTextureFileID());
-	self:Show();
-end
-
-function CooldownViewerSettingsDraggedItemMixin:OnUpdate()
-	local topLevel = GetAppropriateTopLevelParent();
-	local x, y = GetScaledCursorPositionForFrame(topLevel);
-	self:SetPoint("TOPLEFT", topLevel, "BOTTOMLEFT", x, y);
-end
-
-local cooldownItemDragCursor;
-local function PickupCooldownItemCursor(cooldownItem)
-	if not cooldownItemDragCursor then
-		cooldownItemDragCursor = CreateFrame("Frame", nil, GetAppropriateTopLevelParent(), "CooldownViewerSettingsDraggedItemTemplate");
-	end
-
-	cooldownItemDragCursor:SetToCursor(cooldownItem);
-end
-
-local function ClearCooldownItemCursor()
-	if cooldownItemDragCursor then
-		cooldownItemDragCursor:StopMovingOrSizing();
-		cooldownItemDragCursor:Hide();
-	end
-end
-
 CVarCallbackRegistry:SetCVarCachable("cooldownViewerShowUnlearned");
 local function IsShowingUnlearned()
 	return CVarCallbackRegistry:GetCVarValueBool("cooldownViewerShowUnlearned");
@@ -72,18 +44,35 @@ local function ToggleSetShowUnlearned()
 end
 
 local function MatchesCooldownCategory(cooldownInfo, displayCategory)
-	return cooldownInfo.category == displayCategory:GetCategory() and (cooldownInfo.isKnown or IsShowingUnlearned());
+	local isInvisible = CDM_HIDE_INVISIBLE_ITEMS and cooldownInfo.isInvisible;
+	return not isInvisible and displayCategory:MatchesCategory(cooldownInfo.category) and (cooldownInfo.isKnown or IsShowingUnlearned());
 end
 
 local CooldownViewerCategoryMixin = {};
 function CooldownViewerCategoryMixin:Init(category, title, filter)
-	self.category = category;
+	self.category = category; -- It's possible to use multiple categories, the first one is the "main" category
 	self.title = title;
 	self.filter = filter;
 end
 
 function CooldownViewerCategoryMixin:GetCategory()
+	if type(self.category) == "table" then
+		return self.category[1];
+	end
+
 	return self.category;
+end
+
+function CooldownViewerCategoryMixin:MatchesCategory(category)
+	if type(self.category) == "table" then
+		for index, cat in ipairs(self.category) do
+			if cat == category then
+				return true;
+			end
+		end
+	else
+		return self.category == category;
+	end
 end
 
 function CooldownViewerCategoryMixin:GetTitle()
@@ -133,8 +122,10 @@ do
 		MakeCategory(Enum.CooldownViewerCategory.Utility, COOLDOWN_VIEWER_SETTINGS_CATEGORY_UTILITY, MatchesCooldownCategory),
 		MakeCategory(Enum.CooldownViewerCategory.TrackedBuff, COOLDOWN_VIEWER_SETTINGS_CATEGORY_TRACKED_BUFF, MatchesCooldownCategory),
 		MakeCategory(Enum.CooldownViewerCategory.TrackedBar, COOLDOWN_VIEWER_SETTINGS_CATEGORY_TRACKED_BARS, MatchesCooldownCategory),
-		MakeCategory(Enum.CooldownViewerCategory.HiddenSpell, COOLDOWN_VIEWER_SETTINGS_CATEGORY_NOT_IN_BAR, MatchesCooldownCategory),
-		MakeCategory(Enum.CooldownViewerCategory.HiddenAura, COOLDOWN_VIEWER_SETTINGS_CATEGORY_NOT_IN_BAR, MatchesCooldownCategory),
+		MakeCategory({ Enum.CooldownViewerCategory.EquipSlotEssential, Enum.CooldownViewerCategory.SpecAgnosticEssential }, COOLDOWN_VIEWER_SETTINGS_CATEGORY_EQUIP_ACTIVE, MatchesCooldownCategory),
+		MakeCategory({ Enum.CooldownViewerCategory.EquipSlotTracked, Enum.CooldownViewerCategory.SpecAgnosticTracked }, COOLDOWN_VIEWER_SETTINGS_CATEGORY_EQUIP_PASSIVE, MatchesCooldownCategory),
+		MakeCategory(Enum.CooldownViewerCategory.HiddenActive, COOLDOWN_VIEWER_SETTINGS_CATEGORY_NOT_IN_BAR, MatchesCooldownCategory),
+		MakeCategory(Enum.CooldownViewerCategory.HiddenPassive, COOLDOWN_VIEWER_SETTINGS_CATEGORY_NOT_IN_BAR, MatchesCooldownCategory),
 	};
 end
 
@@ -162,7 +153,7 @@ CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, 
 
 function CooldownViewerSettingsItemMixin:RefreshData()
 	if not self:IsEmptyCategory() then
-		self.Icon:SetTexture(self:GetSpellTexture());
+		self:RefreshSpellTexture();
 		self:RefreshIconState();
 	else
 		self.Icon:SetAtlas("cdm-empty");
@@ -171,89 +162,16 @@ function CooldownViewerSettingsItemMixin:RefreshData()
 	end
 end
 
-local function AnchorAlertTypeIcons(overlay)
-	local firstAlertIcon = overlay.visibleIcons[1];
-	if not firstAlertIcon then
-		return;
-	end
-
-	local iconWidth = firstAlertIcon:GetWidth();
-	local totalIconsWidth = (#overlay.visibleIcons * iconWidth) + ((#overlay.visibleIcons - 1) * 2);
-	local overlayWidth = overlay:GetWidth();
-	local firstIconOffset = (overlayWidth - totalIconsWidth) / 2;
-
-	local anchor = CreateAnchor("LEFT", overlay, "LEFT", firstIconOffset, 0);
-	local clearAllPoints = true;
-
-	for index, icon in ipairs(overlay.visibleIcons) do
-		anchor:SetPoint(icon, clearAllPoints);
-		anchor:Set("LEFT", icon, "RIGHT", 2, 0);
-	end
-end
-
-local function AddAlertTypeIcon(index, alertType, overlay)
-	local asset = CooldownViewerAlert_GetTypeAtlas(alertType);
-	if asset then
-		local icon = overlay.icons[index];
-		if not icon then
-			icon = overlay:CreateTexture(nil, "ARTWORK");
-			local size = overlay:GetHeight() - 2;
-			icon:SetSize(size, size);
-
-			overlay.icons[index] = icon;
-		end
-
-		icon:SetAtlas(asset);
-		icon:Show();
-
-		table.insert(overlay.visibleIcons, icon);
-	end
-end
-
-local function HideAlertTypeIcons(overlay)
-	for _, icon in ipairs(overlay.icons) do
-		icon:Hide();
-	end
-
-	overlay.visibleIcons = {};
-end
-
-function CooldownViewerSettingsItemMixin:RefreshAlertTypeOverlay()
-	local alertTypes = self:GetAllAlertTypes();
-	if alertTypes then
-		if not self.AlertTypesOverlay then
-			local overlay = CreateFrame("Frame", nil, self);
-			self.AlertTypesOverlay = overlay;
-			overlay:SetPoint("BOTTOM", self.Icon, "BOTTOM", 0, 2);
-			overlay:SetSize(34, 14); -- This used to be programatically determined, but then anchor setup ordering got in the way.
-
-			overlay.BG = overlay:CreateTexture(nil, "BACKGROUND");
-			overlay.BG:SetAllPoints(overlay);
-			overlay.BG:SetColorTexture(0, 0, 0, 0.7);
-
-			overlay.icons = {};
-		end
-
-		HideAlertTypeIcons(self.AlertTypesOverlay);
-
-		for index, alertType in ipairs(alertTypes) do
-			AddAlertTypeIcon(index, alertType, self.AlertTypesOverlay);
-		end
-
-		AnchorAlertTypeIcons(self.AlertTypesOverlay);
-
-		self.AlertTypesOverlay:Show();
-	elseif self.AlertTypesOverlay then
-		self.AlertTypesOverlay:Hide();
-	end
+function CooldownViewerSettingsItemMixin:RefreshSpellTexture()
+	self.Icon:SetTexture(self:GetSpellTexture());
 end
 
 function CooldownViewerSettingsItemMixin:RefreshIconState()
 	local info = self:GetCooldownInfo();
-	assertsafe(info ~= nil, "Non empty cooldown with invalid info, id: " .. tostring(self:GetCooldownID()));
-
-	self.Icon:SetDesaturated(not info.isKnown or self:IsReorderLocked());
-	self:RefreshAlertTypeOverlay();
+	if info then
+		self.Icon:SetDesaturated(not info.isKnown or self:IsReorderLocked());
+		self:RefreshAlertTypeOverlay();
+	end
 end
 
 function CooldownViewerSettingsItemMixin:SetOrderIndex(orderIndex)
@@ -332,7 +250,8 @@ function CooldownViewerSettingsItemMixin:BeginOrderChange(eatNextGlobalMouseUp)
 end
 
 function CooldownViewerSettingsItemMixin:PlayAlertSample(alert)
-	CooldownViewerAlert_PlayAlert(self, self:GetNameText(), alert);
+	local soundSubType = "Gameplay SFX";
+	CooldownViewerAlert_PlayAlert(self, self:GetNameText(), alert, soundSubType);
 end
 
 do
@@ -364,26 +283,18 @@ do
 		local numAlerts, maxAlerts, addAlertStatus = GetCooldownItemAlertButtonData(layoutManager, cooldownItem);
 		local addAlertEnabled = addAlertStatus == Enum.CooldownLayoutStatus.Success;
 		local text = GetNewAlertButtonText(numAlerts, maxAlerts, addAlertEnabled);
-		local newAlertButton = rootDescription:CreateButton(text, function()
-			CooldownViewerSettingsEditAlert:DisplayForCooldown(cooldownItem);
-		end);
 
-		newAlertButton:SetEnabled(addAlertEnabled);
-
+		local disabledTooltipCallback;
 		if not addAlertEnabled then
-			newAlertButton:SetTooltip(function(tooltip, elementDescription)
+			disabledTooltipCallback = function(tooltip, elementDescription)
 				GameTooltip_SetTitle(tooltip, MenuUtil.GetElementText(elementDescription));
 				GameTooltip_AddErrorLine(tooltip, CooldownViewerSettings:GetActionStatusText(Enum.CooldownLayoutAction.AddAlert, addAlertStatus));
-			end);
+			end;
 		end
 
-		newAlertButton:AddInitializer(function(button, description, menu)
-			local texture = button:AttachTexture();
-			texture:SetPoint("LEFT");
-			texture:SetAtlas(addAlertEnabled and "editmode-new-layout-plus" or "editmode-new-layout-plus-disabled", true);
-			button.fontString:ClearAllPoints();
-			button.fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
-		end);
+		CooldownViewerContextMenu_AddNewAlertButton(rootDescription, text, addAlertEnabled, function()
+			CooldownViewerSettingsEditAlert:DisplayForCooldown(cooldownItem);
+		end, disabledTooltipCallback);
 
 		if numAlerts > 1 then
 			local removeAllAlerts = rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_CLEAR_ALL_ALERTS, function()
@@ -411,49 +322,18 @@ do
 			local payloadText = CooldownViewerAlert_GetPayloadText(alert);
 			local eventText = CooldownViewerAlert_GetEventText(alert);
 			local alertType = CooldownViewerAlert_GetType(alert);
-			local alertButton = rootDescription:CreateButton("temp", function()
-				cooldownItem:PlayAlertSample(alert);
-			end, 1);
 
-			alertButton:AddInitializer(function(button, description, menu)
-				local playSampleButton = MenuTemplates.AttachBasicButton(button, 25, 25);
-				playSampleButton:SetPoint("TOPLEFT");
-				CooldownViewerAlert_SetupTypeButton(playSampleButton, alertType);
-				MenuTemplates.SetUtilityButtonTooltipText(playSampleButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_PLAY_SAMPLE);
-				MenuTemplates.SetUtilityButtonClickHandler(playSampleButton, function()
-					cooldownItem:PlayAlertSample(alert);
-				end);
-
-				local payloadFontString = button.fontString;
-				payloadFontString:SetFontObject("GameFontNormalLarge");
-				payloadFontString:SetSize(0, 0);
-				payloadFontString:ClearAllPoints();
-				payloadFontString:SetPoint("TOPLEFT", playSampleButton, "TOPRIGHT", 3, 0);
-				payloadFontString:SetText(payloadText);
-
-				local eventFontString = button:AttachFontString();
-				eventFontString:SetFontObject("GameFontHighlightSmall");
-				eventFontString:SetSize(0, 0);
-				eventFontString:ClearAllPoints();
-				eventFontString:SetPoint("TOPLEFT", payloadFontString, "BOTTOMLEFT", 0, -5);
-				eventFontString:SetText(eventText);
-
-				local editButton = MenuTemplates.AttachAutoHideGearButton(button);
-				MenuTemplates.SetUtilityButtonTooltipText(editButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_TOOLTIP_EDIT);
-				MenuTemplates.SetUtilityButtonAnchor(editButton, MenuVariants.GearButtonAnchor, button);
-				MenuTemplates.SetUtilityButtonClickHandler(editButton, function()
+			CooldownViewerContextMenu_AddAlertEntryButton(rootDescription, alertType, payloadText, eventText,
+				function()
 					CooldownViewerSettingsEditAlert:DisplayForAlert(cooldownItem, alert);
-					menu:Close();
-				end);
-
-				local deleteButton = MenuTemplates.AttachAutoHideCancelButton(button);
-				MenuTemplates.SetUtilityButtonTooltipText(deleteButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_TOOLTIP_DELETE);
-				MenuTemplates.SetUtilityButtonAnchor(deleteButton, MenuVariants.CancelButtonAnchor, editButton);
-				MenuTemplates.SetUtilityButtonClickHandler(deleteButton, function()
+				end,
+				function()
 					cooldownItem:RemoveAlert(alert);
-					menu:Close();
-				end);
-			end);
+				end,
+				function()
+					cooldownItem:PlayAlertSample(alert);
+				end
+			);
 		end
 
 		return #alerts;
@@ -572,9 +452,124 @@ function CooldownViewerSettingsItemMixin:GetEmptyCategory()
 	return self.emptyCategory;
 end
 
+function CooldownViewerSettingsItemMixin:GetCategory()
+	local emptyCategory = self:GetEmptyCategory();
+	if emptyCategory then
+		return emptyCategory:GetCategory();
+	end
+
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		return cooldownInfo.category;
+	end
+
+	return nil;
+end
+
+function CooldownViewerSettingsItemMixin:GetDefaultCategory()
+	local emptyCategory = self:GetEmptyCategory();
+	if emptyCategory then
+		return emptyCategory:GetCategory();
+	end
+
+	local category = self:GetDefaultCooldownCategory();
+	return category;
+end
+
 function CooldownViewerSettingsItemMixin:GetTextureFileID()
 	return self.Icon:GetTextureFileID();
 end
+
+local isItemCategory = {
+	[Enum.CooldownViewerCategory.Essential] = false,
+	[Enum.CooldownViewerCategory.Utility] = false,
+	[Enum.CooldownViewerCategory.TrackedBuff] = false,
+	[Enum.CooldownViewerCategory.TrackedBar] = false,
+	[Enum.CooldownViewerCategory.EquipSlotEssential] = true,
+	[Enum.CooldownViewerCategory.SpecAgnosticEssential] = true,
+	[Enum.CooldownViewerCategory.EquipSlotTracked] = true,
+	[Enum.CooldownViewerCategory.SpecAgnosticTracked] = true,
+	[Enum.CooldownViewerCategory.HiddenActive] = false,
+	[Enum.CooldownViewerCategory.HiddenPassive] = false,
+};
+
+local legalOriginalSourceCategoryToTargetCategory = {
+	[Enum.CooldownViewerCategory.Essential] = {
+		[Enum.CooldownViewerCategory.Utility] = true,
+		[Enum.CooldownViewerCategory.HiddenActive] = true,
+	},
+
+	[Enum.CooldownViewerCategory.Utility] = {
+		[Enum.CooldownViewerCategory.Essential] = true,
+		[Enum.CooldownViewerCategory.HiddenActive] = true,
+	},
+
+	[Enum.CooldownViewerCategory.EquipSlotEssential] = {
+		[Enum.CooldownViewerCategory.Essential] = true,
+		[Enum.CooldownViewerCategory.Utility] = true,
+	},
+
+	[Enum.CooldownViewerCategory.SpecAgnosticEssential] = {
+		[Enum.CooldownViewerCategory.Essential] = true,
+		[Enum.CooldownViewerCategory.Utility] = true,
+	},
+
+	[Enum.CooldownViewerCategory.HiddenActive] = {
+		[Enum.CooldownViewerCategory.Essential] = true,
+		[Enum.CooldownViewerCategory.Utility] = true,
+	},
+
+	[Enum.CooldownViewerCategory.TrackedBuff] = {
+		[Enum.CooldownViewerCategory.TrackedBar] = true,
+		[Enum.CooldownViewerCategory.HiddenPassive] = true,
+	},
+
+	[Enum.CooldownViewerCategory.TrackedBar] = {
+		[Enum.CooldownViewerCategory.TrackedBuff] = true,
+		[Enum.CooldownViewerCategory.HiddenPassive] = true,
+	},
+
+	[Enum.CooldownViewerCategory.EquipSlotTracked] = {
+		[Enum.CooldownViewerCategory.TrackedBuff] = true,
+		[Enum.CooldownViewerCategory.TrackedBar] = true,
+	},
+
+	[Enum.CooldownViewerCategory.SpecAgnosticTracked] = {
+		[Enum.CooldownViewerCategory.TrackedBuff] = true,
+		[Enum.CooldownViewerCategory.TrackedBar] = true,
+	},
+
+	[Enum.CooldownViewerCategory.HiddenPassive] = {
+		[Enum.CooldownViewerCategory.TrackedBuff] = true,
+		[Enum.CooldownViewerCategory.TrackedBar] = true,
+	}
+};
+
+function CooldownViewerSettingsItemMixin:CanCategoryBeTargetForSourceCategory(targetCategory, sourceCategory)
+	if targetCategory and sourceCategory then
+		-- Identical categories can always be reordered
+		if targetCategory == sourceCategory then
+			return true;
+		end
+
+		local legalTargets = legalOriginalSourceCategoryToTargetCategory[sourceCategory];
+		return legalTargets and legalTargets[targetCategory];
+	end
+
+	return false;
+end
+
+function CooldownViewerSettingsItemMixin:CanBeTargetFor(sourceItem)
+	local targetCategory = self:GetCategory();
+	local sourceCategory = sourceItem:GetDefaultCategory();
+	return self:CanCategoryBeTargetForSourceCategory(targetCategory, sourceCategory);
+end
+
+function CooldownViewerSettingsItemMixin:UsesDynamicAppearance()
+	-- Only show texture/tooltip info from the cooldownInfo data, don't use runtime/combat data.
+	return false;
+end
+
 
 CooldownViewerSettingsBarItemMixin = CreateFromMixins(CooldownViewerSettingsItemMixin);
 
@@ -593,8 +588,7 @@ end
 function CooldownViewerSettingsBarItemMixin:RefreshIconState()
 	CooldownViewerSettingsItemMixin.RefreshIconState(self);
 
-	local info = self:GetCooldownInfo();
-	local isDisabled = not info.isKnown or self:IsReorderLocked();
+	local isDisabled = not self:IsKnown() or self:IsReorderLocked();
 	self.Bar.FillTexture:SetVertexColor((isDisabled and DISABLED_FONT_COLOR or COOLDOWN_BAR_DEFAULT_COLOR):GetRGB());
 end
 
@@ -637,7 +631,12 @@ end
 CooldownViewerSettingsCategoryMixin = CreateFromMixins(CooldownViewerContainerReorderTargetMixin);
 
 function CooldownViewerSettingsCategoryMixin:OnLoad()
-	self.itemPool = CreateFramePool("Frame", self.Container, self:GetItemTemplate());
+	local itemResetCallback = function(pool, itemFrame)
+		Pool_HideAndClearAnchors(pool, itemFrame);
+		itemFrame:ClearCooldownID();
+	end
+
+	self.itemPool = CreateFramePool("Frame", self.Container, self:GetItemTemplate(), itemResetCallback);
 
 	self.Header:SetClickHandler(function(_header, button)
 		if button == "LeftButton" then
@@ -648,6 +647,20 @@ function CooldownViewerSettingsCategoryMixin:OnLoad()
 	self.Header:SetTitleColor(false, NORMAL_FONT_COLOR);
 	self.Header:SetTitleColor(true, NORMAL_FONT_COLOR);
 	self:SetupGridLayoutParams();
+end
+
+function CooldownViewerSettingsCategoryMixin:OnShow()
+	self:RegisterEvent("SPELL_UPDATE_ICON");
+end
+
+function CooldownViewerSettingsCategoryMixin:OnHide()
+	self:UnregisterEvent("SPELL_UPDATE_ICON");
+end
+
+function CooldownViewerSettingsCategoryMixin:OnEvent(event, ...)
+	if event == "SPELL_UPDATE_ICON" then
+		self:RefreshSpellIcons();
+	end
 end
 
 function CooldownViewerSettingsCategoryMixin:GetItemTemplate()
@@ -753,6 +766,14 @@ function CooldownViewerSettingsCategoryMixin:ApplyFilter()
 	end
 end
 
+function CooldownViewerSettingsCategoryMixin:RefreshSpellIcons()
+	for item in self.itemPool:EnumerateActive() do
+		if not item:IsEmptyCategory() then
+			item:RefreshSpellTexture();
+		end
+	end
+end
+
 function CooldownViewerSettingsCategoryMixin:IsDisplayingAnyItems()
 	return self.itemPool:GetNumActive() > 0;
 end
@@ -802,7 +823,6 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetupScrollFrame();
 	self:SetupEventEditFrame();
 	self:SetupLayoutManagerDialog();
-	self:SetupAlerts();
 
 	local function LoadCooldownSettings()
 		local manager = self:GetLayoutManager();
@@ -1149,6 +1169,7 @@ end
 
 function CooldownViewerSettingsMixin:SetupEventEditFrame()
 	CooldownViewerSettingsEditAlert:SetOwner(self);
+	GroupBuffFilterEditVisualAlert:SetOwner(self);
 end
 
 function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
@@ -1227,12 +1248,6 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 	});
 end
 
-function CooldownViewerSettingsMixin:SetupAlerts()
-	for _index, visualAlertData in pairs(CooldownViewerVisualData) do
-		CooldownViewerVisualAlertsManager:RegisterAlert(visualAlertData.enum, visualAlertData.animTemplate);
-	end
-end
-
 function CooldownViewerSettingsMixin:IsReordering()
 	return self:GetReorderSourceItem() ~= nil;
 end
@@ -1248,7 +1263,7 @@ function CooldownViewerSettingsMixin:BeginOrderChange(cooldownItem, eatNextGloba
 	self.eatNextGlobalMouseUp = eatNextGlobalMouseUp;
 
 	cooldownItem:SetReorderLocked(true);
-	PickupCooldownItemCursor(cooldownItem);
+	CooldownViewerDraggedItem_Pickup(cooldownItem:GetTextureFileID());
 
 	self:SetScript("OnUpdate", self.OnUpdate);
 
@@ -1259,7 +1274,9 @@ function CooldownViewerSettingsMixin:EndOrderChange()
 	local sourceItem = self:GetReorderSourceItem();
 	local targetItem = self:GetReorderTargetItem();
 	if sourceItem ~= targetItem then
-		if targetItem:IsEmptyCategory() then
+		if not targetItem:CanBeTargetFor(sourceItem) then
+			PlaySound(SOUNDKIT.COOLDOWN_LAYOUT_MANAGER_PLACEMENT_ERROR);
+		elseif targetItem:IsEmptyCategory() then
 			local status = self:GetDataProvider():SetCooldownToCategory(sourceItem:GetCooldownID(), targetItem:GetEmptyCategory():GetCategory());
 			self:CheckDisplayActionStatus(Enum.CooldownLayoutAction.ChangeCategory, status);
 		else
@@ -1277,7 +1294,7 @@ function CooldownViewerSettingsMixin:CancelOrderChange(cooldownItem, ...)
 	self.ReorderMarker:Hide();
 	self:ClearReorderTargets();
 
-	ClearCooldownItemCursor();
+	CooldownViewerDraggedItem_Clear();
 
 	self:SetScript("OnUpdate", nil);
 
@@ -1353,6 +1370,21 @@ function CooldownViewerSettingsMixin:UpdateReorderMarker()
 			self.reorderOffset = 0;
 		end
 	end
+
+	self:UpdateReorderMarkerState();
+end
+
+function CooldownViewerSettingsMixin:UpdateReorderMarkerState()
+	local sourceItem = self:GetReorderSourceItem();
+	local targetItem = self:GetReorderTargetItem();
+	if sourceItem and targetItem then
+		local isLegal = targetItem:CanBeTargetFor(sourceItem);
+		self.ReorderMarker:SetIsLegalTarget(isLegal);
+		CooldownViewerDraggedItem_SetIsLegalTarget(isLegal);
+	else
+		self.ReorderMarker:SetIsLegalTarget(true);
+		CooldownViewerDraggedItem_SetIsLegalTarget(true);
+	end
 end
 
 function CooldownViewerSettingsMixin:OnEvent(event, ...)
@@ -1400,6 +1432,9 @@ function CooldownViewerSettingsMixin:OnHide()
 	self:CheckSaveCurrentLayout();
 	self:GetLayoutManager():DestroyRestorePoint();
 
+	CooldownViewerSettingsEditAlert:Hide();
+	GroupBuffFilterEditVisualAlert:Hide();
+
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 
 	CallbackRegistrantMixin.OnHide(self);
@@ -1432,12 +1467,15 @@ function CooldownViewerSettingsMixin:RefreshLayout()
 
 	self:SetPortraitToSpecIcon();
 	self:SetupLayoutManagerDropdown();
+
+	self.GroupBuffFilter:Refresh();
 end
 
 local displayModeToCategories =
 {
-	["spells"] = { Enum.CooldownViewerCategory.Essential, Enum.CooldownViewerCategory.Utility, Enum.CooldownViewerCategory.HiddenSpell },
-	["auras"] = { Enum.CooldownViewerCategory.TrackedBuff, Enum.CooldownViewerCategory.TrackedBar, Enum.CooldownViewerCategory.HiddenAura },
+	["spells"] = { Enum.CooldownViewerCategory.Essential, Enum.CooldownViewerCategory.Utility, Enum.CooldownViewerCategory.EquipSlotEssential, Enum.CooldownViewerCategory.SpecAgnosticEssential, Enum.CooldownViewerCategory.HiddenActive },
+	["auras"] = { Enum.CooldownViewerCategory.TrackedBuff, Enum.CooldownViewerCategory.TrackedBar, Enum.CooldownViewerCategory.EquipSlotTracked, Enum.CooldownViewerCategory.SpecAgnosticTracked, Enum.CooldownViewerCategory.HiddenPassive },
+	["groupBuffs"] = {},
 };
 
 function CooldownViewerSettingsMixin:SetDisplayMode(displayMode)
@@ -1445,15 +1483,26 @@ function CooldownViewerSettingsMixin:SetDisplayMode(displayMode)
 		return;
 	end
 
+	CooldownViewerSettingsEditAlert:Hide();
+	GroupBuffFilterEditVisualAlert:Hide();
+
 	self.displayMode = displayMode;
 
 	for i, frame in ipairs(self.TabButtons) do
 		frame:SetChecked(frame.displayMode == displayMode);
 	end
 
+	local isGroupBuffs = displayMode == "groupBuffs";
+	self.CooldownScroll:SetShown(not isGroupBuffs);
+	self.GroupBuffFilter:SetShown(isGroupBuffs);
+
 	local categories = displayModeToCategories[displayMode];
 	assertsafe(type(categories) == "table", "Add missing category data for displayMode: " .. tostring(displayMode)); -- Should never have an invalid category being used.
 	self:SetCurrentCategories(categories);
+
+	if isGroupBuffs then
+		self.GroupBuffFilter:Refresh();
+	end
 end
 
 function CooldownViewerSettingsMixin:ClearDisplayCategories()
@@ -1516,6 +1565,10 @@ function CooldownViewerSettingsMixin:ApplyFilter()
 	for categoryDisplay in self.categoryPool:EnumerateActive() do
 		categoryDisplay:ApplyFilter();
 	end
+
+	if self.displayMode == "groupBuffs" then
+		self.GroupBuffFilter:ApplyFilter(self.filterText or "");
+	end
 end
 
 function CooldownViewerSettingsMixin:RefreshVisibleCategories()
@@ -1528,11 +1581,16 @@ end
 function CooldownViewerSettingsMixin:GetValidAssignmentCategories(cooldownItem)
 	local validAssignments = {};
 
+	-- NOTE: The info here has the category already overridden to what it's currently assigned.
+	-- To get the default/original category from the item use GetDefaultCategory.
+	-- The approach here is to prevent options like "Move to Utility" from appearing if the CDItem
+	-- is already in the Utility category.
 	local info = self:GetDataProvider():GetCooldownInfoForID(cooldownItem:GetCooldownID());
 	if self.currentCategories then
-		for index, category in ipairs(self.currentCategories) do
-			if category:GetCategory() ~= info.category then
-				table.insert(validAssignments, category);
+		for index, categoryObj in ipairs(self.currentCategories) do
+			local category = categoryObj:GetCategory();
+			if category ~= info.category and cooldownItem:CanCategoryBeTargetForSourceCategory(category, cooldownItem:GetDefaultCategory()) then
+				table.insert(validAssignments, categoryObj);
 			end
 		end
 	end
@@ -1714,4 +1772,12 @@ end
 
 function CooldownViewerSettingsReorderMarkerMixin:SetVertical()
 	self.Texture:SetAtlas("CDM-vertical", true);
+end
+
+function CooldownViewerSettingsReorderMarkerMixin:SetIsLegalTarget(isLegal)
+	if isLegal then
+		self.Texture:SetVertexColor(1, 1, 1);
+	else
+		self.Texture:SetVertexColor(ERROR_COLOR:GetRGB());
+	end
 end

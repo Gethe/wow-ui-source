@@ -253,6 +253,15 @@ function CharacterSelectNavBarMixin:TrySetUpMenuButton()
 	end
 
 	self.MenuButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
+
+	-- Menu button should not trigger focus replay narration, as it opens the game menu which has contextual narration.
+	self.MenuButton.NarrationShouldIgnoreFocusReplay = function()
+		return true;
+	end
+
+	self.MenuButton.NarrationGetName = function()
+		return NARRATION_GAME_MENU_BUTTON;
+	end
 end
 
 function CharacterSelectNavBarMixin:TrySetUpRealmsButton()

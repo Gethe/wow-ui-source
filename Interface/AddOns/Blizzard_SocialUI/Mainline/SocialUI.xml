@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SocialUIFrame" inherits="PortraitFrameTemplate, CallbackRegistrantTemplate" mixin="SocialUIFrameMixin" toplevel="true" hidden="true" clampedToScreen="true">
+		<Size x="410" y="675"/>
+		<KeyValues>
+			<KeyValue key="portraitIcon" value="Interface\FriendsFrame\Battlenet-Portrait" type="string"/>
+			<!-- This is the width we register the Social UI into the UIPanelManager system with -->
+			<!-- Note that we dynamically adjust this depending on opened side window frames like the Ignore List-->
+			<KeyValue key="baseUIPanelWidth" value="460" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BattleNetBar" inherits="SocialUIBattleNetBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Bg" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopFade" atlas="friends-frame-toptexbg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BattleNetBar" relativePoint="BOTTOM" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomFade" atlas="friends-frame-bottomtexbg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Bg"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RecruitAFriendFrame" inherits="RecruitAFriendFrameSocialTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BattleNetBar" relativePoint="BOTTOMLEFT" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BattleNetUnavailableNoticeFrame" inherits="SocialUIBattleNetUnavailableNoticeFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="45"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BattleNetBroadcastFrame" inherits="SocialUIBattleNetBroadcastFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="45"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="IgnoreListFrame" inherits="SocialUIIgnoreListFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="45"/>
+				</Anchors>
+			</Frame>
+
+			<!-- Various content frames for the tabs are created dynamically in Lua during InitializeTabDefinitions -->
+			<!-- This allows tabs to be conditionally supported based on the game context (e.g. glues vs in-game) -->
+
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

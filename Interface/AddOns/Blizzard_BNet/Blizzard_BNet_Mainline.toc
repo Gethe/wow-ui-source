@@ -1,8 +1,6 @@
 ## Title: Blizzard_BNet
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SocialToast
-## OptionalDeps: Blizzard_ChatFrame
+## Dep: Blizzard_SocialToast
+## Dep: Blizzard_ChatFrame [AllowLoad game]
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Mainline\BNet.lua

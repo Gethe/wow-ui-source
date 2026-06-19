@@ -729,9 +729,13 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 	actor.dressed = playerData.autoDress;
 
 	if playerData.itemModifiedAppearanceIDs then
-		for i, itemModifiedAppearanceID in ipairs(playerData.itemModifiedAppearanceIDs) do
-			CatalogShopUtil.CatalogShopTryOn(actor, itemModifiedAppearanceID);
-			--actor:TryOn(itemModifiedAppearanceID);
+		local allSameType = CatalogShopUtil.ItemAppearancesHaveSameCategory(playerData.itemModifiedAppearanceIDs);
+		if allSameType then
+			CatalogShopUtil.CatalogShopTryOn(actor, playerData.itemModifiedAppearanceIDs[1]);
+		else
+			for i, itemModifiedAppearanceID in ipairs(playerData.itemModifiedAppearanceIDs) do
+				CatalogShopUtil.CatalogShopTryOn(actor, itemModifiedAppearanceID);
+			end
 		end
 	end
 	actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
@@ -818,12 +822,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 		hideWeapon = actorDisplayData.hideWeapon;
 		sheatheWeapon = actorDisplayData.sheatheWeapon;
 
-		local hideArmorSetting = CatalogShopFrame and CatalogShopFrame:GetHideArmorSetting() or false;
-		if hideArmorSetting == nil then
-			autoDress = actorDisplayData.autoDress;
-		else
-			autoDress = not(hideArmorSetting);
-		end
+		autoDress = actorDisplayData.autoDress or false;
 		--itemModifiedAppearanceID = displayData.itemModifiedAppearanceID;
 		itemModifiedAppearanceIDs = displayData.itemModifiedAppearanceIDs;
 	end	

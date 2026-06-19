@@ -134,6 +134,12 @@ function ButtonFrameTemplateMinimizable_ShowPortrait(self)
 	self:SetPortraitShown(true);
 end
 
+UIPanelCloseButtonNarrationMixin = {};
+
+function UIPanelCloseButtonNarrationMixin:NarrationGetName()
+	return NARRATION_OBJECT_CLOSE_BUTTON;
+end
+
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
 function UIPanelCloseButton_OnClick(self)
 	local parent = self:GetParent();
@@ -337,6 +343,13 @@ function SidePanelTabButtonMixin:OnLeave()
 	GetAppropriateTooltip():Hide();
 end
 
+function SidePanelTabButtonMixin:SetTabGlowAnimationPlaying(playing)
+	self.TabGlowAnimation:SetPlaying(playing);
+end
+
+function SidePanelTabButtonMixin:IsTabGlowAnimationPlaying()
+	return self.TabGlowAnimation:IsPlaying();
+end
 
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
@@ -561,66 +574,6 @@ function PanelTemplates_SetDisabledTabState(tab)
 	tab.LeftActive:Hide();
 	tab.MiddleActive:Hide();
 	tab.RightActive:Hide();
-end
-
--- NOTE: If your edit box never shows partial lines of text, then this function will not work when you use
--- your mouse to move the edit cursor. You need the edit box to cut lines of text so that you can use your
--- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
--- cursor above or below the current scroll area of the edit box.
-function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-	local height, range, scroll, cursorOffset;
-	if ( self.handleCursorChange ) then
-		if ( not scrollFrame ) then
-			scrollFrame = self:GetParent();
-		end
-		height = scrollFrame:GetHeight();
-		range = scrollFrame:GetVerticalScrollRange();
-		scroll = scrollFrame:GetVerticalScroll();
-		cursorOffset = -self.cursorOffset;
-
-		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then
-			--Frame has no area, nothing to calculate.
-			return;
-		end
-
-		while ( cursorOffset < scroll ) do
-			scroll = (scroll - (height / 2));
-			if ( scroll < 0 ) then
-				scroll = 0;
-			end
-			scrollFrame:SetVerticalScroll(scroll);
-		end
-
-		while ( (cursorOffset + self.cursorHeight) > (scroll + height) and scroll < range ) do
-			scroll = (scroll + (height / 2));
-			if ( scroll > range ) then
-				scroll = range;
-			end
-			scrollFrame:SetVerticalScroll(scroll);
-		end
-
-		self.handleCursorChange = false;
-	end
-end
-
-function ScrollingEdit_OnTextChanged(self, scrollFrame)
-	-- force an update when the text changes
-	self.handleCursorChange = true;
-	ScrollingEdit_OnUpdate(self, 0, scrollFrame);
-end
-
-function ScrollingEdit_OnLoad(self)
-	ScrollingEdit_SetCursorOffsets(self, 0, 0);
-end
-
-function ScrollingEdit_SetCursorOffsets(self, offset, height)
-	self.cursorOffset = offset;
-	self.cursorHeight = height;
-end
-
-function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
-	ScrollingEdit_SetCursorOffsets(self, y, h);
-	self.handleCursorChange = true;
 end
 
 MaximizeMinimizeButtonFrameMixin = {};
@@ -1049,14 +1002,37 @@ function ResizeCheckButtonMixin:OnLoad()
 		self.Label:SetText(self.labelText);
 		self:UpdateLabelFont();
 	end
+
+	self:CheckAddNarrationToButton();
 end
 
 function ResizeCheckButtonMixin:OnShow()
 	ResizeLayoutMixin.OnShow(self);
 end
 
+function ResizeCheckButtonMixin:CheckAddNarrationToButton()
+	if not self.Button then
+		return;
+	end
+
+	local owner = self;
+
+	self.Button.NarrationGetName = function()
+		if owner.Label then
+			return owner.Label:GetText();
+		end
+
+		return owner.labelText;
+	end
+
+	self.Button.NarrationGetContext = function()
+		return NarrationUtil.GetCheckboxContext(owner.Button);
+	end
+end
+
 function ResizeCheckButtonMixin:SetButton(button)
 	self.Button = button;
+	self:CheckAddNarrationToButton();
 	self:MarkDirty();
 end
 
@@ -1422,6 +1398,11 @@ PanelDragBarMixin = {};
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self:SetTarget(self:GetParent());
+	self.suspendDrag = false;
+end
+
+function PanelDragBarMixin:SetDragSuspended(suspendDrag)
+	self.suspendDrag = suspendDrag;
 end
 
 function PanelDragBarMixin:Init(target)
@@ -1434,6 +1415,10 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStart = true;
@@ -1454,6 +1439,10 @@ function PanelDragBarMixin:OnDragStart()
 end
 
 function PanelDragBarMixin:OnDragStop()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStop = true;
@@ -1514,6 +1503,11 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	target:SetScript("OnSizeChanged", function(target, width, height)
 		originalTargetOnSizeChanged(target, width, height);
 
+		-- Size changes should not be enforced here unless this button caused the change.
+		if not self.isActive then
+			return;
+		end
+
 		local newWidth = width;
 		if width < self.minWidth then
 			newWidth = self.minWidth;
@@ -1522,7 +1516,7 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 			newWidth = self.maxWidth;
 			target:SetWidth(newWidth);
 		end
-
+		
 		local newHeight = height;
 		if height < self.minHeight then
 			newHeight = self.minHeight;
@@ -1609,6 +1603,14 @@ end
 
 function PanelResizeButtonMixin:SetMinHeight(minHeight)
 	self.minHeight = minHeight;
+end
+
+function PanelResizeButtonMixin:SetMaxWidth(maxWidth)
+	self.maxWidth = maxWidth;
+end
+
+function PanelResizeButtonMixin:SetMaxHeight(maxHeight)
+	self.maxHeight = maxHeight;
 end
 
 function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)

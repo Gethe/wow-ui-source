@@ -1,6 +1,10 @@
 
 UIPanelWindows["TaxiFrame"] = { area = "left", pushable = 0, width = 605, height = 580, showFailedFunc = CloseTaxiMap };
 
+function ShowTaxiMapFrame()
+	ShowUIPanel(TaxiFrame);
+end
+
 TAXI_MAP_WIDTH = 580;
 TAXI_MAP_HEIGHT = 580;
 NUM_TAXI_BUTTONS = 0;
@@ -55,7 +59,7 @@ function TaxiFrame_OnShow(self)
 			button:SetID(i);
 		end
 	end
-		
+
 	-- Draw nodes
 	local numValidFlightNodes = 0;
 	for index = 1, num_nodes do
@@ -107,12 +111,12 @@ function TaxiFrame_OnShow(self)
 			button:Hide();
 		end
 	end
-	
+
 	-- Hide any remaining nodes
 	for index = num_nodes+1, NUM_TAXI_BUTTONS, 1 do
 		local button = _G["TaxiButton"..index];
 		button:Hide();
-	end 
+	end
 
 	if ( num_nodes > NUM_TAXI_BUTTONS ) then
 		NUM_TAXI_BUTTONS = num_nodes
@@ -128,7 +132,7 @@ function TaxiFrame_OnEvent(self, event, ...)
 	end
 end
 
-function TaxiNodeOnButtonEnter(button) 
+function TaxiNodeOnButtonEnter(button)
 	local index = button:GetID();
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 	GameTooltip:AddLine(TaxiNodeName(index), nil, nil, nil, true);
@@ -153,9 +157,9 @@ function TaxiNodeOnButtonEnter(button)
 			end
 		end
 	end
-	
+
 	if ( type == "REACHABLE" ) then
-		SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
+		GameTooltip_AddMoneyLine(GameTooltip, TaxiNodeCost(button:GetID()));
 
 		-- Show the path to this node
 		if ( numRoutes > NUM_TAXI_ROUTES ) then
@@ -204,7 +208,7 @@ function TaxiNodeOnButtonEnter(button)
 	GameTooltip:Show();
 end
 
-function TaxiNodeOnButtonLeave(button) 
+function TaxiNodeOnButtonLeave(button)
 	GameTooltip:Hide();
 
 	local index = button:GetID();

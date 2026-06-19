@@ -40,6 +40,15 @@ local CooldownViewer =
 			},
 		},
 		{
+			Name = "GetGroupBuffItems",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "groupBuffItems", Type = "table", InnerType = "GroupBuffItem", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLayoutData",
 			Type = "Function",
 
@@ -120,16 +129,31 @@ local CooldownViewer =
 			Fields =
 			{
 				{ Name = "cooldownID", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "spellCategoryID", Type = "number", Nilable = true },
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
 				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = true },
+				{ Name = "equipSlot", Type = "luaIndex", Nilable = true },
 				{ Name = "linkedSpellIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "selfAura", Type = "bool", Nilable = false },
 				{ Name = "hasAura", Type = "bool", Nilable = false },
 				{ Name = "charges", Type = "bool", Nilable = false },
 				{ Name = "isKnown", Type = "bool", Nilable = false },
+				{ Name = "isInvisible", Type = "bool", Nilable = false },
 				{ Name = "flags", Type = "CooldownSetSpellFlags", Nilable = false },
 				{ Name = "category", Type = "CooldownViewerCategory", Nilable = false },
+			},
+		},
+		{
+			Name = "GroupBuffItem",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "flags", Type = "GroupBuffItemFlags", Nilable = false },
+				{ Name = "isKnown", Type = "bool", Nilable = false },
 			},
 		},
 	},

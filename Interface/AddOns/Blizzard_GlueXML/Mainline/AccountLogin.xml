@@ -7,7 +7,7 @@
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-	
+
 	<Button name="AccountNameButtonTemplate" mixin="AccountNameMixin" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -83,22 +83,17 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" autoFocus="false" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
-						<Size x="320" y="42"/>
+					<EditBox parentKey="AccountEditBox" mixin="AccountLoginEditBoxMixin" autoFocus="false" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
+						<Size x="320" y="50"/>
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="50"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString parentKey="Label" inherits="GlueFontNormalLarge" justifyH="CENTER" text="ACCOUNT_NAME">
+								<FontString parentKey="Label" inherits="GlueFontNormalLogin" justifyH="CENTER" text="ACCOUNT_NAME">
 									<Size x="600" y="64"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="CENTER" x="0" y="3"/>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-19"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -106,44 +101,31 @@
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
 							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
-							<OnEnterPressed>
-								if ( C_Login.IsLoginReady() ) then
-									AccountLogin_Login();
-								end
-							</OnEnterPressed>
+							<OnEnterPressed function="AccountLogin_OnEnterPressed"/>
 							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
 							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
 							<OnKeyDown function="AccountLoginEditBox_OnKeyDown"/>
-							<OnTextChanged>
-								local accountName = GetSavedAccountName();
-								if ( accountName ~= "" and accountName ~= self:GetText() ) then
-									SetSavedAccountName("");
-									ClearSavedAccountList();
-									AccountLogin_UpdateSavedData(AccountLogin);
-								end
-								if ( self:GetText() ~= "" ) then
-									self.Fill:Hide();
-								else
-									self.Fill:Show();
-								end
-							</OnTextChanged>
+							<OnTextChanged function="AccountLoginEditBox_OnTextChanged"/>
 						</Scripts>
-						<FontString inherits="GlueEditBoxFont"/>
+						<FontString inherits="GlueLoginEditBoxFont"/>
 						<TextInsets>
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" autoFocus="false" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
-						<Size x="320" y="42"/>
+					<EditBox parentKey="PasswordEditBox" mixin="AccountLoginEditBoxMixin" autoFocus="false" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
+						<KeyValues>
+							<KeyValue key="narrationHideText" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="320" y="50"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="0" y="-30"/>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="0" y="-43"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString inherits="GlueFontNormalLarge" justifyH="CENTER" text="PASSWORD">
+								<FontString parentKey="Label" inherits="GlueFontNormalLogin" justifyH="CENTER" text="PASSWORD">
 									<Size x="256" y="64"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-19"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -160,7 +142,7 @@
 							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
 							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
 						</Scripts>
-						<FontString inherits="GlueEditBoxFont"/>
+						<FontString inherits="GlueLoginEditBoxFont"/>
 						<TextInsets>
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
@@ -179,11 +161,14 @@
 								end
 							</OnUpdate>
 						</Scripts>
+						<NormalFont style="GlueFontNormalLogin"/>
+						<HighlightFont style="GlueFontHighlightLogin"/>
+						<DisabledFont style="GlueFontDisableLogin"/>
 					</Button>
 					<CheckButton parentKey="SaveAccountNameCheckButton" mixin="SaveAccountNameCheckButton" inherits="ResizeCheckButtonTemplate" parentArray="ManualLoginRegions">
 						<KeyValues>
 							<KeyValue key="labelText" value="SAVE_ACCOUNT_NAME" type="global"/>
-							<KeyValue key="labelFont" value="GlueFontNormalLarge" type="string"/>
+							<KeyValue key="labelFont" value="GlueFontNormalLogin" type="string"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.LoginButton" relativePoint="TOP" x="0" y="2"/>
@@ -236,10 +221,13 @@
 							<OnClick function="AccountLogin_ManageAccount"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="MenuButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="MAINMENU">
+					<Button parentKey="MenuButton" mixin="AccountLoginMenuButtonMixin" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="MAINMENU">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.CreateAccountButton" relativePoint="TOP" x="0" y="10"/>
 						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
 					</Button>
 					<Frame name="ServerAlertFrame" hidden="true" inherits="CollapsibleServerAlertTemplate">
 						<Anchors>
@@ -510,10 +498,43 @@
 						</Scripts>
 					</Frame>
 					<DropdownButton parentKey="AccountsDropdown" inherits="WowStyle1DropdownTemplate">
+						<KeyValues>
+							<KeyValue key="narrationLabel" value="NARRATION_ACCOUNT_DROPDOWN_NAME" type="global"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
 						</Anchors>
 					</DropdownButton>
+					<Frame parentKey="BlackBars" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Left">
+									<Size x="1024" y="0"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+								<Texture parentKey="Right">
+									<Size x="1024" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+								<Texture parentKey="Top">
+									<Size x="0" y="768"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Left"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.Right"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

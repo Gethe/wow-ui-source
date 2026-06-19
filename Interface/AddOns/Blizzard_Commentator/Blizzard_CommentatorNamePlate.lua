@@ -29,7 +29,7 @@ function CommentatorNamePlateMixin:OnLoad()
 
 	-- Attaching elements to inherited frames and textures to preserve as much of the original
 	-- functionality as possible without redefining it in the XML.
-	self.castBar.border = CreateFrame("FRAME", nil, self.castBar, "NamePlateFullBorderTemplate");
+	self.CastBarsContainer.castBar.border = CreateFrame("FRAME", nil, self.CastBarsContainer.castBar, "NamePlateFullBorderTemplate");
 end
 
 function CommentatorNamePlateMixin:OnEvent(event, ...)
@@ -95,7 +95,7 @@ function CommentatorNamePlateMixin:UpdateAnchors()
 	PixelUtil.SetPoint(self.teamBorder, "TOPLEFT", self.HealthBarsContainer.healthBar.selectedBorder, "TOPLEFT", 0, 0);
 	PixelUtil.SetPoint(self.teamBorder, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar.selectedBorder, "BOTTOMRIGHT", 0, 0);
 
-	self.castBar.border:UpdateSizes();
+	self.CastBarsContainer.castBar.border:UpdateSizes();
 
 	self.ClassIcon:ClearAllPoints();
 	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.ClassificationFrame, "LEFT", 0, 0);
@@ -128,7 +128,7 @@ end
 function CommentatorNamePlateMixin:SetBorderColors()
 	local color = C_Commentator.GetTeamColorByUnit(self.unit);
 	self.teamBorder:SetVertexColor(color.r, color.g, color.b, color.a);
-	self.castBar.border:SetVertexColor(color.r, color.g, color.b, color.a);
+	self.CastBarsContainer.castBar.border:SetVertexColor(color.r, color.g, color.b, color.a);
 end
 
 function CommentatorNamePlateMixin:OnUpdateHealthBorderOverride()

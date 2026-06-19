@@ -28,8 +28,8 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 	UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 	UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1 };
+	UIPanelWindows["SocialUIFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 460 };
 	UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
-	UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 	UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	yoffset = -116, whileDead = 1, allowOtherPanels = 1};
 	UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 	UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead = 1,		yoffset = 4, };
@@ -62,5 +62,5 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 	UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 	UIPanelWindows["PerksProgramFrame"] =			{ area = "full",			pushable = 0,};
-	UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	allowOtherPanels = 1};
+	UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 910, 	allowOtherPanels = 1};
 end

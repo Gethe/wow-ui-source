@@ -68,7 +68,7 @@
 		Commentator:CheckScoreboard();
 	</Binding>
 	<Binding name="TOGGLE_FRAME_LOCK" category="BINDING_HEADER_COMMENTATOR">
-		Commentator:ToggleFrameLock();
+		Commentator:ToggleCommentatorMode();
 	</Binding>
 
 	<Binding name="COMMENTATORFOLLOW1" header="COMMENTATORFOLLOW" category="BINDING_HEADER_COMMENTATOR">

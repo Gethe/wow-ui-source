@@ -72,7 +72,8 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	end
 
 	-- solve this later
-	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", nil, "CENTER", 0, 20); -- Intentionally not anchored to the top-level parent.
 
 	self.categoryIDs = C_CatalogShop.GetAvailableCategoryIDs();
 
@@ -674,6 +675,13 @@ function CatalogShopMixin:OnProductSelected(data)
 		else
 			self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
 		end
+	end
+
+	if data.isBundle then
+		local bundleChildInfo = C_CatalogShop.GetProductIDsForBundle(data.catalogShopProductID);
+		self.IconTrainFrame:Init(bundleChildInfo);
+	else
+		self.IconTrainFrame:Hide();
 	end
 
 	local smallOverrideURL = data and data.previewSmallBGOverrideProductURL;

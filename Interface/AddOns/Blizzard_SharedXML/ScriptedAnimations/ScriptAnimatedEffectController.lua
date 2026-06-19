@@ -44,7 +44,6 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 		return;
 	end
 
-	self:UpdateActorDynamicOffsets()
 	local effect = self:GetEffect();
 	if effect then
 		self.effectStarted = true;
@@ -73,6 +72,9 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 			PlaySound(effect.startSoundKitID);
 		end
 	end
+
+	-- Actor doesn't exist until after InternalAddEffect is called, so we have to wait until now to set the dynamic offsets
+	self:UpdateActorDynamicOffsets();
 end
 
 function ScriptAnimatedEffectControllerMixin:DeltaUpdate(elapsedTime)

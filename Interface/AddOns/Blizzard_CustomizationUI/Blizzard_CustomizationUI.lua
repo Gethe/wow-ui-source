@@ -155,20 +155,20 @@ function CustomizationCategoryButtonMixin:OnClick()
 
 	if self.categoryData.subcategory then
 		hadCategoryChange = not customizationFrame:IsSelectedSubcategory(self.categoryData);
-		if hadCategoryChange then 
+		if hadCategoryChange then
 			customizationFrame:SetSelectedSubcategory(self.categoryData);
 		end
 	else
-		-- If selecting a new main Category, we need to clear the Subcategory and 
+		-- If selecting a new main Category, we need to clear the Subcategory and
 		-- force it to pick a new best valid one in SetCategory().
 		hadCategoryChange = not customizationFrame:IsSelectedCategory(self.categoryData);
-		if hadCategoryChange then 
+		if hadCategoryChange then
 			customizationFrame:SetSelectedCategory(self.categoryData);
 			customizationFrame:SetSelectedSubcategory(nil);
 		end
 	end
 
-	-- If we didn't change category with this click, then we won't run SetCustomizations(), 
+	-- If we didn't change category with this click, then we won't run SetCustomizations(),
 	-- which would have updated our button's state. So, update it here.
 	if not hadCategoryChange then
 		self:SetChecked(true);
@@ -178,6 +178,14 @@ end
 
 function CustomizationCategoryButtonMixin:GetDebugName()
 	return self.categoryData and self.categoryData.name or nil;
+end
+
+function CustomizationCategoryButtonMixin:NarrationGetName()
+	return self.categoryData and self.categoryData.name or nil;
+end
+
+function CustomizationCategoryButtonMixin:NarrationIgnoreCheckedState()
+	return true;
 end
 
 ----------------- Customization Frame -----------------
@@ -347,7 +355,7 @@ function CustomizationFrameBaseMixin:SetCustomizations(categories)
 	keepState = self:HasSelectedSubcategory();
 	if needsCategorySelected or self:NeedsSubcategorySelected() then
 		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState);
-	else 
+	else
 		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState);
 	end
 

@@ -4,6 +4,8 @@ function EventRegistry:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self:SetUndefinedEventsAllowed(true);
 
+	self.onUpdateCallbacksByOwner = {};
+
 	self.frameEventFrame = CreateFrame("Frame");
 	self.frameEventFrame:SetScript("OnEvent", function(frameEventFrame, event, ...)
 		self:TriggerEvent(event, ...);
@@ -56,6 +58,26 @@ end
 function EventRegistry:UnregisterFrameEventAndCallback(frameEvent, ...)
 	self:UnregisterFrameEvent(frameEvent);
 	self:UnregisterCallback(frameEvent, ...);
+end
+
+function EventRegistry:RegisterForOnUpdate(owner, callback)
+	self.onUpdateCallbacksByOwner[owner] = callback;
+
+	if not self.frameEventFrame:GetScript("OnUpdate") then
+		self.frameEventFrame:SetScript("OnUpdate", function(frameEventFrame, dt)
+			for onUpdateOwner, onUpdateCallback in pairs(self.onUpdateCallbacksByOwner) do
+				onUpdateCallback(onUpdateOwner, dt);
+			end
+		end);
+	end
+end
+
+function EventRegistry:UnregisterForOnUpdate(owner)
+	self.onUpdateCallbacksByOwner[owner] = nil;
+
+	if TableIsEmpty(self.onUpdateCallbacksByOwner) then
+		self.frameEventFrame:SetScript("OnUpdate", nil);
+	end
 end
 
 function EventRegistry:GetEventCounts(...)

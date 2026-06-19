@@ -1,8 +1,9 @@
 ## Title: Blizzard_PingUI
-## RequiredDep: Blizzard_SharedXML
+## RequiredDep: Blizzard_SharedXML, Blizzard_FrameXMLUtil
 ## UseSecureEnvironment: 1
 ## AllowLoadGameType: mainline
 
 Blizzard_PingManager.lua
 Blizzard_PingUI.lua
 Blizzard_PingUI.xml
+Blizzard_PingUtil.lua [LoadIntoEnvironment global]

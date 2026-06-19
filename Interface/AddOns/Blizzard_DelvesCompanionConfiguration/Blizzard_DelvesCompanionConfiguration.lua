@@ -129,8 +129,8 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
             self:Refresh();
         elseif event == "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED" then
             UnacknowledgeUnseenCurios();
-            self.CompanionCombatTrinketSlot:Refresh();
-            self.CompanionUtilityTrinketSlot:Refresh();
+            self.CompanionSlots.CompanionCombatTrinketSlot:Refresh();
+            self.CompanionSlots.CompanionUtilityTrinketSlot:Refresh();
         end
     else
         if event == "SHOW_DELVES_COMPANION_CONFIGURATION_UI" then
@@ -170,9 +170,14 @@ function DelvesCompanionConfigurationFrameMixin:Refresh()
     self.CompanionExperienceRingFrame:Refresh();
     self.CompanionLevelFrame:Refresh();
     self.CompanionInfoFrame:Refresh();
-    self.CompanionCombatRoleSlot:Refresh();
-    self.CompanionCombatTrinketSlot:Refresh();
-    self.CompanionUtilityTrinketSlot:Refresh();
+
+	local companionSlots = self.CompanionSlots;
+	local flavorNodeID = C_DelvesUI.GetFlavorNodeForCompanion(GetPlayerCompanionID());
+	companionSlots.CompanionFlavorSlot:SetShown(flavorNodeID ~= 0);
+	companionSlots.CompanionCombatRoleSlot:Refresh();
+	companionSlots.CompanionCombatTrinketSlot:Refresh();
+	companionSlots.CompanionUtilityTrinketSlot:Refresh();
+	companionSlots:Layout();
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnHide()
@@ -584,6 +589,8 @@ function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
         return DELVES_CONFIG_SLOT_UTILITY_CURIO;
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
         return DELVES_CONFIG_SLOT_COMBAT_CURIO;
+	elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Flavor then
+		return C_DelvesUI.GetFlavorNodeNameForCompanion(GetPlayerCompanionID());
     else
         return nil;
     end
@@ -596,6 +603,8 @@ function CompanionConfigSlotTemplateMixin:GetSelectionNodeID()
         return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Utility, GetPlayerCompanionID());
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
 		return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Combat, GetPlayerCompanionID());
+	elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Flavor then
+		return C_DelvesUI.GetFlavorNodeForCompanion(GetPlayerCompanionID());
     else
         return nil;
     end

@@ -109,8 +109,8 @@ function OverrideActionBarMixin:OnShow()
 
 	self:UpdateMicroButtons();
 
-	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
-	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
+	GetBottomManagedFrameContainer():UpdateManagedFramesAlphaState();
+	GetRightManagedFrameContainer():UpdateManagedFramesAlphaState();
 
 	EditModeManagerFrame:BlockEnteringEditMode(self);
 	EditModeManagerFrame:UpdateBottomActionBarPositions();
@@ -122,10 +122,10 @@ function OverrideActionBarMixin:OnShow()
 end
 
 function OverrideActionBarMixin:OnHide()
-	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
-	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
+	GetBottomManagedFrameContainer():UpdateManagedFramesAlphaState();
+	GetRightManagedFrameContainer():UpdateManagedFramesAlphaState();
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 
 	EditModeManagerFrame:UnblockEnteringEditMode(self);
 
@@ -293,7 +293,7 @@ end
 
 function OverrideActionBarMixin:UpdateXpBar(newLevel)
 	local level = newLevel or UnitLevel("player");
-	if ( IsLevelAtEffectiveMaxLevel(level) or IsXPUserDisabled() ) then
+	if ( level >= GameRulesUtil.GetEffectiveMaxLevelForPlayer() or IsXPUserDisabled() ) then
 		self.xpBar:Hide();
 	else
 		local currXP = UnitXP("player");

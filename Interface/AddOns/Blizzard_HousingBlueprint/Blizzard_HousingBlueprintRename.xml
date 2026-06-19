@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingBlueprintRenameFrame" mixin="HousingBlueprintRenameFrameMixin" inherits="ResizeLayoutFrame, HousingBlueprintBaseFrameTemplate" parent="UIParent" hidden="true">
+		<KeyValues>
+			<KeyValue key="headerText" value="HOUSING_BLUEPRINT_RENAME_HEADER" type="global"/>
+			<KeyValue key="isExclusive" value="true" type="boolean"/>
+			<KeyValue key="fixedWidth" value="320" type="number" />
+			<KeyValue key="minimumHeight" value="100" type="number"/>
+			<KeyValue key="widthPadding" value="15" type="number"/>
+			<KeyValue key="heightPadding" value="20" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Frames>
+			<EditBox parentKey="NameInputBox" autoFocus="false" inherits="InputBoxInstructionsTemplate">
+				<Size y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-20"/>
+					<Anchor point="LEFT" x="15"/>
+					<Anchor point="RIGHT" x="-15"/>
+				</Anchors>
+				<FontString inherits="ChatFontNormal"/>
+				<KeyValues>
+					<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+					<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+				</KeyValues>
+			</EditBox>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ErrorText" inherits="Game13FontShadow" collapsesLayout="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NameInputBox" relativePoint="BOTTOM" x="0" y="-10"/>
+						<Anchor point="LEFT" x="5" y="0"/>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SaveButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_RENAME_SAVE_BUTTON" motionScriptsWhileDisabled="true" collapsesLayout="true">
+				<Size x ="152" y="28"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ErrorText" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="LoadingOverlay" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="10"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+						<Size x="142" y="142"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow inherit="prepend" method="OnShow"/>
+			<OnHide inherit="prepend" method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

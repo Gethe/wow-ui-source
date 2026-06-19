@@ -8,21 +8,6 @@ local PingManager =
 	Functions =
 	{
 		{
-			Name = "GetContextualPingTypeForUnit",
-			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
-
-			Arguments =
-			{
-				{ Name = "targetUnit", Type = "WOWGUID", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "type", Type = "PingSubjectType", Nilable = false },
-			},
-		},
-		{
 			Name = "GetCooldownInfo",
 			Type = "Function",
 
@@ -72,8 +57,7 @@ local PingManager =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "PingSubjectType", Nilable = true },
-				{ Name = "targetToken", Type = "cstring", Nilable = true },
+				{ Name = "macroInfo", Type = "PingMacroInfo", Nilable = false },
 			},
 		},
 		{
@@ -105,6 +89,16 @@ local PingManager =
 
 	Tables =
 	{
+		{
+			Name = "PingTypeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "type", Type = "PingSubjectType", Nilable = false },
+				{ Name = "uiTextureKitID", Type = "textureKit", Nilable = false },
+			},
+		},
 	},
 	Predicates =
 	{

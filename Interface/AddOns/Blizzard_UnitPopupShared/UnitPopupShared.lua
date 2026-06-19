@@ -68,8 +68,16 @@ function UnitPopupManager:OpenMenu(which, contextData)
 		end
 
 		if entry:IsTitle() then
-			description:QueueDivider(true);
-			description:QueueTitle(entry:GetText());
+			if entry:ShouldQueueDivider() then
+				description:QueueDivider(true);
+			end
+			if contextData.menuTitlePreInitializer then
+				local titleDescription = MenuUtil.CreateTitle(entry:GetText());
+				titleDescription:AddInitializer(contextData.menuTitlePreInitializer, 1);
+				description:AddQueuedDescription(titleDescription);
+			else
+				description:QueueTitle(entry:GetText());
+			end
 		elseif entry:IsDivider() then
 			description:QueueDivider(true);
 		else
@@ -97,12 +105,20 @@ function UnitPopupManager:OpenMenu(which, contextData)
 	MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_UNIT_"..which, contextData);
 
-		-- Create a class colored title atop every menu.
 		local elementDescription = rootDescription:CreateTitle();
+		if contextData.menuTitlePreInitializer then
+			elementDescription:AddInitializer(contextData.menuTitlePreInitializer);
+		end
 		elementDescription:AddInitializer(function(frame, description, menu)
 			local title, class = GetNameAndClass(contextData.unit, contextData.name);
 			frame.fontString:SetText(title);
 
+			if contextData.titleColor then
+				frame.fontString:SetTextColor(contextData.titleColor:GetRGBA());
+				return;
+			end
+
+			-- Default to class color when a unit with a known class is available.
 			if class and not C_Glue.IsOnGlueScreen() then
 				local colorCode = select(4, GetClassColor(class));
 				local color = CreateColorFromHexString(colorCode);

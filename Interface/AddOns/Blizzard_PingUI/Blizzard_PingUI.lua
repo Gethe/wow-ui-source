@@ -1,6 +1,6 @@
 
 function GetScaledCursorPosition_Insecure()
-	local x, y = GetScaledCursorPositionForFrame(C_UI.GetUIParent());
+	local x, y = InputUtil.GetCursorPosition(C_UI.GetUIParent());
 	return x, y;
 end
 
@@ -10,9 +10,9 @@ local function GetWorldFrameCenter_Insecure()
 	return centerX, centerY;
 end
 
-local function GetUIParentScale_Insecure()
-	local uiParent = C_UI.GetUIParent();
-	return uiParent:GetEffectiveScale();
+local function GetTopLevelParentScale_Insecure()
+	local topLevelParent = C_UI.GetUIParent();
+	return topLevelParent:GetEffectiveScale();
 end
 
 
@@ -47,17 +47,18 @@ function PingFrameMixin:RadialWheelCreated(radialParent)
     self:SetPoint("CENTER", self.radialParent);
 end
 
-function PingFrameMixin:EvaluateResult(overrideTargetGUID)
+function PingFrameMixin:EvaluateResult(uiTargetInfo)
     local result = self:SelectionEnd();
 
     -- If cancel was selected result is nil.
     if result then
-        PingManager:SendPing(result.type, overrideTargetGUID, PingListenerFrame.startX, PingListenerFrame.startY);
+		PingManager:SendPing(result.type, uiTargetInfo, PingListenerFrame.startX, PingListenerFrame.startY);
     else
         -- Ping cancelled.
         PingManager:CancelPendingPing();
     end
 end
+
 
 PingListenerFrameMixin = {
     PingRadialKeyDownDuration = 0.15;
@@ -110,7 +111,7 @@ function PingListenerFrameMixin:OnDragStart()
     if PingFrame.radialParent then
         self:BeginPendingPing();
     else
-        -- Cannot show ping wheel correctly until radialParent is setup.
+		-- Cannot show radial wheel correctly until radialParent is setup.
 		C_PingSecure.DisplayError(PING_FAILED_GENERIC);
     end
 end
@@ -208,34 +209,43 @@ function PingListenerFrameMixin:GetPingMode()
 end
 
 function PingListenerFrameMixin:SetCursorPositions()
-    self.startX, self.startY = securecallfunction(GetScaledCursorPosition_Insecure); -- The position where the ping wheel should show.
-    self.checkX, self.checkY = GetCursorPosition(); -- The position on the screen we should check for targets from.
+	self.startX, self.startY = securecallfunction(GetScaledCursorPosition_Insecure); -- The position where the radial wheel should show.
+	self.checkX, self.checkY = GetCursorPosition(); -- The position on the screen we should check for targets from.
 end
 
 function PingListenerFrameMixin:BeginPendingPing()
-    -- Get the current target, as well as the valid wedges to show for that target.
-    local targetInfo = PingManager:DeterminePingTarget(self.checkX, self.checkY);
+	-- Get the current target, as well as the valid wedges to show for that target.
+	local targetInfo = PingManager:DeterminePingTarget(self.checkX, self.checkY);
 
-    if targetInfo.hasTarget then
-        self.pendingPingInfo = targetInfo;
+	if targetInfo.targetState == Enum.PingSetTargetState.Ok then
+		-- If a UI target is found, but it does not support the radial wheel, just send a contextual ping instead.
+		if targetInfo.hasUITarget and not targetInfo.allowRadialWheel then
+			self.pendingPingForceCancelled = true;
+			PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
+		elseif targetInfo.allowRadialWheel then
+			self.pendingPingInfo = targetInfo;
 
-        if self.pendingPingInfo.hasUITarget then
-            PingFrame.radialParent:SetPoint("CENTER", "WorldFrame", "BOTTOMLEFT", self.startX, self.startY);
-        end
+			if self.pendingPingInfo.hasUITarget then
+				PingFrame.radialParent:SetPoint("CENTER", "WorldFrame", "BOTTOMLEFT", self.startX, self.startY);
+			end
 
-        PingFrame:SelectionStart(self.pendingPingInfo.wedgeInfo, self.pendingPingInfo.hasUITarget, self.cooldownInfo);
-    else
-        -- Show error no valid target.
-        self.pendingPingForceCancelled = true;
-		C_PingSecure.DisplayError(PING_FAILED_GENERIC);
-    end
+			PingFrame:SelectionStart(self.pendingPingInfo.wedgeInfo, self.pendingPingInfo.hasUITarget, self.cooldownInfo);
+		end
+	else
+		self.pendingPingForceCancelled = true;
+
+		-- Show error no valid target.
+		if targetInfo.targetState == Enum.PingSetTargetState.Failed then
+			C_PingSecure.DisplayError(PING_FAILED_GENERIC);
+		end
+	end
 end
 
 function PingListenerFrameMixin:EndPendingPing()
-    if self.pendingPingInfo then
-        PingFrame:EvaluateResult(self.pendingPingInfo.overrideTargetGUID);
-        self:ClearPendingPingInfo();
-    end
+	if self.pendingPingInfo then
+		PingFrame:EvaluateResult(self.pendingPingInfo.uiTargetInfo);
+		self:ClearPendingPingInfo();
+	end
 end
 
 function PingListenerFrameMixin:CancelPendingPing()
@@ -249,6 +259,7 @@ function PingListenerFrameMixin:ClearPendingPingInfo()
     self.pendingPingInfo = nil;
     PingFrame:AnimateOutro();
 end
+
 
 PingPinFrameMixin = {};
 
@@ -265,34 +276,72 @@ local function GetPinFlipBookInfo(uiTextureKit)
 	return PIN_FLIP_BOOK_INFO[uiTextureKit];
 end
 
+-- Some visuals are different if colorblind mode is set. These assets may not always be present for all types though, so fall back to normal assets as needed.
+local function SetPingPinColorblindAtlas(texture, atlas)
+	local colorblindMode = CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
+	if colorblindMode then
+		local atlasColorblind = atlas.."_colorblind";
+		if C_Texture.GetAtlasInfo(atlasColorblind) then
+			texture:SetAtlas(atlasColorblind, TextureKitConstants.UseAtlasSize);
+		else
+			texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		end
+	else
+		texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	end
+end
+
 function PingPinFrameMixin:OnUpdate(elapsed)
     self:UpdateClampedArrow();
 end
 
-function PingPinFrameMixin:SetPinStyle(uiTextureKit, isWorldPoint)
-    self.isWorldPoint = isWorldPoint;
+function PingPinFrameMixin:Reset()
+	self.Icon:Hide();
+	self.ActionInfo:Hide();
+	CooldownFrame_Clear(self.ActionInfo.Cooldown);
+end
 
-    self.Icon:SetAtlas(("Ping_Marker_Icon_%s"):format(uiTextureKit), true);
-    self.IconFlipBook:SetAtlas(("Ping_Marker_Flipbook_%s"):format(uiTextureKit), false);
-    self.ClampedPin.Pointer:SetAtlas(("Ping_OVMarker_Pointer_%s"):format(uiTextureKit), true);
+function PingPinFrameMixin:SetPinStyle(uiTextureKit, isWorldPoint, actionInfo)
+	self.hasAction = actionInfo ~= nil;
+	if self.hasAction then
+		self.ActionInfo.Icon:SetTexture(actionInfo.textureFileDataID);
+		local iconOverlayAtlas = ("Ping_CD_Overlay-%s"):format(uiTextureKit);
+		SetPingPinColorblindAtlas(self.ActionInfo.IconOverlay, iconOverlayAtlas);
 
-    local flipBookInfo = GetPinFlipBookInfo(uiTextureKit);
-    if flipBookInfo then
-        self.hasFlipBook = true;
-        self.IconFlipBook:ClearAllPoints();
-        self.IconFlipBook:SetSize(flipBookInfo.sizeX, flipBookInfo.sizeY);
-        self.IconFlipBook:SetPoint("CENTER", self.Icon, "CENTER", flipBookInfo.anchorX, flipBookInfo.anchorY);
-    else
-        self.hasFlipBook = false;
-    end
+		if actionInfo.cooldownInfo and actionInfo.cooldownInfo.durationMs > 0 then
+			local percentage = (actionInfo.cooldownInfo.durationMs - actionInfo.cooldownInfo.remainingMs) / actionInfo.cooldownInfo.durationMs;
+			local durationSeconds = actionInfo.cooldownInfo.durationMs / 1000;
+			CooldownFrame_SetDisplayAsPercentage(self.ActionInfo.Cooldown, percentage, durationSeconds);
+		end
 
+		self.hasFlipBook = false;
+	else
+		self.Icon:SetAtlas(("Ping_Marker_Icon_%s"):format(uiTextureKit), true);
+
+		self.IconFlipBook:SetAtlas(("Ping_Marker_Flipbook_%s"):format(uiTextureKit), false);
+		local flipBookInfo = GetPinFlipBookInfo(uiTextureKit);
+		if flipBookInfo then
+			self.hasFlipBook = true;
+			self.IconFlipBook:ClearAllPoints();
+			self.IconFlipBook:SetSize(flipBookInfo.sizeX, flipBookInfo.sizeY);
+			self.IconFlipBook:SetPoint("CENTER", self.Icon, "CENTER", flipBookInfo.anchorX, flipBookInfo.anchorY);
+		else
+			self.hasFlipBook = false;
+		end
+	end
+
+	local clampedPointerAtlas = ("Ping_OVMarker_Pointer_%s"):format(uiTextureKit);
+	SetPingPinColorblindAtlas(self.ClampedPin.Pointer, clampedPointerAtlas);
+
+	self.isWorldPoint = isWorldPoint;
     if self.isWorldPoint then
         self.GroundPin.Background:SetAtlas(("Ping_GroundMarker_BG_%s"):format(uiTextureKit), true);
         self.GroundPin.BackgroundHighlight:SetAtlas(("Ping_GroundMarker_BG_%s"):format(uiTextureKit), true);
         self.GroundPin.BackgroundStem:SetAtlas(("Ping_GroundMarker_Pin_%s"):format(uiTextureKit), true);
         self.GroundPin.Stroke:SetAtlas(("Ping_GroundMarker_Stroke_%s"):format(uiTextureKit), true);
     else
-        self.UnitPin.Background:SetAtlas(("Ping_UnitMarker_BG_%s"):format(uiTextureKit), true);
+		local unitBackgroundAtlas = ("Ping_UnitMarker_BG_%s"):format(uiTextureKit);
+		SetPingPinColorblindAtlas(self.UnitPin.Background, unitBackgroundAtlas);
     end
 
     self:UpdatePinTargetStyle();
@@ -301,11 +350,21 @@ end
 
 function PingPinFrameMixin:UpdatePinTargetStyle()
     if self.isWorldPoint then
-        self.Icon:ClearAllPoints();
-        self.Icon:SetPoint("CENTER", self.GroundPin.Background, "CENTER");
+		if self.hasAction then
+			self.ActionInfo:ClearAllPoints();
+			self.ActionInfo:SetPoint("CENTER", self.GroundPin.Background, "CENTER");
+		else
+			self.Icon:ClearAllPoints();
+			self.Icon:SetPoint("CENTER", self.GroundPin.Background, "CENTER");
+		end
     else
-        self.Icon:ClearAllPoints();
-        self.Icon:SetPoint("CENTER", self.UnitPin.Background, "CENTER", 0, 3);
+		if self.hasAction then
+			self.ActionInfo:ClearAllPoints();
+			self.ActionInfo:SetPoint("CENTER", self.UnitPin.Background, "CENTER", 0, 3);
+		else
+			self.Icon:ClearAllPoints();
+			self.Icon:SetPoint("CENTER", self.UnitPin.Background, "CENTER", 0, 3);
+		end
     end
 
     self.GroundPin:SetShown(self.isWorldPoint);
@@ -313,32 +372,38 @@ function PingPinFrameMixin:UpdatePinTargetStyle()
 end
 
 function PingPinFrameMixin:UpdatePinClampedStyle(state)
-    self.isClamped = state;
+	self.isClamped = state;
 
-    self.ClampedPin:SetShown(self.isClamped);
-    if self.isClamped then
-        self.GroundPin:Hide();
-        self.UnitPin:Hide();
+	self.ClampedPin:SetShown(self.isClamped);
+	if self.isClamped then
+		self.GroundPin:Hide();
+		self.UnitPin:Hide();
 
-        self.Icon:ClearAllPoints();
-        self.Icon:SetPoint("CENTER", self.ClampedPin.Background, "CENTER");
-        self:SetScript("OnUpdate", self.OnUpdate);
+		if self.hasAction then
+			self.ActionInfo:ClearAllPoints();
+			self.ActionInfo:SetPoint("CENTER", self.ClampedPin.Background, "CENTER");
+		else
+			self.Icon:ClearAllPoints();
+			self.Icon:SetPoint("CENTER", self.ClampedPin.Background, "CENTER");
+		end
 
-        if self.isWorldPoint and self.IntroAnimGround:IsPlaying() then
-            self.IntroAnimGround:Stop();
-        elseif self.IntroAnimUnit:IsPlaying() then
-            self.IntroAnimUnit:Stop();
-        end
-    else
-        self:UpdatePinTargetStyle();
+		self:SetScript("OnUpdate", self.OnUpdate);
 
-        self:SetScript("OnUpdate", nil);
-    end
+		if self.isWorldPoint and self.IntroAnimGround:IsPlaying() then
+			self.IntroAnimGround:Stop();
+		elseif self.IntroAnimUnit:IsPlaying() then
+			self.IntroAnimUnit:Stop();
+		end
+	else
+		self:UpdatePinTargetStyle();
+
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 local function GetCenterScreenPoint()
     local centerX, centerY = securecallfunction(GetWorldFrameCenter_Insecure);
-    local scale = securecallfunction(GetUIParentScale_Insecure) or 1;
+    local scale = securecallfunction(GetTopLevelParentScale_Insecure) or 1;
     return centerX / scale, centerY / scale;
 end
 
@@ -354,6 +419,11 @@ end
 
 function PingPinFrameMixin:AnimateIntro()
     self:Show();
+
+	if self.hasAction then
+		self.ActionInfo:Show();
+	end
+
     if self.isWorldPoint then
         self.IntroAnimGround:Restart();
 
@@ -369,16 +439,62 @@ function PingPinFrameMixin:AnimateIntro()
     end
 end
 
+
 PingPinFlipBookAnimMixin = {};
 
 function PingPinFlipBookAnimMixin:OnPlay()
-    local parent = self:GetParent();
-    parent.Icon:Hide();
-    parent.IconFlipBook:Show();
+	local parent = self:GetParent();
+	parent.Icon:Hide();
+	parent.IconFlipBook:Show();
 end
 
 function PingPinFlipBookAnimMixin:OnFinished()
-    local parent = self:GetParent();
-    parent.Icon:Show();
-    parent.IconFlipBook:Hide();
+	local parent = self:GetParent();
+	parent.Icon:Show();
+	parent.IconFlipBook:Hide();
+end
+
+
+UnitPingIconFrameMixin = {};
+
+function UnitPingIconFrameMixin:OnLoad()
+	self:RegisterEvent("UNIT_PING_PIN_ADDED");
+	self:RegisterEvent("UNIT_PING_PIN_REMOVED");
+end
+
+function UnitPingIconFrameMixin:OnEvent(event, ...)
+	if event == "UNIT_PING_PIN_ADDED" then
+		if self.isRaidFrame and not GetCVarBool("showPingsOnRaidFrames") then
+			return;
+		end
+
+		local guid, uiTextureKit = ...;
+		if self:IsGUIDMatch(guid) then
+			self:ShowPing(uiTextureKit);
+		end
+	elseif event == "UNIT_PING_PIN_REMOVED" then
+		local guid = ...;
+		if self:IsGUIDMatch(guid) then
+			self:ClearPing();
+		end
+	end
+end
+
+function UnitPingIconFrameMixin:ShowPing(uiTextureKit)
+	self.IconFrame.BackgroundMarker:SetAtlas(("Ping_Frame_BG_%s"):format(uiTextureKit), TextureKitConstants.UseAtlasSize);
+	self.IconFrame.Icon:SetAtlas(("Ping_Frame_%s"):format(uiTextureKit), TextureKitConstants.UseAtlasSize);
+	self.IconFrame:Show();
+end
+
+function UnitPingIconFrameMixin:ClearPing()
+	self.IconFrame:Hide();
+end
+
+-- To be called by frames using associated template, as each may have bespoke setups.
+function UnitPingIconFrameMixin:SetGUIDMatch(isMatch)
+	self.isMatch = isMatch;
+end
+
+function UnitPingIconFrameMixin:IsGUIDMatch(guid)
+	return self.isMatch and self.isMatch(guid);
 end

@@ -20,6 +20,12 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.totalAbsorb"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="TotalAbsorbLeftShadow" atlas="!raidframe-absorb-edge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.totalAbsorb"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.totalAbsorb"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name" wordwrap="false"/>
@@ -31,10 +37,7 @@
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentMyHealAbsorb" parentKey="myHealAbsorb"/>
 				<Texture name="$parentMyHealAbsorbOverlay" parentKey="myHealAbsorbOverlay" alpha="0.2"/>
-				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
-				<Texture name="$parentMyHealAbsorbRightShadow" parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
+				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" atlas="!raidframe-absorb-edge" useAtlasSize="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
@@ -52,7 +55,7 @@
 				<BarTexture atlas="RaidFrame-Hp-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" horizTile="true" vertTile="true"/>
 			</StatusBar>
 			<StatusBar name="$parentTempMaxHealthLoss" parentKey="TempMaxHealthLoss" hidden="true" drawLayer="ARTWORK" useParentLevel="true" mixin="TempMaxHealthLossMixin">
-				<BarTexture atlas="Raid Frame"/>
+				<BarTexture atlas="_RaidFrame-Resource-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" horizTile="true" vertTile="true" />
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="1" y="-1"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
@@ -87,6 +90,14 @@
 						<Texture parentKey="Icon" ignoreParentAlpha="true" setAllPoints="true"/>
 					</Layer>
 				</Layers>
+			</Frame>
+			<Frame parentKey="pingIconFrame" inherits="UnitPingIconFrameTemplate">
+				<KeyValues>
+					<KeyValue key="isRaidFrame" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>

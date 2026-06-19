@@ -18,10 +18,10 @@ end
 
 local CategoryButtonInitializerMixin = CreateFromMixins(ScrollBoxFactoryInitializerMixin);
 
-local function CreateCategoryButtonInitializer(category, indent)
+local function CreateCategoryButtonInitializer(category, indent, categoryData)
 	local initializer = CreateFromMixins(CategoryButtonInitializerMixin);
 	initializer:Init("SettingsCategoryListButtonTemplate");
-	initializer.data = { category = category, indent = indent or 0 };
+	initializer.data = { category = category, indent = indent or 0, groupText = categoryData and categoryData.groupText };
 	return initializer;
 end
 
@@ -130,6 +130,39 @@ function SettingsCategoryListButtonMixin:RefreshNewFeature()
 		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
 	end
 	self.NewFeature:SetShown(showNewFeature);
+end
+
+function SettingsCategoryListButtonMixin:NarrationGetName()
+	return self.Label:GetText();
+end
+
+function SettingsCategoryListButtonMixin:NarrationGetContext()
+	local initializer = self:GetElementData();
+	if not initializer or not initializer.data then
+		return NARRATION_OBJECT_BUTTON;
+	end
+
+	local groupText = initializer.data.groupText;
+	return NarrationUtil.MakeNarrationString(NARRATION_OBJECT_BUTTON, groupText);
+end
+
+function SettingsCategoryListButtonMixin:NarrationGetIndexInfo()
+	local initializer = self:GetElementData();
+	if not initializer or not initializer.data then
+		return nil;
+	end
+
+	local categoryIndex = initializer.data.categoryIndex;
+	if not categoryIndex or categoryIndex == 0 then
+		return nil;
+	end
+
+	local categoryTotal = initializer.data.categoryTotal;
+	return NarrationUtil.MakeIndexInfo(categoryIndex, categoryTotal);
+end
+
+function SettingsCategoryListButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
 end
 
 SettingsCategoryListMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -355,21 +388,21 @@ local function SortCategoriesByName(lhs, rhs)
 	return strcmputf8i(lhs:GetName(), rhs:GetName()) < 0;
 end
 
-local function CreateSection(currentCategory, elementList, categories, canSort, indent)
+local function CreateSection(currentCategory, elementList, categories, canSort, indent, categoryData)
 	if canSort then
 		table.sort(categories, SortCategoriesByName);
 	end
 
 	for index, category in ipairs(categories) do
 		if not category.redirectCategory then
-			local initializer = CreateCategoryButtonInitializer(category, indent);
+			local initializer = CreateCategoryButtonInitializer(category, indent, categoryData);
 			table.insert(elementList, initializer);
 			if category == currentCategory then
 				g_selectionBehavior:SelectElementData(initializer);
 			end
 			if category:IsExpanded() then
 				canSort = category:ShouldSortAlphabetically();
-				CreateSection(currentCategory, elementList, category:GetSubcategories(), canSort, indent + 10);
+				CreateSection(currentCategory, elementList, category:GetSubcategories(), canSort, indent + 10, categoryData);
 			end
 		end
 	end
@@ -383,9 +416,10 @@ local function CreateGroup(currentCategory, elementList, categories, categorySet
 		end
 	end
 
+	local categoryData = { groupText = groupText };
 	local canSort = categorySet == Settings.CategorySet.AddOns;
 	local indent = 0;
-	CreateSection(currentCategory, elementList, categories, canSort, indent);
+	CreateSection(currentCategory, elementList, categories, canSort, indent, categoryData);
 end
 
 function SettingsCategoryListMixin:GenerateElementList()
@@ -415,6 +449,24 @@ end
 
 function SettingsCategoryListMixin:CreateCategories()
 	self.elementList = self:GenerateElementList();
+
+	local categoryTotal = 0;
+	for _, elementData in ipairs(self.elementList) do
+		if elementData.data and elementData.data.category then
+			categoryTotal = categoryTotal + 1;
+		end
+	end
+
+	local categoryIndex = 0;
+	for _, elementData in ipairs(self.elementList) do
+		local categoryData = elementData.data;
+		if categoryData and categoryData.category then
+			categoryIndex = categoryIndex + 1;
+			categoryData.categoryIndex = categoryIndex;
+			categoryData.categoryTotal = categoryTotal;
+		end
+	end
+
 	local dataProvider = CreateDataProvider(self.elementList);
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end

@@ -246,22 +246,21 @@
 
 	<Button name="CharacterBoostTemplate" inherits="CharacterVASTemplate" mixin="CharacterBoostMixin" virtual="true"/>
 
-	<Button name="CharacterSelectRotateButtonTemplate" inherits="CommonSquareIconButtonTemplate" registerForClicks="LeftButtonDown, LeftButtonUp" virtual="true">
+	<Button name="CharacterSelectRotateButtonTemplate" inherits="CommonSquareIconButtonTemplate" mixin="CharacterSelectRotateButtonMixin" registerForClicks="LeftButtonDown, LeftButtonUp" virtual="true">
 		<KeyValues>
 			<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER" type="global"/>
 			<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
 		<!--
 			iconAtlas: atlas for the icon and highlight on the button.
 			rotationOnUpdate: function for use in OnUpdate.
+			narrationName: text for narration.
 			<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
 			<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateLeft_OnUpdate" type="global"/>
+			<KeyValue key="narrationName" value="NARRATION_ROTATE_LEFT_BUTTON" type="global"/>
 		-->
 		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				IconButtonMixin.OnLoad(self);
-				self:SetScript("OnUpdate", self.rotationOnUpdate);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Button>
 
@@ -474,25 +473,19 @@
 									<Anchor point="TOPRIGHT"/>
 								</Anchors>
 							</Frame>
-							<Button name="CharSelectEnterWorldButton" inherits="GlueButtonBigTemplate" text="ENTER_WORLD">
+							<Button name="CharSelectEnterWorldButton" inherits="GlueButtonBigTemplate" mixin="CharSelectEnterWorldButtonMixin" text="ENTER_WORLD">
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="45"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										-- This should be disabled, but due to timing of events it may not be checked yet
-										if not CharacterSelect_AllowedToEnterWorld() then
-											CharacterSelect_UpdateButtonState();
-											return;
-										end
-										CharacterSelect_EnterWorld();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 							<Button name="CharacterSelectRotateLeft" inherits="CharacterSelectRotateButtonTemplate">
 								<KeyValues>
 									<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
 									<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateLeft_OnUpdate" type="global"/>
+									<KeyValue key="narrationName" value="NARRATION_ROTATE_LEFT_BUTTON" type="global"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOM" x="-21" y="4"/>
@@ -502,6 +495,7 @@
 								<KeyValues>
 									<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
 									<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateRight_OnUpdate" type="global"/>
+									<KeyValue key="narrationName" value="NARRATION_ROTATE_RIGHT_BUTTON" type="global"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharacterSelectRotateLeft" relativePoint="RIGHT" x="-11" y="0"/>
@@ -980,7 +974,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Button parentKey="VisibilityToggleButton" inherits="UIButtonTemplate">
+					<Button parentKey="VisibilityToggleButton" inherits="UIButtonTemplate" mixin="CharacterSelectVisibilityToggleButtonMixin">
 						<Size x="42" y="42"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="205" y="12"/>
@@ -1010,7 +1004,7 @@
 			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CharacterDeleteDialog" mixin="CharacterDeletionDialogMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame parentKey="Background">
@@ -1056,7 +1050,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<EditBox parentKey="EditBox" letters="32" historyLines="1">
+			<EditBox parentKey="EditBox" mixin="NarrationEditBoxMixin" letters="32" historyLines="1">
 				<Size x="130" y="32"/>
 				<Anchors>
 					<Anchor point="TOP"  relativeKey="$parent.Background.Text2" relativePoint="BOTTOM" x="0" y="-5"/>
@@ -1086,107 +1080,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
-		<Frames>
-			<Frame name="CharacterRenameBackground">
-				<Size x="512" y="256"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">
-							<Size x="400" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-16"/>
-							</Anchors>
-						</FontString>
-						<FontString name="CharacterRenameText2" inherits="GlueFontNormalSmall" text="CHAR_RENAME_INSTRUCTIONS">
-							<Size x="400" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterRenameText1" relativePoint="BOTTOM" x="0" y="-20"/>
-							</Anchors>
-						</FontString>
-						<Texture name="CharacterRenameAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size x="48" y="48"/>
-							<Anchors>
-								<Anchor point="LEFT" x="24" y="10"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button name="CharacterRenameButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterRenameBackground" relativePoint="BOTTOM" x="-6" y="16"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( RenameCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
-									CharacterRenameDialog:Hide();
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="CharacterRenameButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterRenameButton1" relativePoint="RIGHT" x="13" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterRenameDialog:Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-			<EditBox name="CharacterRenameEditBox" letters="12" historyLines="1">
-				<Size x="130" y="32"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterRenameText2" relativePoint="BOTTOM" x="0" y="-5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size x="75" y="32"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-10" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size x="75" y="32"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="10" y="0"/>
-							</Anchors>
-							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnterPressed>
-						if ( RenameCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
-							CharacterRenameDialog:Hide();
-						end
-					</OnEnterPressed>
-					<OnEscapePressed>
-						CharacterRenameDialog:Hide();
-					</OnEscapePressed>
-				</Scripts>
-				<FontString inherits="GlueFontHighlight"/>
-			</EditBox>
-		</Frames>
-		<Scripts>
-			<OnShow>
-				self:Raise();
-			</OnShow>
-			<OnHide>
-				CharacterRenameEditBox:SetText("");
-			</OnHide>
 		</Scripts>
 	</Frame>
 

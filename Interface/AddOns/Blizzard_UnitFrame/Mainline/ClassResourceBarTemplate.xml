@@ -3,7 +3,7 @@
   <Script file="ClassResourceBarTemplate.lua"/>
    		
 	<!-- Default template with a horizontal layout group for pooled point instances -->
-	<Frame name="ClassResourceBarTemplate" inherits="ClassPowerBarFrame, HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
+	<Frame name="ClassResourceBarTemplate" inherits="ClassPowerBarFrame, HorizontalLayoutFrame, PlayerBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxUsablePoints" value="5" type="number"/>
 			<KeyValue key="powerType" value="Enum.PowerType.None" type="global"/>
@@ -14,7 +14,7 @@
 	</Frame>
 	
   	<!-- Template without a layout group for resources that require a special self-managed point layout -->
-	  <Frame name="ClassResourceBarSelfManagedPointsTemplate" inherits="ClassPowerBarFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
+	  <Frame name="ClassResourceBarSelfManagedPointsTemplate" inherits="ClassPowerBarFrame, PlayerBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxUsablePoints" value="5" type="number"/>
 			<KeyValue key="powerType" value="Enum.PowerType.None" type="global"/>

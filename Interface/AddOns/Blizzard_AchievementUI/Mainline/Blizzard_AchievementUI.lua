@@ -1068,11 +1068,6 @@ function AchievementTemplateMixin:ProcessClick(buttonName, down)
 				if handled then
 					AchievementFrame_OnAchievementLinkedInChat(elementData.id);
 				end
-
-				if not handled and SocialPostFrame and Social_IsShown() then
-					Social_InsertLink(achievementLink);
-					handled = true;
-				end
 			end
 		end
 		if not handled and IsModifiedClick("QUESTWATCHTOGGLE") then
@@ -2497,9 +2492,6 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 		if ( achievementLink ) then
 			if ( ChatFrameUtil.InsertLink(achievementLink) ) then
 				AchievementFrame_OnAchievementLinkedInChat(self.id);
-				return;
-			elseif ( SocialPostFrame and Social_IsShown() ) then
-				Social_InsertLink(achievementLink);
 				return;
 			end
 		end

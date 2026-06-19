@@ -1,7 +1,7 @@
 ## Title: Blizzard Housing Inspect Mode UI
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HouseEditor
+## Dependencies: Blizzard_HouseEditor, Blizzard_GameMenuEsc
 ## AllowLoadGameType: standard
 
 Blizzard_HousingInspectModeUI.lua

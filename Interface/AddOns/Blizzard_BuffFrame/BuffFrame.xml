@@ -3,7 +3,7 @@
 
 	<Frame name="BaseAuraFrameTemplate" inherits="AuraFrameEditModeTemplate" mixin="BaseAuraFrameMixin" parent="UIParent" frameStrata="LOW" virtual="true"/>
 
-	<Frame name="BuffFrame" inherits="BaseAuraFrameTemplate" mixin="BuffFrameMixin">
+	<Frame name="BuffFrame" inherits="BaseAuraFrameTemplate" mixin="BuffFrameMixin" roleset="buffs">
 		<KeyValues>
 			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
 			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
@@ -84,7 +84,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="DebuffFrame" inherits="BaseAuraFrameTemplate" mixin="DebuffFrameMixin">
+	<Frame name="DebuffFrame" inherits="BaseAuraFrameTemplate" mixin="DebuffFrameMixin" roleset="buffs">
 		<KeyValues>
 			<KeyValue key="maxPrivateAuras" value="6" type="number"/>
 		</KeyValues>
@@ -137,7 +137,7 @@
 	</Frame>
 
 	<Frame name="DeadlyDebuffFrame" parent="UIParent" mixin="DeadlyDebuffFrameMixin" hidden="true" frameStrata="DIALOG" toplevel="true">
-		<Size x="400" y="300"/>
+		<Size x="800" y="80"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
 		</Anchors>
@@ -162,7 +162,6 @@
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 

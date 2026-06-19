@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<GameTooltip name="GlueTooltipTemplate" inherits="SharedTooltipTemplate" virtual="true">
+	<GameTooltip name="GlueTooltipTemplate" inherits="SharedTooltipTemplate, NarratableTooltipTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GlueFontNormal" type="string"/>
 			<KeyValue key="textRight1Font" value="GlueFontNormal" type="string"/>

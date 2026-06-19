@@ -1,5 +1,6 @@
 ## Title: Blizzard Photo Sharing
 ## Author: Blizzard Entertainment
+## Dependencies: Blizzard_GameMenuEsc
 ## AllowLoadGameType: standard
 
 Blizzard_PhotoSharing.lua

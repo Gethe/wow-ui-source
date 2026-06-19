@@ -182,6 +182,14 @@ function BuilderSpender:StopFeedbackAnim()
 	end
 end
 
+function BuilderSpender:SetMaxValue(maxValue)
+	self.maxValue = maxValue;
+end
+
+function BuilderSpender:GetMaxValue()
+	return self.maxValue;
+end
+
 --
 -- Full Resource Pulse
 --
@@ -201,6 +209,10 @@ end
 
 function FullResourcePulse:SetMaxValue(maxValue)
 	self.maxValue = maxValue;
+end
+
+function FullResourcePulse:GetMaxValue()
+	return self.maxValue;
 end
 
 function FullResourcePulse_OnEvent(self, event)

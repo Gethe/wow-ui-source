@@ -9,6 +9,17 @@ local characterLayoutHeaderText = GetClassColoredTextForUnit("player", HUD_EDIT_
 
 EditModeManagerFrameMixin = {};
 
+function EditModeManagerFrame_EscapePressed()
+	if EditModeManagerFrame and EditModeManagerFrame:IsShown() then
+		EditModeManagerFrame.onCloseCallback();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, EditModeManagerFrame_EscapePressed);
+
 function EditModeManagerFrameMixin:OnLoad()
 	self.registeredSystemFrames = {};
 	self.modernSystemMap = EditModePresetLayoutManager:GetModernSystemMap();
@@ -188,7 +199,7 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		self:UpdateRightActionBarPositions();
-		EditModeMagnetismManager:UpdateUIParentPoints();
+		EditModeMagnetismManager:UpdateTopLevelParentPoints();
 	end
 end
 
@@ -299,11 +310,11 @@ function EditModeManagerFrameMixin:UpdateSystemAnchorInfo(systemFrame)
 
 		local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
 
-		-- If we don't have a relativeTo then we are gonna set our relativeTo to be UIParent
+		-- If we don't have a relativeTo then we are gonna set our relativeTo to be the top-level parent
 		if not relativeTo then
 			relativeTo = UIParent;
 
-			-- When setting our relativeTo to UIParent it's possible for our y position to change slightly depending on UIParent's size from stuff like debug menus
+			-- When setting our relativeTo to the top-level parent it's possible for our y position to change slightly depending on the top-level parent's size from stuff like debug menus
 			-- To account for this set out position and then track the change in our top and adjust for that
 			local originalSystemFrameTop = systemFrame:GetTop();
 			systemFrame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
@@ -355,7 +366,7 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 		self:UpdateActionBarLayout(systemFrame);
 
 		if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
-			UIParent_ManageFramePositions();
+			ManageFramePositions();
 		end
 
 		EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
@@ -613,7 +624,7 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 		end
 	end
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
@@ -660,12 +671,11 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 		end
 	end
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function EditModeManagerFrameMixin:UpdateTopFramePositions()
-	-- Currently only needed for GMTicketFrame, but this can be used for managing any future top frames
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 end
 
 function EditModeManagerFrameMixin:SelectSystem(selectFrame)
@@ -885,6 +895,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetPersonalResourceDisplayShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPersonalResourceDisplay));
 	self.AccountSettings:SetEncounterEventsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterEvents));
 	self.AccountSettings:SetDamageMeterShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDamageMeter));
+	self.AccountSettings:SetRaidWarningShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidWarning));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1368,6 +1379,11 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 end
 
 local function initSystemAnchor(index, systemFrame)
+	-- Managed frames don't need to be reset.
+	if (systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame) and systemFrame:IsInDefaultPosition() then
+		return;
+	end
+
 	systemFrame:ClearAllPoints();
 	systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
 end
@@ -1559,7 +1575,7 @@ end
 function EditModeManagerFrameMixin:RevertAllChanges()
 	self:ClearSelectedSystem();
 	self:UpdateLayoutInfo(C_EditMode.GetLayouts());
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutInfo)
@@ -1785,6 +1801,7 @@ local checkBoxSetupData =
 	ArenaFrames = { callbackName = "SetArenaFramesShown", mouseoverName = "SetArenaFramesMouseOver", },
 	LootFrame = { callbackName = "SetLootFrameShown", mouseoverName = "SetLootFrameMouseOver", },
 	HudTooltip = { callbackName = "SetHudTooltipShown", mouseoverName = "SetHudTooltipMouseOver", },
+	RaidWarning = { callbackName = "SetRaidWarningShown", mouseoverName = "SetRaidWarningMouseOver", },
 	StatusTrackingBar2 = { callbackName = "SetStatusTrackingBar2Shown", mouseoverName = "SetStatusTrackingBar2MouseOver", },
 	DurabilityFrame = { callbackName = "SetDurabilityFrameShown", mouseoverName = "SetDurabilityFrameMouseOver", },
 	PetFrame = { callbackName = "SetPetFrameShown", mouseoverName = "SetPetFrameMouseOver", },
@@ -2221,7 +2238,7 @@ function EditModeAccountSettingsMixin:RefreshEncounterBar()
 	end
 
 	EncounterBar:Layout();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function EditModeAccountSettingsMixin:SetExtraAbilitiesShown(shown, isUserInput)
@@ -2309,7 +2326,7 @@ function EditModeAccountSettingsMixin:RefreshTalkingHeadFrame()
 	end
 
 	TalkingHeadFrame:UpdateShownState();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function EditModeAccountSettingsMixin:SetVehicleLeaveButtonShown(shown, isUserInput)
@@ -2417,6 +2434,33 @@ end
 
 function EditModeAccountSettingsMixin:ResetHudTooltip()
 	GameTooltipDefaultContainer:Hide();
+end
+
+function EditModeAccountSettingsMixin:SetRaidWarningShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowRaidWarning, shown);
+		self:RefreshRaidWarning();
+	else
+		self.settingsCheckButtons.RaidWarning:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshRaidWarning()
+	local showRaidWarning = self.settingsCheckButtons.RaidWarning:IsControlChecked();
+	RaidWarningFrame:SetIsInEditMode(showRaidWarning);
+	if showRaidWarning then
+		RaidWarningFrame:HighlightSystem();
+	else
+		RaidWarningFrame:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:ResetRaidWarning()
+	RaidWarningFrame:SetIsInEditMode(false);
+end
+
+function EditModeAccountSettingsMixin:SetRaidWarningMouseOver(...)
+	RaidWarningFrame:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:SetStatusTrackingBar2Shown(shown, isUserInput)

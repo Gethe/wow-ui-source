@@ -28,7 +28,7 @@ ArenaEnemyFramesContainerMixin = {};
 function ArenaEnemyFramesContainerMixin:Update()
 	self:UpdateShownState();
 	self:Layout();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function ArenaEnemyFramesContainerMixin:UpdateShownState()

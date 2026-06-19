@@ -11,6 +11,12 @@ GARRISON_LONG_MISSION_TIME_FORMAT = "|cffff7d1a%s|r";
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
 
+local function GarrisonMissionFrame_EscapePressed()
+	return GarrisonMissionFrame:EscapePressed();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, GarrisonMissionFrame_EscapePressed);
+
 ---------------------------------------------------------------------------------
 --- Garrison Follower Mission  Mixin Functions                                ---
 ---------------------------------------------------------------------------------
@@ -426,7 +432,20 @@ function GarrisonFollowerMission:UpdateMissionParty(followers)
 end
 
 function GarrisonFollowerMission:ClearMouse()
-	GarrisonMissionFrame_ClearMouse();
+	return GarrisonMissionFrame_ClearMouse();
+end
+
+function GarrisonFollowerMission:EscapePressed()
+	if self:ClearMouse() then
+		return true;
+	end
+
+	if self:GetMissionPage() and self:GetMissionPage():IsVisible() then
+		self:GetMissionPage().CloseButton:Click();
+		return true;
+	end
+
+	return false;
 end
 
 function GarrisonFollowerMission:OnDragStartFollowerButton(placer, frame, yOffset)

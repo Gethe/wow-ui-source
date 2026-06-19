@@ -242,7 +242,7 @@
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
-							SetTooltipMoney(GameTooltip, repairAllCost);
+							GameTooltip_AddMoneyLine(GameTooltip, repairAllCost);
 							local personalMoney = GetMoney();
 							if(repairAllCost > personalMoney) then
 								GameTooltip:AddLine(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS, RED_FONT_COLOR:GetRGB());
@@ -259,13 +259,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllButton.Icon, true);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
+							MerchantRepairAllButton.Icon:SetDesaturated(true);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(true);
 							MerchantGuildBankRepairButton:Disable();
 							self:Disable();
 						else
-							SetDesaturation(MerchantRepairAllButton.Icon, false);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
+							MerchantRepairAllButton.Icon:SetDesaturated(false);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(false);
 							self:Enable();
 							MerchantGuildBankRepairButton:Enable();
 						end
@@ -340,7 +340,7 @@
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 						GameTooltip:SetText(REPAIR_ALL_ITEMS);
-						SetTooltipMoney(GameTooltip, repairAllCost);
+						GameTooltip_AddMoneyLine(GameTooltip, repairAllCost);
 						local amount = GetGuildBankWithdrawMoney();
 						local guildBankMoney = GetGuildBankMoney();
 						if ( amount == -1 ) then
@@ -350,7 +350,7 @@
 							amount = min(amount, guildBankMoney);
 						end
 						GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, true);
-						SetTooltipMoney(GameTooltip, amount, "GUILD_REPAIR");
+						GameTooltip_AddHighlightLine(GameTooltip, MoneyFormatterUtil.FormatMoney(amount, MoneyFormatterPresets.ShowLowerWithZero))
 
 						if ( ( repairAllCost > amount ) ) then
 							-- The repair cost is greater than the guild funds available, so personal funds will be required.
@@ -359,7 +359,7 @@
 							if ( personalMoney >= personalAmount ) then
 								-- The player has enough money to make up the difference.
 								GameTooltip:AddLine(GUILDBANK_REPAIR_PERSONAL, nil, nil, nil, true);
-								SetTooltipMoney(GameTooltip, personalAmount);
+								GameTooltip_AddMoneyLine(GameTooltip, personalAmount);
 							else
 								-- The player doesn't have enough to repair all.
 								GameTooltip:AddLine(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS, RED_FONT_COLOR:GetRGB());
@@ -381,13 +381,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllButton.Icon, true);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
+							MerchantRepairAllButton.Icon:SetDesaturated(true);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(true);
 							MerchantGuildBankRepairButton:Disable();
 							MerchantRepairAllButton:Disable();
 						else
-							SetDesaturation(MerchantRepairAllButton.Icon, false);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
+							MerchantRepairAllButton.Icon:SetDesaturated(false);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(false);
 							self:Enable();
 							MerchantRepairAllButton:Enable();
 						end
@@ -454,12 +454,12 @@
 										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
-									SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
+									self.UndoFrame.Arrow:SetDesaturated(GetNumBuybackItems() == 0);
 									UpdateCursorAfterBuyBack(self);
 								end
 							</OnEvent>
 							<OnShow>
-								SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
+								self.UndoFrame.Arrow:SetDesaturated(GetNumBuybackItems() == 0);
 							</OnShow>
 							<OnClick>
 								BuybackItem(GetNumBuybackItems());

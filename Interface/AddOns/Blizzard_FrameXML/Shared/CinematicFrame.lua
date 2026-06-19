@@ -87,7 +87,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 		self.forcedAspectRatio = forcedAspectRatio;	
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
-		RaidNotice_Clear(self.raidBossEmoteFrame);
+		self.BossEmoteFrame:ClearMessages(RaidWarningUtil.MessageType.BossEmote);
 		CinematicFrame_UpdateLettboxForAspectRatio(self);
 
 		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
@@ -95,7 +95,9 @@ function CinematicFrame_OnEvent(self, event, ...)
 		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CINEMATIC_STOP" ) then
 		HideUIPanel(self);
-		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
+
+		-- Clear the normal boss emote messages. If there are any messages left over from the cinematic, we don't want to show them.
+		RaidWarningUtil.ClearBossEmotes();
 
 		LowHealthFrame:EvaluateVisibleState();
 

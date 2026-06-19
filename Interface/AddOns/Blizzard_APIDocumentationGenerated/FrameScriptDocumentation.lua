@@ -100,15 +100,17 @@ local FrameScript =
 			SecureHooksAllowed = false,
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Creates a secure delegate closure for a Lua function. The delegate invokes the original function in a protected call context with secure execution taint, and supports passing and returning values directly." },
 
 			Arguments =
 			{
-				{ Name = "luaFunction", Type = "LuaValueReference", Nilable = false },
+				{ Name = "luaFunction", Type = "LuaValueReference", Nilable = false, Documentation = { "The Lua function to invoke through the secure delegate." } },
+				{ Name = "options", Type = "SecureDelegateOptions", Nilable = true, Documentation = { "Optional settings controlling secure delegate behavior. If omitted, default options are used." } },
 			},
 
 			Returns =
 			{
-				{ Name = "secureDelegateFunction", Type = "LuaValueReference", Nilable = false },
+				{ Name = "secureDelegateFunction", Type = "LuaValueReference", Nilable = false, Documentation = { "A secure delegate function that calls through to the original Lua function." } },
 			},
 		},
 		{
@@ -194,6 +196,23 @@ local FrameScript =
 				{ Name = "numExecutedHandlers", Type = "number", Nilable = false },
 				{ Name = "slowestHandlerName", Type = "cstring", Nilable = false },
 				{ Name = "slowestHandlerTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetForbiddenObjectTable",
+			Type = "Function",
+			Environment = "SecureOnly",
+			SecureHooksAllowed = false,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "object", Type = "FrameScriptObject", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "forbiddenTable", Type = "FrameScriptObject", Nilable = false },
 			},
 		},
 		{
@@ -416,6 +435,24 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "securecopy",
+			Type = "Function",
+			SecureHooksAllowed = false,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Securely copies a Lua value. Tables are deep-copied with recursive and shared references preserved; script objects are preserved by reference. Copied values receive the current execution taint." },
+
+			Arguments =
+			{
+				{ Name = "value", Type = "LuaValueReference", Nilable = false, Documentation = { "The Lua value to copy." } },
+				{ Name = "options", Type = "SecureCopyOptions", Nilable = true, Documentation = { "Optional settings controlling value copying behavior. If omitted, default secure copy options are used." } },
+			},
+
+			Returns =
+			{
+				{ Name = "copy", Type = "LuaValueReference", Nilable = false, Documentation = { "The copied value. For tables, recursive and shared references within the copied graph are preserved." } },
+			},
+		},
+		{
 			Name = "SetErrorCallstackHeight",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -497,6 +534,23 @@ local FrameScript =
 				{ Name = "DisallowTaintedAccess", Type = "TableSecurityOption", EnumValue = 0 },
 				{ Name = "DisallowSecretKeys", Type = "TableSecurityOption", EnumValue = 1 },
 				{ Name = "SecretWrapContents", Type = "TableSecurityOption", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "SecureCopyOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maxTraversalDepth", Type = "number", Nilable = false, Default = 100, Documentation = { "Maximum table nesting depth allowed during recursive copying." } },
+				{ Name = "wrapUntrustedFunctions", Type = "bool", Nilable = false, Default = true, Documentation = { "Wrap function values in secure closures that call through using the original function taint." } },
+			},
+		},
+		{
+			Name = "SecureDelegateOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "wrapUntrustedFunctions", Type = "bool", Nilable = false, Default = true, Documentation = { "Wrap function arguments in secure closures that call through using the original function taint." } },
 			},
 		},
 		{

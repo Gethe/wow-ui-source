@@ -93,4 +93,17 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+
+	<Button name="HousingBlueprintActionButtonTemplate" inherits="HousingControlActionButtonTemplate" mixin="HousingBlueprintActionButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconDefault" type="string" value="decor-controls-save-default"/>
+			<KeyValue key="iconActive" type="string" value="decor-controls-save-active"/>
+			<KeyValue key="iconPressed" type="string" value="decor-controls-save-pressed"/>
+			<KeyValue key="enabledTooltip" value="HOUSING_CONTROLS_BLUEPRINT_TOOLTIP" type="global"/>
+			<KeyValue key="clickSoundKit" value="SOUNDKIT.HOUSING_MINOR_TOP_ACTION_BAR_INTERACT" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

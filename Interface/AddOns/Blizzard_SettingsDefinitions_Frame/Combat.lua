@@ -44,7 +44,7 @@ local function Register()
 	end
 
 	-- Mouseover Cast control
-	if C_CVar.GetCVar("enableMouseoverCast") then
+	if IsMouseoverCastSupported() and C_CVar.GetCVar("enableMouseoverCast") then
 		local cbSetting = Settings.RegisterCVarSetting(category, "enableMouseoverCast", Settings.VarType.Boolean, ENABLE_MOUSEOVER_CAST);
 
 		local tooltips = {

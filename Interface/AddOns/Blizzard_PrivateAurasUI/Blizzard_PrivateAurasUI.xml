@@ -10,6 +10,7 @@
 				<OnLeave method="OnLeave"/>
 				<OnLoad method="OnLoad"/>
 				<OnUpdate method="OnUpdate"/>
+				<OnHide method="OnHide"/>
 			</Scripts>
 			<Frames>
 				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" reverse="true" inherits="CooldownFrameTemplate" useParentLevel="true" hidden="true">
@@ -46,22 +47,20 @@
 			</Layers>
 		</Frame>
 
-		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidBossEmoteFrameTemplate" frameStrata="HIGH"/>
-
-		<GameTooltip name="PrivateAurasTooltip" mixin="GameTooltipDataMixin" inherits="SharedTooltipArtTemplate" parent="UIParent">
+		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidWarningFrameTemplate" mixin="PrivateRaidBossEmoteFrameMixin" frameStrata="HIGH">
 			<KeyValues>
-				<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
+				<KeyValue key="maxMessageSlots" value="2" type="number"/>
+				<KeyValue key="maxTotalLines" value="4" type="number"/>
+				<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.BossEmote" type="global"/>
 			</KeyValues>
+		</Frame>
+
+		<Frame name="PrivateVisualAlertsManager" inherits="VisualAlertsManagerTemplate"/>
+
+		<Frame name="PrivateGroupBuffsManager" mixin="GroupBuffMixin">
 			<Scripts>
-				<OnLoad>
-					GameTooltip_OnLoad(self);
-					SharedTooltip_OnLoad(self);
-				</OnLoad>
-				<OnShow function="GameTooltip_OnShow"/>
-				<OnHide function="SharedTooltip_OnHide"/>
-				<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
-				<OnEvent method="OnEvent"/>
+				<OnLoad method="OnLoad"/>
 			</Scripts>
-		</GameTooltip>
+		</Frame>
 	</ScopedModifier>
 </Ui>

@@ -233,12 +233,14 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 			containerFrame:Hide();
 			return
 		end
+
 		containerFrame.Text:SetText(name);
+		containerFrame:SetNarrationDescription(tooltip);
 
 		local control = containerFrame.Control;
 		control:SetWidth(220);
 
-		local inserter = Settings.CreateDropdownOptionInserter(setting, options);
+		local inserter = Settings.CreateDropdownOptionInserter(setting, options, {});
 		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
 		Settings.InitDropdown(control.Dropdown, setting, inserter, initTooltip);
 
@@ -266,6 +268,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		end
 
 		containerFrame.Text:SetText(name);
+		containerFrame:SetNarrationDescription(tooltip);
 
 		local function OnSliderValueChanged(o, value)
 			setting:SetValue(value);
@@ -374,6 +377,41 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	InitControlSlider(	self.GroundClutter, settingGroundClutter,	GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
 
 	GraphicsOverrides.AdjustAdvancedQualityControls(self, settings, raid, InitControlDropdown, AddValidatedSettingOption, AddRecommended);
+
+	local visibleControls = {};
+	if self.GraphicsQuality:IsShown() then
+		table.insert(visibleControls, self.GraphicsQuality);
+	end
+
+	for _, control in ipairs(self.Controls) do
+		if control ~= self.GraphicsQuality and control:IsShown() then
+			table.insert(visibleControls, control);
+		end
+	end
+
+	local total = 0;
+	for _, control in ipairs(visibleControls) do
+		total = total + control:GetNarrationControlCount();
+	end
+
+	local groupName = raid and SETTINGS_RAID_GRAPHICS_QUALITY or BASE_GRAPHICS_QUALITY;
+	local currentIndex = 1;
+	for _, control in ipairs(visibleControls) do
+		local controlCount = control:GetNarrationControlCount();
+		control:SetNarrationIndexInfo(groupName, currentIndex, total);
+		currentIndex = currentIndex + controlCount;
+	end
+end
+
+SettingsTabNarrationMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
+
+function SettingsTabNarrationMixin:NarrationGetName()
+	return self.Text:GetText();
+end
+
+function SettingsTabNarrationMixin:NarrationGetContext()
+	local indexString = NarrationUtil.MakeNarrationStringFromIndexInfo(NarrationUtil.MakeIndexInfo(self.tabIndex, self.numTabs));
+	return NarrationUtil.MakeNarrationString(NARRATION_OBJECT_TAB, indexString);
 end
 
 SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
@@ -424,7 +462,24 @@ function SettingsAdvancedQualitySectionMixin:EvaluateVisibility(tab)
 	self.RaidQualityControls:SetShown(tab == self.RaidTab);
 end
 
-SettingsAdvancedSliderMixin = CreateFromMixins(DefaultTooltipMixin);
+function SettingsAdvancedQualitySectionMixin:NarrationGetIndexInfo()
+	-- ScrollBox assigns a NarrationGetIndexInfo closure in AssignAccessors if there isn't
+	-- a custom override already. Settings controls use custom index logic embedded in context
+	-- to get the ordering the way we want so no index info should be returned here.
+	return nil;
+end
+
+SettingsAdvancedControlNarrationMixin = CreateFromMixins(NarrationStaticDescriptionMixin);
+
+function SettingsAdvancedControlNarrationMixin:GetNarrationControlCount()
+	return 1;
+end
+
+function SettingsAdvancedControlNarrationMixin:SetNarrationIndexInfo(groupName, startIndex, total)
+	self.settingsNarrationIndexString = groupName .. " " .. NARRATION_INDEX_INFO_FORMAT:format(startIndex, total);
+end
+
+SettingsAdvancedSliderMixin = CreateFromMixins(DefaultTooltipMixin, SettingsAdvancedControlNarrationMixin);
 
 function SettingsAdvancedSliderMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
@@ -432,9 +487,21 @@ function SettingsAdvancedSliderMixin:OnLoad()
 	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);
 
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
+
+	self.SliderWithSteppers.Slider.NarrationGetContext = function()
+		local slider = self.SliderWithSteppers.Slider;
+		local sliderContext = NarrationSliderMixin.NarrationGetContext(slider);
+		local valueText = NarrationSliderMixin.NarrationGetDescription(slider);
+		return NarrationUtil.MakeNarrationString(sliderContext, valueText, self.settingsNarrationIndexString);
+	end;
+
+	self.SliderWithSteppers.Slider.NarrationGetDescription = function()
+		return self:NarrationGetDescription();
+	end;
 end
 
-SettingsAdvancedCheckboxSliderMixin = CreateFromMixins(DefaultTooltipMixin);
+SettingsAdvancedCheckboxSliderMixin = CreateFromMixins(DefaultTooltipMixin, SettingsAdvancedControlNarrationMixin);
 
 function SettingsAdvancedCheckboxSliderMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
@@ -442,9 +509,50 @@ function SettingsAdvancedCheckboxSliderMixin:OnLoad()
 	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);
 
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
+
+	self:EnableMouse(true);
+	self:SetScript("OnMouseUp", function()
+		if self.Checkbox:IsEnabled() then
+			self.Checkbox:Click();
+		end
+	end);
+
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+
+	self.NarrationGetName = function()
+		return self.Text:GetText();
+	end;
+
+	self.NarrationGetContext = function()
+		local checkboxContext = NarrationUtil.GetCheckboxContext(self.Checkbox);
+		return NarrationUtil.MakeNarrationString(checkboxContext, self.settingsNarrationIndexString);
+	end;
+
+	self.SliderWithSteppers.Slider.NarrationGetContext = function()
+		local slider = self.SliderWithSteppers.Slider;
+		local sliderContext = NarrationSliderMixin.NarrationGetContext(slider);
+		local valueText = NarrationSliderMixin.NarrationGetDescription(slider);
+		return NarrationUtil.MakeNarrationString(sliderContext, valueText, self.settingsSliderNarrationIndexString);
+	end;
+
+	self.SliderWithSteppers.Slider.NarrationGetDescription = function()
+		return self:NarrationGetDescription();
+	end;
+
+	Mixin(self.SliderWithSteppers, NarrationSkipTooltipsMixin);
 end
 
-SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin);
+function SettingsAdvancedCheckboxSliderMixin:GetNarrationControlCount()
+	return 2;
+end
+
+function SettingsAdvancedCheckboxSliderMixin:SetNarrationIndexInfo(groupName, startIndex, total)
+	self.settingsNarrationIndexString = groupName .. " " .. NARRATION_INDEX_INFO_FORMAT:format(startIndex, total);
+	self.settingsSliderNarrationIndexString = groupName .. " " .. NARRATION_INDEX_INFO_FORMAT:format(startIndex + 1, total);
+end
+
+SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin, SettingsAdvancedControlNarrationMixin);
 
 function SettingsAdvancedDropdownMixin:OnLoad()
 	DefaultTooltipMixin.OnLoad(self);
@@ -452,6 +560,29 @@ function SettingsAdvancedDropdownMixin:OnLoad()
 
 	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
 	self.Control.Dropdown:InitDefaultTooltipScriptHandlers();
+
+	self.Control.Dropdown.NarrationGetName = function()
+		return self.Text:GetText();
+	end;
+
+	self.Control.Dropdown.NarrationGetContext = function()
+		local dropdownContext;
+		if not self.Control.Dropdown:IsEnabled() then
+			dropdownContext = NARRATION_STATUS_DISABLED_FORMAT:format(NARRATION_OBJECT_DROPDOWN);
+		else
+			dropdownContext = NARRATION_OBJECT_DROPDOWN;
+		end
+
+		local valueText = self.Control.Dropdown:GetText();
+		return NarrationUtil.MakeNarrationString(dropdownContext, valueText, self.settingsNarrationIndexString);
+	end;
+
+	self.Control.Dropdown.NarrationGetDescription = function()
+		return self:NarrationGetDescription();
+	end;
+
+	NarrationUtil.SetStaticName(self.Control.DecrementButton, NARRATION_DROPDOWN_PREVIOUS_OPTION);
+	NarrationUtil.SetStaticName(self.Control.IncrementButton, NARRATION_DROPDOWN_NEXT_OPTION);
 end
 
 local SettingsAdvancedQualitySectionInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
@@ -711,7 +842,7 @@ local function Register()
 	end
 
 	-- Notch Mode
-	if (C_UI.DoesAnyDisplayHaveNotch()) then
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(0, NOTCH_MODE_OVERLAP, VIDEO_OPTIONS_NOTCH_MODE_OVERLAP);
@@ -726,7 +857,8 @@ local function Register()
 			Settings.VarType.Number, NOTCH_MODE, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected, Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow);
 
-		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
+		initializer:AddShownPredicate(C_UI.DoesAnyDisplayHaveNotch);
 	end
 
 	-- Low Latency Mode
@@ -844,6 +976,7 @@ local function Register()
 				return value == AA_IMAGE or value == AA_ADVANCED;
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample
@@ -888,6 +1021,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample Alpha Test
@@ -913,6 +1047,7 @@ local function Register()
 				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
+			initializer:AddSearchTags(ANTIALIASING);
 		end
 	end
 

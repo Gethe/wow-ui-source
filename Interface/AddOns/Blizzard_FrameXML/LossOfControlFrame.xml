@@ -67,7 +67,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 				</Anchors>
 				<SwipeTexture>
-					<Color r="0.17" g="0" b="0" a="0.8"/>
+					<Color r="0.17" g="0" b="0" a="0.64"/>
 				</SwipeTexture>
 				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
 			</Cooldown>

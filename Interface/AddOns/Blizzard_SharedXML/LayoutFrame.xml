@@ -133,6 +133,8 @@
 		<!--
 		Dynamically places child frames into a grid layout based on grid flow defined by KeyValue settings
 
+		Unlike ResizeLayoutFrame, layoutIndex IS required on child frames
+
 		<KeyValues>
 			- Space in between laid out frames
 			<KeyValue key="childXPadding" value="0" type="number"/>
@@ -149,6 +151,9 @@
 
 			- This is the direction the layout grows as it adds frames vertically. If true, new frames will be added to the top. If false, new frames will be added to the bottom.
 			<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+
+			- If true, overrides the grid layout's primary padding strategy to AllSpacingToLast. If false, keeps the default standard padding strategy of AllPaddingToFirst. (See GridLayoutUtil)
+			<KeyValue key="paddingToLast" value="true" type="boolean"/>
 
 			- Use this to force the frame to update whenever Layout is called, otherwise the frame has to be sufficiently changed for the layout to happen.
 			<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>

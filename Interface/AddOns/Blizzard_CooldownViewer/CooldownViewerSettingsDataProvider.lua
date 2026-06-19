@@ -7,12 +7,25 @@ function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	-- This can be called very easily when the CooldownViewerSettings are hidden
 	-- If the player switches specs the last active layout for a spec needs to be updated
 	-- in the save data, so ensure that happens and that the PendingChanges on the layout manager are cleared
-	local function OnTraitConfigUpdated()
+	local SpecChangeUpdater = CreateFromMixins(DirtiableMixin);
+	SpecChangeUpdater:SetDirtyMethod(function()
+		self.layoutChangeUpdateQueued = nil;
 		self:SwitchToBestLayoutForSpec();
 		self:GetLayoutManager():SaveLayouts();
+	end);
+
+	local function UpdateLayoutForSpecChange()
+		self.layoutChangeUpdateQueued = true;
+		SpecChangeUpdater:MarkDirty();
 	end
 
-	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", OnTraitConfigUpdated, self);
+	self.IsLayoutUpdateQueued = function()
+		return self.layoutChangeUpdateQueued;
+	end
+
+	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", UpdateLayoutForSpecChange, self);
+	EventRegistry:RegisterFrameEventAndCallback("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", UpdateLayoutForSpecChange, self);
+	EventRegistry:RegisterFrameEventAndCallback("ACTIVE_COMBAT_CONFIG_CHANGED", UpdateLayoutForSpecChange, self);
 
 	local function RefreshFromExternalUpdate()
 		self:MarkDirty();
@@ -26,6 +39,7 @@ function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	EventRegistry:RegisterFrameEventAndCallback("COOLDOWN_VIEWER_TABLE_HOTFIXED", RefreshFromExternalUpdate, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_PVP_TALENT_UPDATE", RefreshFromExternalUpdate, self);
 	EventRegistry:RegisterFrameEventAndCallback("SPELLS_CHANGED", RefreshFromExternalUpdate, self);
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_EQUIPMENT_CHANGED", RefreshFromExternalUpdate, self);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SetLayoutManager(layoutManager)
@@ -42,20 +56,30 @@ local cooldownCategories = {
 	Enum.CooldownViewerCategory.Utility,
 	Enum.CooldownViewerCategory.TrackedBuff,
 	Enum.CooldownViewerCategory.TrackedBar,
+	Enum.CooldownViewerCategory.EquipSlotEssential,
+	Enum.CooldownViewerCategory.EquipSlotTracked,
+	Enum.CooldownViewerCategory.SpecAgnosticEssential,
+	Enum.CooldownViewerCategory.SpecAgnosticTracked,
 };
 
 local cooldownCategoryToHiddenCategoryMapping = {
-	[Enum.CooldownViewerCategory.Essential] = Enum.CooldownViewerCategory.HiddenSpell,
-	[Enum.CooldownViewerCategory.Utility] = Enum.CooldownViewerCategory.HiddenSpell,
-	[Enum.CooldownViewerCategory.TrackedBuff] = Enum.CooldownViewerCategory.HiddenAura,
-	[Enum.CooldownViewerCategory.TrackedBar] = Enum.CooldownViewerCategory.HiddenAura,
+	[Enum.CooldownViewerCategory.Essential] = Enum.CooldownViewerCategory.HiddenActive,
+	[Enum.CooldownViewerCategory.Utility] = Enum.CooldownViewerCategory.HiddenActive,
+	[Enum.CooldownViewerCategory.TrackedBuff] = Enum.CooldownViewerCategory.HiddenPassive,
+	[Enum.CooldownViewerCategory.TrackedBar] = Enum.CooldownViewerCategory.HiddenPassive,
+
+	-- These map to their own categories because the default hidden category for item OnUse/Proc entries is in their own container.
+	[Enum.CooldownViewerCategory.EquipSlotEssential] = Enum.CooldownViewerCategory.EquipSlotEssential,
+	[Enum.CooldownViewerCategory.EquipSlotTracked] = Enum.CooldownViewerCategory.EquipSlotTracked,
+	[Enum.CooldownViewerCategory.SpecAgnosticEssential] = Enum.CooldownViewerCategory.SpecAgnosticEssential,
+	[Enum.CooldownViewerCategory.SpecAgnosticTracked] = Enum.CooldownViewerCategory.SpecAgnosticTracked,
 };
 
 -- Because the hidden categories are pseudo-categories, make sure that no valid enum value matches them
 do
 	local categoriesInverted = tInvert(cooldownCategories);
-	assertsafe(categoriesInverted[Enum.CooldownViewerCategory.HiddenSpell] == nil, "CooldownViewerCategory for HiddenSpells has value overlap with valid cooldown category");
-	assertsafe(categoriesInverted[Enum.CooldownViewerCategory.HiddenAura] == nil, "CooldownViewerCategory for HiddenAuras category has value overlap with valid cooldown category");
+	assertsafe(categoriesInverted[Enum.CooldownViewerCategory.HiddenActive] == nil, "CooldownViewerCategory for HiddenActive has value overlap with valid cooldown category");
+	assertsafe(categoriesInverted[Enum.CooldownViewerCategory.HiddenPassive] == nil, "CooldownViewerCategory for HiddenPassive category has value overlap with valid cooldown category");
 
 	for _, category in pairs(cooldownCategories) do
 		assertsafe(cooldownCategoryToHiddenCategoryMapping[category] ~= nil, "CooldownViewerCategory[%d] is missing its Hidden category equivalent, add a hidden category mapping", category);
@@ -87,16 +111,10 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 		for cooldownIndex, cooldownID in ipairs(cooldownIDs) do
 			local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID);
 			if info then
-				-- Experimental, this should disable the cooldown and put it into the right display bucket
-				-- It should also allow the saved data to completely override whatever gets set here.
-				-- The thing to test, even before moving this into an API somewhere is whether or not marking the provider dirty will overwrite saved data...
 				local isDisabled = FlagsUtil.IsSet(info.flags, Enum.CooldownSetSpellFlags.HideByDefault);
 				if isDisabled then
 					info.category = cooldownCategoryToHiddenCategoryMapping[info.category];
 				end
-
-				-- Probably need to check and see that if there's actually saved data that exists for this info in the currently loaded save data that
-				-- it is allowed to overwrite whatever is returned from the game at this point...
 
 				-- Store defaults so that we know what to avoid saving
 				cooldownDefaultsByID[cooldownID] = { category = info.category, };
@@ -231,7 +249,8 @@ function CooldownViewerSettingsDataProviderMixin:GetOrderedCooldownIDsForCategor
 	local cooldownIDs = {};
 	for index, cooldownID in ipairs(self:GetOrderedCooldownIDs()) do
 		local cooldownInfo = self:GetCooldownInfoForID(cooldownID);
-		if cooldownInfo.category == category and (cooldownInfo.isKnown or allowUnknown) then
+		local isInvisible = CDM_HIDE_INVISIBLE_ITEMS and cooldownInfo.isInvisible;
+		if not isInvisible and cooldownInfo.category == category and (cooldownInfo.isKnown or allowUnknown) then
 			table.insert(cooldownIDs, cooldownID);
 		end
 	end

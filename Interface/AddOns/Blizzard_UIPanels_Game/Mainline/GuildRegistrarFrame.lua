@@ -11,6 +11,15 @@ function GuildRegistrar_ShowPurchaseFrame()
 	MoneyFrame_Update("GuildRegistrarMoneyFrame", GetGuildCharterCost());
 end
 
+local function RegisterWithPlayerInteractionManager()
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.Registrar,
+		{
+			frame = "GuildRegistrarFrame",
+		});
+end
+
+RegisterWithPlayerInteractionManager();
+
 function GuildRegistrar_PurchaseCharter(hasConfirmed)
 	local guildFactionData = C_Reputation.GetGuildFactionData();
 	if ( not hasConfirmed and guildFactionData and ( guildFactionData.reaction > 4 or guildFactionData.currentStanding > 0 ) ) then

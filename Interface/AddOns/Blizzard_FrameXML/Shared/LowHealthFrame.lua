@@ -18,6 +18,8 @@ function LowHealthFrameMixin:OnLoad()
 	self.lowHealthReducedMinAlpha = .15;
 	
 	self:EvaluateVisibleState();
+	EventRegistry:RegisterCallback("UI.TopLevelParentShown", self.EvaluateVisibleState, self);
+	EventRegistry:RegisterCallback("UI.TopLevelParentHidden", self.EvaluateVisibleState, self);
 	
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");

@@ -96,13 +96,31 @@ function HousingLayoutDoorPinMixin:Update()
 
 	local pin = self:GetPin();
 	local isOccupied = pin:IsOccupiedDoor();
-	local isAtBudgetMax = C_HousingLayout.HasRoomPlacementBudget() and C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = false;
+	if C_HousingLayout.HasRoomPlacementBudget() then
+		local spentBudget = C_HousingLayout.GetSpentPlacementBudget();
+		local maxBudget = C_HousingLayout.GetRoomPlacementBudget();
+		if not spentBudget or not maxBudget then
+			-- If budgets aren't available, fallback to acting as if they're insufficient just in case
+			isAtBudgetMax = true;
+		else
+			isAtBudgetMax = spentBudget >= maxBudget;
+		end
+	end
+	
 	local isEnabled = not isOccupied and not isAtBudgetMax;
 	self:SetEnabled(isEnabled);
 	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;
 
+	local isDraggingRoom = C_HousingLayout.IsDraggingRoom();
+
 	if (isOccupied) then
-		self:Hide();
+		if (isDraggingRoom and (pin:IsPartOfDraggingRoom() or pin:IsConnectedToDraggingRoom())) then
+			self:Show();
+			self:SetAlpha(1);
+		else
+			self:Hide();
+		end
 	elseif C_HousingLayout.HasSelectedRoom() then
 		self.NodeAvailable:Hide();
 		self:SetShown(pin:IsAnyPartOfRoomSelected());
@@ -111,7 +129,7 @@ function HousingLayoutDoorPinMixin:Update()
 		self:SetShown(showWithAvailableAnim);
 		self.NodeAvailable:SetShown(showWithAvailableAnim);
 	else
-		self:Show();
+		self:SetShown(isDraggingRoom and pin:IsConnectedToDraggingRoom() or pin:IsValidForSelectedFloorplan());
 		self.NodeAvailable:Hide();
 	end
 
@@ -220,55 +238,63 @@ HousingLayoutRoomPinMixin = CreateFromMixins(HousingLayoutBasePinMixin);
 
 function HousingLayoutRoomPinMixin:OnLoad()
 	
-	do --Rotate
-		local function LoadRotateButton(button, isLeft)
-			button.extraDisabledCheck = GenerateClosure(self.CheckRotateDisabled, self);
-
-			button:SetScript("OnClick", function()
-				if self:HasActivePin() then
-					C_HousingLayout.RotateRoom(self:GetPin():GetRoomGUID(), isLeft);
-					PlaySound(SOUNDKIT.HOUSING_ROOM_ROTATE);
-				end
-			end);
-		end
-
-		LoadRotateButton(self.OptionsContainer.RotateButtonLeft, true);
-		LoadRotateButton(self.OptionsContainer.RotateButtonRight, false);
-	end
-
-	do --Move
-		self.OptionsContainer.MoveButton.extraDisabledCheck = GenerateClosure(self.CheckMoveDisabled, self);
-
-		self.OptionsContainer.MoveButton:SetScript("OnClick", function()
+	--Rotate
+	local function LoadRotateButton(button, isLeft)
+		button.extraDisabledCheck = GenerateClosure(self.CheckRotateDisabled, self);
+		button:SetScript("OnClick", function()
 			if self:HasActivePin() then
-				local accessible = true;
-				self:GetPin():Drag(accessible);
+				C_HousingLayout.RotateRoom(self:GetPin():GetRoomGUID(), isLeft);
+				PlaySound(SOUNDKIT.HOUSING_ROOM_ROTATE);
 			end
 		end);
 	end
+	LoadRotateButton(self.OptionsContainer.RotateButtonLeft, true);
+	LoadRotateButton(self.OptionsContainer.RotateButtonRight, false);
 
-	do --Remove
-		self.OptionsContainer.RemoveButton.extraDisabledCheck = GenerateClosure(self.CheckRemoveDisabled, self);
+	-- Move
+	self.OptionsContainer.MoveButton.extraDisabledCheck = GenerateClosure(self.CheckMoveDisabled, self);
+	self.OptionsContainer.MoveButton:SetScript("OnClick", function()
+		if self:HasActivePin() then
+			local accessible = true;
+			self:GetPin():Drag(accessible);
+		end
+	end);
 
-		self.OptionsContainer.RemoveButton:SetScript("OnClick", function()
-			if self:HasActivePin() then
+	-- Export
+	self.OptionsContainer.ExportButton:SetScript("OnClick", function()
+		if self:HasActivePin() then
+			local roomGUID = self:GetPin():GetRoomGUID();
+			HousingFramesUtil.ShowBlueprintRoomExport(roomGUID);
+		end
+	end);
+
+	--Remove
+	self.OptionsContainer.RemoveButton.extraDisabledCheck = GenerateClosure(self.CheckRemoveDisabled, self);
+	self.OptionsContainer.RemoveButton:SetScript("OnClick", function()
+		if self:HasActivePin() then
+			local roomGUID = self:GetPin():GetRoomGUID();
+
+			local function RemoveRoom()
+				C_HousingLayout.RemoveRoom(roomGUID);
+				PlaySound(SOUNDKIT.HOUSING_ROOM_DELETE);
+			end
+
+			if C_HousingDecor.AnyDecorPlacedInRoom(roomGUID) then
 				if StaticPopup_IsCustomGenericConfirmationShown(HouseEditorFrame.LayoutModeFrame) then
 					return;
 				end
-				local roomGUID = self:GetPin():GetRoomGUID();
 				StaticPopup_ShowCustomGenericConfirmation({
 					text = HOUSING_LAYOUT_REMOVE_ROOM_CONFIRMATION,
 					acceptText = YES,
 					cancelText = CANCEL,
-					callback = function()
-						C_HousingLayout.RemoveRoom(roomGUID);
-						PlaySound(SOUNDKIT.HOUSING_ROOM_DELETE);
-					end,
+					callback = RemoveRoom,
 					referenceKey = HouseEditorFrame.LayoutModeFrame, --will cause it to be closed on HouseEditorLayoutModeMixin:OnHide.
 				});
+			else
+				RemoveRoom();
 			end
-		end);
-	end
+		end
+	end);
 end
 
 function HousingLayoutRoomPinMixin:Init()
@@ -283,10 +309,8 @@ function HousingLayoutRoomPinMixin:Update()
 
 	local pin = self:GetPin();
 	local isSelected = pin:IsSelected();
-	local isBaseRoom = C_HousingLayout.IsBaseRoom(pin:GetRoomGUID())
 
 	self.OptionsContainer:SetShown(isSelected);
-	self:SetEnabled(not isBaseRoom);
 
 	self:UpdateVisuals();
 end

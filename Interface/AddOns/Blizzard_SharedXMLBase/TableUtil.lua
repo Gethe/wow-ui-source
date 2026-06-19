@@ -785,11 +785,11 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 		return top;
 	end
 
-	function t:Iterate(callback)
+	function t:Iterate(callback, ...)
 		local posToKeyMap = isAssociative and tInvert(keyToPosMap) or nil;
 		for pos, v in ipairs(sortedArray) do
 			local key = isAssociative and posToKeyMap[pos] or pos;
-			local done = callback(key, v);
+			local done = callback(key, v, ...);
 			if done then
 				return;
 			end

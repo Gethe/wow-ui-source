@@ -75,6 +75,17 @@ function MailFrame_Hide()
 	StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 end
 
+local function RegisterWithPlayerInteractionManager()
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.MailInfo,
+		{
+			frame = "MailFrame",
+			showFunc = MailFrame_Show,
+			hideFunc = MailFrame_Hide,
+		});
+end
+
+RegisterWithPlayerInteractionManager();
+
 function MailFrame_OnEvent(self, event, ...)
 	if ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
@@ -242,13 +253,13 @@ function InboxFrame_Update()
 				senderText:SetTextColor(0.75, 0.75, 0.75);
 				subjectText:SetTextColor(0.75, 0.75, 0.75);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(0.5, 0.5, 0.5);
-				SetDesaturation(buttonIcon, true);
+				buttonIcon:SetDesaturated(true);
 				button.IconBorder:SetVertexColor(0.5, 0.5, 0.5);
 			else
 				senderText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				subjectText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(1.0, 0.82, 0);
-				SetDesaturation(buttonIcon, false);
+				buttonIcon:SetDesaturated(false);
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then
@@ -354,19 +365,14 @@ function InboxFrameItem_OnEnter(self)
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(ENCLOSED_MONEY, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, self.money);
-		SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
+		GameTooltip_AddMoneyLine(GameTooltip, self.money);
 	elseif (self.cod) then
 		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(COD_AMOUNT, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, self.cod);
-		if ( self.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
-		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
-		end
+		local useRedLineColor = self.cod > GetMoney();
+		GameTooltip_AddMoneyLine(GameTooltip, self.cod, useRedLineColor);
 	end
 	GameTooltip:Show();
 end
@@ -898,12 +904,8 @@ function OpenMailAttachment_OnEnter(self, index)
 	GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
 
 	if ( OpenMailFrame.cod ) then
-		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
-		if ( OpenMailFrame.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
-		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
-		end
+		local useRedLineColor = OpenMailFrame.cod > GetMoney();
+		GameTooltip_AddMoneyLine(GameTooltip, OpenMailFrame.cod, useRedLineColor);
 	end
 	GameTooltip:Show();
 end
@@ -1191,7 +1193,7 @@ function OpenAllMailMixin:Reset()
 	self.mailIndex = 1;
 	self.attachmentIndex = ATTACHMENTS_MAX;
 	self.timeUntilNextRetrieval = nil;
-	self.blacklistedItemIDs = nil;
+	self.failedItemIDs = nil;
 end
 
 function OpenAllMailMixin:StartOpening()
@@ -1218,44 +1220,92 @@ function OpenAllMailMixin:StopOpening()
 	self:UnregisterEvent("MAIL_FAILED");
 end
 
+function OpenAllMailMixin:ShouldSkipCurrentMail()
+	local _, _, _, _, _money, CODAmount, _daysLeft, _itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
+
+	-- Players are required to manually open mail from GMs so they don't accidentially miss them or any restored items attached.
+	if isGM then
+		return true;
+	end
+
+	-- Players are required to manually open COD mail to confirm the payment.
+	if CODAmount and CODAmount > 0 then
+		return true;
+	end
+
+	return false;
+end
+
+function OpenAllMailMixin:ShouldSkipCurrentAttachment()
+	local _, id, _, _, _, _, isCurrency = GetInboxItem(self.mailIndex, self.attachmentIndex);
+	local hasFailedItem = not isCurrency and self:IsItemFailed(id);
+	if hasFailedItem then
+		return true;
+	end
+
+	-- Mail money is retrieved per-mail rather than per-slot, so any slot on a
+	-- mail with money is considered retrievable regardless of slot index.
+	if C_Mail.HasInboxMoney(self.mailIndex) then
+		return false;
+	end
+
+	if HasInboxItem(self.mailIndex, self.attachmentIndex) then
+		return false;
+	end
+
+	return true;
+end
+
+function OpenAllMailMixin:AdvanceToNextMail()
+	self.mailIndex = self.mailIndex + 1;
+	self.attachmentIndex = ATTACHMENTS_MAX;
+
+	if self.mailIndex > GetInboxNumItems() then
+		return false;
+	end
+
+	return true;
+end
+
 function OpenAllMailMixin:AdvanceToNextItem()
+	if self:ShouldSkipCurrentMail() then
+		if self:AdvanceToNextMail() then
+			return self:AdvanceToNextItem();
+		end
+
+		return false;
+	end
+
 	local foundAttachment = false;
-	while ( not foundAttachment ) do
-		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
-		local _, id, _, _, _, _, isCurrency = GetInboxItem(self.mailIndex, self.attachmentIndex);
-		local hasBlacklistedItem = (not isCurrency) and self:IsItemBlacklisted(id);
-		local hasCOD = CODAmount and CODAmount > 0;
-		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
-		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then
-			foundAttachment = true;
-		else
+	while not foundAttachment do
+		if self:ShouldSkipCurrentAttachment() then
 			self.attachmentIndex = self.attachmentIndex - 1;
-			if ( self.attachmentIndex == 0 ) then
+			if self.attachmentIndex == 0 then
 				break;
 			end
+		else
+			foundAttachment = true;
 		end
 	end
 
-	if ( not foundAttachment ) then
-		self.mailIndex = self.mailIndex + 1;
-		self.attachmentIndex = ATTACHMENTS_MAX;
-		if ( self.mailIndex > GetInboxNumItems() ) then
-			return false;
+	if not foundAttachment then
+		if self:AdvanceToNextMail() then
+			return self:AdvanceToNextItem();
 		end
 
-		return self:AdvanceToNextItem();
+		return false;
 	end
 
 	return true;
 end
 
 function OpenAllMailMixin:AdvanceAndProcessNextItem()
-	if ( CalculateTotalNumberOfFreeBagSlots() == 0 ) then
+	if C_Container.CalculateTotalNumberOfFreeBagSlots() == 0 then
 		self:StopOpening();
 		return;
 	end
 
-	if ( self:AdvanceToNextItem() ) then
+	if self:AdvanceToNextItem() then
 		self:ProcessNextItem();
 	else
 		self:StopOpening();
@@ -1263,16 +1313,12 @@ function OpenAllMailMixin:AdvanceAndProcessNextItem()
 end
 
 function OpenAllMailMixin:ProcessNextItem()
-	local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
-	if ( isGM or (CODAmount and CODAmount > 0) ) then
-		self:AdvanceAndProcessNextItem();
-		return;
-	end
+	local _, _, _, _, money, _, _, itemCount = GetInboxHeaderInfo(self.mailIndex);
 
-	if ( money > 0 ) then
+	if money > 0 then
 		TakeInboxMoney(self.mailIndex);
 		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
-	elseif ( itemCount and itemCount > 0 ) then
+	elseif itemCount and itemCount > 0 then
 		TakeInboxItem(self.mailIndex, self.attachmentIndex);
 		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
 	else
@@ -1286,24 +1332,24 @@ end
 
 function OpenAllMailMixin:OnEvent(event, ...)
 	if event == "MAIL_INBOX_UPDATE" then
-		if ( self.numToOpen ~= GetInboxNumItems() ) then
+		if self.numToOpen ~= GetInboxNumItems() then
 			self.mailIndex = 1;
 			self.attachmentIndex = ATTACHMENTS_MAX;
 		end
-	elseif ( event == "MAIL_FAILED" ) then
+	elseif event == "MAIL_FAILED" then
 		local itemID = ...;
-		if ( itemID ) then
-			self:AddBlacklistedItem(itemID);
+		if itemID then
+			self:AddFailedItem(itemID);
 		end
 	end
 end
 
 function OpenAllMailMixin:OnUpdate(dt)
-	if ( self.timeUntilNextRetrieval ) then
+	if self.timeUntilNextRetrieval then
 		self.timeUntilNextRetrieval = self.timeUntilNextRetrieval - dt;
 
-		if ( self.timeUntilNextRetrieval <= 0 ) then
-			if ( not C_Mail.IsCommandPending() ) then
+		if self.timeUntilNextRetrieval <= 0 then
+			if not C_Mail.IsCommandPending() then
 				self.timeUntilNextRetrieval = nil;
 				self:AdvanceAndProcessNextItem();
 			else
@@ -1322,14 +1368,14 @@ function OpenAllMailMixin:OnHide()
 	self:StopOpening();
 end
 
-function OpenAllMailMixin:AddBlacklistedItem(itemID)
-	if ( not self.blacklistedItemIDs ) then
-		self.blacklistedItemIDs = {};
+function OpenAllMailMixin:AddFailedItem(itemID)
+	if not self.failedItemIDs then
+		self.failedItemIDs = {};
 	end
 
-	self.blacklistedItemIDs[itemID] = true;
+	self.failedItemIDs[itemID] = true;
 end
 
-function OpenAllMailMixin:IsItemBlacklisted(itemID)
-	return self.blacklistedItemIDs and self.blacklistedItemIDs[itemID];
+function OpenAllMailMixin:IsItemFailed(itemID)
+	return self.failedItemIDs and self.failedItemIDs[itemID];
 end

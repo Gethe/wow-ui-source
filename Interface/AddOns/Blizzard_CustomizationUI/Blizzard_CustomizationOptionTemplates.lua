@@ -87,12 +87,20 @@ function CustomizationOptionFrameBaseMixin:GetDebugName()
 	return string.format("[%02d] %s", index, name);
 end
 
+function CustomizationOptionFrameBaseMixin:NarrationGetName()
+	if not self.optionData then
+		return nil;
+	end
+	return self.optionData.name;
+end
+
 ----------------- Option Slider -----------------
 
 CustomizationOptionSliderMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, SliderWithButtonsAndLabelMixin, CustomizationFrameWithTooltipMixin);
 
 function CustomizationOptionSliderMixin:OnLoad()
 	CustomizationFrameWithTooltipMixin.OnLoad(self);
+	Mixin(self.Slider, NarrationForwardToParentMixin);
 end
 
 function CustomizationOptionSliderMixin:SetupAnchors(tooltip)
@@ -147,6 +155,10 @@ function CustomizationOptionSliderMixin:OnSliderValueChanged(value, userInput)
 	end
 end
 
+function CustomizationOptionSliderMixin:NarrationGetContext()
+	return NARRATION_OBJECT_SLIDER;
+end
+
 ----------------- Option Check Button -----------------
 
 CustomizationOptionCheckButtonMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, CustomizationFrameWithTooltipMixin);
@@ -155,6 +167,7 @@ function CustomizationOptionCheckButtonMixin:CustomizationOptionCheckButton_OnLo
 	self.Button:SetScript("OnClick", GenerateClosure(self.OnCheckButtonClick, self));
 	self.Button:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
 	self.Button:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
+	Mixin(self.Button, NarrationForwardToParentMixin);
 end
 
 function CustomizationOptionCheckButtonMixin:SetupOption(optionData)
@@ -189,6 +202,11 @@ function CustomizationOptionCheckButtonMixin:OnCheckButtonClick()
 	customizationFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
 
+function CustomizationOptionCheckButtonMixin:NarrationGetContext()
+	local checkboxContext = NarrationUtil.GetCheckboxContext(self.Button);
+	return NarrationUtil.MakeNarrationString(checkboxContext);
+end
+
 ----------------- Dropdown with Steppers + Label -----------------
 
 -- Expects to inherit DropdownWithSteppersAndLabelTemplate
@@ -202,7 +220,31 @@ function CustomizationDropdownWithSteppersAndLabelMixin:OnLoad()
 	self.Dropdown:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self.Dropdown, "BOTTOMRIGHT"));
 	self.Dropdown:EnableMouseWheel(true);
 
+	Mixin(self.Dropdown, NarrationForwardToParentMixin);
+
 	EventRegistry:RegisterCallback("Customization.SetMissingOptionWarningEnabled", self.SetMissingOptionWarningEnabled, self);
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetContext()
+	return NARRATION_OBJECT_DROPDOWN;
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetDescription()
+	if not self.optionData then
+		return nil;
+	end
+	local currentChoice = self:GetCurrentChoice();
+	if currentChoice and currentChoice.name ~= "" then
+		return currentChoice.name;
+	end
+	return nil;
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetIndexInfo()
+	if not self.optionData then
+		return nil;
+	end
+	return NarrationUtil.MakeIndexInfo(self:GetCurrentChoiceIndex(), #self:GetOptionData().choices);
 end
 
 function CustomizationDropdownWithSteppersAndLabelMixin:SetupAnchors(tooltip)
@@ -416,18 +458,18 @@ local CUSTOMIZATION_LOCK_WIDTH = 24;
 CustomizationElementDetailsMixin = {};
 
 function CustomizationElementDetailsMixin:GetTooltipText()
-	local name;
-	if self.lockedText or (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
-		name = self.name;
+	if not self.lockedText and not self.ineligibleText and not (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
+		return nil;
 	end
 
-	if not self.lockedText then
-		return name;
+	local disabledText = nil;
+	if self.lockedText then
+		disabledText = self.skipLockedTextFormat and self.lockedText or BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+	elseif self.ineligibleText then
+		disabledText = self.ineligibleText;
 	end
 
-	local lockedText = self.skipLockedTextFormat and self.lockedText or BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
-
-	return name, lockedText;
+	return self.name, disabledText;
 end
 
 function CustomizationElementDetailsMixin:SetOverrideWidth(overrideWidth)
@@ -567,7 +609,7 @@ end
 --[[
 Expected choiceData members
 	Standard/required: id, name, choiceIndex
-	Optional: isLocked, lockedText, isNew, ineligibleChoice, disabled, swatchColor1, swatchColor2, soundKit
+	Optional: isLocked, lockedText, isNew, ineligibleChoice, ineligibleText, disabled, swatchColor1, swatchColor2, soundKit
 ]]--
 
 function CustomizationElementDetailsMixin:Init(choiceData, index, isSelected, hasAFailedReq, hasALockedChoice, clampNameSize)
@@ -589,6 +631,7 @@ function CustomizationElementDetailsMixin:Init(choiceData, index, isSelected, ha
 	self.name = choiceData.name;
 	self.index = index;
 	self.lockedText = choiceData.isLocked and choiceData.lockedText;
+	self.ineligibleText = choiceData.ineligibleChoice and choiceData.ineligibleText;
 
 	local color1 = choiceData.swatchColor1 or choiceData.swatchColor2;
 	local color2 = choiceData.swatchColor1 and choiceData.swatchColor2;

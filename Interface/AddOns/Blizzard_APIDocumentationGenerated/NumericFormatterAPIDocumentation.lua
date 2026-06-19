@@ -2,6 +2,7 @@ local NumericFormatterAPI =
 {
 	Name = "NumericFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

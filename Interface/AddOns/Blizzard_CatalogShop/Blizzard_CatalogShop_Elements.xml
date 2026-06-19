@@ -417,6 +417,17 @@
 				</Texture>				
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="1.0" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Image" relativePoint="CENTER" x="0" y="0" />
+				</Anchors>
+				<Size x="54" y="54"/>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Button>
 	
 	<Frame name="ImageCarouselControlTemplate" mixin="ImageCarouselControlMixin" virtual="true">
@@ -670,6 +681,29 @@
 		<Scripts>
 			<OnHide method="OnHide" />
 		</Scripts>
+	</Frame>
+
+	<Frame name="IconTrainFrameChildTemplate" mixin="IconTrainFrameChildMixin" inherits="CallbackRegistrantTemplate" virtual="true" >
+		<Size x="130" y="130" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" >
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="IconTrainTemplate" mixin="IconTrainMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="IconTrainScrollBox" inherits="WowScrollBoxList" setAllPoints="true" />
+		</Frames>
 	</Frame>
 
 	<Frame name="CatalogShopProductContainerFrameTemplate" mixin="CatalogShopProductContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">

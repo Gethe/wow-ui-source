@@ -158,6 +158,10 @@ function BattlePetTooltipTemplate_AddTextLine(self, text, r, g, b, wrap)
 end
 
 function BattlePetTooltipJournalClick_OnClick(self)
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	if CollectionsJournal then
 		local battlePetID = self:GetParent().battlePetID;

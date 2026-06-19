@@ -449,6 +449,8 @@
 	<Font name="UserScaledFontGameDisableSmall" inherits="GameFontDisableSmall" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontGameHighlightSmall" inherits="GameFontHighlightSmall" canBeUserScaled="true" virtual="true"/>
 
+	<Font name="UserScaledFontGame15Shadow" inherits="Game15Font_Shadow" canBeUserScaled="true" virtual="true"/>
+
 	<Font name="UserScaledFontGameNormalLarge" inherits="GameFontNormalLarge" canBeUserScaled="true" virtual="true"/>
 
 	<Font name="UserScaledChatFontNormal" inherits="ChatFontNormal" canBeUserScaled="true" justifyH="LEFT" virtual="true"/>
@@ -458,4 +460,6 @@
 	<Font name="UserScaledFontNumberNormalRightYellow" inherits="NumberFontNormalRightYellow" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontNumberNormalRightGray" inherits="NumberFontNormalRightGray" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontNumberNormalRightGreen" inherits="NumberFontNormalRightGreen" canBeUserScaled="true" virtual="true"/>
+
+	<Font name="UserScaledFontSystem15Shadow" inherits="System15Font_Shadow" canBeUserScaled="true" virtual="true"/>
 </Ui>

@@ -46,6 +46,22 @@ function ScrollBarMixin:OnLoad()
 	self.Track:SetScript("OnSizeChanged", function(...)
 		self:Update();
 	end);
+
+	self:InitializeNarration();
+end
+
+-- These Narration functions need to be added here directly since the referenced
+-- elements are not created from a shared template.
+function ScrollBarMixin:InitializeNarration()
+	local backStepper = self:GetBackStepper();
+	backStepper.NarrationGetName = function()
+		return NARRATION_OBJECT_SCROLL_UP_BUTTON;
+	end;
+
+	local forwardStepper = self:GetForwardStepper();
+	forwardStepper.NarrationGetName = function()
+		return NARRATION_OBJECT_SCROLL_DOWN_BUTTON;
+	end;
 end
 
 function ScrollBarMixin:Init(visibleExtentPercentage, panExtentPercentage)

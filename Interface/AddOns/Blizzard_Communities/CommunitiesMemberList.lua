@@ -1286,7 +1286,7 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 			self.Zone:SetText(COMMUNITIES_PRESENCE_MOBILE_CHAT);
 		elseif memberInfo.presence == Enum.ClubMemberPresence.Offline then
 			if memberInfo.lastOnlineYear then
-				self.Zone:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
+				self.Zone:SetText(TimeUtil.GetRecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
 			else
 				self.Zone:SetText(COMMUNITIES_PRESENCE_OFFLINE);
 			end

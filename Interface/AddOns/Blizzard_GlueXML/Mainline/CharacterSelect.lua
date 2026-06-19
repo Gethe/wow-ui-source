@@ -225,7 +225,7 @@ end
 
 function CharacterSelectFrameMixin:OnHide()
     CharacterDeleteDialog:Hide();
-    CharacterRenameDialog:Hide();
+	StaticPopup_Hide("FORCE_RENAME_CHARACTER");
     AccountReactivate_CloseDialogs();
 
     if ( DeclensionFrame ) then
@@ -498,10 +498,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignNearest);
 		end
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-        StaticPopup_HideAll();
-        local message = ...;
-        CharacterRenameDialog:Show();
-        CharacterRenameText1:SetText(_G[message]);
+		StaticPopup_HideAll();
+		local message = ...;
+		StaticPopup_Show("FORCE_RENAME_CHARACTER", CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]));
     elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
         StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
     elseif ( event == "STORE_STATUS_CHANGED" ) then
@@ -1326,6 +1325,33 @@ function CharacterSelectRewardsButtonMixin:OnClick()
 	end
 end
 
+CharSelectEnterWorldButtonMixin = {};
+
+function CharSelectEnterWorldButtonMixin:OnClick()
+	-- This should be disabled, but due to timing of events it may not be checked yet
+	if not CharacterSelect_AllowedToEnterWorld() then
+		CharacterSelect_UpdateButtonState();
+		return;
+	end
+
+	CharacterSelect_EnterWorld();
+end
+
+function CharSelectEnterWorldButtonMixin:NarrationGetName()
+	return NarrationUtil.MakeNarrationString(self:GetText(), CharSelectCharacterName:GetText());
+end
+
+CharacterSelectRotateButtonMixin = {};
+
+function CharacterSelectRotateButtonMixin:OnLoad()
+	IconButtonMixin.OnLoad(self);
+	self:SetScript("OnUpdate", self.rotationOnUpdate);
+end
+
+function CharacterSelectRotateButtonMixin:NarrationGetName()
+	return self.narrationName;
+end
+
 CharacterSelectBackButtonMixin = {};
 
 function CharacterSelectBackButtonMixin:OnLoad()
@@ -1945,6 +1971,34 @@ function CharacterVASMixin:OnLeave()
 	GetAppropriateTooltip():Hide();
 end
 
+function CharacterVASMixin:NarrationGetName()
+	if self.data then
+		if self.data.isExpansionTrial or self.data.isVAS then
+			return self.data.popupInfo and self.data.popupInfo.title or nil;
+		else
+			return self.data.flowTitle;
+		end
+	end
+
+	return nil;
+end
+
+function CharacterVASMixin:NarrationGetDescription()
+	if self.data then
+		if not self.data.isExpansionTrial and not self.data.isVAS then
+			return BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level);
+		elseif self.data.popupInfo then
+			return self.data.popupInfo.description;
+		end
+	end
+
+	return nil;
+end
+
+function CharacterVASMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
+end
+
 CharacterBoostMixin = {};
 
 function CharacterBoostMixin:OnClick()
@@ -2468,6 +2522,20 @@ end
 function CopyCharacterButtonMixin:UpdateButtonState()
 	local isShown = C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled();
 	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, isShown);
+end
+
+CharacterSelectVisibilityToggleButtonMixin = {};
+
+function CharacterSelectVisibilityToggleButtonMixin:NarrationGetName()
+	return NARRATION_HIDE_INTERFACE_BUTTON;
+end
+
+function CharacterSelectVisibilityToggleButtonMixin:NarrationGetDescription()
+	return NARRATION_HIDE_INTERFACE_DESCRIPTION;
+end
+
+function CharacterSelectVisibilityToggleButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
 end
 
 function CopyCharacterSearch_OnClick(self)

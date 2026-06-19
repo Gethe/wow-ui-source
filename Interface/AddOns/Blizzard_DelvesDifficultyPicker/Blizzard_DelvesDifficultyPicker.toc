@@ -3,5 +3,6 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+Blizzard_DelvesDifficultyPicker_Bootstrap.lua [Bootstrap]
 Blizzard_DelvesDifficultyPicker.lua
 Blizzard_DelvesDifficultyPicker.xml

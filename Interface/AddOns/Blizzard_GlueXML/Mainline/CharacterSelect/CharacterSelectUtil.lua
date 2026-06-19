@@ -105,6 +105,19 @@ function CharacterSelectUtil.UpdateShowDebugTooltipInfo(state)
 	showDebugTooltipInfo = state;
 end
 
+function CharacterSelectUtil.GetProfessionNames(characterInfo)
+	if not characterInfo then
+		return nil, nil;
+	end
+
+	local raceID = characterInfo.raceID;
+	local profession0 = characterInfo.profession0;
+	local profession1 = characterInfo.profession1;
+	local professionName0 = profession0 ~= 0 and GetSkillLineDisplayNameForRace(profession0, raceID) or nil;
+	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
+	return professionName0, professionName1;
+end
+
 function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, characterID)
 	if not characterInfo then
 		return false;
@@ -127,11 +140,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 	local areaName = characterInfo.areaName;
 
 	-- Block 3
-	local raceID = characterInfo.raceID;
-	local profession0 = characterInfo.profession0;
-	local profession1 = characterInfo.profession1;
-	local professionName0 = profession0 ~= 0 and GetSkillLineDisplayNameForRace(profession0, raceID) or nil;
-	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
+	local professionName0, professionName1 = CharacterSelectUtil.GetProfessionNames(characterInfo);
 
 	-- Block 4
 	local realmAddress = characterInfo.realmAddress;
@@ -180,8 +189,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 	-- Add a blank line only if we have populated fields for the next section.
 	if money and money > 0 then
 		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
-
-		SetTooltipMoney(GlueTooltip, money);
+		GameTooltip_AddColoredLine(GlueTooltip, MoneyFormatterUtil.FormatMoney(money, MoneyFormatterPresets.Compact), WHITE_FONT_COLOR);
 	end
 	
 	-- Add a blank line only if we have populated fields for the next section.

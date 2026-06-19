@@ -187,22 +187,23 @@ local EditModeManagerConstants =
 		{
 			Name = "DamageMeterVisibility",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Always", Type = "DamageMeterVisibility", EnumValue = 0 },
 				{ Name = "InCombat", Type = "DamageMeterVisibility", EnumValue = 1 },
 				{ Name = "Hidden", Type = "DamageMeterVisibility", EnumValue = 2 },
+				{ Name = "InGroup", Type = "DamageMeterVisibility", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 34,
+			NumValues = 35,
 			MinValue = 0,
-			MaxValue = 33,
+			MaxValue = 34,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -238,7 +239,8 @@ local EditModeManagerConstants =
 				{ Name = "ShowEncounterEvents", Type = "EditModeAccountSetting", EnumValue = 30 },
 				{ Name = "ShowDamageMeter", Type = "EditModeAccountSetting", EnumValue = 31 },
 				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
-				{ Name = "ShowTotemActionBar", Type = "EditModeAccountSetting", EnumValue = 33 },
+				{ Name = "ShowRaidWarning", Type = "EditModeAccountSetting", EnumValue = 33 },
+				{ Name = "ShowTotemActionBar", Type = "EditModeAccountSetting", EnumValue = 34 },
 			},
 		},
 		{
@@ -507,14 +509,15 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeMinimapSetting",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "HeaderUnderneath", Type = "EditModeMinimapSetting", EnumValue = 0 },
 				{ Name = "RotateMinimap", Type = "EditModeMinimapSetting", EnumValue = 1 },
 				{ Name = "Size", Type = "EditModeMinimapSetting", EnumValue = 2 },
+				{ Name = "IconScale", Type = "EditModeMinimapSetting", EnumValue = 3 },
 			},
 		},
 		{
@@ -533,13 +536,26 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModePersonalResourceDisplaySetting",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 14,
 			Fields =
 			{
-				{ Name = "HideHealthAndPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
-				{ Name = "OnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+				{ Name = "HideHealth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
+				{ Name = "DeprecatedOnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+				{ Name = "HidePower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 2 },
+				{ Name = "HideClassInfo", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 3 },
+				{ Name = "HealthBarHeight", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 4 },
+				{ Name = "PowerBarHeight", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 5 },
+				{ Name = "Padding", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 6 },
+				{ Name = "Opacity", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 7 },
+				{ Name = "VisibleSetting", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 8 },
+				{ Name = "Size", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 9 },
+				{ Name = "HideClassInfoOnPlayerFrame", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 10 },
+				{ Name = "ShowClassColor", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 11 },
+				{ Name = "BarWidth", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 12 },
+				{ Name = "ShowBarText", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 13 },
+				{ Name = "HideAltPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 14 },
 			},
 		},
 		{
@@ -552,6 +568,17 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Modern", Type = "EditModePresetLayouts", EnumValue = 0 },
 				{ Name = "Classic", Type = "EditModePresetLayouts", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "EditModeRaidWarningSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "None", Type = "EditModeRaidWarningSetting", EnumValue = 0 },
 			},
 		},
 		{
@@ -596,9 +623,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -625,7 +652,8 @@ local EditModeManagerConstants =
 				{ Name = "PersonalResourceDisplay", Type = "EditModeSystem", EnumValue = 21 },
 				{ Name = "EncounterEvents", Type = "EditModeSystem", EnumValue = 22 },
 				{ Name = "DamageMeter", Type = "EditModeSystem", EnumValue = 23 },
-				{ Name = "TotemActionBar", Type = "EditModeSystem", EnumValue = 24 },
+				{ Name = "RaidWarning", Type = "EditModeSystem", EnumValue = 24 },
+				{ Name = "TotemActionBar", Type = "EditModeSystem", EnumValue = 25 },
 			},
 		},
 		{
@@ -642,9 +670,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 23,
 			MinValue = 0,
-			MaxValue = 21,
+			MaxValue = 22,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -666,9 +694,10 @@ local EditModeManagerConstants =
 				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
 				{ Name = "ViewArenaSize", Type = "EditModeUnitFrameSetting", EnumValue = 17 },
 				{ Name = "AuraOrganizationType", Type = "EditModeUnitFrameSetting", EnumValue = 18 },
-				{ Name = "IconSize", Type = "EditModeUnitFrameSetting", EnumValue = 19 },
+				{ Name = "DebuffIconSize", Type = "EditModeUnitFrameSetting", EnumValue = 19 },
 				{ Name = "Opacity", Type = "EditModeUnitFrameSetting", EnumValue = 20 },
 				{ Name = "BigDefensiveIconSize", Type = "EditModeUnitFrameSetting", EnumValue = 21 },
+				{ Name = "BuffIconSize", Type = "EditModeUnitFrameSetting", EnumValue = 22 },
 			},
 		},
 		{
@@ -786,6 +815,19 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Horizontal", Type = "MicroMenuOrientation", EnumValue = 0 },
 				{ Name = "Vertical", Type = "MicroMenuOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "PersonalResourceDisplayVisibleSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 0 },
+				{ Name = "InCombat", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 1 },
+				{ Name = "Hidden", Type = "PersonalResourceDisplayVisibleSetting", EnumValue = 2 },
 			},
 		},
 		{

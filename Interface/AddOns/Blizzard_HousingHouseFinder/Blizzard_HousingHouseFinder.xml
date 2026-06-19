@@ -84,6 +84,21 @@
 					<OnMouseUp method="OnMouseUp"/>
 				</Scripts>
 			</Button>
+			<Button parentKey="IgnoreNeighborhoodButton" hidden="true" mixin="IgnoreNeighborhoodButtonMixin">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+				</Anchors>
+				<NormalTexture atlas="common-icon-delete"/>
+				<HighlightTexture atlas="common-icon-delete" alphaMode="ADD"/>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
 			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" frameLevel="2000" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
@@ -481,13 +496,13 @@
 									<Layer level="ARTWORK" textureSubLevel="5">
 										<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSEFINDER_NEIGHBORHOOD_LABEL">
 											<Anchors>
-												<Anchor point="LEFT"/>
+												<Anchor point="TOPLEFT"/>
 											</Anchors>
 											<Color color="NORMAL_FONT_COLOR"/>
 										</FontString>
 										<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" wordwrap="true" text="">
 											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="3"/>
+												<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="TOPRIGHT" x="3"/>
 												<Anchor point="RIGHT" relativePoint="RIGHT"/>
 											</Anchors>
 										</FontString>

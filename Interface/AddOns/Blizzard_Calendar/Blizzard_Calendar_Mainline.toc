@@ -1,8 +1,11 @@
 ## Title: Blizzard Calendar
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## OptionalDeps: Blizzard_Plunderstorm
+## Dependencies: Blizzard_FrameXMLUtil, Blizzard_GameMenuEsc
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Blizzard_Calendar_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_Calendar.lua
 Mainline\Blizzard_CalendarTemplates.xml
 Mainline\Blizzard_Calendar.xml

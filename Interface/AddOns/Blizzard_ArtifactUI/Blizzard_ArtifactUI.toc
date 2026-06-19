@@ -1,6 +1,7 @@
 ## Title: Blizzard Artifact UI
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+Blizzard_ArtifactUI_Bootstrap.lua [Bootstrap]
 Blizzard_ArtifactPowerButton.xml
 Blizzard_ArtifactPerks.xml
 Blizzard_ArtifactAppearances.xml

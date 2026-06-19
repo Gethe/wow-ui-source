@@ -214,6 +214,7 @@ DEFAULT_COMBATLOG_FILTER_TEMPLATE = {
 
 local CombatLogQuickButtonFrame, CombatLogQuickButtonFrameProgressBar
 _G.CombatLogQuickButtonFrame = CreateFrame("Frame", "CombatLogQuickButtonFrame", UIParent)
+_G.CombatLogQuickButtonFrame:SetRolesets("chat");
 
 local Blizzard_CombatLog_Update_QuickButtons
 local Blizzard_CombatLog_PreviousSettings

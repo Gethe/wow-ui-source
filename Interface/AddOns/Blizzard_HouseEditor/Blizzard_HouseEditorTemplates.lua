@@ -309,13 +309,42 @@ function HouseEditorDecorCountMixin:OnLoad()
 	self.tooltipText =  HOUSING_DECOR_BUDGET_TOOLTIP;
 end
 
+function HouseEditorDecorCountMixin:OnShow()
+	self.Icon:SetAtlas(C_Housing.IsInsideHouse() and "house-decor-budget-icon" or "house-decor-exteriorbudget-icon")
+	HouseEditorBudgetCountMixin.OnShow(self);
+end
+
 function HouseEditorDecorCountMixin:UpdateCount()
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
 	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
+	local petDecorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
+	local maxPetDecor = C_HousingDecor.GetMaxPetPlacementBudget();
+	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
 	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
 	-- Update tooltip text with context-appropriate base and populate with updated count info
 	local baseTooltip = C_Housing.IsInsideHouse() and HOUSING_DECOR_BUDGET_TOOLTIP_INDOOR or HOUSING_DECOR_BUDGET_TOOLTIP_OUTDOOR;
-	self.tooltipText =  baseTooltip:format(decorPlaced, maxDecor);
+	self.tooltipText =  baseTooltip:format(decorPlaced, maxDecor, petDecorPlaced, maxPetDecor);
+end
+
+HouseEditorPetCountMixin = {};
+
+function HouseEditorPetCountMixin:OnLoad()
+	self.updateEvents = {"HOUSING_NUM_DECOR_PLACED_CHANGED", "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED"};
+	self.tooltipText =  nil;
+end
+
+function HouseEditorPetCountMixin:UpdateCount()
+	local decorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
+	local maxDecor = C_HousingDecor.GetMaxPetPlacementBudget();
+	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
+
+	local shouldShowBudget = false;
+	if C_HousingBasicMode.IsDecorSelected() then
+		local info = C_HousingBasicMode.GetSelectedDecorInfo();
+		shouldShowBudget = info and info.canAttachPet;
+	end
+	self.Text:SetShown(shouldShowBudget);
+	self.Icon:SetShown(shouldShowBudget);
 end
 
 HouseEditorRoomCountMixin = {};

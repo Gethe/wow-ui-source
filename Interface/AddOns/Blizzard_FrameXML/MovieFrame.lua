@@ -58,7 +58,7 @@ end
 
 function MovieFrameMixin:OnShow()
 	WorldFrame:Hide();
-	self.uiParentShown = UIParent:IsShown();
+	self.topLevelParentShown = UIParent:IsShown();
 	UIParent:Hide();
 	self:EnableSubtitles(GetCVarBool("movieSubtitle"));
 	SpellStopTargeting();
@@ -68,7 +68,7 @@ function MovieFrameMixin:OnHide()
 	self:StopMovie();
 	self.movieID = nil;
 	WorldFrame:Show();
-	if ( self.uiParentShown ) then
+	if ( self.topLevelParentShown ) then
 		UIParent:Show();
 		SetUIVisibility(true);
 	end
@@ -78,7 +78,7 @@ function MovieFrameMixin:OnCinematicStopped()
 	-- It's possible that both frames are trying to play around the same time, but the cinematic stop comes after we've already started a movie
 	-- In that case just make sure the UI stays hidden
 	if MovieFrame:IsShown() and UIParent:IsShown() then
-		MovieFrame.uiParentShown = true;
+		MovieFrame.topLevelParentShown = true;
 		UIParent:Hide();
 	end
 end

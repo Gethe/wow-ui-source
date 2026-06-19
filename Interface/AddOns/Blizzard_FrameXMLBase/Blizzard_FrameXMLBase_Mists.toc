@@ -4,11 +4,11 @@
 ## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
 ## AllowLoad: Game
 ## AllowLoadGameType: mists
-Classic\IconDataProvider.lua
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
 AnimatedStatusBar.xml
 FlowContainer.lua
-Classic\FrameLocks.lua
 GradualAnimatedStatusBar.xml
 PlayerMovementFrameFader.lua
 Classic\Constants.lua

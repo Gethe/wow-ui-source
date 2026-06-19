@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_AuctionHouseUI
+Blizzard_ProfessionsCustomerOrders_Bootstrap.lua [Bootstrap]
 Blizzard_ProfessionsCustomerOrdersForm.xml
 Blizzard_ProfessionsCustomerOrdersRecipeCategoryList.xml
 Blizzard_ProfessionsCustomerOrdersRecipeList.xml

@@ -312,14 +312,24 @@ function GameTooltip_OnLoad(self)
 	end
 end
 
+function GameTooltip_AddColoredMoneyLine(self, rawCopper, color)
+	local text = MoneyFormatterUtil.FormatMoney(rawCopper, GameTooltipMoneyFormat);
+	GameTooltip_AddColoredLine(self, text, color);
+end
+
+function GameTooltip_AddMoneyLine(self, rawCopper, useRedLineColor)
+	local color = useRedLineColor and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	GameTooltip_AddColoredMoneyLine(self, rawCopper, color);
+end
+
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	if( not maxcost or maxcost < 1 ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
+		GameTooltip_AddHighlightLine(self, string.format("%s: %s", SELL_PRICE, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
 	else
 		GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
 		local indent = string.rep(" ",4)
-		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MINIMUM, MoneyFormatterUtil.FormatMoney(cost, GameTooltipMoneyFormat)));
+		GameTooltip_AddHighlightLine(self, string.format("%s%s: %s", indent, MAXIMUM, MoneyFormatterUtil.FormatMoney(maxcost, GameTooltipMoneyFormat)));
 	end
 end
 
@@ -368,6 +378,8 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 };
 
 function GameTooltip_OnShow(self)
+	NarratableTooltipMixin.OnShow(self);
+
 	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
 	if (EditModeManagerFrame and GameTooltipDefaultContainer and EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
 		local relativeTo = select(2, self:GetPoint());
@@ -381,6 +393,8 @@ function GameTooltip_OnShow(self)
 end
 
 function GameTooltip_OnHide(self)
+	NarratableTooltipMixin.OnHide(self);
+
 	for i, info in ipairs(self.infoList or {}) do
 		local inventoryType = info.tooltipData.worldLootObjectInventoryType;
 		if inventoryType then

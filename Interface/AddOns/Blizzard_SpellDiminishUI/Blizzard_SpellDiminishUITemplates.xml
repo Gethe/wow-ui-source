@@ -11,7 +11,7 @@
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" setAllPoints="true">
 				<SwipeTexture>
-					<Color r="0" g="0" b="0" a="0.85"/>
+					<Color r="0" g="0" b="0" a="0.72"/>
 				</SwipeTexture>
 			</Cooldown>
 			<Frame parentKey="ImmunityIndicator" hidden="true">

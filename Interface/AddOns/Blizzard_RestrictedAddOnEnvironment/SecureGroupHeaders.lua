@@ -836,7 +836,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 				end
 				if ( tempEnchant ) then
 					tempEnchant:ClearAllPoints();
-					local slot = GetInventorySlotInfo(enchantableSlots[weapon]);
+					local slot = C_PaperDollInfo.GetInventorySlotInfo(enchantableSlots[weapon]);
 					tempEnchant:SetAttribute("target-slot", slot);
 					tempEnchant:SetID(slot);
 					if ( weaponPosition == 0 ) then

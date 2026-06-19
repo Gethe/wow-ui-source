@@ -63,6 +63,19 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "GetRenderMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "renderMode", Type = "StatusBarRenderMode", Nilable = false },
+			},
+		},
+		{
 			Name = "GetReverseFill",
 			Type = "Function",
 
@@ -233,6 +246,16 @@ local SimpleStatusBarAPI =
 			Arguments =
 			{
 				{ Name = "orientation", Type = "Orientation", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRenderMode",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "renderMode", Type = "StatusBarRenderMode", Nilable = false },
 			},
 		},
 		{

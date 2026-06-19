@@ -708,4 +708,16 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			},
 		},
 	},
+
+	[Enum.EditModeSystem.RaidWarning] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -182,
+		},
+	},
 };

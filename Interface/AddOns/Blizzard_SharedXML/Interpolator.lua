@@ -10,6 +10,21 @@ function InterpolatorUtil.InterpolateEaseOut(v1, v2, t)
 	return (v1 * (1 - y)) + (v2 * y);
 end
 
+function InterpolatorUtil.GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSecond, maxPerSecond)
+	maxPerSecond = maxPerSecond or 0.7;
+	minPerSecond = minPerSecond or 0.3;
+	minPerSecond = max(minPerSecond, 1 / range);
+
+	local diff = displayedValue - value;
+	local diffRatio = diff / range;
+	local change = range * ((minPerSecond / abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
+	if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
+		return value;
+	else
+		return displayedValue - change;
+	end
+end
+
 InterpolatorMixin = {}
 
 function InterpolatorMixin:Interpolate(v1, v2, time, setter, finished)

@@ -61,7 +61,7 @@ function LandingPageSoulbindButtonMixin:OnMouseUp()
 end
 
 function LandingPageSoulbindButtonMixin:OnClick()
-	if UIParentLoadAddOn("Blizzard_Soulbinds") then
+	if SoulbindViewer_LoadUI() then
 		SetCVar("soulbindsLandingPageTutorial", true);
 		SoulbindViewer:Open();
 	end

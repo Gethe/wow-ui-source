@@ -301,9 +301,104 @@
 		</Frames>
 	</Frame>
 
+	<!-- we show this if you've already linked your account.  shows current server info and a disconnect button -->
+	<Frame name="DiscordLinkedTemplate" virtual="true">
+		<Size x="300" y="300"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLinkedTitle" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="linkedTitle">
+					<Size x="250" y="30"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLinkedServer" inherits="GameFontNormalSmall" justifyH="CENTER" parentKey="linkedServer">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentLinkedTitle" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLinkedChannel" inherits="GameFontNormalSmall" justifyH="CENTER" parentKey="linkedChannel">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentLinkedServer" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SeparateStream">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.linkedChannel" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="UICheckButtonTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="DISCORD_GUILD_SETTING_SEPARATE_STREAM" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentButton" inherits="UIPanelButtonTemplate" text="DISCORD_SERVER_UNLINK_PROMPT" parentKey="button">
+				<Size x="110" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						GuildControlUI_UnlinkDiscord();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildControlDiscord_Loaded_OnLoad"/>
+			<OnEvent function="GuildControlDiscord_Loaded_OnEvent"/>
+		</Scripts>
+	</Frame>
 
-
-
+	<!-- we show this if your guild isn't set up and you need to oauth to set it up -->
+	<Frame name="DiscordUnlinkedTemplate" virtual="true">
+		<Size x="300" y="310"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentUnlinkedTitle" inherits="GameFontNormal" justifyH="CENTER" parentKey="unlinkedTitle" text="DISCORD_GUILD_NEED_TO_OAUTH">
+					<Size x="230" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLinkButton" inherits="UIPanelButtonTemplate" text="DISCORD_SETUP_OAUTH" parentKey="button">
+				<Size x="110" y="21"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentUnlinkedTitle" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						GuildControlUI_SetupDiscord();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
 	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" toplevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="338" y="444"/>
 		<Layers>
@@ -387,6 +482,8 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
+
+			<!-- Bank tab -->
 			<Frame name="$parentRankBankFrame" hidden="true" parentKey="bankTabFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHbar" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
@@ -440,6 +537,79 @@
 					<OnLoad function="GuildControlRankBank_OnLoad"/>
 				</Scripts>
 			</Frame>
+			
+			<!-- Discord settings -->
+			<Frame name="$parentRankDiscordFrame" hidden="true" inherits="VerticalLayoutFrame" parentKey="discordFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHbar" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
+				</Anchors>
+
+				<Frames>
+					<DropdownButton name="$parentServerDropdown" inherits="WowStyle1DropdownTemplate" parentKey="serverDropdown">
+						<Size x="161" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="117" y="-80"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString inherits="GameFontNormal" text="DISCORD_SELECT_SERVER" justifyH="RIGHT">
+									<Size x="110" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="-2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</DropdownButton>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlight" text="DISCORD_VALID_SERVER_CHANNEL_LIST" justifyH="CENTER" parentKey="channelListTitle">
+							<Size x="285" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="7" y="-160"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontNormal" text="DISCORD_GUILD_SERVER_VALIDATE_ERROR" justifyH="CENTER" parentKey="serverError" nonspacewrap="true">
+							<Size x="285" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="7" y="-160"/>
+							</Anchors>
+							<Color color="ERROR_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<DropdownButton name="$parentChannelDropdown" inherits="WowStyle1DropdownTemplate" parentKey="channelDropdown">
+						<Size x="161" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="117" y="-180"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString inherits="GameFontNormal" text="DISCORD_SELECT_CHANNEL" justifyH="RIGHT">
+									<Size x="110" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="-2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</DropdownButton>
+					<Button name="$parentChannelButton" inherits="UIPanelButtonTemplate" text="DISCORD_CHANNEL_LINK_PROMPT" parentKey="channelButton">
+						<Size x="285" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="7" y="-210"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad function="GuildControlRankDiscord_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+			<!-- Rank -->
 			<Frame name="$parentRankSettingsFrame" hidden="true" parentKey="rankPermFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHbar" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
@@ -471,7 +641,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="OfficerPermissions" font="GameFontNormal" justifyH="LEFT">
-							<Size x="268"/>
+							<Size x="288"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="22" y="-20"/>
 							</Anchors>
@@ -660,6 +830,7 @@
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 			<OnLoad function="GuildControlUI_OnLoad"/>
+			<OnShow function="GuildControlUI_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

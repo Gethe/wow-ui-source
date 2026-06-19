@@ -827,6 +827,10 @@ function CharacterCreateMixin:NavForward()
 		elseif self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) and ZoneChoiceFrame:ShouldShow() then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
+			-- Suppress narration on the ForwardButton when transitioning.
+			-- The mouse cursor is likely still over the button, and we don't want it to interrupt
+			-- any OnShow narration. The flag is cleared when the mouse leaves.
+			self.ForwardButton.suppressFocusNarration = true;
 		else
 			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 			self:CreateCharacter();
@@ -905,6 +909,25 @@ function CharacterCreateNavForwardButtonMixin:OnLoad_NavForward()
 			self:OnEnter();
 		end
 	end);
+end
+
+-- Suppress narration while the flag is set, so moving the mouse while still hovering
+-- over the button doesn't interrupt narration when transitioning forward.
+function CharacterCreateNavForwardButtonMixin:NarrationShouldIgnoreFocus()
+	return self.suppressFocusNarration;
+end
+
+-- Suppress click-replay narration while the flag is set, so the GLOBAL_MOUSE_UP fired
+-- immediately after the click doesn't interrupt narration when transitioning forward.
+function CharacterCreateNavForwardButtonMixin:NarrationShouldIgnoreFocusReplay()
+	return self.suppressFocusNarration;
+end
+
+-- Once the mouse leaves the button the suppression is no longer needed; the user has
+-- deliberately moved away and hovering back should narrate normally.
+function CharacterCreateNavForwardButtonMixin:OnLeave()
+	CharacterCreateNavButtonMixin.OnLeave(self);
+	self.suppressFocusNarration = nil;
 end
 
 CharacterCreateClassButtonMixin = CreateFromMixins(CustomizationMaskedButtonMixin);
@@ -1001,6 +1024,8 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 					tooltipDisabledReason = tooltipDisabledReason.."\n"..DASH_WITH_TEXT:format(requirement);
 				end
 			end
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.LockedByEntitlement then
+			tooltipDisabledReason = CHAR_CREATE_NEED_ENTITLEMENT;
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1131,7 +1156,10 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
 			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.InvalidForNewPlayers then
 				self:AddPostTooltipLine(CHAR_CREATE_NEW_PLAYER_RESTRICTED_RACE, RED_FONT_COLOR);
-			else
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveEntitlement then
+				self:AddPostTooltipLine(CHAR_CREATE_NEED_ENTITLEMENT, RED_FONT_COLOR);
+			-- We only use achievement unlocks for allied races right now
+			elseif raceData.isAlliedRace and raceData.disabledReason == Enum.CreationRaceDisabledReason.LockedByAchievement then
 				local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
 				if requirements then
 					self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
@@ -1140,6 +1168,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 						self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
 					end
 				end
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveAvailableClasses then
+				self:AddPostTooltipLine(CHAR_CREATE_NO_AVAILABLE_CLASSES, RED_FONT_COLOR);
 			end
 		end
 	end
@@ -1399,18 +1429,14 @@ function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
 end
 
 function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
-	return C_CharacterServices.IsTrialBoostEnabled() and
-		not IsKioskGlueEnabled() and
-		not C_CharacterCreation.IsNewPlayerRestricted() and
-		not C_CharacterCreation.IsTrialAccountRestricted() and
+	return CharacterServices_CanTrialBoostCharacter() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
 		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	local showTrialBoost = self:CanTrialBoostCharacter() and not fullCharacterCreateDisabled;
+	local showTrialBoost = self:CanTrialBoostCharacter();
 	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
 
 	self.ClassTrialCheckButton:SetShown(showTrialBoost);
@@ -1997,11 +2023,24 @@ function CharacterCreateRacialAbilityListMixin:SetupRacialAbilties(racialAbiliti
 	self:Layout();
 end
 
-CharacterCreateEditBoxMixin = {}
+CharacterCreateEditBoxMixin = CreateFromMixins(NarrationEditBoxMixin);
 
 function CharacterCreateEditBoxMixin:OnLoad()
 	SharedEditBoxMixin.OnLoad(self);
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
+end
+
+function CharacterCreateEditBoxMixin:NarrationGetName()
+	return NAME;
+end
+
+function CharacterCreateEditBoxMixin:NarrationGetDescription()
+	local text = NarrationEditBoxMixin.NarrationGetDescription(self);
+	if text and text ~= "" then
+		return NarrationUtil.MakeNarrationString(text, NARRATION_STATUS_REQUIRED);
+	end
+
+	return NARRATION_STATUS_REQUIRED;
 end
 
 function CharacterCreateEditBoxMixin:OnHide()
@@ -2122,6 +2161,14 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateState(available, failur
 	self:Show();
 end
 
+function CharacterCreateNameAvailabilityStateMixin:NarrationGetName()
+	if self.tooltipLines and self.tooltipLines[1] then
+		return self.tooltipLines[1].text;
+	end
+
+	return nil;
+end
+
 CharacterCreateRandomNameButtonMixin = {};
 
 function CharacterCreateRandomNameButtonMixin:OnClick()
@@ -2192,8 +2239,17 @@ function CharacterCreateZoneChoiceMixin:OnLoad()
 	self:SetUseNPE(true);
 end
 
+function CharacterCreateZoneChoiceMixin:NarrationGetName()
+	return self.Title:GetText();
+end
+
 function CharacterCreateZoneChoiceMixin:OnShow()
 	self.FadeIn:Play();
+
+	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.Notification);
+	if narrationInfo then
+		EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+	end
 end
 
 function CharacterCreateZoneChoiceMixin:OnHide()
@@ -2225,6 +2281,8 @@ function CharacterCreateZoneChoiceMixin:Setup()
 
 	-- If there is more than one choice, the normal starting zone will always be first
 	self.NormalStartingZone:SetZoneInfo(firstZoneChoiceInfo.zoneName, firstZoneChoiceInfo.zoneImageAtlas);
+
+	self:UpdateForScale();
 end
 
 function CharacterCreateZoneChoiceMixin:ShouldShow()
@@ -2243,6 +2301,25 @@ end
 function CharacterCreateZoneChoiceMixin:SetUseNPE(useNPE)
 	self.useNPE = useNPE;
 	self:UpdateButtons();
+end
+
+function CharacterCreateZoneChoiceMixin:UpdateForScale()
+	-- reset
+	self:SetScale(1);
+	-- negative room means something is offscreen
+	-- multiply by 2 because only 1 side is being measured
+	local horizontalRoom = 2 * self.NPEZone:GetLeft();
+	local verticalRoom = 2 * (GlueParent:GetHeight() - self.Title:GetTop());
+
+	local desiredScale = 1;
+	-- pick the worst one and scale based on that
+	if verticalRoom < 0 and verticalRoom <= horizontalRoom then
+		-- adding to 1 because room is negative
+		desiredScale = 1 + (verticalRoom / self:GetHeight());
+	elseif horizontalRoom < 0 and horizontalRoom <= verticalRoom then
+		desiredScale = 1 + (horizontalRoom / self:GetWidth());
+	end
+	self:SetScale(desiredScale);
 end
 
 CharacterCreateStartingZoneMixin = {};

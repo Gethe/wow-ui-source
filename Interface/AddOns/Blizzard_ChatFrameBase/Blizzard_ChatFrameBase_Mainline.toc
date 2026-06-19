@@ -1,8 +1,12 @@
 ## Title: Blizzard_ChatFrameBase
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_AutoComplete, Blizzard_Settings_Shared, Blizzard_TimerunningUtil
-## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode, Blizzard_TransmogShared
+## Dep: Blizzard_AutoComplete
+## Dep: Blizzard_Settings_Shared
+## Dep: Blizzard_TimerunningUtil
+## Dep: Blizzard_FrameXMLUtil [AllowLoad game]
+## Dep: Blizzard_GlueStubs [AllowLoad glue]
+## Dep: Blizzard_EditMode [AllowLoad game]
+## Dep: Blizzard_TransmogShared [AllowLoad game]
+## Dep: Blizzard_GameMenuEsc
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Shared\HistoryKeeper.lua

@@ -243,11 +243,19 @@ local function IsUsingValidProductForTrialBoost(flowData)
 	return boostType ~= nil and boostType == requiredBoost;
 end
 
+function CharacterServices_CanTrialBoostCharacter()
+	return C_CharacterServices.IsTrialBoostEnabled() and
+		not IsKioskGlueEnabled() and
+		not C_CharacterCreation.IsNewPlayerRestricted() and
+		not C_CharacterCreation.IsTrialAccountRestricted() and
+		not C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+end
+
 local function IsUsingValidProductForCreateNewCharacterBoost()
 	-- To prevent player confusion, when trial boost create is shown, do not show the normal boost create character button
 	-- As different products are added this may need to be updated to reflect specific cases, but for now it's
 	-- sufficient to make trial/normal create mutually exclusive.
-	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
+	return not CharacterServices_CanTrialBoostCharacter() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
 function CharacterSelectBlockBase:Initialize(results)
@@ -307,7 +315,7 @@ function CharacterSelectBlockBase:Initialize(results)
 	local hasEligibleBoostCharacter = CharacterServicesCharacterSelector:HasAnyEligibleCharacter();
 	local canCreateCharacter = CanCreateCharacter();
 	local canShowCreateNewCharacterButton = canCreateCharacter and IsUsingValidProductForCreateNewCharacterBoost();
-	local canCreateTrialBoostCharacter = canCreateCharacter and (C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data));
+	local canCreateTrialBoostCharacter = canCreateCharacter and CharacterServices_CanTrialBoostCharacter() and IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 
 	self:SetOptionUsed(self.OPTION_INDEX_STEP_LABEL, hasEligibleBoostCharacter);
 	self:SetOptionUsed(self.OPTION_INDEX_CREATE_NEW_CHARACTER, canShowCreateNewCharacterButton);

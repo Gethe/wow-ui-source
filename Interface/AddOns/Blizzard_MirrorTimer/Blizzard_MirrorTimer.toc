@@ -1,8 +1,0 @@
-## Title: Blizzard_MirrorTimer
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_EditMode
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-MirrorTimer.lua
-MirrorTimer.xml

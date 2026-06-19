@@ -82,6 +82,8 @@ function BaseMapPoiPinMixin:OnAcquired(poiInfo)
 	if poiInfo.isSuppressible then
 		self:AddTag(MapPinTags.IsSuppressible);
 	end
+
+	self:AddTag(MapPinTags.AreaPOI);
 end
 
 function BaseMapPoiPinMixin:GetPoiInfo()

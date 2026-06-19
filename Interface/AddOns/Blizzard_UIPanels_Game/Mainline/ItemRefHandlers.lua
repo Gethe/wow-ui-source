@@ -79,6 +79,10 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DelveCompanionConfig, function(link, text
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.MountEquipment, function(link, text, linkData, contextData)
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 end);
 
@@ -187,7 +191,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.CalendarEvent, function(link, text, linkD
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.Community, function(link, text, linkData, contextData)
-	if ( CommunitiesFrame_IsEnabled() ) then
+	if ( C_Club.IsEnabled() ) then
 		local clubId = string.split(":", linkData.options);
 		clubId = tonumber(clubId);
 		CommunitiesHyperlink.OnClickReference(clubId);
@@ -301,3 +305,63 @@ LinkUtil.RegisterLinkHandler(LinkTypes.HousingDecor, function(link, text, linkDa
 	local decorID = string.split(":", linkData.options);
 	EventRegistry:TriggerEvent("HousingCatalogFrame.OpenToDecorID", tonumber(decorID));
 end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.HousingBlueprint, function(link, text, linkData, contextData)
+	local blueprintShareCode = string.split(":", linkData.options);
+	if HousingFramesUtil then
+		HousingFramesUtil.ShowBlueprintImport(blueprintShareCode);
+	end
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUser,
+	function(link, text, linkData, contextData)
+		if ( contextData.button == "RightButton" ) then
+
+			local bnetIDAccount, discordUserID, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
+
+			local menuContextData = 
+			{
+				name = string.format(DISCORD_USER_WITH_ID, discordUserID);
+				lineID = lineID,
+				communityClubID = nil,
+				communityStreamID = nil,
+				communityEpoch = nil,
+				communityPosition = nil,
+				bnetIDAccount = bnetIDAccount,
+			};
+
+			local which = "DISCORD_USER";
+			if discordUserID == C_Discord.GetDiscordUserID() then
+				which = "DISCORD_USER_SELF";
+			end
+
+			UnitPopup_OpenMenu(which, menuContextData);
+		end
+	end
+);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUserCommunity,
+	function(link, text, linkData, contextData)
+		if ( contextData.button == "RightButton" ) then
+
+			local bnetIDAccount, discordUserID, clubId, streamId, epoch, position = string.split(":", linkData.options);
+
+			local menuContextData = 
+			{
+				name = string.format(DISCORD_USER_WITH_ID, discordUserID);
+				lineID = nil,
+				communityClubID = clubId,
+				communityStreamID = streamId,
+				communityEpoch = epoch,
+				communityPosition = position,
+				bnetIDAccount = bnetIDAccount,
+			};
+			local which = "DISCORD_USER";
+			if discordUserID == C_Discord.GetDiscordUserID() then
+				which = "DISCORD_USER_SELF";
+			end
+
+			UnitPopup_OpenMenu(which, menuContextData);
+		end
+	end
+);

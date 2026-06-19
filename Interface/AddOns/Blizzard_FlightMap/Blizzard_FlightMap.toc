@@ -3,6 +3,7 @@
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 1
 
+Blizzard_FlightMap_Bootstrap.lua [Bootstrap]
 FM_AreaPOIDataProvider.xml
 FM_FlightPathDataProvider.xml
 FM_ZoneSummaryDataProvider.xml

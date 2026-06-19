@@ -267,6 +267,25 @@ function ColorManager.GetAtlasDataForPlayerChoice(quality)
 	return atlasData;
 end
 
+function ColorManager.GetAtlasDataForMawBuff(quality)
+	local atlasData = {
+		atlas = nil,
+		overrideColor = nil
+	};
+
+	local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
+	if overrideQuality then
+		local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
+		if overrideInfo then
+			atlasData.atlas = "jailerstower-animapowerlist-powerborder-white";
+			atlasData.overrideColor = overrideInfo.overrideColor;
+		end
+	end
+
+	-- No need to set default atlas data here, as maw buffs know this already via API calls.
+	return atlasData;
+end
+
 -- |cnIQ<ItemQuality>:<your text here>|r - Named color token specifically for Item Qualities (IQ) which takes override colors into account.
 function ColorManager.GetFormattedStringForItemQuality(text, quality)
 	return string.format("|cnIQ%d:%s|r", quality, text);

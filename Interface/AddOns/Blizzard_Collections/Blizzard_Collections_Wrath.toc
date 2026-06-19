@@ -1,11 +1,12 @@
 ## Title: Blizzard Collections
-## Notes: Collections				 
+## Notes: Collections
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## Dependencies: Blizzard_FrameXMLUtil, Blizzard_TransmogShared
-## AllowLoadGameType: classic
+## AllowLoadGameType: wrath
+Blizzard_Collections_Bootstrap.lua [Bootstrap]
 Classic\Blizzard_CollectionTemplates.lua
 Classic\Blizzard_CollectionTemplates.xml
 Classic\Blizzard_Collections.lua

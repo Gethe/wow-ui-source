@@ -1,4 +1,18 @@
 
+UIModeUtil.RegisterMode("Spectating", {
+	rolesetBlocklist = {
+		"unitFrames",
+		"buffs",
+		"objectives",
+		"statusBars",
+		"cooldownViewers",
+		"encounterUI",
+		"pvp",
+		"extraAbilities",
+		"bags",
+	},
+});
+
 local ZoomFrequencySeconds = 0.1;
 
 local PreferSpectatePreviousKey = "A";
@@ -105,7 +119,7 @@ function SpectateFrameMixin:InitializeSpectateMode()
 		return;
 	end
 
-	SetFrameLock("SPECTATING", true);
+	UIModeUtil.SetModeActive("Spectating", true);
 	EditModeManagerFrame:SetOverrideLayout(1);
 	self:Show();
 	self:UpdatePlayerName();
@@ -120,7 +134,7 @@ end
 local EDITMODE_MODERN_PRESET_LAYOUT_INDEX = 1;
 function SpectateFrameMixin:LeaveSpectatingMode()
 	StaticPopup_Hide("CONFIRM_LEAVE_MATCH_WHILE_RESSURECTABLE");
-	SetFrameLock("SPECTATING", false);
+	UIModeUtil.SetModeActive("Spectating", false);
 	EditModeManagerFrame:ClearOverrideLayout();
 	C_EditMode.SetActiveLayout(EDITMODE_MODERN_PRESET_LAYOUT_INDEX); --Default layout
 	self:Hide();

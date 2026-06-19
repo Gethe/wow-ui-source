@@ -145,15 +145,15 @@ end
 
 function MacroFrameMixin:SetAccountMacros()
 	self.macroBase = 0;
-	self.macroMax = MAX_ACCOUNT_MACROS;
+	self.macroMax = Constants.MacroConsts.MAX_ACCOUNT_MACROS;
 	self:Update();
 	local scrollToSelected = true;
 	self:SelectMacro(1, scrollToSelected);
 end
 
 function MacroFrameMixin:SetCharacterMacros()
-	self.macroBase = MAX_ACCOUNT_MACROS;
-	self.macroMax = MAX_CHARACTER_MACROS;
+	self.macroBase = Constants.MacroConsts.MAX_ACCOUNT_MACROS;
+	self.macroMax = Constants.MacroConsts.MAX_CHARACTER_MACROS;
 	self:Update();
 	local scrollToSelected = true;
 	self:SelectMacro(1, scrollToSelected);
@@ -173,7 +173,7 @@ function MacroFrameMixin:Update()
 	end
 
 	local function MacroFrameGetNumMacros()
-		return useAccountMacros and MAX_ACCOUNT_MACROS or MAX_CHARACTER_MACROS;
+		return useAccountMacros and Constants.MacroConsts.MAX_ACCOUNT_MACROS or Constants.MacroConsts.MAX_CHARACTER_MACROS;
 	end
 
 	self.MacroSelector.numMacros = useAccountMacros and numAccountMacros or numCharacterMacros;
@@ -277,7 +277,7 @@ function MacroFrameMixin:SelectMacro(index, scrollToSelected)
 	if index then
 		local actualIndex = self:GetMacroDataIndex(index);
 		local name, texture, body = GetMacroInfo(actualIndex);
-		if(name) then 
+		if(name) then
 			MacroFrameSelectedMacroName:SetText(name);
 			MacroFrameText:SetText(body);
 			self.SelectedMacroButton.Icon:SetTexture(texture);

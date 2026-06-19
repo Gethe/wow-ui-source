@@ -319,7 +319,8 @@ function DamageMeterSessionWindowMixin:InitEntry(frame, elementData)
 
 	frame:SetScript("OnClick", function(button, mouseButtonName)
 		if mouseButtonName == "LeftButton" or mouseButtonName == "RightButton" then
-			self:ShowSourceWindow(elementData);
+			local sticky = IsShiftKeyDown();
+			self:ShowSourceWindow(elementData, sticky);
 		end
 	end);
 end
@@ -351,9 +352,9 @@ function DamageMeterSessionWindowMixin:InitializeScrollBox()
 	self:InitializeScrollBoxPadding(view);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self:GetScrollBox(), self:GetScrollBar(), view);
 
-	local topLeftX, topLeftY = 17, -5;
-	local bottomRightX, bottomRightY = -15, 6;
-	local withBarXOffset = 20;
+	local topLeftX, topLeftY = 5, -2;
+	local bottomRightX, bottomRightY = -1, 6;
+	local withBarXOffset = 15;
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", self:GetHeader(), "BOTTOMLEFT", topLeftX, topLeftY),
 		CreateAnchor("BOTTOMRIGHT", bottomRightX - withBarXOffset, bottomRightY);
@@ -963,7 +964,7 @@ function DamageMeterSessionWindowMixin:UpdateSessionTimerState(combatSession)
 	end
 end
 
-function DamageMeterSessionWindowMixin:ShowSourceWindow(source)
+function DamageMeterSessionWindowMixin:ShowSourceWindow(source, sticky)
 	-- Leverage the death recap UI to show death breakdown.
 	if source.deathRecapID and source.deathRecapID ~= 0 then
 		OpenDeathRecapUI(source.deathRecapID);
@@ -972,6 +973,7 @@ function DamageMeterSessionWindowMixin:ShowSourceWindow(source)
 
 	local sourceWindow = self:GetSourceWindow();
 	sourceWindow:SetSource(source);
+	sourceWindow:SetSticky(sticky);
 	sourceWindow:AnchorToSessionWindow(self);
 	sourceWindow:Show();
 end

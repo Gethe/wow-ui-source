@@ -27,7 +27,7 @@
 		<Frames>
 			<Cooldown parentKey="Cooldown" setAllPoints="true" reverse="true">
 				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
-					<Color r="0" g="0" b="0" a="0.5"/>
+					<Color r="0" g="0" b="0" a="0.25"/>
 				</SwipeTexture>
 				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
 			</Cooldown>

@@ -2,5 +2,6 @@
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
 ## AllowLoadGameType: mainline
+Blizzard_ItemUpgradeUI_Bootstrap.lua [Bootstrap]
 Mainline/Blizzard_ItemUpgradeUI.lua
 Mainline/Blizzard_ItemUpgradeUI.xml

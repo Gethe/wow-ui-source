@@ -5,9 +5,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencyDestroyReason",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "Cheat", Type = "CurrencyDestroyReason", EnumValue = 0 },
@@ -27,6 +27,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "AccountTransfer", Type = "CurrencyDestroyReason", EnumValue = 14 },
 				{ Name = "HonorLoss", Type = "CurrencyDestroyReason", EnumValue = 15 },
 				{ Name = "CraftingOrderReagent", Type = "CurrencyDestroyReason", EnumValue = 16 },
+				{ Name = "AccountServerConversion", Type = "CurrencyDestroyReason", EnumValue = 17 },
 			},
 		},
 		{
@@ -100,7 +101,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "PlayerTraitRefund", Type = "CurrencySource", EnumValue = 60 },
 				{ Name = "AccountHwmUpdate", Type = "CurrencySource", EnumValue = 61 },
 				{ Name = "ConvertItemsToCurrencyAndReputation", Type = "CurrencySource", EnumValue = 62 },
-				{ Name = "PhBuffer_63", Type = "CurrencySource", EnumValue = 63 },
+				{ Name = "AccountServerConversion", Type = "CurrencySource", EnumValue = 63 },
 				{ Name = "SpellSkipLinkedCurrency", Type = "CurrencySource", EnumValue = 64 },
 				{ Name = "AccountTransfer", Type = "CurrencySource", EnumValue = 65 },
 				{ Name = "RenownRepGainInitialVisibility", Type = "CurrencySource", EnumValue = 66 },

@@ -110,22 +110,6 @@ local Spell =
 			},
 		},
 		{
-			Name = "GetMawPowerBorderAtlasBySpellID",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -139,6 +123,23 @@ local Spell =
 			Returns =
 			{
 				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMawPowerRarityInfoBySpellID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rarityID", Type = "number", Nilable = false },
+				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -449,7 +450,7 @@ local Spell =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -528,6 +529,7 @@ local Spell =
 			{
 				{ Name = "iconID", Type = "fileID", Nilable = false },
 				{ Name = "originalIconID", Type = "fileID", Nilable = false },
+				{ Name = "conditionalIconID", Type = "fileID", Nilable = true },
 			},
 		},
 		{
@@ -931,6 +933,15 @@ local Spell =
 			Returns =
 			{
 				{ Name = "hasRange", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellChecksItemCondition",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

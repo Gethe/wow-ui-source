@@ -10,9 +10,12 @@ local function GetStreamName(clubId, stream)
 	local r, g, b = ChatFrameUtil.GetCommunitiesChannelColor(clubId, streamId);
 	local color = CreateColor(r, g, b);
 	streamName = color:WrapTextInColorCode(streamName);
-		
+
 	local localID = ChatFrameUtil.GetCommunitiesChannelLocalID(clubId, streamId);
-	if localID and localID ~= 0 then
+
+	if(stream.streamType == Enum.ClubStreamType.Discord) then
+		streamName = streamName.." "..CreateAtlasMarkup("UI-ChatIcon-Discord");
+	end	if localID and localID ~= 0 then
 		streamName = streamName.." "..GRAY_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_STREAM0_CHAT_SHORTCUT_FORMAT:format(localID));
 	end
 	
@@ -363,10 +366,11 @@ function CommunitiesAddToChatMixin:OnShow()
 		local streamId = self:GetParent():GetSelectedStreamId();
 		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 		local channelName = ChatFrameUtil.GetCommunitiesChannelName(clubId, streamId);
+		local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer or streamInfo.streamType == Enum.ClubStreamType.Discord;
 		if not streamInfo then
 			return;
 		end
-		local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer;
+
 	
 		rootDescription:CreateTitle(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE);
 		
@@ -381,7 +385,9 @@ function CommunitiesAddToChatMixin:OnShow()
 			
 			if isGuildStream then
 				local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-				
+				if streamInfo and streamInfo.streamType == Enum.ClubStreamType.Discord then
+					messageGroup = "GUILD_DISCORD";
+				end
 				local function IsChecked(chatWindowIndex)
 					return chatWindow:ContainsMessageGroup(messageGroup);
 				end
@@ -425,8 +431,10 @@ function CommunitiesAddToChatMixin:OnShow()
 					local chatFrameName = streamInfo.name;
 					local frame = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
 					local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-					frame:AddMessageGroup(messageGroup);
-				else
+					if streamInfo and streamInfo.streamType == Enum.ClubStreamType.Discord then
+						messageGroup = "GUILD_DISCORD";
+					end
+					frame:AddMessageGroup(messageGroup);				else
 					local clubInfo = C_Club.GetClubInfo(clubId);
 					if clubInfo  then
 						local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.

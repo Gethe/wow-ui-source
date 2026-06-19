@@ -41,14 +41,6 @@ local function ClearMouseLeaveEventData()
 	return false;
 end
 
-local function TryHideTooltip(frame)
-	local tooltip = GetAppropriateTooltip();
-	if tooltip:GetOwner() == frame then
-		tooltip:Hide();
-		tooltip:SetWindow(nil);
-	end
-end
-
 --[[
 For ease of debugging with internal tools, dropdowns are prevented from automatically
 closing when clicked outside when either the edit menu or editor is shown.
@@ -149,6 +141,20 @@ do
 	function SharedMenuPropertiesMixin:GetMenuMixin()
 		return securecall(GetMenuMixin, self);
 	end
+end
+
+do
+	local function GetTooltipFrame(smp)
+		return smp.tooltip or GetAppropriateTooltip();
+	end
+
+	function SharedMenuPropertiesMixin:GetTooltipFrame()
+		return securecall(GetTooltipFrame, self);
+	end
+end
+
+function SharedMenuPropertiesMixin:SetTooltipFrame(tooltip)
+	self.tooltip = tooltip;
 end
 
 function SharedMenuPropertiesMixin:GetMenuResponseCallbacks()
@@ -396,6 +402,10 @@ function BaseMenuDescriptionMixin:DisableReacquireFrames()
 	self:GetSharedMenuProperties():DisableReacquireFrames();
 end
 
+function BaseMenuDescriptionMixin:GetTooltipFrame()
+	return self:GetSharedMenuProperties():GetTooltipFrame();
+end
+
 function BaseMenuDescriptionMixin:HasElements()
 	return self.elementDescriptions:HasValues();
 end
@@ -482,6 +492,10 @@ function RootMenuDescriptionMixin:AddMenuReleasedCallback(callback)
 	self:GetSharedMenuProperties():AddMenuReleasedCallback(callback);
 end
 
+function RootMenuDescriptionMixin:SetTooltipFrame(tooltip)
+	self:GetSharedMenuProperties():SetTooltipFrame(tooltip);
+end
+
 --[[
 Menu element descriptions represent each individual menu element. Adding menu element
 descriptions into an existing element description creates a submenu.
@@ -531,6 +545,7 @@ local BaseMenuDescriptionAPI =
 	"SetMaximumWidth",
 	"SetGridMode",
 	"SetScrollMode",
+	"GetTooltipFrame",
 };
 
 local RootMenuDescriptionProxyMixin;
@@ -541,6 +556,7 @@ do
 		"AddMenuChangedCallback",
 		"AddMenuAcquiredCallback",
 		"AddMenuReleasedCallback",
+		"SetTooltipFrame",
 		"DisableCompositor",
 		"DisableReacquireFrames",
 	};
@@ -661,6 +677,14 @@ do
 
 	function MenuElementDescriptionProxyMixin:IsRadio()
 		return self.isRadio;
+	end
+
+	function MenuElementDescriptionProxyMixin:SetCheckbox(isCheckbox)
+		self.isCheckbox = isCheckbox;
+	end
+
+	function MenuElementDescriptionProxyMixin:IsCheckbox()
+		return self.isCheckbox;
 	end
 
 	function MenuElementDescriptionProxyMixin:SetIsSelected(isSelected)
@@ -796,7 +820,11 @@ do
 			self.onLeave(frame, self);
 		end
 
-		TryHideTooltip(frame);
+		local tooltip = self:GetTooltipFrame();
+		if tooltip:GetOwner() == frame then
+			tooltip:Hide();
+			tooltip:SetWindow(nil);
+		end
 	end
 
 	function MenuElementDescriptionProxyMixin:SetEnabled(isEnabled)
@@ -829,6 +857,10 @@ do
 
 	function MenuElementDescriptionProxyMixin:SetResponder(callback)
 		self.responder = callback;
+	end
+
+	function MenuElementDescriptionProxyMixin:HasResponder()
+		return self.responder ~= nil;
 	end
 
 	function MenuElementDescriptionProxyMixin:HookResponder(callback)
@@ -885,7 +917,7 @@ do
 		never cause the menu to close.
 		]]--
 		local response = nil;
-		local willRespond = self.responder ~= nil;
+		local willRespond = self:HasResponder();
 		if willRespond then
 			-- Use the default response if it exists. This is supplied by checkbox and radio descriptions.
 			local descriptionResponse = securecallfunction(SecureGetDefaultResponse, self, menuInputContext, menuInputButtonName);
@@ -1037,8 +1069,6 @@ local function ResetMenuElement(pool, frame, new)
 	frame:SetToDefaults();
 
 	if not new then
-		TryHideTooltip(frame);
-
 		--[[
 		Clear scripts to ensure they cannot be called when the pool removes this frame's anchors.
 		Any callback assigned to the menu description will be unavailable now that the
@@ -1483,7 +1513,14 @@ function MenuMixin:PerformLayout()
 	the appropriate axis if necessary. Note that if this was a grid menu with the compaction margin provided,
 	this will have no effect along the vertical axis.
 	]]--
-	self:FlipPositionIfOffscreen();
+
+	local window = menuFrame:GetWindow();
+	if window == nil then
+		-- We're not attempting to flip offscreen menus in external windows. The longterm
+		-- goal is to have menus in external windows be opened into their own external window,
+		-- making any repositioning across the axis of an anchor target unnecessary.
+		self:FlipPositionIfOffscreen();
+	end
 
 	--[[
 	After any menu position has been inverted, finish by clamping to screen. If this is a new menu, the menu
@@ -1557,18 +1594,15 @@ do
 			return;
 		end
 
-		local overflowHorizontal, overflowVertical = false, false;
-
-		local br, bt;
-		local window = menuFrame:GetWindow();
-		if window then
-			br, bt = window:GetWindowSize();
-		else
-			local boundsParent = GetAppropriateTopLevelParent();
-			br = boundsParent:GetRight();
-			bt = boundsParent:GetTop();
+		local boundsParent = GetAppropriateTopLevelParent();
+		local br = boundsParent:GetRight();
+		local bt = boundsParent:GetTop();
+		if not br or not bt then
+			-- If we cannot obtain bounds, then we cannot determine if the menu is offscreen.
+			return;
 		end
 
+		local overflowHorizontal, overflowVertical = false, false;
 		if (l < 0) or (r > br) then
 			overflowHorizontal = true;
 		end
@@ -1767,6 +1801,18 @@ function MenuProxyMixin:SetMenuDescription(descriptionProxy)
 	local menu = Proxies:ToPrivate(self);
 	local description = Proxies:ToPrivate(descriptionProxy);
 	menu:SetMenuDescription(description);
+end
+
+function MenuProxyMixin:EnumerateElementDescriptions(callback)
+	local menu = Proxies:ToPrivate(self);
+	if not menu.menuDescription then
+		return;
+	end
+
+	for index, elementDescription in menu.menuDescription:EnumerateElementDescriptions() do
+		local descriptionProxy = elementDescription:ToProxy();
+		callback(index, descriptionProxy);
+	end
 end
 
 function MenuProxyMixin:SendResponse(descriptionProxy, response)
@@ -2054,7 +2100,7 @@ function MenuManagerMixin:AcquireMenu(params)
 	local menuDescription = params.menuDescription;
 
 	--[[
-	Menus are parented to WorldFrame because UIParent is hidden in certain fullscreen UIs.
+	Menus are parented to WorldFrame because the top-level parent is hidden in certain fullscreen UIs.
 	We apply the scale of the appropriate parent to the menu to get the desired base scale.
 	]]--
 	local proxy = securecallfunction(AcquireMenuFrame, self);

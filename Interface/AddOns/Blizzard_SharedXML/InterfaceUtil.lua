@@ -14,6 +14,18 @@ function ViewInDebugWindow(...)
 	end
 end
 
+InterfaceUtil = InterfaceUtil or {};
+
+function InterfaceUtil.GetScreenHeightScale()
+	local screenHeight = 768;
+	return GetScreenHeight() / screenHeight;
+end
+
+function InterfaceUtil.GetScreenWidthScale()
+	local screenWidth = 1024;
+	return GetScreenWidth() / screenWidth;
+end
+
 StoreInterfaceUtil = {};
 
 -- Returns true if there is a subscription product available and the store was toggled.

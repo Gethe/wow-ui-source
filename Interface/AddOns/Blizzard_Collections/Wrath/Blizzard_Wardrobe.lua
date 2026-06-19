@@ -48,7 +48,7 @@ function WardrobeCollectionFrameMixin:OnLoad()
 end
 
 function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
-	if ( not CollectionsJournal:IsVisible() or not self:IsVisible() ) then
+	if not DISALLOW_FRAME_TOGGLING and ( not CollectionsJournal:IsVisible() or not self:IsVisible() ) then
 		ToggleCollectionsJournal(5);
 	end
 
@@ -101,6 +101,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 		cvarBitfield = "closedInfoFramesAccountWide",
 		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSetsTab,
 		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		checkCVars = true,
 	};
 	HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 end

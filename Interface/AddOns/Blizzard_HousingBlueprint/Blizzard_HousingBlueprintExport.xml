@@ -1,0 +1,180 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingBlueprintExportContentTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-20"/>
+			<Anchor point="LEFT" x="15"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="320" type="number" />
+		</KeyValues>
+	</Frame>
+
+	<Frame name="HousingBlueprintExportFrame" mixin="HousingBlueprintExportFrameMixin" inherits="ResizeLayoutFrame, HousingBlueprintBaseFrameTemplate" parent="UIParent" hidden="true">
+		<KeyValues>
+			<KeyValue key="minimumHeight" value="100" type="number"/>
+			<KeyValue key="widthPadding" value="15" type="number"/>
+			<KeyValue key="heightPadding" value="20" type="number"/>
+			<KeyValue key="headerText" value="HOUSING_BLUEPRINT_EXPORT_HEADER" type="global"/>
+			<KeyValue key="isExclusive" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="InputContent" mixin="HousingBlueprintExportInputContentMixin" inherits="VerticalLayoutFrame, HousingBlueprintExportContentTemplate">
+				<Size y="200"/>
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="320" type="number" />
+					<KeyValue key="spacing" value="15" type="number" />
+				</KeyValues>
+				<Frames>
+					<DropdownButton parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate">
+						<KeyValues>
+							<KeyValue key="defaultText" value="HOUSING_BLUEPRINT_EXPORT_TYPE_PLACEHOLDER" type="global"/>
+						</KeyValues>
+						<Size y="28"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean" />
+						</KeyValues>
+					</DropdownButton>
+					<EditBox parentKey="NameInputBox" autoFocus="false" inherits="InputBoxInstructionsTemplate">
+						<Size y="22"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="leftPadding" value="5" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean" />
+						</KeyValues>
+						<FontString inherits="ChatFontNormal"/>
+						<KeyValues>
+							<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+							<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+						</KeyValues>
+					</EditBox>
+					<Button parentKey="SaveButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_EXPORT_SAVE_BUTTON" motionScriptsWhileDisabled="true">
+						<Size x ="152" y="28"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+							<KeyValue key="topPadding" value="5" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NameInputLabel" inherits="GameFontHighlightSmall" justifyH="LEFT" text="HOUSING_BLUEPRINT_EXPORT_ROOM_NAME_LABEL" hidden="true">
+							<Size y="12"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean" />
+								<KeyValue key="bottomPadding" value="-10" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="ErrorText" inherits="Game13FontShadow">
+							<Size y="12"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean" />
+								<KeyValue key="leftPadding" value="5" type="number"/>
+								<KeyValue key="rightPadding" value="5" type="number"/>
+							</KeyValues>
+							<Color color="PURE_RED_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="SuccessContent" mixin="HousingBlueprintExportSuccessContentMixin" inherits="ResizeLayoutFrame, HousingBlueprintExportContentTemplate">
+				<Size y="150"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="SavedName" inherits="GameFontHighlightLarge" justifyH="LEFT">
+							<Size y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="BlueprintsCollectionButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_EXPORT_BLUEPRINTS_COLLECTION_BUTTON" motionScriptsWhileDisabled="true">
+						<Size x ="180" y="28"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SavedName" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="maxWidth" value="300" type="number"/>
+						</KeyValues>
+					</Button>
+					<ScrollFrame parentKey="ShareCodeBox" inherits="InputScrollFrameTemplate">
+						<Size y="15"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.BlueprintsCollectionButton" relativePoint="BOTTOM" x="0" y="-25"/>
+							<Anchor point="LEFT" x="5" y="0"/>
+							<Anchor point="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="hideCharCount" value="true" type="boolean"/>
+						</KeyValues>
+					</ScrollFrame>
+					<Button parentKey="ChatLinkButton" inherits="UIPanelButtonTemplate" text="HOUSING_BLUEPRINT_EXPORT_CHAT_LINK_BUTTON" motionScriptsWhileDisabled="true">
+						<Size y="28"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ShareCodeBox" relativePoint="BOTTOMLEFT" x="-5" y="-15"/>
+							<Anchor point="RIGHT" relativePoint="CENTER" x="-5" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ClipboardButton" inherits="UIPanelButtonTemplate" text="HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_BUTTON" motionScriptsWhileDisabled="true">
+						<Size y="28"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ShareCodeBox" relativePoint="BOTTOMRIGHT" x="0" y="-15"/>
+							<Anchor point="LEFT" relativePoint="CENTER" x="5" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ShareCodeLabel" inherits="GameFontHighlightSmall" text="HOUSING_BLUEPRINT_EXPORT_SHARECODE_LABEL">
+							<Size y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShareCodeBox" relativePoint="TOPLEFT" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="LoadingOverlay" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="10"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+						<Size x="142" y="142"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow inherit="prepend" method="OnShow"/>
+			<OnHide inherit="prepend" method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

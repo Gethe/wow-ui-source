@@ -62,6 +62,12 @@ function HousingMarketProductDisplayMixin:AddTooltipPrice(tooltip)
 	GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(self.Contents:GetCurrentPrice()));
 end
 
+function HousingMarketProductDisplayMixin:GetCartItemData()
+	-- Override in your derived Mixin to supply cart item data.
+	-- Returns a cart item table, or nil if the item cannot be added to the cart.
+	return nil;
+end
+
 function HousingMarketProductDisplayMixin:ShowContextMenu()
 	if not self.elementData then
 		return;
@@ -73,11 +79,10 @@ function HousingMarketProductDisplayMixin:ShowContextMenu()
 		-- Items that cannot be previewed must be purchased directly from the shop and can't be added to the cart.
 		if self.elementData.canPreview then
 			local addToCartButton = rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
-				local elementData = {
-					bundleCatalogShopProductID = self.elementData.productID,
-				};
-
-				EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), elementData);
+				local cartItemData = self:GetCartItemData();
+				if cartItemData then
+					EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), cartItemData);
+				end
 
 				local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartVisualServices.SetCartShown);
 				local shown = true;
@@ -194,6 +199,34 @@ function HousingMarketSmallProductDisplayMixin:StartPreview()
 	end
 end
 
+function HousingMarketSmallProductDisplayMixin:GetCartItemData()
+	-- Overrides HousingMarketProductDisplayMixin.
+
+	local entryVariantID = self.elementData.entryVariantID;
+	if not entryVariantID or (entryVariantID.entryType ~= Enum.HousingCatalogEntryType.Decor) then
+		return nil;
+	end
+
+	local decorID = entryVariantID.recordID;
+	local entryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID);
+	local marketInfo = C_HousingCatalog.GetMarketInfoForDecor(decorID);
+	if not entryInfo or not marketInfo then
+		return nil;
+	end
+
+	return {
+		isBundleParent = false,
+		isBundleChild = false,
+		id = entryInfo.itemID,
+		name = entryInfo.name,
+		decorID = decorID,
+		icon = entryInfo.iconTexture,
+		productID = marketInfo.productID,
+		price = marketInfo.originalPrice or marketInfo.price,
+		salePrice = marketInfo.originalPrice and marketInfo.price or nil,
+	};
+end
+
 HousingMarketBundleDisplayMixin = {};
 
 function HousingMarketBundleDisplayMixin:AddTooltipLines(tooltip)
@@ -226,6 +259,10 @@ function HousingMarketBundleDisplayMixin:StartPreview()
 
 	PlaySound(SOUNDKIT.HOUSING_MARKET_SELECT_BUNDLE);
 	EventRegistry:TriggerEvent("HousingMarket.BundleSelected", self.elementData);
+end
+
+function HousingMarketBundleDisplayMixin:GetCartItemData()
+	return { bundleCatalogShopProductID = self.elementData.productID };
 end
 
 function HousingMarketBundleDisplayMixin:CanAddToCart()

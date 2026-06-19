@@ -22,13 +22,13 @@ function EncounterTimelineMixin:OnLoad()
 
 	self:RegisterEvent("ENCOUNTER_STATE_CHANGED");
 	self:RegisterEvent("ENCOUNTER_TIMELINE_STATE_UPDATED");
+	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_ACTIVATED");
+	self:RegisterEvent("ENCOUNTER_TIMELINE_VIEW_DEACTIVATED");
 	self:RegisterEvent("SETTINGS_LOADED");
 
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameAcquired", self.OnEventFrameAcquired, self);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameReleased", self.OnEventFrameReleased, self);
-	EventRegistry:RegisterCallback("EncounterTimeline.OnViewActivated", self.OnViewActivated, self);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnViewSizeChanged", self.OnViewSizeChanged, self);
-	EventRegistry:RegisterCallback("EncounterTimeline.OnViewDeactivated", self.OnViewDeactivated, self);
 
 	for _, cvarName in pairs(EncounterTimelineVisibilityCVars) do
 		CVarCallbackRegistry:SetCVarCachable(cvarName);
@@ -54,6 +54,15 @@ function EncounterTimelineMixin:OnEvent(event, ...)
 		self:MarkDirty(EncounterTimelineDirtyFlag.Visibility);
 	elseif event == "ENCOUNTER_TIMELINE_STATE_UPDATED" then
 		self:MarkDirty(EncounterTimelineDirtyFlag.Visibility);
+	elseif event == "ENCOUNTER_TIMELINE_VIEW_ACTIVATED" then
+		local viewType = ...;
+		self:ActivateView(viewType);
+	elseif event == "ENCOUNTER_TIMELINE_VIEW_DEACTIVATED" then
+		local viewType = ...;
+
+		if self:IsViewActiveByType(viewType) then
+			self:DeactivateView(viewType);
+		end
 	elseif event == "SETTINGS_LOADED" then
 		self:UpdateEventIndicatorIconMask();
 		self:UpdateHighlightTime();
@@ -102,22 +111,30 @@ function EncounterTimelineMixin:OnEditingChanged(isEditing)
 	end
 end
 
-function EncounterTimelineMixin:OnViewActivated(viewFrame)
-	if self:GetActiveView() == nil then
-		self.activeView = viewFrame;
-		self:UpdateSize();
+function EncounterTimelineMixin:DeactivateView()
+	if not self:GetActiveView() then
+		return;
 	end
+
+	self.activeView:DeactivateView();
+	self.activeView = nil;
+end
+
+function EncounterTimelineMixin:ActivateView(viewType)
+	if self:IsViewActiveByType(viewType) then
+		return;
+	end
+
+	self:DeactivateView();
+	self.activeView = self:GetViewByType(viewType);
+	self.activeView:ActivateView();
+
+	self:UpdateSize();
 end
 
 function EncounterTimelineMixin:OnViewSizeChanged(viewFrame, _width, _height)
 	if self:GetActiveView() == viewFrame then
 		self:UpdateSize();
-	end
-end
-
-function EncounterTimelineMixin:OnViewDeactivated(viewFrame)
-	if self:GetActiveView() == viewFrame then
-		self.activeView = nil;
 	end
 end
 
@@ -155,6 +172,10 @@ function EncounterTimelineMixin:GetActiveView()
 	return self.activeView;
 end
 
+function EncounterTimelineMixin:GetActiveViewType()
+	return self.activeView ~= nil and self.activeView:GetViewType() or nil;
+end
+
 function EncounterTimelineMixin:GetTimerView()
 	return self.TimerView;
 end
@@ -165,6 +186,14 @@ end
 
 function EncounterTimelineMixin:EnumerateViews()
 	return ipairs(self.Views);
+end
+
+function EncounterTimelineMixin:GetViewByType(viewType)
+	return FindValueInTableIf(self.Views, function(viewFrame) return viewFrame:GetViewType() == viewType; end);
+end
+
+function EncounterTimelineMixin:IsViewActiveByType(viewType)
+	return self:GetActiveViewType() == viewType;
 end
 
 function EncounterTimelineMixin:IsExplicitlyShown()
@@ -324,21 +353,32 @@ function EncounterTimelineMixin:UpdateHighlightTime()
 	end
 end
 
-function EncounterTimelineMixin:UpdateTrackOrientation()
+function EncounterTimelineMixin:UpdatePipAnchor()
 	local orientationSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
-	local iconDirectionSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection);
-
-	local orientation = EncounterTimelineUtil.CreateTrackOrientation(orientationSetting, iconDirectionSetting);
+	local flipHorizontally = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.FlipHorizontally);
 	local pipTextAnchor;
 
 	if orientationSetting == Enum.EncounterEventsOrientation.Horizontal then
 		pipTextAnchor = EncounterTimelinePipTextAnchors.Horizontal;
 	elseif orientationSetting == Enum.EncounterEventsOrientation.Vertical then
-		pipTextAnchor = EncounterTimelinePipTextAnchors.Vertical;
+		if flipHorizontally then
+			pipTextAnchor = EncounterTimelinePipTextAnchors.VerticalFlipped;
+		else
+			pipTextAnchor = EncounterTimelinePipTextAnchors.Vertical;
+		end
 	end
 
-	self:GetTrackView():SetTrackOrientation(orientation);
 	self:GetTrackView():SetPipTextAnchor(pipTextAnchor);
+end
+
+function EncounterTimelineMixin:UpdateTrackOrientation()
+	local orientationSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
+	local iconDirectionSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection);
+
+	local orientation = EncounterTimelineUtil.CreateTrackOrientation(orientationSetting, iconDirectionSetting);
+
+	self:GetTrackView():SetTrackOrientation(orientation);
+	self:UpdatePipAnchor();
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingViewType()
@@ -418,6 +458,8 @@ function EncounterTimelineMixin:UpdateSystemSettingFlipHorizontally()
 	for _, view in self:EnumerateViews() do
 		view:SetFlipHorizontally(flipHorizontally);
 	end
+
+	self:UpdatePipAnchor();
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingShowSpellName()

@@ -17,9 +17,9 @@ local PingConstants =
 		{
 			Name = "PingResult",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Success", Type = "PingResult", EnumValue = 0 },
@@ -30,14 +30,28 @@ local PingConstants =
 				{ Name = "FailedOutOfPingArea", Type = "PingResult", EnumValue = 5 },
 				{ Name = "FailedSquelched", Type = "PingResult", EnumValue = 6 },
 				{ Name = "FailedUnspecified", Type = "PingResult", EnumValue = 7 },
+				{ Name = "FailedSilent", Type = "PingResult", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "PingSetTargetState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Ok", Type = "PingSetTargetState", EnumValue = 0 },
+				{ Name = "Failed", Type = "PingSetTargetState", EnumValue = 1 },
+				{ Name = "FailedSilent", Type = "PingSetTargetState", EnumValue = 2 },
 			},
 		},
 		{
 			Name = "PingSubjectType",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Attack", Type = "PingSubjectType", EnumValue = 0 },
@@ -46,6 +60,35 @@ local PingConstants =
 				{ Name = "OnMyWay", Type = "PingSubjectType", EnumValue = 3 },
 				{ Name = "AlertThreat", Type = "PingSubjectType", EnumValue = 4 },
 				{ Name = "AlertNotThreat", Type = "PingSubjectType", EnumValue = 5 },
+				{ Name = "ActionReady", Type = "PingSubjectType", EnumValue = 6 },
+				{ Name = "ActionOnCooldown", Type = "PingSubjectType", EnumValue = 7 },
+				{ Name = "ActionUnavailable", Type = "PingSubjectType", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "PingTargetOption",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "All", Type = "PingTargetOption", EnumValue = 0 },
+				{ Name = "Environment", Type = "PingTargetOption", EnumValue = 1 },
+				{ Name = "Units", Type = "PingTargetOption", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "PingTargetType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Unit", Type = "PingTargetType", EnumValue = 0 },
+				{ Name = "Point", Type = "PingTargetType", EnumValue = 1 },
+				{ Name = "Action", Type = "PingTargetType", EnumValue = 2 },
 			},
 		},
 		{
@@ -57,34 +100,6 @@ local PingConstants =
 			Fields =
 			{
 				{ Name = "DefaultPing", Type = "PingTypeFlags", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "ContextualWorldPingResult",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "contextualPingType", Type = "PingSubjectType", Nilable = true },
-				{ Name = "result", Type = "PingResult", Nilable = false },
-			},
-		},
-		{
-			Name = "PingCooldownInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "startTimeMs", Type = "number", Nilable = false },
-				{ Name = "endTimeMs", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "PingTypeInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "orderIndex", Type = "number", Nilable = false },
-				{ Name = "type", Type = "PingSubjectType", Nilable = false },
-				{ Name = "uiTextureKitID", Type = "textureKit", Nilable = false },
 			},
 		},
 	},

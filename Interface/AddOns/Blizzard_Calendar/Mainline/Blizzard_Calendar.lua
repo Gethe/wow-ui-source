@@ -26,34 +26,22 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 };
 
 
--- UIParent integration
+-- Top-level parent integration
 CALENDAR_FRAME_EXTRA_WIDTH = 20;
 UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, whileDead = 1, yOffset = 20, extraWidth = CALENDAR_FRAME_EXTRA_WIDTH };
 
--- CalendarMenus is an ORDERED table of frames, one of which will close when you press Escape.
-local CalendarMenus = {
+local CALENDAR_MENU_FRAMES = {
 	"CalendarEventPickerFrame",
 	"CalendarTexturePickerFrame",
 	"CalendarMassInviteFrame",
 	"CalendarCreateEventFrame",
 	"CalendarViewEventFrame",
 	"CalendarViewHolidayFrame",
-	"CalendarViewRaidFrame"
+	"CalendarViewRaidFrame",
 };
 
-CalendarEventTypeNames =
-{
-	[Enum.CalendarEventType.Raid] = CALENDAR_TYPE_RAID,
-	[Enum.CalendarEventType.Dungeon] = CALENDAR_TYPE_DUNGEON,
-	[Enum.CalendarEventType.PvP] = CALENDAR_TYPE_PVP,
-	[Enum.CalendarEventType.Meeting] = CALENDAR_TYPE_MEETING,
-	[Enum.CalendarEventType.Other] = CALENDAR_TYPE_OTHER,
-	[Enum.CalendarEventType.HeroicDeprecated] = CALENDAR_TYPE_DUNGEON,
-};
-
--- this function will attempt to close the first open menu in the CalendarMenus table
-function CloseCalendarMenus()
-	for _, menuName in next, CalendarMenus do
+local function CloseCalendarMenus()
+	for _, menuName in ipairs(CALENDAR_MENU_FRAMES) do
 		local menu = _G[menuName];
 		if ( menu and menu:IsShown() ) then
 			if ( menu == CalendarFrame_GetEventFrame() ) then
@@ -65,8 +53,30 @@ function CloseCalendarMenus()
 			return true;
 		end
 	end
+
 	return false;
 end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, CloseCalendarMenus);
+
+local function GetDungeonNameWithDifficulty(name, difficultyName)
+	name = name or "";
+	if ( difficultyName == "" ) then
+		return NORMAL_FONT_COLOR_CODE .. name .. FONT_COLOR_CODE_CLOSE;
+	end
+
+	return NORMAL_FONT_COLOR_CODE .. format(DUNGEON_NAME_WITH_DIFFICULTY, name, difficultyName) .. FONT_COLOR_CODE_CLOSE;
+end
+
+CalendarEventTypeNames =
+{
+	[Enum.CalendarEventType.Raid] = CALENDAR_TYPE_RAID,
+	[Enum.CalendarEventType.Dungeon] = CALENDAR_TYPE_DUNGEON,
+	[Enum.CalendarEventType.PvP] = CALENDAR_TYPE_PVP,
+	[Enum.CalendarEventType.Meeting] = CALENDAR_TYPE_MEETING,
+	[Enum.CalendarEventType.Other] = CALENDAR_TYPE_OTHER,
+	[Enum.CalendarEventType.HeroicDeprecated] = CALENDAR_TYPE_DUNGEON,
+};
 
 -- tab handling
 local tabFocusGroup = nil;
@@ -1798,6 +1808,10 @@ function CalendarFrame_OpenToGuildEventIndex(guildEventIndex)
 		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
 		C_Calendar.SetAbsMonth(currentCalendarTime.month, currentCalendarTime.year);
 	else
+		if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+			return;
+		end
+
 		ToggleCalendar();
 	end
 	local info = C_Calendar.GetGuildEventSelectionInfo(guildEventIndex);
@@ -2823,14 +2837,14 @@ function CalendarViewEventFrame_Update()
 	if ( eventInfo.isLocked ) then
 		-- set the event title
 		CalendarViewEventTitle:SetFormattedText(CALENDAR_VIEW_EVENTTITLE_LOCKED, eventInfo.title);
-		SetDesaturation(CalendarViewEventIcon, true);
+		CalendarViewEventIcon:SetDesaturated(true);
 		CalendarViewEventTypeName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarViewEventCreatorName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarViewEventDescriptionContainer.ScrollingFont:SetTextColor(GRAY_FONT_COLOR);
 	else
 		-- set the event title
 		CalendarViewEventTitle:SetText(eventInfo.title);
-		SetDesaturation(CalendarViewEventIcon, false);
+		CalendarViewEventIcon:SetDesaturated(false);
 		CalendarViewEventTypeName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		CalendarViewEventCreatorName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		CalendarViewEventDescriptionContainer.ScrollingFont:SetTextColor(NORMAL_FONT_COLOR);
@@ -4607,15 +4621,15 @@ function CalendarClassButtonContainer_Update()
 		if ( count > 0 ) then
 			buttonCount:Show();
 			if ( isModal ) then
-				SetDesaturation(buttonIcon, true);
+				buttonIcon:SetDesaturated(true);
 				button:Disable();
 			else
-				SetDesaturation(buttonIcon, false);
+				buttonIcon:SetDesaturated(false);
 				button:Enable();
 			end
 		else
 			buttonCount:Hide();
-			SetDesaturation(buttonIcon, true);
+			buttonIcon:SetDesaturated(true);
 			button:Disable();
 		end
 		-- adjust the total

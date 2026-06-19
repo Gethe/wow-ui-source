@@ -243,7 +243,11 @@ HousingRoomComponentDoorTypeMixin = CreateFromMixins(HousingRoomComponentOptionM
 function HousingRoomComponentDoorTypeMixin:GetSupportsComponent(roomComponentInfo)
 	-- Only supports walls that are already some kind of door, no special labels needed
 	local isDoorComponent = roomComponentInfo.type == Enum.HousingRoomComponentType.Wall and roomComponentInfo.doorType ~= Enum.HousingRoomComponentDoorType.None;
-	return isDoorComponent, nil;
+
+	-- Make sure the connecting room supports smaller doors, if not we default to wide doors and skip the UI
+	local isDoorwaySupported = C_HousingCustomizeMode.RoomConnectionSupportsDoorType(roomComponentInfo.roomGUID, roomComponentInfo.componentID, Enum.HousingRoomComponentDoorType.Doorway);
+
+	return isDoorComponent and isDoorwaySupported, nil;
 end
 
 function HousingRoomComponentDoorTypeMixin:UpdateDropdown()

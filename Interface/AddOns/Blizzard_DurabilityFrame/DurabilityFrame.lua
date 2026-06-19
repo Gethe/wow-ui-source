@@ -25,7 +25,7 @@ end
 
 function DurabilityFrameMixin:OnEvent()
 	self:SetAlerts();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function DurabilityFrameMixin:OnEnter()
@@ -133,6 +133,6 @@ function DurabilityFrameMixin:UpdateShownState()
 	self:SetShown((self.shouldShow or self.isInEditMode ) and not Kiosk.IsEnabled());
 
 	if self:IsShown() ~= oldIsShown then
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 	end
 end

@@ -45,7 +45,7 @@ end
 
 function ScrollBoxListTreeListViewMixin:EnumerateDataProviderEntireRange()
 	local indexBegin, indexEnd = nil, nil;
-	self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+	return self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
 end
 
 function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
@@ -54,7 +54,7 @@ end
 
 function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProviderEntireRange()
 	local indexBegin, indexEnd = nil, nil;
-	self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+	return self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
 end
 
 function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
@@ -132,14 +132,14 @@ function ScrollBoxListTreeListViewMixin:AssignAccessors(frame, elementData)
 end
 
 function ScrollBoxListTreeListViewMixin:UnassignAccessors(frame)
-	ScrollBoxListViewMixin.UnassignAccessors(self, frame, elementData);
+	ScrollBoxListViewMixin.UnassignAccessors(self, frame);
 
 	frame.IsCollapsed = nil;
 end
 
 function ScrollBoxListTreeListViewMixin:GetLayoutFunction()
 	local elementStretchDisabled = self:IsElementStretchDisabled();
-	local setPoint = self:IsHorizontal() and ScrollBoxViewUtil.SetHorizontalPoint or ScrollBoxViewUtil.SetVerticalPoint;
+	local isHorizontal = self:IsHorizontal();
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local elementData = frame:GetElementData();
@@ -152,7 +152,7 @@ function ScrollBoxListTreeListViewMixin:GetLayoutFunction()
 		if indent == nil then
 			indent = (elementData:GetDepth() - 1) * self:GetElementIndent();
 		end
-		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
+		return ScrollBoxViewUtil.SetPoint(frame, offset, indent, elementStretchDisabled, scrollTarget, isHorizontal);
 	end
 	return Layout;
 end

@@ -1,7 +1,6 @@
 ## Title: Blizzard_SimpleCheckout
 ## AllowLoad: Both
-## RequiredDep: Blizzard_SharedXML
-## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent
+## Dep: Blizzard_SharedXML
 ## UseSecureEnvironment: 1
 
 Blizzard_SimpleCheckout_Inbound.lua

@@ -382,6 +382,23 @@ function PetActionButtonMixin:IsFlashing()
 	return self.flashing;
 end
 
+-- Override for BaseActionButtonInfoMixin. 
 function PetActionButtonMixin:HasAction()
     return GetPetActionInfo(self.index);
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function PetActionButtonMixin:GetActionButtonInfo()
+	local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(self.index);
+	local info = {
+		id = spellID,
+		texture = texture,
+		isActive = isActive,
+		name = name,
+		isToken = isToken,
+		autoCastAllowed = autoCastAllowed,
+		autoCastEnabled = autoCastEnabled
+	};
+
+	return info;
 end

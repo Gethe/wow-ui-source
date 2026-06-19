@@ -7,6 +7,15 @@ local SimpleTextureBaseAPI =
 	Functions =
 	{
 		{
+			Name = "ClearRadialProgressBar",
+			Type = "Function",
+			Documentation = { "Disable radial progress bar rendering and restore standard texture display." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "ClearTextureSlice",
 			Type = "Function",
 			Documentation = { "Disable shader based nineslice texture rendering. Since SetAtlas will automatically load slice data for the atlas from the DB, can be useful if you want to disable nineslice after setting an atlas." },
@@ -74,6 +83,77 @@ local SimpleTextureBaseAPI =
 			Returns =
 			{
 				{ Name = "tiling", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRadialProgressBarEndOffset",
+			Type = "Function",
+			Documentation = { "Returns the end angle offset of the radial progress bar as a normalized value (0 to 1)." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "offset", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRadialProgressBarFeather",
+			Type = "Function",
+			Documentation = { "Returns the feather/blur amount applied to the radial progress bar edge." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "feather", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRadialProgressBarPercent",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.RadialProgress },
+			Documentation = { "Returns the fill percentage of the radial progress bar (0 to 1)." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "percent", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRadialProgressBarReverse",
+			Type = "Function",
+			Documentation = { "Returns whether the radial progress bar fills in reverse (counterclockwise) direction." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "reverse", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRadialProgressBarStartOffset",
+			Type = "Function",
+			Documentation = { "Returns the start angle offset of the radial progress bar as a normalized value (0 to 1)." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "offset", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -374,6 +454,62 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "file", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRadialProgressBarEndOffset",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets the end angle offset of the radial progress bar as a normalized value (0 to 1)." },
+
+			Arguments =
+			{
+				{ Name = "offset", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRadialProgressBarFeather",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets the feather/blur amount applied to the radial progress bar edge (higher = more gradual falloff)." },
+
+			Arguments =
+			{
+				{ Name = "feather", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRadialProgressBarPercent",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.RadialProgress },
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Sets the fill percentage of the radial progress bar (0 to 1)." },
+
+			Arguments =
+			{
+				{ Name = "percent", Type = "normalizedValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRadialProgressBarReverse",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets whether the radial progress bar fills in reverse (counterclockwise) direction." },
+
+			Arguments =
+			{
+				{ Name = "reverse", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRadialProgressBarStartOffset",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets the start angle offset of the radial progress bar as a normalized value (0 to 1), where 0 is at the bottom." },
+
+			Arguments =
+			{
+				{ Name = "offset", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{

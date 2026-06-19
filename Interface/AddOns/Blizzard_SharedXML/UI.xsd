@@ -104,6 +104,33 @@
 			<xs:enumeration value="number"/>
 			<xs:enumeration value="string"/>
 			<xs:enumeration value="global"/>
+			<xs:enumeration value="local"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="TABLESOURCE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="auto"/>
+			<xs:enumeration value="global"/>
+			<xs:enumeration value="secure"/>
+			<xs:enumeration value="local"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ONUPDATEMODE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="disabled"/>
+			<xs:enumeration value="visible"/>
+			<xs:enumeration value="visibleonce"/>
+			<xs:enumeration value="once"/>
+			<xs:enumeration value="always"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="SCRIPTOBJECTPARTITION">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="public"/>
+			<xs:enumeration value="forbidden"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -143,7 +170,7 @@
 			<xs:enumeration value="MIRROR"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="UITextureSliceMode">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="Stretched"/>
@@ -160,10 +187,17 @@
 
 	<xs:simpleType name="StatusBarFillStyle">
 		<xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="Standard"/>
-            <xs:enumeration value="StandardNoRangeFill"/>
-            <xs:enumeration value="Center"/>
-            <xs:enumeration value="Reverse"/>
+			<xs:enumeration value="Standard"/>
+			<xs:enumeration value="StandardNoRangeFill"/>
+			<xs:enumeration value="Center"/>
+			<xs:enumeration value="Reverse"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="StatusBarRenderMode">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Linear"/>
+			<xs:enumeration value="Radial"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -289,12 +323,29 @@
 		<xs:attribute name="value" type="xs:string" use="required"/>
 		<xs:attribute name="keyType" type="KEYVALUETYPE" use="optional" default="string"/>
 		<xs:attribute name="type" type="KEYVALUETYPE" use="optional" default="string"/>
+		<xs:attribute name="targetPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:complexType>
 
 	<xs:complexType name="KeyValuesType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="KeyValue" type="KeyValueType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="MixinType">
+		<xs:attribute name="key" type="xs:string" use="required"/>
+		<xs:attribute name="inboundPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
+		<xs:attribute name="secureDelegates" type="xs:boolean" default="false"/>
+		<xs:attribute name="source" type="TABLESOURCE" use="optional" default="auto"/>
+		<xs:attribute name="targetPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
+	</xs:complexType>
+
+	<xs:complexType name="MixinsType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Mixin" type="MixinType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -407,6 +458,7 @@
 				<xs:attribute name="inherit" type="SCRIPTINHERITTYPE" use="optional" default="none"/>
 				<xs:attribute name="intrinsicOrder" type="SCRIPTINTRINSICORDERTYPE" use="optional" default="none"/>
 				<xs:attribute name="autoEnableInput" type="xs:boolean" default="true"/>
+				<xs:attribute name="targetPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -487,6 +539,7 @@
 		<xs:attribute name="propagateMouseInput" type="PROPAGATE_MOUSE"/>
 		<xs:attribute name="propagateMouseInputMask" type="PROPAGATE_MOUSE"/>
 		<xs:attribute name="preventSecretValues" type="xs:boolean" default="false"/>
+		<xs:attribute name="parentPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="LayoutFrameType">
@@ -523,6 +576,7 @@
 	</xs:element>
 	<xs:element name="Scripts" type="ScriptsType" substitutionGroup="LayoutField"/>
 	<xs:element name="KeyValues" type="KeyValuesType" substitutionGroup="LayoutField"/>
+	<xs:element name="Mixins" type="MixinsType" substitutionGroup="LayoutField"/>
 	<xs:element name="Animations" substitutionGroup="LayoutField">
 		<xs:complexType>
 			<xs:sequence>
@@ -604,9 +658,31 @@
 			<xs:attribute name="mode" type="UITextureSliceMode"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="RadialProgressBar" substitutionGroup="TextureField">
+		<xs:complexType>
+			<xs:attribute name="barFillPercent" type="xs:float"/>
+			<xs:attribute name="startOffset" type="xs:float"/>
+			<xs:attribute name="endOffset" type="xs:float"/>
+			<xs:attribute name="reverse" type="xs:boolean"/>
+			<xs:attribute name="feather" type="xs:float"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="Color" type="ColorType" substitutionGroup="TextureField"/>
 	<xs:element name="Gradient" type="GradientType" substitutionGroup="TextureField"/>
 	<xs:element name="Texture" type="TextureType" substitutionGroup="LayoutFrameRef"/>
+
+	<xs:complexType name="VectorGraphicsType">
+		<xs:complexContent>
+			<xs:extension base="LayoutFrameRefType">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="LayoutField"/>
+				</xs:choice>
+				<xs:attributeGroup ref="LayoutFrameAttributes"/>
+				<xs:attribute name="file" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="VectorGraphics" type="VectorGraphicsType" substitutionGroup="LayoutFrameRef"/>
 
 	<xs:complexType name="MaskTextureType">
 		<xs:complexContent>
@@ -747,6 +823,8 @@
 		<xs:attribute name="jumpNavigateEnabled" type="xs:boolean" default="false"/>
 		<xs:attribute name="jumpNavigateStart" type="xs:string" default="false"/>
 		<xs:attribute name="ignoreChildrenForBounds" type="xs:boolean" default="false"/>
+		<xs:attribute name="onUpdateMode" type="ONUPDATEMODE" default="visible"/>
+		<xs:attribute name="roleset" type="xs:string"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="FrameType">
@@ -782,6 +860,7 @@
 							<xs:choice maxOccurs="unbounded">
 								<xs:element ref="Texture"/>
 								<xs:element ref="MaskTexture"/>
+								<xs:element ref="VectorGraphics"/>
 								<xs:element ref="FontString"/>
 								<xs:element ref="Line"/>
 							</xs:choice>
@@ -895,6 +974,7 @@
 				<xs:attribute name="rotatesTexture" type="xs:boolean" default="false"/>
 				<xs:attribute name="reverseFill" type="xs:boolean" default="false"/>
 				<xs:attribute name="fillStyle" type="ui:StatusBarFillStyle" default="Standard"/>
+				<xs:attribute name="renderMode" type="ui:StatusBarRenderMode" default="Linear"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1139,6 +1219,7 @@
 		<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 		<xs:attribute name="scale" type="xs:float" default="1.0"/>
 		<xs:attribute name="desaturation" type="xs:float" default="0.0"/>
+		<xs:attribute name="binding" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:complexType>
 	<xs:element name="Actor" type="ModelSceneActorType" substitutionGroup="UiField"/>
 
@@ -1152,6 +1233,7 @@
 		<xs:attribute name="addToSecureEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="fullLockdown" type="xs:boolean" default="false"/>
+		<xs:attribute name="useForbiddenObjectTable" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 	<xs:element name="Ui">
@@ -1449,6 +1531,7 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="Scripts" type="AnimScriptsType"/>
 				<xs:element name="KeyValues" type="KeyValuesType"/>
+				<xs:element name="Mixins" type="MixinsType"/>
 				<xs:element name="Origin" type="AnimOriginType"/>
 			</xs:choice>
 		</xs:sequence>
@@ -1466,6 +1549,7 @@
 		<xs:attribute name="duration" type="xs:float"/>
 		<xs:attribute name="order" type="AnimOrderType" default="1"/>
 		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
+		<xs:attribute name="parentPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AnimationRef" abstract="true" substitutionGroup="UiField"/>
 	<xs:element name="Animation" type="AnimationType" substitutionGroup="AnimationRef"/>
@@ -1569,7 +1653,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="FlipBook" type="FlipBookType" substitutionGroup="AnimationRef"/>
-	
+
 	<xs:complexType name="VertexColorType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -1600,6 +1684,7 @@
 				<xs:element ref="AnimationRef"/>
 				<xs:element name="Scripts" type="AnimGroupScriptsType"/>
 				<xs:element name="KeyValues" type="KeyValuesType"/>
+				<xs:element name="Mixins" type="MixinsType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
@@ -1610,6 +1695,7 @@
 		<xs:attribute name="parentArray" type="xs:string"/>
 		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
 		<xs:attribute name="setToFinalAlpha" type="xs:boolean" default="false"/>
+		<xs:attribute name="parentPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AnimationGroup" type="AnimationGroupType" substitutionGroup="UiField"/>
 	<xs:element name="OffScreenFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
@@ -1625,4 +1711,6 @@
 	<xs:element name="ItemButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="TestFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="UIThemeContainerFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="AuraContainer" type="FrameType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="AuraButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 </xs:schema>

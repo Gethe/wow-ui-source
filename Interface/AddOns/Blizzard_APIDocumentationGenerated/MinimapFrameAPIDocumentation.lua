@@ -128,57 +128,17 @@ local MinimapFrameAPI =
 			},
 		},
 		{
-			Name = "SetBlipTexture",
+			Name = "SetIconScale",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
-			},
-		},
-		{
-			Name = "SetCorpsePOIArrowTexture",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
-			},
-		},
-		{
-			Name = "SetIconTexture",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "SetMaskTexture",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPOIArrowTexture",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPlayerTexture",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -249,16 +209,6 @@ local MinimapFrameAPI =
 		},
 		{
 			Name = "SetQuestBlobRingTexture",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "asset", Type = "TextureAsset", Nilable = false },
-			},
-		},
-		{
-			Name = "SetStaticPOIArrowTexture",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 

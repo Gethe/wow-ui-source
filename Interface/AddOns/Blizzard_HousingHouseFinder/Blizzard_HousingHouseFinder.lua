@@ -6,10 +6,7 @@ local HouseFinderFrameShownEvents =
 	"HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED",
 	"B_NET_NEIGHBORHOOD_LIST_UPDATED",
 	"DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
-};
-
-local HouseFinderLoadedEvents = 
-{
+	"IGNORE_NEIGHBORHOOD_RESPONSE",
 	"FORCE_REFRESH_HOUSE_FINDER",
 };
 
@@ -33,7 +30,6 @@ function HouseFinderFrameMixin:OnLoad()
 	self.HouseFinderMapCanvasFrame:SetShouldZoomInstantly(true);
 
 	self.NeighborhoodListFrame:SetScript("OnShow", function() EventRegistry:TriggerEvent("HouseFinder.NeighborhoodListShown"); end);
-	FrameUtil.RegisterFrameForEvents(self, HouseFinderLoadedEvents);
 end
 
 function HouseFinderFrameMixin:OnRefreshClicked()
@@ -82,7 +78,6 @@ function HouseFinderFrameMixin:PopulateNeighborhoodList(neighborhoodInfoVector)
 	self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 	self.NeighborhoodListFrame.ScrollFrame:UpdateScrollChildRect();
 	self.NeighborhoodListFrame.LoadingSpinnerList:Hide();
-	self.hasNeighborhoodList = true;
 end
 
 function HouseFinderFrameMixin:PopulateBNetNeighborhoodList(neighborhoodInfoVector)
@@ -181,6 +176,10 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_PARTY_LEADER);
 		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
 		self.HouseFinderNotificationBanner:Show();
+	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Relinquished then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_OLD_NEIGHBORHOOD);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
+		self.HouseFinderNotificationBanner:Show();
 	else
 		self.HouseFinderNotificationBanner:Hide();
 	end
@@ -233,15 +232,24 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 			self.pendingDeclineInviteNeighborhoodButton:FailCancelInvite();
 		end
 		self.pendingDeclineInviteNeighborhoodButton = nil;
-	elseif event == "FORCE_REFRESH_HOUSE_FINDER" then
-		if self:IsShown() then
-			self:OnRefreshClicked();
-		else
-			--clear saved data and set flag to request new info on show
-			local emptyList = {};
-			self:PopulateNeighborhoodList(emptyList);
-			self.hasNeighborhoodList = nil;
+	elseif event == "IGNORE_NEIGHBORHOOD_RESPONSE" then
+		local success, neighborhoodGUID = ...;
+		if success then
+			local nextNeighborhood = nil;
+
+			for button in self.neighborhoodButtonPool:EnumerateActive() do
+				if button.neighborhoodInfo.neighborhoodGUID == neighborhoodGUID then
+					self.neighborhoodButtonPool:Release(button);
+					break;
+				end;
+			end
+
+			nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(nextNeighborhood);
+			self:SelectNeighborhood(nextNeighborhood, true); --select new first button and request data for map
+			self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 		end
+	elseif event == "FORCE_REFRESH_HOUSE_FINDER" then
+		self:OnRefreshClicked();
 	end
 end
 
@@ -249,9 +257,11 @@ function HouseFinderFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, HouseFinderFrameShownEvents);
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_OPEN);
 
-	if not self.hasNeighborhoodList then
-		C_Housing.HouseFinderRequestNeighborhoods();
-	end
+	--Refresh house finder list every time the UI is opened
+	C_Housing.HouseFinderRequestNeighborhoods();
+	HouseFinderFrame.NeighborhoodListFrame.LoadingSpinnerList:Show();
+	HouseFinderFrame.LoadingSpinnerMap:Show();
+	HouseFinderFrame.HouseFinderMapCanvasFrame:Hide();
 end
 
 function HouseFinderFrameMixin:OnHide()
@@ -561,20 +571,31 @@ function HouseFinderNeighborhoodButtonMixin:Init(neighborhoodInfo, houseFinderFr
 		self.DeclineInviteButton:SetNeighborhoodButton(self);
 		self.DeclineInviteButton:Show();
 		self.GuildIcon:Hide();
+		self.IgnoreNeighborhoodButton:Hide();
 	elseif self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.PartySync then
 		self.SuggestionIcon:Show();
 		self.SuggestionIcon:SetAtlas("housefinder_neighborhood-party-sync-icon");
 		self.NeighborhoodName:SetPoint("LEFT", 30, 7);
 		self.DeclineInviteButton:Hide();
 		self.GuildIcon:Hide();
+		self.IgnoreNeighborhoodButton:Hide();
 	elseif self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild and self:UpdateGuildIcon() then
 		self.GuildIcon:Show();
 		self.NeighborhoodName:SetPoint("LEFT", 30, 7);
 		self.DeclineInviteButton:Hide();
 		self.SuggestionIcon:Hide();
+		self.IgnoreNeighborhoodButton:Hide();
+	elseif self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Relinquished then
+		self.SuggestionIcon:Hide();
+		self.NeighborhoodName:SetPoint("LEFT", 15, 7);
+		self.IgnoreNeighborhoodButton:SetNeighborhoodButton(self);
+		self.IgnoreNeighborhoodButton:Show();
+		self.DeclineInviteButton:Hide();
+		self.GuildIcon:Hide();
 	else
 		self.NeighborhoodName:SetPoint("LEFT", 15, 7);
 		self.DeclineInviteButton:Hide();
+		self.IgnoreNeighborhoodButton:Hide();
 		self.SuggestionIcon:Hide();
 		self.GuildIcon:Hide();
 	end
@@ -644,6 +665,18 @@ function HouseFinderNeighborhoodButtonMixin:FailCancelInvite()
 	self.DeclineInviteButton:Show();
 end
 
+function HouseFinderNeighborhoodButtonMixin:TryIgnoreNeighborhood()
+	HouseFinderFrame:SetPendingNeighborhoodInviteToDecline(self);
+	self.LoadingSpinner:Show();
+	self.IgnoreNeighborhoodButton:Hide();
+	C_Housing.HouseFinderIgnoreNeighborhood(self.neighborhoodInfo.neighborhoodGUID);
+end
+
+function HouseFinderNeighborhoodButtonMixin:FailIgnoreNeighborhood()
+	self.LoadingSpinner:Hide();
+	self.IgnoreNeighborhoodButton:Show();
+end
+
 function HouseFinderNeighborhoodButtonMixin:UpdateGuildIcon()
 	local emblemFilename = select(10, GetGuildLogoInfo());
 	local tabardInfo = C_GuildInfo.GetGuildTabardInfo("player");
@@ -694,5 +727,43 @@ function DeclineInviteButtonMixin:OnMouseDown()
 end
 
 function DeclineInviteButtonMixin:OnMouseUp()
+	self:SetPoint("TOPRIGHT", -10, -10);
+end
+
+IgnoreNeighborhoodButtonMixin = {}
+
+function IgnoreNeighborhoodButtonMixin:SetNeighborhoodButton(neighborhoodButton)
+	self.neighborhoodButton = neighborhoodButton;
+end
+
+function IgnoreNeighborhoodButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip_AddNormalLine(GameTooltip, HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD_CONFIRM);
+	GameTooltip:Show();
+end
+
+function IgnoreNeighborhoodButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+StaticPopupDialogs["HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD"] = {
+	text = HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD,
+	button1 = HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD_CONFIRM,
+	button2 = HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD_CANCEL,
+	OnAccept = function(self, neighborhoodButton)
+		neighborhoodButton:TryIgnoreNeighborhood();
+	end,
+	hideOnEscape = 1
+};
+
+function IgnoreNeighborhoodButtonMixin:OnClick()
+	StaticPopup_Show("HOUSING_HOUSEFINDER_IGNORE_NEIGHBORHOOD", nil, nil, self.neighborhoodButton);
+end
+
+function IgnoreNeighborhoodButtonMixin:OnMouseDown()
+	self:SetPoint("TOPRIGHT", -9, -11);
+end
+
+function IgnoreNeighborhoodButtonMixin:OnMouseUp()
 	self:SetPoint("TOPRIGHT", -10, -10);
 end

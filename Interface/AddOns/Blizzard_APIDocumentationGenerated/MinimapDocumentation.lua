@@ -67,24 +67,6 @@ local Minimap =
 			},
 		},
 		{
-			Name = "GetObjectIconTextureCoords",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "index", Type = "number", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "textureCoordsX", Type = "number", Nilable = false },
-				{ Name = "textureCoordsY", Type = "number", Nilable = false },
-				{ Name = "textureCoordsZ", Type = "number", Nilable = false },
-				{ Name = "textureCoordsW", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetPOITextureCoords",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

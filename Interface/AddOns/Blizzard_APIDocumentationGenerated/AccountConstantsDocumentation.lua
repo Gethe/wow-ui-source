@@ -71,6 +71,18 @@ local AccountConstants =
 			},
 		},
 		{
+			Name = "AccountGetListRequestType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "AccountGetListRequestType", EnumValue = 0 },
+				{ Name = "Battlepets", Type = "AccountGetListRequestType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "AccountSequenceCacheType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -163,9 +175,9 @@ local AccountConstants =
 		{
 			Name = "BnetAccountFlag",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 524288,
+			MaxValue = 1048576,
 			Fields =
 			{
 				{ Name = "None", Type = "BnetAccountFlag", EnumValue = 0 },
@@ -189,6 +201,7 @@ local AccountConstants =
 				{ Name = "IsLegacy", Type = "BnetAccountFlag", EnumValue = 131072 },
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
+				{ Name = "MopQuestLogFlagsFixUp", Type = "BnetAccountFlag", EnumValue = 1048576 },
 			},
 		},
 		{

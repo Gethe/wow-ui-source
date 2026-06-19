@@ -55,7 +55,7 @@ function WardrobeCollectionFrameMixin:InitItemsFilterButton()
 			C_TransmogCollection.SetAllSourceTypeFilters(false);
 			return MenuResponse.Refresh;
 		end);
-		
+
 		local function IsChecked(filter)
 			return C_TransmogCollection.IsSourceTypeFilterChecked(filter);
 		end
@@ -63,7 +63,7 @@ function WardrobeCollectionFrameMixin:InitItemsFilterButton()
 		local function SetChecked(filter)
 			C_TransmogCollection.SetSourceTypeFilter(filter, not IsChecked(filter));
 		end
-		
+
 		for filterIndex = 1, C_TransmogCollection.GetNumTransmogSources() do
 			if (C_TransmogCollection.IsValidTransmogSource(filterIndex)) then
 				description:CreateCheckbox(_G["TRANSMOG_SOURCE_"..filterIndex], IsChecked, SetChecked, filterIndex);
@@ -248,7 +248,7 @@ function WardrobeCollectionFrameMixin:OnKeyDown(key)
 end
 
 function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
-	if ( not CollectionsJournal:IsVisible() or not self:IsVisible() ) then
+	if not Kiosk.IsEnabled() and not DISALLOW_FRAME_TOGGLING and ( not CollectionsJournal:IsVisible() or not self:IsVisible() ) then
 		ToggleCollectionsJournal(5);
 	end
 
@@ -713,7 +713,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 					if ( equip ) then
 						model:TryOn(TransmogUtil.GetWardrobeModelSetupGearData(slot));
 					else
-						model:UndressSlot(GetInventorySlotInfo(slot));
+						model:UndressSlot(C_PaperDollInfo.GetInventorySlotInfo(slot));
 					end
 					if ( slot == oldSlot ) then
 						changedOldSlot = true;
@@ -722,7 +722,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 			end
 			-- undress old slot
 			if ( not changedOldSlot ) then
-				local slotID = GetInventorySlotInfo(oldSlot);
+				local slotID = C_PaperDollInfo.GetInventorySlotInfo(oldSlot);
 				model:UndressSlot(slotID);
 			end
 		elseif ( reloadModel ) then
@@ -740,7 +740,7 @@ function WardrobeItemsCollectionMixin:EvaluateSlotAllowed()
 	local isArmor = self.transmogLocation:GetArmorCategoryID();
 		-- Any model will do, using the 1st
 	local model = self.Models[1];
-	self.slotAllowed = not isArmor or model:IsSlotAllowed(self.transmogLocation:GetSlotID());	
+	self.slotAllowed = not isArmor or model:IsSlotAllowed(self.transmogLocation:GetSlotID());
 	if not model:IsGeoReady() then
 		self:MarkGeoDirty();
 	end
@@ -1136,7 +1136,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 			model.HideVisual.Icon:Hide();
 			-- slots not allowed
 			local showAsInvalid = not canDisplayVisuals or not self.slotAllowed;
-			model.SlotInvalidTexture:SetShown(showAsInvalid);		
+			model.SlotInvalidTexture:SetShown(showAsInvalid);
 			model:SetDesaturated(showAsInvalid);
 
 			if ( GameTooltip:GetOwner() == model ) then
@@ -1274,17 +1274,17 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 		return;
 	end
 	local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(self.tooltipVisualID, C_TransmogCollection.GetClassFilter(), self.activeCategory, self.transmogLocation);
-	
+
 	-- When swapping Classes in the Collections panel,
 	-- There is a quick period of time when moving the
 	-- cursor to another element can produce a size 0
-	-- sources list. This causes a nil error if not 
+	-- sources list. This causes a nil error if not
 	-- guarded against
 	if #sources == 0 then
 		return;
 	end
 
-	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);	
+	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
 	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.tooltipModel, self.transmogLocation, sources);
 	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID, warningString);
 end
@@ -1548,9 +1548,9 @@ function WardrobeItemModelMixin:GetSourceInfoForTracking()
 	if transmogLocation:IsIllusion() then
 		return nil;
 	else
-		local sourceIndex = itemsCollectionFrame.tooltipSourceIndex or 1;
+		local tooltipSourceIndex = itemsCollectionFrame:GetTooltipSourceIndex() or 1;
 		local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(appearanceInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), transmogLocation);
-		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(sourceIndex, #sources);
+		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(tooltipSourceIndex, #sources);
 		return sources[index];
 	end
 end
@@ -1639,11 +1639,11 @@ function WardrobeCollectionClassDropdownMixin:Refresh()
 		rootDescription:SetTag("MENU_WARDROBE_CLASS");
 
 		local function IsClassFilterSet(classInfo)
-			return self:GetClassFilter() == classInfo.classID; 
+			return self:GetClassFilter() == classInfo.classID;
 		end;
 
 		local function SetClassFilter(classInfo)
-			self:SetClassFilter(classInfo.classID); 
+			self:SetClassFilter(classInfo.classID);
 		end;
 
 		for classID = 1, GetNumClasses() do

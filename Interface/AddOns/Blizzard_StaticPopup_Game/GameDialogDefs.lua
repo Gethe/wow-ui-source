@@ -2,12 +2,26 @@ local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
 timeFormatter:SetStripIntervalWhitespace(true);
 
+local function GetDungeonNameWithDifficulty(name, difficultyName)
+	name = name or "";
+	if ( difficultyName == "" ) then
+		return NORMAL_FONT_COLOR_CODE .. name .. FONT_COLOR_CODE_CLOSE;
+	end
+
+	return NORMAL_FONT_COLOR_CODE .. string.format(DUNGEON_NAME_WITH_DIFFICULTY, name, difficultyName) .. FONT_COLOR_CODE_CLOSE;
+end
+
 local function SetLockDeclineTimeText(button, originalText, timeleft)
 	local timeText = timeFormatter:Format(timeleft);
-	button:SetText(("%s (%s)"):format(originalText, timeText));
+	button:SetText(string.format("%s (%s)", originalText, timeText));
 end
 
 local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
+	if dialog.ticker then
+		dialog.ticker:Cancel();
+		dialog.ticker = nil;
+	end
+
 	local button2 = dialog:GetButton2();
 	local originalButtonText = button2:GetText();
 	button2:Disable();
@@ -35,6 +49,99 @@ local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
 			SetLockDeclineTimeText(button2, originalButtonText, dialog.declineTimeLeft);
 		end
 	end);
+end
+
+local function UpdateQuestAcceptLogFullButton(dialog)
+	local _, numQuests;
+	if C_QuestLog and C_QuestLog.GetNumQuestLogEntries then
+		_, numQuests = C_QuestLog.GetNumQuestLogEntries();
+	else
+		_, numQuests = GetNumQuestLogEntries();
+	end
+	dialog:GetButton1():SetEnabled(numQuests < MAX_QUESTS);
+end
+
+function UpdateQuestAcceptLogFullDialog()
+	local frameName = StaticPopup_Visible("QUEST_ACCEPT_LOG_FULL");
+	if frameName then
+		UpdateQuestAcceptLogFullButton(_G[frameName]);
+	end
+end
+
+local function ShowConfirmLootRollDialog(rollID, rollType, dialogText)
+	local texture, name, count, quality = GetLootRollItemInfo(rollID);
+	local textArg1 = name;
+	local colorData = ColorManager.GetColorDataForItemQuality(quality);
+	if colorData then
+		textArg1 = colorData.hex..name.."|r";
+	end
+
+	local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", textArg1);
+	if dialog then
+		dialog:SetFormattedText(dialogText, textArg1);
+		dialog:Resize("CONFIRM_LOOT_ROLL");
+		dialog.data = rollID;
+		dialog.data2 = rollType;
+	end
+end
+
+function ConfirmLootRollDialog_Show(rollID, rollType)
+	ShowConfirmLootRollDialog(rollID, rollType, LOOT_NO_DROP);
+end
+
+function ConfirmDisenchantRollDialog_Show(rollID, rollType)
+	ShowConfirmLootRollDialog(rollID, rollType, LOOT_NO_DROP_DISENCHANT);
+end
+
+function ConfirmTalentWipeDialog_Show(cost, talentType)
+	local data = { cost = cost };
+	return StaticPopup_Show("CONFIRM_TALENT_WIPE", _G["CONFIRM_TALENT_WIPE_"..talentType], nil, data);
+end
+
+function GossipConfirmDialog_Show(optionID, text, cost)
+	local data = { optionID = optionID, cost = cost or 0 };
+	return StaticPopup_Show("GOSSIP_CONFIRM", text, nil, data);
+end
+
+function ShowInstanceBootDialog()
+	if C_Garrison and C_Garrison.IsOnGarrisonMap and C_Garrison.IsOnGarrisonMap() then
+		return StaticPopup_Show("GARRISON_BOOT");
+	end
+
+	return StaticPopup_Show("INSTANCE_BOOT");
+end
+
+function HideInstanceBootDialog()
+	StaticPopup_Hide("INSTANCE_BOOT");
+	StaticPopup_Hide("GARRISON_BOOT");
+end
+
+function ShowInstanceLockDialog(enforceTime)
+	return StaticPopup_Show("INSTANCE_LOCK", nil, nil, { enforceTime = enforceTime });
+end
+
+function HideInstanceLockDialog()
+	StaticPopup_Hide("INSTANCE_LOCK");
+end
+
+function IsSummonConfirmationDialogVisible()
+	return StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON");
+end
+
+function ShowSummonConfirmationDialog(summonReason, skipStartingArea)
+	if ( skipStartingArea ) then
+		return StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
+	elseif ( summonReason == Enum.SummonReason.Scenario ) then
+		return StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
+	end
+
+	return StaticPopup_Show("CONFIRM_SUMMON");
+end
+
+function HideSummonConfirmationDialogs()
+	StaticPopup_Hide("CONFIRM_SUMMON");
+	StaticPopup_Hide("CONFIRM_SUMMON_SCENARIO");
+	StaticPopup_Hide("CONFIRM_SUMMON_STARTING_AREA");
 end
 
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
@@ -1488,7 +1595,7 @@ StaticPopupDialogs["QUEST_ACCEPT_LOG_FULL"] = {
 	button1 = YES,
 	button2 = NO,
 	OnShow = function(dialog, data)
-		dialog:GetButton1():Disable();
+		UpdateQuestAcceptLogFullButton(dialog);
 	end,
 	OnAccept = function(dialog, data)
 		ConfirmAcceptQuest();
@@ -1632,7 +1739,7 @@ StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -2245,9 +2352,12 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 };
 
 StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
-	text = CONFIRM_TALENT_WIPE,
+	text = "%s",
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(dialog, data)
+		MoneyFrame_Update(dialog.MoneyFrame, data.cost);
+	end,
 	OnAccept = function(dialog, data)
 		ConfirmTalentWipe();
 	end,
@@ -2413,7 +2523,15 @@ StaticPopupDialogs["GOSSIP_CONFIRM"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		C_GossipInfo.SelectOption(data, "", true);
+		C_GossipInfo.SelectOption(data.optionID, "", true);
+	end,
+	OnShow = function(dialog, data)
+		local hasCost = data.cost > 0;
+		dialog.MoneyFrame:SetShown(hasCost);
+		if hasCost then
+			MoneyFrame_Update(dialog.MoneyFrame, data.cost);
+		end
+		dialog:Resize();
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
@@ -2594,7 +2712,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 	maxLetters = 64,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		UninviteUnit(data, editBox:GetText());
+		C_PartyInfo.UninviteUnit(data, editBox:GetText());
 		dialog:Hide();
 	end,
 	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
@@ -2602,7 +2720,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 		dialog:GetButton1():Disable();
 	end,
 	OnAccept = function(dialog, data)
-		UninviteUnit(data, dialog:GetEditBox():GetText());
+		C_PartyInfo.UninviteUnit(data, dialog:GetEditBox():GetText());
 	end,
 	timeout = 0,
 	whileDead = 1,

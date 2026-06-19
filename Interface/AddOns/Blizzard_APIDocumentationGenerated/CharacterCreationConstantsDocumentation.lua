@@ -28,6 +28,21 @@ local CharacterCreationConstants =
 				{ Name = "RaceClassCombo", Type = "CharSectionCondition", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "RestrictionType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "RestrictionType", EnumValue = 0 },
+				{ Name = "ServerExpansion", Type = "RestrictionType", EnumValue = 1 },
+				{ Name = "AccountExpansion", Type = "RestrictionType", EnumValue = 2 },
+				{ Name = "Achievement", Type = "RestrictionType", EnumValue = 3 },
+				{ Name = "Entitlement", Type = "RestrictionType", EnumValue = 4 },
+			},
+		},
 	},
 	Predicates =
 	{

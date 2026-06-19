@@ -4,5 +4,6 @@
 ## Dependencies: Blizzard_EditMode, Blizzard_GarrisonBase, Blizzard_Colors
 ## AllowLoadGameType: mainline
 HealthBar.lua
+Shared\GameTooltipConstants.lua
 Mainline\GameTooltip.lua
 Mainline\GameTooltip.xml

@@ -1,3 +1,4 @@
 ## Title: Blizzard Weekly Rewards
 ## LoadOnDemand: 1
+Blizzard_WeeklyRewards_Bootstrap.lua [Bootstrap]
 Blizzard_WeeklyRewards.xml

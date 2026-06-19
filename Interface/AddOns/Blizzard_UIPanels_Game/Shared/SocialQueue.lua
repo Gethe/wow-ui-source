@@ -103,13 +103,16 @@ function SocialQueueUtil_GetHeaderName(groupGUID)
 	end
 end
 
-function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin, hasRelationshipWithLeader)
+function SocialQueueUtil_SetTooltip(tooltip, tooltipTitle, queues, canJoin, hasRelationshipWithLeader)
 	local firstQueue = queues[1];
 	assert(firstQueue);
 
 	local isAutoAccept = false;
 	local canEffectivelyJoin = canJoin;
 	local needTank, needHealer, needDamage;
+
+	-- If we're showing a title then use the lowercase "queued for", otherwise use "Queued for"
+	local queuedForLabel = tooltipTitle and SOCIAL_QUEUE_QUEUED_FOR or SOCIAL_QUEUE_QUEUED_FOR_STANDALONE;
 
 	--For now, you can't queue for both LFGList and LFG+PvP.
 	if ( firstQueue.queueData.queueType == "lfglist" ) then
@@ -121,12 +124,16 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 			isAutoAccept = firstQueue.isAutoAccept; -- Auto accept is set on the premade group entry
 			LFGListUtil_SetSearchEntryTooltip(tooltip, firstQueue.queueData.lfgListID, LFG_LIST_UTIL_SUPPRESS_AUTO_ACCEPT_LINE);
 		else
-			GameTooltip_SetTitle(tooltip, playerDisplayName);
+			if tooltipTitle then
+				GameTooltip_SetTitle(tooltip, tooltipTitle);
+			end
 			GameTooltip_AddErrorLine(tooltip, LFG_LIST_ENTRY_DELISTED);
 		end
 	else
-		GameTooltip_SetTitle(tooltip, playerDisplayName);
-		GameTooltip_AddDisabledLine(tooltip, SOCIAL_QUEUE_QUEUED_FOR);
+		if tooltipTitle then
+			GameTooltip_SetTitle(tooltip, tooltipTitle);
+		end
+		GameTooltip_AddDisabledLine(tooltip, queuedForLabel);
 		for i, queue in ipairs(queues) do
 			local queueName = SocialQueueUtil_GetQueueName(queue.queueData, "- %s");
 			if ( queue.isZombie ) then

@@ -43,11 +43,19 @@ local function Register()
 			PlayerSpellsUtil.ToggleSpellBookFrame();
 		end
 
+		local subsectionInitializer;
 		local addSearchTags = false;
-		local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
-		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
-		initializer:SetKioskProtected();
-		layout:AddInitializer(initializer);
+		do
+			local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
+			initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+			initializer:SetKioskProtected();
+			layout:AddInitializer(initializer);
+			subsectionInitializer = initializer;
+		end
+		do
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatReduceHighlights", ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS, OPTION_TOOLTIP_ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS);
+			initializer:SetParentInitializer(subsectionInitializer);
+		end
 	end);
 
 	-- Assisted Highlight

@@ -50,7 +50,7 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 		self:Hide();
 		return;
 	end
-	
+
 	local choiceFrameShown = PlayerChoiceFrame:IsShown();
 	local buttonInfo = choiceFrameShown and self.shownModeButtonInfo or self.hiddenModeButtonInfo;
 	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
@@ -112,7 +112,7 @@ function TorghastPlayerChoiceToggleButtonMixin:UpdateButtonState()
 end
 
 function TorghastPlayerChoiceToggleButtonMixin:OnLoad()
-	self.shownModeButtonInfo = 
+	self.shownModeButtonInfo =
 	{
 		normalAtlas = "UI-Frame-%s-HideButton",
 		highlightAtlas = "UI-Frame-%s-HideButtonHighlight",
@@ -121,7 +121,7 @@ function TorghastPlayerChoiceToggleButtonMixin:OnLoad()
 		showRerollButton = true,
 	};
 
-	self.hiddenModeButtonInfo = 
+	self.hiddenModeButtonInfo =
 	{
 		normalAtlas = "UI-Frame-%s-PendingButton",
 		highlightAtlas = "UI-Frame-%s-PendingButtonHighlight",
@@ -134,13 +134,13 @@ end
 CypherPlayerChoiceToggleButtonMixin = {};
 
 function CypherPlayerChoiceToggleButtonMixin:OnLoad()
-	self.shownModeButtonInfo = 
+	self.shownModeButtonInfo =
 	{
 		normalAtlas = "UI-Frame-%s-HideButton",
 		highlightAtlas = "UI-Frame-%s-HideButtonHighlight",
 	};
 
-	self.hiddenModeButtonInfo = 
+	self.hiddenModeButtonInfo =
 	{
 		normalAtlas = "UI-Frame-%s-PendingButton",
 		highlightAtlas = "UI-Frame-%s-PendingButtonHighlight",
@@ -238,6 +238,7 @@ end
 
 -- Filled when needed for the first time, since the toggle buttons don't exist when this is loaded
 local toggleButtons = nil;
+
 local function FillToggleButtonsIfNeeded()
 	if toggleButtons == nil then
 		toggleButtons =
@@ -253,19 +254,6 @@ function PlayerChoiceToggle_ShouldShow()
 	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() or C_PlayerChoice.GetRemainingTime();
 end
 
-function PlayerChoiceToggle_TryShow()
-	FillToggleButtonsIfNeeded();
-
-	for _, button in pairs(toggleButtons) do
-		if button:ShouldShow() then
-			button:UpdateButtonState();
-			button:Show();
-		else
-			button:Hide();
-		end
-	end
-end
-
 function PlayerChoiceToggle_GetActiveToggle()
 	FillToggleButtonsIfNeeded();
 
@@ -273,8 +261,8 @@ function PlayerChoiceToggle_GetActiveToggle()
 	local textureKit = choiceInfo and choiceInfo.uiTextureKit;
 
 	for _, button in pairs(toggleButtons) do
-		if(button:IsShown()) then 
-			return button; 
+		if(button:IsShown()) then
+			return button;
 		elseif button.textureKit == textureKit then
 			return button;
 		end

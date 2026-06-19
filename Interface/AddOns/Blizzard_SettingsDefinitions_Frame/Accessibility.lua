@@ -42,7 +42,7 @@ local function Register()
 
 	-- Move Pad
 	Settings.SetupCVarCheckbox(category, "enableMovePad", MOVE_PAD, OPTION_TOOLTIP_MOVE_PAD);
-	Settings.LoadAddOnCVarWatcher("enableMovePad", "Blizzard_MovePad");
+	Settings.LoadAddOnCVarWatcher("enableMovePad", MovePad_LoadUI);
 
 	-- Alternate Full Screen Effects
 	AccessibilityOverrides.CreatePhotosensitivitySetting(category);

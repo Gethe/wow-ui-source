@@ -1,0 +1,26 @@
+## Title: Blizzard Housing Blueprint
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates, Blizzard_GameMenuEsc
+## AllowLoadGameType: standard
+
+Blizzard_HousingBlueprintFrameTemplates.lua
+Blizzard_HousingBlueprintFrameTemplates.xml
+
+Blizzard_HousingBlueprintContentEntry.lua
+Blizzard_HousingBlueprintContentEntry.xml
+Blizzard_HousingBlueprintContentList.lua
+Blizzard_HousingBlueprintContentList.xml
+
+Blizzard_HousingBlueprintExport.lua
+Blizzard_HousingBlueprintExport.xml
+Blizzard_HousingBlueprintImport.lua
+Blizzard_HousingBlueprintImport.xml
+
+Blizzard_HousingBlueprintRename.lua
+Blizzard_HousingBlueprintRename.xml
+
+Blizzard_HousingBlueprintCollection.lua
+Blizzard_HousingBlueprintCollection.xml
+
+Blizzard_HousingBlueprintRegistration.lua

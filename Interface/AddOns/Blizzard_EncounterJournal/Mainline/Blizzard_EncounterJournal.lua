@@ -688,9 +688,8 @@ function EncounterJournal_GetLootJournalPanels(view)
 end
 
 function EncounterJournal_EnableExpansionDropdown(xOffset, yOffset, relativeKey)
-	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
-	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);
 	EncounterJournal.instanceSelect.ExpansionDropdown:Enable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
 end
 
 function EncounterJournal_ShowGreatVaultButton()
@@ -703,6 +702,12 @@ end
 
 function EncounterJournal_DisableExpansionDropdown()
 	EncounterJournal.instanceSelect.ExpansionDropdown:Disable();
+	EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey);
+end
+
+function EncounterJournal_AnchorExpansionDropdown(xOffset, yOffset, relativeKey)
+	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
+	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);	
 end
 
 function EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID)
@@ -1259,8 +1264,10 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
-	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
+	-- hide loot tab when there isn't loot
+	EncounterJournal_SetTabVisibe(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
+	
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
 		EJ_Tabs[3].frame = "detailsScroll"; -- flip them back
@@ -1323,7 +1330,9 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
-	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
+
+	-- hide loot tab when there isn't loot
+	EncounterJournal_SetTabVisibe(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 
@@ -2208,6 +2217,13 @@ function EncounterJournal_SetTabEnabled(tab, enabled)
 	end
 end
 
+function EncounterJournal_SetTabVisibe(tab, visible)
+	tab:SetShown(visible);
+	if not visible then
+		EncounterJournal_ValidateSelectedTab();
+	end
+end
+
 function EncounterJournal_ValidateSelectedTab()
 	local info = EncounterJournal.encounter.info;
 	local selectedTabButton = info[EJ_Tabs[info.tab].button];
@@ -2244,7 +2260,6 @@ function EncounterJournal_LootUpdate()
 	local extremelyRareLoot = {};
 	local seasonalLoot = {};
 	local currentSeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
-	local currentSeasonExpansion = C_SeasonInfo.GetCurrentDisplaySeasonExpansion();
 
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
@@ -2269,9 +2284,8 @@ function EncounterJournal_LootUpdate()
 	end
 
 	local seasonalHeaderTitle;
-	local uiSeason = PVPUtil.GetCurrentSeasonNumber();
-	if #seasonalLoot > 0 and currentSeason and currentSeasonExpansion then
-		seasonalHeaderTitle = EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
+	if #seasonalLoot > 0 and currentSeason then
+		seasonalHeaderTitle = PVPUtil.GetCurrentSeasonText();
 	end
 
 	local lootCategories = {
@@ -2775,7 +2789,6 @@ function EJ_ContentTab_Select(id)
 		EJ_HideTutorialsPanel();
 		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(EncounterJournal);
 		EJ_ShowLootJournalPanel();
-		EncounterJournal_EnableExpansionDropdown();
 		EncounterJournal_HideGreatVaultButton();
 	elseif showDungeons or showRaid then
 		EJ_HideNonInstancePanels();
@@ -3022,7 +3035,9 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 			CollectionsJournal_LoadUI();
 		end
 		WardrobeCollectionFrame:ShowItemTrackingHelptipOnShow();
-		ToggleCollectionsJournal();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal();
+		end
 	end
 end
 

@@ -42,9 +42,7 @@ end
 
 function QuickJoinToastMixin:OnShow()
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
-	if RecruitAFriendFrame then
-		RecruitAFriendFrame:UpdateRAFTutorialTips();
-	end
+	EventRegistry:TriggerEvent("QuickJoinToastButtonShown");
 end
 
 function QuickJoinToastMixin:OnHide()
@@ -313,6 +311,8 @@ function QuickJoinToastMixin:OnClick(button)
 		ToggleQuickJoinPanel();
 		QuickJoinFrame:SelectGroup(self.displayedToast.guid);
 		QuickJoinFrame:ScrollToGroup(self.displayedToast.guid);
+	elseif C_RecruitAFriend.IsSystemEnabled() and HelpTip:IsShowing(self, RAF_REWARD_TUTORIAL_TEXT) then
+		ToggleRAFPanel();
 	else
 		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	end
@@ -360,7 +360,8 @@ function QuickJoinToastMixin:OnEnter()
 				local knowsLeader = SocialQueueUtil_HasRelationshipWithLeader(self.displayedToast.guid);
 
 				GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
-				SocialQueueUtil_SetTooltip(GameTooltip, SocialQueueUtil_GetHeaderName(self.displayedToast.guid), queues, true, knowsLeader);
+				local tooltipTitle = SocialQueueUtil_GetHeaderName(self.displayedToast.guid);
+				SocialQueueUtil_SetTooltip(GameTooltip, tooltipTitle, queues, true, knowsLeader);
 				GameTooltip:AddLine(" ");
 				GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				GameTooltip:Show();

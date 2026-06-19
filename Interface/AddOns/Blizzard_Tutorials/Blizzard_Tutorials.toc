@@ -1,6 +1,7 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard Tutorials
-## RequiredDep: Blizzard_TutorialManager
+## Title: Blizzard_Tutorials
+## Dep: middleclass
+## Dep: Blizzard_TutorialManager
+## Dep: Blizzard_UIFrameManager
 ## AllowLoadGameType: standard
 StateMachineUtil.lua
 StateMachineTutorialUtil.lua

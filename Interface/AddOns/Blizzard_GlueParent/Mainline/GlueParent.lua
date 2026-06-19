@@ -142,7 +142,9 @@ function GlueParentMixin:OnEvent(event, ...)
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
 		if not GlueParent_CheckPhotosensitivity() then
-			GlueParent_CheckCinematic();
+			if not GlueParent_CheckCinematic() then
+				GlueParent_CheckScreenNarrator();
+			end
 		end
 
 		if ( AccountLogin:IsVisible() ) then
@@ -431,10 +433,12 @@ function GlueParent_IsSecondaryScreenOpen(screen)
 end
 
 function GlueParent_SetScreen(screen)
-	local oldScreen = GlueParent.currentScreen or 'none'
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
+		local oldScreen = GlueParent.currentScreen;
 		GlueParent.currentScreen = screen;
+
+		EventRegistry:TriggerEvent("GlueParent.ScreenChanged", screen, oldScreen);
 
 		--Sometimes, we have to do things we would normally do in OnShow even if the screen doesn't actually
 		--get shown (due to a secondary screen being shown)
@@ -567,11 +571,11 @@ end
 -- So we will play the cinematic at that index + 1 if there is one.
 function GlueParent_CheckCinematic()
 	if not C_Glue.IsFirstLoadThisSession() then
-		return;
+		return false;
 	end
 	local firstCinematicIndex, lastCinematicIndex = GetCinematicsIndexRangeForExpansion(LE_EXPANSION_LEVEL_CURRENT);
 	if not firstCinematicIndex or not lastCinematicIndex then
-		return;
+		return false;
 	end
 	local nextCinematicIndex = (tonumber(GetCVar("playIntroMovie")) or 0) + 1;
 	nextCinematicIndex = math.max(nextCinematicIndex, firstCinematicIndex);
@@ -580,10 +584,12 @@ function GlueParent_CheckCinematic()
 		if not IsCinematicsAutoPlayDisabled(nextCinematicIndex) then
 			MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));
 			GlueParent_OpenSecondaryScreen("movie");
-			break;
+			return true;
 		end
 		nextCinematicIndex = nextCinematicIndex + 1;
 	end
+
+	return false;
 end
 
 function ToggleFrame(frame)
@@ -902,15 +908,4 @@ function AllowChatFramesToShow(chatFrame)
 	    return chatFrame.allowAtGlues;
 	end
 	return false;
-end
-
--- =============================================================
--- Backwards Compatibility
--- =============================================================
-function getglobal(var)
-	return _G[var];
-end
-
-function setglobal(var, val)
-	_G[var] = val;
 end

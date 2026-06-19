@@ -9,7 +9,7 @@ function MovieFrame_PlayMovie(self, index)
 	local movieEntry = MOVIE_LIST[self.version];
 	local movieID = movieEntry and movieEntry.movieIDs[index];
 	if ( not movieID ) then
-		GlueParent_CloseSecondaryScreen();
+		MovieFrame_Close();
 		return;
 	end
 	local playSuccess, errorCode = self:StartMovie(movieID);
@@ -21,7 +21,7 @@ function MovieFrame_PlayMovie(self, index)
 		if ( self.showError ) then
 			StaticPopup_Show("ERROR_CINEMATIC");
 		end
-		GlueParent_CloseSecondaryScreen();
+		MovieFrame_Close();
 	end
 	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
 end
@@ -66,7 +66,7 @@ function MovieFrame_OnKeyUp(self, key)
 	if ( key == "ESCAPE" ) then
 		local userCanceled = true;
 		CinematicFinished(Enum.CinematicType.GlueMovie, userCanceled);
-		GlueParent_CloseSecondaryScreen();
+		MovieFrame_Close();
 	elseif ( key == "SPACE" or key == "ENTER" ) then
 		local userCanceled = true;
 		CinematicFinished(Enum.CinematicType.GlueMovie, userCanceled);
@@ -81,4 +81,7 @@ function MovieFrame_OnMovieFinished(self)
 	end
 end
 
-
+function MovieFrame_Close()
+	GlueParent_CloseSecondaryScreen();
+	GlueParent_CheckScreenNarrator();
+end

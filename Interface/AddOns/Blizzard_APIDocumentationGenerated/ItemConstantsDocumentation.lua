@@ -250,6 +250,17 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "ItemConversionFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UseInputItemStats", Type = "ItemConversionFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
 			NumValues = 31,

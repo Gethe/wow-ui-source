@@ -5,7 +5,11 @@ local function CreateOptions(...)
 		local localeName = select(index, ...);
 		if not exists[localeName] then
 			exists[localeName] = true;
-			table.insert(options, {value=localeName});
+
+			-- Note: text here is strictly for screen narration purposes. The
+			-- actual rendered display is done via atlases.
+			local displayName = LocaleUtil.GetLocaleDisplayName(localeName);
+			table.insert(options, { value = localeName, text = displayName });
 		end
 	end
 	return options;
@@ -88,10 +92,21 @@ end
 -- SettingsDropdownControlTemplate inherited in XML.
 local BaseLanguageDropdownControlMixin = {}; 
 
-function BaseLanguageDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
-	self.Control:HideSteppers();
+function BaseLanguageDropdownControlMixin:Init(initializer)
+	SettingsDropdownControlMixin.Init(self, initializer);
 
+	self.Control.NarrationGetContext = function()
+		local setting = self:GetSetting();
+		local displayName = setting and LocaleUtil.GetLocaleDisplayName(setting:GetValue()) or nil;
+		local indexString = self:GetNarrationIndexString();
+		return NarrationUtil.MakeNarrationString(NARRATION_OBJECT_DROPDOWN, displayName, indexString);
+	end;
+end
+
+function BaseLanguageDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
 	SetupDropdown(self.Control.Dropdown, setting, options, initTooltip);
+
+	self.forceSteppersHidden = true;
 end
 
 SettingsLanguageDropdownControlMixin = CreateFromMixins(BaseLanguageDropdownControlMixin);
@@ -99,7 +114,7 @@ SettingsLanguageDropdownControlMixin = CreateFromMixins(BaseLanguageDropdownCont
 SettingsAudioLocaleDropdownMixin = CreateFromMixins(BaseLanguageDropdownControlMixin);
 
 function SettingsAudioLocaleDropdownMixin:Init(initializer)
-	SettingsDropdownControlMixin.Init(self, initializer);
+	BaseLanguageDropdownControlMixin.Init(self, initializer);
 
 	-- Changing the text locale changed the audio locale options. Since CBR callbacks are unordered, we need
 	-- to ensure the audio locale value is updated prior to updating the dropdown or we won't get the correct

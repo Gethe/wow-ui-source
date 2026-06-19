@@ -6,8 +6,8 @@ PVE_FRAME_BASE_WIDTH = 563;
 
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
-	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
+	{ name = "PVPUIFrame", loadFunc = function() return PVPUI_LoadUI() end },
+	{ name = "ChallengesFrame", loadFunc = function() return ChallengeMode_LoadUI() end, check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
 }
 
 function LFGListPVPStub_OnShow(self)
@@ -55,6 +55,22 @@ function PVEFrame_ToggleFrame(sidePanelName, selection)
 	PVEFrame_ShowFrame(sidePanelName, selection);
 end
 
+function ToggleLFDParentFrame()
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+
+	local factionGroup = UnitFactionGroup("player");
+	if (factionGroup == "Neutral") then
+		return;
+	end
+
+	local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+	if canUse then
+		PVEFrame_ToggleFrame("GroupFinderFrame", LFDParentFrame);
+	end
+end
+
 function PVEFrame_ShowFrame(sidePanelName, selection)
 	local self = PVEFrame;
 	-- find side panel
@@ -83,9 +99,11 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	end
 
 	-- load addon if needed
-	if ( panels[tabIndex].addon ) then
-		UIParentLoadAddOn(panels[tabIndex].addon);
-		panels[tabIndex].addon = nil;
+	if ( panels[tabIndex].loadFunc ) then
+		if not panels[tabIndex].loadFunc() then
+			return;
+		end
+		panels[tabIndex].loadFunc = nil;
 	end
 
 	-- we've loaded the AddOn, so try to dereference the selection if needed
@@ -282,8 +300,8 @@ function GroupFinderFrameButton_SetEnabled(button, enabled)
 		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
 		button.name:SetFontObject("GameFontDisableLarge");
 	end
-	SetDesaturation(button.icon, not enabled);
-	SetDesaturation(button.ring, not enabled);
+	button.icon:SetDesaturated(not enabled);
+	button.ring:SetDesaturated(not enabled);
 	button:SetEnabled(enabled);
 end
 

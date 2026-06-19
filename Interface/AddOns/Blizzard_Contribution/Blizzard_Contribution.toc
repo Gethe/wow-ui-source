@@ -1,3 +1,4 @@
 ## Title: Blizzard Contribution UI
 ## LoadOnDemand: 1
+Blizzard_Contribution_Bootstrap.lua [Bootstrap]
 Blizzard_Contribution.xml

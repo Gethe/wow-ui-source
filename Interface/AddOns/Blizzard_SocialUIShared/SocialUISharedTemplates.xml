@@ -1,0 +1,216 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<EditBox name="SocialUISearchBoxTemplate" inherits="SearchBoxNineSliceTemplate, UserScaledFrameTemplate" mixin="SocialUISearchBoxMixin" letters="40" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="SOCIAL_UI_SEARCH_BOX_INSTRUCTIONS" type="global"/>
+			<KeyValue key="showTooltipForTruncatedInstructions" value="true" type="boolean"/>
+			<KeyValue key="baseWidth" value="128" type="number"/>
+			<KeyValue key="baseHeight" value="20" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EditBox>
+
+	<DropdownButton name="SocialUISearchFilterDropdownTemplate" mixin="SocialUIOnlineSearchFilterDropdownMixin" inherits="WowStyle1FilterDropdownTemplate, UserScaledFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="resizeToText" type="boolean" value="false"/>
+			<KeyValue key="baseFontObject" type="string" value="UserScaledFontGameNormal"/>
+			<KeyValue key="disableFontObject" type="string" value="UserScaledFontGameDisable"/>
+			<KeyValue key="baseWidth" value="135" type="number"/>
+			<KeyValue key="baseHeight" value="30" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.4" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</DropdownButton>
+
+	<Frame name="SocialUIFilterBarTemplate" virtual="true">
+		<Size y="50"/>
+		<Frames>
+			<DropdownButton parentKey="SearchFilterDropdown" inherits="SocialUISearchFilterDropdownTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-10"/>
+				</Anchors>
+			</DropdownButton>
+
+			<EditBox parentKey="SearchBar" inherits="SocialUISearchBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="15"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SearchFilterDropdown" relativePoint="LEFT" x="-20"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+	</Frame>
+
+	<Button name="SocialUIActionButtonTemplate" inherits="UserScaledButtonFitToTextTemplate, SharedButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
+
+			<KeyValue key="baseWidth" value="70" type="number"/>
+			<KeyValue key="baseHeight" value="30" type="number"/>
+			<KeyValue key="baseButtonTextInset" value="15" type="number"/>
+		</KeyValues>
+		<NormalFont style="UserScaledFontGameNormal"/>
+		<HighlightFont style="UserScaledFontGameHighlight"/>
+		<DisabledFont style="UserScaledFontGameDisable"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SocialUIScrollableHeaderTemplate" inherits="ListHeaderVisualTemplate, ListHeaderCodeTemplate, UserScaledFrameTemplate" mixin="SocialUIScrollableHeaderMixin" virtual="true">
+		<ButtonText parentKey="ButtonText" maxLines="1" wordwrap="false" justifyH="LEFT" justifyV="MIDDLE">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="1"/>
+				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" relativePoint="LEFT" x="-4" y="1"/>
+			</Anchors>
+		</ButtonText>
+		<KeyValues>
+			<KeyValue key="baseHeight" value="24" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+		</KeyValues>
+		<NormalFont style="UserScaledFontSystem15Shadow"/>
+		<HighlightFont style="UserScaledFontSystem15Shadow"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SocialUIScrollableSpacerTemplate" mixin="SocialUIScrollableSpacerMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="2" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SocialUIContactsFrameTemplate" mixin="SocialUIContactsFrameMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="FilterBar" inherits="SocialUIFilterBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="TopDivider" texelSnappingBias="0.0" snapToPixelGrid="false" atlas="perks-divider-short">
+					<Size x="400" y="3"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FilterBar" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.FilterBar" relativePoint="BOTTOMRIGHT" x="-5" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="ActionButton" inherits="SocialUIActionButtonTemplate" mixin="SocialUIActionButtonMixin">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="160" type="number"/>
+					<KeyValue key="maxWidth" value="400" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="12"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BottomDivider" texelSnappingBias="0.0" snapToPixelGrid="false" atlas="perks-divider-short">
+					<Size x="400" y="3"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.ActionButton" relativePoint="TOP" y="12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="FriendsDisabledText" inherits="UserScaledFontBody" hidden="true" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopDivider" x="15" y="-25"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomDivider" relativePoint="TOP" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="-23"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopDivider" y="-5"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BottomDivider" relativePoint="TOP" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="-23"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-7"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+	</Frame>
+
+	<Frame name="SocialCardPresenceHolderTemplate" mixin="SocialCardPresenceHolderMixin" inherits="UserScaledFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="19" type="number"/>
+			<KeyValue key="baseHeight" value="19" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PresenceIcon" atlas="friends-status-online" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SocialCardActionButtonTemplate" mixin="SocialCardActionButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="34" y="34"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ActionIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-tertiary-square-normal"/>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-tertiary-square-pressed"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-square-normal" alphaMode="ADD"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+</Ui>

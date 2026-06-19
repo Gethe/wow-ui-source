@@ -1,25 +1,8 @@
-CooldownViewerSettingsEditAlertMixin = {};
-
-function CooldownViewerSettingsEditAlertMixin:SetOwner(owner)
-	self.owner = owner;
-	self:SetParent(owner);
-	self:SetPoint("TOPLEFT", owner, "TOPRIGHT", owner:GetExtraPanelWidth(), 0);
-end
+CooldownViewerSettingsEditAlertMixin = CreateFromMixins(CooldownViewerEditAlertBaseMixin);
 
 function CooldownViewerSettingsEditAlertMixin:OnLoad()
-	self.AddAlertButton:SetScript("OnClick", function()
-		self:AddCurrentAlert();
-	end);
-end
-
-function CooldownViewerSettingsEditAlertMixin:OnShow()
-	SetUIPanelAttribute(self.owner, "extraWidth", self:GetWidth() + (2 * self.owner:GetExtraPanelWidth()));
-	UpdateUIPanelPositions(self.owner);
-end
-
-function CooldownViewerSettingsEditAlertMixin:OnHide()
-	SetUIPanelAttribute(self.owner, "extraWidth", self.owner:GetExtraPanelWidth());
-	UpdateUIPanelPositions(self.owner);
+	CooldownViewerEditAlertBaseMixin.OnLoad(self);
+	self.PrimaryLabel:SetText(COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_TYPE);
 end
 
 function CooldownViewerSettingsEditAlertMixin:SetCooldown(cooldownItem)
@@ -31,8 +14,8 @@ function CooldownViewerSettingsEditAlertMixin:SetCooldown(cooldownItem)
 	self.cooldownName = cooldownItem:GetNameText();
 	self.validCooldownAlertTypes  = cooldownItem:GetValidAlertTypes();
 
-	self.Icon:SetTexture(cooldownItem:GetSpellTexture());
-	self.CooldownName:SetText(cooldownItem:GetNameText());
+	self:GetIcon():SetTexture(cooldownItem:GetSpellTexture());
+	self:GetNameLabel():SetText(cooldownItem:GetNameText());
 end
 
 function CooldownViewerSettingsEditAlertMixin:GetCooldownID()
@@ -48,8 +31,8 @@ function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
 end
 
 local defaultPayloadForAlertType = {
-	[Enum.CooldownViewerAlertType.Sound] = CooldownViewerSound.ImpactsLowThud,
-	[Enum.CooldownViewerAlertType.Visual] = CooldownViewerVisual.MarchingAnts,
+	[Enum.CooldownViewerAlertType.Sound] = Enum.CooldownViewerSound.ImpactsLowThud,
+	[Enum.CooldownViewerAlertType.Visual] = Enum.VisualAlertType.MarchingAnts,
 };
 
 function CooldownViewerSettingsEditAlertMixin:DisplayForCooldown(cooldownItem)
@@ -67,38 +50,20 @@ function CooldownViewerSettingsEditAlertMixin:DisplayForAlert(cooldownItem, aler
 	self.workingCopyOfAlert = CopyTable(alert);
 	self.isNewAlert = isNewAlert;
 
-	self:UpdateAddButton(isNewAlert);
 	self:SetCooldown(cooldownItem);
 	self:SetupDropdowns();
-	self:Show();
-end
-
-function CooldownViewerSettingsEditAlertMixin:UpdateAddButton(isNewAlert)
-	self.AddAlertButton:SetText(isNewAlert and COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_ADD_ALERT or COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_EDIT_EXISTING_ALERT);
+	self:Display(isNewAlert);
 end
 
 function CooldownViewerSettingsEditAlertMixin:AddCurrentAlert()
-	local status;
 	if self.isNewAlert then
-		status = self.owner:GetLayoutManager():AddAlert(self.cooldownID, self.workingCopyOfAlert);
+		self.owner:GetLayoutManager():AddAlert(self.cooldownID, self.workingCopyOfAlert);
 	else
-		status = self.owner:GetLayoutManager():UpdateAlert(self.cooldownID, self.originalAlert, self.workingCopyOfAlert);
+		self.owner:GetLayoutManager():UpdateAlert(self.cooldownID, self.originalAlert, self.workingCopyOfAlert);
 	end
 
-	self:Hide();
 	self.owner:RefreshLayout();
-	return status;
 end
-
-local soundCategoryKeyToText =
-{
-	Animals = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_ANIMALS,
-	Devices = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_DEVICES,
-	Impacts = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_IMPACTS,
-	Instruments = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_INSTRUMENTS,
-	War2 = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_WAR2,
-	War3 = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_WAR3,
-}
 
 local alertTypeToPayloadLabelText =
 {
@@ -107,28 +72,38 @@ local alertTypeToPayloadLabelText =
 };
 
 function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
-	local function SetAlertType(elementData, _inputData, _menuProxy)
+	-- Type dropdown.
+	local function IsAlertTypeSelected(type)
+		return CooldownViewerAlert_GetType(self.workingCopyOfAlert) == type;
+	end
+
+	local function SetAlertType(type)
 		-- NOTE: It's possible for the user to reselect the same thing and this is still called, so don't do the extra work if that's the case
-		if CooldownViewerAlert_GetType(self.workingCopyOfAlert) ~= elementData then
-			CooldownViewerAlert_SetType(self.workingCopyOfAlert, elementData);
-			CooldownViewerAlert_SetPayload(self.workingCopyOfAlert, defaultPayloadForAlertType[elementData]);
+		if CooldownViewerAlert_GetType(self.workingCopyOfAlert) ~= type then
+			CooldownViewerAlert_SetType(self.workingCopyOfAlert, type);
+			CooldownViewerAlert_SetPayload(self.workingCopyOfAlert, defaultPayloadForAlertType[type]);
 
 			self:SetupDropdowns();
 		end
 	end
 
-	self.TypeDropdown:SetSelectionText(function(selections)
+	self.TypeDropdown:SetSelectionText(function(_selections)
 		return CooldownViewerAlert_GetTypeText(self.workingCopyOfAlert);
 	end);
 
-	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
+	self.TypeDropdown:SetupMenu(function(_dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_TYPE");
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_SOUND, SetAlertType, Enum.CooldownViewerAlertType.Sound);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_VISUAL, SetAlertType, Enum.CooldownViewerAlertType.Visual);
+		rootDescription:CreateRadio(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_SOUND, IsAlertTypeSelected, SetAlertType, Enum.CooldownViewerAlertType.Sound);
+		rootDescription:CreateRadio(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_VISUAL, IsAlertTypeSelected, SetAlertType, Enum.CooldownViewerAlertType.Visual);
 	end);
 
-	local function SetAlertEvent(elementData, _inputData, _menuProxy)
-		CooldownViewerAlert_SetEvent(self.workingCopyOfAlert, elementData);
+	-- Event dropdown.
+	local function IsAlertEventSelected(event)
+		return CooldownViewerAlert_GetEvent(self.workingCopyOfAlert) == event;
+	end
+
+	local function SetAlertEvent(event)
+		CooldownViewerAlert_SetEvent(self.workingCopyOfAlert, event);
 	end
 
 	self.EventDropdown:SetSelectionText(function(selections)
@@ -141,55 +116,31 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 
 		if validEventTypes then
 			for eventType in pairs(validEventTypes) do
-				rootDescription:CreateButton(CooldownViewerAlert_GetEventText(eventType), SetAlertEvent, eventType);
+				rootDescription:CreateRadio(CooldownViewerAlert_GetEventText(eventType), IsAlertEventSelected, SetAlertEvent, eventType);
 			end
 		else
 			-- TODO: Add "nothing available...", or likely prevent the frame from showing up at all, this could be queried externally.
-			rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE, SetAlertEvent, Enum.CooldownViewerAlertEventType.Available);
+			rootDescription:CreateRadio(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE, IsAlertEventSelected, SetAlertEvent, Enum.CooldownViewerAlertEventType.Available);
 		end
 	end);
 
-	local function SetAlertPayload(elementData, _inputData, _menuProxy)
-		CooldownViewerAlert_SetPayload(self.workingCopyOfAlert, elementData);
+	-- Payload dropdown.
+	local function IsAlertPayloadSelected(payload)
+		return CooldownViewerAlert_GetPayload(self.workingCopyOfAlert) == payload;
+	end
+
+	local function SetAlertPayload(payload)
+		CooldownViewerAlert_SetPayload(self.workingCopyOfAlert, payload);
 	end
 
 	self.PayloadDropdown:SetSelectionText(function(selections)
 		return CooldownViewerAlert_GetPayloadText(self.workingCopyOfAlert);
 	end);
 
-	local function AddSoundAlertButton(description, buttonText, alertPayload)
-		local selectPayloadButton = description:CreateButton(buttonText, SetAlertPayload, alertPayload);
-		selectPayloadButton:AddInitializer(function(button, description, menu)
-			local playSampleButton = MenuTemplates.AttachUtilityButton(button);
-			playSampleButton.Texture:Hide();
-			CooldownViewerAlert_SetupTypeButton(playSampleButton, Enum.CooldownViewerAlertType.Sound);
-
-			MenuTemplates.SetUtilityButtonTooltipText(playSampleButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_PLAY_SAMPLE);
-			MenuTemplates.SetUtilityButtonAnchor(playSampleButton, MenuVariants.GearButtonAnchor, button); -- gear means throw on the right
-			MenuTemplates.SetUtilityButtonClickHandler(playSampleButton, function()
-				local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, alertPayload);
-				CooldownViewerAlert_PlayAlert(self, self:GetCooldownName(), alert);
-			end);
+	local function BuildVisualMenus(description)
+		VisualAlertData_ForEach(function(visualData)
+			description:CreateRadio(visualData.text, IsAlertPayloadSelected, SetAlertPayload, visualData.enum);
 		end);
-	end
-
-	local function BuildSoundMenus(description, currentTable)
-		for key, value in pairs (currentTable) do
-			if value.soundEnum and value.text then
-				AddSoundAlertButton(description, value.text, value.soundEnum);
-			elseif type(value) == "table" then
-				local nestedDescription = description:CreateButton(soundCategoryKeyToText[key], nop, -1);
-				BuildSoundMenus(nestedDescription, value);
-			end
-		end
-	end
-
-	local function BuildVisualMenus(description, currentTable)
-		for key, value in pairs (currentTable) do
-			if value.enum and value.text then
-				description:CreateButton(value.text, SetAlertPayload, value.enum);
-			end
-		end
 	end
 
 	self.PayloadDropdown:SetupMenu(function(dropdown, rootDescription)
@@ -197,10 +148,20 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 
 		local alertType = CooldownViewerAlert_GetType(self.workingCopyOfAlert);
 		if alertType == Enum.CooldownViewerAlertType.Sound then
-			BuildSoundMenus(rootDescription, CooldownViewerSoundData);
-			AddSoundAlertButton(rootDescription, COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, CooldownViewerSound.TextToSpeech);
+			-- Sound menus are in Util methods as some game settings also use them.
+			local useHighlightStyle = false;
+			CooldownViewerUtil.BuildSoundMenus(rootDescription, IsAlertPayloadSelected, SetAlertPayload, useHighlightStyle);
+
+			local alertDataTTS = {
+				text = COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH,
+				soundEnum = Enum.CooldownViewerSound.TextToSpeech,
+				spellName = self:GetCooldownName()
+			};
+
+			local CreateRadio = GenerateClosure(rootDescription.CreateRadio, rootDescription);
+			CooldownViewerUtil.AddSoundAlertRadio(alertDataTTS, CreateRadio, IsAlertPayloadSelected, SetAlertPayload, useHighlightStyle);
 		elseif alertType == Enum.CooldownViewerAlertType.Visual then
-			BuildVisualMenus(rootDescription, CooldownViewerVisualData);
+			BuildVisualMenus(rootDescription);
 		else
 			assertsafe(false, "Unhandled alert type %s in SetupDropdowns", tostring(alertType));
 		end
@@ -209,4 +170,74 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 	-- Update the alert editing frame elements to match the current alert data.
 	local alertType = CooldownViewerAlert_GetType(self.workingCopyOfAlert);
 	self.PayloadLabel:SetText(alertTypeToPayloadLabelText[alertType]);
+end
+
+function CooldownViewerContextMenu_AddNewAlertButton(rootDescription, text, isEnabled, onClickCallback, disabledTooltipCallback)
+	local newAlertButton = rootDescription:CreateButton(text, onClickCallback);
+
+	newAlertButton:SetEnabled(isEnabled);
+
+	if not isEnabled and disabledTooltipCallback then
+		newAlertButton:SetTooltip(disabledTooltipCallback);
+	end
+
+	newAlertButton:AddInitializer(function(button, description, menu)
+		local texture = button:AttachTexture();
+		texture:SetPoint("LEFT");
+		texture:SetAtlas(isEnabled and "editmode-new-layout-plus" or "editmode-new-layout-plus-disabled", true);
+		button.fontString:ClearAllPoints();
+		button.fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
+	end);
+end
+
+function CooldownViewerContextMenu_AddAlertEntryButton(rootDescription, alertType, payloadText, eventText, editCallback, deleteCallback, playSampleCallback)
+	local alertButton = rootDescription:CreateButton("temp", playSampleCallback or nop, 1);
+
+	alertButton:AddInitializer(function(button, description, menu)
+		local typeIconButton = MenuTemplates.AttachBasicButton(button, 25, 25);
+		typeIconButton:SetPoint("TOPLEFT");
+		CooldownViewerAlert_SetupTypeButton(typeIconButton, alertType);
+
+		if playSampleCallback then
+			MenuTemplates.SetUtilityButtonTooltipText(typeIconButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_PLAY_SAMPLE);
+			MenuTemplates.SetUtilityButtonClickHandler(typeIconButton, playSampleCallback);
+			description.playSampleButton = typeIconButton;
+		else
+			typeIconButton:SetEnabled(false);
+		end
+
+		local payloadFontString = button.fontString;
+		payloadFontString:SetFontObject("GameFontNormalLarge");
+		payloadFontString:SetSize(0, 0);
+		payloadFontString:ClearAllPoints();
+		payloadFontString:SetPoint("TOPLEFT", typeIconButton, "TOPRIGHT", 3, 0);
+		payloadFontString:SetText(payloadText);
+
+		if eventText then
+			local eventFontString = button:AttachFontString();
+			eventFontString:SetFontObject("GameFontHighlightSmall");
+			eventFontString:SetSize(0, 0);
+			eventFontString:ClearAllPoints();
+			eventFontString:SetPoint("TOPLEFT", payloadFontString, "BOTTOMLEFT", 0, -5);
+			eventFontString:SetText(eventText);
+		end
+
+		local editButton = MenuTemplates.AttachAutoHideGearButton(button);
+		MenuTemplates.SetUtilityButtonTooltipText(editButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_TOOLTIP_EDIT);
+		MenuTemplates.SetUtilityButtonAnchor(editButton, MenuVariants.GearButtonAnchor, button);
+		MenuTemplates.SetUtilityButtonClickHandler(editButton, function()
+			editCallback();
+			menu:Close();
+		end);
+
+		local deleteButton = MenuTemplates.AttachAutoHideCancelButton(button);
+		MenuTemplates.SetUtilityButtonTooltipText(deleteButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_TOOLTIP_DELETE);
+		MenuTemplates.SetUtilityButtonAnchor(deleteButton, MenuVariants.CancelButtonAnchor, editButton);
+		MenuTemplates.SetUtilityButtonClickHandler(deleteButton, function()
+			deleteCallback();
+			menu:Close();
+		end);
+
+		description.deleteButton = deleteButton;
+	end);
 end

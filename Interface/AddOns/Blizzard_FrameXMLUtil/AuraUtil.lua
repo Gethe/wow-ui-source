@@ -10,6 +10,9 @@ local DEBUFF_DISPLAY_INFO = {
 	["None"] = { color = DEBUFF_TYPE_NONE_COLOR, abbreviation = "", basicAtlas = "ui-debuff-border-default-noicon" },
 };
 
+CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
+CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
+
 AuraUtil = {};
 
 local AuraUtilDataProvider = C_UnitAuras;
@@ -170,7 +173,6 @@ AuraUtil.AuraFilters =
 	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
 	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
 	BigDefensive = "BIG_DEFENSIVE",
-	Important = "IMPORTANT",
 };
 
 function AuraUtil.CreateFilterString(...)
@@ -501,9 +503,8 @@ function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelT
 end
 
 local function OnSwitchAuraDataProvider(...)
-	local whatAreTheArgs = { ... };
-	local realData = select(2, ...);
-	if realData then
+	local useActualDataProvider = select(2, ...);
+	if useActualDataProvider then
 		AuraUtil.ClearDataProvider();
 	else
 		AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
@@ -511,3 +512,66 @@ local function OnSwitchAuraDataProvider(...)
 end
 
 EventRegistry:RegisterFrameEventAndCallback("AURA_DATA_PROVIDER_SWITCH", OnSwitchAuraDataProvider, {});
+
+GroupBuffMixin = {};
+
+function GroupBuffMixin:OnLoad()
+	self:RegisterHiddenGroupBuffsChangedEvent();
+	self:RefreshHiddenGroupBuffs();
+	self:RegisterGroupBuffVisualAlertsChangedEvent();
+	self:RefreshGroupBuffVisualAlerts();
+end
+
+function GroupBuffMixin:RefreshHiddenGroupBuffs(spellIDs)
+	self.hiddenGroupBuffSpellIDs = {};
+	for _, spellID in ipairs(spellIDs or C_UnitAuras.GetHiddenGroupBuffs() or {}) do
+		self.hiddenGroupBuffSpellIDs[spellID] = true;
+	end
+end
+
+function GroupBuffMixin:IsGroupBuffHidden(spellID)
+	if spellID and self.hiddenGroupBuffSpellIDs then
+		return not not self.hiddenGroupBuffSpellIDs[spellID];
+	end
+
+	return false;
+end
+
+function GroupBuffMixin:OnHiddenGroupBuffsChanged(...)
+	local spellIDs = ...;
+	self:RefreshHiddenGroupBuffs(spellIDs);
+end
+
+function GroupBuffMixin:RegisterHiddenGroupBuffsChangedEvent()
+	EventRegistry:RegisterFrameEventAndCallback("HIDDEN_GROUP_BUFFS_CHANGED", self.OnHiddenGroupBuffsChanged, self);
+end
+
+function GroupBuffMixin:UnregisterHiddenGroupBuffsChangedEvent()
+	EventRegistry:UnregisterFrameEventAndCallback("HIDDEN_GROUP_BUFFS_CHANGED", self);
+end
+
+function GroupBuffMixin:RefreshGroupBuffVisualAlerts(visualAlerts)
+	self.groupBuffVisualAlerts = {};
+	for _, info in ipairs(visualAlerts or C_UnitAuras.GetGroupBuffVisualAlerts() or {}) do
+		self.groupBuffVisualAlerts[info.spellID] = info.visualValue;
+	end
+end
+
+function GroupBuffMixin:GetGroupBuffVisualAlert(spellID)
+	if spellID and self.groupBuffVisualAlerts then
+		return self.groupBuffVisualAlerts[spellID];
+	end
+end
+
+function GroupBuffMixin:OnGroupBuffVisualAlertsChanged(...)
+	local visualAlerts = ...;
+	self:RefreshGroupBuffVisualAlerts(visualAlerts);
+end
+
+function GroupBuffMixin:RegisterGroupBuffVisualAlertsChangedEvent()
+	EventRegistry:RegisterFrameEventAndCallback("GROUP_BUFF_VISUAL_ALERTS_CHANGED", self.OnGroupBuffVisualAlertsChanged, self);
+end
+
+function GroupBuffMixin:UnregisterGroupBuffVisualAlertsChangedEvent()
+	EventRegistry:UnregisterFrameEventAndCallback("GROUP_BUFF_VISUAL_ALERTS_CHANGED", self);
+end

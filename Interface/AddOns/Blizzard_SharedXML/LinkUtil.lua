@@ -59,6 +59,9 @@ LinkTypes = {
 	WorldMapWaypoint = "worldmap",
 	WorldQuest = "worldquest",
 	Talent = "talent",
+	DiscordUser = "discorduser",
+	DiscordUserCommunity = "discorduserCommunity",
+	HousingBlueprint = "housingblueprint",
 };
 
 LinkUtil = {};

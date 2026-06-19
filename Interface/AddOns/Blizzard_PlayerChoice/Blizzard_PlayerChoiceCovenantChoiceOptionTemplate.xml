@@ -52,14 +52,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="PreviewButton" mixin="PlayerChoiceCovenantChoicePreviewButtonMixin" hidden="true">
+			<Button parentKey="PreviewButton" mixin="PlayerChoiceBaseOptionButtonTemplateMixin" hidden="true">
 				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.OptionButtonsContainer" relativePoint="RIGHT" />
 				</Anchors>
 				<NormalTexture atlas="UI-Frame-Oribos-ExtraButton" useAtlasSize="true"/>
 				<Scripts>
-					<OnLoad method="OnLoad"/>
 					<OnClick method="OnConfirm"/>
 				</Scripts>
 			</Button>

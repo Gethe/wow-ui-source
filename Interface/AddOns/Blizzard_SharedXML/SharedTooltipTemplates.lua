@@ -130,8 +130,8 @@ function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, overrideColor or HIGHLIGHT_FONT_COLOR, wrap)
 end
 
-function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
-	tooltip:SetOwner(owner, tooltipAnchor);
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor, offsetX, offsetY)
+	tooltip:SetOwner(owner, tooltipAnchor, offsetX, offsetY);
 
 	local wrap = true;
 	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
@@ -258,6 +258,57 @@ end
 
 function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
 	self.NineSlice:SetBorderBlendMode(blendMode);
+end
+
+-- Provides default Narration* method overrides for tooltips and fires Tooltip.OnShown and
+-- Tooltip.OnHidden EventRegistry events. Inheritors that override OnShow or OnHide should
+-- manually invoke these methods.
+NarratableTooltipMixin = {};
+
+function NarratableTooltipMixin:OnShow()
+	EventRegistry:TriggerEvent("Tooltip.OnShown", self);
+end
+
+function NarratableTooltipMixin:OnHide()
+	EventRegistry:TriggerEvent("Tooltip.OnHidden", self);
+end
+
+function NarratableTooltipMixin:NarrationGetName()
+	local regions = { self:GetRegions() };
+	for _, region in ipairs(regions) do
+		if region:IsObjectType("FontString") then
+			local text = region:GetText();
+			if text and text ~= "" then
+				return text;
+			end
+		end
+	end
+
+	return nil;
+end
+
+function NarratableTooltipMixin:NarrationGetDescription()
+	local parts = {};
+	local skippedFirst = false;
+	local regions = { self:GetRegions() };
+	for _, region in ipairs(regions) do
+		if region:IsObjectType("FontString") then
+			local text = region:GetText();
+			if text and text ~= "" then
+				if skippedFirst then
+					parts[#parts + 1] = text;
+				else
+					skippedFirst = true;
+				end
+			end
+		end
+	end
+
+	if #parts == 0 then
+		return nil;
+	end
+
+	return table.concat(parts, NARRATION_SEPARATOR);
 end
 
 DisabledTooltipButtonMixin = {};

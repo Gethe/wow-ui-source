@@ -53,7 +53,11 @@ function PhotosensitivityWarningFrameMixin:ShowNextFrame()
 	GlueParent_CloseSecondaryScreen();
 
 	GlueParent_UpdateDialogs();
-	GlueParent_CheckCinematic();
+
+	if not GlueParent_CheckCinematic() then
+		GlueParent_CheckScreenNarrator();
+	end
+
 	if AccountLogin:IsVisible() and SetExpansionLogo and AccountLogin.UI.GameLogo:GetObjectType() == "Texture" then
 		-- Note: AccountLogin.UI.GameLogo is not a texture in Classic, and this logic is being handled by GlueGameLogoMixin.
 		SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());

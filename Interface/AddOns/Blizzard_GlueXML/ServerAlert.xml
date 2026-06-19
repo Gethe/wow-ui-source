@@ -59,10 +59,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CollapsibleServerAlertTemplate" inherits="ServerAlertBackgroundTemplate" mixin="CollapsibleServerAlertMixin" virtual="true">
+	<!-- Mouse enabled so that mouse-based screen narration can detect it. -->
+	<Frame name="CollapsibleServerAlertTemplate" inherits="ServerAlertBackgroundTemplate" mixin="CollapsibleServerAlertMixin" enableMouse="true" virtual="true">
 		<Size x="287" y="400"/>
 		<Frames>
-			<Button parentKey="ExpandBar" inherits="ExpandBarTemplate">
+			<Button parentKey="ExpandBar" mixin="NarrationForwardToParentMixin" inherits="ExpandBarTemplate">
 				<Size x="0" y="60"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>

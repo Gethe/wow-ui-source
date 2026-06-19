@@ -30,8 +30,8 @@ Pools.lua
 ButtonStateBehavior.lua
 EnvironmentUtil.lua
 Color.lua
-ColorSwatch.xml
 ColorSwatch.lua
+ColorSwatch.xml
 FrameWatcher.lua
 TaggableObject.lua
 TimedCallback.lua
@@ -39,4 +39,3 @@ RegionLayoutManager.lua
 ModelSceneUtil.lua
 AnchorUtil.lua
 CurveConstants.lua
-CombatAudioAlertConstants.lua

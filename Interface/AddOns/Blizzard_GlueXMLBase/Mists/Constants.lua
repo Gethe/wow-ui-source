@@ -45,6 +45,7 @@ GLUE_AMBIENCE_TRACKS = {
 	["MAGHARORC"] 				= SOUNDKIT.AMB_GLUESCREEN_MAGHARORC,
 };
 
+CHAR_CREATE_USES_MODEL_FOG = false;
 CHAR_MODEL_FOG_INFO = {
 	["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
 	["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };
@@ -58,13 +59,11 @@ CHAR_MODEL_FOG_INFO = {
 };
 
 CHAR_MODEL_GLOW_INFO = {
-	--[[
 	["WORGEN"] = 0.0;
 	["GOBLIN"] = 0.0;
 	["HUMAN"] = 0.15;
 	["DWARF"] = 0.15;
 	["CHARACTERSELECT"] = 0.3;
-	]]
 };
 
 -- for WoW accounts list

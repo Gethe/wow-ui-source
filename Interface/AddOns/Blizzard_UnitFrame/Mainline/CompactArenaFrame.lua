@@ -84,6 +84,7 @@ function CompactArenaFrame_Generate()
 	local didCreate = false;
 	if not frame then
 		frame = CreateFrame("Frame", "CompactArenaFrame", UIParent, "CompactArenaFrameTemplate");
+		frame:SetRolesets("arenaFrames");
 		frame:RegisterEvent("ARENA_OPPONENT_UPDATE");
 		frame:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
 		frame:RegisterEvent("PVP_MATCH_STATE_CHANGED");
@@ -220,7 +221,7 @@ function CompactArenaFrameMixin:UpdateLayout()
 	firstMemberUnitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", unitFrameXOffset, -14);
 	self:SetSize(width, height);
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function CompactArenaFrameMixin:UpdateVisibility()

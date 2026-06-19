@@ -22,7 +22,7 @@ function TalentFrame_Clear(TalentFrame)
 		for column=1, 3 do
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			if(button ~= nil) then
-				SetDesaturation(button.icon, true);
+				button.icon:SetDesaturated(true);
 				button.border:Hide();
 			end
 		end
@@ -101,7 +101,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					end
 
 					if( TalentFrame.inspect ) then
-						SetDesaturation(button.icon, not (talentInfo.selected or talentInfo.grantedByAura));
+						button.icon:SetDesaturated(not (talentInfo.selected or talentInfo.grantedByAura));
 						button.border:SetShown(talentInfo.selected or talentInfo.grantedByAura);
 						if ( talentInfo.grantedByAura ) then
 							local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Legendary);
@@ -113,7 +113,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						end
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)) and not talentInfo.grantedByAura);
+						button.icon:SetDesaturated((button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)) and not talentInfo.grantedByAura);
 						button.Cover:SetShown(button.disabled);
 						button.highlight:SetAlpha((talentInfo.selected or not tierAvailable) and 0 or 1);
 					end

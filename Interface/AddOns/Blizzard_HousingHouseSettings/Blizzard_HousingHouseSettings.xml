@@ -147,7 +147,12 @@
 		</Frame>
 		<Frame parentKey="HouseAccess" inherits="HouseSettingsAccessOptionsTemplate">
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeKey="$parent.PlotAccess" relativePoint="TOPRIGHT" x="118"/>
+				<Anchor point="TOPLEFT" relativeKey="$parent.PlotAccess" relativePoint="TOPRIGHT" x="20"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="BlueprintExport" inherits="HouseSettingsAccessOptionsTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.HouseAccess" relativePoint="TOPRIGHT" x="20"/>
 			</Anchors>
 		</Frame>
 		<Button parentKey="IgnoreListButton" inherits="UIPanelButtonTemplate" text="HOUSING_HOUSE_SETTINGS_IGNORELIST_BUTTON">

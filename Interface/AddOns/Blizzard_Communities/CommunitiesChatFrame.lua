@@ -124,12 +124,16 @@ function CommunitiesChatMixin:SendMessage(text)
 			return;
 		end
 		
-		if streamInfo.streamType == Enum.ClubStreamType.Guild and not C_GuildInfo.CanSpeakInGuildChat() then
-			self.MessageFrame:AddMessage(ERR_GUILD_PERMISSIONS, YELLOW_FONT_COLOR:GetRGB());
-			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
-			return;
+		if streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Discord then
+			local canGuildSpeak = C_GuildInfo.CanSpeakInGuildChat();
+			if(not canGuildSpeak) then
+				self.MessageFrame:AddMessage(ERR_GUILD_PERMISSIONS, YELLOW_FONT_COLOR:GetRGB());
+				ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
+				return;
+			end
+			
 		end
-		
+
 		C_Club.SendMessage(clubId, streamId, text);
 	elseif clubId ~= nil and C_Club.IsAccountMuted(clubId) then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_PARENTAL_CONTROLS_CHAT_MUTED);
@@ -295,8 +299,12 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		displayName = TimerunningUtil.AddSmallIcon(name);
 	end
 	local link;
+
 	if message.author.clubType == Enum.ClubType.BattleNet then
 		link = GetBNPlayerCommunityLink(name, displayName, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
+	elseif message.author.discordInfo and message.author.discordInfo.fromDiscord then
+		local playerName = ChatFrameUtil.GetNameForDiscordMessage(message.author.discordInfo);
+		link = GetDiscordUserCommunityLink(playerName, message.author.bnetAccountId, message.author.discordInfo.userID, clubId, streamId, message.messageId.epoch, message.messageId.position);
 	elseif message.author.clubType == Enum.ClubType.Character or message.author.clubType == Enum.ClubType.Guild then
 		local classInfo = message.author.classID and C_CreatureInfo.GetClassInfo(message.author.classID);
 		if classInfo then
@@ -319,13 +327,26 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	else
 		content = message.content;
 	end
+
 	
-	local format = ChatFrameUtil.GetTimestampFormat();
-	if format then
-		return BetterDate(format, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
-	else
-		return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	local isFromDiscord = message.author.discordInfo and message.author.discordInfo.fromDiscord;
+	if isFromDiscord then
+		content = ChatFrameUtil.FormatDiscordMessage(message.author.discordInfo, content);
 	end
+
+	local format = ChatFrameUtil.GetTimestampFormat();
+	local outMessage;
+	if format then
+		outMessage = TimeUtil.BetterDate(format, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	else
+		outMessage = COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	end
+
+	if isFromDiscord then
+		outMessage = CreateAtlasMarkup("UI-ChatIcon-Discord").." "..outMessage
+	end
+
+	return outMessage;
 end
 
 function CommunitiesChatMixin:AddDateNotification(calendarTime, backfill)

@@ -1,14 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	
-	<Frame name="MicroButtonAndBagsBar" parent="UIParent">
+	<Frame name="MicroButtonAndBagsBar" parent="UIParent" roleset="microMenu">
 		<Size x="232" y="80"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
 		</Anchors>
 	</Frame>
 
-	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuContainerMixin">
+	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuContainerMixin" roleset="microMenu">
 		<Size x="1" y="1"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" relativeTo="MicroButtonAndBagsBar"/>

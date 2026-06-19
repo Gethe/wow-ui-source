@@ -16,10 +16,6 @@ function MonkAlternatePowerBarMixin:Initialize()
     self.powerName = "STAGGER";
 	self.alternatePowerRequirementsMet = false;
 
-	local statusBarTexture = self:GetStatusBarTexture();
-	statusBarTexture:SetTexelSnappingBias(0);
-	statusBarTexture:SetSnapToPixelGrid(false);
-
 	self:EvaluateUnit();
 end
 
@@ -87,12 +83,13 @@ function MonkAlternatePowerBarMixin:UpdateArt()
 		self.overrideArtInfo = artInfo[staggerStateKey];
 	end
 
-    local info = self.overrideArtInfo or PowerBarColor[self.powerName];
+	local barTextureAtlas = self.barTextureAtlas;
+	local info = self.overrideArtInfo or PowerBarColor[self.powerName];
 	if info then
-        self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
-        self:SetStatusBarColor(info.r, info.g, info.b);
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status-Rectangle");
+		self:SetStatusBarColor(info.r, info.g, info.b);
 	else
-		self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
+		self:SetStatusBarTexture(barTextureAtlas or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
 		self:SetStatusBarColor(1, 1, 1);
 	end
 end

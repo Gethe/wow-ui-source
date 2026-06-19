@@ -8,6 +8,15 @@ local Container =
 	Functions =
 	{
 		{
+			Name = "CalculateTotalNumberOfFreeBagSlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalFreeSlots", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ContainerIDToInventoryID",
 			Type = "Function",
 			MayReturnNothing = true,

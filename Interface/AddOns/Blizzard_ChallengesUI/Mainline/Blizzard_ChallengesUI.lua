@@ -9,6 +9,17 @@ local CHEST_STATE_COLLECT = 4;
 
 local SHADOWLANDS_FIRST_SEASON = 5;
 
+local function ChallengesKeystoneFrame_EscapePressed()
+	if ChallengesKeystoneFrame:IsShown() then
+		ChallengesKeystoneFrame:Hide();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, ChallengesKeystoneFrame_EscapePressed);
+
 local function CreateFrames(self, array, num, template)
 	while (#self[array] < num) do
 		local frame = CreateFrame("Frame", nil, self, template);
@@ -358,7 +369,7 @@ end
 
 function ChallengeModeWeeklyChestMixin:OnLeave()
 	GameTooltip_Hide();
-	
+
 	if C_WeeklyRewards.HasAvailableRewards() then
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();

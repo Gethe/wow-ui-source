@@ -906,4 +906,22 @@
 			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
+
+	<FontFamily name="NumberFont_Outline_Large2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_C.ttf" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\arheiuhk_bd.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
 </Ui>

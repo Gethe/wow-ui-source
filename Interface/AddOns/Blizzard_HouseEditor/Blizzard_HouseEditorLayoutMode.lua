@@ -218,8 +218,8 @@ function HouseEditorLayoutFloorLineMixin:Init(floorIndex)
 	local isTopFloor = floorIndex == (C_HousingLayout.GetNumFloors() - 1);
 	self.TopDivider:SetShown(isTopFloor);
 
-	local isFloorOne = floorIndex == 0;
-	self.DoorIcon:SetShown(isFloorOne);
+	local isBaseRoomFloor = floorIndex == C_HousingLayout.GetBaseRoomFloor();
+	self.DoorIcon:SetShown(isBaseRoomFloor);
 
 	local isActive = self:IsActive();
 	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
@@ -292,9 +292,8 @@ end
 
 function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	self.currentFloor = C_HousingLayout.GetViewedFloor();
-	local isDraggingStairwell = C_HousingLayout.IsDraggingStairwell();
-	self.UpButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
-	self.DownButton:SetEnabled(not isDraggingStairwell and C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));
+	self.UpButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor + 1));
+	self.DownButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor - 1));
 
 	local dataProvider = CreateDataProvider();
 

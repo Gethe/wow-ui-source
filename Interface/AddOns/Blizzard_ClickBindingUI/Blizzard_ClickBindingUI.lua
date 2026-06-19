@@ -223,7 +223,7 @@ local function BindingTextFromElementData(elementData)
 	end
 
 	local buttonString = ButtonStrings[bindingInfo.button];
-	local modifierText = C_ClickBindings.GetStringFromModifiers(bindingInfo.modifiers);
+	local modifierText = GetStringFromModifiers(bindingInfo.modifiers);
 	if modifierText ~= "" then
 		return CLICK_BINDINGS_BINDING_TEXT_FORMAT:format(modifierText, buttonString);
 	else
@@ -477,7 +477,7 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 				return;
 			end
 
-			local modifiers = C_ClickBindings.MakeModifiers();
+			local modifiers = MakeModifiers();
 			if elementData.bindingInfo.button == buttonName and elementData.bindingInfo.modifiers == modifiers then
 				return;
 			end

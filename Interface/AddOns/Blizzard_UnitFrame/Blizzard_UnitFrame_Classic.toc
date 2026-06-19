@@ -1,6 +1,6 @@
 ## Title: Blizzard_UnitFrame
 ## Author: Blizzard Entertainment
-## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UIParentPanelManager
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UIParentPanelManager, Blizzard_ColorPickerFrame, Blizzard_ManagedFrameSystem
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 Classic\UnitPowerBarAlt.xml
@@ -16,6 +16,7 @@ Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua [AllowLoadGameType wrath, cata, mists]
 Wrath\AlternatePowerBar.xml [AllowLoadGameType wrath, cata]
 Mists\AlternatePowerBar.xml [AllowLoadGameType mists]
+Shared\GroupFrameVisibility.lua
 Shared\PartyMemberFrame.lua
 Classic\PartyMemberFrame.lua
 Shared\PartyFrameTemplates.xml
@@ -55,4 +56,5 @@ Cata\EclipseBarFrame.xml [AllowLoadGameType cata, mists]
 [Game]\MonkStaggerBar.xml [AllowLoadGameType mists]
 [Game]\PriestBar.lua [AllowLoadGameType mists]
 [Game]\PriestBar.xml [AllowLoadGameType mists]
+Shared\Localization.lua
 Classic\Localization.lua

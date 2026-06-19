@@ -2,7 +2,7 @@ local _, addonTable = ...; -- Used for passing functions between UIParentPanelMa
 
 BOTTOM_FRAME_CONTAINER_MARGIN = 15;
 
-addonTable.UIParentManageFramePositions = function(self)
+addonTable.ManageFramePositions = function(self)
 	if MainActionBar and MicroButtonAndBagsBar and not MainActionBar:IsUserPlaced() and not MicroButtonAndBagsBar:IsUserPlaced() then
 		local screenWidth = UIParent:GetWidth();
 		local barScale = 1;
@@ -19,8 +19,8 @@ addonTable.UIParentManageFramePositions = function(self)
 		MainActionBar:SetScale(barScale);
 	end
 
-	self:UIParentManageBottomFrameContainer();
-	self:UIParentManageRightFrameContainer();
+	self:ManageBottomFrameContainer();
+	self:ManageRightFrameContainer();
 
 	if(ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsShown()) then
 		ObjectiveTrackerFrame:UpdateHeight();

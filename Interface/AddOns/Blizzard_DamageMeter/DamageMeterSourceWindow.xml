@@ -4,7 +4,7 @@
 		<Size x="400" y="200"/>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="250" y="120"/>
+				<AbsDimension x="200" y="120"/>
 			</minResize>
 			<maxResize>
 				<AbsDimension x="600" y="600"/>
@@ -40,6 +40,11 @@
 				<NormalTexture atlas="damagemeters-scalehandle"/>
 				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
 				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
 			</Button>
 		</Frames>
 		<Animations>

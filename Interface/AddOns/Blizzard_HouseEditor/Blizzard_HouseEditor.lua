@@ -34,7 +34,7 @@ function HouseEditorFrameMixin:OnLoad()
 
 	FrameUtil.RegisterFrameForEvents(self, HouseEditorFrameLifetimeEvents);
 	EventRegistry:RegisterCallback("HouseEditor.HouseStorageSetShown", self.HouseStorageSetShown, self);
-	
+
 end
 
 function HouseEditorFrameMixin:ShowAfterCheckout()

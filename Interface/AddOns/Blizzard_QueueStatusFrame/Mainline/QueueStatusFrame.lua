@@ -492,6 +492,7 @@ function QueueStatusFrameMixin:OnLoad()
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
+	self:RegisterEvent("LFG_LIST_REVEALED_CENSORED_ACTIVE_ENTRY");
 
 	--For PvP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
@@ -542,6 +543,7 @@ do
 
 		local prevEntry;
 		for i, entry in ipairs(entries) do
+			entry:ClearAllPoints();
 			if ( not prevEntry ) then
 				entry:SetPoint("TOP", self, "TOP", 0, 0);
 				entry.EntrySeparator:Hide();
@@ -556,7 +558,6 @@ end
 do
     local function QueueStatusEntryResetter(pool, frame)
 	    frame:Hide();
-	    frame:ClearAllPoints();
 
 	    frame.EntrySeparator:Show();
 	    frame.active = nil;
@@ -1003,16 +1004,32 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	end
 end
 
+local function GetNameTextFromActiveEntryInfo(activeEntryInfo)
+	if activeEntryInfo.censored then
+		return RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+	end
+	return activeEntryInfo.name;
+end
+
 function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local numApplicants, numActiveApplicants = C_LFGList.GetNumApplicants();
-	QueueStatusEntry_SetMinimalDisplay(entry, activeEntryInfo.name, QUEUED_STATUS_LISTED, string.format(LFG_LIST_PENDING_APPLICANTS, numActiveApplicants));
+	local nameText = GetNameTextFromActiveEntryInfo(activeEntryInfo);
+	QueueStatusEntry_SetMinimalDisplay(entry, nameText, QUEUED_STATUS_LISTED, string.format(LFG_LIST_PENDING_APPLICANTS, numActiveApplicants));
+end
+
+local function GetNameTextFromSearchResultInfo(searchResultInfo)
+	if searchResultInfo.censored then
+		return RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+	end
+	return searchResultInfo.name;
 end
 
 function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityIDs[1], nil, searchResultInfo.isWarMode);
-	QueueStatusEntry_SetMinimalDisplay(entry, searchResultInfo.name, QUEUED_STATUS_SIGNED_UP, activityName);
+	local nameText = GetNameTextFromSearchResultInfo(searchResultInfo);
+	QueueStatusEntry_SetMinimalDisplay(entry, nameText, QUEUED_STATUS_SIGNED_UP, activityName);
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
@@ -1159,7 +1176,6 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local height = 14;
 
 	entry.Title:SetText(title);
-	height = height + entry.Title:GetHeight();
 
 	entry.Status:Hide();
 	entry.SubTitle:ClearAllPoints();
@@ -1173,14 +1189,17 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.SubTitle:Hide();
 	end
 
+	local leftmostIconRegion = nil;
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
 		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
+		leftmostIconRegion = entry.AssignedSpec.Icon;
 	else
 		--Update your role icons
 		if ( isDPS ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
+			leftmostIconRegion = icon;
 			local showDisabled = false;
 			icon:SetAtlas(GetIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
@@ -1188,6 +1207,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		end
 		if ( isHealer ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
+			leftmostIconRegion = icon;
 			local showDisabled = false;
 			icon:SetAtlas(GetIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
@@ -1195,6 +1215,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		end
 		if ( isTank ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
+			leftmostIconRegion = icon;
 			local showDisabled = false;
 			icon:SetAtlas(GetIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
@@ -1207,6 +1228,14 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry["RoleIcon"..i]:Hide();
 	end
 	entry.AssignedSpec:SetShown(assignedSpec ~= nil);
+
+	-- Resize text
+	if leftmostIconRegion then
+		entry.Title:SetPoint("RIGHT", leftmostIconRegion, "LEFT", -5, 0);
+	else
+		entry.Title:SetPoint("RIGHT", -10, 0);
+	end
+	height = height + entry.Title:GetHeight();
 
 	--Update the role needs
 	if ( totalTanks and totalHealers and totalDPS ) then
@@ -1348,7 +1377,9 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 
 		if ( not inArena ) then
 			description:CreateButton(TOGGLE_BATTLEFIELD_MAP, function()
-				ToggleBattlefieldMap();
+				if not DISALLOW_FRAME_TOGGLING then
+					ToggleBattlefieldMap();
+				end
 			end);
 		end
 
@@ -1358,7 +1389,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 			local button = description:CreateButton(SURRENDER_ARENA, function()
 				ConfirmSurrenderArena();
 			end);
-			if not CanSurrenderArena() or C_PvP.IsSoloShuffle() then
+			if not C_PvP.CanSurrenderArena() or C_PvP.IsSoloShuffle() then
 				button:SetEnabled(false);
 			end
 			disabled = false;

@@ -1,3 +1,1348 @@
+local CASTBAR_STAGE_INVALID = -1;
+local CASTBAR_STAGE_DURATION_INVALID = -1;
+
+-- Casting bar type, determined based on spell data.
+CastingBarType = {
+	ApplyingCrafting = secretwrap("applyingcrafting"),
+	ApplyingTalents = secretwrap("applyingtalents"),
+	Standard = secretwrap("standard"),
+	Empowered = secretwrap("empowered"),
+	Channel = secretwrap("channel"),
+	Uninterruptable = secretwrap("uninterruptable"),
+	Interrupted = secretwrap("interrupted"),
+};
+
+-- Visual config for each CastingBarType.
+CastingBarTypeInfo = {
+	[CastingBarType.ApplyingCrafting] = {
+		filling = "ui-castingbar-filling-applyingcrafting",
+		full = "ui-castingbar-full-applyingcrafting",
+		glow = "ui-castingbar-full-glow-applyingcrafting",
+		sparkFx = "CraftingGlow",
+		finishAnim = "CraftingFinish",
+		classicFillColor = CASTBAR_CLASSIC_YELLOW,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.ApplyingTalents] = {
+		filling = "ui-castingbar-filling-standard",
+		full = "ui-castingbar-full-standard",
+		glow = "ui-castingbar-full-glow-standard",
+		sparkFx = "StandardGlow",
+		classicFillColor = CASTBAR_CLASSIC_YELLOW,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.Standard] = {
+		filling = "ui-castingbar-filling-standard",
+		full = "ui-castingbar-full-standard",
+		glow = "ui-castingbar-full-glow-standard",
+		sparkFx = "StandardGlow",
+		finishAnim = "StandardFinish",
+		classicFillColor = CASTBAR_CLASSIC_YELLOW,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.Empowered] = {
+		filling = "",
+		full = "",
+		glow = "",
+		classicFillColor = CASTBAR_CLASSIC_YELLOW,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.Channel] = {
+		filling = "ui-castingbar-filling-channel",
+		full = "ui-castingbar-full-channel",
+		glow = "ui-castingbar-full-glow-channel",
+		sparkFx = "ChannelShadow",
+		finishAnim = "ChannelFinish",
+		classicFillColor = CASTBAR_CLASSIC_GREEN,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.Uninterruptable] = {
+		filling = "ui-castingbar-uninterruptable",
+		full = "ui-castingbar-uninterruptable",
+		glow = "ui-castingbar-full-glow-standard",
+		classicFillColor = CASTBAR_CLASSIC_GRAY,
+		classicFullColor = CASTBAR_CLASSIC_GREEN,
+	},
+	[CastingBarType.Interrupted] = {
+		filling = "ui-castingbar-interrupted",
+		full = "ui-castingbar-interrupted",
+		glow = "ui-castingbar-full-glow-standard",
+		classicFillColor = CASTBAR_CLASSIC_RED,
+		classicFullColor = CASTBAR_CLASSIC_RED,
+	},
+};
+
+CastingBarMixin = {};
+
+--[[
+	Event Handlers
+]]
+function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
+	self.StagePoints = {};
+	self.StagePips = {};
+	self.StageTiers = {};
+
+	self:SetUnit(unit, showTradeSkills, showShield);
+
+	self.showCastbar = true;
+	self.showIcon = true;
+
+	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint(1);
+	if ( point == "CENTER" ) then
+		self.Spark.offsetY = offsetY;
+	end
+end
+
+function CastingBarMixin:OnEvent(event, ...)
+	local arg1 = ...;
+
+	local unit = self.unit;
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local nameChannel = UnitChannelInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
+		if ( nameChannel ) then
+			event = "UNIT_SPELLCAST_CHANNEL_START";
+			arg1 = unit;
+		elseif ( nameSpell ) then
+			event = "UNIT_SPELLCAST_START";
+			arg1 = unit;
+		else
+			self:FinishSpell();
+		end
+	end
+
+	if ( arg1 ~= unit ) then
+		return;
+	end
+
+	if ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" ) then
+		self:HandleCastStart(event);
+	elseif ( event == "UNIT_SPELLCAST_STOP" ) then
+		local _unit, castGUID, _spellID = ...;
+		local complete = false;
+		local interruptedBy = nil;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+		local _unit, castGUID, _spellID, interruptedBy = ...;
+		local complete = interruptedBy == nil;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_EMPOWER_STOP" ) then
+		local _unit, castGUID, _spellID, complete, interruptedBy = ...;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_FAILED" ) then
+		local _unit, castID, _spellID = ...
+		local interruptedBy = nil;
+		self:HandleInterruptOrSpellFailed(false, event, castID, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_INTERRUPTED" ) then
+		local _unit, castID, _spellID, interruptedBy = ...
+		self:HandleInterruptOrSpellFailed(false, event, castID, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
+		self:HandleCastDelayed();
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" or event == "UNIT_SPELLCAST_EMPOWER_UPDATE" ) then
+		self:HandleChannelUpdateDelayed();
+	elseif ( event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
+		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+	end
+end
+
+function CastingBarMixin:OnUpdate(elapsed)
+	if ( self.casting or self.reverseChanneling) then
+		self.value = self.value + elapsed;
+		if(self.reverseChanneling and self.NumStages > 0) then
+			self:UpdateStage();
+		end
+		if ( self.value >= self.maxValue ) then
+			self:SetValue(self.maxValue);
+			self:UpdateCastTimeText();
+			if (not self.reverseChanneling) then
+				self:FinishSpell();
+			else
+				if self.FlashLoopingAnim and not self.FlashLoopingAnim:IsPlaying() then
+					self.FlashLoopingAnim:Play();
+					self.Flash:Show();
+				end
+			end
+			self:HideSpark();
+			return;
+		end
+		self:SetValue(self.value);
+		self:UpdateCastTimeText();
+		if ( self.Flash ) then
+			self.Flash:Hide();
+		end
+	elseif ( self.channeling ) then
+		self.value = self.value - elapsed;
+		if ( self.value <= 0 ) then
+			self:FinishSpell();
+			return;
+		end
+		self:SetValue(self.value);
+		self:UpdateCastTimeText();
+		if ( self.Flash ) then
+			self.Flash:Hide();
+		end
+	end
+
+	if ( self.casting or self.reverseChanneling or self.channeling ) then
+		if ( self.Spark ) then
+			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 0);
+		end
+	end
+end
+
+function CastingBarMixin:OnShow()
+	if ( self.unit ) then
+		if ( self.casting ) then
+			local _, _, _, startTime = UnitCastingInfo(self.unit);
+			if ( startTime ) then
+				self.value = (GetTime() - (startTime / 1000));
+			end
+		else
+			local _, _, _, _, endTime = UnitChannelInfo(self.unit);
+			if ( endTime ) then
+				self.value = ((endTime / 1000) - GetTime());
+			end
+		end
+	end
+end
+
+--[[
+	State Management and Visibility
+]]
+function CastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
+	if self.unit ~= unit then
+		self.unit = unit;
+		self.spellID = nil;
+		self.showTradeSkills = showTradeSkills;
+		self.showShield = showShield;
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+
+		self:StopAnims();
+
+		if unit then
+			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+			self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+			self:OnEvent("PLAYER_ENTERING_WORLD")
+		else
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+			self:UnregisterEvent("UNIT_SPELLCAST_DELAYED");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			self:UnregisterEvent("UNIT_SPELLCAST_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+		end
+	end
+end
+
+function CastingBarMixin:ShouldShowCastBar()
+	return self.showCastbar and (self.unit ~= nil);
+end
+
+function CastingBarMixin:SetAndUpdateShowCastbar(showCastbar)
+	self.showCastbar = showCastbar;
+	self:UpdateIsShown();
+end
+
+function CastingBarMixin:UpdateIsShown()
+	if ( self.casting and self:ShouldShowCastBar() ) then
+		self:OnEvent("PLAYER_ENTERING_WORLD")
+	else
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
+	end
+end
+
+function CastingBarMixin:UpdateShownState(desiredShow)
+	if (self == PlayerCastingBarFrame) and not GameRulesUtil.ShouldShowPlayerCastBar() then
+		desiredShow = false;
+	end
+
+	self:UpdateCastTimeTextShown();
+
+	if self.isInEditMode then
+		-- If we are in edit mode then override and just show
+		self:StopFinishAnims();
+		self:ApplyAlpha(1.0);
+		self:Show();
+		return;
+	end
+
+	if desiredShow ~= nil then
+		self:SetShown(desiredShow);
+		return;
+	end
+
+	self:SetShown(self.casting and self:ShouldShowCastBar());
+end
+
+function CastingBarMixin:AddWidgetForFade(widget)
+	if not self.additionalFadeWidgets then
+		self.additionalFadeWidgets = {};
+	end
+	self.additionalFadeWidgets[widget] = true;
+end
+
+--[[
+	CastingBarType Functions
+]]
+function CastingBarMixin:GetTypeInfo(barType)
+	if not barType then
+		barType = CastingBarType.Standard;
+	end
+	return CastingBarTypeInfo[barType];
+end
+
+function CastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
+	if isTradeSkill then
+		return CastingBarType.ApplyingCrafting;
+	end
+	if notInterruptible then
+		return CastingBarType.Uninterruptable;
+	end
+	if isChannel then
+		return CastingBarType.Channel;
+	end
+	if isEmpowered then
+		return CastingBarType.Empowered;
+	end
+	return CastingBarType.Standard;
+end
+
+--[[
+	Cast Event Handlers
+]]
+function CastingBarMixin:HandleCastStart(event)
+	local isChannel = event == "UNIT_SPELLCAST_CHANNEL_START";
+	local isEmpowered = event == "UNIT_SPELLCAST_EMPOWER_START";
+
+	local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID, _isEmpowered, numStages;
+	if (isChannel or isEmpowered) then
+		name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _isEmpowered, numStages = UnitChannelInfo(self.unit);
+	else
+		name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(self.unit);
+	end
+
+	if ( not name or (not self.showTradeSkills and isTradeSkill)) then
+		-- if there is no name, there is no bar
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
+		return;
+	end
+
+	local isChargeSpell = numStages and numStages > 0;
+	if isChargeSpell then
+		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit);
+	end
+
+	self.barType = self:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isChargeSpell);
+
+	if isChargeSpell then
+		self:SetColorFill(0, 0, 0, 0);
+	else
+		self:UpdateBarFillTexture(false);
+	end
+
+	self:ClearStages();
+	self:ShowSpark();
+
+	if (isChannel) then
+		self.value = (endTime / 1000) - GetTime();
+	else
+		self.value = GetTime() - (startTime / 1000);
+	end
+	self.maxValue = (endTime - startTime) / 1000;
+	self:SetMinMaxValues(0, self.maxValue);
+	self:SetValue(self.value);
+
+	self:UpdateCastTimeText();
+	if ( self.Text ) then
+		self.Text:SetText(text);
+	end
+	if ( self.Icon ) then
+		self.Icon:SetTexture(texture);
+	end
+
+	if (isEmpowered) then
+		self.casting = true;
+		self.channeling = false;
+		self.reverseChanneling = true;
+	elseif (isChannel) then
+		self.casting = nil;
+		self.channeling = true;
+		self.reverseChanneling = nil;
+	else
+		self.casting = true;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+		self.castID = castID;
+	end
+
+	self.spellID = spellID;
+
+	self:UpdateIconShown();
+	self:StopAnims();
+	self:ApplyAlpha(1.0);
+
+	self:UpdateHighlightImportantCast();
+	self:UpdateHighlightWhenCastTarget();
+	self:UpdateTargetNameText();
+	self:UpdateShownState(self:ShouldShowCastBar());
+
+	-- AddStages after Show so that the layout is valid
+	if (isChargeSpell) then
+		self:AddStages(numStages);
+	end
+end
+
+function CastingBarMixin:HandleCastStop(event, castID, castComplete, interruptedBy)
+	if ( not self:IsVisible() ) then
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
+	end
+
+	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and castID == self.castID) or
+	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
+
+		if ( not castComplete) then
+			if ( event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+				self:HandleInterruptOrSpellFailed(true, event, castID, interruptedBy);
+				return;
+			end
+		end
+
+		-- Cast info not available once stopped, so update bar based on cached barType
+		local barTypeInfo = self:GetTypeInfo(self.barType);
+		self:UpdateBarFillTexture(true);
+
+		if not self.reverseChanneling then
+			self:HideSpark();
+		end
+
+		if ( self.Flash ) then
+			if (not self.classicStyleCastBar) then
+				self.Flash:SetAtlas(barTypeInfo.glow);
+			end
+			self.Flash:SetAlpha(0.0);
+			self.Flash:Show();
+		end
+		if not self.reverseChanneling and not self.channeling then
+			self:SetValue(self.maxValue);
+			self:UpdateCastTimeText();
+		end
+
+		self:PlayFadeAnim();
+		self:PlayFinishAnim();
+
+		if ( event == "UNIT_SPELLCAST_STOP" ) then
+			self.casting = nil;
+		else
+			self.channeling = nil;
+			if (self.reverseChanneling) then
+				self.casting = nil;
+			end
+			self.reverseChanneling = nil;
+		end
+	end
+end
+
+function CastingBarMixin:HandleCastDelayed()
+	if ( self:IsShown() ) then
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(self.unit);
+		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
+			-- if there is no name, there is no bar
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+			return;
+		end
+		self.value = (GetTime() - (startTime / 1000));
+		self.maxValue = (endTime - startTime) / 1000;
+		self:SetMinMaxValues(0, self.maxValue);
+		if ( not self.casting ) then
+			self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
+			self:UpdateBarFillTexture(false);
+			self:ClearStages();
+			self:ShowSpark();
+			if ( self.Flash ) then
+				self.Flash:SetAlpha(0.0);
+				self.Flash:Hide();
+			end
+			self.casting = true;
+			self.channeling = nil;
+			self.reverseChanneling = nil;
+
+			self:StopAnims();
+		end
+	end
+end
+
+function CastingBarMixin:HandleChannelUpdateDelayed()
+	if ( self:IsShown() ) then
+		local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(self.unit);
+		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
+			-- if there is no name, there is no bar
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+			return;
+		end
+		self.value = ((endTime / 1000) - GetTime());
+		self.maxValue = (endTime - startTime) / 1000;
+		self:SetMinMaxValues(0, self.maxValue);
+		self:SetValue(self.value);
+		self:UpdateCastTimeText();
+	end
+end
+
+function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, castID, interruptedBy)
+	if ( empoweredInterrupt or (self:IsShown() and (self.casting and castID == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
+		self.barType = CastingBarType.Interrupted; -- failed and interrupted use same bar art
+
+		self:UpdateBarFillTexture(true);
+
+		self:ShowSpark();
+
+		if ( self.Text ) then
+			if ( event == "UNIT_SPELLCAST_FAILED" ) then
+				self.Text:SetText(FAILED);
+			else
+				local interruptText = self:GetInterruptText(interruptedBy);
+				self.Text:SetText(interruptText);
+			end
+		end
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+
+		self:PlayInterruptAnims();
+
+		if (self.classicStyleCastBar) then
+			-- Mainline has some quirky behavior where
+			-- an interrupted cast bar does not fill immediately
+			-- but rather waits for the InterruptSparkAnim to finish.
+			-- We don't have the InterruptSparkAnim for Classic,
+			-- so just fill it immediately. Snappy!
+			self:ApplyInterruptFilledState();
+		end
+	end
+end
+
+function CastingBarMixin:FinishSpell()
+	if self.maxValue and not self.reverseChanneling and not self.channeling then
+		self:SetValue(self.maxValue);
+		self:UpdateCastTimeText();
+	end
+	local barTypeInfo = self:GetTypeInfo(self.barType);
+	self:UpdateBarFillTexture(true);
+
+	self:HideSpark();
+
+	if ( self.Flash ) then
+		if (not self.classicStyleCastBar) then
+			self.Flash:SetAtlas(barTypeInfo.glow);
+		end
+		self.Flash:SetAlpha(0.0);
+		self.Flash:Show();
+	end
+
+	self:PlayFadeAnim();
+	self:PlayFinishAnim();
+
+	self.casting = nil;
+	self.channeling = nil;
+	self.reverseChanneling = nil;
+end
+
+--[[
+	Interruptable State Functions
+]]
+function CastingBarMixin:IsInterruptable()
+	return self.barType ~= CastingBarType.Uninterruptable;
+end
+
+function CastingBarMixin:UpdateInterruptibleState(notInterruptible)
+	if ( self.casting or self.channeling ) then
+		local _, _, _, _, _, isTradeSkill = UnitCastingInfo(self.unit);
+		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
+		self:UpdateBarFillTexture(false);
+
+		self:UpdateIconShown();
+	end
+end
+
+function CastingBarMixin:GetInterruptText(interruptedBy)
+	if interruptedBy then
+		local unitName, _unitServer = UnitNameFromGUID(interruptedBy);
+		if unitName and #unitName > 0 then
+			local _className, classFilename, _classID = UnitClassFromGUID(interruptedBy);
+			if classFilename and #classFilename > 0 then
+				local classColor = RAID_CLASS_COLORS[classFilename];
+				if classColor then
+					unitName = classColor:WrapTextInColorCode(unitName);
+				end
+			end
+
+			return SPELL_INTERRUPTED_BY:format(unitName);
+		end
+	end
+
+	return INTERRUPTED;
+end
+
+--[[
+	Bar Fill Texture
+]]
+function CastingBarMixin:UpdateBarFillTexture(isFull)
+	local barType = self.barType or CastingBarType.Standard;
+	local barTypeInfo = self:GetTypeInfo(barType);
+
+	if (self.classicStyleCastBar) then
+		-- For Classic style, set the vertex color based on bar type.
+		local colorInfo = isFull and barTypeInfo.classicFullColor or barTypeInfo.classicFillColor;
+		self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+		self:SetStatusBarColor(colorInfo:GetRGB());
+	else
+		-- Look up the appropriate atlas based on bar type.
+		local texture = isFull and barTypeInfo.full or barTypeInfo.filling;
+		self:SetStatusBarTexture(texture);
+		self:SetStatusBarColor(1, 1, 1);
+	end
+end
+
+--[[
+	Animations and FX
+]]
+function CastingBarMixin:ApplyAlpha(alpha)
+	self:SetAlpha(alpha);
+	if self.additionalFadeWidgets then
+		for widget in pairs(self.additionalFadeWidgets) do
+			widget:SetAlpha(alpha);
+		end
+	end
+end
+
+function CastingBarAnim_OnInterruptSparkAnimFinish(self)
+	local castingBar = self:GetParent();
+	castingBar:ApplyInterruptFilledState();
+end
+
+function CastingBarMixin:ApplyInterruptFilledState()
+	self:SetValue(self.maxValue);
+	self:UpdateCastTimeText();
+	self:HideSpark();
+end
+
+function CastingBarMixin:ShowSpark()
+	if ( self.Spark ) then
+		self.Spark:Show();
+	end
+
+	local currentBarType = self.barType;
+
+	if not self.classicStyleCastBar then -- Classic Style uses a static Spark texture.
+		if currentBarType == CastingBarType.Interrupted then
+			self.Spark:SetAtlas("ui-castingbar-pip-red");
+			self.Spark.offsetY = 0;
+		elseif currentBarType == CastingBarType.Empowered then
+			self.Spark:SetAtlas("ui-castingbar-empower-cursor");
+			self.Spark.offsetY = 4;
+		else
+			self.Spark:SetAtlas("ui-castingbar-pip");
+			self.Spark.offsetY = 0;
+		end
+	end
+
+	for barType, barTypeInfo in pairs(CastingBarTypeInfo) do
+		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
+		if sparkFx then
+			sparkFx:SetShown(self.playCastFX and barType == currentBarType);
+		end
+	end
+end
+
+function CastingBarMixin:HideSpark()
+	if ( self.Spark ) then
+		self.Spark:Hide();
+	end
+
+	for barType, barTypeInfo in pairs(CastingBarTypeInfo) do
+		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
+		if sparkFx then
+			sparkFx:Hide();
+		end
+	end
+end
+
+function CastingBarMixin:PlayInterruptAnims()
+	if self.HoldFadeOutAnim then
+		self.HoldFadeOutAnim:Play();
+	end
+
+	if not self.playCastFX then
+		return;
+	end
+
+	if self.InterruptShakeAnim and tonumber(GetCVar("ShakeStrengthUI")) > 0 then
+		self.InterruptShakeAnim:Play();
+	end
+	if self.InterruptGlowAnim then
+		self.InterruptGlowAnim:Play();
+	end
+	if self.InterruptSparkAnim then
+		self.InterruptSparkAnim:Play();
+	end
+end
+
+function CastingBarMixin:StopInterruptAnims()
+	if self.HoldFadeOutAnim then
+		self.HoldFadeOutAnim:Stop();
+	end
+	if self.InterruptShakeAnim then
+		self.InterruptShakeAnim:Stop();
+	end
+	if self.InterruptGlowAnim then
+		self.InterruptGlowAnim:Stop();
+	end
+	if self.InterruptSparkAnim then
+		self.InterruptSparkAnim:Stop();
+	end
+end
+
+function CastingBarMixin:PlayFadeAnim()
+	if self.FlashLoopingAnim then
+		self.FlashLoopingAnim:Stop();
+	end
+
+	if self.FlashAnim then
+		self.FlashAnim:Play();
+	end
+
+	if self.FadeOutAnim and self:GetAlpha() > 0 and self:IsVisible() then
+		if self.reverseChanneling and self.CurrSpellStage < self.NumStages then
+			self.HoldFadeOutAnim:Play();
+		elseif not self.isInEditMode then
+			self.FadeOutAnim:Play();
+		end
+	end
+end
+
+function CastingBarMixin:PlayFinishAnim()
+	if not self.playCastFX then
+		return;
+	end
+
+	local barTypeInfo = self:GetTypeInfo(self.barType);
+
+	local playFinish = not barTypeInfo.finishCondition or barTypeInfo.finishCondition(self);
+	if playFinish then
+		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim];
+		if finishAnim then
+			finishAnim:Play();
+		end
+	end
+
+	if self.barType == CastingBarType.Empowered then
+		for i = 1, self.CurrSpellStage do
+			local stageTier = self.StageTiers[i];
+			if stageTier and stageTier.FinishAnim then
+				stageTier.FlashAnim:Stop();
+				stageTier.FinishAnim:Play();
+			end
+		end
+	end
+end
+
+function CastingBarMixin:StopFinishAnims()
+	if self.FlashAnim then
+		self.FlashAnim:Stop();
+	end
+	if self.FadeOutAnim then
+		self.FadeOutAnim:Stop();
+	end
+
+	for _, barTypeInfo in pairs(CastingBarTypeInfo) do
+		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim];
+		if finishAnim then
+			finishAnim:Stop();
+		end
+	end
+end
+
+function CastingBarMixin:StopAnims()
+	self:StopInterruptAnims();
+	self:StopFinishAnims();
+end
+
+--[[
+	Name Text
+]]
+function CastingBarMixin:SetNameTextShown(showNameText)
+	if not self.Text then
+		return;
+	end
+
+	self.Text:SetShown(showNameText);
+end
+
+--[[
+	Cast Time Text
+]]
+function CastingBarMixin:SetCastTimeTextShown(showCastTime)
+	self.showCastTimeSetting = showCastTime;
+	self:UpdateCastTimeTextShown();
+end
+
+function CastingBarMixin:UpdateCastTimeTextShown()
+	if not self.CastTimeText then
+		return;
+	end
+
+	local showCastTime = self.showCastTimeSetting and (self.casting or self.channeling or self.isInEditMode);
+	self.CastTimeText:SetShown(showCastTime);
+	if showCastTime and self.isInEditMode and not self.CastTimeText.text then
+		self:UpdateCastTimeText();
+	end
+end
+
+function CastingBarMixin:UpdateCastTimeText()
+	if not self.CastTimeText then
+		return;
+	end
+
+	local seconds = 0;
+	if self.casting or self.channeling then
+		local min, max = self:GetMinMaxValues();
+		if self.casting then
+			seconds = math.max(min, max - self:GetValue());
+		else
+			seconds = math.max(min, self:GetValue());
+		end
+	elseif self.isInEditMode then
+		seconds = 10;
+	end
+
+	local text = string.format(CAST_BAR_CAST_TIME, seconds);
+	self.CastTimeText:SetText(text);
+end
+
+--[[
+	Spell Icon
+]]
+function CastingBarMixin:SetIconShown(showIcon)
+	if not self.Icon then
+		return;
+	end
+
+	self.showIcon = showIcon;
+
+	self:UpdateIconShown();
+end
+
+function CastingBarMixin:ShouldIconBeShown()
+	if not self.showIcon then
+		return false;
+	end
+
+	if self.look ~= nil and self.look ~= "UNITFRAME" then
+		return false;
+	end
+
+	if self.HideIconWhenNotInterruptible and not self:IsInterruptable() then
+		return false;
+	end
+
+	return true;
+end
+
+function CastingBarMixin:UpdateIconShown()
+	if not self.Icon and not self.BorderShield then
+		return;
+	end
+
+	local iconShown = self:ShouldIconBeShown();
+	if self.Icon then
+		self.Icon:SetShown(iconShown);
+	end
+
+	if self.BorderShield then
+		local shieldShown = self.showShield and not self:IsInterruptable();
+		self.BorderShield:SetShown(shieldShown);
+			if self.BarBorder then
+				self.BarBorder:SetShown(not shieldShown);
+			end
+		end
+end
+
+--[[
+	Target Name Text
+]]
+function CastingBarMixin:SetTargetNameTextShown(showTargetNameText)
+	if not self.CastTargetNameText then
+		return;
+	end
+
+	self.CastTargetNameText:SetShown(showTargetNameText);
+end
+
+function CastingBarMixin:UpdateTargetNameText()
+	if not self.CastTargetNameText then
+		return;
+	end
+
+	if not self.CastTargetNameText:IsShown() then
+		return;
+	end
+
+	if not UnitShouldDisplaySpellTargetName(self.unit) then
+		self:SetTargetNameText(nil);
+		return;
+	end
+
+	local targetName = UnitSpellTargetName(self.unit);
+
+	self:SetTargetNameText(targetName);
+
+	local classFilename = UnitSpellTargetClass(self.unit);
+	local r, g, b, _str = GetClassColor(classFilename);
+	self.CastTargetNameText:SetVertexColor(r, g, b);
+end
+
+function CastingBarMixin:SetTargetNameText(targetName)
+	if not self.CastTargetNameText then
+		return;
+	end
+
+	self.CastTargetNameText:SetText(targetName);
+end
+
+--[[
+	Highlighted Casts
+]]
+function CastingBarMixin:SetHighlightImportantCasts(highlightImportantCasts)
+	self.highlightImportantCasts = highlightImportantCasts;
+	self:UpdateHighlightImportantCast();
+end
+
+function CastingBarMixin:GetHighlightImportantCasts()
+	return self.highlightImportantCasts == true;
+end
+
+function CastingBarMixin:UpdateHighlightImportantCast()
+	self:SetIsHighlightedImportantCast(self:GetHighlightImportantCasts() and self.spellID ~= nil and C_Spell.IsSpellImportant(self.spellID));
+end
+
+function CastingBarMixin:SetIsHighlightedImportantCast(isHighlightedImportantCast)
+	self.isHighlightedImportantCast = isHighlightedImportantCast;
+
+	if self.ImportantCastIndicator then
+		self.ImportantCastIndicator:SetShown(self.isHighlightedImportantCast);
+	end
+
+	if self.ImportantCastFlashAnim then
+		self.ImportantCastFlashAnim:SetPlaying(self.isHighlightedImportantCast);
+	end
+end
+
+function CastingBarMixin:GetIsHighlightedImportantCast()
+	return self.isHighlightedImportantCast;
+end
+
+function CastingBarMixin:SetHighlightWhenCastTarget(highlightWhenCastTarget)
+	self.highlightWhenCastTarget = highlightWhenCastTarget;
+	self:UpdateHighlightWhenCastTarget();
+end
+
+function CastingBarMixin:GetHighlightWhenCastTarget()
+	return self.highlightWhenCastTarget == true;
+end
+
+function CastingBarMixin:UpdateHighlightWhenCastTarget()
+	self:SetIsHighlightedCastTarget(self:GetHighlightWhenCastTarget() and PlayerIsSpellTarget(self.unit));
+end
+
+function CastingBarMixin:SetIsHighlightedCastTarget(isHighlightedCastTarget)
+	self.isHighlightedCastTarget = isHighlightedCastTarget;
+	if self.CastTargetIndicator then
+		self.CastTargetIndicator:SetShown(self.isHighlightedCastTarget);
+	end
+end
+
+function CastingBarMixin:GetIsHighlightedCastTarget()
+	return self.isHighlightedCastTarget;
+end
+
+--[[
+	Visual Style
+]]
+function CastingBarMixin:SetLook(look)
+	self.look = look;
+	local modernStyle = not self.classicStyleCastBar;
+
+	if ( look == "CLASSIC" ) then
+		self.playCastFX = modernStyle and true or false;
+		self:SetWidth(modernStyle and 208 or 195);
+		self:SetHeight(modernStyle and 11 or 13);
+		-- border (Classic-style)
+		if (not modernStyle) then
+			self.Border:ClearAllPoints();
+			self.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border");
+			self.Border:SetWidth(256);
+			self.Border:SetHeight(64);
+			self.Border:SetPoint("TOP", 0, 28);
+		end
+		-- bordershield
+		self.BorderShield:ClearAllPoints();
+		self.BorderShield:SetWidth(256);
+		self.BorderShield:SetHeight(64);
+		self.BorderShield:SetPoint("TOP", 0, 28);
+		-- text
+		self.Text:Show();
+		self.Text:ClearAllPoints();
+		self.Text:SetWidth(185);
+		self.Text:SetHeight(16);
+		self.Text:SetPoint("TOP", 0, modernStyle and -10 or 5);
+		self.Text:SetFontObject(modernStyle and "GameFontHighlightSmall" or "GameFontHighlight");
+		-- text border
+		if self.TextBorder then
+			self.TextBorder:Show();
+		end
+		-- icon
+		self:UpdateIconShown();
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Hide();
+		end
+	elseif ( look == "UNITFRAME" ) then
+		self.playCastFX = false;
+		self:SetWidth(150);
+		self:SetHeight(10);
+		-- border (Classic-style)
+		if (not modernStyle) then
+			self.Border:ClearAllPoints();
+			self.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
+			self.Border:SetWidth(0);
+			self.Border:SetHeight(56);
+			self.Border:SetPoint("TOPLEFT", -23, 23);
+			self.Border:SetPoint("TOPRIGHT", 23, 23);
+		end
+		-- bordershield
+		self.BorderShield:ClearAllPoints();
+		self.BorderShield:SetWidth(0);
+		self.BorderShield:SetHeight(modernStyle and 49 or 56);
+		self.BorderShield:SetPoint("TOPLEFT", -28, modernStyle and 20 or 23);
+		self.BorderShield:SetPoint("TOPRIGHT", 18, modernStyle and 20 or 23);
+		-- text
+		self.Text:Show();
+		self.Text:ClearAllPoints();
+		self.Text:SetWidth(0);
+		self.Text:SetHeight(16);
+		self.Text:SetPoint("TOPLEFT", 0, modernStyle and 3 or 4);
+		self.Text:SetPoint("TOPRIGHT", 0, modernStyle and 3 or 4);
+		self.Text:SetFontObject("SystemFont_Shadow_Small");
+		-- text border
+		if self.TextBorder then
+			self.TextBorder:Hide();
+		end
+		-- icon
+		self:UpdateIconShown();
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Hide();
+		end
+	elseif ( look == "OVERLAY" ) then
+		self.playCastFX = true;
+		self:SetWidth(208);
+		self:SetHeight(11);
+		-- bordershield
+		self.BorderShield:ClearAllPoints();
+		self.BorderShield:SetWidth(256);
+		self.BorderShield:SetHeight(64);
+		self.BorderShield:SetPoint("TOP", 0, 28);
+		-- text
+		self.Text:Show();
+		self.Text:ClearAllPoints();
+		self.Text:SetWidth(300);
+		self.Text:SetHeight(20);
+		self.Text:SetPoint("TOP", 0, 30);
+		self.Text:SetFontObject("GameFontNormalLarge");
+		-- text border
+		if self.TextBorder then
+			self.TextBorder:Hide();
+		end
+		-- icon
+		self:UpdateIconShown();
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Show();
+		end
+	end
+end
+
+--[[
+	Empower Spells
+]]
+function CastingBarMixin:AddStages(numStages)
+	self.CurrSpellStage = CASTBAR_STAGE_INVALID;
+	self.NumStages = numStages + 1;
+	local sumDuration = 0;
+	self.StagePoints = {};
+	self.StagePips = {};
+	self.StageTiers = {};
+	local hasFX = self.StandardFinish ~= nil;
+	local stageMaxValue = self.maxValue * 1000;
+
+	local getStageDuration = function(stage)
+		if stage == self.NumStages then
+			return GetUnitEmpowerHoldAtMaxTime(self.unit);
+		else
+			return GetUnitEmpowerStageDuration(self.unit, stage-1);
+		end
+	end;
+
+	local castBarLeft = self:GetLeft();
+	local castBarRight = self:GetRight();
+
+	if not castBarLeft or not castBarRight then
+		return;
+	end
+
+	local castBarWidth = castBarRight - castBarLeft;
+
+	if not self.StagePipPool then
+		self.StagePipPool = {};
+	end
+	if not self.ChargeTierPool then
+		self.ChargeTierPool = {};
+	end
+
+	for i = 1,self.NumStages-1,1 do
+		local duration = getStageDuration(i);
+		if(duration > CASTBAR_STAGE_DURATION_INVALID) then
+			sumDuration = sumDuration + duration;
+			local portion = sumDuration / stageMaxValue;
+			local offset = castBarWidth * portion;
+			self.StagePoints[i] = sumDuration;
+
+			local stagePipName = "StagePip" .. i;
+			local stagePip = self.StagePipPool[stagePipName];
+			if not stagePip then
+				stagePip = CreateFrame("FRAME", nil, self, hasFX and "CastingBarFrameStagePipFXTemplate" or "CastingBarFrameStagePipTemplate");
+				self.StagePipPool[stagePipName] = stagePip;
+			end
+
+			if stagePip then
+				table.insert(self.StagePips, stagePip);
+				stagePip:ClearAllPoints();
+				stagePip:SetPoint("TOP", self, "TOPLEFT", offset, -1);
+				stagePip:SetPoint("BOTTOM", self, "BOTTOMLEFT", offset, 1);
+				stagePip:Show();
+				stagePip.BasePip:SetShown(i ~= self.NumStages);
+			end
+		end
+	end
+
+	for i = 1,self.NumStages-1,1 do
+		local chargeTierName = "ChargeTier" .. i;
+		local chargeTier = self.ChargeTierPool[chargeTierName];
+		if not chargeTier then
+			chargeTier = CreateFrame("FRAME", nil, self, "CastingBarFrameStageTierTemplate");
+			self.ChargeTierPool[chargeTierName] = chargeTier;
+		end
+
+		if chargeTier then
+			local leftStagePip = self.StagePips[i];
+			local rightStagePip = self.StagePips[i+1];
+
+			if leftStagePip then
+				chargeTier:SetPoint("TOPLEFT", leftStagePip, "TOP", 0, 0);
+			end
+			if rightStagePip then
+				chargeTier:SetPoint("BOTTOMRIGHT", rightStagePip, "BOTTOM", 0, 0);
+			else
+				chargeTier:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1);
+			end
+
+			local chargeTierLeft = chargeTier:GetLeft();
+			local chargeTierRight = chargeTier:GetRight();
+
+			local left = (chargeTierLeft - castBarLeft) / castBarWidth;
+			local right = 1.0 - ((castBarRight - chargeTierRight) / castBarWidth);
+
+			chargeTier.FlashAnim:Stop();
+			chargeTier.FinishAnim:Stop();
+
+			chargeTier.Normal:SetAtlas(("ui-castingbar-tier%d-empower"):format(i));
+			chargeTier.Disabled:SetAtlas(("ui-castingbar-disabled-tier%d-empower"):format(i));
+			chargeTier.Glow:SetAtlas(("ui-castingbar-glow-tier%d-empower"):format(i));
+
+			chargeTier.Normal:SetTexCoord(left, right, 0, 1);
+			chargeTier.Disabled:SetTexCoord(left, right, 0, 1);
+			chargeTier.Glow:SetTexCoord(left, right, 0, 1);
+
+			chargeTier.Normal:SetShown(false);
+			chargeTier.Disabled:SetShown(true);
+			chargeTier.Glow:SetAlpha(0);
+
+			chargeTier:Show();
+			table.insert(self.StageTiers, chargeTier);
+		end
+	end
+end
+
+function CastingBarMixin:UpdateStage()
+	local maxStage = 0;
+	local stageValue = self.value*1000;
+	for i = 1, self.NumStages do
+		if self.StagePoints[i] then
+			if stageValue > self.StagePoints[i] then
+				maxStage = i;
+			else
+				break;
+			end
+		end
+	end
+
+	if (maxStage ~= self.CurrSpellStage and maxStage > CASTBAR_STAGE_INVALID and maxStage <= self.NumStages) then
+		self.CurrSpellStage = maxStage;
+		if maxStage < self.NumStages then
+			local stagePip = self.StagePips[maxStage];
+			if stagePip and stagePip.StageAnim then
+				stagePip.StageAnim:Play();
+			end
+		end
+
+		if self.playCastFX then
+			if maxStage == self.NumStages - 1 then
+				if self.StageFinish then
+					self.StageFinish:Play();
+				end
+			elseif maxStage > 0 then
+				if self.StageFlash then
+					self.StageFlash:Play();
+				end
+			end
+		end
+
+		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
+		local chargeTier = self[chargeTierName];
+		if chargeTier then
+			chargeTier.Normal:SetShown(true);
+			chargeTier.Disabled:SetShown(false);
+			chargeTier.FlashAnim:Play();
+		end
+	end
+end
+
+function CastingBarMixin:ClearStages()
+
+	if self.ChargeGlow then
+		self.ChargeGlow:SetShown(false);
+	end
+	if self.ChargeFlash then
+		self.ChargeFlash:SetAlpha(0);
+	end
+
+	for _, stagePip in pairs(self.StagePips) do
+		local maxStage = self.NumStages;
+		for i = 1, maxStage do
+			local stageAnimName = "Stage" .. i;
+			local stageAnim = stagePip[stageAnimName];
+			if stageAnim then
+				stageAnim:Stop();
+			end
+		end
+		stagePip:Hide();
+	end
+
+	for _, stageTier in pairs(self.StageTiers) do
+		stageTier:Hide();
+	end
+
+	self.NumStages = 0;
+	table.wipe(self.StagePoints);
+	table.wipe(self.StageTiers);
+end
+
+--[[
+	Simulated Casts
+
+	Useful for situations like previews in edit mode or options panels to demonstrate what the cast
+	bar looks like as settings change.
+]]
+-- Default values for castData parameter of CastingBarMixin:SimulateCast
+local DEFAULT_SIMULATE_CAST_DATA = {
+	barType = CastingBarType.Standard,
+	iconTexture = "Interface\\Icons\\INV_Misc_QuestionMark",
+	spellName = UNIT_NAMEPLATES_SPELL_NAME_PREVIEW,
+	targetName = UNIT_NAMEPLATES_TARGET_NAME_PREVIEW,
+	castTime = 3.0,
+	isImportantSpell = false;
+	isSpellTarget = false;
+};
+
+function CastingBarMixin:SimulateCast(castData)
+	castData.barType = castData.barType or DEFAULT_SIMULATE_CAST_DATA.barType;
+	castData.iconTexture = castData.iconTexture or DEFAULT_SIMULATE_CAST_DATA.iconTexture;
+	castData.spellName = castData.spellName or DEFAULT_SIMULATE_CAST_DATA.spellName;
+	castData.targetName = castData.targetName or DEFAULT_SIMULATE_CAST_DATA.targetName;
+	castData.castTime = castData.castTime or DEFAULT_SIMULATE_CAST_DATA.castTime;
+	castData.isImportantSpell = castData.isImportantSpell or DEFAULT_SIMULATE_CAST_DATA.isImportantSpell;
+	castData.isSpellTarget = castData.isSpellTarget or DEFAULT_SIMULATE_CAST_DATA.isSpellTarget;
+
+	self.barType = castData.barType;
+	self:UpdateBarFillTexture(false);
+
+	self.Icon:SetTexture(castData.iconTexture);
+
+	self.Text:SetText(castData.spellName);
+
+	self:SetTargetNameText(castData.targetName);
+
+	self:SetIsHighlightedImportantCast(self:GetHighlightImportantCasts() and castData.isImportantSpell);
+	self:SetIsHighlightedCastTarget(self:GetHighlightWhenCastTarget() and castData.isSpellTarget);
+
+	self:SetMinMaxValues(0, castData.castTime);
+	self.maxValue = castData.castTime;
+
+	self:ShowSpark();
+
+	self:SetValue(0);
+	self.value = 0;
+
+	self.casting = true;
+
+	self:StopAnims();
+	self:ApplyAlpha(1.0);
+
+	self:UpdateShownState(true);
+end
 
 PlayerCastingBarMixin = {};
 
@@ -10,7 +1355,7 @@ end
 
 function PlayerCastingBarMixin:OnShow()
 	CastingBarMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self); 
+	ManagedFrameMixin.OnShow(self); 
 end
 
 function PlayerCastingBarMixin:IsAttachedToPlayerFrame()

@@ -1,6 +1,7 @@
 ## Title: Blizzard Runeforge UI
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+Blizzard_RuneforgeUI_Bootstrap.lua [Bootstrap]
 Blizzard_RuneforgePowerList.xml
 Blizzard_RuneforgeModifierSlot.xml
 Blizzard_RuneforgeItemSlot.xml

@@ -44,6 +44,15 @@ function HousingUpgradeFrameMixin:OnEvent(event, ...)
 
 		if self:AllRewardsLoaded() then
 			self.TrackFrame:Init(self.houseLevelRewardInfos);
+
+			local elements = self.TrackFrame:GetElements();
+			for i, frame in ipairs(elements) do
+				frame.Button:SetOnClickHandler(function()
+					local fromOnShow, forceRefresh = false, true;
+					self:SelectLevel(frame:GetLevel(), fromOnShow, forceRefresh);
+				end);
+			end
+
 			if not self.hasSelectedLevel then
 				local fromOnShow, forceRefresh = false, true;
 				self:SelectLevel(self.displayLevel, fromOnShow, forceRefresh);
@@ -455,9 +464,17 @@ function HouseUpgradeCurrentLevelFrameMixin:OnEnter()
 		return;
 	end
 
+	-- Avoid the the "coming soon" level
+	local isMaxLevel = parent.actualLevel >= (parent.maxLevel - 1);
+
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DASHBOARD_HOUSE_LEVEL, parent.actualLevel));
-	GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	if isMaxLevel then
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_HOUSE_EXPERIENCE_FORMAT, parent.houseFavor));
+	else
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	end
+
 	GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR_TOOLTIP);
 	GameTooltip:Show();
 end

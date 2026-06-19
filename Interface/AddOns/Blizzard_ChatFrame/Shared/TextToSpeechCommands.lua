@@ -12,7 +12,7 @@ function TextToSpeechCommandsMixin:Init()
 	self.commands = {};
 end
 
-function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, cmdNameNarrated, rangeMin, rangeMax, rangeFn, validateRange)
+function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, cmdNameNarrated, rangeMin, rangeMax, rangeFn, validateRange, helpTextExtra)
 	cmdName = string.lower(cmdName);
 	self.commands[cmdName] = {
 		cmdName = cmdName,
@@ -20,6 +20,7 @@ function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpTex
 		callback = callback,
 		option = option,
 		helpText = helpText,
+		helpTextExtra = helpTextExtra,
 		rangeMin = rangeMin,
 		rangeMax = rangeMax,
 		rangeFn = rangeFn,
@@ -84,22 +85,45 @@ local function GetNumericValueForNarration(value)
 end
 
 function TextToSpeechCommandsMixin:GetCommandHelpText(cmd)
+	-- A command may have multiple help text entries, each will display separately.
+	local helpTextEntries = {};
+
 	if cmd and cmd.helpText then
-		local rangeMin, rangeMax = GetCommandArgumentRange(cmd);
-		if rangeMin and rangeMax then
-			local displayText = cmd.helpText:format(rangeMin, rangeMax);
-			local narratedText = cmd.helpText:format(GetNumericValueForNarration(rangeMin), GetNumericValueForNarration(rangeMax));
-			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdName, displayText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdNameNarrated, narratedText);
-		else
-			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdName, cmd.helpText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdNameNarrated, cmd.helpText);
+		local function AddHelpTextInfo(text)
+			local formattedDisplayText = SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdName, text);
+			local formattedNarratedText = SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdNameNarrated, text);
+
+			local rangeMin, rangeMax = GetCommandArgumentRange(cmd);
+			if rangeMin and rangeMax then
+				local displayText = text:format(rangeMin, rangeMax);
+				formattedDisplayText = SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdName, displayText);
+
+				local narratedText = text:format(GetNumericValueForNarration(rangeMin), GetNumericValueForNarration(rangeMax));
+				formattedNarratedText = SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdNameNarrated, narratedText);
+			end
+
+			local helpTextEntry = {
+				displayText = formattedDisplayText,
+				narratedText = formattedNarratedText
+			};
+			table.insert(helpTextEntries, helpTextEntry);
+		end
+
+		AddHelpTextInfo(cmd.helpText);
+		if cmd.helpTextExtra then
+			AddHelpTextInfo(cmd.helpTextExtra);
 		end
 	end
+
+	return helpTextEntries;
 end
 
 function TextToSpeechCommandsMixin:ShowCommandHelp(cmd)
-	local displayText, narratedText = self:GetCommandHelpText(cmd);
-	if displayText then
-		self:SpeakConfirmation(displayText, narratedText);
+	local helpTextEntries = self:GetCommandHelpText(cmd);
+	if not TableIsEmpty(helpTextEntries) then
+		for _index, helpTextEntry in ipairs(helpTextEntries) do
+			self:SpeakConfirmation(helpTextEntry.displayText, helpTextEntry.narratedText);
+		end
 		return true;
 	end
 
@@ -127,10 +151,10 @@ function TextToSpeechCommandsMixin:ShowUsage()
 	self:SpeakConfirmation(self.helpOverviewText, self.helpOverviewNarratedText);
 
 	local usageEntries = {};
-	for cmdName, cmd in pairs(self.commands) do
-		local displayText, narratedText = self:GetCommandHelpText(cmd);
-		if displayText then
-			table.insert(usageEntries, { displayText, narratedText });
+	for _cmdName, cmd in pairs(self.commands) do
+		local helpTextEntries = self:GetCommandHelpText(cmd);
+		for _index, helpTextEntry in ipairs(helpTextEntries) do
+			table.insert(usageEntries, { helpTextEntry.displayText, helpTextEntry.narratedText });
 		end
 	end
 
@@ -430,11 +454,14 @@ do
 end
 
 CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_NAME, "CAASayTargetName", SLASH_CAA_HELP_SAY_TARGET_NAME, SLASH_CAA_SAY_TARGET_NAME_NARRATED, CAA_SAY_TARGET_NAME_LABEL);
-CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_START, "CAASayCombatStart", SLASH_CAA_HELP_SAY_COMBAT_START, SLASH_CAA_SAY_COMBAT_START_NARRATED, CAA_SAY_COMBAT_START_LABEL);
-CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_END, "CAASayCombatEnd", SLASH_CAA_HELP_SAY_COMBAT_END,SLASH_CAA_SAY_COMBAT_END_NARRATED, CAA_SAY_COMBAT_END_LABEL);
-CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT, "CAAInterruptCast", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
-CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, "CAAInterruptCastSuccess", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
 CAA_AddBoolCommand(SLASH_CAA_SAY_YOUR_DEBUFFS, "CAASayYourDebuffs", SLASH_CAA_HELP_SAY_YOUR_DEBUFFS, SLASH_CAA_SAY_YOUR_DEBUFFS_NARRATED, CAA_SAY_YOUR_DEBUFFS_LABEL);
+
+-- For toggling non-bool settings. Useful if jumping between disabled/some default enabled option.
+local function CAA_ToggleSetting(cmd, newVal, confirmationName)
+	SetCVar(cmd.option, newVal);
+	local isMainToggle = false;
+	cmd:GetCommands():SpeakConfirmation(GetCAAOptionConfirmation(confirmationName, newVal ~= 0, isMainToggle));
+end
 
 local function TrySetCAAVoice(cmd, newVoiceID, confirmationText, categoryType)
 	local voiceName = GetVoiceName(newVoiceID);
@@ -499,6 +526,8 @@ local CAST_TIME_MIN = Constants.CAAConstants.CAAMinCastTimeMin;
 local CAST_TIME_MAX = Constants.CAAConstants.CAAMinCastTimeMax;
 local RESOURCE_FORMAT_MIN = Enum.CombatAudioAlertPlayerResourceFormatValuesMeta.MinValue;
 local RESOURCE_FORMAT_MAX = Enum.CombatAudioAlertPlayerResourceFormatValuesMeta.MaxValue;
+local COMBAT_VIEWER_SOUND_MIN = Enum.CooldownViewerSound.AnimalsCat; -- Not min value as the first entry is TextToSpeech which is not valid, set to the first actual sound.
+local COMBAT_VIEWER_SOUND_MAX = Enum.CooldownViewerSoundMeta.MaxValue;
 local EXAMPLE_PERCENT = 20;
 
 local function GetInitialSuboptionFailureStrings()
@@ -552,6 +581,223 @@ local function InitResourceFailureText()
 			resourceFailureText, resourceFailureTextNarrated = AddSuboptionFailureString(resourceFailureText, resourceFailureTextNarrated, subOptionString);
 		end
 	end
+end
+
+-- CooldownViewerSound enum elements have fixed values. In order to not have any overlap between those values and non-sound dropdown elements, a fixed offset is added when using them with the cvar system.
+-- When referenced elsewhere, this offset should be removed in order to correctly look up the associated sound info.
+local function CooldownViewerSoundToCAAValue(value)
+	return value + CombatAudioAlertConstants.COOLDOWN_VIEWER_SOUND_OFFSET;
+end
+
+local function CAA_ProcessCooldownViewerSound(cmd, arg, confirmationName)
+	local soundParam, soundEnumString = string.split(":", arg);
+	if soundParam == SLASH_CAA_SOUND then
+		local soundEnum = tonumber(soundEnumString);
+		if soundEnum and soundEnum >= COMBAT_VIEWER_SOUND_MIN and soundEnum <= COMBAT_VIEWER_SOUND_MAX then
+			SetCVar(cmd.option, CooldownViewerSoundToCAAValue(soundEnum));
+			local text = CooldownViewerUtil.GetSoundTypeText(soundEnum);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(confirmationName, text));
+			return true;
+		end
+	end
+
+	return false;
+end
+
+-- Say Combat Start
+do
+	-- Possible formats:
+	-- /ttscombat saycombatstart
+	-- /ttscombat saycombatstart [0 or 1]
+	-- /ttscombat saycombatstart [sound:#]
+
+	local SAY_COMBAT_START_DISABLED = 0;
+	local SAY_COMBAT_START_ENABLED = 1;
+
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateSayCombatStartInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
+		end
+	end
+
+	local function CAA_CombatStartHandler(cmd, arg)
+		InitFailureText(cmd);
+
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == SAY_COMBAT_START_DISABLED or cvarVal == SAY_COMBAT_START_ENABLED then
+				CAA_ToggleSetting(cmd, cvarVal, CAA_SAY_COMBAT_START_LABEL);
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_SAY_COMBAT_START_LABEL) then
+				return true;
+			end
+		else
+			-- If no arg, treat this as a toggle.
+			local newVal = GetCVarNumberOrDefault(cmd.option) == 0 and SAY_COMBAT_START_ENABLED or SAY_COMBAT_START_DISABLED;
+			CAA_ToggleSetting(cmd, newVal, CAA_SAY_COMBAT_START_LABEL);
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	local formattedSoundHelpText = SLASH_CAA_HELP_SAY_COMBAT_START_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_SAY_COMBAT_START, CAA_CombatStartHandler, "CAASayCombatStart", SLASH_CAA_HELP_SAY_COMBAT_START, SLASH_CAA_SAY_COMBAT_START_NARRATED, SAY_COMBAT_START_DISABLED, SAY_COMBAT_START_ENABLED, nil, nil, formattedSoundHelpText);
+end
+
+-- Say Combat End
+do
+	-- Possible formats:
+	-- /ttscombat saycombatend
+	-- /ttscombat saycombatend [0 or 1]
+	-- /ttscombat saycombatend [sound:#]
+
+	local SAY_COMBAT_END_DISABLED = 0;
+	local SAY_COMBAT_END_ENABLED = 1;
+
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateSayCombatEndInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
+		end
+	end
+
+	local function CAA_CombatEndHandler(cmd, arg)
+		InitFailureText(cmd);
+
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == SAY_COMBAT_END_DISABLED or cvarVal == SAY_COMBAT_END_ENABLED then
+				CAA_ToggleSetting(cmd, cvarVal, CAA_SAY_COMBAT_END_LABEL);
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_SAY_COMBAT_END_LABEL) then
+				return true;
+			end
+		else
+			-- If no arg, treat this as a toggle.
+			local newVal = GetCVarNumberOrDefault(cmd.option) == 0 and SAY_COMBAT_END_ENABLED or SAY_COMBAT_END_DISABLED;
+			CAA_ToggleSetting(cmd, newVal, CAA_SAY_COMBAT_END_LABEL);
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	local formattedSoundHelpText = SLASH_CAA_HELP_SAY_COMBAT_END_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_SAY_COMBAT_END, CAA_CombatEndHandler, "CAASayCombatEnd", SLASH_CAA_HELP_SAY_COMBAT_END, SLASH_CAA_SAY_COMBAT_END_NARRATED, SAY_COMBAT_END_DISABLED, SAY_COMBAT_END_ENABLED, nil, nil, formattedSoundHelpText);
+end
+
+-- Interrupt Alert
+do
+	-- Possible formats:
+	-- /ttscombat interruptalert
+	-- /ttscombat interruptalert [0 or 1]
+	-- /ttscombat interruptalert [sound:#]
+
+	local INTERRUPT_CAST_DISABLED = 0;
+	local INTERRUPT_CAST_ENABLED = 1;
+
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateInterruptCastInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
+		end
+	end
+
+	local function CAA_InterruptCastHandler(cmd, arg)
+		InitFailureText(cmd);
+
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == INTERRUPT_CAST_DISABLED or cvarVal == INTERRUPT_CAST_ENABLED then
+				CAA_ToggleSetting(cmd, cvarVal, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL) then
+				return true;
+			end
+		else
+			-- If no arg, treat this as a toggle.
+			local newVal = GetCVarNumberOrDefault(cmd.option) == 0 and INTERRUPT_CAST_ENABLED or INTERRUPT_CAST_DISABLED;
+			CAA_ToggleSetting(cmd, newVal, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	local formattedSoundHelpText = SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT, CAA_InterruptCastHandler, "CAAInterruptCast", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_NARRATED, INTERRUPT_CAST_DISABLED, INTERRUPT_CAST_ENABLED, nil, nil, formattedSoundHelpText);
+end
+
+-- Interrupt Alert Success
+do
+	-- Possible formats:
+	-- /ttscombat interruptsuccess
+	-- /ttscombat interruptsuccess [0 or 1]
+	-- /ttscombat interruptsuccess [sound:#]
+
+	local INTERRUPT_CAST_SUCCESS_DISABLED = 0;
+	local INTERRUPT_CAST_SUCCESS_ENABLED = 1;
+
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateInterruptCastSuccessInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
+		end
+	end
+
+	local function CAA_InterruptCastSuccessHandler(cmd, arg)
+		InitFailureText(cmd);
+
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == INTERRUPT_CAST_SUCCESS_DISABLED or cvarVal == INTERRUPT_CAST_SUCCESS_ENABLED then
+				CAA_ToggleSetting(cmd, cvarVal, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL) then
+				return true;
+			end
+		else
+			-- If no arg, treat this as a toggle.
+			local newVal = GetCVarNumberOrDefault(cmd.option) == 0 and INTERRUPT_CAST_SUCCESS_ENABLED or INTERRUPT_CAST_SUCCESS_DISABLED;
+			CAA_ToggleSetting(cmd, newVal, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	local formattedSoundHelpText = SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, CAA_InterruptCastSuccessHandler, "CAAInterruptCastSuccess", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_NARRATED, INTERRUPT_CAST_SUCCESS_DISABLED, INTERRUPT_CAST_SUCCESS_ENABLED, nil, nil, formattedSoundHelpText);
 end
 
 -- Say Your Health
@@ -691,6 +937,52 @@ do
 	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_HEALTH_FORMAT, CAA_SayTargetHealthFormatHandler, nil, SLASH_CAA_HELP_SAY_TARGET_HEALTH_FORMAT, SLASH_CAA_SAY_TARGET_HEALTH_FORMAT_NARRATED, HEALTH_FORMAT_MIN, HEALTH_FORMAT_MAX);
 end
 
+-- When Target Dies
+do
+	-- Possible formats:
+	-- /ttscombat whentargetdies [0 - 1]
+	-- /ttscombat whentargetdies [sound:#]
+
+	-- When Target Dies currently only has 2 non-sound options. If that changes some logic here will need to update.
+	local HEALTH_FORMAT_MIN = Enum.CombatAudioAlertTargetDeathBehaviorMeta.MinValue;
+	local HEALTH_FORMAT_MAX = Enum.CombatAudioAlertTargetDeathBehaviorMeta.MaxValue;
+
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumeratetWhenTargetDiesInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
+		end
+	end
+
+	local function CAA_WhenTargetDiesHandler(cmd, arg)
+		InitFailureText(cmd);
+
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == HEALTH_FORMAT_MIN or cvarVal == HEALTH_FORMAT_MAX then
+				SetCVar(cmd.option, cvarVal);
+				local info = CombatAudioAlertUtil.GetWhenTargetDiesInfo(cvarVal);
+				cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_WHEN_TARGET_DIES_LABEL, info.str));
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_WHEN_TARGET_DIES_LABEL) then
+				return true;
+			end
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	local formattedSoundHelpText = SLASH_CAA_HELP_WHEN_TARGET_DIES_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_WHEN_TARGET_DIES, CAA_WhenTargetDiesHandler, "CAATargetDeathBehavior", SLASH_CAA_HELP_WHEN_TARGET_DIES, SLASH_CAA_WHEN_TARGET_DIES_NARRATED, HEALTH_FORMAT_MIN, HEALTH_FORMAT_MAX, nil, nil, formattedSoundHelpText);
+end
+
 -- Say Target Health Voice
 AddCAAVoiceCommand(SLASH_CAA_SAY_TARGET_HEALTH_VOICE, SLASH_CAA_HELP_SAY_TARGET_HEALTH_VOICE, SLASH_CAA_SAY_TARGET_HEALTH_VOICE_NARRATED, SLASH_CAA_SAY_TARGET_HEALTH_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.TargetHealth);
 
@@ -716,13 +1008,16 @@ AddCAAVolumeCommand(SLASH_CAA_SAY_TARGET_HEALTH_VOLUME, SLASH_CAA_HELP_SAY_TARGE
 
 -- Say If Targeted
 do
-	local failureText;
-	local failureTextNarrated;
+	-- Possible formats:
+	-- /ttscombat sayiftargeted [0 - 3]
+	-- /ttscombat sayiftargeted [sound:#]
 
 	local SAY_IF_TARGETED_MIN = Enum.CombatAudioAlertSayIfTargetedTypeMeta.MinValue;
 	local SAY_IF_TARGETED_MAX = Enum.CombatAudioAlertSayIfTargetedTypeMeta.MaxValue;
 
-	local function InitFailureText()
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
 		if not failureText then
 			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
 			for index, info in CombatAudioAlertUtil.EnumerateSayIfTargetedInfo() do
@@ -730,24 +1025,39 @@ do
 				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
 				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
 			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
 		end
 	end
 
 	local function CAA_SayIfTargetedHandler(cmd, arg)
-		InitFailureText();
+		InitFailureText(cmd);
 
-		local cvarVal = tonumber(arg);
-		if cvarVal and cvarVal >= SAY_IF_TARGETED_MIN and cvarVal <= SAY_IF_TARGETED_MAX then
-			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, cvarVal);
-			local info = CombatAudioAlertUtil.GetSayIfTargetedInfo(cvarVal);
-			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_IF_TARGETED_LABEL, info.str));
-			return true;
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal and cvarVal >= SAY_IF_TARGETED_MIN and cvarVal <= SAY_IF_TARGETED_MAX then
+				C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, cvarVal);
+				local info = CombatAudioAlertUtil.GetSayIfTargetedInfo(cvarVal);
+				cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_IF_TARGETED_LABEL, info.str));
+				return true;
+			else
+				local soundParam, soundEnumString = string.split(":", arg);
+				if soundParam == SLASH_CAA_SOUND then
+					local soundEnum = tonumber(soundEnumString);
+					if soundEnum and soundEnum >= COMBAT_VIEWER_SOUND_MIN and soundEnum <= COMBAT_VIEWER_SOUND_MAX then
+						C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, CooldownViewerSoundToCAAValue(soundEnum));
+						local text = CooldownViewerUtil.GetSoundTypeText(soundEnum);
+						cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_IF_TARGETED_LABEL, text));
+						return true;
+					end
+				end
+			end
 		end
 
 		return false, failureText, failureTextNarrated;
 	end
 
-	CAACommands:AddCommand(SLASH_CAA_SAY_IF_TARGETED, CAA_SayIfTargetedHandler, nil, SLASH_CAA_HELP_SAY_IF_TARGETED, SLASH_CAA_SAY_IF_TARGETED_NARRATED, SAY_IF_TARGETED_MIN, SAY_IF_TARGETED_MAX);
+	local formattedSoundHelpText = SLASH_CAA_HELP_SAY_IF_TARGETED_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_SAY_IF_TARGETED, CAA_SayIfTargetedHandler, nil, SLASH_CAA_HELP_SAY_IF_TARGETED, SLASH_CAA_SAY_IF_TARGETED_NARRATED, SAY_IF_TARGETED_MIN, SAY_IF_TARGETED_MAX, nil, nil, formattedSoundHelpText);
 end
 
 -- Say Your Debuffs Format
@@ -814,13 +1124,18 @@ AddCAAVolumeCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME, SLASH_CAA_HELP_SAY_YOUR_D
 
 -- Debuff Self Alert
 do
-	local failureText;
-	local failureTextNarrated;
+	-- Possible formats:
+	-- /ttscombat debuffselfalert
+	-- /ttscombat debuffselfalert [0 or 1]
+	-- /ttscombat debuffselfalert [sound:#]
 
+	-- Debuff self currently only has 2 non-sound options (off/on). If that changes some logic here will need to update.
 	local DEBUFF_SELF_ALERT_MIN = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MinValue;
 	local DEBUFF_SELF_ALERT_MAX = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MaxValue;
 
-	local function InitFailureText()
+	local failureText;
+	local failureTextNarrated;
+	local function InitFailureText(cmd)
 		if not failureText then
 			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
 			for index, info in CombatAudioAlertUtil.EnumerateDebuffSelfAlertInfo() do
@@ -829,25 +1144,33 @@ do
 				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
 				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
 			end
+			failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, SLASH_CAA_HELP_SOUND:format(cmd.cmdName));
 		end
 	end
 
 	local function CAA_DebuffSelfAlertHandler(cmd, arg)
-		InitFailureText();
+		InitFailureText(cmd);
 
-		local cvarVal = tonumber(arg);
-		if cvarVal and cvarVal >= DEBUFF_SELF_ALERT_MIN and cvarVal <= DEBUFF_SELF_ALERT_MAX then
-			SetCVar("CAADebuffSelfAlert", cvarVal);
-			local info = CombatAudioAlertUtil.GetDebuffSelfAlertInfo(cvarVal);
-			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_DISPELTTYPE)
-			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_DEBUFF_SELF_ALERT_LABEL, formattedStr));
+		if arg and arg ~= "" then
+			local cvarVal = tonumber(arg);
+			if cvarVal == DEBUFF_SELF_ALERT_MIN or cvarVal == DEBUFF_SELF_ALERT_MAX then
+				CAA_ToggleSetting(cmd, cvarVal, CAA_DEBUFF_SELF_ALERT_LABEL);
+				return true;
+			elseif CAA_ProcessCooldownViewerSound(cmd, arg, CAA_DEBUFF_SELF_ALERT_LABEL) then
+				return true;
+			end
+		else
+			-- If no arg, treat this as a toggle.
+			local newVal = GetCVarNumberOrDefault(cmd.option) == 0 and DEBUFF_SELF_ALERT_MAX or DEBUFF_SELF_ALERT_MIN;
+			CAA_ToggleSetting(cmd, newVal, CAA_DEBUFF_SELF_ALERT_LABEL);
 			return true;
 		end
 
 		return false, failureText, failureTextNarrated;
 	end
 
-	CAACommands:AddCommand(SLASH_CAA_DEBUFF_SELF_ALERT, CAA_DebuffSelfAlertHandler, nil, SLASH_CAA_HELP_DEBUFF_SELF_ALERT, SLASH_CAA_DEBUFF_SELF_ALERT_NARRATED, DEBUFF_SELF_ALERT_MIN, DEBUFF_SELF_ALERT_MAX);
+	local formattedSoundHelpText = SLASH_CAA_HELP_DEBUFF_SELF_ALERT_SOUND:format(COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+	CAACommands:AddCommand(SLASH_CAA_DEBUFF_SELF_ALERT, CAA_DebuffSelfAlertHandler, "CAADebuffSelfAlert", SLASH_CAA_HELP_DEBUFF_SELF_ALERT, SLASH_CAA_DEBUFF_SELF_ALERT_NARRATED, DEBUFF_SELF_ALERT_MIN, DEBUFF_SELF_ALERT_MAX, nil, nil, formattedSoundHelpText);
 end
 
 -- Say Party Health
@@ -1220,3 +1543,17 @@ end
 
 -- Say Resource 2 Volume
 AddCAAVolumeCommand(SLASH_CAA_SAY_RESOURCE_2_VOLUME, SLASH_CAA_HELP_SAY_RESOURCE_2_VOLUME, SLASH_CAA_SAY_RESOURCE_2_VOLUME_NARRATED, SLASH_CAA_SAY_RESOURCE_2_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerResource2);
+
+-- Play Sound
+do
+	local function CAA_PlaySoundHandler(_cmd, arg)
+		local soundEnum = tonumber(arg);
+		if soundEnum and soundEnum >= COMBAT_VIEWER_SOUND_MIN and soundEnum <= COMBAT_VIEWER_SOUND_MAX then
+			CombatAudioAlertManager:PlayTTSCombatStateSound(soundEnum);
+			return true;
+		end
+		return false
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_PLAY_SOUND, CAA_PlaySoundHandler, nil, SLASH_CAA_HELP_PLAY_SOUND, SLASH_CAA_PLAY_SOUND_NARRATED, COMBAT_VIEWER_SOUND_MIN, COMBAT_VIEWER_SOUND_MAX);
+end

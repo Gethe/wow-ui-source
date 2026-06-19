@@ -70,6 +70,22 @@ function CooldownManagerLayout_SetIsDefault(layout, isDefault)
 	layout.isDefault = isDefault;
 end
 
+function CooldownManagerLayout_GetHiddenGroupBuffs(layout)
+	return layout.hiddenGroupBuffs;
+end
+
+function CooldownManagerLayout_SetHiddenGroupBuffs(layout, hiddenGroupBuffs)
+	layout.hiddenGroupBuffs = hiddenGroupBuffs;
+end
+
+function CooldownManagerLayout_GetGroupBuffVisualAlerts(layout)
+	return layout.groupBuffVisualAlerts;
+end
+
+function CooldownManagerLayout_SetGroupBuffVisualAlerts(layout, visualAlerts)
+	layout.groupBuffVisualAlerts = visualAlerts;
+end
+
 CooldownViewerLayoutManagerMixin = {};
 
 function CooldownViewerLayoutManagerMixin:Init(dataProvider, serializer)
@@ -631,14 +647,14 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownInfo_KeyValue(cooldownInf
 end
 
 function CooldownViewerLayoutManagerMixin:WriteCooldownInfo_Category(cooldownInfo, category)
-	return self:WriteCooldownInfo_KeyValue(cooldownInfo, "category", category);
+	return self:WriteCooldownInfo_KeyValue(cooldownInfo, "category", tonumber(category));
 end
 
 function CooldownViewerLayoutManagerMixin:WriteCooldownCategoryToLayout(layout, cooldownCategory, cooldownIDs)
 	for cooldownIndex, cooldownID in pairs(cooldownIDs) do
 		local block = self:GetCooldownIDDataBlockForLayout(layout, cooldownID, Enum.CDMLayoutMode.AllowCreate);
 		if block then
-			block["category"] = cooldownCategory;
+			block["category"] = tonumber(cooldownCategory);
 		end
 	end
 end
@@ -650,6 +666,38 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownAlertsToLayout(layout, al
 		for _, alert in ipairs(alertList) do
 			table.insert(blockAlerts, alert);
 		end
+	end
+end
+
+function CooldownViewerLayoutManagerMixin:WriteHiddenGroupBuffsToLayout(layout, hiddenGroupBuffs)
+	local currentHiddenGroupBuffs = CooldownManagerLayout_GetHiddenGroupBuffs(layout);
+	if not currentHiddenGroupBuffs or not tCompare(currentHiddenGroupBuffs, hiddenGroupBuffs) then
+		CooldownManagerLayout_SetHiddenGroupBuffs(layout, CopyTable(hiddenGroupBuffs));
+		local isVerboseChange = true;
+		self:SetHasPendingChanges(true, isVerboseChange);
+	end
+end
+
+function CooldownViewerLayoutManagerMixin:WriteGroupBuffVisualAlertsToLayout(layout, visualAlerts)
+	local currentVisualAlerts = CooldownManagerLayout_GetGroupBuffVisualAlerts(layout);
+	if not currentVisualAlerts or not tCompare(currentVisualAlerts, visualAlerts) then
+		CooldownManagerLayout_SetGroupBuffVisualAlerts(layout, CopyTable(visualAlerts));
+		local isVerboseChange = true;
+		self:SetHasPendingChanges(true, isVerboseChange);
+	end
+end
+
+function CooldownViewerLayoutManagerMixin:WriteHiddenGroupBuffsToActiveLayout(hiddenGroupBuffs, accessMode)
+	local layout = self:GetActiveLayout(accessMode);
+	if layout then
+		self:WriteHiddenGroupBuffsToLayout(layout, hiddenGroupBuffs);
+	end
+end
+
+function CooldownViewerLayoutManagerMixin:WriteGroupBuffVisualAlertsToActiveLayout(visualAlerts, accessMode)
+	local layout = self:GetActiveLayout(accessMode);
+	if layout then
+		self:WriteGroupBuffVisualAlertsToLayout(layout, visualAlerts);
 	end
 end
 
@@ -732,7 +780,7 @@ end
 function CooldownViewerLayoutManagerMixin:DeserializeCooldownInfo(cooldownInfo)
 	local block = self:GetCooldownInfoDataBlock(cooldownInfo, Enum.CDMLayoutMode.AccessOnly);
 	if block then
-		cooldownInfo.category = block.category or cooldownInfo.category;
+		cooldownInfo.category = tonumber(block.category or cooldownInfo.category);
 	end
 end
 

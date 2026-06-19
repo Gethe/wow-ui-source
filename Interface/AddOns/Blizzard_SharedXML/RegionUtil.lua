@@ -112,6 +112,58 @@ function RegionUtil.GetBounds(region)
 	return l, r, t, b;
 end
 
+local function GetTopLeftSortKey(region)
+	local left, bottom, _width, height = region:GetRect();
+	if not left or not height then
+		return nil;
+	end
+
+	-- 20000 is chosen to be safely larger than any expected screen dimension.
+	-- We could normalize the coordinates to the screen size, but this is sufficient
+	-- for sorting purposes and avoids needing to query the screen size.
+	local top = bottom + height;
+	return top * 20000 - left;
+end
+
+function RegionUtil.SortByTopLeft(regions)
+	local sortKeys = {};
+	for _, region in ipairs(regions) do
+		sortKeys[region] = GetTopLeftSortKey(region);
+	end
+
+	table.sort(regions, function(regionA, regionB)
+		local keyA = sortKeys[regionA];
+		local keyB = sortKeys[regionB];
+
+		if not keyA then
+			return false;
+		end
+
+		if not keyB then
+			return true;
+		end
+
+		return keyA > keyB;
+	end);
+
+	return regions;
+end
+
+function RegionUtil.GetTopLeftMost(regions)
+	local best = nil;
+	local bestKey = nil;
+
+	for _, region in ipairs(regions) do
+		local key = GetTopLeftSortKey(region);
+		if key and (not bestKey or key > bestKey) then
+			best = region;
+			bestKey = key;
+		end
+	end
+
+	return best or regions[1];
+end
+
 local ALLOWED_KEYBIND_SET = {
 	["FSTACK"] = true,
 	["RELOADUI"] = true,

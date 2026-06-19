@@ -89,6 +89,24 @@ NewSettings["12.0.1"] = {
 	"raidFramesDispelIndicatorOverlay",
 }
 
+NewSettings["12.1.0"] = {
+	"pingTarget",
+	"showPingsOnRaidFrames",
+	"TOGGLEPINGTARGET",
+	"nameplateShowOnlyNameForFriendlyPlayerUnits",
+	"nameplateUseClassColorForFriendlyPlayerUnitNames",
+	"nameplateShowFriendlyRealmName",
+	"SOCIAL_ENABLE_DISCORD_FUNCTIONALITY",
+};
+
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
 	return C_PhotoSharing.IsEnabled();
 end
+
+NewSettings["12.0.7"] = {
+	"assistedCombatReduceHighlights",
+};
+
+NewSettingsPredicates["assistedCombatReduceHighlights"] = function()
+	return C_AssistedCombat.IsAvailable();
+end;

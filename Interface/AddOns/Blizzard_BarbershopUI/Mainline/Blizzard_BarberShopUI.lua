@@ -135,6 +135,10 @@ function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
 		CharCustomizeFrame:Reset();
 	end
 
+	-- Mounts use the scrollable dropdown. Races don't have as many options and use a row of buttons.
+	local useAlteredFormsDropdown = C_BarberShop.HasCustomizationFeature(Enum.ChrModelFeatureFlags.Mounts);
+	CharCustomizeFrame:SetAlteredFormsUseDropdown(useAlteredFormsDropdown);
+
 	CharCustomizeFrame:SetCustomizations(customizationCategoryData);
 
 	self:UpdateButtons();

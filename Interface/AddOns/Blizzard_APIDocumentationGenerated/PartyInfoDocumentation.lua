@@ -100,6 +100,17 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "ConfirmReadyCheck",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmRequestInviteFromUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
@@ -130,6 +141,18 @@ local PartyInfo =
 			Type = "Function",
 		},
 		{
+			Name = "DemoteAssistant",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "exactNameMatch", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "DoCountdown",
 			Type = "Function",
 			HasRestrictions = true,
@@ -144,6 +167,11 @@ local PartyInfo =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "DoReadyCheck",
+			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "GetActiveCategories",
@@ -389,6 +417,22 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsGUIDInGroup",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isInGroup", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLootMethodAvailable",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -448,6 +492,30 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "PromoteToAssistant",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "exactNameMatch", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "PromoteToLeader",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "exactNameMatch", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "RequestInviteFromUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
@@ -460,6 +528,22 @@ local PartyInfo =
 				{ Name = "tank", Type = "bool", Nilable = true },
 				{ Name = "healer", Type = "bool", Nilable = true },
 				{ Name = "dps", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "SetEveryoneIsAssistant",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isAssistant", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "updated", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -507,6 +591,19 @@ local PartyInfo =
 			Type = "Function",
 			HasRestrictions = true,
 			Documentation = { "Start the vote" },
+		},
+		{
+			Name = "UninviteUnit",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "reason", Type = "cstring", Nilable = true },
+				{ Name = "exactNameMatch", Type = "bool", Nilable = true },
+			},
 		},
 	},
 

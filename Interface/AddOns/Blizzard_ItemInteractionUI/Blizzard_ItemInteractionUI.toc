@@ -1,4 +1,5 @@
 ## Title: Blizzard Item Interaction UI
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+Blizzard_ItemInteractionUI_Bootstrap.lua [Bootstrap]
 Blizzard_ItemInteractionUI.xml

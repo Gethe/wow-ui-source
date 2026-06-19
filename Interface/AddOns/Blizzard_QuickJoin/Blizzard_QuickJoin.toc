@@ -6,3 +6,6 @@
 ## AllowLoadGameType: mainline
 QuickJoinToast.xml
 QuickJoin.xml
+
+QuickJoinFrame.xml
+QuickJoinFrame.lua

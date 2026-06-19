@@ -14,6 +14,47 @@ TUTORIAL_QUEST_ACCEPTED = false; -- used to trigger tutorials after closing the 
 TUTORIAL_QUEST_TO_WATCH = nil;
 TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ = (50 * 50); -- the square distance to trigger the "near quest creature" tutorial.
 
+local TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
+local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
+
+local function GetTutorialQuestIndex(questID)
+	if C_QuestLog and C_QuestLog.GetLogIndexForQuestID then
+		return C_QuestLog.GetLogIndexForQuestID(questID);
+	end
+
+	return GetQuestLogIndexByID(questID);
+end
+
+local function GetTutorialQuestDistanceSq(questID, questIndex)
+	if C_QuestLog and C_QuestLog.GetDistanceSqToQuest then
+		return C_QuestLog.GetDistanceSqToQuest(questID);
+	end
+
+	return GetDistanceSqToQuest(questIndex);
+end
+
+EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
+	if TUTORIAL_QUEST_TO_WATCH and not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) then
+		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
+		local questIndex = GetTutorialQuestIndex(TUTORIAL_QUEST_TO_WATCH);
+		if questIndex and TUTORIAL_TIMER_CLOSE_TO_QUEST > 2 then
+			TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
+			local distSq = GetTutorialQuestDistanceSq(TUTORIAL_QUEST_TO_WATCH, questIndex);
+			if distSq and distSq > 0 and distSq < TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ then
+				TriggerTutorial(4);
+			end
+		end
+	end
+
+	if CURRENT_TUTORIAL_QUEST_INFO and CURRENT_TUTORIAL_QUEST_INFO.showReminder and not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() and not QuestFrame:IsShown() then
+		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE - elapsed;
+		if TUTORIAL_TIMER_FIRST_QUEST_COMPLETE < 0 then
+			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 30;
+			TriggerTutorial(57);
+		end
+	end
+end);
+
 local ARROW_TYPES = {
 	"ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
 	"ArrowCurveUpRight", "ArrowCurveUpLeft", "ArrowCurveDownRight", "ArrowCurveDownLeft",
@@ -225,7 +266,7 @@ function TutorialFrame_OnHide(self)
 
 	if ( (getn(TUTORIALFRAME_QUEUE) <= 0) and (UnitLevel("player") > 5) ) then
 		TutorialFrameAlertButton:Hide();
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 	end
 end
 
@@ -416,7 +457,7 @@ function TutorialFrame_Update(currentTutorial)
 		end
 	end
 	if (displayData.raidwarning) then
-		RaidNotice_AddMessage(RaidWarningFrame, text, HIGHLIGHT_FONT_COLOR);
+		RaidWarningUtil.AddMessage(text, HIGHLIGHT_FONT_COLOR);
 		return;
 	end
 
@@ -660,7 +701,7 @@ function TutorialFrame_NewTutorial(tutorialID, forceShow)
 	if ( not TutorialFrame:IsShown() ) then
 		button.id = tutorialID;
 		button:Show();
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 		if (( not TutorialFrame:IsShown() and not InCombatLockdown()) or DISPLAY_DATA[tutorialID].raidwarning ) then
 			TutorialFrame_AlertButton_OnClick(button);
 		end

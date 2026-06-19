@@ -1,17 +1,16 @@
 ## Title: Blizzard_CooldownViewer
 ## AllowLoadGameType: standard
-## Dependencies: Blizzard_EditMode, Blizzard_ChatFrameBase
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_ChatFrameBase
+## Dep: Blizzard_VisualAlerts
+## Dep: Blizzard_ManagedFrameSystem
 CooldownViewerSettingsConstants.lua
 CooldownViewerUtil.lua
-CooldownViewerVisualAlert.lua
-CooldownViewerVisualAlertTemplates.lua
-CooldownViewerVisualAlertTemplates.xml
-CooldownViewerVisualAlertsManager.lua
-CooldownViewerVisualAlertsManager.xml
 CooldownViewerVisualAlertTarget.lua
 CooldownViewerSoundAlertData.lua
-CooldownViewerVisualAlertData.lua
 CooldownViewerAlert.lua
+CooldownViewerEditAlertBase.lua
+CooldownViewerEditAlertBase.xml
 CooldownViewerSettingsAlerts.lua
 CooldownViewerSettingsAlerts.xml
 CooldownViewerSettingsDataStoreSerialization.lua
@@ -20,6 +19,10 @@ CooldownViewerSettingsDataProvider.lua
 CooldownViewerItemData.lua
 CooldownViewerSettingsDialogs.lua
 CooldownViewerSettingsDialogs.xml
+CooldownViewerDraggedItemBase.lua
+CooldownViewerDraggedItemBase.xml
+GroupBuffFilter.lua
+GroupBuffFilter.xml
 CooldownViewerSettings.lua
 CooldownViewerSettings.xml
 CooldownViewer.lua

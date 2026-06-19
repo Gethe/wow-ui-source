@@ -488,13 +488,13 @@ end
 
 function OrbitCameraMixin:OnUpdate(elapsed) -- override
 	if self:IsLeftMouseButtonDown() then
-		local deltaX, deltaY = GetScaledCursorDelta();
+		local deltaX, deltaY = InputUtil.GetCursorDelta(UIParent);
 		self:HandleMouseMovement(self.buttonModes.leftX, deltaX * self:GetDeltaModifierForCameraMode(self.buttonModes.leftX), not self.buttonModes.leftXinterpolate);
 		self:HandleMouseMovement(self.buttonModes.leftY, -deltaY * self:GetDeltaModifierForCameraMode(self.buttonModes.leftY), not self.buttonModes.leftYinterpolate);
 	end
 
 	if self:IsRightMouseButtonDown() then
-		local deltaX, deltaY = GetScaledCursorDelta();
+		local deltaX, deltaY = InputUtil.GetCursorDelta(UIParent);
 		self:HandleMouseMovement(self.buttonModes.rightX, deltaX * self:GetDeltaModifierForCameraMode(self.buttonModes.rightX), not self.buttonModes.rightXinterpolate);
 		self:HandleMouseMovement(self.buttonModes.rightY, -deltaY * self:GetDeltaModifierForCameraMode(self.buttonModes.rightY), not self.buttonModes.rightYinterpolate);
 	end

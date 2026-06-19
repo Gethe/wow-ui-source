@@ -5,7 +5,9 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_FrameXMLUtil
 ## AllowLoadGameType: mists
+Blizzard_AchievementUI_Bootstrap.lua [Bootstrap]
 Cata\Blizzard_AchievementUI.lua
 Classic\Blizzard_AchievementUI_Shared.lua
 Cata\Blizzard_AchievementUI.xml

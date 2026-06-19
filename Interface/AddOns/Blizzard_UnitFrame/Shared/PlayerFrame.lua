@@ -1,7 +1,7 @@
 
-PlayerFrameBottomManagedFramesContainerMixin = {};
+PlayerBottomManagedFrameContainerMixin = {};
 
-function PlayerFrameBottomManagedFramesContainerMixin:Layout()
+function PlayerBottomManagedFrameContainerMixin:Layout()
 	LayoutMixin.Layout(self);
 	PlayerFrame_AdjustAttachments();
 end
@@ -13,11 +13,12 @@ end
 local function AnchorCastBarToPlayerFrame()
 	local playerFrameScale = PlayerFrame:GetScale();
 	local castBarScale = PlayerCastingBarFrame:GetScale();
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
 
 	local xOffset = -24 / castBarScale;
 	local yOffset = 12 * playerFrameScale;
-	if PlayerFrameBottomManagedFramesContainer:IsShown() then
-		yOffset = yOffset - (PlayerFrameBottomManagedFramesContainer:GetHeight() * playerFrameScale);
+	if playerBottomManagedFrameContainer:IsShown() then
+		yOffset = yOffset - (playerBottomManagedFrameContainer:GetHeight() * playerFrameScale);
 	end
 	yOffset = yOffset / castBarScale / playerFrameScale;
 
@@ -33,7 +34,7 @@ function PlayerFrame_AttachCastBar()
 
 	-- player
 	PlayerCastingBarFrame.ignoreFramePositionManager = true;
-	UIParentBottomManagedFrameContainer:RemoveManagedFrame(PlayerCastingBarFrame);
+	GetBottomManagedFrameContainer():RemoveManagedFrame(PlayerCastingBarFrame);
 	PlayerCastingBarFrame.attachedToPlayerFrame = true;
 	PlayerCastingBarFrame:SetLook("UNITFRAME");
 	PlayerCastingBarFrame:SetFixedFrameStrata(false); -- Inherit parent strata while locked

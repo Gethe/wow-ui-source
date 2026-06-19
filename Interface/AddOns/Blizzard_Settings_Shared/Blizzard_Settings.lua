@@ -343,7 +343,12 @@ function Settings.CreateElementInitializer(frameTemplate, data)
 end
 
 function Settings.CreateSettingInitializer(frameTemplate, data)
-	return SettingsInbound.CreateSettingInitializer(frameTemplate, data);
+	local initializer = SettingsInbound.CreateSettingInitializer(frameTemplate, data);
+
+	-- Marks this as a countable setting for narration index calculation.
+	initializer.isSettingElement = true;
+
+	return initializer;
 end
 
 function Settings.CreatePanelInitializer(frameTemplate, data)
@@ -407,7 +412,7 @@ function Settings.CreateDropdown(category, setting, options, tooltip)
 	return initializer;
 end
 
-function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
+function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options, initializer)
 	local function InitTooltip()
 		Settings.InitTooltip(name, tooltip);
 
@@ -471,6 +476,11 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddErrorLine(SettingsTooltip, VIDEO_OPTIONS_NEED_CLIENTRESTART);
 		end
+
+		if initializer and initializer.additionalTooltipText then
+			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
+			GameTooltip_AddColoredLine(SettingsTooltip, initializer.additionalTooltipText, GREEN_FONT_COLOR);
+		end
 	end
 	return InitTooltip;
 end
@@ -494,7 +504,7 @@ function Settings.CreateDropdownCheckbox(rootDescription, optionData, isSelected
 	return optionDescription;
 end
 
-function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
+function Settings.CreateDropdownOptionInserter(setting, optionsFunc, initializer)
 	local function Inserter(setting, rootDescription)
 		for index, optionData in ipairs(optionsFunc()) do
 			if optionData.controlType == Settings.ControlType.Radio then
@@ -524,6 +534,10 @@ function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
 			else
 				assertsafe(false, "Unhandled control type %s for optionData.", tostring(optionData.controlType));
 			end
+		end
+
+		if initializer.customOptionHandler then
+			initializer.customOptionHandler(rootDescription);
 		end
 	end
 	return Inserter;
@@ -628,12 +642,15 @@ function Settings.GetOrCreateSettingsGroup(groupID, order)
 	group.order = order;
 end
 
-function Settings.LoadAddOnCVarWatcher(cvar, addOn)
+function Settings.LoadAddOnCVarWatcher(cvar, loadFunc)
 	if Settings.GetValue(cvar) then
-		UIParentLoadAddOn(addOn);
+		loadFunc();
 	else
 		local function OnValueChanged(o, setting, value)
-			UIParentLoadAddOn(addOn);
+			-- Only load addons for CVars that are being turned on, not off, to avoid unnecessary loading.
+			if value then
+				loadFunc();
+			end
 		end
 		Settings.SetOnValueChangedCallback(cvar, OnValueChanged);
 	end

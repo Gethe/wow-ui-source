@@ -1,0 +1,5 @@
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+
+UIParent.lua

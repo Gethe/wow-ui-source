@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
+	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent" roleset="minimap">
 		<Size x="256" y="256"/>
 		<KeyValues>
 			<KeyValue key="scaleMinimapHeader" value="false" type="boolean"/>
@@ -371,6 +371,8 @@
 										</Animations>
 										<Scripts>
 											<OnLoad  method="OnLoad"/>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
 											<OnEvent method="OnEvent"/>
 											<OnClick method="OnClick"/>
 											<OnEnter method="OnEnter"/>

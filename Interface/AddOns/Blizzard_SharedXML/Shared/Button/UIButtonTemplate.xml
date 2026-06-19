@@ -58,7 +58,7 @@
 		</KeyValues>
 	</Button>
 
-	<Button name="BigRedExitButtonTemplate" inherits="UIButtonTemplate" virtual="true">
+	<Button name="BigRedExitButtonTemplate" mixin="UIPanelCloseButtonNarrationMixin" inherits="UIButtonTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
 			<KeyValue key="buttonArtKit" value="128-redbutton-exit" type="string"/>

@@ -378,9 +378,6 @@ function HandleModifiedItemClick(link, itemLocation)
 		end
 		if ( ChatFrameUtil.InsertLink(link) ) then
 			return true;
-		elseif ( SocialPostFrame and Social_IsShown() ) then
-			Social_InsertLink(link);
-			return true;
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
@@ -391,7 +388,7 @@ function HandleModifiedItemClick(link, itemLocation)
 			OpenAzeriteEmpoweredItemUIFromLink(link);
 			return true;
 		end
-		
+
 		local skillLineID = C_TradeSkillUI.GetSkillLineForGear(link);
 		if skillLineID then
 			OpenProfessionUIToSkillLine(skillLineID);

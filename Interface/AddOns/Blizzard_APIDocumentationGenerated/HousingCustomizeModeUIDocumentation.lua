@@ -20,6 +20,18 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "ApplyPetToSelectedDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If a decor is selected that supports pets, applies a specific petID to be shown on that decor" },
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = true },
+				{ Name = "petBehavior", Type = "HousingPetBehaviorType", Nilable = false },
+			},
+		},
+		{
 			Name = "ApplyThemeToRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -179,6 +191,17 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "GetSelectedDecorPetInfo",
+			Type = "Function",
+			Documentation = { "If a decor is selected that supports pets, gets petID and behavior type from decor" },
+
+			Returns =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = true },
+				{ Name = "petBehavior", Type = "HousingPetBehaviorType", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSelectedRoomComponentInfo",
 			Type = "Function",
 			Documentation = { "Returns info for the currently selected room component, if there is one" },
@@ -285,6 +308,24 @@ local HousingCustomizeModeUI =
 			Returns =
 			{
 				{ Name = "variantSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RoomConnectionSupportsDoorType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Check whether a specific room component, within a specific room, supports a particular doorType" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "newDoortype", Type = "HousingRoomComponentDoorType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doorTypeSupported", Type = "bool", Nilable = false },
 			},
 		},
 		{

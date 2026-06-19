@@ -5,6 +5,17 @@ local SPELLFLYOUT_FINAL_SPACING = 9;
 
 SpellFlyoutOpenReason = EnumUtil.MakeEnum("GlyphPending", "GlyphActivated");
 
+function SpellFlyout_EscapePressed()
+	if ( DISALLOW_SPELL_FLYOUTS or not SpellFlyout or not SpellFlyout:IsShown() ) then
+		return false;
+	end
+
+	SpellFlyout:Hide();
+	return true;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Menu, SpellFlyout_EscapePressed);
+
 SpellFlyoutPopupButtonMixin = {};
 
 function SpellFlyoutPopupButtonMixin:OnLoad()
@@ -146,6 +157,20 @@ end
 function SpellFlyoutPopupButtonMixin:UpdateCount()
 	local text = _G[self:GetName().."Count"];
 	text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount));
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function SpellFlyoutPopupButtonMixin:HasAction()
+	return true;
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function SpellFlyoutPopupButtonMixin:GetActionButtonInfo()
+	local info = {
+		id = self.spellID
+	};
+
+	return info;
 end
 
 SpellFlyoutMixin = {};

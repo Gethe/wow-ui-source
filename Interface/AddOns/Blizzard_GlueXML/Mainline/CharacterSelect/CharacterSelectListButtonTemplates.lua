@@ -55,3 +55,12 @@ function CharacterSelectListMoveButtonMixin:SetEnabledState(enabled)
 	self:SetEnabled(enabled);
 	self.Arrow:SetShown(enabled);
 end
+
+function CharacterSelectListMoveButtonMixin:NarrationGetName()
+	local characterName = self:GetParent().Text.Name:GetText() or "";
+	if self.moveOffset == -1 then
+		return NARRATION_MOVE_UP_IN_LIST:format(characterName);
+	else
+		return NARRATION_MOVE_DOWN_IN_LIST:format(characterName);
+	end
+end

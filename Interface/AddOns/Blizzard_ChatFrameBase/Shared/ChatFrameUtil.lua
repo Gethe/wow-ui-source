@@ -247,6 +247,11 @@ function ChatFrameUtil.AddSystemMessage(messageText)
 	DEFAULT_CHAT_FRAME:AddMessage(messageText, info.r, info.g, info.b, info.id);
 end
 
+function DisplayInterfaceActionBlockedMessage()
+	ChatFrameUtil.AddSystemMessage(INTERFACE_ACTION_BLOCKED);
+	DisplayInterfaceActionBlockedMessage = function() end
+end
+
 function ChatFrameUtil.CanAddChannel()
 	return C_ChatInfo.GetNumActiveChannels() < Constants.ChatFrameConstants.MaxChatChannels;
 end
@@ -264,6 +269,9 @@ function ChatFrameUtil.GetPFlag(specialFlag, zoneChannelID, localChannelID)
 			if ChatFrameUtil.GetMentorChannelStatus(Enum.PlayerMentorshipStatus.Newcomer, C_ChatInfo.GetChannelRulesetForChannelID(zoneChannelID)) == Enum.PlayerMentorshipStatus.Newcomer then
 				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
+		elseif specialFlag == "DISCORD" then
+			-- Add Discord Icon if  this was sent by DISCORD
+			return CreateAtlasMarkup("UI-ChatIcon-Discord").." ";
 		else
 			local pflag = _G["CHAT_FLAG_"..specialFlag];
 			assertsafe(pflag ~= nil, "'pflag' at _G[CHAT_FLAG_%s] doesn't exist.", specialFlag);
@@ -651,6 +659,8 @@ function ChatFrameUtil.PopOutChat(sourceChatFrame, chatType, chatTarget)
 	local windowName;
 	if ( chatType == "CHANNEL" ) then
 		windowName = ChatFrameUtil.GetChannelShortcutName(chatTarget);
+	elseif( chatType == "GUILD_DISCORD" ) then
+		windowName = CreateAtlasMarkup("UI-ChatIcon-Discord").._G[chatType];
 	else
 		windowName = _G[chatType];
 	end
@@ -827,6 +837,10 @@ function ChatFrameUtil.GetColoredChatName(chatType, chatTarget)
 		local info = ChatTypeInfo["WHISPER"];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		return format("%s[%s] |Hplayer:%3$s|h[%3$s]|h|r", colorString, _G[chatType], chatTarget);
+	elseif ( chatType == "GUILD_DISCORD" ) then
+		local info = ChatTypeInfo["GUILD_DISCORD"];
+		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
+		return format("%s|H:channel:GUILD_DISCORD|h[%s%s]|h|r", colorString, CreateAtlasMarkup("UI-ChatIcon-Discord"), CHAT_MSG_GUILD_DISCORD);
 	else
 		local info = ChatTypeInfo[chatType];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
@@ -857,6 +871,9 @@ function ChatFrameUtil.GetCommunitiesChannelColor(clubId, streamId)
 		if clubInfo.clubType == Enum.ClubType.Guild then
 			local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 			local chatInfoType = (streamInfo and streamInfo.streamType == Enum.ClubStreamType.Officer) and "OFFICER" or "GUILD";
+			if streamInfo and streamInfo.streamType == Enum.ClubStreamType.Discord then
+				chatInfoType = "GUILD_DISCORD"
+			end
 			return ChatFrameUtil.GetChannelColor(ChatTypeInfo[chatInfoType]);
 		elseif clubInfo.clubType == Enum.ClubType.BattleNet then
 			return BATTLENET_FONT_COLOR:GetRGB();
@@ -869,7 +886,7 @@ end
 function ChatFrameUtil.GetCommunityAndStreamName(clubId, streamId)
 	local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 
-	if streamInfo and (streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer) then
+	if streamInfo and (streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer or streamInfo.streamType == Enum.ClubStreamType.Discord) then
 		return streamInfo.name;
 	end
 
@@ -975,7 +992,7 @@ function ChatFrameUtil.FlashTabIfNotShown(chatFrame, info, type, chatGroup, chat
 end
 
 function ChatFrameUtil.GetDecoratedSenderName(event, ...)
-	local text, senderName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile = ...;
+	local text, senderName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile, discordInfo = ...;
 	local chatType = string.sub(event, 10);
 
 	if string.find(chatType, "^WHISPER") then
@@ -998,6 +1015,16 @@ function ChatFrameUtil.GetDecoratedSenderName(event, ...)
 		end
 	end
 
+	if (discordInfo and discordInfo.userID ~= 0) then
+		local shouldShowGlobalName = discordInfo.type == Enum.DiscordDisplayNameType.GlobalName;
+		if(discordInfo.globalName and shouldShowGlobalName) then
+		-- Names of user from Discord have a fixed color
+			return ChatFrameUtil.DiscordNameColorize(discordInfo.globalName);
+		end
+		senderGUID = discordInfo.lastOnlineGUID;
+		decoratedPlayerName = discordInfo.lastOnlineName;
+	end
+
 	-- Add timerunning icon when necessary based on player guid
 	if senderGUID and C_ChatInfo.IsTimerunningPlayer(senderGUID) then
 		decoratedPlayerName = TimerunningUtil.AddSmallIcon(decoratedPlayerName);
@@ -1017,6 +1044,70 @@ function ChatFrameUtil.GetDecoratedSenderName(event, ...)
 
 	decoratedPlayerName = ChatFrameUtil.ProcessSenderNameFilters(event, decoratedPlayerName, ...);
 	return decoratedPlayerName;
+end
+
+function ChatFrameUtil.DiscordNameColorize(discordName)
+	-- there is probably a better way to do this
+	local colorInfo = C_ChatInfo.GetColorForChatType("DISCORD_PLAYER_NAME");
+	if(colorInfo) then
+		return WrapTextInColorCode(discordName, CreateColor(colorInfo.r, colorInfo.g, colorInfo.b, 1):GenerateHexColor())
+	end
+
+	return WrapTextInColorCode(discordName, CreateColor(224, 227, 255, 1):GenerateHexColor());
+end
+
+function ChatFrameUtil.GetNameForDiscordMessage(discordInfo)
+	-- if we are explictly trying to use globalname, then use that, otherwise try and use the character name first
+	if( discordInfo.type ~= Enum.DiscordDisplayNameType.GlobalName ) then
+		if ( discordInfo.lastOnlineName and discordInfo.lastOnlineGUID ) then
+			local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(discordInfo.lastOnlineGUID)
+
+			if ( englishClass ) then
+				local classColorTable = RAID_CLASS_COLORS[englishClass];
+				if ( classColorTable ) then
+					return WrapTextInColorCode(discordInfo.lastOnlineName, classColorTable.colorStr)
+				end
+			end
+
+			return discordInfo.lastOnlineName;
+		end
+	end
+
+	return ChatFrameUtil.DiscordNameColorize(discordInfo.globalName);
+end
+
+function ChatFrameUtil.FormatDiscordMessage(discordInfo, message)
+	if discordInfo and discordInfo.fromDiscord then
+		local modifiedMessage = message;
+
+		if discordInfo.hasAttachment then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_ATTACHMENT).." "..message;
+		end
+
+		if discordInfo.hasPoll then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_POLL).." "..message;
+		end
+
+		if discordInfo.hasEmbed then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMBED).." "..message;
+		end
+
+		if discordInfo.hasSticker then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_STICKER).." "..message;
+		end
+
+		if discordInfo.hasEmoji then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMOJI).." "..message;
+		end
+
+		if discordInfo.hasForwardedMessage then
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_FORWARD).." "..discordInfo.forwardedMessage;
+		end
+
+		return modifiedMessage;
+	end
+
+	return message;
 end
 
 function GetRandomArgument(...)
@@ -1056,3 +1147,6 @@ function SecureCmdUseItem(name, bag, slot, target)
 		C_Item.UseItemByName(name, target);
 	end
 end
+
+
+

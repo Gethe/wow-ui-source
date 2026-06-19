@@ -402,14 +402,10 @@ local FriendList =
 	Events =
 	{
 		{
-			Name = "BattletagInviteShow",
+			Name = "BattleNetFriendTagEnabledStatusUpdated",
 			Type = "Event",
-			LiteralName = "BATTLETAG_INVITE_SHOW",
+			LiteralName = "BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED",
 			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-			},
 		},
 		{
 			Name = "BnBlockFailedTooMany",
@@ -555,6 +551,17 @@ local FriendList =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "ConfirmBattleNetFriendInviteShow",
+			Type = "Event",
+			LiteralName = "CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "FriendlistUpdate",
 			Type = "Event",
 			LiteralName = "FRIENDLIST_UPDATE",
@@ -587,6 +594,12 @@ local FriendList =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
+		},
+		{
+			Name = "SocialUIFriendsListSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "SOCIAL_UI_FRIENDS_LIST_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WhoListUpdate",

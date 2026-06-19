@@ -2,6 +2,7 @@ local LuaDurationObjectAPI =
 {
 	Name = "LuaDurationObjectAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -177,6 +178,20 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "GetClock",
+			Type = "Function",
+			Documentation = { "Returns the clock source used by this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "clock", Type = "LuaDurationClock", Nilable = true, Documentation = { "If nil, the duration object is using an internal default clock source equivalent to GetTime()." } },
+			},
+		},
+		{
 			Name = "GetClockTime",
 			Type = "Function",
 			Documentation = { "Returns the current time of the clock source used by this object." },
@@ -317,6 +332,22 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "HasExpired",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true once the duration has reached its end time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "hasExpired", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSecretValues",
 			Type = "Function",
 			ReturnsNeverSecret = true,
@@ -329,6 +360,38 @@ local LuaDurationObjectAPI =
 			Returns =
 			{
 				{ Name = "hasSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasStarted",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true once the duration has reached its start time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "hasStarted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true while the duration is at or after its start time and before its end time." },
+
+			Arguments =
+			{
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -352,6 +415,17 @@ local LuaDurationObjectAPI =
 
 			Arguments =
 			{
+			},
+		},
+		{
+			Name = "SetClock",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Configures the clock source used by this object." },
+
+			Arguments =
+			{
+				{ Name = "clock", Type = "LuaDurationClock", Nilable = true, Documentation = { "If nil, the duration object will use an internal default clock source equivalent to GetTime()." } },
 			},
 		},
 		{

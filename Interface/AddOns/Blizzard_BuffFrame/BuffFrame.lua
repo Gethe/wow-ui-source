@@ -418,6 +418,10 @@ function AuraFrameEditModeMixin:TryEditModeUpdateAuraButtons()
 	return self.hasInitializedForEditMode;
 end
 
+function AuraFrameEditModeMixin:UpdatePrivateAuraAnchors()
+	-- override as necessary
+end
+
 BaseAuraFrameMixin = {};
 
 function BaseAuraFrameMixin:GetIconLimitSettingEnum()
@@ -751,13 +755,19 @@ end
 
 function DebuffFrameMixin:Update() -- Override
 	AuraFrameEditModeMixin.Update(self);
-	local unit = PlayerFrame.unit;
-	if unit ~= self.unit then
-		for _, anchor in ipairs(self.PrivateAuraAnchors) do
-			anchor:SetUnit(unit);
-		end
+
+	if PlayerFrame.unit ~= self.unit then
+		self:UpdatePrivateAuraAnchors(PlayerFrame.unit);
+		self.unit = PlayerFrame.unit;
+	end	
+end
+
+function DebuffFrameMixin:UpdatePrivateAuraAnchors(unit)
+	unit = unit or PlayerFrame.unit;
+	local showDispelType = self.AuraContainer.showDispelType;
+	for _, anchor in ipairs(self.PrivateAuraAnchors) do
+		anchor:SetUnit(unit, showDispelType);
 	end
-	self.unit = unit;
 end
 
 function DebuffFrameMixin:UpdateAuraButtons()  -- Override
@@ -858,18 +868,7 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 
 	if mostCriticalDebuffIndex then
 		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
-
-		if RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown() then
-			DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-		elseif RaidWarningFrame then
-			DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
-		else
-			-- Fallback location only if RaidWarningFrame doesn't exist. We
-			-- want to anchor to RaidWarningFrame even if it's hidden to
-			-- make some room for the default position of Boss Warning text
-			-- displays.
-			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
-		end
+		RaidWarningUtil.UpdateCenterScreenAnchors();
 	else
 		DeadlyDebuffFrame:Hide();
 	end
@@ -1214,23 +1213,12 @@ end
 DeadlyDebuffFrameMixin = {};
 
 function DeadlyDebuffFrameMixin:OnShow()
-	self:RegisterEvent("CHAT_MSG_RAID_WARNING");
-	self:RegisterEvent("RAID_BOSS_EMOTE");
-end
-
-function DeadlyDebuffFrameMixin:OnEvent(event, ...)
-	if event == "RAID_BOSS_EMOTE" then
-		DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-	elseif event == "CHAT_MSG_RAID_WARNING" then
-		DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
-	end
+	RaidWarningUtil.UpdateCenterScreenAnchors();
 end
 
 function DeadlyDebuffFrameMixin:OnHide()
-	self:UnregisterEvent("CHAT_MSG_RAID_WARNING");
-	self:UnregisterEvent("RAID_BOSS_EMOTE");
-
 	self.lastSpellID = nil;
+	RaidWarningUtil.UpdateCenterScreenAnchors();
 end
 
 function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
@@ -1249,11 +1237,8 @@ end
 
 BuffFramePrivateAuraAnchorMixin = {};
 
-function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
-	if unit == self.unit then
-		return;
-	end
-	self.unit = unit;
+function BuffFramePrivateAuraAnchorMixin:SetUnit(unit, showDispelType)
+	self.unit = unit; -- This is really just for debugging now.
 
 	if self.anchorID then
 		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
@@ -1282,8 +1267,10 @@ function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
 			unitToken = unit,
 			auraIndex = self.auraIndex,
 			parent = self,
-			showCountdownFrame = false,
+			showCooldownFrame = false,
+			showCooldownEdge = false,
 			showCountdownNumbers = false,
+			showDispelIcon = showDispelType,
 			isContainer = false,
 			iconInfo =
 			{

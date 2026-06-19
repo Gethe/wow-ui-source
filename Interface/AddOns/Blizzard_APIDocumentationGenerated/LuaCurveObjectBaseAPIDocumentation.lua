@@ -2,6 +2,7 @@ local LuaCurveObjectBaseAPI =
 {
 	Name = "LuaCurveObjectBaseAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

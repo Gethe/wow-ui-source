@@ -90,16 +90,6 @@
 		</Layers>
 	</Button>
 
-	<Button name="WowMenuDropdownHighlightRadioTemplate" inherits="DarkMenuElementTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" font="GameFontNormal" justifyH="LEFT" maxLines="1">
-					<Size x="200" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="14"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Button>
+	<!-- Both buttons and radios use this same template. -->
+	<Button name="WowMenuDropdownHighlightButtonTemplate" inherits="DarkMenuElementTemplate" motionScriptsWhileDisabled="true" virtual="true"/>
 </Ui>

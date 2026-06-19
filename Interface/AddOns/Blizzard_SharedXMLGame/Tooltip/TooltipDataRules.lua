@@ -153,7 +153,7 @@ function TooltipDataRules.FinalizeItemTooltip(tooltip, tooltipData)
 	local repairCost = tooltipData.repairCost;
 	if repairCost and InRepairMode() then
 		tooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(tooltip, repairCost);
+		GameTooltip_AddMoneyLine(tooltip, repairCost);
 	end
 
 	-- style
@@ -219,10 +219,8 @@ function TooltipDataRules.AccountForCloseButtonOnItems(tooltip, lineData)
 				height = 2,
 				region = Enum.TooltipTextureRelativeRegion.RightLine,
 				anchor = Enum.TooltipTextureAnchor.RightCenter,
-				vertexColor = {r = 0, g = 0, b = 0, a = 0},
 			};
-			-- texture doesn't matter because we are setting alpha to 0.
-			tooltip:AddTexture("Interface\\Icons\\Achievement_General_StayClassy", textureSettings); 
+			tooltip:AddTexture("Interface\\Common\\Spacer", textureSettings); 
 	end
 end
 TooltipDataProcessor.AddLinePostCall(LineTypeEnums.ItemName, TooltipDataRules.AccountForCloseButtonOnItems);

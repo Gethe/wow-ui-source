@@ -1,6 +1,6 @@
-## Title: Blizzard NamePlates
-## LoadOnDemand: 0
-## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs, Blizzard_UnitFrame
+## Title: Blizzard_NamePlates
+## Dep: Blizzard_UIWidgets
+## Dep: Blizzard_UnitFrame
 
 Blizzard_NamePlateConstants.lua
 Blizzard_NamePlateFrameOptions.lua
@@ -9,31 +9,32 @@ Blizzard_NamePlateAuras.lua
 Blizzard_NamePlateAuras.xml
 Blizzard_NamePlateHealthBar.lua
 Blizzard_NamePlateCastingBar.lua
+Blizzard_NamePlateCastingBar.xml
 Blizzard_NamePlateClassificationFrame.lua
 Blizzard_NamePlateRaidTarget.lua
 Blizzard_NamePlateUnitFrame.lua
 Blizzard_NamePlateBase.lua
 Blizzard_NamePlates.lua
 Blizzard_NamePlates.xml
-Blizzard_ClassNameplateBar.lua
-Blizzard_ClassNameplateBar.xml
-Blizzard_ClassNameplateAlternatePowerBarBase.lua
-Blizzard_ClassNameplateAlternatePowerBarBase.xml
-Blizzard_ClassNameplateBar_Paladin.lua
-Blizzard_ClassNameplateBar_Paladin.xml
-Blizzard_ClassNameplateBar_DeathKnight.lua
-Blizzard_ClassNameplateBar_DeathKnight.xml
-Blizzard_ClassNameplateBar_Dracthyr.lua
-Blizzard_ClassNameplateBar_Dracthyr.xml
-Blizzard_ClassNameplateBar_Rogue.lua
-Blizzard_ClassNameplateBar_Rogue.xml
-Blizzard_ClassNameplateBar_Druid.lua
-Blizzard_ClassNameplateBar_Druid.xml
-Blizzard_ClassNameplateBar_Mage.lua
-Blizzard_ClassNameplateBar_Mage.xml
-Blizzard_ClassNameplateBar_Monk.lua
-Blizzard_ClassNameplateBar_Monk.xml
-Blizzard_ClassNameplateBar_Warlock.lua
-Blizzard_ClassNameplateBar_Warlock.xml
-Blizzard_ClassNameplateBar_AlternatePower.lua [AllowLoadGameType wowhack]
-Blizzard_ClassNameplateBar_AlternatePower.xml [AllowLoadGameType wowhack]
+Mainline\Blizzard_ClassNameplateBar.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateAlternatePowerBarBase.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateAlternatePowerBarBase.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Paladin.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Paladin.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_DeathKnight.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_DeathKnight.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Dracthyr.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Dracthyr.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Rogue.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Rogue.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Druid.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Druid.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Mage.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Mage.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Monk.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Monk.xml [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Warlock.lua [AllowLoadGameType mainline]
+Mainline\Blizzard_ClassNameplateBar_Warlock.xml [AllowLoadGameType mainline]
+WoWHack\Blizzard_ClassNameplateBar_AlternatePower.lua [AllowLoadGameType wowhack]
+WoWHack\Blizzard_ClassNameplateBar_AlternatePower.xml [AllowLoadGameType wowhack]

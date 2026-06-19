@@ -38,6 +38,23 @@ local StringUtil =
 			},
 		},
 		{
+			Name = "EscapeDecimalNonPrintables",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a string with ASCII control characters (except \
+, \r, and 	) and invalid UTF-8 bytes replaced by decimal escape sequences (e.g. \\127)." },
+
+			Arguments =
+			{
+				{ Name = "text", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "escapedText", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaFormatString",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",

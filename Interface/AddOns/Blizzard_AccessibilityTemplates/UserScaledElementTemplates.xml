@@ -7,6 +7,7 @@
 			<KeyValue key="baseHeight" value="..." type="number"/>
 			<KeyValue key="useScaleWeight" value="t/f" type="boolean"/>
 			<KeyValue key="scaleWeight" value="> 0" type="number"/>
+			<KeyValue key="maxWidth" value="..." type="number"/>
 		</KeyValues>
 		-->
 		<Scripts>
@@ -24,4 +25,29 @@
 			<OnLoad method="OnLoad_UserScaledElement" inherit="append"/>
 		</Scripts>
 	</FontString>
+
+	<Button name="UserScaledButtonFitToTextTemplate" inherits="UserScaledFrameTemplate, TruncatedTooltipScriptTemplate" mixin="UserScaledButtonFitToTextMixin" virtual="true">
+		<ButtonText parentKey="Text" maxLines="1" wordwrap="false"/>
+		<!--
+		<KeyValues>
+			See UserScaledFrameTemplate
+			Additional KeyValues:
+			<KeyValue key="baseButtonTextInset" value="..." type="number"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="UserScaledFrameByHeightTemplate" mixin="UserScaledFrameByHeightMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="additionalHeight" value="..." type="number"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad_UserScaledByHeight" inherit="append"/>
+		</Scripts>
+	</Frame>
 </Ui>

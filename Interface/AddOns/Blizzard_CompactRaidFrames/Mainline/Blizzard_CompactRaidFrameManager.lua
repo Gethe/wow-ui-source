@@ -1231,7 +1231,7 @@ end
 
 function RaidFrameEveryoneIsAssistMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	SetEveryoneIsAssistant(self:GetChecked());
+	C_PartyInfo.SetEveryoneIsAssistant(self:GetChecked());
 end
 
 function RaidFrameEveryoneIsAssistMixin:OnButtonStateChanged()
@@ -1246,7 +1246,7 @@ RaidFrameReadyCheckMixin = CreateFromMixins(CRFM_ToolbarButtonMixin);
 
 function RaidFrameReadyCheckMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	DoReadyCheck();
+	C_PartyInfo.DoReadyCheck();
 end
 
 RaidFrameRolePollMixin = CreateFromMixins(CRFM_ToolbarButtonMixin);

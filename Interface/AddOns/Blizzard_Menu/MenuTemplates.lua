@@ -50,6 +50,58 @@ local function GetButtonSoundKit(description)
 	return MenuVariants.GetButtonSoundKit();
 end
 
+local function MenuButtonNarrationGetName(self)
+	local description = self:GetElementDescription();
+	if description then
+		return MenuUtil.GetElementText(description);
+	end
+
+	return nil;
+end
+
+local function MenuButtonNarrationGetContext(self)
+	local description = self:GetElementDescription();
+	if not description then
+		return nil;
+	end
+
+	local objectName = NARRATION_OBJECT_BUTTON;
+	if description:CanOpenSubmenu() then
+		objectName = NARRATION_OBJECT_SUBMENU;
+	elseif description:IsCheckbox() then
+		objectName = NARRATION_OBJECT_CHECK_BUTTON;
+	elseif description:IsRadio() then
+		objectName = NARRATION_OBJECT_RADIO_BUTTON;
+	end
+
+	if description:IsSelected() then
+		return NARRATION_STATUS_SELECTED_FORMAT:format(objectName);
+	end
+
+	return objectName;
+end
+
+local function MenuButtonNarrationGetIndexInfo(self)
+	local menu = self.owningMenu;
+	if not menu then
+		return nil;
+	end
+
+	local selfDescription = self:GetElementDescription();
+	local index = 0;
+	local total = 0;
+	menu:EnumerateElementDescriptions(function(_, elementDescription)
+		if elementDescription:HasResponder() or elementDescription:CanOpenSubmenu() then
+			total = total + 1;
+			if elementDescription == selfDescription then
+				index = total;
+			end
+		end
+	end);
+
+	return NarrationUtil.MakeIndexInfo(index, total);
+end
+
 --[[
 Final initializer is called after all other initializers are called so that
 the recursion functions here can find any of the regions that were attached.
@@ -61,6 +113,11 @@ local function ButtonFinalInitializer(button, description, menu)
 	button:SetEnabled(enabled);
 
 	MenuTemplates.SetHierarchyEnabled(button, enabled);
+
+	button.owningMenu = menu;
+	button.NarrationGetName = MenuButtonNarrationGetName;
+	button.NarrationGetContext = MenuButtonNarrationGetContext;
+	button.NarrationGetIndexInfo = MenuButtonNarrationGetIndexInfo;
 end
 
 local function OnButtonEnable(button)
@@ -278,6 +335,7 @@ function MenuTemplates.CreateCheckbox(text, isSelected, onSelect, data)
 	local elementDescription = CreateButtonDescription(data);
 	elementDescription:SetSoundKit(GetCheckboxSoundKit);
 	elementDescription:AddInitializer(Initializer);
+	elementDescription:SetCheckbox(true);
 	elementDescription:SetIsSelected(isSelected);
 	elementDescription:SetResponder(onSelect);
 	elementDescription:SetResponse(MenuResponse.Refresh);
@@ -298,8 +356,93 @@ function MenuTemplates.CreateRadio(text, isSelected, onSelect, data)
 	return elementDescription;
 end
 
+-- Attach text here instead of the template for content sizing calculations fixes if other pieces get attached elsewhere.
+local function CreateHighlightButtonText(button)
+	local fontString = button:AttachFontString();
+	fontString:SetPoint("TOPLEFT", 14, 0);
+	fontString:SetSize(200, 20);
+	fontString:SetFontObject("GameFontNormal");
+	fontString:SetJustifyH("LEFT");
+	fontString:SetMaxLines(1);
+	button.Text = fontString;
+end
+
+local function SetHighlightButtonFinalInitializer(button, _description, menu)
+	button.owningMenu = menu;
+	button.NarrationGetName = MenuButtonNarrationGetName;
+	button.NarrationGetContext = MenuButtonNarrationGetContext;
+	button.NarrationGetIndexInfo = MenuButtonNarrationGetIndexInfo;
+end
+
+function MenuTemplates.CreateHighlightButton(text, onSelect, data, onEnter)
+	local optionDescription = CreateMenuElementDescription("WowMenuDropdownHighlightButtonTemplate");
+
+	local truncated = false;
+
+	local function OnEnter(button)
+		button.HighlightBGTex:SetAlpha(0.15);
+
+		if truncated then
+			local description = button:GetElementDescription();
+			MenuUtil.ShowTooltipEx(button, description:GetTooltipFrame(), function(tooltip)
+				GameTooltip_SetTitle(tooltip, text);
+			end);
+		end
+
+		if onEnter then
+			onEnter(data);
+		end
+	end
+
+	local function OnLeave(button)
+		button.HighlightBGTex:SetAlpha(0);
+
+		local description = button:GetElementDescription();
+		MenuUtil.HideTooltipEx(button, description:GetTooltipFrame());
+	end
+
+	optionDescription:AddInitializer(function(button, description, _menu)
+		button:SetScript("OnClick", function(_button, buttonName)
+			description:Pick(MenuInputContext.MouseButton, buttonName);
+		end);
+
+		if optionDescription:CanOpenSubmenu() then
+			MenuVariants.CreateSubmenuArrow(button);
+		end
+
+		CreateHighlightButtonText(button);
+
+		-- This button template is modified in Languages.lua to hide the text and display
+		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
+		-- about that texture here because it is managed by the compositor.
+		button.Text:Show();
+		button.Text:SetTextToFit(text);
+		button.Text:SetWidth(button.Text:GetWidth() + 15);
+
+		button.HighlightBGTex:SetAlpha(0);
+
+		if description:IsEnabled() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		else
+			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
+
+		truncated = button.Text:IsTruncated();
+
+		button:Layout();
+	end);
+
+	optionDescription:SetFinalInitializer(SetHighlightButtonFinalInitializer);
+	optionDescription:SetResponder(onSelect);
+	optionDescription:SetOnEnter(OnEnter);
+	optionDescription:SetOnLeave(OnLeave);
+	optionDescription:SetData(data);
+
+	return optionDescription;
+end
+
 function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, onEnter)
-	local optionDescription = CreateMenuElementDescription("WowMenuDropdownHighlightRadioTemplate");
+	local optionDescription = CreateMenuElementDescription("WowMenuDropdownHighlightButtonTemplate");
 
 	local truncated = false;
 
@@ -312,7 +455,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 		end
 
 		if truncated then
-			MenuUtil.ShowTooltip(button, function(tooltip)
+			MenuUtil.ShowTooltipEx(button, description:GetTooltipFrame(), function(tooltip)
 				GameTooltip_SetTitle(tooltip, text);
 			end);
 		end
@@ -330,7 +473,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
 		end
 
-		MenuUtil.HideTooltip(button);
+		MenuUtil.HideTooltipEx(button, description:GetTooltipFrame());
 	end
 
 	optionDescription:AddInitializer(function(button, description, menu)
@@ -338,16 +481,18 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 			description:Pick(MenuInputContext.MouseButton, buttonName);
 		end);
 
+		CreateHighlightButtonText(button);
+
 		-- This button template is modified in Languages.lua to hide the text and display
 		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
 		-- about that texture here because it is managed by the compositor.
 		button.Text:Show();
 		button.Text:SetTextToFit(text);
-		button.Text:SetWidth(button.Text:GetWidth() + 10);
+		-- Give enough room should any icon be added to the far right the spacing is fine between them.
+		button.Text:SetWidth(button.Text:GetWidth() + 45);
 
 		button.HighlightBGTex:SetAlpha(0);
 
-		local fontColor = nil;
 		if description:IsSelected() then
 			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
 		elseif description:IsEnabled() then
@@ -361,6 +506,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 		button:Layout();
 	end);
 
+	optionDescription:SetFinalInitializer(SetHighlightButtonFinalInitializer);
 	optionDescription:SetIsSelected(isSelected);
 	optionDescription:SetResponder(onSelect);
 	optionDescription:SetOnEnter(OnEnter);
@@ -409,7 +555,7 @@ end
 
 do
 	local function OnAutoHideButtonLeave(button)
-		MenuUtil.HideTooltip(button);
+		MenuUtil.HideTooltipEx(button, GetAppropriateTooltip());
 	end
 
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
@@ -481,9 +627,11 @@ function MenuTemplates.SetUtilityButtonLockedEnabledState(button, value)
 	button.lockedEnabledState = value;
 end
 
-function MenuTemplates.SetUtilityButtonAnchor(button, anchor, relativeTo)
+function MenuTemplates.SetUtilityButtonAnchor(button, anchor, relativeTo, offsetX, offsetY)
 	local point, _, relativePoint, x, y = anchor:Get();
-	button:SetPoint(point, relativeTo, relativePoint, x, y);
+	offsetX = offsetX or 0;
+	offsetY = offsetY or 0;
+	button:SetPoint(point, relativeTo, relativePoint, x + offsetX, y + offsetY);
 end
 
 function MenuTemplates.AttachAutoHideGearButton(parent)
@@ -646,6 +794,25 @@ function DropdownSelectionTextMixin:UpdateToMenuSelections(menuDescription, curr
 	self:SetText(text or self.defaultText);
 end
 
+function DropdownSelectionTextMixin:NarrationGetName()
+	local text = self:GetText();
+	if text and text ~= "" then
+		return text;
+	end
+
+	-- Set narrationLabel as a key-value if you want the dropdown button to report
+	-- custom text with no option selected.
+	return self.narrationLabel;
+end
+
+function DropdownSelectionTextMixin:NarrationGetContext()
+	if self:IsEnabled() then
+		return NARRATION_OBJECT_DROPDOWN;
+	end
+
+	return NARRATION_STATUS_DISABLED_FORMAT:format(NARRATION_OBJECT_DROPDOWN);
+end
+
 function DropdownSelectionTextMixin:OnShow()
 	-- Will only cause a menu description to be generated if the generator was
 	-- assigned prior to the OnShow() being called.
@@ -669,10 +836,11 @@ function DropdownSelectionTextMixin:SetTooltip(tooltipFunc)
 end
 
 function DropdownSelectionTextMixin:ShowTooltip()
+	local tooltip = GetAppropriateTooltip();
 	if self.tooltipFunc then
-		MenuUtil.ShowTooltip(self, self.tooltipFunc);
+		MenuUtil.ShowTooltipEx(self, tooltip, self.tooltipFunc);
 	else
-		MenuUtil.ShowTooltip(self, function(tooltip)
+		MenuUtil.ShowTooltipEx(self, tooltip, function(tooltip)
 			GameTooltip_SetTitle(tooltip, self.Text:GetText());
 		end);
 	end
@@ -681,7 +849,7 @@ end
 function DropdownSelectionTextMixin:OnLeave()
 	ButtonStateBehaviorMixin.OnLeave(self);
 
-	MenuUtil.HideTooltip(self);
+	MenuUtil.HideTooltipEx(self, GetAppropriateTooltip());
 end
 
 -- Inherited by dropdown buttons that require the reset button behavior. The reset button

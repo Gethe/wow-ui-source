@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate, ObjectiveTrackerContainerTemplate" mixin="ObjectiveTrackerFrameMixin" frameStrata="LOW">
+	<Frame name="ObjectiveTrackerFrame" inherits="RightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate, ObjectiveTrackerContainerTemplate" mixin="ObjectiveTrackerFrameMixin" frameStrata="LOW" roleset="objectives">
 		<KeyValues>
   			<KeyValue key="topPadding" value="0" type="number"/>
 			<KeyValue key="topModulePadding" value="38" type="number"/>

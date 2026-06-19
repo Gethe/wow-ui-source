@@ -539,16 +539,20 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 
 		C_ActionBar.RegisterActionUIButton(self, action, self.cooldown);
 
-		self:UpdateAssistedCombatRotationFrame();
+		local isAssistedCombatRotation = self:UpdateAssistedCombatRotationFrame();
 
 		self:Update();
+
+		self:UpdatePingAttributes();
 
 		-- If on an action bar and layout fields are set, ask it to update visibility of its buttons
 		if (self.index and self.bar) then
 			self.bar:UpdateShownButtons();
 		end
 
-		EventRegistry:TriggerEvent("ActionButton.OnActionChanged", self);
+		if not isAssistedCombatRotation then
+			EventRegistry:TriggerEvent("ActionButton.OnActionChanged", self);
+		end
 	end
 end
 
@@ -664,10 +668,6 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	if ( self.SpellHighlightTexture and self.SpellHighlightAnim ) then
 		SharedActionButton_RefreshSpellHighlight(self, GetOnBarHighlightMark(self.action));
 	end
-end
-
-function ActionBarActionButtonMixin:HasAction()
-	return C_ActionBar.HasAction(self.action);
 end
 
 function ActionBarActionButtonMixin:UpdateState()
@@ -899,46 +899,11 @@ function ActionBarActionButtonMixin:UpdateAssistedCombatRotationFrame()
 	if assistedCombatRotationFrame then
 		assistedCombatRotationFrame:UpdateState();
 	end
+	return show;
 end
 
 -- Override as needed
 function ActionBarActionButtonMixin:EvaluateTutorials(spellType, id)
-end
-
-ActionBarOverlayGlowAnimInMixin = {};
-
-function ActionBarOverlayGlowAnimInMixin:OnPlay()
-	local frame = self:GetParent();
-	local frameWidth, frameHeight = frame:GetSize();
-	frame.spark:SetSize(frameWidth, frameHeight);
-	frame.spark:SetAlpha(0.3);
-	frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2);
-	frame.innerGlow:SetAlpha(1.0);
-	frame.innerGlowOver:SetAlpha(1.0);
-	frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2);
-	frame.outerGlow:SetAlpha(1.0);
-	frame.outerGlowOver:SetAlpha(1.0);
-	frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
-	frame.ants:SetAlpha(0);
-	frame:Show();
-end
-
-function ActionBarOverlayGlowAnimInMixin:OnFinished()
-	local frame = self:GetParent();
-	local frameWidth, frameHeight = frame:GetSize();
-	frame.spark:SetAlpha(0);
-	frame.innerGlow:SetAlpha(0);
-	frame.innerGlow:SetSize(frameWidth, frameHeight);
-	frame.innerGlowOver:SetAlpha(0.0);
-	frame.outerGlow:SetSize(frameWidth, frameHeight);
-	frame.outerGlowOver:SetAlpha(0.0);
-	frame.outerGlowOver:SetSize(frameWidth, frameHeight);
-	frame.ants:SetAlpha(1.0);
-end
-
-ActionButtonInterruptAnimInMixin = {};
-function ActionButtonInterruptAnimInMixin:OnFinished()
-	self:GetParent():GetParent():Hide();
 end
 
 function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
@@ -971,8 +936,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
-			ClearNewActionHighlight(self.action, true);
-			self:UpdateAction(true);
+			self:OnActionBarSlotChanged();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Update();
@@ -1096,6 +1060,11 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif event == "AssistedCombatManager.OnSetActionSpell" then
 		self:UpdateAssistedCombatRotationFrame();
 	end
+end
+
+function ActionBarActionButtonMixin:OnActionBarSlotChanged()
+	ClearNewActionHighlight(self.action, true);
+	self:UpdateAction(true);
 end
 
 function ActionBarActionButtonMixin:SetTooltip()
@@ -1438,10 +1407,86 @@ function ActionBarActionButtonMixin:OnLeave()
 	end
 end
 
+-- Override for BaseActionButtonInfoMixin.
+function ActionBarActionButtonMixin:HasAction()
+	return C_ActionBar.HasAction(self.action);
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function ActionBarActionButtonMixin:GetActionButtonInfo()
+	local actionType, id, subType = GetActionInfo(self.action);
+	local isUsable, notEnoughMana = C_ActionBar.IsUsableAction(self.action);
+
+	local info = {
+		id = id,
+		actionType = actionType,
+		subType = subType,
+		isUsable = isUsable,
+		notEnoughMana = notEnoughMana
+	};
+
+	return info;
+end
+
+
+ActionBarOverlayGlowAnimInMixin = {};
+
+function ActionBarOverlayGlowAnimInMixin:OnPlay()
+	local frame = self:GetParent();
+	local frameWidth, frameHeight = frame:GetSize();
+	frame.spark:SetSize(frameWidth, frameHeight);
+	frame.spark:SetAlpha(0.3);
+	frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2);
+	frame.innerGlow:SetAlpha(1.0);
+	frame.innerGlowOver:SetAlpha(1.0);
+	frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2);
+	frame.outerGlow:SetAlpha(1.0);
+	frame.outerGlowOver:SetAlpha(1.0);
+	frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
+	frame.ants:SetAlpha(0);
+	frame:Show();
+end
+
+function ActionBarOverlayGlowAnimInMixin:OnFinished()
+	local frame = self:GetParent();
+	local frameWidth, frameHeight = frame:GetSize();
+	frame.spark:SetAlpha(0);
+	frame.innerGlow:SetAlpha(0);
+	frame.innerGlow:SetSize(frameWidth, frameHeight);
+	frame.innerGlowOver:SetAlpha(0.0);
+	frame.outerGlow:SetSize(frameWidth, frameHeight);
+	frame.outerGlowOver:SetAlpha(0.0);
+	frame.outerGlowOver:SetSize(frameWidth, frameHeight);
+	frame.ants:SetAlpha(1.0);
+end
+
+
+ActionButtonInterruptAnimInMixin = {};
+
+function ActionButtonInterruptAnimInMixin:OnFinished()
+	self:GetParent():GetParent():Hide();
+end
+
+
+-- Functions that should be guaranteed on any kind of action button, regardless of permutation of templates/mixins. Intended to be overridden.
+BaseActionButtonInfoMixin = {};
+
+function BaseActionButtonInfoMixin:HasAction()
+	return false;
+end
+
+function BaseActionButtonInfoMixin:GetActionButtonInfo()
+	return nil;
+end
+
 
 -- Can be overridden by ActionButtonOverrides.
 ActionBarButtonEventsDerivedFrameMixin = CreateFromMixins(ActionBarButtonEventsFrameMixin);
-ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
+
+
+-- Note that both this and BaseActionButtonMixin take in BaseActionButtonInfoMixin. While this is a bit redundant in cases, it helps clarify that every action button permutation should have this mixin.
+-- ActionBarActionButtonMixin has the context to override the methods in BaseActionButtonInfoMixin, but without this explicit redundant callout could be a bit confusing to know how it's connected.
+ActionBarActionButtonDerivedMixin = CreateFromMixins(BaseActionButtonInfoMixin, ActionBarActionButtonMixin);
 
 function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLoad()
 	ActionBarActionButtonMixin.OnLoad(self);
@@ -1497,7 +1542,8 @@ function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnH
 end
 
 
-BaseActionButtonMixin = {}
+-- Note that both this and ActionBarActionButtonDerivedMixin take in BaseActionButtonInfoMixin.
+BaseActionButtonMixin = CreateFromMixins(BaseActionButtonInfoMixin);
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	FlyoutButtonMixin.OnLoad(self);
@@ -1830,7 +1876,10 @@ function ActionBarButtonAssistedCombatRotationFrameMixin:OnUpdate(elapsed)
 	self.updateTimeLeft = self.updateTimeLeft - elapsed;
 	if self.updateTimeLeft <= 0 then
 		local actionButton = self:GetParent();
-		C_ActionBar.ForceUpdateAction(actionButton.action);
+		-- suppress the events, then directly call OnActionBarSlotChanged so icon/etc update
+		local suppressEvents = true;
+		C_ActionBar.ForceUpdateAction(actionButton.action, suppressEvents);
+		actionButton:OnActionBarSlotChanged();
 		self.updateTimeLeft = AssistedCombatManager:GetUpdateRate();
 	end
 end

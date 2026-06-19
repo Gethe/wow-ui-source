@@ -4,6 +4,17 @@ end
 
 local selectedSavedAccount = nil;
 
+AccountLoginEditBoxMixin = CreateFromMixins(NarrationEditBoxMixin);
+
+function AccountLoginEditBoxMixin:NarrationGetDescription()
+	local text = NarrationEditBoxMixin.NarrationGetDescription(self);
+	if text and text ~= "" then
+		return NarrationUtil.MakeNarrationString(text, NARRATION_STATUS_REQUIRED);
+	end
+
+	return NARRATION_STATUS_REQUIRED;
+end
+
 function AccountLogin_OnLoad(self)
 	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -31,9 +42,6 @@ function AccountLogin_OnLoad(self)
 	local year = date:sub(#date - 3, #date);
 	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
 
-	self.UI.MenuButton:SetScript("OnClick", GenerateFlatClosure(GlueMenuFrameUtil.ShowMenu));
-
-	local defaultText = nil;
 	self.UI.AccountsDropdown:SetWidth(234);
 
 	AccountLoginDropdown_SetupList();
@@ -150,6 +158,15 @@ function AccountLoginEditBox_OnKeyDown(self, key)
 	return false;
 end
 
+function AccountLoginEditBox_OnTextChanged(self)
+	local accountName = GetSavedAccountName();
+	if accountName ~= "" and accountName ~= self:GetText() then
+		SetSavedAccountName("");
+		ClearSavedAccountList();
+		AccountLogin_UpdateSavedData(AccountLogin);
+	end
+end
+
 function AccountLogin_OnKeyDown(self, key)
 	-- Reconnect button isn't an edit box, so can't respond to these on its own.
 	if key == "ENTER" then
@@ -213,6 +230,12 @@ function AccountLogin_OnEscapePressed(editBox)
 	return true;
 end
 
+function AccountLogin_OnEnterPressed()
+	if C_Login.IsLoginReady() then
+		AccountLogin_Login();
+	end
+end
+
 function AccountLogin_Exit()
 	QuitGame();
 end
@@ -233,6 +256,16 @@ end
 
 function AccountLogin_OnEditFocusLost(self, userAction)
 	self:HighlightText(0, 0);
+end
+
+AccountLoginMenuButtonMixin = {};
+
+function AccountLoginMenuButtonMixin:OnClick()
+	GlueMenuFrameUtil.ShowMenu();
+end
+
+function AccountLoginMenuButtonMixin:NarrationShouldIgnoreFocusReplay()
+	return true;
 end
 
 -- =============================================================
@@ -364,14 +397,14 @@ do
 	local function SetSelected(account)
 		selectedSavedAccount = account;
 	end
-	
+
 	function AccountLoginDropdown_SetupList()
 		-- This can be assigned nil if none of the accounts in the account list were selected.
 		-- See AccountLogin_GetSavedAccountList() above.
 		selectedSavedAccount = FindValueInTableIf(AccountLogin_GetSavedAccountList(), function(account)
 			return account.selected;
 		end);
-	
+
 		AccountLogin.UI.AccountsDropdown:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_ACCOUNT_LOGIN");
 

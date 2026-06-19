@@ -27,7 +27,56 @@ local PLAYER_UNITS = {
 
 CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
 
+TargetFramePrivateAuraAnchorMixin = {};
+
+function TargetFramePrivateAuraAnchorMixin:SetUnit(unit, auraIndex)
+	if self.anchorID then
+		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
+		self.anchorID = nil;
+	end
+
+	if unit then
+		local iconAnchor =
+		{
+			point = "CENTER",
+			relativeTo = self,
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		};
+
+		local privateAnchorArgs = {
+			unitToken = unit,
+			auraIndex = auraIndex,
+			parent = self,
+			showCooldownFrame = true,
+			showCooldownEdge = true,
+			showCountdownNumbers = false,
+			showDispelIcon = false,
+			isContainer = false,
+			iconInfo =
+			{
+				iconAnchor = iconAnchor,
+				iconWidth = LARGE_AURA_SIZE,
+				iconHeight = LARGE_AURA_SIZE,
+				borderScale = 1,
+			},
+			durationAnchor = durationAnchor;
+		};
+
+		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
+	end
+end
+
 TargetFrameMixin = {};
+
+local function TargetFrame_UpdateForClientScene(self, sceneType)
+	if sceneType == Enum.ClientSceneType.MinigameSceneType then
+		self:Hide();
+	else
+		self:Update();
+	end
+end
 
 function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.statusCounter = 0;
@@ -78,7 +127,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 
 	healthBar:SetBarText(targetFrameContentMain.HealthBarsContainer.HealthBarText, targetFrameContentMain.HealthBarsContainer.LeftText, targetFrameContentMain.HealthBarsContainer.RightText);
 
-	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
+	tempMaxHealthLossBar:InitializeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
 
 	local healthBarTexture = healthBar:GetStatusBarTexture();
 	healthBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);
@@ -95,9 +144,16 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	manaBarTexture:SetTexelSnappingBias(0);
 	manaBarTexture:SetSnapToPixelGrid(false);
 
+	self.TargetFrameContent.TargetFrameContentContextual.PingIconFrame:SetGUIDMatch(function(guid)
+		-- Boss frames should currently not show ping icons.
+		return not self.isBossFrame and guid == UnitGUID(self.unit);
+	end);
+
 	self:Update();
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("CLIENT_SCENE_OPENED");
+	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 	self:RegisterEvent("UNIT_HEALTH");
 	if ( self.showLevel ) then
 		self:RegisterEvent("UNIT_LEVEL");
@@ -115,6 +171,40 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
+
+	EventRegistry:RegisterCallback("EditMode.Enter", function()
+		self:UpdateAuras();
+	end, self);
+
+	EventRegistry:RegisterCallback("EditMode.Exit", function()
+		self:UpdateAuras();
+	end, self);
+
+	self:CreatePrivateAuraAnchors();
+end
+
+function TargetFrameMixin:CreatePrivateAuraAnchors()
+	assertsafe(self.PrivateAuraAnchors == nil, "Private aura anchors should only be created once.");
+	self.PrivateAuraAnchors = {};
+
+	for i = 1, 5 do
+		local paFrame = CreateFrame("Frame", nil, self);
+		Mixin(paFrame, TargetFramePrivateAuraAnchorMixin);
+		table.insert(self.PrivateAuraAnchors, paFrame);
+
+		paFrame:SetParentKey("PrivateAuraAnchor"..i);
+		paFrame:SetSize(LARGE_AURA_SIZE, LARGE_AURA_SIZE);
+	end
+
+	self:UpdatePrivateAuraAnchors();
+end
+
+function TargetFrameMixin:UpdatePrivateAuraAnchors()
+	assertsafe(self.PrivateAuraAnchors ~= nil, "Private aura anchors should exist before update.");
+
+	for i, anchor in ipairs(self.PrivateAuraAnchors) do
+		anchor:SetUnit(self.unit, i);
+	end
 end
 
 function TargetFrameMixin:Update()
@@ -158,10 +248,16 @@ function TargetFrameMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self:Update();
+	elseif (event == "CLIENT_SCENE_OPENED") then
+		local sceneType = ...;
+		TargetFrame_UpdateForClientScene(self, sceneType);
+	elseif (event == "CLIENT_SCENE_CLOSED") then
+		TargetFrame_UpdateForClientScene(self, nil);
 	elseif (event == "PLAYER_TARGET_CHANGED" ) then
 		-- Moved here to avoid taint from functions below
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
+		self:UpdatePrivateAuraAnchors();
 		self:UpdateAuras();
 
 		if (UnitExists(self.unit) and not C_PlayerInteractionManager.IsReplacingUnit()) then
@@ -173,18 +269,20 @@ function TargetFrameMixin:OnEvent(event, ...)
 				PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT);
 			end
 		end
+
+		self.TargetFrameContent.TargetFrameContentContextual.PingIconFrame:ClearPing();
 	elseif (event == "INSTANCE_ENCOUNTER_ENGAGE_UNIT") then
 		for i = 1, MAX_BOSS_FRAMES do
 			local bossTargetFrame = _G["Boss"..i.."TargetFrame"];
 			bossTargetFrame:Update();
 			bossTargetFrame:UpdateRaidTargetIcon(bossTargetFrame);
 		end
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 		BossTargetFrameContainer:UpdateShownState();
 	elseif (event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 	elseif (event == "UNIT_HEALTH") then
 		if (arg1 == self.unit) then
 			self:CheckDead();
@@ -237,14 +335,17 @@ function TargetFrameMixin:OnEvent(event, ...)
 			self:Show();
 			self:Update();
 			self:UpdateRaidTargetIcon(self);
+			self:UpdatePrivateAuraAnchors();
 			self:UpdateAuras();
 		else
 			self:Hide();
 		end
+
+		self.TargetFrameContent.TargetFrameContentContextual.PingIconFrame:ClearPing();
 	end
 end
 
-function TargetFrameMixin:OnHide()
+function TargetFrameMixin:OnHide_TargetFrame()
 	-- "Soft" target changes should not cause this sound to play
 	if (not IsTargetLoose()) then
 		local forceNoDuplicates = true;
@@ -633,7 +734,7 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	numBuffs = math.min(maxBuffs, self.activeBuffs:Size());
 
 	local maxDebuffs = math.min(self.maxDebuffs or MAX_TARGET_DEBUFFS, MAX_TARGET_DEBUFFS);
-	numDebuffs = math.min(maxDebuffs, self.activeDebuffs:Size());
+	numDebuffs = math.min(maxDebuffs, self.activeDebuffs:Size() + (self.PrivateAuraAnchors and #self.PrivateAuraAnchors or 0));
 
 	self.auraRows = 0;
 	local mirrorAurasVertically = false;
@@ -645,13 +746,19 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 		haveTargetofTarget = self.totFrame:IsShown();
 	end
 	self.spellbarAnchor = nil;
+
+	-- Clear the points on the anchor utility frames before beginning to anchor to them
+	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
+	targetFrameContentContextual.buffs:ClearAllPoints();
+	targetFrameContentContextual.debuffs:ClearAllPoints();
+
 	local maxRowWidth;
 	-- update buff positions
 	maxRowWidth = (haveTargetofTarget and self.TOT_AURA_ROW_WIDTH) or AURA_ROW_WIDTH;
 	self:UpdateAuraFrames(self.activeBuffs, numBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically, "TargetBuffFrameTemplate");
 	-- update debuff positions
 	maxRowWidth = (haveTargetofTarget and self.auraRows < NUM_TOT_AURA_ROWS and self.TOT_AURA_ROW_WIDTH) or AURA_ROW_WIDTH;
-	self:UpdateAuraFrames(self.activeDebuffs, numDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically, "TargetDebuffFrameTemplate");
+	self:UpdateAuraFrames(self.activeDebuffs, numDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically, "TargetDebuffFrameTemplate", self.PrivateAuraAnchors);
 	-- update the spell bar position
 	if self.spellbar ~= nil then
 		self.spellbar:AdjustPosition();
@@ -795,11 +902,13 @@ function TargetFrame_UpdateDebuffAnchor(self, buff, index, numBuffs, anchorBuff,
 	buff:SetWidth(size);
 	buff:SetHeight(size);
 	local buffBorder = buff.Border;
-	buffBorder:SetWidth(size+2);
-	buffBorder:SetHeight(size+2);
+	if buffBorder then
+		buffBorder:SetWidth(size+2);
+		buffBorder:SetHeight(size+2);
+	end
 end
 
-function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically, template)
+function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically, template, privateAuraAnchors)
 	-- a lot of this complexity is in place to allow the auras to wrap around the target of target frame if it's shown
 
 	-- Position auras
@@ -811,21 +920,28 @@ function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras,
 	local firstIndexOnRow = 1;
 	local firstBuffOnRow;
 	local lastBuff;
-	auraList:Iterate(function(auraInstanceID, aura)
+
+	local function AnchorSingleAuraFrame(aura, privateAuraAnchor)
 		i = i + 1;
 		if i > numAuras then
 			return true;
 		end
-		local pool = self.auraPools:GetPool(template);
-		local frame = pool:Acquire();
-		setupFunc(frame, aura);
 
-		-- update size and offset info based on large aura status
-		if ShouldAuraBeLarge(aura.sourceUnit) then
-			size = LARGE_AURA_SIZE;
-			offsetY = AURA_OFFSET_Y + AURA_OFFSET_Y;
-		else
-			size = SMALL_AURA_SIZE;
+		local frame = privateAuraAnchor;
+		size = LARGE_AURA_SIZE;
+
+		if aura and not privateAuraAnchor then
+			local pool = self.auraPools:GetPool(template);
+			frame = pool:Acquire();
+			setupFunc(frame, aura);
+
+			-- update size and offset info based on large aura status
+			if ShouldAuraBeLarge(aura.sourceUnit) then
+				size = LARGE_AURA_SIZE;
+				offsetY = AURA_OFFSET_Y + AURA_OFFSET_Y;
+			else
+				size = SMALL_AURA_SIZE;
+			end
 		end
 
 		-- anchor the current aura
@@ -858,7 +974,20 @@ function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras,
 
 		lastBuff = frame;
 		return false;
+	end
+
+
+	auraList:Iterate(function(auraInstanceID, aura)
+		return AnchorSingleAuraFrame(aura);
 	end);
+
+	if privateAuraAnchors then
+		for index, anchor in ipairs(privateAuraAnchors) do
+			if AnchorSingleAuraFrame(nil, anchor) then
+				break;
+			end
+		end
+	end
 end
 
 function TargetFrameMixin:HealthUpdate(elapsed, unit)
@@ -994,6 +1123,7 @@ end
 function TargetFrameMixin:CreateTargetofTarget(unit)
 	local thisName = self:GetName().."ToT";
 	local frame = CreateFrame("BUTTON", thisName, self, "TargetofTargetFrameTemplate");
+	frame:SetRolesets("unitFrames");
 	frame:SetFrameLevel(self:GetFrameLevel() + 5);
 	self.totFrame = frame;
 	UnitFrame_Initialize(frame, unit, frame.Name, frame.frameType, frame.Portrait,
@@ -1147,6 +1277,7 @@ end
 
 function TargetOfTargetMixin:OnShow()
 	local parent = self:GetParent();
+	parent:UpdatePrivateAuraAnchors();
 	parent:UpdateAuras();
 end
 
@@ -1354,12 +1485,12 @@ function BossTargetFrameContainerMixin:UpdateSize()
 	end
 
 	self:Layout();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function BossTargetFrameContainerMixin:OnShow()
 	LayoutMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self);
+	ManagedFrameMixin.OnShow(self);
 end
 
 function BossTargetFrameContainerMixin:SetSmallSize(smallSize)
@@ -1466,4 +1597,64 @@ function FocusFrameMixin:SetSmallSize(smallSize)
 
 	self:Update();
 	self:UpdateAuras();
+end
+
+TargetAuraFrameMixin = {};
+
+function TargetAuraFrameMixin:GetTooltipAPI()
+	-- override
+	assertsafe(false, "TargetAuraFrameMixin:GetTooltipAPI should be overridden by inheriting mixin");
+end
+
+function TargetAuraFrameMixin:CheckUpdateTooltip()
+	local tooltip, fn = self:GetTooltipAPI();
+	if tooltip:IsOwned(self) then
+		fn(tooltip, self.unit, self.auraInstanceID);
+	end
+end
+
+function TargetAuraFrameMixin:OnEnter()
+	local tooltip, fn = self:GetTooltipAPI();
+	tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
+	fn(tooltip, self.unit, self.auraInstanceID);
+
+	self:SetScript("OnUpdate", self.CheckUpdateTooltip);
+end
+
+function TargetAuraFrameMixin:OnLeave()
+	GameTooltip:Hide();
+
+	self:SetScript("OnUpdate", nil);
+end
+
+TargetDebuffFrameMixin = CreateFromMixins(TargetAuraFrameMixin);
+
+function TargetDebuffFrameMixin:GetTooltipAPI()
+	local tooltip = GetAppropriateTooltip();
+	return tooltip, tooltip.SetUnitDebuffByAuraInstanceID;
+end
+
+TargetBuffFrameMixin = CreateFromMixins(TargetAuraFrameMixin);
+
+function TargetBuffFrameMixin:GetTooltipAPI()
+	local tooltip = GetAppropriateTooltip();
+	return tooltip, tooltip.SetUnitBuffByAuraInstanceID;
+end
+
+TargetFrameInstanceMixin = {};
+
+function TargetFrameInstanceMixin:OnLoad_TargetFrameInstance()
+	self.showLevel = true;
+	self.showPVP = true;
+	self.showLeader = true;
+	self.showThreat = true;
+	self.showPortrait = true;
+	self.showClassification = true;
+	self.showAuraCount = true;
+	self:OnLoad("target", TargetFrame_OpenMenu);
+	self:CreateSpellbar("PLAYER_TARGET_CHANGED");
+	self:CreateTargetofTarget("targettarget");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self.threatNumericIndicator:SetScript("OnShow", function() self:UpdateAuras() end);
+	self.threatNumericIndicator:SetScript("OnHide", function() self:UpdateAuras() end);
 end

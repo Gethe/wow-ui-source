@@ -1,0 +1,3 @@
+## Title: middleclass
+## AllowLoad: Both
+middleclass.lua

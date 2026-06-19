@@ -3,10 +3,12 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 ## SavedVariables: g_auctionHouseSortsBySearchContext
+## SavedVariablesPerCharacter: g_auctionHouseFilters
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
-## Dependencies: Blizzard_Colors, Blizzard_HelpPlate
+## Dependencies: Blizzard_Colors, Blizzard_HelpPlate, Blizzard_ManagedFrameSystem
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Shared\Blizzard_AuctionHouseUI_Bootstrap.lua [Bootstrap]
 Shared\Blizzard_AuctionHouseUtil.lua
 Mainline\Blizzard_AuctionHouseUtil.lua
 Shared\Blizzard_AuctionData.lua

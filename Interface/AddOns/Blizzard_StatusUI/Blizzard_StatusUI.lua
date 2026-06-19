@@ -16,9 +16,9 @@ function StatusUIMixin:OnLoad()
 end
 
 function StatusUIMixin:OnShow()
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 end
 
 function StatusUIMixin:OnHide()
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 end

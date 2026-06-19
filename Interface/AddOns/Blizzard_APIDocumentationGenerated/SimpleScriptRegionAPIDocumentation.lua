@@ -49,6 +49,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "ClearScripts",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 			Documentation = { "Remove all script handlers set through Scripts in XML or SetScript in Lua" },
 
 			Arguments =
@@ -218,18 +219,20 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
+			RequiresSupportedScript = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "luaFunction", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
 			},
 		},
 		{
@@ -324,13 +327,20 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			RequiresAssignableScript = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -627,12 +637,14 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			RequiresAssignableScript = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = true },
 			},
 		},
 		{

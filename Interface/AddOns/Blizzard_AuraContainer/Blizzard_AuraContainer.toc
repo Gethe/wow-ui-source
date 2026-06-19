@@ -1,0 +1,19 @@
+## Title: Blizzard_AuraContainer
+## Dep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
+
+# XML files need to be loaded into the global environment in order to allow
+# intrinsics and templates to be instantiated by external code without making
+# their created objects implicitly forbidden. The Lua files must however be
+# loaded into the secure environment.
+
+Blizzard_AuraContainerShared.lua
+Blizzard_AuraContainer.lua
+Blizzard_AuraContainer.xml [LoadIntoEnvironment global]
+Blizzard_AuraButton.lua
+Blizzard_AuraButton.xml [LoadIntoEnvironment global]
+Blizzard_CustomAuraContainer.lua
+Blizzard_CustomAuraContainer.xml [LoadIntoEnvironment global]
+Blizzard_CustomAuraButton.lua
+Blizzard_CustomAuraButton.xml [LoadIntoEnvironment global]
+Blizzard_AuraContainerInbound.lua [LoadIntoEnvironment global]

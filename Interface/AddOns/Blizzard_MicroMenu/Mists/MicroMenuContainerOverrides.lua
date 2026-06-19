@@ -14,7 +14,6 @@ function MicroMenuMixin:GenerateButtonInfos()
 		MicroMenuUtil.GenerateButtonInfo(EJMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(StoreMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(MainMenuMicroButton),
-		MicroMenuUtil.GenerateButtonInfo(HelpMicroButton),
 	};
 
 	return buttonInfos;

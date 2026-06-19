@@ -14,7 +14,7 @@ local SecretPredicates =
 		{
 			Name = "RequiresDeclassifiedUnitIdentity",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 			Documentation = { "Guarded APIs and events require that callers have access to the identity of a supplied unit token." },
 		},
 		{
@@ -26,22 +26,22 @@ local SecretPredicates =
 		{
 			Name = "RequiresScriptObjectAlphaAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresScriptObjectDesaturationAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresStatusBarDesaturationAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 		},
 		{
 			Name = "RequiresUnitIdentityAccess",
 			Type = "Precondition",
-			FailureMode = "ReturnNothing",
+			FailureMode = "ReturnWithError",
 			Documentation = { "Guarded APIs and events require that callers have access to unit identity values. This does not raise a blocked action error - instead, protected APIs will return no values." },
 		},
 		{
@@ -102,7 +102,7 @@ local SecretPredicates =
 		{
 			Name = "SecretWhenUnitHealthMaxRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when the subject unit isn't player-controlled or in the party/raid." },
+			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled." },
 		},
 		{
 			Name = "SecretWhenUnitIdentityRestricted",
@@ -112,7 +112,7 @@ local SecretPredicates =
 		{
 			Name = "SecretWhenUnitPowerMaxRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when the subject unit isn't player-controlled or in the party/raid. Individual power types may be flagged as never or always secret, which takes priority." },
+			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled. Individual power types may be flagged as never or always secret, which takes priority." },
 		},
 		{
 			Name = "SecretWhenUnitPowerRestricted",

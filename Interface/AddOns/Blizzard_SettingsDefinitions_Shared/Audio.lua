@@ -355,7 +355,7 @@ local function InitVoiceSettings(category, layout)
 	do
 		local chatModeInitializer = nil;
 		do
-			local function GetOptionData(options)
+			local function GetOptionData()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(Enum.CommunicationMode.PushToTalk, PUSH_TO_TALK, OPTION_TOOLTIP_VOICE_TYPE1);
 				container:Add(Enum.CommunicationMode.OpenMic, OPEN_MIC, OPTION_TOOLTIP_VOICE_TYPE2);

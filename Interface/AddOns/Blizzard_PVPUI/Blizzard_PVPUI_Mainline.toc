@@ -3,8 +3,10 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## Dependencies: Blizzard_HelpPlate, Blizzard_GroupFinder, Blizzard_MatchmakingQueueDisplay
+## OptionalDeps: Blizzard_Plunderstorm
+## Dependencies: Blizzard_HelpPlate, Blizzard_GroupFinder, Blizzard_MatchmakingQueueDisplay, Blizzard_FrameXMLUtil
 ## AllowLoadGameType: mainline
+Mainline\Blizzard_PVPUI_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_PVPUI.lua
 Mainline\Blizzard_PVPUI.xml
 Localization.lua

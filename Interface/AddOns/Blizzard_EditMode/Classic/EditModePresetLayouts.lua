@@ -346,6 +346,18 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
 	[Enum.EditModeSystem.AuraFrame] = {
 		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
 			settings = {
@@ -492,6 +504,18 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativePoint = "RIGHT",
 			offsetX = 0,
 			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.RaidWarning] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -182,
 		},
 	},
 
@@ -843,6 +867,18 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
 	[Enum.EditModeSystem.AuraFrame] = {
 		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
 			settings = {
@@ -992,6 +1028,18 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.RaidWarning] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -182,
+		},
+	},
+
 	[Enum.EditModeSystem.TotemActionBar] = {
 		settings = {
 		},
@@ -1003,5 +1051,4 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			offsetY = 46,
 		},
 	},
-
 };

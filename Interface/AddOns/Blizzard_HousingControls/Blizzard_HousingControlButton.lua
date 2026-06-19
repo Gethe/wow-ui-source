@@ -116,8 +116,50 @@ function HouseExitButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
-	return C_Housing.IsInsideHouse() and C_HouseEditor.GetActiveHouseEditorMode() == Enum.HouseEditorMode.None;
+	return C_Housing.IsInsideHouse() and not C_HouseEditor.IsHouseEditorActive();
 end
+
+-- Inherits BaseHousingControlButtonMixin
+HousingBlueprintActionButtonMixin = {};
+
+function HousingBlueprintActionButtonMixin:OnClick()
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_HOUSING_BLUEPRINT_ACTION");
+		if C_HousingBlueprint.IsImportAvailable() then
+			rootDescription:CreateButton(HOUSING_CONTROLS_BLUEPRINT_IMPORT, function()
+				HousingFramesUtil.ShowBlueprintImport();
+			end);
+		end
+		
+		if C_HousingBlueprint.IsExportAvailable() then
+			rootDescription:CreateButton(HOUSING_CONTROLS_BLUEPRINT_EXPORT, function()
+				HousingFramesUtil.ShowBlueprintExport();
+			end);
+		end
+		
+	end);
+end
+
+function HousingBlueprintActionButtonMixin:IsActive()
+	return false;
+end
+
+function HousingBlueprintActionButtonMixin:CheckEnabled()
+	if Kiosk.IsEnabled() then
+		return false, ERR_SYSTEM_DISABLED;
+	end
+
+	if C_HouseEditor.IsHouseEditorActive() then
+		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_EDITOR;
+	end
+
+	if not C_HousingBlueprint.IsExportAvailable() and not C_HousingBlueprint.IsImportAvailable() then
+		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_PERMISSION;
+	end
+
+	return true;
+end
+
 
 -- Inherits BaseHousingControlButtonMixin
 HouseInfoButtonMixin = {};
@@ -205,3 +247,4 @@ function HouseSettingsButtonMixin:CheckEnabled()
 
 	return canActivate, errorText;
 end
+

@@ -180,7 +180,7 @@ local function Register()
 		};
 
 		local function CreateTimeStampOption(container, format)
-			local label = BetterDate(format, time(exampleTime));
+			local label = TimeUtil.BetterDate(format, time(exampleTime));
 			container:Add(format, label);
 		end
 
@@ -266,6 +266,65 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
+
+	-- Discord
+	do
+		-- Discord OAuth Button
+		local function OnAuthButtonClick()
+			if not C_Discord.IsUserOAuthed() then
+				C_Discord.Authorize();
+			end
+		end
+		local function GetAuthButtonName()
+			if(C_Discord.IsUserOAuthed()) then
+				return SOCIAL_DISCORD_DISCONNECT;
+			else
+				return SOCIAL_DISCORD_SIGN_IN;
+			end
+		end
+		local tooltipFn = function()
+			if(C_Discord.IsUserOAuthed()) then
+				return OPTION_TOOLTIP_SOCIAL_DISCONNECT_DISCORD;
+			else
+				return OPTION_TOOLTIP_SOCIAL_ENABLE_DISCORD_FUNCTIONALITY;
+			end
+		end
+		local function SetButtonName(button)
+			button:SetText(GetAuthButtonName());
+		end
+		local function IsDiscordSettingsAllowed()
+			return C_Discord.IsEnabled();
+		end
+		
+
+		local addSearchTags = true;
+		local newTagID = "SOCIAL_ENABLE_DISCORD_FUNCTIONALITY";
+		local newTagName = "";
+		if(SOCIAL_ENABLE_DISCORD_FUNCTIONALITY) then -- might be encrypted
+			newTagName = string.format(SOCIAL_ENABLE_DISCORD_FUNCTIONALITY, CreateAtlasMarkup("UI-ChatIcon-Discord"));
+		end
+		local discordAuthInitializer = CreateSettingsButtonInitializer(newTagName, GetAuthButtonName, OnAuthButtonClick, tooltipFn, addSearchTags, newTagID, SetButtonName, "DISCORD_LINK_UPDATE");
+		discordAuthInitializer:AddShownPredicate(IsDiscordSettingsAllowed);
+		discordAuthInitializer:AddEvaluateStateFrameEvent("DISCORD_LINK_UPDATE");
+		layout:AddInitializer(discordAuthInitializer);
+
+		-- Discord Display Name
+		local function GetDisplayNameOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, SOCIAL_DISCORD_DISPLAY_NAME_OPTION_DEFAULT, OPTION_TOOLTIP_SOCIAL_DISCORD_DISPLAY_NAME_OPTION_DEFAULT);
+			container:Add(1, SOCIAL_DISCORD_DISPLAY_NAME_OPTION_LAST_ONLINE, OPTION_TOOLTIP_SOCIAL_DISCORD_DISPLAY_NAME_OPTION_LAST_ONLINE);
+			container:Add(2, SOCIAL_DISCORD_DISPLAY_NAME_OPTION_GLOBAL_NAME, OPTION_TOOLTIP_SOCIAL_DISCORD_DISPLAY_NAME_OPTION_GLOBAL_NAME);
+			return container:GetData();
+		end
+		local function IsDisplayNameModifiable()
+			return C_Discord.IsUserOAuthed();
+		end
+		local _, displayNameInitializer = Settings.SetupCVarDropdown(category, "discordDisplayName", Settings.VarType.Number, GetDisplayNameOptions, SOCIAL_DISCORD_DISPLAY_NAME or "", OPTION_TOOLTIP_SOCIAL_DISCORD_DISPLAY_NAME or "");
+		displayNameInitializer:SetParentInitializer(discordAuthInitializer, IsDisplayNameModifiable);
+		displayNameInitializer:AddShownPredicate(IsDiscordSettingsAllowed);
+		displayNameInitializer:AddEvaluateStateFrameEvent("DISCORD_LINK_UPDATE");
+	end
+	
 	SocialOverrides.AdjustSocialSettings(category);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);

@@ -1,7 +1,7 @@
 ## Title: Blizzard_HelpFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar, Blizzard_StaticPopup_Game, Blizzard_UIParent
+## Dependencies: Blizzard_MicroMenu, Blizzard_ActionBar, Blizzard_StaticPopup_Game, Blizzard_GameMenuEsc
 ## AllowLoad: Game
 HelpFrame.lua
 HelpFrame.xml

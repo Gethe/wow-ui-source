@@ -10,6 +10,19 @@ local FrameEvents =
 
 LootFrameMixin = {};
 
+function LootFrame_EscapePressed()
+	if LootFrame:IsShown() then
+		LootFrame:Hide();
+		return true;
+	end
+
+	return false;
+end
+
+-- Loot can be shown outside the UIPanel manager (for example loot-under-mouse),
+-- so keep an explicit ESC handler after CloseAllWindows for the remaining cases.
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOnPost2, LootFrame_EscapePressed);
+
 function LootFrameMixin:OnLoad()
 	ScrollingFlatPanelMixin.OnLoad(self);
 	EditModeSystemMixin.OnSystemLoad(self);
@@ -143,7 +156,7 @@ function LootFrameMixin:Open()
 	for slotIndex = 1, GetNumLootItems() do
 		local texture, item, quantity, currencyID, itemQuality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);
 
-		if currencyID then 
+		if currencyID then
 			item, texture, quantity, itemQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, itemQuality);
 		end
 
@@ -249,7 +262,7 @@ end
 function LootFrameElementMixin:Init()
 	local slotIndex = self:GetSlotIndex();
 	local texture, item, quantity, currencyID, itemQuality, locked, isQuestItem, questID, isActive = GetLootSlotInfo(slotIndex);
-	if currencyID then 
+	if currencyID then
 		item, texture, quantity, itemQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, itemQuality);
 	end
 

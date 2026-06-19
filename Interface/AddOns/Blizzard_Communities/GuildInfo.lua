@@ -188,7 +188,7 @@ function CommunitiesGuildLogFrame_Update(self)
 			msg = format(GUILDEVENT_TYPE_QUIT, player1);
 		end
 		if ( msg ) then
-			buffer = buffer..msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)).."|n";
+			buffer = buffer..msg..GUILD_BANK_LOG_TIME:format(TimeUtil.GetRecentTimeDate(year, month, day, hour)).."|n";
 		end
 	end
 	self.Container.ScrollFrame.Child.HTMLFrame:SetText(buffer);
