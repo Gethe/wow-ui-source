@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="LossOfControlFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" mixin="LossOfControlMixin">
+	<Frame name="LossOfControlFrame" inherits="EditModeLossOfControlSystemTemplate" mixin="LossOfControlMixin" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
 		<Size x="256" y="58"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>

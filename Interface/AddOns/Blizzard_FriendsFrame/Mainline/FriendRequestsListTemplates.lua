@@ -30,6 +30,7 @@ function FriendRequestsListSocialViewMixin:OnLoad()
 end
 
 function FriendRequestsListSocialViewMixin:InitializeActionButton()
+	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_FRIEND_REQUESTS_ADD_FRIEND_BUTTON_LABEL);
 end
 
@@ -110,7 +111,9 @@ function FriendRequestsListSocialViewMixin:InitializeScrollBox()
 end
 
 function FriendRequestsListSocialViewMixin:InitializeRealIDWarning()
-	self.RealIDWarning.ContinueButton:SetScript("OnClick", function()
+	self.RealIDWarning.ContinueButton:SetScript("OnClick", function(button)
+		SocialUIActionButtonMixin.OnClick(button);
+
 		SetCVar("pendingInviteInfoShown", 1);
 		self:RefreshRealIDWarningVisibility();
 	end);
@@ -152,6 +155,8 @@ local function InsertFriendRequestsIntoDataProvider(dataProvider)
 end
 
 function FriendRequestsListSocialViewMixin:Refresh(retainScrollPosition)
+	self:RefreshActionButtonEnabledState();
+
 	self:ClearTemplateExtentCache();
 	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), retainScrollPosition);
 

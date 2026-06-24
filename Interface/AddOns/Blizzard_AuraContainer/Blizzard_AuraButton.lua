@@ -9,6 +9,18 @@ function AuraButtonPrivateMixin:OnLoad_Intrinsic()
 	self.unitToken = nil;
 end
 
+function AuraButtonPrivateMixin:OnEnter_Intrinsic(_isFromMouseMotion)
+	self:ShowTooltip();
+end
+
+function AuraButtonPrivateMixin:OnLeave_Intrinsic(_isFromMouseMotion)
+	self:HideTooltip();
+end
+
+function AuraButtonPrivateMixin:OnUpdate_Intrinsic(_elapsedTime)
+	self:UpdateTooltip();
+end
+
 function AuraButtonPrivateMixin:OnAuraInstanceAssigned(_unitToken, _auraData)
 	-- Override in a derived mixin to be notified when this button should set
 	-- up display for a new or potentially fully-updated aura instance.
@@ -88,6 +100,33 @@ end
 
 function AuraButtonPrivateMixin:UpdateAuraDisplay()
 	-- Override in a derived mixin to apply a full update to the aura.
+end
+
+function AuraButtonPrivateMixin:ShowTooltip()
+	local unitToken, auraData = self:GetAuraInstance();
+
+	if auraData then
+		AuraButtonTooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Layout));
+		AuraButtonTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		RaiseFrameLevelByTwo(AuraButtonTooltip);
+		self:PopulateTooltip(unitToken, auraData);
+		self:SetOnUpdateMode(Enum.OnUpdateMode.RunWhenVisible);
+	end
+end
+
+function AuraButtonPrivateMixin:PopulateTooltip(unitToken, auraData)
+	AuraButtonTooltip:ShowAuraTooltip(unitToken, auraData);
+end
+
+function AuraButtonPrivateMixin:HideTooltip()
+	AuraButtonTooltip:Hide();
+	self:SetOnUpdateMode(Enum.OnUpdateMode.Disabled);
+end
+
+function AuraButtonPrivateMixin:UpdateTooltip()
+	if AuraButtonTooltip:IsOwned(self) then
+		self:PopulateTooltip(self:GetAuraInstance());
+	end
 end
 
 local AuraButtonInboundMixin = {};

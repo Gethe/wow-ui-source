@@ -54,6 +54,10 @@ function HousingBlueprintRenameFrameMixin:ShowForBlueprint(blueprintInfo)
 	self:MarkDirty();
 end
 
+function HousingBlueprintRenameFrameMixin:IsShowingBlueprint(shareCode)
+	return self.blueprintInfo and self.blueprintInfo.shareCode == shareCode;
+end
+
 function HousingBlueprintRenameFrameMixin:ClearData()
 	self.blueprintInfo = nil;
 	self.isWaitingForResult = nil;

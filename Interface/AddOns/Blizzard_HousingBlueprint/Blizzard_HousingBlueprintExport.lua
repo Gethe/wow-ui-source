@@ -75,13 +75,17 @@ function HousingBlueprintExportFrameMixin:OnSaveClicked()
 	self:UpdateLoadingState(--[[isWaitingForResult=]]true);
 	local selectedType, nameText = self.InputContent:GetInputValues();
 
-	C_HouseEditor.LeaveHouseEditor();
-
 	if selectedType == Enum.HousingBlueprintType.Room then
 		local roomGUID = self.roomGUID or C_HousingLayout.GetRoomPlayerIsIn();
 		C_HousingBlueprint.ExportRoomBlueprint(nameText, roomGUID);
 	else
 		C_HousingBlueprint.ExportBlueprint(selectedType, nameText);
+	end
+end
+
+function HousingBlueprintExportFrameMixin:OnCollectionButtonClicked()
+	if HousingFramesUtil.TryOpenBlueprintCollection() then
+		self:HideSelf();
 	end
 end
 
@@ -253,9 +257,11 @@ function HousingBlueprintExportSuccessContentMixin:OnLoad()
 		ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
 	end);
 
-	-- TODO: Implement blueprint collection UI
+	self.BlueprintsCollectionButton:SetScript("OnClick", function()
+		self:GetParent():OnCollectionButtonClicked();
+	end);
+
 	self.BlueprintsCollectionButton:Disable();
-	self.BlueprintsCollectionButton:SetDisabledTooltip("Not yet implemented", "ANCHOR_BOTTOM");
 
 	self.ChatLinkButton:SetScript("OnClick", function()
 		local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(self.ShareCodeBox.EditBox:GetText());
@@ -263,6 +269,15 @@ function HousingBlueprintExportSuccessContentMixin:OnLoad()
 			ChatFrameUtil.OpenChat(blueprintLink);
 		end
 	end);
+end
+
+function HousingBlueprintExportSuccessContentMixin:OnShow()
+	if HousingFramesUtil.IsBlueprintCollectionAvailable() then
+		self.BlueprintsCollectionButton:Enable();
+	else
+		self.BlueprintsCollectionButton:Disable();
+		self.BlueprintsCollectionButton:SetDisabledTooltip(HOUSING_BLUEPRINT_EXPORT_BLUEPRINTS_COLLECTION_BUTTON_DISABLED, "ANCHOR_BOTTOM");
+	end
 end
 
 function HousingBlueprintExportSuccessContentMixin:SetData(savedName, shareCode)

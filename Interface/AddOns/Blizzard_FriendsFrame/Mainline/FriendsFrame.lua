@@ -2733,3 +2733,21 @@ end
 function ContactsMenuMixin:OnLeave()
 	GameTooltip:Hide();
 end
+
+FriendsFrameAddFriendButtonMixin = {};
+
+function FriendsFrameAddFriendButtonMixin:OnClick()
+	AddFriendFrame_Show();
+end
+
+function FriendsFrameAddFriendButtonMixin:OnEnter()
+	if self.disableTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 6, 0);
+		GameTooltip_AddErrorLine(GameTooltip, self.disableTooltip);
+		GameTooltip:Show();
+	end
+end
+
+function FriendsFrameAddFriendButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end

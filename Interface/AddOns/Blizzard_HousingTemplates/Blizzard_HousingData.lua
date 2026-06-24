@@ -9,6 +9,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.BlueprintNotFound] = ERR_HOUSING_RESULT_BLUEPRINT_NOT_FOUND,
 	[Enum.HousingResult.BlueprintTypeInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_TYPE_INVALID,
 	[Enum.HousingResult.BlueprintRequirementsUnmet] = ERR_HOUSING_RESULT_BLUEPRINT_REQUIREMENTS_UNMET,
+	[Enum.HousingResult.BlueprintRoomPlacementRequired] = ERR_HOUSING_RESULT_BLUEPRINT_ROOM_PLACEMENT_REQUIRED,
 	[Enum.HousingResult.BlueprintStorageLimit] = ERR_HOUSING_RESULT_BLUEPRINT_STORAGE_LIMIT,
 	[Enum.HousingResult.BlueprintVersionInvalid] = ERR_HOUSING_RESULT_BLUEPRINT_VERSION_INVALID,
 	[Enum.HousingResult.BoundsFailureChildren] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT,

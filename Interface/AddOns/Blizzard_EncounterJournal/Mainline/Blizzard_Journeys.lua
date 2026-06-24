@@ -829,7 +829,7 @@ function JourneyOverviewHighlightsFrameMixin:DisplayHighlights()
 		highlightFrame.HighlightTitle:SetText(highlight.title);
 		highlightFrame.HighlightDescription:SetText(highlight.description);
 		if highlight.level > 0 then
-			highlightFrame.HighlightLevel:SetText(JOURNEYS_LEVEL_LABEL:format(highlight.level));
+			highlightFrame.HighlightLevel:SetText(JOURNEYS_HIGHLIGHT_LEVEL_LABEL:format(highlight.level));
 		else
 			highlightFrame.HighlightLevel:SetText("");
 		end

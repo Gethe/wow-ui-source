@@ -1402,6 +1402,21 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	{
 
 	},
+
+	[Enum.EditModeSystem.LossOfControl] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeLossOfControlSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_LOSS_OF_CONTROL_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

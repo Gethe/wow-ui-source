@@ -1,18 +1,73 @@
-SocialUIActionButtonMixin = {}
+SocialUIActionButtonMixin = {};
 
 function SocialUIActionButtonMixin:OnEnter()
-	if self.disableTooltip then
-		local tooltip = GetAppropriateTooltip();
-		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddErrorLine(tooltip, self.disableTooltip);
-		tooltip:Show();
+	self:TryShowTooltip();
+end
+
+function SocialUIActionButtonMixin:TryShowTooltip()
+	if not self:IsEnabled() then
+		self:ShowDisabledTooltip();
+		return;
 	end
+
+	self:ShowTooltip();
+end
+
+function SocialUIActionButtonMixin:ShowDisabledTooltip()
+	-- Optionally override in your mixin
+end
+
+function SocialUIActionButtonMixin:ShowTooltip()
+	-- Optionally override in your mixin
 end
 
 function SocialUIActionButtonMixin:OnLeave()
-	GetAppropriateTooltip():Hide()
+	self:TryHideTooltip();
 end
 
+function SocialUIActionButtonMixin:OnClick(...)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:PerformClickAction(...);
+end
+
+function SocialUIActionButtonMixin:PerformClickAction(...)
+	-- Optionally override in your mixin
+end
+
+function SocialUIActionButtonMixin:TryHideTooltip()
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:IsOwned(self) then
+		tooltip:Hide();
+	end
+end
+
+function SocialUIActionButtonMixin:RefreshEnabledState()
+	local isEnabled = self:IsActionEnabled();
+	self:SetEnabled(isEnabled);
+end
+
+function SocialUIActionButtonMixin:IsActionEnabled()
+	-- Optionally override in your mixin
+	return true;
+end
+
+SocialUIAddFriendButtonMixin = CreateFromMixins(SocialUIActionButtonMixin);
+
+function SocialUIAddFriendButtonMixin:IsActionEnabled()
+	local isFriendsEnabled = not C_SocialRestrictions.IsFriendsDisabled();
+	return isFriendsEnabled;
+end
+
+function SocialUIAddFriendButtonMixin:ShowDisabledTooltip()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddErrorLine(tooltip, ADDING_FRIENDS_DISABLED);
+	tooltip:Show();
+end
+
+function SocialUIAddFriendButtonMixin:PerformClickAction(...)
+	AddFriendFrame_Show();
+end
 
 SocialUISearchBoxMixin = {};
 
@@ -47,6 +102,10 @@ end
 
 SocialUIContactsFrameMixin = {};
 
+function SocialUIContactsFrameMixin:RefreshActionButtonEnabledState()
+	self.ActionButton:RefreshEnabledState();
+end
+
 function SocialUIContactsFrameMixin:SetLoadingSpinnerShown(shown)
 	if not self.FriendsDisabledText:IsShown() then
 		self.LoadingSpinner:SetShown(shown);
@@ -63,20 +122,10 @@ function SocialUIContactsFrameInitializeAADC(tabData)
 		frame.ScrollBar:Hide();
 		frame.FriendsDisabledText:SetText(SOCIAL_TAB_UNAVAILABLE:format(tabData.tabName));
 		frame.FriendsDisabledText:Show();
-
-		if frame.ActionButton then
-			frame.ActionButton:SetEnabled(false);
-			frame.ActionButton.disableTooltip = ADDING_FRIENDS_DISABLED;
-		end
 	else
 		frame.ScrollBox:Show();
 		frame.ScrollBar:Show();
 		frame.FriendsDisabledText:Hide();
-		
-		if frame.ActionButton then
-			frame.ActionButton:SetEnabled(true);
-			frame.ActionButton.disableTooltip = nil;
-		end
 	end
 end
 

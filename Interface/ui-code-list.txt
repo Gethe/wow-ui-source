@@ -355,6 +355,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\PingManagerSecureDocumentati
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PingManagerSharedDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PingPinFrameAPIDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PlatformDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\PlayerChoiceConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PlayerChoiceDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PlayerDataConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\PlayerDocumentation.lua
@@ -714,6 +715,9 @@ Interface\AddOns\Blizzard_ActionStatus\Classic\ActionStatus.lua
 Interface\AddOns\Blizzard_ActionStatus\Classic\ActionStatus.xml
 Interface\AddOns\Blizzard_ActionStatus\Mainline\ActionStatus.lua
 Interface\AddOns\Blizzard_ActionStatus\Mainline\ActionStatus.xml
+Interface\AddOns\Blizzard_AddFriend\AddFriendTemplates.lua
+Interface\AddOns\Blizzard_AddFriend\AddFriendTemplates.xml
+Interface\AddOns\Blizzard_AddFriend\Blizzard_AddFriend.toc
 Interface\AddOns\Blizzard_AddOnList\AddonList.lua
 Interface\AddOns\Blizzard_AddOnList\AddonList.xml
 Interface\AddOns\Blizzard_AddOnList\Blizzard_AddOnList.toc
@@ -846,6 +850,8 @@ Interface\AddOns\Blizzard_AuraContainer\Blizzard_CustomAuraButton.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_CustomAuraButton.xml
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_CustomAuraContainer.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_CustomAuraContainer.xml
+Interface\AddOns\Blizzard_AuraContainer\Classic\Blizzard_AuraButtonTooltip.xml
+Interface\AddOns\Blizzard_AuraContainer\Mainline\Blizzard_AuraButtonTooltip.xml
 Interface\AddOns\Blizzard_AuthChallengeUI\Blizzard_AuthChallengeUI.lua
 Interface\AddOns\Blizzard_AuthChallengeUI\Blizzard_AuthChallengeUI.toc
 Interface\AddOns\Blizzard_AuthChallengeUI\Blizzard_AuthChallengeUI.xml
@@ -1795,8 +1801,6 @@ Interface\AddOns\Blizzard_FramerateFrame\Classic\FramerateFrame.xml
 Interface\AddOns\Blizzard_FramerateFrame\Mainline\FramerateFrame.lua
 Interface\AddOns\Blizzard_FramerateFrame\Mainline\FramerateFrame.xml
 Interface\AddOns\Blizzard_FriendsFrame\Blizzard_FriendsFrame.toc
-Interface\AddOns\Blizzard_FriendsFrame\Mainline\AddFriendTemplates.lua
-Interface\AddOns\Blizzard_FriendsFrame\Mainline\AddFriendTemplates.xml
 Interface\AddOns\Blizzard_FriendsFrame\Mainline\FriendRequestsListTemplates.lua
 Interface\AddOns\Blizzard_FriendsFrame\Mainline\FriendRequestsListTemplates.xml
 Interface\AddOns\Blizzard_FriendsFrame\Mainline\FriendsFrame.lua

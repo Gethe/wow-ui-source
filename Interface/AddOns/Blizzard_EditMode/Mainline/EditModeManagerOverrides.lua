@@ -38,6 +38,7 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshEncounterEvents();
 	self:RefreshDamageMeter();
 	self:RefreshRaidWarning();
+	self:RefreshLossOfControl();
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()

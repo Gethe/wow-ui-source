@@ -119,6 +119,7 @@
 	</Frame>
 
 	<Frame name="DecorPetCustomizationTemplate" mixin="DecorPetCustomizationMixin" enableMouse="true" virtual="true">
+		<Size x="270" y="170"/>
 		<Frames>
 			<Frame parentKey="AssignPetContainer">
 				<Size x="270" y="80"/>
@@ -156,6 +157,13 @@
 								<Anchor point="CENTER" relativeKey="$parent.PetIconSlot" />
 							</Anchors>
 						</Texture>
+						<FontString parentKey="PetApplyDescription" inherits="GameFontNormalSmall" text="HOUSING_DECOR_CUSTOMIZATION_PET_APPEAR" wordwrap="true">
+							<Size x="160"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.AssignPetContainer" relativePoint="BOTTOM" x="0" y="-45" />
+							</Anchors>
+							<Color r="0.8" g="0.8" b="0.8"/>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>

@@ -439,6 +439,7 @@ function RecentAlliesSocialViewMixin:OnLoad()
 end
 
 function RecentAlliesSocialViewMixin:InitializeActionButton()
+	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_RECENT_ALLIES_ADD_FRIEND_BUTTON_LABEL);
 end
 
@@ -553,6 +554,8 @@ function RecentAlliesSocialViewMixin:OnRecentAlliesTextScaleUpdated()
 end
 
 function RecentAlliesSocialViewMixin:Refresh(retainScrollPosition)
+	self:RefreshActionButtonEnabledState();
+
 	local dataReady = C_RecentAllies.IsRecentAllyDataReady();
 	self:SetLoadingSpinnerShown(not dataReady);
 	if not dataReady then

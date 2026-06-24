@@ -320,7 +320,9 @@ function DecorPetCustomizationMixin:SetPetID(petID)
 end
 
 function DecorPetCustomizationMixin:OnApply()
-	C_HousingCustomizeMode.ApplyPetToSelectedDecor(self.petID, self.selectedBehaviorType);
+	if self:IsShown() then 
+		C_HousingCustomizeMode.ApplyPetToSelectedDecor(self.petID, self.selectedBehaviorType);
+	end
 end
 
 function DecorPetCustomizationMixin:OnShow()

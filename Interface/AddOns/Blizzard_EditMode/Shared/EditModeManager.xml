@@ -403,6 +403,13 @@
 									<KeyValue key="advancedLayoutIndex" value="13" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="LossOfControl" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOSS_OF_CONTROL_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="14" type="number"/>
+								</KeyValues>
+							</Frame>
 
 							<!-- Misc Settings -->
 							<Frame parentKey="TalkingHeadFrame" inherits="EditModeManagerSettingCheckButtonTemplate">

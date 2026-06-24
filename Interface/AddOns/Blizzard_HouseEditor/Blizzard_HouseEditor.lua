@@ -131,7 +131,7 @@ end
 function HouseEditorFrameMixin:HandleEscape()
 	if not StaticPopup_EscapePressed() then
 		if not self.activeModeFrame or not self.activeModeFrame:TryHandleEscape() then
-			HousingFramesUtil.LeaveHouseEditor()
+			HousingFramesUtil.LeaveHouseEditor();
 		end
 	end
 end
@@ -161,4 +161,13 @@ end
 
 function HouseEditorFrameMixin:ExpandHouseStorage()
 	self.StoragePanel:SetCollapsed(false);
+end
+
+-- Expects a HousingFramesUtil.HouseChestTabs value
+function HouseEditorFrameMixin:TryShowHouseStorageTab(tabEnum)
+	local didSet = self.StoragePanel:TrySetTab(tabEnum);
+	if didSet then
+		self:ExpandHouseStorage();
+	end
+	return didSet;
 end

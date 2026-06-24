@@ -1,15 +1,22 @@
-SuperTrackWaypointDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
+SuperTrackWaypointDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin, DirtiableMixin);
+
+function SuperTrackWaypointDataProviderMixin:OnAdded(owningMap)
+	MapCanvasDataProviderMixin.OnAdded(self, owningMap);
+	self:SetDirtyMethod(self.RefreshAllData);
+end
 
 function SuperTrackWaypointDataProviderMixin:OnShow()
 	self:RegisterEvent("SUPER_TRACKING_PATH_UPDATED");
+	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function SuperTrackWaypointDataProviderMixin:OnHide()
 	self:UnregisterEvent("SUPER_TRACKING_PATH_UPDATED");
+	self:UnregisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function SuperTrackWaypointDataProviderMixin:OnEvent(event, ...)
-	self:RefreshAllData();
+	self:MarkDirty();
 end
 
 function SuperTrackWaypointDataProviderMixin:RemoveAllData()
@@ -29,7 +36,7 @@ do
 
 		if ShouldShowSuperTrackedWaypoint() then
 			local mapID = self:GetMap():GetMapID();
-			local x, y, waypointText = C_SuperTrack.GetNextWaypointForMap(mapID);
+			local x, y, waypointText = C_Navigation.GetNextWaypointForMap(mapID);
 			if x and y then
 				self.pin = self:GetMap():AcquirePin("SuperTrackWaypointPinTemplate", x, y, waypointText);
 			end

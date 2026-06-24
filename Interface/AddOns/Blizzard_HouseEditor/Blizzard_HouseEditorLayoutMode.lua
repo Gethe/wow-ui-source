@@ -55,7 +55,7 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED" then
 		local hasSelection = ...;
 		if hasSelection then
-			self:GetParent():ExpandHouseStorage();
+			self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
 		end
 		self:UpdateShownInstructions();
 	elseif event == "GLOBAL_MOUSE_UP" or event == "GLOBAL_MOUSE_DOWN" then
@@ -77,7 +77,15 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 		end
 	elseif event == "UPDATE_BINDINGS" then
 		self:UpdateKeybinds();
-	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
+		local anySelected, roomID, blueprintCode = ...;
+		if anySelected then
+			-- On selecting a floorplan, ensure the Storage UI is open to the proper tab
+			local tabEnum = blueprintCode and HousingFramesUtil.HouseChestTabs.Blueprints or HousingFramesUtil.HouseChestTabs.Storage;
+			self:GetParent():TryShowHouseStorageTab(tabEnum);
+		end
+		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
 		self:UpdateShownInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_RECEIVED" then
 		local prevNumFloors, currNumFloors, isUpStairs = ...;
@@ -110,6 +118,12 @@ function HouseEditorLayoutModeMixin:OnShow()
 	self:GetParent():ShowHouseStorage();
 	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorLayoutMode);
 	PlaySound(SOUNDKIT.HOUSING_ENTER_LAYOUT_MODE);
+
+	if C_HousingLayout.HasSelectedBlueprintFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+	elseif C_HousingLayout.HasSelectedDoor() or C_HousingLayout.HasSelectedFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
+	end
 end
 
 function HouseEditorLayoutModeMixin:OnHide()

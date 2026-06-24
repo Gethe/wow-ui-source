@@ -29,12 +29,14 @@ local function HousingBlueprintFrame_EscapePressed()
 	if HousingBlueprintExportFrame:TryHandleEscape() then
 		return true;
 	end
-
 	if HousingBlueprintImportFrame:TryHandleEscape() then
+		return true;
+	end
+	if HousingBlueprintRenameFrame:TryHandleEscape() then
 		return true;
 	end
 
 	return false;
 end
 
-RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, HousingBlueprintFrame_EscapePressed);
+RegisterGameMenuEscHandler(GameMenuEscPriority.FrameworkPre, HousingBlueprintFrame_EscapePressed);

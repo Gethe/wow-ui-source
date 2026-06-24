@@ -108,6 +108,17 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "GetSelectedBlueprintFloorplan",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "roomID", Type = "number", Nilable = false },
+				{ Name = "shareCode", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSelectedDoor",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -185,6 +196,15 @@ local HousingLayoutUI =
 			Returns =
 			{
 				{ Name = "hasBudget", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSelectedBlueprintFloorplan",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasSelectedBlueprintFloorplan", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -426,6 +446,7 @@ local HousingLayoutUI =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
 				{ Name = "roomID", Type = "number", Nilable = false },
+				{ Name = "blueprintShareCode", Type = "cstring", Nilable = true },
 			},
 		},
 		{

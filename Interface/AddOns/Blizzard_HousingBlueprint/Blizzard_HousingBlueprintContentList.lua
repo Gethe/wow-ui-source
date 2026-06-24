@@ -88,7 +88,7 @@ local function SortEntriesByName(nodeA, nodeB)
 	return strcmputf8i(elementA.name, elementB.name) < 0;
 end
 
-function HousingBlueprintContentListFrameMixin:IsShowingBlueprint(shareCode, houseGUID)
+function HousingBlueprintContentListFrameMixin:IsShowingBlueprintForTarget(shareCode, houseGUID)
 	if not self.blueprintContentInfo then
 		return false;
 	end
@@ -101,7 +101,7 @@ function HousingBlueprintContentListFrameMixin:IsOperationInProgress()
 end
 
 function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintContentInfo, isReadonly, isFilterUpdate)
-	local isDataUpdate = not isFilterUpdate and blueprintContentInfo and self:IsShowingBlueprint(blueprintContentInfo.shareCode, blueprintContentInfo.targetHouseGUID);
+	local isDataUpdate = not isFilterUpdate and blueprintContentInfo and self:IsShowingBlueprintForTarget(blueprintContentInfo.shareCode, blueprintContentInfo.targetHouseGUID);
 	self:ClearData();
 
 	if not blueprintContentInfo or not blueprintContentInfo.contentGroups then
@@ -169,7 +169,7 @@ function HousingBlueprintContentListFrameMixin:OnEvent(event, ...)
 
 	-- If the Import UI that opened this list is still open, then we can rely on it to respond to all of these events and update the list as needed
 	if HousingBlueprintImportFrame:IsShown() and HousingBlueprintImportFrame.ValidationContent:IsShown() 
-		and HousingBlueprintImportFrame.ValidationContent:IsShowingBlueprint(self.blueprintContentInfo.shareCode, self.blueprintContentInfo.targetHouseGUID) then
+		and HousingBlueprintImportFrame.ValidationContent:IsShowingBlueprintForTarget(self.blueprintContentInfo.shareCode, self.blueprintContentInfo.targetHouseGUID) then
 		return;
 	end
 
@@ -188,7 +188,7 @@ function HousingBlueprintContentListFrameMixin:OnEvent(event, ...)
 		self:OnContentRequestFailure(result);
 	elseif event == "HOUSING_BLUEPRINT_CONTENTS_RECEIVED" then
 		local contentInfo = ...;
-		if contentInfo and self:IsShowingBlueprint(contentInfo.shareCode, contentInfo.targetHouseGUID) then
+		if contentInfo and self:IsShowingBlueprintForTarget(contentInfo.shareCode, contentInfo.targetHouseGUID) then
 			self:ShowBlueprintContents(contentInfo, self.isReadonly);
 		end
 	end

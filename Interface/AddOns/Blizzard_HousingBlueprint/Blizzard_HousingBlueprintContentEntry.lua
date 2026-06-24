@@ -71,6 +71,14 @@ function HousingBlueprintContentEntryMixin:OnClick()
 	end
 end
 
+function HousingBlueprintContentEntryMixin:UpdateCursor()
+	if IsModifiedClick("DRESSUP") and self.entryData and self.entryData.contentType == Enum.HousingBlueprintContentType.Decor then
+		ShowInspectCursor();
+	else
+		ResetCursor();
+	end
+end
+
 function HousingBlueprintContentEntryMixin:OnEnter()
 	if not self.entryData then
 		return;
@@ -88,9 +96,13 @@ function HousingBlueprintContentEntryMixin:OnEnter()
 	else
 		GameTooltip:Hide();
 	end
+
+	self:SetScript("OnUpdate", function() self:UpdateCursor(); end);
+	self:UpdateCursor();
 end
 
 function HousingBlueprintContentEntryMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
 	if not self.entryData then
 		return;
 	end
@@ -99,6 +111,8 @@ function HousingBlueprintContentEntryMixin:OnLeave()
 	if GameTooltip:GetOwner() == self then
 		GameTooltip:Hide();
 	end
+
+	ResetCursor();
 end
 
 function HousingBlueprintContentEntryMixin:AddTypeSpecificTooltipTitle(tooltip)

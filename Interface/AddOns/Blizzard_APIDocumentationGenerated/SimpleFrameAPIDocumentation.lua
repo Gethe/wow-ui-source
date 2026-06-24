@@ -686,6 +686,7 @@ local SimpleFrameAPI =
 			Name = "Hide",
 			Type = "Function",
 			IsProtectedFunction = true,
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -740,6 +741,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -992,6 +994,7 @@ local SimpleFrameAPI =
 		{
 			Name = "RegisterAllEvents",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1001,6 +1004,7 @@ local SimpleFrameAPI =
 			Name = "RegisterEvent",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1016,6 +1020,7 @@ local SimpleFrameAPI =
 			Name = "RegisterEventCallback",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1042,6 +1047,7 @@ local SimpleFrameAPI =
 			Name = "RegisterUnitEvent",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1058,6 +1064,7 @@ local SimpleFrameAPI =
 			Name = "RegisterUnitEventCallback",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1293,6 +1300,7 @@ local SimpleFrameAPI =
 			Name = "SetHyperlinkPropagateToParent",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.UntrustedScriptExecution } },
 			Documentation = { "Enables or disables propagating hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) to this frame's parent." },
 
 			Arguments =
@@ -1449,6 +1457,7 @@ local SimpleFrameAPI =
 			IsProtectedFunction = true,
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Shown },
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -1502,6 +1511,7 @@ local SimpleFrameAPI =
 			Name = "Show",
 			Type = "Function",
 			IsProtectedFunction = true,
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -1550,6 +1560,7 @@ local SimpleFrameAPI =
 		{
 			Name = "UnregisterAllEvents",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1559,6 +1570,7 @@ local SimpleFrameAPI =
 			Name = "UnregisterEvent",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{

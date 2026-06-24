@@ -57,6 +57,7 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

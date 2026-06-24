@@ -31,9 +31,12 @@ local DISPLAY_TYPE_NONE = 0;
 
 LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
 
+local LOSS_OF_CONTROL_STUNNED_ICON = 135860;
+
 LossOfControlMixin = {};
 
 function LossOfControlMixin:OnLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
@@ -92,6 +95,10 @@ function LossOfControlMixin:OnEvent(event, ...)
 end
 
 function LossOfControlMixin:OnUpdate(elapsed)
+	if self.isInEditMode then
+		return;
+	end
+
 	FadingFrame_UpdateTextScaling(self.AbilityName, elapsed);
 	FadingFrame_UpdateTextScaling(self.TimeLeft.NumberText, elapsed);
 	FadingFrame_UpdateTextScaling(self.TimeLeft.SecondsText, elapsed);
@@ -125,11 +132,20 @@ function LossOfControlMixin:OnHide()
 	self.priority = nil;
 end
 
+function LossOfControlMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function LossOfControlMixin:UpdateShownState()
+	self:UpdateDisplay();
+end
+
 function LossOfControlMixin:SetUpDisplay(animate, data)
 	if ( not data ) then
 		data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
 	end
-	
+
 	local locType = data.locType;
 	local spellID = data.spellID;
 	local text = data.displayText;
@@ -195,6 +211,18 @@ function LossOfControlMixin:SetUpDisplay(animate, data)
 end
 
 function LossOfControlMixin:UpdateDisplay()
+	if self.isInEditMode then
+		-- Fake data for edit mode.
+		local editModeData = {
+			displayText = LOSS_OF_CONTROL_DISPLAY_STUN,
+			iconTexture = LOSS_OF_CONTROL_STUNNED_ICON,
+			timeRemaining = 67,
+		};
+
+		self:SetUpDisplay(false, editModeData);
+		return;
+	end
+
 	-- if displaying an alert, wait for it to go away on its own
 	if ( self.fadeTime ) then
 		return;

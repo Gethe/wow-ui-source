@@ -18,6 +18,7 @@ function FriendsListSocialViewMixin:OnLoad()
 end
 
 function FriendsListSocialViewMixin:InitializeActionButton()
+	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_FRIENDS_LIST_ADD_FRIEND_BUTTON_LABEL);
 end
 
@@ -235,6 +236,8 @@ function FriendsListSocialViewMixin:TrySwitchFriendsFriendsTarget(node)
 end
 
 function FriendsListSocialViewMixin:Refresh(retainScrollPosition)
+	self:RefreshActionButtonEnabledState();
+
 	self:ClearTemplateExtentCache();
 	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), retainScrollPosition);
 end

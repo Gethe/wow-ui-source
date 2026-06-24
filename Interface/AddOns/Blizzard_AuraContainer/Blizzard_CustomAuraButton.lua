@@ -1,11 +1,5 @@
 local _addonName, addonTbl = ...;
 
-local function RequireObjectIsNotForbidden(object)
-	if object:IsForbidden() then
-		error(string.format("bad object '%s' in function call (must not be a forbidden object)", object:GetDebugName()));
-	end
-end
-
 local function RequireObjectType(requiredType)
 	return function(object)
 		if not object:IsObjectType(requiredType) then
@@ -14,16 +8,29 @@ local function RequireObjectType(requiredType)
 	end
 end
 
-local function GetValidatedForbiddenObjectTable(inboundObject, ...)
-	local forbiddenObject = GetForbiddenObjectTable(inboundObject);
-	RequireObjectIsNotForbidden(inboundObject);
+local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
+	inboundObject = GetForbiddenObjectTable(inboundObject);
+
+	if inboundObject:IsForbidden() then
+		error(string.format("bad object '%s' in function call (must not be a forbidden object)", inboundObject:GetDebugName()));
+	end
+
+	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Parent)) then
+		-- This can error when attempting to attach a region that isn't parented to an aura button.
+		error(string.format("bad object '%s' in function call (must inherit all forbidden parent aspects from owner)", inboundObject:GetDebugName()));
+	end
+
+	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Layout)) then
+		-- This can error when attempting to attach a region that isn't anchored to an aura button.
+		error(string.format("bad object '%s' in function call (must inherit all forbidden layout aspects from owner)", inboundObject:GetDebugName()));
+	end
 
 	local function ApplyToForbiddenObject(validationFunc)
-		validationFunc(forbiddenObject);
+		validationFunc(inboundObject);
 	end
 
 	mapvalues(ApplyToForbiddenObject, ...);
-	return forbiddenObject;
+	return inboundObject;
 end
 
 local CustomAuraButtonPrivateMixin = CreateFromMixins(addonTbl.AuraButtonPrivateMixin);
@@ -62,6 +69,48 @@ function CustomAuraButtonPrivateMixin:ApplyApplicationCount(auraData)
 		end
 
 		self.ApplicationCount:SetText(secretwrap(text));
+	end
+end
+
+local function ShouldShowDispelTypeForAura(auraBorder, auraData)
+	if not auraData then
+		return false;
+	elseif auraData.isHarmful and not auraBorder.showWhenHarmful then
+		return false;
+	elseif auraData.isHelpful and not auraBorder.showWhenHelpful then
+		return false;
+	end
+
+	return true;
+end
+
+function CustomAuraButtonPrivateMixin:ApplyAuraBorder(auraData)
+	if self.AuraBorder then
+		local dispelType = ShouldShowDispelTypeForAura(self.AuraBorder, auraData) and auraData.dispelName or nil;
+		local style = self.AuraBorder.style;
+
+		if style == AuraButtonBorderStyle.Atlas then
+			AuraUtil.SetAuraBorderAtlas(self.AuraBorder, dispelType, self.AuraBorder.showIcon);
+		elseif style == AuraButtonBorderStyle.Color then
+			AuraUtil.SetAuraBorderColor(self.AuraBorder, dispelType);
+		end
+
+		self.AuraBorder:SetShown(dispelType ~= nil);
+	end
+end
+
+function CustomAuraButtonPrivateMixin:ApplyAuraSymbol(auraData)
+	if self.AuraSymbol then
+		local dispelType = ShouldShowDispelTypeForAura(self.AuraBorder, auraData) and auraData.dispelName or nil;
+
+		-- SetAuraSymbol only conditionally sets secret text; we need this
+		-- to be unconditional as it could be observed externally. Also make
+		-- sure visibility is secret as a precaution.
+	
+		self.AuraSymbol:SetShown(secretwrap(false));
+		self.AuraSymbol:SetText(secretwrap(""));
+
+		AuraUtil.SetAuraSymbol(self.AuraSymbol, dispelType);
 	end
 end
 
@@ -124,6 +173,8 @@ end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData)
 	self:ApplyApplicationCount(auraData);
+	self:ApplyAuraBorder(auraData);
+	self:ApplyAuraSymbol(auraData);
 	self:ApplyDuration(unitToken, auraData);
 	self:ApplyIcon(auraData);
 	self:ApplySpellName(auraData);
@@ -151,7 +202,7 @@ local function AssertValidFormatter(formatter)
 end
 
 function CustomAuraButtonInboundMixin:SetApplicationCount(fontString, options)
-	self.ApplicationCount = GetValidatedForbiddenObjectTable(fontString, RequireObjectType("FontString"));
+	self.ApplicationCount = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
 	self.ApplicationCount.formatter = AssertValidFormatter(options.formatter);
 	self:UpdateAuraDisplay();
 end
@@ -160,12 +211,65 @@ function CustomAuraButtonInboundMixin:ClearApplicationCount()
 	self.ApplicationCount = nil;
 end
 
+function CustomAuraButtonInboundMixin:GetAuraBorder()
+	return self.AuraBorder;
+end
+
+local DefaultAuraBorderOptions = {
+	showIcon = true,
+	showWhenHarmful = true,
+	showWhenHelpful = false,
+	style = AuraButtonBorderStyle.Atlas,
+};
+
+function CustomAuraButtonInboundMixin:SetAuraBorder(texture, options)
+	options = CreateFromMixins(DefaultAuraBorderOptions, securecopy(options or {}));
+
+	self.AuraBorder = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
+	self.AuraBorder.showIcon = options.showIcon;
+	self.AuraBorder.showWhenHarmful = options.showWhenHarmful;
+	self.AuraBorder.showWhenHelpful = options.showWhenHelpful;
+	self.AuraBorder.style = options.style;
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonInboundMixin:ClearAuraBorder()
+	self.AuraBorder = nil;
+end
+
+function CustomAuraButtonInboundMixin:GetAuraSymbol()
+	return self.AuraSymbol;
+end
+
+local DefaultAuraSymbolOptions = {
+	showIcon = false,
+	showWhenHarmful = true,
+	showWhenHelpful = false,
+	style = AuraButtonBorderStyle.Color,
+};
+
+
+function CustomAuraButtonInboundMixin:SetAuraSymbol(fontString, options)
+	options = CreateFromMixins(DefaultAuraSymbolOptions, securecopy(options or {}));
+
+	self.AuraSymbol = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	self.AuraSymbol.showWhenHarmful = options.showWhenHarmful;
+	self.AuraSymbol.showWhenHelpful = options.showWhenHelpful;
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonInboundMixin:ClearAuraSymbol()
+	self.AuraSymbol = nil;
+end
+
 function CustomAuraButtonInboundMixin:GetDurationCooldown()
 	return self.DurationCooldown;
 end
 
 function CustomAuraButtonInboundMixin:SetDurationCooldown(cooldownFrame)
-	self.DurationCooldown = GetValidatedForbiddenObjectTable(cooldownFrame, RequireObjectType("Cooldown"));
+	self.DurationCooldown = GetValidatedForbiddenObjectTable(self, cooldownFrame, RequireObjectType("Cooldown"));
 	self:UpdateAuraDisplay();
 end
 
@@ -180,7 +284,7 @@ end
 function CustomAuraButtonInboundMixin:SetDurationText(fontString, options)
 	options = securecopy(options or {});
 
-	self.DurationText = GetValidatedForbiddenObjectTable(fontString, RequireObjectType("FontString"));
+	self.DurationText = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
 
 	if not self.DurationTextBinding then
 		self.DurationTextBinding = C_DurationUtil.CreateDurationTextBinding();
@@ -228,7 +332,7 @@ function CustomAuraButtonInboundMixin:SetDurationBar(statusBar, options)
 	assert(options.interpolation == nil or EnumUtil.IsValid(Enum.StatusBarInterpolation, options.interpolation));
 	assert(options.direction == nil or EnumUtil.IsValid(Enum.StatusBarTimerDirection, options.direction));
 
-	self.DurationBar = GetValidatedForbiddenObjectTable(statusBar, RequireObjectType("StatusBar"));
+	self.DurationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
 
 	if options.interpolation then
 		self.DurationBar.interpolation = options.interpolation;
@@ -250,7 +354,7 @@ function CustomAuraButtonInboundMixin:GetIcon()
 end
 
 function CustomAuraButtonInboundMixin:SetIcon(texture)
-	self.Icon = GetValidatedForbiddenObjectTable(texture, RequireObjectType("Texture"));
+	self.Icon = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
 	self:UpdateAuraDisplay();
 end
 
@@ -263,7 +367,7 @@ function CustomAuraButtonInboundMixin:GetSpellName()
 end
 
 function CustomAuraButtonInboundMixin:SetSpellName(fontString)
-	self.SpellName = GetValidatedForbiddenObjectTable(fontString, RequireObjectType("FontString"));
+	self.SpellName = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
 	self:UpdateAuraDisplay();
 end
 

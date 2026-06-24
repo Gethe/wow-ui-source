@@ -412,4 +412,19 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="EditModeLossOfControlSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeLossOfControlSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.LossOfControl" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_LOSS_OF_CONTROL_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="28"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-28"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
 </Ui>

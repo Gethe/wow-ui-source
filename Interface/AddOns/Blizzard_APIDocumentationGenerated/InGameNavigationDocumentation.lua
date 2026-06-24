@@ -36,6 +36,24 @@ local InGameNavigation =
 			},
 		},
 		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "waypointDescription", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTargetState",
 			Type = "Function",
 

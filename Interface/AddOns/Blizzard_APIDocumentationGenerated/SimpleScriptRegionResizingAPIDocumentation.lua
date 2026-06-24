@@ -111,6 +111,7 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetAllPoints",
 			Type = "Function",
 			IsProtectedFunction = true,
+			CheckAllowInheritForbiddenLayoutAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -134,6 +135,7 @@ local SimpleScriptRegionResizingAPI =
 			Name = "SetPoint",
 			Type = "Function",
 			IsProtectedFunction = true,
+			CheckAllowInheritForbiddenLayoutAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

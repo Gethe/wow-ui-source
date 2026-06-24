@@ -19,6 +19,7 @@ local SimpleEditBoxAPI =
 		{
 			Name = "ClearFocus",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -406,6 +407,7 @@ local SimpleEditBoxAPI =
 		{
 			Name = "HasFocus",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryFocus } },
 
 			Arguments =
 			{
@@ -558,7 +560,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "IsPassword",
 			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -646,6 +647,7 @@ local SimpleEditBoxAPI =
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Cursor },
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -665,6 +667,7 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetFocus",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -816,7 +819,6 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetPassword",
 			Type = "Function",
-			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

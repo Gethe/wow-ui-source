@@ -9,6 +9,7 @@ local CollectionWhileShownEvents = {
 	"HOUSING_BLUEPRINT_DELETE_FAILURE",
 	"HOUSE_RESET_FAILED",
 	"HOUSE_RESET_COMPLETED",
+	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
 };
 
 local ResetScopeAllMask = bit.band(Enum.HousingHouseScope.Interior, Enum.HousingHouseScope.Exterior);
@@ -39,7 +40,7 @@ function HousingBlueprintCollectionMixin:OnLoad()
 	self.ResetButton:Layout();
 	
 	self.SlotCountText:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self.ResetButton, "ANCHOR_BOTTOM");
+		GameTooltip:SetOwner(self.SlotCountText, "ANCHOR_BOTTOM");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_BLUEPRINT_COLLECTION_COUNT_TOOLTIP);
 		GameTooltip:Show();
 	end);
@@ -91,16 +92,22 @@ function HousingBlueprintCollectionMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_BLUEPRINT_DELETE_FAILURE" then
 		local result = ...;
 		self:OnDeleteFailure(result);
+	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
+		self:RefreshEntryStates();
 	end
 end
 
 function HousingBlueprintCollectionMixin:OnShow()
 	self:RequestNewData();
 	FrameUtil.RegisterFrameForEvents(self, CollectionWhileShownEvents);
+	EventRegistry:RegisterCallback("HousingBlueprint.FrameShown", self.OnBlueprintFrameStateChanged, self);
+	EventRegistry:RegisterCallback("HousingBlueprint.FrameHidden", self.OnBlueprintFrameStateChanged, self);
 end
 
 function HousingBlueprintCollectionMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CollectionWhileShownEvents);
+	EventRegistry:UnregisterCallback("HousingBlueprint.FrameShown", self);
+	EventRegistry:UnregisterCallback("HousingBlueprint.FrameHidden", self);
 end
 
 function HousingBlueprintCollectionMixin:RequestNewData()
@@ -145,7 +152,11 @@ function HousingBlueprintCollectionMixin:OnCollectionReceived(collectionInfo)
 	end
 
 	local maxBlueprints = Constants.HousingConsts.HOUSING_BLUEPRINTS_MAX_PER_BNET_ACCOUNT;
-	self.SlotCountText:SetText(HOUSING_BLUEPRINT_COLLECTION_COUNT_FMT:format(numPlayerMadeBlueprints, maxBlueprints))
+	self.SlotCountText:SetText(HOUSING_BLUEPRINT_COLLECTION_COUNT_FMT:format(numPlayerMadeBlueprints, maxBlueprints));
+	local underMax = numPlayerMadeBlueprints < maxBlueprints;
+	local textColor = underMax and HIGHLIGHT_FONT_COLOR or RED_FONT_COLOR;
+	self.SlotCountText:SetTextColor(textColor:GetRGB());
+	
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
@@ -196,6 +207,20 @@ function HousingBlueprintCollectionMixin:OnResetConfirmed(scopeFlags)
 	end
 
 	C_Housing.ResetHouse(scopeFlags);
+end
+
+function HousingBlueprintCollectionMixin:OnBlueprintFrameStateChanged(blueprintFrame)
+	if blueprintFrame == HousingBlueprintImportFrame or blueprintFrame == HousingBlueprintRenameFrame then
+		self:RefreshEntryStates();
+	end
+end
+
+function HousingBlueprintCollectionMixin:RefreshEntryStates()
+	for _, frame in self.ScrollBox:EnumerateFrames() do
+		if frame.UpdateStateVisuals then
+			frame:UpdateStateVisuals();
+		end
+	end
 end
 
 ----------------- Collection Group -----------------
@@ -260,13 +285,14 @@ function HousingBlueprintCollectionEntryMixin:Init(node)
 	else
 		self.Text:SetText(self.blueprintInfo.name);
 	end
+	self:UpdateStateVisuals();
 end
 
 function HousingBlueprintCollectionEntryMixin.Reset(pool, self)
 	Pool_HideAndClearAnchors(framePool, self);
 	self.blueprintInfo = nil;
-	self.SelectedBackground:Hide();
 	self.HighlightBackground:Hide();
+	self.contextMenuIsOpen = false;
 end
 
 function HousingBlueprintCollectionEntryMixin:GetDateTimeStr()
@@ -288,7 +314,7 @@ function HousingBlueprintCollectionEntryMixin:OnClick(button)
 		if IsModifiedClick("CHATLINK") then
 			local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(self.blueprintInfo.shareCode);
 			ChatFrameUtil.InsertLink(blueprintLink);
-		elseif self.blueprintInfo.blueprintType ~= Enum.HousingBlueprintType.Room then -- TODO: Implement room import flow
+		else
 			HousingFramesUtil.ShowBlueprintImport(self.blueprintInfo.shareCode);
 		end
 	end
@@ -311,17 +337,13 @@ function HousingBlueprintCollectionEntryMixin:OnEnter()
 	local dateTimeStr = self:GetDateTimeStr();
 	GameTooltip_AddNormalLine(tooltip, HOUSING_BLUEPRINT_COLLECTION_TIMESTAMP_FMT:format(dateTimeStr));
 
-	-- TODO: REMOVE THIS once room import flow implemented
-	if self.blueprintInfo.blueprintType == Enum.HousingBlueprintType.Room then
-		GameTooltip_AddErrorLine(tooltip, "Room Import not yet implemented");
-	end
-
 	GameTooltip:Show();
+	self:UpdateStateVisuals();
 end
 
 function HousingBlueprintCollectionEntryMixin:OnLeave()
-	self.HighlightBackground:Hide();
 	GameTooltip:Hide();
+	self:UpdateStateVisuals();
 end
 
 function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
@@ -333,10 +355,12 @@ function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
 		rootDescription:SetTag("MENU_HOUSING_BLUEPRINT_ENTRY");
 		
 		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
-			self.SelectedBackground:Show();
+			self.contextMenuIsOpen = true;
+			self:UpdateStateVisuals();
 		end);
 		rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
-			self.SelectedBackground:Hide();
+			self.contextMenuIsOpen = false;
+			self:UpdateStateVisuals();
 		end);
 
 		if self.blueprintInfo.isAutoSave then
@@ -357,12 +381,58 @@ function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
 				confirmationString = HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING,
 			};
 			StaticPopup_Show("CONFIRM_BLUEPRINT_DELETE", HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING, nil, popupData);
+			self:UpdateStateVisuals();
 		end);
 	end);
 end
 
 function HousingBlueprintCollectionEntryMixin:OnDeleteConfirmed()
 	C_HousingBlueprint.DeleteBlueprint(self.blueprintInfo.blueprintID);
+end
+
+function HousingBlueprintCollectionEntryMixin:UpdateStateVisuals()
+	local isSelected = self:IsSelected();
+	local isHovered = self:IsHovered();
+
+	local textColor = isSelected and NORMAL_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	self.Text:SetTextColor(textColor:GetRGB());
+
+	self.HighlightBackground:SetShown(isHovered);
+end
+
+function HousingBlueprintCollectionEntryMixin:IsSelected()
+	if not self.blueprintInfo then
+		return false;
+	end
+
+	-- If this blueprint is open in Import or Rename frame, show selected
+	if HousingBlueprintImportFrame:IsShowingBlueprint(self.blueprintInfo.shareCode) or HousingBlueprintRenameFrame:IsShowingBlueprint(self.blueprintInfo.shareCode) then
+		return true;
+	end
+
+	-- If Delete confirmation for this blueprint is open, show selected
+	local dialogName, dialog = StaticPopup_Visible("CONFIRM_BLUEPRINT_DELETE");
+	if dialog and dialog.data and dialog.data.owner == self then
+		return true;
+	end
+
+	-- If this is a room blueprint and is currently selected for door selection in layout mode, show selected
+	if self.blueprintInfo.blueprintType == Enum.HousingBlueprintType.Room then
+		local roomID, blueprintCode = C_HousingLayout.GetSelectedBlueprintFloorplan();
+		if blueprintCode and blueprintCode == self.blueprintInfo.shareCode then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function HousingBlueprintCollectionEntryMixin:IsHovered()
+	if not self.blueprintInfo then
+		return false;
+	end
+
+	return GameTooltip:GetOwner() == self or self.contextMenuIsOpen;
 end
 
 function HousingBlueprintCollectionEntryMixin:GetDebugName()
@@ -383,11 +453,17 @@ StaticPopupDialogs["CONFIRM_BLUEPRINT_DELETE"] = {
 	whileDead = 1,
 	hasEditBox = 1,
 	maxLetters = 32,
-	showAlert = 1,
+	selectCallbackByIndex = true,
 
-
-	OnAccept = function(dialog, data)
+	OnButton1 = function(self, data)
+		-- Confirm
 		data.owner:OnDeleteConfirmed();
+		self:Hide();
+	end,
+	OnButton2 = function(self, data)
+		-- Cancel
+		data.owner:UpdateStateVisuals();
+		self:Hide();
 	end,
 	OnShow = function(dialog, data)
 		dialog:GetButton1():Disable();
@@ -396,6 +472,7 @@ StaticPopupDialogs["CONFIRM_BLUEPRINT_DELETE"] = {
 	end,
 	OnHide = function(dialog, data)
 		dialog:GetEditBox():SetText("");
+		data.owner:UpdateStateVisuals();
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
@@ -409,6 +486,7 @@ StaticPopupDialogs["CONFIRM_BLUEPRINT_DELETE"] = {
 	end,
 	EditBoxOnEscapePressed = function(editBox, data)
 		editBox:GetParent():Hide();
+		data.owner:UpdateStateVisuals();
 		ClearCursor();
 	end
 };
@@ -425,9 +503,17 @@ StaticPopupDialogs["CONFIRM_RESET_HOUSE"] = {
 	whileDead = 1,
 	hasEditBox = 1,
 	maxLetters = 32,
+	showAlert = 1,
+	selectCallbackByIndex = true,
 
-	OnAccept = function(dialog, data)
+	OnButton1 = function(self, data)
+		-- Confirm
 		data.owner:OnResetConfirmed(data.resetScope);
+		self:Hide();
+	end,
+	OnButton2 = function(self, data)
+		-- Cancel
+		self:Hide();
 	end,
 	OnShow = function(dialog, data)
 		dialog:GetButton1():Disable();

@@ -522,6 +522,7 @@ PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PingManagerSharedDocumentation.lua
 PlayerDocumentation.lua
+PlayerChoiceConstantsDocumentation.lua
 PlayerDataConstantsDocumentation.lua
 PlayerHousingConstantsDocumentation.lua
 PlayerInfoSharedDocumentation.lua

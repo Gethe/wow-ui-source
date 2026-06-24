@@ -8,7 +8,6 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="HighlightBackground" atlas="common-dropdown-customize-mouseover" alpha="0.15" hidden="true" setAllPoints="true"/>
-				<Texture parentKey="SelectedBackground" atlas="common-dropdown-customize-mouseover" alpha="0.25" hidden="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="LEFT" wordwrap="false">

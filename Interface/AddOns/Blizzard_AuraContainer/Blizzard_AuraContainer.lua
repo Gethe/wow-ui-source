@@ -7,7 +7,7 @@ AuraContainerPrivateMixin.DynamicEvents = {};
 AuraContainerPrivateMixin.DynamicUnitEvents = { "UNIT_AURA" };
 
 function AuraContainerPrivateMixin:OnLoad_Intrinsic()
-	-- No-op; reserved for future needs.
+	-- Reserved for future use.
 end
 
 function AuraContainerPrivateMixin:OnShow_Intrinsic()

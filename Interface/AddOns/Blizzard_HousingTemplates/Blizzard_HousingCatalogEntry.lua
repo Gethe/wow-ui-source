@@ -916,8 +916,12 @@ function HousingCatalogRoomEntryMixin:UpdateTypeSpecificData()
 	if not self:HasValidData() then
 		return;
 	end
-	local selectedFloorplan = C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.Layout) and C_HousingLayout.GetSelectedFloorplan() or nil;
-	local isSelected = selectedFloorplan == self.entryVariantID.recordID;
+
+	local isSelected = false;
+	if C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.Layout) and (not C_HousingLayout.HasSelectedBlueprintFloorplan()) then
+		local selectedFloorplan = C_HousingLayout.GetSelectedFloorplan() or nil;
+		isSelected = selectedFloorplan == self.entryVariantID.recordID;
+	end
 
 	if isSelected ~= self.isSelected then
 		self:SetSelected(isSelected);

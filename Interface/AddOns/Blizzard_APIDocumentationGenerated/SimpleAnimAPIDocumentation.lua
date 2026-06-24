@@ -330,6 +330,7 @@ local SimpleAnimAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

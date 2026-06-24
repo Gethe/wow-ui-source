@@ -42,6 +42,7 @@ local SimpleButtonAPI =
 			Name = "Click",
 			Type = "Function",
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -323,6 +324,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetDisabledTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -345,6 +347,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetFontString",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -387,6 +390,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetHighlightTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -428,6 +432,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetNormalTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -459,6 +464,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetPushedTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

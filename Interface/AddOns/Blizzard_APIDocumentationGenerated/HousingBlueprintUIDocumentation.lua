@@ -27,6 +27,7 @@ local HousingBlueprintUI =
 			Name = "DeleteBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Delete the specified owned blueprint; Listen for HousingBlueprintDeleteSuccess and HousingBlueprintDeleteFailure for results" },
 
 			Arguments =
 			{
@@ -37,6 +38,7 @@ local HousingBlueprintUI =
 			Name = "ExportBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Saves out a new Blueprint of the specified type, using the specified name, if available, based on where the player is currently standing (see IsExportAvailable); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
 
 			Arguments =
 			{
@@ -48,6 +50,7 @@ local HousingBlueprintUI =
 			Name = "ExportRoomBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Saves out a new Blueprint of the specified room, using the specified name, if available (see IsExportAvailable); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
 
 			Arguments =
 			{
@@ -75,6 +78,7 @@ local HousingBlueprintUI =
 			Name = "GetBlueprintTypeForCode",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns what type of Blueprint the specified code is for; Will return HousingBlueprintType.None if code is invalid; Does NOT check whether the shareCode actually matches up to a real valid Blueprint" },
 
 			Arguments =
 			{
@@ -90,6 +94,7 @@ local HousingBlueprintUI =
 			Name = "ImportBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Imports the specified blueprint, if available (see IsImportAvailable and CanImportTypeFromCurrentLocation); Listen for HousingBlueprintImportSuccess and HousingBlueprintImportFailure for results" },
 
 			Arguments =
 			{
@@ -120,6 +125,7 @@ local HousingBlueprintUI =
 			Name = "IsShareCodeValid",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the string matches the valid expected format for a Blueprint Share Code; Does NOT check whether the shareCode actually matches up to a real valid Blueprint" },
 
 			Arguments =
 			{
@@ -135,6 +141,7 @@ local HousingBlueprintUI =
 			Name = "RenameBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Rename the specified owned blueprint to the specified name; Listen for HousingBlueprintRenameSuccess and HousingBlueprintRenameFailure for results" },
 
 			Arguments =
 			{
@@ -168,6 +175,17 @@ local HousingBlueprintUI =
 			{
 				{ Name = "shareCode", Type = "cstring", Nilable = false },
 				{ Name = "optionalHouseGUID", Type = "WOWGUID", Nilable = true },
+			},
+		},
+		{
+			Name = "StartImportRoomBlueprint",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Start the process of importing a Room Blueprint. This will lead to Layout Mode being opened, so the player can then select an available door to attach the room to" },
+
+			Arguments =
+			{
+				{ Name = "shareCode", Type = "cstring", Nilable = false },
 			},
 		},
 	},

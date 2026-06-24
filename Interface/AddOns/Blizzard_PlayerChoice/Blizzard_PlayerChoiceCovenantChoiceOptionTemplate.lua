@@ -96,7 +96,7 @@ function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnLeave()
 end
 
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnSelected()
-	PlayerChoiceCovenantChoiceOptionTemplateMixin.OnSelected(self);
+	PlayerChoiceBaseOptionTemplateMixin.OnSelected(self);
 
 	PlaySound(SOUNDKIT.UI_COVENANT_CHOICE_CONFIRM_COVENANT);
 end

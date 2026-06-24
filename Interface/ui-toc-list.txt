@@ -10,6 +10,7 @@ Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Classic.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Mainline.toc
 Interface\AddOns\Blizzard_ActionStatus\Blizzard_ActionStatus_Classic.toc
 Interface\AddOns\Blizzard_ActionStatus\Blizzard_ActionStatus_Mainline.toc
+Interface\AddOns\Blizzard_AddFriend\Blizzard_AddFriend.toc
 Interface\AddOns\Blizzard_AddOnList\Blizzard_AddOnList.toc
 Interface\AddOns\Blizzard_AddOnPerformance\Blizzard_AddOnPerformance.toc
 Interface\AddOns\Blizzard_AdventureMap\Blizzard_AdventureMap.toc

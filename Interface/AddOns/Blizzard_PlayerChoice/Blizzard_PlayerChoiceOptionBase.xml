@@ -13,6 +13,7 @@
 		<Size x="175" y="22"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="defaultWidth" value="175" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -24,6 +25,9 @@
 
 	<Button name="PlayerChoiceBaseSmallerOptionButtonTemplate" inherits="PlayerChoiceBaseOptionButtonTemplate" virtual="true">
 		<Size x="120" y="22"/>
+		<KeyValues>
+			<KeyValue key="defaultWidth" value="120" type="number"/>
+		</KeyValues>
 	</Button>
 
 	<Frame name="PlayerChoiceBaseOptionButtonFrameTemplate" inherits="HorizontalLayoutFrame" mixin="PlayerChoiceBaseOptionButtonFrameTemplateMixin" virtual="true">

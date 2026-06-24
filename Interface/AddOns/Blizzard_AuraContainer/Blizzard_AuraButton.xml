@@ -2,13 +2,23 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<ScopedModifier useForbiddenObjectTable="true">
-		<Button name="AuraButton" intrinsic="true">
+		<Button name="AuraButton" intrinsic="true" onUpdateMode="disabled">
 			<Mixins>
 				<Mixin key="AuraButtonInboundMixin" source="local" inboundPartition="public"/>
 				<Mixin key="AuraButtonPrivateMixin" source="local"/>
 			</Mixins>
+			<ForbiddenAspects>
+				<ForbiddenAspect aspect="UntrustedScriptExecution"/>
+				<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
+				<ForbiddenAspect aspect="ScriptedInput"/>
+				<ForbiddenAspect aspect="AlwaysPropagateInput"/>
+				<ForbiddenAspect aspect="QueryFocus"/>
+			</ForbiddenAspects>
 			<Scripts>
 				<OnLoad method="OnLoad_Intrinsic"/>
+				<OnEnter method="OnEnter_Intrinsic"/>
+				<OnLeave method="OnLeave_Intrinsic"/>
+				<OnUpdate method="OnUpdate_Intrinsic"/>
 			</Scripts>
 		</Button>
 	 </ScopedModifier>

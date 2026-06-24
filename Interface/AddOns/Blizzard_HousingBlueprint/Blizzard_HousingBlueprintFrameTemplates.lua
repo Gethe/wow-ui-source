@@ -72,6 +72,8 @@ function HousingBlueprintBaseFrameMixin:HideSelf()
 		self:ClearAllPoints();
 		self:Hide();
 	end
+
+	EventRegistry:TriggerEvent("HousingBlueprint.FrameHidden", self);
 end
 
 function HousingBlueprintBaseFrameMixin:SetFullInputBlockerEnabled(enabled)

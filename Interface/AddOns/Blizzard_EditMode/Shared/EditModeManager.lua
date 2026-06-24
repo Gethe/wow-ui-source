@@ -896,6 +896,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetEncounterEventsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterEvents));
 	self.AccountSettings:SetDamageMeterShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDamageMeter));
 	self.AccountSettings:SetRaidWarningShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidWarning));
+	self.AccountSettings:SetLossOfControlShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLossOfControl));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1815,6 +1816,7 @@ local checkBoxSetupData =
 	PetActionBar = { callbackName = "SetPetActionBarShown", mouseoverName = "SetPetActionBarMouseOver", },
 	PossessActionBar = { callbackName = "SetPossessActionBarShown", mouseoverName = "SetPossessActionBarMouseOver", },
 	TotemActionBar = { callbackName = "SetTotemActionBarShown", mouseoverName = "SetTotemActionBarMouseOver", },
+	LossOfControl = { callbackName = "SetLossOfControlShown", mouseoverName = "SetLossOfControlMouseOver", },
 };
 
 EditModeAccountSettingsMixin = {};
@@ -2119,6 +2121,10 @@ function EditModeAccountSettingsMixin:SetDamageMeterMouseOver(...)
 	for index, frame in ipairs(self:GetDamageMeterFrames()) do
 		frame:ShowEditInstructions(...);
 	end
+end
+
+function EditModeAccountSettingsMixin:SetLossOfControlMouseOver(...)
+	LossOfControlFrame:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:SetupActionBar(bar)
@@ -2790,6 +2796,26 @@ end
 function EditModeAccountSettingsMixin:ToggleExpandedState()
 	local isUserInput = true;
 	self:SetExpandedState(not self.expanded, isUserInput);
+end
+
+function EditModeAccountSettingsMixin:SetLossOfControlShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowLossOfControl, shown);
+		self:RefreshLossOfControl();
+	else
+		self.settingsCheckButtons.LossOfControl:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshLossOfControl()
+	local showLossOfControl = self.settingsCheckButtons.LossOfControl:IsControlChecked();
+
+	LossOfControlFrame:SetIsInEditMode(showLossOfControl);
+	if showLossOfControl then
+		LossOfControlFrame:HighlightSystem();
+	else
+		LossOfControlFrame:ClearHighlight();
+	end
 end
 
 EditModeManagerTutorialMixin = {};

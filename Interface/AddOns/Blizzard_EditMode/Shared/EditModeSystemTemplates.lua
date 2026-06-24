@@ -3597,3 +3597,33 @@ function EditModeRaidWarningSystemMixin:OnEditModeExit()
 
 	self:SetIsInEditMode(false);
 end
+
+EditModeLossOfControlSystemMixin = {};
+
+function EditModeLossOfControlSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeLossOfControlSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeLossOfControlSetting.Size) / 100);
+end
+
+function EditModeLossOfControlSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeLossOfControlSetting.Size then
+			self:UpdateSystemSettingSize();
+		end
+	end
+
+	self:ClearDirtySetting(setting);
+end

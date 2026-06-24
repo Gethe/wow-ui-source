@@ -67,11 +67,13 @@ function GuildControlUI_SetupSelected(selected)
 				rootDescription:CreateRadio(GUILDCONTROL_BANK_PERMISSIONS, IsSelected, SetSelected, 3);
 			end
 		end
-		local discordName = "";
-		if(GUILDCONTROL_DISCORD_SETTINGS) then -- might be encrypted
-			discordName = string.format(GUILDCONTROL_DISCORD_SETTINGS, CreateAtlasMarkup("UI-ChatIcon-Discord"));
+		if(C_Discord.IsEnabled()) then
+			local discordName = "";
+			if(GUILDCONTROL_DISCORD_SETTINGS) then -- might be encrypted
+				discordName = string.format(GUILDCONTROL_DISCORD_SETTINGS, CreateAtlasMarkup("UI-ChatIcon-Discord"));
+			end
+			rootDescription:CreateRadio(discordName, IsSelected, SetSelected, 4);
 		end
-		rootDescription:CreateRadio(discordName, IsSelected, SetSelected, 4);
 	end);
 end
 

@@ -58,6 +58,7 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetCheckedTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -68,6 +69,7 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetDisabledCheckedTexture",
 			Type = "Function",
+			CheckAllowInheritForbiddenParentAspects = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

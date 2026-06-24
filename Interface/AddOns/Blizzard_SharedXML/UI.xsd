@@ -127,6 +127,20 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="FORBIDDENASPECT">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="SetToDefaults"/>
+			<xs:enumeration value="ScriptBindings"/>
+			<xs:enumeration value="UntrustedScriptExecution"/>
+			<xs:enumeration value="UntrustedLayoutScriptExecution"/>
+			<xs:enumeration value="EventRegistrations"/>
+			<xs:enumeration value="ScriptedInput"/>
+			<xs:enumeration value="AlwaysPropagateInput"/>
+			<xs:enumeration value="QueryFocus"/>
+			<xs:enumeration value="Shown"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="SCRIPTOBJECTPARTITION">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="public"/>
@@ -346,6 +360,18 @@
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="Mixin" type="MixinType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ForbiddenAspectType">
+		<xs:attribute name="aspect" type="FORBIDDENASPECT" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="ForbiddenAspectsType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="ForbiddenAspect" type="ForbiddenAspectType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -577,6 +603,7 @@
 	<xs:element name="Scripts" type="ScriptsType" substitutionGroup="LayoutField"/>
 	<xs:element name="KeyValues" type="KeyValuesType" substitutionGroup="LayoutField"/>
 	<xs:element name="Mixins" type="MixinsType" substitutionGroup="LayoutField"/>
+	<xs:element name="ForbiddenAspects" type="ForbiddenAspectsType" substitutionGroup="LayoutField"/>
 	<xs:element name="Animations" substitutionGroup="LayoutField">
 		<xs:complexType>
 			<xs:sequence>
@@ -1532,6 +1559,7 @@
 				<xs:element name="Scripts" type="AnimScriptsType"/>
 				<xs:element name="KeyValues" type="KeyValuesType"/>
 				<xs:element name="Mixins" type="MixinsType"/>
+				<xs:element name="ForbiddenAspects" type="ForbiddenAspectsType"/>
 				<xs:element name="Origin" type="AnimOriginType"/>
 			</xs:choice>
 		</xs:sequence>
@@ -1617,6 +1645,11 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="ControlPoint" maxOccurs="unbounded">
 					<xs:complexType>
+						<xs:sequence minOccurs="0">
+							<xs:choice maxOccurs="unbounded">
+								<xs:element name="ForbiddenAspects" type="ForbiddenAspectsType"/>
+							</xs:choice>
+						</xs:sequence>
 						<xs:attribute name="name" type="xs:string"/>
 						<xs:attribute name="offsetX" type="xs:float" default="0.0"/>
 						<xs:attribute name="offsetY" type="xs:float" default="0.0"/>
@@ -1685,6 +1718,7 @@
 				<xs:element name="Scripts" type="AnimGroupScriptsType"/>
 				<xs:element name="KeyValues" type="KeyValuesType"/>
 				<xs:element name="Mixins" type="MixinsType"/>
+				<xs:element name="ForbiddenAspects" type="ForbiddenAspectsType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>

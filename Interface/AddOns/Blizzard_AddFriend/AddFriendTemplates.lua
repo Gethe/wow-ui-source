@@ -40,9 +40,7 @@ function BattleNetInviteFrameMixin:SetTextForFriendLevel(friendLevel)
 	self.InviteText:SetText(text);
 end
 
-FriendsFrameAddFriendButtonMixin = {}
-
-function FriendsFrameAddFriendButtonMixin:OnClick()
+function AddFriendFrame_Show()
 	local name = nil;
 	if not C_Glue.IsOnGlueScreen() then
 		name = GetUnitName("target", true);
@@ -74,18 +72,6 @@ function FriendsFrameAddFriendButtonMixin:OnClick()
 			end
 		end
 	end
-end
-
-function FriendsFrameAddFriendButtonMixin:OnEnter()
-	if self.disableTooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 6, 0);
-		GameTooltip_AddErrorLine(GameTooltip, self.disableTooltip);
-		GameTooltip:Show();
-	end
-end
-
-function FriendsFrameAddFriendButtonMixin:OnLeave()
-	GameTooltip:Hide();
 end
 
 AddFriendFrameMixin = {};

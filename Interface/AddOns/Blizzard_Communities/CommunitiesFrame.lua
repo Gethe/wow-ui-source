@@ -865,7 +865,7 @@ function CommunitiesFrameMixin:GetDisplayableReportFrame(clubId)
 	end
 
 	local hasForceNameChange = self:ClubFinderPostingHasActiveFlag(clubId, Enum.ClubFinderClubPostingStatusFlags.ForceNameChange);
-	local hasGuildManagementPrivlileges = C_GuildInfo.IsGuildOfficer() or IsGuildLeader();
+	local hasGuildManagementPrivlileges = IsGuildLeader() or (C_Discord.IsEnabled() and C_GuildInfo.IsGuildOfficer());
 	local needsGuildNameChange = clubInfo.clubType == Enum.ClubType.Guild and (hasForceNameChange or self:GetNeedsGuildNameChange()) and hasGuildManagementPrivlileges;
 	if needsGuildNameChange then
 		return self.GuildNameChangeFrame;

@@ -1,6 +1,8 @@
 local REORDER_MARKER_BEFORE_TARGET = false;
 local REORDER_MARKER_AFTER_TARGET = true;
 
+local GROUP_BUFFS_TAB_MIN_ITEMS = 2;
+
 COOLDOWN_BAR_DEFAULT_COLOR = CreateColor(1, 0.5, 0.25);
 
 StaticPopupDialogs["REVERT_COOLDOWN_LAYOUT_CHANGES"] = {
@@ -877,6 +879,36 @@ function CooldownViewerSettingsMixin:SetupTabs()
 	end
 end
 
+function CooldownViewerSettingsMixin:UpdateGroupBuffsTabState()
+	local groupBuffItems = C_CooldownViewer.GetGroupBuffItems();
+	local isDisabled = #groupBuffItems < GROUP_BUFFS_TAB_MIN_ITEMS;
+	local groupBuffsTab = self.GroupBuffsTab;
+
+	if isDisabled then
+		if not groupBuffsTab.isTabDisabled then
+			groupBuffsTab.normalTooltipText = groupBuffsTab.tooltipText;
+			groupBuffsTab.tooltipText = COOLDOWN_VIEWER_SETTINGS_TAB_GROUP_AURAS_DISABLED_TOOLTIP;
+			groupBuffsTab.isTabDisabled = true;
+
+			if self.displayMode == "groupBuffs" then
+				self:SetDisplayMode("spells");
+			end
+		end
+
+		groupBuffsTab:SetMouseClickEnabled(false);
+		groupBuffsTab.Icon:SetDesaturated(true);
+		groupBuffsTab.Icon:SetAlpha(0.5);
+
+	elseif groupBuffsTab.isTabDisabled then
+		groupBuffsTab.tooltipText = groupBuffsTab.normalTooltipText;
+		groupBuffsTab.isTabDisabled = false;
+
+		groupBuffsTab:SetMouseClickEnabled(true);
+		groupBuffsTab.Icon:SetDesaturated(false);
+		groupBuffsTab.Icon:SetAlpha(1);
+	end
+end
+
 function CooldownViewerSettingsMixin:SetupEventHandlers()
 	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.BeginOrderChange", self.BeginOrderChange);
 	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.OnEnterItem", self.OnEnterItem);
@@ -1468,6 +1500,7 @@ function CooldownViewerSettingsMixin:RefreshLayout()
 	self:SetPortraitToSpecIcon();
 	self:SetupLayoutManagerDropdown();
 
+	self:UpdateGroupBuffsTabState();
 	self.GroupBuffFilter:Refresh();
 end
 

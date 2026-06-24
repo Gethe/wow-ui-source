@@ -8,18 +8,17 @@ local HousingBlueprintTypeConfirmationStrings = {
 StaticPopupDialogs["CONFIRM_BLUEPRINT_IMPORT"] = {
 	text = "%s",
 	subText = HOUSING_BLUEPRINT_IMPORT_CONFIRMATION_TEXT,
-	button1 = HOUSING_BLUEPRINT_IMPORT_CONFIRMATION_CANCEL,
-	button2 = HOUSING_BLUEPRINT_IMPORT_CONFIRMATION_CONFIRM,
+	button1 = HOUSING_BLUEPRINT_IMPORT_CONFIRMATION_CONFIRM,
+	button2 = HOUSING_BLUEPRINT_IMPORT_CONFIRMATION_CANCEL,
 	hideOnEscape = 1,
 	selectCallbackByIndex = true,
 	OnButton1 = function(self, data)
-		-- Cancel
+		-- Confirm
+		data.owner:OnImportConfirmed(data.blueprintCode, data.blueprintType);
 		self:Hide();
 	end,
 	OnButton2 = function(self, data)
-		-- Confirm
-		HousingBlueprintImportFrame:OnImportStarting();
-		C_HousingBlueprint.ImportBlueprint(data.shareCode);
+		-- Cancel
 		self:Hide();
 	end,
 };
@@ -70,6 +69,15 @@ function HousingBlueprintImportFrameMixin:ClearData()
 	self.ValidationContent:ClearData();
 end
 
+function HousingBlueprintImportFrameMixin:IsShowingBlueprint(shareCode)
+	local inputCode = self.InputContent:GetInputValues();
+	if inputCode and inputCode == shareCode then
+		return true;
+	end
+
+	return self.ValidationContent:IsShowingBlueprint(shareCode);
+end
+
 function HousingBlueprintImportFrameMixin:ShowContent(contentFrame)
 	self.InputContent:SetShown(self.InputContent == contentFrame);
 	self.ValidationContent:SetShown(self.ValidationContent == contentFrame);
@@ -95,12 +103,22 @@ function HousingBlueprintImportFrameMixin:OnValidationNextClicked()
 	local blueprintCode, blueprintType = self.ValidationContent:GetBlueprintValues();
 	local confirmationString = HousingBlueprintTypeConfirmationStrings[blueprintType];
 	if confirmationString then
-		local data = { shareCode = blueprintCode };
+		local data = { blueprintCode = blueprintCode, blueprintType = blueprintType, owner = self };
 		StaticPopup_Show("CONFIRM_BLUEPRINT_IMPORT", confirmationString, nil, data);
 		self:HideSelf();
 	else
+		self:OnImportConfirmed(blueprintCode, blueprintType);
+	end
+end
+
+function HousingBlueprintImportFrameMixin:OnImportConfirmed(blueprintCode, blueprintType)
+	if blueprintType == Enum.HousingBlueprintType.Room then
+		-- Rooms have their own flow as they require the extra step of selecting an available door
+		C_HousingBlueprint.StartImportRoomBlueprint(blueprintCode);
+		self:HideSelf();
+	else
 		self:OnImportStarting();
-		C_HousingBlueprint.ImportBlueprint(data.shareCode);
+		C_HousingBlueprint.ImportBlueprint(blueprintCode);
 	end
 end
 
@@ -146,11 +164,6 @@ function HousingBlueprintImportInputContentMixin:ClearData()
 	self.NextButton:Disable();
 end
 
--- TODO: REMOVE THIS FUNCTION ENTIRELY once room import flow is implemented
-function HousingBlueprintImportInputContentMixin:IsRoomBlueprint()
-	return C_HousingBlueprint.GetBlueprintTypeForCode(self.ShareCodeBox.EditBox:GetText()) == Enum.HousingBlueprintType.Room;
-end
-
 -- Returns isValid, isNonEmpty
 function HousingBlueprintImportInputContentMixin:IsInputValid()
 	local isValid = false;
@@ -158,7 +171,7 @@ function HousingBlueprintImportInputContentMixin:IsInputValid()
 
 	if isNonEmpty then
 		local codeText = self.ShareCodeBox.EditBox:GetText();
-		isValid = C_HousingBlueprint.IsShareCodeValid(codeText) and (not self:IsRoomBlueprint());
+		isValid = C_HousingBlueprint.IsShareCodeValid(codeText);
 	end
 
 	return isValid, isNonEmpty;
@@ -175,11 +188,7 @@ function HousingBlueprintImportInputContentMixin:OnInputUpdated()
 	local isInputValid, hasAnyInput = self:IsInputValid();
 
 	if hasAnyInput then
-		if self:IsRoomBlueprint() then
-			newNoticeText = "ROOM BLUEPRINT FLOW NOT YET IMPLEMENTED"; -- TODO: Remove once room import flow is implemented
-		else
-			newNoticeText = isInputValid and HOUSING_BLUEPRINT_IMPORT_NOTICE or HOUSING_BLUEPRINT_IMPORT_SHARECODE_INVALID;
-		end
+		newNoticeText = isInputValid and HOUSING_BLUEPRINT_IMPORT_NOTICE or HOUSING_BLUEPRINT_IMPORT_SHARECODE_INVALID;
 	end
 	
 	local isError = hasAnyInput and not isInputValid;
@@ -259,7 +268,11 @@ function HousingBlueprintImportValidationContentMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ValidationWhileShownEvents);
 end
 
-function HousingBlueprintImportValidationContentMixin:IsShowingBlueprint(shareCode, houseGUID)
+function HousingBlueprintImportValidationContentMixin:IsShowingBlueprint(shareCode)
+	return self.blueprintContentInfo and self.blueprintContentInfo.shareCode == shareCode;
+end
+
+function HousingBlueprintImportValidationContentMixin:IsShowingBlueprintForTarget(shareCode, houseGUID)
 	if not self.blueprintContentInfo then
 		return false;
 	end
@@ -425,7 +438,7 @@ function HousingBlueprintImportValidationContentMixin:OnBlueprintContentsReceive
 	self:MarkDirty();
 
 	-- If we got new content data for the blueprint the List frame is also showing, make sure it gets updated too
-	if HousingBlueprintContentListFrame:IsShown() and HousingBlueprintContentListFrame:IsShowingBlueprint(self.blueprintContentInfo.shareCode, self.blueprintContentInfo.targetHouseGUID)  then
+	if HousingBlueprintContentListFrame:IsShown() and HousingBlueprintContentListFrame:IsShowingBlueprintForTarget(self.blueprintContentInfo.shareCode, self.blueprintContentInfo.targetHouseGUID)  then
 		HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, self.isReadonly);
 	end
 end

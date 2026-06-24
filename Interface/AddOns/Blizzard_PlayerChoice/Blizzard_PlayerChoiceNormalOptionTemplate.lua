@@ -68,14 +68,25 @@ end
 PlayerChoiceNormalOptionTemplateMixin = CreateFromMixins(PlayerChoiceBaseOptionTemplateMixin, BaseMixin);
 
 local MIN_OPTION_HEIGHT_DEFAULT = 439;
-local MIN_OPTION_HEIGHT_NO_HEADER = 410;
+local MIN_OPTION_HEIGHT_COLUMNS = 260;
+local MIN_OPTION_HEIGHT_NO_HEADER_DIFF = 29; -- Amount to optionally remove from the above heights.
 
 function PlayerChoiceNormalOptionTemplateMixin:GetMinOptionHeight()
-	return self.Header:IsShown() and MIN_OPTION_HEIGHT_DEFAULT or MIN_OPTION_HEIGHT_NO_HEADER;
+	local minOptionHeight = MIN_OPTION_HEIGHT_DEFAULT;
+	if self.playerChoiceLayout == Enum.PlayerChoiceLayout.Columns then
+		minOptionHeight = MIN_OPTION_HEIGHT_COLUMNS;
+	end
+
+	if not self.Header:IsShown() then
+		minOptionHeight = minOptionHeight - MIN_OPTION_HEIGHT_NO_HEADER_DIFF;
+	end
+
+	return minOptionHeight;
 end
 
-local STANDARD_SIZE_WIDTH = 240;
-local WIDE_SIZE_WIDTH = 501;
+local WIDTH_STANDARD = 240;
+local WIDTH_LIST = 501;
+local WIDTH_COLUMNS = 540;
 
 do
 	local textureKitRegions = {
@@ -104,7 +115,14 @@ do
 			self.ArtworkBorder:SetDesaturated(not self.optionInfo.desaturatedArt and self.optionInfo.disabledOption);
 		end
 
-		self.fixedWidth = self.soloOption and WIDE_SIZE_WIDTH or STANDARD_SIZE_WIDTH;
+		if self.playerChoiceLayout == Enum.PlayerChoiceLayout.Columns then
+			self.fixedWidth = WIDTH_COLUMNS;
+		elseif self.soloOption then
+			self.fixedWidth = WIDTH_LIST;
+		else
+			self.fixedWidth = WIDTH_STANDARD;
+		end
+
 		self.Background:SetDesaturated(self.optionInfo.disabledOption);
 
 		local useTextureRegions = self:GetTextureKitRegionTable(textureKitRegions);
@@ -218,7 +236,7 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupOptionText()
 end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupButtons()
-	self.OptionButtonsContainer.numColumns = (self.soloOption and not self.showAsList) and 2 or 1;
+	self.OptionButtonsContainer.numColumns = (self.playerChoiceLayout == Enum.PlayerChoiceLayout.Columns or (self.soloOption and self.playerChoiceLayout ~= Enum.PlayerChoiceLayout.List)) and 2 or 1;
 	PlayerChoiceBaseOptionTemplateMixin.SetupButtons(self);
 end
 

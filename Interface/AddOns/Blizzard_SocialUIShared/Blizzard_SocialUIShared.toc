@@ -1,7 +1,7 @@
 ## Title: Blizzard_SocialUIShared
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_AccessibilityTemplates
+## Dependencies: Blizzard_AccessibilityTemplates, Blizzard_AddFriend
 
 SocialUISharedConstants.lua
 

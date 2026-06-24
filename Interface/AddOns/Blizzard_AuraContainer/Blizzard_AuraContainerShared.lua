@@ -20,3 +20,8 @@ do
 	DefaultAuraDurationFormatter:SetMaxIntervalCurve(maxIntervalCurve);
 	DefaultAuraDurationFormatter:SetDesiredUnitCount(1);
 end
+
+AuraButtonBorderStyle = {
+	Atlas = 0,
+	Color = 1,
+};

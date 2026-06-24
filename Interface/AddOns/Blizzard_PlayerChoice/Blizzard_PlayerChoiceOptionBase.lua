@@ -46,13 +46,13 @@ function PlayerChoiceBaseOptionTemplateMixin:OnSelected()
 	PlayerChoiceFrame:OnSelectionMade();
 end
 
-function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, soloOption, showAsList, hideAnswerArt)
+function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, layoutInfo)
 	self.optionInfo = optionInfo;
 	self.uiTextureKit = optionInfo.uiTextureKit;
 	self.frameTextureKit = frameTextureKit;
-	self.soloOption = soloOption;
-	self.showAsList = showAsList;
-	self.hideAnswerArt = hideAnswerArt;
+	self.playerChoiceLayout = layoutInfo.playerChoiceLayout;
+	self.soloOption = layoutInfo.soloOption;
+	self.hideAnswerArt = layoutInfo.hideAnswerArt;
 
 	self:SetupFrame();
 	self:SetupHeader();
@@ -284,7 +284,7 @@ function PlayerChoiceBaseOptionTemplateMixin:SetupWidgets()
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupButtons()
-	self.OptionButtonsContainer:Setup(self.optionInfo, self.showAsList, self);
+	self.OptionButtonsContainer:Setup(self.optionInfo, self.playerChoiceLayout, self);
 end
 
 PlayerChoiceBaseOptionAlignedSectionMixin = {};
@@ -371,21 +371,24 @@ local listFontByDisabledState = {
 	[true] = GRAY_FONT_COLOR,
 };
 
-function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, optionInfo, showAsList, parentOption)
-	if showAsList then
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, optionInfo, playerChoiceLayout, parentOption)
+	if playerChoiceLayout == Enum.PlayerChoiceLayout.List or playerChoiceLayout == Enum.PlayerChoiceLayout.Columns then
 		local fontColor = listFontByDisabledState[buttonInfo.disabled];
 		self.ListText:SetTextColor(fontColor:GetRGBA());
 		self.ListText:SetText(buttonInfo.listText);
 		self.ListText:Show();
 		self:SetScript("OnEnter", function() self.Button:OnEnter() end);
 		self:SetScript("OnLeave", function() self.Button:OnLeave() end);
+
+		-- Column layouts have the list text placed to the right of the button, determined via layoutIndex.
+		self.ListText.layoutIndex = playerChoiceLayout == Enum.PlayerChoiceLayout.Columns and 3 or 1;
 	else
 		self.ListText:Hide();
 		self:SetScript("OnEnter", nil);
 		self:SetScript("OnLeave", nil);
 	end
 
-	self.Button:Setup(buttonInfo, optionInfo, parentOption);
+	self.Button:Setup(buttonInfo, optionInfo, playerChoiceLayout, parentOption);
 	self:Layout();
 end
 
@@ -400,8 +403,9 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:OnLoad()
 end
 
 local COMPLETED_ATLAS_MARKUP = CreateAtlasMarkup("common-icon-checkmark", 16, 16);
+local BUTTON_WIDTH_COLUMN = 40; -- Column layouts have much smaller button widths as they are used for icons.
 
-function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo, parentOption)
+function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo, playerChoiceLayout, parentOption)
 	self.parentOption = parentOption;
 
 	local enabledState = not buttonInfo.disabled;
@@ -420,6 +424,12 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo,
 			self.Text:SetIgnoreParentAlpha(false);
 			self:SetAlpha(1);
 		end
+	end
+
+	if playerChoiceLayout == Enum.PlayerChoiceLayout.Columns then
+		self:SetWidth(BUTTON_WIDTH_COLUMN);
+	elseif self.defaultWidth then
+		self:SetWidth(self.defaultWidth);
 	end
 
 	self:SetEnabled(enabledState);
@@ -585,7 +595,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:SetPaddedHeight(paddedHeigh
 	self.topPadding = math.max(paddingHeight, 5);
 end
 
-function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsList, parentOption)
+function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, playerChoiceLayout, parentOption)
 	local buttonStride = math.max(math.floor(#optionInfo.buttons / self.numColumns), 1);
 
 	if buttonStride ~= self.lastStride then
@@ -595,13 +605,16 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 
 	self.buttonFramePool:ReleaseAll();
 
-	local buttonFrameTemplate = showAsList and self.listButtonFrameTemplate or self.buttonFrameTemplate;
+	local buttonFrameTemplate = self.buttonFrameTemplate;
+	if playerChoiceLayout == Enum.PlayerChoiceLayout.List or playerChoiceLayout == Enum.PlayerChoiceLayout.Columns then
+		buttonFrameTemplate = self.listButtonFrameTemplate;
+	end
 	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate, GenerateClosure(self.OptionButtonResetter, self));
 
 	local buttonFrames = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
 		local buttonFrame = self.buttonFramePool:Acquire(buttonFrameTemplate);
-		buttonFrame:Setup(buttonInfo, optionInfo, showAsList, parentOption);
+		buttonFrame:Setup(buttonInfo, optionInfo, playerChoiceLayout, parentOption);
 		buttonFrame:Show();
 		table.insert(buttonFrames, buttonFrame);
 	end

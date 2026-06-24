@@ -47,7 +47,6 @@
 				</Anchors>
 				<Frames>
 					<Frame parentKey="PetPane" inherits="DecorPetCustomizationTemplate">
-						<Size x="270" y="150"/>
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>

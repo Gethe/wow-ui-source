@@ -15,7 +15,39 @@ local SimpleFrameScriptObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "aspect", Type = "ForbiddenAspect", Nilable = false },
+				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
+			},
+		},
+		{
+			Name = "GetForbiddenAspects",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			Documentation = { "Returns the mask of all forbidden aspects applied to this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInheritableForbiddenAspects",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns the mask of all forbidden aspects applied to this object that can propagate to others." },
+
+			Arguments =
+			{
+				{ Name = "inheritance", Type = "ForbiddenAspectInheritance", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
 			},
 		},
 		{
@@ -60,7 +92,7 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
-			Name = "HasAnyForbiddenAspect",
+			Name = "HasAnyForbiddenAspects",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 			SecretArguments = "AllowedWhenUntainted",
@@ -68,27 +100,12 @@ local SimpleFrameScriptObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "aspect", Type = "ForbiddenAspect", Nilable = false },
+				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "hasAnyForbiddenAspect", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "HasAnyForbiddenAspects",
-			Type = "Function",
-			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
-			Documentation = { "Returns true if this object has any forbidden aspects." },
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "hasAnyForbiddenAspects", Type = "bool", Nilable = false },
 			},
 		},
 		{

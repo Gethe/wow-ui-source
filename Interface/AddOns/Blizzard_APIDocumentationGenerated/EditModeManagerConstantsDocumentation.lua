@@ -201,9 +201,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 35,
+			NumValues = 36,
 			MinValue = 0,
-			MaxValue = 34,
+			MaxValue = 35,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -241,6 +241,7 @@ local EditModeManagerConstants =
 				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
 				{ Name = "ShowRaidWarning", Type = "EditModeAccountSetting", EnumValue = 33 },
 				{ Name = "ShowTotemActionBar", Type = "EditModeAccountSetting", EnumValue = 34 },
+				{ Name = "ShowLossOfControl", Type = "EditModeAccountSetting", EnumValue = 35 },
 			},
 		},
 		{
@@ -493,6 +494,17 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeLossOfControlSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeLossOfControlSetting", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "EditModeMicroMenuSetting",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -623,9 +635,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -654,6 +666,7 @@ local EditModeManagerConstants =
 				{ Name = "DamageMeter", Type = "EditModeSystem", EnumValue = 23 },
 				{ Name = "RaidWarning", Type = "EditModeSystem", EnumValue = 24 },
 				{ Name = "TotemActionBar", Type = "EditModeSystem", EnumValue = 25 },
+				{ Name = "LossOfControl", Type = "EditModeSystem", EnumValue = 26 },
 			},
 		},
 		{

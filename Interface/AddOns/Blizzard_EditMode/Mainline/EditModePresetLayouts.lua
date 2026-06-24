@@ -891,6 +891,19 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			offsetY = -182,
 		},
 	},
+
+	[Enum.EditModeSystem.LossOfControl] = {
+		settings = {
+			[Enum.EditModeLossOfControlSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
 };
 
 EDIT_MODE_CLASSIC_SYSTEM_MAP =
@@ -1553,4 +1566,6 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.DamageMeter] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.DamageMeter];
 
 	[Enum.EditModeSystem.RaidWarning] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.RaidWarning];
+
+	[Enum.EditModeSystem.LossOfControl] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.LossOfControl];
 };

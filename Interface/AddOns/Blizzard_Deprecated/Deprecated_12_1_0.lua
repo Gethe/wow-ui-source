@@ -18,3 +18,6 @@ function setglobal(var, val)
 	_G[var] = val;
 end
 
+C_SuperTrack.GetNextWaypointForMap = C_Navigation.GetNextWaypointForMap;
+
+
