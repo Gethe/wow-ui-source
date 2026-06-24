@@ -340,7 +340,7 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, (function() TradeSkillFrame_Update(self:GetParent()) end));
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
