@@ -170,14 +170,14 @@ function BarberShop_UpdateCustomizationOptions(self)
 	self.FacialHairSelector.Category:SetText(C_BarberShop.GetCustomizationTypeInfo(Enum.CharCustomizationType.FacialHair));
 
 	for i = 0, Constants.CharCustomizationConstants.NUM_CUSTOM_DISPLAY - 1 do
-		local customizationOption = Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + i;
+		local customizationOption = i;
 		local customizationName, name, isCurrent = C_BarberShop.GetCustomizationTypeInfo(customizationOption);
 
-		self.Selector[customizationOption]:SetShown(isCurrent);
+		self.Selector[customizationOption + 1]:SetShown(true);
 
 		if isCurrent then
 			assertsafe(customizationName ~= nil, "Option %d is marked current but has no name", customizationOption);
-			self.Selector[customizationOption].Category:SetText(customizationName);
+			self.Selector[customizationOption + 1].Category:SetText(customizationName);
 		end
 	end
 
