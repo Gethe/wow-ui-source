@@ -17,6 +17,9 @@ local SoftTargetConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SoftTargetConstants);

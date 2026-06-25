@@ -269,7 +269,7 @@ end
 function MountJournal_OnShow(self)
 
 	MountJournal_FullUpdate(self);
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\ICONS\\Ability_Mount_RidingHorse");
+	self:GetParent().portrait:SetTexture("Interface\\ICONS\\Ability_Mount_RidingHorse");
 
 	--flip the texture so it matches the microbutton
 	self:GetParent().portrait:SetTexCoord(1, 0, 0, 1);

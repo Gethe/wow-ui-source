@@ -3,6 +3,7 @@ local Seasons =
 	Name = "SeasonsScripts",
 	Type = "System",
 	Namespace = "C_Seasons",
+	Environment = "All",
 
 	Functions =
 	{
@@ -31,6 +32,9 @@ local Seasons =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

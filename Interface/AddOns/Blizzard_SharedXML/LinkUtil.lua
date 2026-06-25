@@ -28,6 +28,8 @@ LinkTypes = {
 	GarrisonMission = "garrmission",
 	GMChat = "GMChat",
 	GroupFinderUI = "lfd",
+	HousingDecor = "housingdecor",
+	InitiativeTask = "initiativetask",
 	Item = "item",
 	LevelUpToast = "levelup",
 	LFGListing = "lfglisting",
@@ -49,14 +51,14 @@ LinkTypes = {
 	TalentsUI = "talentpane",
 	TransmogAppearance = "transmogappearance",
 	TransmogIllusion = "transmogillusion",
-	TransmogOutfit = "outfit",
+	TransmogCustomSet = "customset",
 	TransmogSet = "transmogset",
 	Unit = "unit",
 	URLIndex = "urlIndex",
 	WarbandScene = "warbandScene",
 	WorldMapWaypoint = "worldmap",
 	WorldQuest = "worldquest",
-	Talent = "talent"
+	Talent = "talent",
 };
 
 LinkUtil = {};

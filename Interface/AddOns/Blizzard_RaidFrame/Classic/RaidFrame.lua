@@ -4,7 +4,7 @@ RaidInfoFrameMixin = {}
 RaidInstanceFrameMixin = {}
 
 function RaidParentFrameMixin:OnLoad()
-	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self.portrait:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 end
@@ -134,7 +134,7 @@ end
 function RaidInstanceFrameMixin:OnClick()
 	if self.instanceID and IsModifiedClick("CHATLINK") then
 		--Currently this isn't supported in Classic
-		--ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetElementData().index));
+		--ChatFrameUtil.InsertLink(GetSavedInstanceChatLink(self:GetElementData().index));
 	else
 		local oldSelectedIndex = RaidInfoFrame.selectedIndex;
 		local oldSelectedIsInstance = RaidInfoFrame.selectedIsInstance;

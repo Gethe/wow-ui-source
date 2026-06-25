@@ -157,7 +157,7 @@
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
-						SetEveryoneIsAssistant(self:GetChecked());
+						C_PartyInfo.SetEveryoneIsAssistant(self:GetChecked());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

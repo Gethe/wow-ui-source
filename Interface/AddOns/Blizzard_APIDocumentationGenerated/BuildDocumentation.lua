@@ -2,9 +2,24 @@ local Build =
 {
 	Name = "Build",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "GetBuildOption",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSet", Type = "bool", Nilable = true },
+			},
+		},
 		{
 			Name = "IsBetaBuild",
 			Type = "Function",
@@ -40,6 +55,9 @@ local Build =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -2,6 +2,7 @@ local FrameAPITabardModel =
 {
 	Name = "FrameAPITabardModel",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -90,6 +91,9 @@ local FrameAPITabardModel =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

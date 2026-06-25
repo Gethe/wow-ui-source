@@ -1,24 +1,5 @@
 InterfaceOverrides = {}
 
-function InterfaceOverrides.CreateLargerNameplateSetting(category)
-	--no setting in Classic
-end
-
-function InterfaceOverrides.AdjustNameplateSettings(category)
-	if GetClassicExpansionLevel() > LE_EXPANSION_CLASSIC then
-		-- Nameplate Distance
-		local minValue, maxValue, step = 20, 41, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
-		Settings.SetupCVarSlider(category, "nameplateMaxDistance", options, UNIT_NAMEPLATES_MAX_DISTANCE, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAX_DISTANCE);
-	end
-
-	-- Nameplate Show Cast Bars
-	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckbox(category, "nameplateShowCastBars", UNIT_NAMEPLATES_SHOW_CAST_BARS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_CAST_BARS);
-	end);
-end
-
 function InterfaceOverrides.AdjustDisplaySettings(category)
 	do
 		-- Show Helm
@@ -106,9 +87,6 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		-- Consolidate Buffs
 		Settings.SetupCVarCheckbox(category, "consolidateBuffs", CONSOLIDATE_BUFFS_TEXT, OPTION_TOOLTIP_CONSOLIDATE_BUFFS);
 	end
-
-	-- Hide Zone Objective Tracker
-	Settings.SetupCVarCheckbox(category, "hideOutdoorWorldState", HIDE_OUTDOOR_WORLD_STATE_TEXT, OPTION_TOOLTIP_HIDE_OUTDOOR_WORLD_STATE);
 
 	do
 		-- Show Minimap Clock
@@ -261,6 +239,10 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 end
 
 function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
+	--No setting in Classic
+end
+
+function InterfaceOverrides.CreateHousingSettings(category, layout)
 	--No setting in Classic
 end
 

@@ -11,11 +11,6 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Count" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Duration" inherits="GameFontNormalSmall" hidden="true" >
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
@@ -23,12 +18,11 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size x="33" y="32"/>
+				<Texture parentKey="DebuffBorder">
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
-					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>
 				<Texture parentKey="TempEnchantBorder" file="Interface\Buttons\UI-TempEnchant-Border">
 					<Size x="32" y="32"/>
@@ -39,6 +33,11 @@
 				<FontString parentKey="Symbol" inherits="TextStatusBarText">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -52,7 +51,7 @@
 	</Button>
 
 	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->
-	<Button name="AuraButtonTemplate" inherits="AuraButtonCodeTemplate" virtual="true">
+	<Button name="AuraButtonTemplate" inherits="AuraButtonCodeTemplate" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>

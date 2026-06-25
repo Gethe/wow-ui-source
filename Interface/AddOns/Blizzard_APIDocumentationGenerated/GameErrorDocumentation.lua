@@ -2,6 +2,7 @@ local GameError =
 {
 	Name = "GameError",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -33,6 +34,9 @@ local GameError =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -49,7 +49,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ConfirmReadyCheck(1);
+								C_PartyInfo.ConfirmReadyCheck(true);
 								ReadyCheckFrame:Hide();
 							</OnClick>
 						</Scripts>
@@ -62,7 +62,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ConfirmReadyCheck();
+								C_PartyInfo.ConfirmReadyCheck(false);
 								ReadyCheckFrame:Hide();
 							</OnClick>
 						</Scripts>

@@ -38,7 +38,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
+
 	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
 	<Frame name="InspectTalentRowTemplate" virtual="true">
 		<Size x="627" y="50"/>
@@ -60,7 +60,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
+
 	<!-- Glyph icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
 	<Button name="InspectGlyphTemplate" virtual="true" mixin="InspectGlyphMixin">
 		<Size x="72" y="72"/>
@@ -97,7 +97,7 @@
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4" mixin="InspectTalentFrameMixin">
 		<Layers>
 			<!-- Blue background behind spec ring -->
@@ -105,7 +105,7 @@
 				<Texture file="Interface\Common\bluemenu-main">
 					<Size x="325" y="70"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="6" y="-64" />
+						<Anchor point="TOPLEFT" x="6" y="-64"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
 				</Texture>
@@ -132,12 +132,13 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
-							<Size x="101" y="101"/>	
+							<Size x="101" y="101"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="5" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
 						</Texture>
+						<!-- InspectTalentFrameSpecName, help to link up a frame reference in Blizzard_InspectUI RU localization.lua	-->
 						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyV="BOTTOM" parentKey="specName">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="1"/>
@@ -178,7 +179,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Talents -->
 			<Frame parentKey="InspectTalents" mixin="InspectTalentsMixin">
 				<Size x="300" y="300"/>
@@ -189,32 +190,32 @@
 					<Frame name="$parentTalentRow1" inherits="InspectTalentRowTemplate" parentKey="tier1" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-142"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 					<Frame name="$parentTalentRow2" inherits="InspectTalentRowTemplate" parentKey="tier2" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 					<Frame name="$parentTalentRow3" inherits="InspectTalentRowTemplate" parentKey="tier3" id="3">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 					<Frame name="$parentTalentRow4" inherits="InspectTalentRowTemplate" parentKey="tier4" id="4">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 					<Frame name="$parentTalentRow5" inherits="InspectTalentRowTemplate" parentKey="tier5" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 					<Frame name="$parentTalentRow6" inherits="InspectTalentRowTemplate" parentKey="tier6" id="6">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>				
+						</Anchors>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -222,10 +223,10 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Glyphs -->
 			<Frame parentKey="InspectGlyphs" mixin="InspectGlyphsMixin">
-			<Size x="300" y="300"/>
+				<Size x="300" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="180" y="-150"/>
 				</Anchors>
@@ -245,8 +246,8 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" x="65" y="-180"/>
 						</Anchors>
-					</Button>	
-					
+					</Button>
+
 					<!-- Major Glyphs -->
 					<Button name="$parentGlyph2" parentKey="Glyph2" inherits="InspectGlyphTemplate" id="2">
 						<Anchors>
@@ -265,12 +266,11 @@
 					</Button>
 				</Frames>
 			</Frame>
-			
 		</Frames>
-	<Scripts>
+		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
-	</Scripts>
+		</Scripts>
 	</Frame>
 </Ui>

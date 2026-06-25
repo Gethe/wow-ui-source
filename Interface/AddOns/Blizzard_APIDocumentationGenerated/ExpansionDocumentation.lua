@@ -2,6 +2,7 @@ local Expansion =
 {
 	Name = "Expansion",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -194,11 +195,13 @@ local Expansion =
 			Name = "MaxExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MAX_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MinExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MIN_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -215,6 +218,9 @@ local Expansion =
 				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "glueAmbianceSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueMusicSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueCreditsSoundKit", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -226,6 +232,9 @@ local Expansion =
 				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

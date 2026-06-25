@@ -529,13 +529,16 @@ function QuestLogTitleButton_OnClick(self, button)
 		-- Shift-click toggles quest-watch on this quest.
 		if ( IsQuestWatched(questIndex) ) then
 			local questID = GetQuestIDFromLogIndex(questIndex);
-			for index, value in ipairs(QUEST_WATCH_LIST) do
-				if ( value.id == questID ) then
-					tremove(QUEST_WATCH_LIST, index);
+			if (questID) then
+				for index, value in ipairs(QUEST_WATCH_LIST) do
+					if ( value.id == questID ) then
+						tremove(QUEST_WATCH_LIST, index);
+					end
 				end
+				RemoveQuestWatch(questIndex);
+				QuestWatch_Update();
 			end
-			RemoveQuestWatch(questIndex);
-			QuestWatch_Update();
+			
 		else
 			-- Set error if no objectives
 			if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
@@ -583,10 +586,10 @@ function QuestLog_UpdatePartyInfoTooltip(self)
 	local questID = GetQuestIDFromLogIndex(index);
 
 	if ( numPartyMembers == 0 or self.isHeader ) then
-		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, false);
+		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, index);
 		return;
 	end
-	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, true);
+	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, index);
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 
 	local questLogTitleText = GetQuestLogTitle(index);
@@ -818,23 +821,25 @@ end
 
 function AutoQuestWatch_Update(questIndex)
 	local questID = GetQuestIDFromLogIndex(questIndex);
+	if (questID) then
 	-- Check the array for an existing matching entry.  Remove if matched, then add the quest to the watch list.
-	for index, value in ipairs(QUEST_WATCH_LIST) do
-		if ( value.id == questID and value.timer == QUEST_WATCH_NO_EXPIRE ) then
-			return;
-		elseif ( not value.id and QuestIsWatched(questIndex) ) then
-			value.id = questID;
-			value.timer = QUEST_WATCH_NO_EXPIRE;
-			tinsert(QUEST_WATCH_LIST, value)
-		elseif ( value.id == questID and ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) ) then
-			tremove(QUEST_WATCH_LIST, index);
-			value.id = questID;
-			value.timer = MAX_QUEST_WATCH_TIMER;
-			tinsert(QUEST_WATCH_LIST, value);
-			return;
+		for index, value in ipairs(QUEST_WATCH_LIST) do
+			if ( value.id == questID and value.timer == QUEST_WATCH_NO_EXPIRE ) then
+				return;
+			elseif ( not value.id and QuestIsWatched(questIndex) ) then
+				value.id = questID;
+				value.timer = QUEST_WATCH_NO_EXPIRE;
+				tinsert(QUEST_WATCH_LIST, value)
+			elseif ( value.id == questID and ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) ) then
+				tremove(QUEST_WATCH_LIST, index);
+				value.id = questID;
+				value.timer = MAX_QUEST_WATCH_TIMER;
+				tinsert(QUEST_WATCH_LIST, value);
+				return;
+			end
 		end
+		AutoQuestWatch_Insert(questIndex, MAX_QUEST_WATCH_TIMER);
 	end
-	AutoQuestWatch_Insert(questIndex, MAX_QUEST_WATCH_TIMER);
 end
 
 
@@ -854,8 +859,11 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	local questID = select(8, GetQuestLogTitle(questIndex));
-	return questID;
+	if (type(questIndex) == "number") then
+		local questID = select(8, GetQuestLogTitle(questIndex));
+		return questID;
+	end
+	return nil
 end
 
 function QuestLogUpdateQuestCount(numQuests)

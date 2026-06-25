@@ -222,7 +222,7 @@ function GlyphFrame_Update (self)
 			local specIcon = GlyphFrame.specIcon;
 			GlyphFrame.specRing:Show();
 			specIcon:Show();
-			SetPortraitToTexture(specIcon, icon);
+			specIcon:SetTexture(icon);
 			SetDesaturation(specIcon, true);
 			SetDesaturation(GlyphFrame.specRing, not isActiveTalentGroup);
 		else
@@ -488,7 +488,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.spell = glyphSpell;
 		self.glyph:Show();
 		if ( iconFilename ) then
-			SetPortraitToTexture(self.glyph, iconFilename);
+			self.glyph:SetTexture(iconFilename);
 		else
 			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
 		end

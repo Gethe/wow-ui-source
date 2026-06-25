@@ -1,7 +1,7 @@
 UnitPopupAttachableFrameMixin = {};
 
 function UnitPopupAttachableFrameMixin:GetDesiredSize()
-	return self:GetWidth(), self:GetHeight();
+	return self:GetSize();
 end
 
 function UnitPopupAttachableFrameMixin:SetContextData(contextData)
@@ -31,6 +31,17 @@ function UnitPopupVoiceMemberInfoMixin:CallMutator(...)
 end
 
 UnitPopupVoiceToggleButtonMixin = {};
+
+function UnitPopupVoiceToggleButtonMixin:UpdateTooltipForState(state)
+	if self.tooltipFrame and (self.tooltipFrame:GetOwner() == self or self:IsMouseOver()) then
+		self:SetTooltip(state);
+	end
+end
+
+function UnitPopupVoiceToggleButtonMixin:OnClick()
+	PropertyButtonMixin.OnClick(self);
+	self:UpdateVisibleState();
+end
 
 function UnitPopupVoiceToggleButtonMixin:OnEnter()
 	PropertyBindingMixin.OnEnter(self);
@@ -126,7 +137,7 @@ function UnitPopupToggleDeafenMixin:OnLoad()
 	self:AddStateAtlas(false, "voicechat-icon-speaker");
 	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
 	self:AddStateTooltipString(false, VOICE_TOOLTIP_DEAFEN);
-   	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNDEAFEN);
+	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNDEAFEN);
 	self:SetUseIconAsHighlight(true);
 end
 

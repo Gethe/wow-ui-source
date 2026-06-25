@@ -93,7 +93,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeActionBarSetting.VisibleSetting,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.ActionBarVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_ALWAYS},
 				{value = Enum.ActionBarVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_IN_COMBAT},
@@ -240,7 +240,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.ViewRaidSize,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_SIZE,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.ViewRaidSize.Ten, text = "10"},
 				{value = Enum.ViewRaidSize.TwentyFive, text = "25"},
@@ -293,7 +293,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.RaidGroupDisplayType,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.RaidGroupDisplayType.SeparateGroupsVertical, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_VERTICAL},
 				{value = Enum.RaidGroupDisplayType.SeparateGroupsHorizontal, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_HORIZONTAL},
@@ -307,7 +307,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.SortPlayersBy,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.SortPlayersBy.Role, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_ROLE},
 				{value = Enum.SortPlayersBy.Group, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_GROUP},
@@ -350,6 +350,59 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+		},
+
+		-- Aura Organization (how the auras, role icons, name, and dispel types are organized and anchored within the frame)
+		{
+			setting = Enum.EditModeUnitFrameSetting.AuraOrganizationType,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.RaidAuraOrganizationType.Legacy, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_LEGACY },
+				{value = Enum.RaidAuraOrganizationType.BuffsTopDebuffsBottom, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_TOP },
+				{value = Enum.RaidAuraOrganizationType.BuffsRightDebuffsLeft, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_RIGHT },
+			},
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeUnitFrameSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CONTAINER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- IconSize (controls the scale of the aura icons)
+		{
+			setting = Enum.EditModeUnitFrameSetting.IconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- BigDefensiveIconSize (controls the scale of the larger centered defensive aura icon)
+		{
+			setting = Enum.EditModeUnitFrameSetting.BigDefensiveIconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BIGDEFENSIVE_AURA_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
 		},
 	},
 
@@ -440,6 +493,39 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 16,
 			stepSize = 1,
 		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeAuraFrameSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visible Setting
+		{
+			setting = Enum.EditModeAuraFrameSetting.VisibleSetting,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.AuraFrameVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.AuraFrameVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.AuraFrameVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_HIDDEN},
+			},
+		},
+
+		-- Show Dispel Type Setting
+		{
+			setting = Enum.EditModeAuraFrameSetting.ShowDispelType,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_SHOW_DISPEL_TYPE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] =
@@ -457,7 +543,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 800,
 			stepSize = 1,
 
-			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value.
 			-- We do this to support more values than we're normally capable of based on data saving limits.
 			isCompositeNumberSetting = true,
 			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.WidthHundreds,
@@ -473,7 +559,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 800,
 			stepSize = 1,
 
-			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value.
 			-- We do this to support more values than we're normally capable of based on data saving limits.
 			isCompositeNumberSetting = true,
 			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.HeightHundreds,
@@ -632,7 +718,17 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.StatusTrackingBar] =
 	{
-
+		-- Size
+		{
+			setting = Enum.EditModeStatusTrackingBarSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_STATUS_TACKING_BAR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 130,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 
 	[Enum.EditModeSystem.DurabilityFrame] =
@@ -748,9 +844,21 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.IconPadding,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_PADDING,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 2,
-			maxValue = 10,
+			minValue = 0,	-- NOTE: See CooldownViewerMixin:GetAdditionalPaddingOffset when changing these values.
+			maxValue = 14,
 			stepSize = 1,
+		},
+
+		-- BarWidthScale
+		{
+			setting = Enum.EditModeCooldownViewerSetting.BarWidthScale,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BUFFBAR_WIDTH_SCALE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
 		},
 
 		-- Opacity
@@ -771,7 +879,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.VisibleSetting,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.CooldownViewerVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_ALWAYS},
 				{value = Enum.CooldownViewerVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_IN_COMBAT},
@@ -784,7 +892,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.BarContent,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.CooldownViewerBarContent.IconAndName, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_AND_NAME},
 				{value = Enum.CooldownViewerBarContent.IconOnly, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_ONLY},
@@ -812,6 +920,457 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_SHOW_TOOLTIPS,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+	},
+
+	[Enum.EditModeSystem.PersonalResourceDisplay] = {
+		-- Size
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.Size,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 70,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Bar Width
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.BarWidth,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_BAR_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Health Bar Height
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HealthBarHeight,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HEALTH_BAR_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 10,
+			maxValue = 30,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Power Bar Height
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.PowerBarHeight,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_POWER_BAR_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 10,
+			maxValue = 30,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Padding
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 10,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visible Setting
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.VisibleSetting,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.PersonalResourceDisplayVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.PersonalResourceDisplayVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.PersonalResourceDisplayVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_VISIBLE_SETTING_HIDDEN},
+			},
+		},
+
+		-- Hide Health
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideHealth,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_HEALTH_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Power
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HidePower,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_POWER_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Alternate Power
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideAltPower,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_ALT_POWER_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Class Info
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideClassInfo,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_CLASS_INFO,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Hide Class Info On Player Frame
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.HideClassInfoOnPlayerFrame,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_HIDE_CLASS_INFO_ON_PLAYER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Class Color
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.ShowClassColor,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SHOW_CLASS_COLOR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Bar Text
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.ShowBarText,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SHOW_BAR_TEXT,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	[Enum.EditModeSystem.EncounterEvents] = {
+		-- Type
+		{
+			setting = Enum.EditModeEncounterEventsSetting.ViewType,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsViewType.Timeline, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE_TIMELINE},
+				{value = Enum.EncounterEventsViewType.Bars, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TYPE_BARS},
+			},
+		},
+
+		-- Orientation
+		{
+			setting = Enum.EditModeEncounterEventsSetting.Orientation,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ORIENTATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ORIENTATION_HORIZONTAL},
+				{value = Enum.EncounterEventsOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ORIENTATION_VERTICAL},
+			},
+		},
+
+		-- Direction
+		{
+			setting = Enum.EditModeEncounterEventsSetting.IconDirection,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsIconDirection.Left, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_LEFT},
+				{value = Enum.EncounterEventsIconDirection.Right, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_RIGHT},
+			},
+		},
+
+		-- Icon Size
+		{
+			setting = Enum.EditModeEncounterEventsSetting.IconSize,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Overall Size
+		{
+			setting = Enum.EditModeEncounterEventsSetting.OverallSize,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_OVERALL_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Padding
+		{
+			setting = Enum.EditModeEncounterEventsSetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 20,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Bar Width
+		{
+			setting = Enum.EditModeEncounterEventsSetting.BarWidth,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_BAR_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Background
+		{
+			setting = Enum.EditModeEncounterEventsSetting.BackgroundTransparency,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_BACKGROUND,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Transparency
+		{
+			setting = Enum.EditModeEncounterEventsSetting.Transparency,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TRANSPARENCY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visibility
+		{
+			setting = Enum.EditModeEncounterEventsSetting.Visibility,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsVisibility.Always, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_ALWAYS},
+				{value = Enum.EncounterEventsVisibility.InEncounter, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_IN_ENCOUNTER},
+			},
+		},
+
+		-- Tooltips
+		{
+			setting = Enum.EditModeEncounterEventsSetting.TooltipAnchor,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EncounterEventsTooltipAnchor.Hidden, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS_NONE},
+				{value = Enum.EncounterEventsTooltipAnchor.Default, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS_HUD},
+				{value = Enum.EncounterEventsTooltipAnchor.Cursor, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TOOLTIPS_CURSOR},
+			},
+		},
+
+		-- Flip Horizontally
+		{
+			setting = Enum.EditModeEncounterEventsSetting.FlipHorizontally,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_FLIP_HORIZONTAL,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Spell Name
+		{
+			setting = Enum.EditModeEncounterEventsSetting.ShowSpellName,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_SHOW_SPELL_NAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Timer
+		{
+			setting = Enum.EditModeEncounterEventsSetting.ShowTimer,
+			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_SHOW_TIMER,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	[Enum.EditModeSystem.DamageMeter] =
+	{
+		-- Style
+		{
+			setting = Enum.EditModeDamageMeterSetting.Style,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			hideSystemSelectionOnInteract = true,
+			options = {
+				{ value = Enum.DamageMeterStyle.Default, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_DEFAULT },
+				{ value = Enum.DamageMeterStyle.Bordered, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_BORDERED },
+				{ value = Enum.DamageMeterStyle.Thin, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_THIN },
+			},
+		},
+
+		-- Numbers
+		{
+			setting = Enum.EditModeDamageMeterSetting.Numbers,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = {
+				{ value = Enum.DamageMeterNumbers.Minimal, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_MINIMAL },
+				{ value = Enum.DamageMeterNumbers.Compact, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPACT },
+				{ value = Enum.DamageMeterNumbers.Complete, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPLETE },
+			},
+		},
+
+		-- Frame Width
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameWidth,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 200,
+			maxValue = 600,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Frame Height
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 120,
+			maxValue = 400,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Bar Height
+		{
+			setting = Enum.EditModeDamageMeterSetting.BarHeight,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_BAR_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 15,
+			maxValue = 40,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Padding
+		{
+			setting = Enum.EditModeDamageMeterSetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 2,
+			maxValue = 10,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Transparency
+		{
+			setting = Enum.EditModeDamageMeterSetting.Transparency,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_TRANSPARENCY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Background
+		{
+			setting = Enum.EditModeDamageMeterSetting.BackgroundTransparency,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_BACKGROUND,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Text Size
+		{
+			setting = Enum.EditModeDamageMeterSetting.TextSize,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_TEXT_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Visibility
+		{
+			setting = Enum.EditModeDamageMeterSetting.Visibility,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.DamageMeterVisibility.Always, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_ALWAYS},
+				{value = Enum.DamageMeterVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_COMBAT},
+				{value = Enum.DamageMeterVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_HIDDEN},
+				{value = Enum.DamageMeterVisibility.InGroup, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_GROUP},
+			},
+		},
+
+		-- Show Spec Icon
+		{
+			setting = Enum.EditModeDamageMeterSetting.ShowSpecIcon,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_SHOW_SPEC_ICON,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Class Color
+		{
+			setting = Enum.EditModeDamageMeterSetting.ShowClassColor,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_SHOW_CLASS_COLOR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	[Enum.EditModeSystem.TotemActionBar] =
+	{
+
 	},
 };
 

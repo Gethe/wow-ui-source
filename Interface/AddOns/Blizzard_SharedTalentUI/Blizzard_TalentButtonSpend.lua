@@ -37,8 +37,15 @@ function TalentButtonSpendMixin:CanPurchaseRank()
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
-	self:PlaySelectSound();
-	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
+	local talentFrame = self:GetTalentFrame();
+	local nodeID = self:GetNodeID();
+
+	-- If we are showing a confirmation, we want to hold off on playing the sound until they confirm
+	if not talentFrame:ShouldShowConfirmation(nodeID) then
+		self:PlaySelectSound();
+	end
+
+	self:GetTalentFrame():PurchaseRank(nodeID);
 	self:UpdateMouseOverInfo();
 end
 

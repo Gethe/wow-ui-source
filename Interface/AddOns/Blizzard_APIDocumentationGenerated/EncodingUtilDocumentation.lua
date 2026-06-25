@@ -3,6 +3,7 @@ local EncodingUtil =
 	Name = "EncodingUtil",
 	Type = "System",
 	Namespace = "C_EncodingUtil",
+	Environment = "All",
 
 	Functions =
 	{
@@ -221,6 +222,9 @@ local EncodingUtil =
 				{ Name = "ignoreSerializationErrors", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, attempt to ignore errors from unsupported values and instead replace them where applicable with 'null' JSON values." } },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

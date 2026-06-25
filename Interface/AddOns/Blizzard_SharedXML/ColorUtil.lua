@@ -1,5 +1,6 @@
 COLOR_FORMAT_RGBA = "RRGGBBAA";
 COLOR_FORMAT_RGB = "RRGGBB";
+COLOR_FORMAT_ARGB = "AARRGGBB";
 FONT_COLOR_CODE_CLOSE = "|r";
 
 function ExtractColorValueFromHex(str, index)
@@ -7,30 +8,44 @@ function ExtractColorValueFromHex(str, index)
 end
 
 function CreateColorFromHexString(hexColor)
-	if #hexColor == 8 then
+	if #hexColor == #COLOR_FORMAT_ARGB then
 		local a, r, g, b = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
 		return CreateColor(r, g, b, a);
-	else
-		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
 	end
+
+	assertsafe(false, "CreateColorFromHexString input must be hexadecimal digits in this format: %s.", COLOR_FORMAT_ARGB);
+	return nil;
 end
 
 function CreateColorFromRGBAHexString(hexColor)
 	if #hexColor == #COLOR_FORMAT_RGBA then
 		local r, g, b, a = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
 		return CreateColor(r, g, b, a);
-	else
-		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: RRGGBBAA.");
 	end
+
+	assertsafe(false, "CreateColorFromHexString input must be hexadecimal digits in this format: %s", COLOR_FORMAT_RGBA);
+	return nil;
 end
 
 function CreateColorFromRGBHexString(hexColor)
 	if #hexColor == #COLOR_FORMAT_RGB then
 		local r, g, b = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5);
 		return CreateColor(r, g, b, 1);
-	else
-		GMError("CreateColorFromRGBHexString input must be hexadecimal digits in this format: RRGGBB.");
 	end
+
+	assertsafe(false, "CreateColorFromRGBHexString input must be hexadecimal digits in this format: %s", COLOR_FORMAT_RGB);
+	return nil;
+end
+
+function CreateColorFromBestRGBHexString(hexColor)
+	if #hexColor == #COLOR_FORMAT_RGBA then
+		return CreateColorFromRGBAHexString(hexColor);
+	elseif #hexColor == #COLOR_FORMAT_RGB then
+		return CreateColorFromRGBHexString(hexColor);
+	end
+
+	assertsafe(false, "CreateColorFromBestRGBHexString input must be hexadecimal digits in either of these formats: %s / %s", COLOR_FORMAT_RGBA, COLOR_FORMAT_RGB);
+	return nil;
 end
 
 function CreateColorFromBytes(r, g, b, a)

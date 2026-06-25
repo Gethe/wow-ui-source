@@ -119,9 +119,9 @@ local CursorConst =
 		{
 			Name = "UICursorType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 21,
 			Fields =
 			{
 				{ Name = "Default", Type = "UICursorType", EnumValue = 0 },
@@ -145,6 +145,7 @@ local CursorConst =
 				{ Name = "Toy", Type = "UICursorType", EnumValue = 18 },
 				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 19 },
 				{ Name = "PerksProgramVendorItem", Type = "UICursorType", EnumValue = 20 },
+				{ Name = "Outfit", Type = "UICursorType", EnumValue = 21 },
 			},
 		},
 		{
@@ -161,6 +162,24 @@ local CursorConst =
 				{ Name = "Nameplate", Type = "WorldCursorAnchorType", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "WoWClientCursorSize",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Standard", Type = "WoWClientCursorSize", EnumValue = 0 },
+				{ Name = "Medium", Type = "WoWClientCursorSize", EnumValue = 1 },
+				{ Name = "Large", Type = "WoWClientCursorSize", EnumValue = 2 },
+				{ Name = "ExtraLarge", Type = "WoWClientCursorSize", EnumValue = 3 },
+				{ Name = "Massive", Type = "WoWClientCursorSize", EnumValue = 4 },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

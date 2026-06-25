@@ -100,7 +100,7 @@ function AlternatePowerBar_SetLook(self)
 	local specialization = C_SpecializationInfo.GetSpecialization();
 	if ( class == "MONK" and (specialization == SPEC_MONK_MISTWEAVER or specialization == SPEC_MONK_BREWMASTER)) then
 		self:SetWidth(94);
-		self:SetPoint("BOTTOMLEFT", 118, 4);
+		self:SetPoint("BOTTOMLEFT", 100, 0);
 		self.DefaultBackground:Hide();
 		self.DefaultBorder:Hide();
 		self.DefaultBorderLeft:Hide();

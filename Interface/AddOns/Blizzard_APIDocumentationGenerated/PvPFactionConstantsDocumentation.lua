@@ -15,6 +15,9 @@ local PvPFactionConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PvPFactionConstants);

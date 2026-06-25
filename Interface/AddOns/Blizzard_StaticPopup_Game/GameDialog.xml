@@ -151,7 +151,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
+			<Frame parentKey="CoverFrame" enableMouse="true" enableKeyboard="true" hidden="true" frameStrata="HIGH" mixin="GameDialogCoverFrameMixin">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
@@ -163,7 +163,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnKeyDown function="nop"/>
+					<OnKeyDown method="OnKeyDown"/>
 					<OnKeyUp function="nop"/>
 				</Scripts>
 			</Frame>

@@ -1,0 +1,406 @@
+local SecretPredicateAPI =
+{
+	Name = "SecretUtil",
+	Type = "System",
+	Namespace = "C_Secrets",
+	Environment = "All",
+	Documentation = { "'How is it a secret if we can C it?'" },
+
+	Functions =
+	{
+		{
+			Name = "CanCompareUnitTokens",
+			Type = "Function",
+			Documentation = { "Returns true if queries to compare two input unit tokens are permitted. If this returns false, APIs guarded by the RequiresComparableUnitTokens predicate will fail." },
+
+			Arguments =
+			{
+				{ Name = "unit1", Type = "UnitToken", Nilable = false },
+				{ Name = "unit2", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitComparisonPermitted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPowerTypeSecrecy",
+			Type = "Function",
+			Documentation = { "Queries the base secrecy for a power type." },
+
+			Arguments =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellAuraSecrecy",
+			Type = "Function",
+			Documentation = { "Queries the base secrecy for a spell if queried as an aura." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCastSecrecy",
+			Type = "Function",
+			Documentation = { "Queries the base secrecy for a spell if queried as a cast." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCooldownSecrecy",
+			Type = "Function",
+			Documentation = { "Queries the base secrecy for a spell if queried as a cooldown." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretRestrictions",
+			Type = "Function",
+			Documentation = { "Returns true if this client build has secret value restrictions enabled. If false, all APIs that are tagged as potentially returning secrets will never do so." },
+
+			Returns =
+			{
+				{ Name = "hasSecretRestrictions", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldActionCooldownBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given action bar slot ID will produce secret values for cooldowns if queried." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCooldownSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldAurasBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for aura data will generally produce secret values." },
+
+			Returns =
+			{
+				{ Name = "hasSecretAuras", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldCooldownsBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for cooldown data will generally produce secret values." },
+
+			Returns =
+			{
+				{ Name = "hasSecretCooldowns", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldSpellAuraBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given spell identifier would, if applied as an aura, produce secret values when queried." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAuraSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldSpellCooldownBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given spell identifier will produce secret values for cooldowns if queried." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCooldownSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldTotemSlotBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if information about a totem slot will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTotemSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldTotemSpellBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if information about a spell when associated with a totem slot will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTotemSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitAuraIndexBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given aura index will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isAuraSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitAuraInstanceBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given aura instance ID will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAuraSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitAuraSlotBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if a given aura slot ID will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAuraSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitComparisonBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries that compare units will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit1", Type = "UnitToken", Nilable = false },
+				{ Name = "unit2", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitComparisonSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitHealthMaxBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for maximum unit health will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitHealthMaxSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitIdentityBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit identity (such as name or GUID) will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitIdentitySecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitPowerBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit power will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitPowerSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitPowerMaxBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for maximum unit power will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitPowerMaxSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitSpellCastBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for spell casting information for a unit would produce secret values when queried." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSpellCastSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitSpellCastingBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for spell casting information for a specific unit will generally produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSpellCastingSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitStatsBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit statistics will produce secret values." },
+
+			Returns =
+			{
+				{ Name = "hasSecretStats", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitThreatStateBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit threat status will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobUnit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitThreatSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUnitThreatValuesBeSecret",
+			Type = "Function",
+			Documentation = { "Returns true if queries for unit threat values will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobUnit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitThreatSecret", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SecretPredicateAPI);

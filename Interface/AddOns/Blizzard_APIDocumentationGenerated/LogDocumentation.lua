@@ -3,6 +3,7 @@ local Log =
 	Name = "Log",
 	Type = "System",
 	Namespace = "C_Log",
+	Environment = "All",
 
 	Functions =
 	{
@@ -50,6 +51,9 @@ local Log =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

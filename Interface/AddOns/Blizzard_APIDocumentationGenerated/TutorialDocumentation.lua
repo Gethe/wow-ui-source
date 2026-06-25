@@ -3,6 +3,7 @@ local Tutorial =
 	Name = "Tutorial",
 	Type = "System",
 	Namespace = "C_Tutorial",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local Tutorial =
 			Name = "TutorialTrigger",
 			Type = "Event",
 			LiteralName = "TUTORIAL_TRIGGER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "tutorialIndex", Type = "number", Nilable = false },
@@ -27,9 +29,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 49,
 			MinValue = 1,
-			MaxValue = 40,
+			MaxValue = 49,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -72,7 +74,24 @@ local Tutorial =
 				{ Name = "HousingModesUnlocked", Type = "FrameTutorialAccount", EnumValue = 38 },
 				{ Name = "HousingExpertMode", Type = "FrameTutorialAccount", EnumValue = 39 },
 				{ Name = "HousingCleanupMode", Type = "FrameTutorialAccount", EnumValue = 40 },
+				{ Name = "TransmogOutfits", Type = "FrameTutorialAccount", EnumValue = 41 },
+				{ Name = "TransmogSets", Type = "FrameTutorialAccount", EnumValue = 42 },
+				{ Name = "TransmogCustomSets", Type = "FrameTutorialAccount", EnumValue = 43 },
+				{ Name = "TransmogSituations", Type = "FrameTutorialAccount", EnumValue = 44 },
+				{ Name = "TransmogWeaponOptions", Type = "FrameTutorialAccount", EnumValue = 45 },
+				{ Name = "TransmogTrialOfStyle", Type = "FrameTutorialAccount", EnumValue = 46 },
+				{ Name = "TransmogCustomSetsMigration", Type = "FrameTutorialAccount", EnumValue = 47 },
+				{ Name = "HousingEndeavorsTabSeen", Type = "FrameTutorialAccount", EnumValue = 48 },
+				{ Name = "RunesOfPower", Type = "FrameTutorialAccount", EnumValue = 49 },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequireNPERestricted",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

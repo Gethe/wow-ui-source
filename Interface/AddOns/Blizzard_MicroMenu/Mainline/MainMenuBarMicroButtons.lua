@@ -1,19 +1,3 @@
-MICRO_BUTTONS = {
-	"CharacterMicroButton",
-	"ProfessionMicroButton",
-	"PlayerSpellsMicroButton",
-	"AchievementMicroButton",
-	"QuestLogMicroButton",
-	"HousingMicroButton",
-	"GuildMicroButton",
-	"LFDMicroButton",
-	"EJMicroButton",
-	"CollectionsMicroButton",
-	"MainMenuMicroButton",
-	"HelpMicroButton",
-	"StoreMicroButton",
-}
-
 DISPLAYED_COMMUNITIES_INVITATIONS = {};
 local PERFORMANCE_BAR_UPDATE_INTERVAL = 1;
 local EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
@@ -364,6 +348,9 @@ end
 
 --Mixins (In order of placement)
 MainMenuBarMicroButtonMixin = {};
+
+function MainMenuBarMicroButtonMixin:PostAddButtonCallback()
+end
 
 function MainMenuBarMicroButtonMixin:ShouldShowTooltip()
 	if KeybindFrames_InQuickKeybindMode() then
@@ -1658,7 +1645,8 @@ end
 
 function EJMicroButtonMixin:UpdateNotificationIcon()
 	local show = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen);
-	self.NotificationOverlay:SetShown(show);
+	local journeyTutorial = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_JOURNEYS_TAB);
+	self.NotificationOverlay:SetShown(show or journeyTutorial);
 end
 
 StoreMicroButtonMixin = {};
@@ -1745,10 +1733,7 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 	self:Show();
 	HelpMicroButton:Hide();
 
-	if ( C_StorePublic.IsDisabledByParentalControls() ) then
-		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
-		self:Disable();
-	elseif ( not C_StorePublic.IsEnabled() ) then
+	if ( not C_StorePublic.IsEnabled() ) then
 		if ( GetCurrentRegionName() == "CN" ) then
 			self:Show();
 			self:Hide();
@@ -1771,6 +1756,8 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 		self.disabledTooltip = nil;
 		self:Enable();
 	end
+
+	self.NotificationOverlay:SetShown(C_CatalogShop.HasNewProducts());
 end
 
 HelpMicroButtonMixin = {};

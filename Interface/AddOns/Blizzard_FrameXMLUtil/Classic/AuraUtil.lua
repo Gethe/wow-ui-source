@@ -4,12 +4,20 @@ do
 	if ( classFilename == "PALADIN" ) then
 		AuraUtil.IsPriorityDebuff = function(spellId)
 			local isForbearance = (spellId == 25771);	-- Forbearance
-			return isForbearance or securecallfunction(AuraUtil.CheckIsPriorityAura, spellId);
+			if isForbearance then
+				return true;
+			else
+				return securecallfunction(AuraUtil.CheckIsPriorityAura, spellId);
+			end
 		end
 	elseif ( classFilename == "PRIEST" ) then
 		AuraUtil.IsPriorityDebuff = function(spellId)
 			local isWeakenedSoul = (spellId == 6788);	-- Weakened Soul
-			return isWeakenedSoul or securecallfunction(AuraUtil.CheckIsPriorityAura, spellId);
+			if isWeakenedSoul then
+				return true;
+			else
+				return securecallfunction(AuraUtil.CheckIsPriorityAura, spellId);
+			end
 		end
 	else
 		AuraUtil.IsPriorityDebuff = function(spellId)
@@ -17,4 +25,9 @@ do
 		end
 	end
 
+end
+
+-- _showDispelType not supported in Classic
+function AuraUtil.SetAuraBorderAtlas(borderRegion, dispelType, _showDispelType)
+	AuraUtil.SetAuraBorderColor(borderRegion, dispelType);
 end

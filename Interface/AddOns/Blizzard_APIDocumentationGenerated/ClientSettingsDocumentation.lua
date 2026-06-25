@@ -22,6 +22,9 @@ local ClientSettings =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClientSettings);

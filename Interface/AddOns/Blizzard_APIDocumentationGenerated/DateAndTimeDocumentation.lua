@@ -3,6 +3,7 @@ local DateAndTime =
 	Name = "DateAndTime",
 	Type = "System",
 	Namespace = "C_DateAndTime",
+	Environment = "All",
 
 	Functions =
 	{
@@ -120,6 +121,9 @@ local DateAndTime =
 				{ Name = "GlueScreenShortcut", Type = "TimeEventFlag", EnumValue = 1 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -6,7 +6,10 @@ implementations are here for reference despite being shared code.
 MenuVariants = {};
 
 MenuVariants.GearButtonTexture = [[Interface\WorldMap\GEAR_64GREY]];
+MenuVariants.GearButtonAnchor = CreateAnchor("RIGHT");
 MenuVariants.CancelButtonTexture = [[Interface\Buttons\UI-GroupLoot-Pass-Up]];
+MenuVariants.CancelButtonAnchor = CreateAnchor("RIGHT", nil, "LEFT", -3, 0);
+
 MenuVariants.DisabledHighlightOpacity = .4;
 
 function MenuVariants.CreateFontString(frame)

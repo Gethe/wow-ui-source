@@ -2,6 +2,7 @@ local SimpleModelAPI =
 {
 	Name = "SimpleModelAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -677,6 +678,16 @@ local SimpleModelAPI =
 			},
 		},
 		{
+			Name = "SetUseGBuffer",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "useGBuffer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetViewInsets",
 			Type = "Function",
 
@@ -728,6 +739,9 @@ local SimpleModelAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

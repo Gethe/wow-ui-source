@@ -3,6 +3,7 @@ local CVar =
 	Name = "CVarScripts",
 	Type = "System",
 	Namespace = "C_CVar",
+	Environment = "All",
 
 	Functions =
 	{
@@ -159,6 +160,29 @@ local CVar =
 				{ Name = "isSecure", Type = "bool", Nilable = false },
 				{ Name = "isReadOnly", Type = "bool", Nilable = false },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "IsIndexInRange",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsNotReadOnly",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsNotSecure",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "IsValidAndPublic",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

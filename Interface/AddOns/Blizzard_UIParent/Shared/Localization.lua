@@ -1,32 +1,3 @@
-NUMBER_ABBREVIATION_DATA_ASIAN = {
-	-- Order these from largest to smallest.
-	{ breakpoint = 1000000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000000,	fractionDivisor = 1 },
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 10 },
-	{ breakpoint = 100000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000,		fractionDivisor = 1 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 10 },
-};
-
-function LocalizeNumberAbbreviation_Asian()
-	AbbreviateLargeNumbers = function(value)
-		local strLen = strlen(value);
-		local retString = value;
-		if ( strLen >= 11 ) then
-			retString = string.sub(value, 1, -8)..SECOND_NUMBER_CAP;
-		elseif ( strLen >= 9 ) then
-			retString = string.sub(value, 1, -9).."."..string.sub(value, -8, -7)..SECOND_NUMBER_CAP;
-		elseif ( strLen >= 7 ) then
-			retString = string.sub(value, 1, -5)..FIRST_NUMBER_CAP;
-		elseif (strLen > 3 ) then
-			retString = BreakUpLargeNumbers(value);
-		end
-		return retString;
-	end
-
-	function GetLocalizedNumberAbbreviationData()
-		return NUMBER_ABBREVIATION_DATA_ASIAN;
-	end
-end
-
 function LocalizePlayerFrame(offsXVehicle, offsYVehicle, offsX, offsY)
 	PlayerFrame_UpdatePlayerNameTextAnchor = function()
 		if (PlayerFrame.unit == "vehicle") then
@@ -37,17 +8,11 @@ function LocalizePlayerFrame(offsXVehicle, offsYVehicle, offsX, offsY)
 	end
 end
 
-function LocalizekoKR()
-	LocalizeNumberAbbreviation_Asian();
-end
-
 function LocalizezhCN()
-	LocalizeNumberAbbreviation_Asian();
 	LocalizePlayerFrame(92, -26, 85, -26);
 end
 
 function LocalizezhTW()
-	LocalizeNumberAbbreviation_Asian();
 	LocalizePlayerFrame(92, -27, 85, -27);
 end
 
@@ -59,9 +24,7 @@ local l10nTable = {
 	esMX = {},
 	frFR = {},
 	itIT = {},
-	koKR = {
-		localize = LocalizekoKR,
-	},
+	koKR = {},
 	ptBR = {},
 	ptPT = {},
 	ruRU = {},

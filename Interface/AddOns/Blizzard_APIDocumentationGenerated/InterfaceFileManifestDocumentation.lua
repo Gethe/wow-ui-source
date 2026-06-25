@@ -3,6 +3,7 @@ local InterfaceFileManifest =
 	Name = "InterfaceFileManifest",
 	Type = "System",
 	Namespace = "C_InterfaceFileManifest",
+	Environment = "All",
 
 	Functions =
 	{
@@ -23,6 +24,9 @@ local InterfaceFileManifest =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

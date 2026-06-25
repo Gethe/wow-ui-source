@@ -36,60 +36,18 @@
 			<OnEvent function="ItemAnim_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" virtual="true">
-		<Size x="37" y="37"/>
+	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" mixin="BagSlotButtonMixin" virtual="true">
+		<Size x="37" y="37"/> <!-- Gets overidden by MainMenuBarBagButtonsConsts.BAGS_BAR_SLOT_SIZE -->
 		<Scripts>
-			<OnLoad>
-				MainMenuBarBagManager:RegisterBagButton(self);
-				ItemAnim_OnLoad(self)
-				PaperDollItemSlotButton_OnLoad(self);
-				self:RegisterEvent("BAG_UPDATE_DELAYED");
-				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
-				self.isBag = 1;
-				self.UpdateTooltip = BagSlotButton_OnEnter;
-				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
-				self.maxDisplayCount = 999;
-			</OnLoad>
-			<OnEvent>
-				ItemAnim_OnEvent(self, event, ...);
-				if ( event == "BAG_UPDATE_DELAYED" ) then
-					PaperDollItemSlotButton_Update(self);
-				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-					if ( C_Container.IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
-						self.searchOverlay:Show();
-					else
-						self.searchOverlay:Hide();
-					end
-				else
-					PaperDollItemSlotButton_OnEvent(self, event, ...);
-				end
-			</OnEvent>
-			<OnShow>
-				PaperDollItemSlotButton_OnShow(self, true);
-			</OnShow>
-			<OnHide>
-				PaperDollItemSlotButton_OnHide(self);
-			</OnHide>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					BagSlotButton_OnModifiedClick(self, button);
-				else
-					BagSlotButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnDragStart>
-				BagSlotButton_OnDrag(self, button);
-			</OnDragStart>
-			<OnReceiveDrag>
-				BagSlotButton_OnClick(self);
-			</OnReceiveDrag>
-			<OnEnter>
-				BagSlotButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
@@ -106,9 +64,9 @@
 		</KeyValues>
 		<Frames>
 			<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" id="0">
-				<Size x="37" y="37"/>
+				<Size x="37" y="37"/> <!-- Gets overidden by MainMenuBarBagButtonsConsts.BAGS_BAR_BACKPACK_SIZE -->
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="2"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -122,6 +80,8 @@
 						self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 						_G[self:GetName().."Count"]:ClearAllPoints();
 						_G[self:GetName().."Count"]:SetPoint("CENTER", 1, -7);
+						_G[self:GetName().."NormalTexture"]:SetSize(MainMenuBarBagButtonsConsts.BAGS_BAR_BACKPACK_NORMAL_TEXTURE_SIZE, MainMenuBarBagButtonsConsts.BAGS_BAR_BACKPACK_NORMAL_TEXTURE_SIZE);
+						self:SetSize(MainMenuBarBagButtonsConsts.BAGS_BAR_BACKPACK_SIZE, MainMenuBarBagButtonsConsts.BAGS_BAR_BACKPACK_SIZE);
 					</OnLoad>
 					<OnClick>
 						if ( IsModifiedClick() ) then
@@ -179,10 +139,10 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-					<Layers>
-						<Layer level="OVERLAY">
-							<Texture  parentKey="animIcon" setAllPoints="true"/>
-						</Layer>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture  parentKey="animIcon" setAllPoints="true"/>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

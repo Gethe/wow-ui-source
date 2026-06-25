@@ -1,3 +1,5 @@
+local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
+
 local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeRemainingFormatter:Init(
 	SecondsFormatterConstants.ZeroApproximationThreshold,
@@ -8,6 +10,19 @@ timeRemainingFormatter:Init(
 timeRemainingFormatter:SetDesiredUnitCount(1);
 timeRemainingFormatter:SetMinInterval(SecondsFormatter.Interval.Minutes);
 timeRemainingFormatter:SetStripIntervalWhitespace(true);
+
+function FormatPriceStrings(productInfo)
+	local price;
+	local originalPrice;
+	if productInfo.isVCProduct then
+		price = productInfo.price.." "..HearthsteelAtlasMarkup;
+		originalPrice = productInfo.originalPrice.." "..HearthsteelAtlasMarkup;
+	else
+		price = productInfo.price;
+		originalPrice = productInfo.originalPrice;
+	end
+	return price, originalPrice;
+end
 
 ----------------------------------------------------------------------------------
 -- InvisibleMouseOverFrameMixin
@@ -45,11 +60,31 @@ function CatalogShopDefaultProductCardMixin:OnShow()
 end
 
 function CatalogShopDefaultProductCardMixin:OnEnter()
-	self.ForegroundContainer.HoverTexture:Show();
+	if self.hoverVisualEnabled then
+		self.ForegroundContainer.HoverTexture:Show();
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:OnLeave()
-	self.ForegroundContainer.HoverTexture:Hide();
+	if self.hoverVisualEnabled then
+		self.ForegroundContainer.HoverTexture:Hide();
+	end
+
+	local function NonSecureWrapper(productId)
+		SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, productId)
+	end
+
+	local function NonSecureSet(productId)
+		SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, productId);
+	end
+
+	local checkfunction = SavedSetsUtil and NonSecureWrapper or CatalogShopOutbound.SavedSet_Check
+	local setFunction = SavedSetsUtil and NonSecureSet or CatalogShopOutbound.SavedSet_Set
+
+	if not checkfunction(self.productInfo.catalogShopProductID) then
+		setFunction(self.productInfo.catalogShopProductID);
+		self:HideNotification();
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:IsSameProduct(productInfo)
@@ -60,7 +95,6 @@ function CatalogShopDefaultProductCardMixin:OnProductInfoChanged(productInfo)
 	if not self:IsSameProduct(productInfo) then
 		return;
 	end
-
 	self:SetProductInfo(productInfo);
 end
 
@@ -91,6 +125,25 @@ function CatalogShopDefaultProductCardMixin:UpdateState()
 	end
 
 	--... handle state
+end
+
+function CatalogShopDefaultProductCardMixin:ShowNotification()
+	if CatalogShopOutbound and not CatalogShopOutbound.SavedSet_Check(self.productInfo.catalogShopProductID) and not self.notificationFrame then
+		self.notificationFrame = CatalogShopOutbound.NotificationUtil_AcquireLargeNotification("TOPRIGHT", self.SelectedContainer, "TOPRIGHT", 0, 0);
+	elseif not CatalogShopOutbound and not SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, self.productInfo.catalogShopProductID) and not self.notificationFrame then
+		self.notificationFrame = NotificationUtil.AcquireLargeNotification("TOPRIGHT", self.SelectedContainer, "TOPRIGHT", 0, 0);
+	end
+end
+
+function CatalogShopDefaultProductCardMixin:HideNotification()
+	if self.notificationFrame then
+		if CatalogShopOutbound then
+			CatalogShopOutbound.NotificationUtil_ReleaseNotification(self.notificationFrame);
+		else
+			NotificationUtil.ReleaseNotification(self.notificationFrame);
+		end
+		self.notificationFrame = nil;
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:SetProductInfo(productInfo)
@@ -197,6 +250,7 @@ function CatalogShopDefaultProductCardMixin:HideCardVisuals()
 end
 
 function CatalogShopDefaultProductCardMixin:Layout()
+	self:HideNotification();
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.productInfo.catalogShopProductID);
 	local productType = displayInfo.productType;
 	local container = self.ForegroundContainer;
@@ -212,8 +266,18 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	self:HideCardVisuals();
 	container.RectIcon:SetSize(85.0,85.0);		-- Resetting the size since certain element types want to change it
 
-	-- An unknown license implies a product from another Game (Classic, etc.)
-	if displayInfo.hasUnknownLicense then
+	if self.productInfo.isMystery then
+		container.RectIcon:Show();
+		container.RectIcon:SetSize(140, 140);
+
+		if productType == CatalogShopConstants.ProductType.Mount then
+			container.RectIcon:SetAtlas(CatalogShopConstants.MysteryTypes.Mount);
+		elseif productType == CatalogShopConstants.ProductType.Pet then
+			container.RectIcon:SetAtlas(CatalogShopConstants.MysteryTypes.Pet);
+		else
+			container.RectIcon:SetAtlas(CatalogShopConstants.DefaultWoWAtlas);
+		end
+	elseif displayInfo.hasUnknownLicense then -- An unknown license implies a product from another Game (Classic, etc.)
 		container.RectIcon:Show();
 		container.RectIcon:SetSize(140, 140);
 		CatalogShopUtil.SetAlternateProductIcon(container.RectIcon, displayInfo);
@@ -226,14 +290,27 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		self:SetModelScene(self.productInfo, true, displayInfo, productType);
 	end
 	container.Name:SetText(self.productInfo.name);
+
 	local isFullyOwned = self.productInfo.isFullyOwned;
 	container.PurchasedIcon:SetShown(isFullyOwned);
+
 	local discountPercentage = self.productInfo.discountPercentage or 0;
-	container.DiscountSaleTag:SetShown(not isFullyOwned and discountPercentage > 0);
-	container.DiscountAmount:SetShown(not isFullyOwned and discountPercentage > 0);
+	local shouldShowDiscountPercentage = (not isFullyOwned) and discountPercentage > 0;
+	container.DiscountSaleTag:SetShown(shouldShowDiscountPercentage);
+	container.DiscountAmount:SetShown(shouldShowDiscountPercentage);
 	container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+
+	local quantityInBundle = self.productInfo.quantityInBundle;
+	local shouldShowQuantityInBundle = (not not quantityInBundle) and quantityInBundle > 1;
+	container.QuantityInBundleBackground:SetShown(shouldShowQuantityInBundle);
+	container.QuantityInBundleText:SetShown(shouldShowQuantityInBundle);
+	container.QuantityInBundleText:SetText(quantityInBundle);
+	self:ShowNotification();
 end
 
+function CatalogShopDefaultProductCardMixin:GetCurrentPrice()
+	return self.productInfo.price;
+end
 
 --------------------------------------------------
 -- SMALL CATALOG SHOP PRODUCT CARD MIXIN
@@ -242,11 +319,16 @@ function SmallCatalogShopProductCardMixin:OnLoad()
 	CatalogShopDefaultProductCardMixin.OnLoad(self);
 end
 
+function SmallCatalogShopProductCardMixin:OnEnter()
+	CatalogShopDefaultProductCardMixin.OnEnter(self);
+end
+
 function SmallCatalogShopProductCardMixin:Layout()
 	CatalogShopDefaultProductCardMixin.Layout(self);
 
-	local container = self.ForegroundContainer;
+	local price, originalPrice = FormatPriceStrings(self.productInfo);
 
+	local container = self.ForegroundContainer;
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
@@ -275,7 +357,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
 		priceElement:SetPoint("BOTTOM", 0, 13);
-		priceElement:SetText(self.productInfo.originalPrice);
+		priceElement:SetText(originalPrice);
 
 		local strikeThrough = container.Strikethrough;
 		local strikeThroughLength = priceElement:GetStringWidth() * 0.5;
@@ -290,7 +372,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetPoint("TOP", priceElement, "TOP", 0, 15);
 		discountPriceElement:SetPoint("LEFT", 15, 0);
 		discountPriceElement:SetPoint("RIGHT", -15, 0);
-		discountPriceElement:SetText(self.productInfo.price);
+		discountPriceElement:SetText(price);
 
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
@@ -304,7 +386,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 17);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
-		priceElement:SetText(self.productInfo.price);
+		priceElement:SetText(price);
 		priceElement:Show();
 
 		container.DiscountPrice:Hide();
@@ -322,38 +404,99 @@ end
 
 
 --------------------------------------------------
--- SMALL CATALOG SHOP BUY BUTTON CARD MIXIN
-SmallCatalogShopProductWithBuyButtonCardMixin = {};
-function SmallCatalogShopProductWithBuyButtonCardMixin:OnLoad()
+-- SMALL CATALOG SHOP HOUSING CURRENCY CARD MIXIN
+SmallCatalogShopHousingCurrencyCardMixin = {};
+function SmallCatalogShopHousingCurrencyCardMixin:OnLoad()
 	SmallCatalogShopProductCardMixin.OnLoad(self);
 end
+
+function SmallCatalogShopHousingCurrencyCardMixin:OnEnter()
+	SmallCatalogShopProductCardMixin.OnEnter(self);
+
+	PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_HOVER_OPTION);
+end
+
+local CurrencyBreakpoints = {
+	[100] = { icon = "hearthsteel-icon-xs" },
+	[500] = { icon = "hearthsteel-icon-sm" },
+	[1000] = { icon = "hearthsteel-icon-md" },
+	[2500] = { icon = "hearthsteel-icon-lg", vfxElement="HeathSteel_L_VFX" },
+	[5000] = { icon = "hearthsteel-icon-xl", vfxElement="HeathSteel_XL_VFX" },
+	[10000] = { icon = "hearthsteel-icon-xxl", vfxElement="HeathSteel_XXL_VFX" },
+};
 
 local function BuyButtonCardLayout(card)
 	local container = card.ForegroundContainer;
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
 
-	-- Skip access-specific display for unknown (cross-game) licenses
-	if displayInfo.hasUnknownLicense then
-		container.RectIcon:Hide();
-		return;
+	local virtualCurrencyInfo = card.productInfo.virtualCurrencies[1];
+	if virtualCurrencyInfo then
+		local amount = virtualCurrencyInfo.amount;
+		container.Name:SetText(string.format(HOUSING_VC_QUANTITY, amount));
+		local textureAtlas = CurrencyBreakpoints[amount].icon or "hearthsteel-icon-single";
+		container.RectIcon:SetAtlas(textureAtlas);
+
+		local vfx = CurrencyBreakpoints[amount].vfxElement;
+		if vfx and card[vfx] then
+			card[vfx]:Show();
+		else
+			if card.HeathSteel_L_VFX then
+				card.HeathSteel_L_VFX:Hide();
+			end
+			if card.HeathSteel_XL_VFX then
+				card.HeathSteel_XL_VFX:Hide();
+			end
+			if card.HeathSteel_XXL_VFX then
+				card.HeathSteel_XXL_VFX:Hide();
+			end
+		end
 	end
 
-	local atlasWidth = 140;
-	local atlasHeight = 140;
+	local divider = container.DividerTop;
+	divider:SetShown(true);
+	divider:ClearAllPoints();
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 145);
+	divider:SetPoint("LEFT", 0, 0);
+	divider:SetPoint("RIGHT", 0, 0);
+
+	local nameElement = container.Name;
+	nameElement:ClearAllPoints();
+	nameElement:SetJustifyH("CENTER");
+	nameElement:SetJustifyV("MIDDLE");
+	nameElement:SetPoint("TOP", divider, "TOP", 0, -3);
+	nameElement:SetPoint("LEFT", 20, 0);
+	nameElement:SetPoint("RIGHT", -22, 0);
+	nameElement:SetPoint("BOTTOM", 0, 94);
+
+	local priceElement = container.Price;
+	priceElement:Hide();
+
+	local atlasWidth = 240;
+	local atlasHeight = 240;
+
+	local purchaseButton = card.PurchaseButton;
+	purchaseButton:SetText(card.productInfo.price);
+	purchaseButton:ClearAllPoints();
+	purchaseButton:SetPoint("BOTTOM", 0, 30);
 
 	container.RectIcon:ClearAllPoints();
-	container.RectIcon:SetPoint("CENTER", 0, 40);
+	container.RectIcon:SetPoint("CENTER", 0, 30);
 	container.RectIcon:SetSize(atlasWidth, atlasHeight);
+	container.RectIcon:Show();
 
-	if card.productInfo.previewIconTexture then
-		container.RectIcon:Show();
-		container.RectIcon:SetAtlas(card.productInfo.previewIconTexture);
-	else
-		container.RectIcon:Hide();
-	end
+	local background = card.BackgroundContainer.Background;
+	background:ClearAllPoints();
+	background:SetPoint("TOPLEFT", 20, -20);
+	background:SetPoint("BOTTOMRIGHT", -21, 21);
+
+	local backgroundMask = card.BackgroundContainer.BackgroundMask;
+	backgroundMask:ClearAllPoints();
+	backgroundMask:SetPoint("TOPLEFT", 20, -20);
+	backgroundMask:SetPoint("BOTTOMRIGHT", -21, 21);
+
 end
 
-function SmallCatalogShopProductWithBuyButtonCardMixin:Layout()
+function SmallCatalogShopHousingCurrencyCardMixin:Layout()
 	SmallCatalogShopProductCardMixin.Layout(self);
 	BuyButtonCardLayout(self);
 end
@@ -373,6 +516,8 @@ end
 
 function WideCatalogShopProductCardMixin:Layout()
 	CatalogShopDefaultProductCardMixin.Layout(self);
+
+	local price, originalPrice = FormatPriceStrings(self.productInfo);
 
 	local container = self.ForegroundContainer;
 	local divider = container.DividerTop;
@@ -403,7 +548,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 30);
 		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
 		priceElement:SetJustifyH("RIGHT");
-		priceElement:SetText(self.productInfo.originalPrice);
+		priceElement:SetText(originalPrice);
 
 		local strikeThrough = container.Strikethrough;
 		local strikeThroughLength = priceElement:GetStringWidth();
@@ -418,7 +563,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetPoint("BOTTOM", 0, 30);
 		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
 		discountPriceElement:SetJustifyH("LEFT");
-		discountPriceElement:SetText(self.productInfo.price);
+		discountPriceElement:SetText(price);
 
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
@@ -433,7 +578,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 30);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
-		priceElement:SetText(self.productInfo.price);
+		priceElement:SetText(price);
 		priceElement:Show();
 
 		container.DiscountPrice:Hide();
@@ -458,4 +603,74 @@ function WideCatalogShopProductCardMixin:Layout()
 	end
 
 	self:UpdateTimeRemaining();
+end
+
+--------------------------------------------------
+-- HEARTHSTEEL VFX MIXINS
+HearthsteelVFXBaseMixin = {};
+function HearthsteelVFXBaseMixin:PlayAnimation()
+	-- override this
+end
+
+function HearthsteelVFXBaseMixin:StopAnimation()
+	-- override this
+end
+
+function HearthsteelVFXBaseMixin:OnShow()
+	self:PlayAnimation();
+end
+
+function HearthsteelVFXBaseMixin:OnHide()
+	self:StopAnimation();
+end
+
+function HearthsteelVFXBaseMixin:OnEnter()
+	self:PlayAnimation();
+end
+
+
+HearthsteelVFX_L_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+function HearthsteelVFX_L_Mixin:PlayAnimation()
+	self.Glows.animation:Play();
+	self.IconGlow.animation:Play();
+	self.Flipbook.animation:Play();
+end
+
+function HearthsteelVFX_L_Mixin:StopAnimation()
+	self.Glows.animation:Stop();
+	self.IconGlow.animation:Stop();
+	self.Flipbook.animation:Stop();
+end
+
+HearthsteelVFX_XL_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+
+function HearthsteelVFX_XL_Mixin:PlayAnimation()
+	self.Rays.animation:Play();
+	self.Flipbook.animation:Play();
+	self.Shine01.animation:Play();
+	self.Shine02.animation:Play();
+	self.CoinShine.animation:Play();
+end
+
+function HearthsteelVFX_XL_Mixin:StopAnimation()
+	self.Rays.animation:Stop();
+	self.Flipbook.animation:Stop();
+	self.Shine01.animation:Stop();
+	self.Shine02.animation:Stop();
+	self.CoinShine.animation:Stop();
+end
+
+HearthsteelVFX_XXL_Mixin = CreateFromMixins(HearthsteelVFXBaseMixin);
+function HearthsteelVFX_XXL_Mixin:PlayAnimation()
+	self.Rays.animation:Play();
+	self.Flipbook.animation:Play();
+	self.MetalShine.animation:Play();
+	self.CoinShine.animation:Play();
+end
+
+function HearthsteelVFX_XXL_Mixin:StopAnimation()
+	self.Rays.animation:Stop();
+	self.Flipbook.animation:Stop();
+	self.MetalShine.animation:Stop();
+	self.CoinShine.animation:Stop();
 end

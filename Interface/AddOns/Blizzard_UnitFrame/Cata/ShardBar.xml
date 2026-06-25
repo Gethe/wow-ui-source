@@ -111,7 +111,7 @@
 		</Scripts>
   </Frame>
 
-	<Frame name="ShardBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">
+	<Frame name="ShardBarFrame" parent="PlayerFrame" inherits="PlayerFrameBottomManagedFrameTemplate" frameStrata="LOW" toplevel="true" hidden="false">
 		<Animations>
 			<AnimationGroup parentKey="showAnim">
 				<Alpha duration="0.5" order="1"/>
@@ -128,10 +128,15 @@
 		<Anchors>
 		  <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
 			<Offset>
-			  <AbsDimension x="50" y="34"/>
+			  <AbsDimension x="32" y="30"/>
 			</Offset>
 		  </Anchor>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="1" type="number"/>
+			<KeyValue key="leftPadding" value="44" type="number"/>
+			<KeyValue key="topPadding" value="6" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
 				<Anchors>

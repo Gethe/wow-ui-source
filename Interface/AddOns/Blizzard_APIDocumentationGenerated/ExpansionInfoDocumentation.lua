@@ -2,6 +2,7 @@ local ExpansionInfo =
 {
 	Name = "ExpansionInfo",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -49,6 +50,9 @@ local ExpansionInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

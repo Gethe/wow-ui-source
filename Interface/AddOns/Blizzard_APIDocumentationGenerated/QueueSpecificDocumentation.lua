@@ -20,6 +20,9 @@ local QueueSpecific =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QueueSpecific);

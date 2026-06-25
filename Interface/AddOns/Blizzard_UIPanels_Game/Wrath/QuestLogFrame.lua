@@ -452,10 +452,14 @@ function QuestLogTitleButton_OnClick(self, button)
 		end
 
 		local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-		local questLink = GetQuestLink(GetQuestIDFromLogIndex(questIndex));
-		if ( questLink ) then
-			ChatFrameUtil.InsertLink(questLink);
+		local questID = GetQuestIDFromLogIndex(questIndex)
+		if (questID) then
+			local questLink = GetQuestLink(questID);
+			if ( questLink ) then
+				ChatFrameUtil.InsertLink(questLink);
+			end
 		end
+		
 	elseif ( IsShiftKeyDown() ) then
 		-- If header then return
 		if ( self.isHeader ) then
@@ -577,8 +581,11 @@ function GetQuestLogIndexByName(name)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	local questID = select(8, GetQuestLogTitle(questIndex));
-	return questID;
+	if (type(questIndex) == "number") then
+		local questID = select(8, GetQuestLogTitle(questIndex));
+		return questID;
+	end
+	return nil
 end
 
 function QuestLogUpdateQuestCount(numQuests)

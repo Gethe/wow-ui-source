@@ -15,6 +15,9 @@ local ModelAnimationShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ModelAnimationShared);

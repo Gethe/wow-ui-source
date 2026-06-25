@@ -18,3 +18,7 @@ function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
 
 	return characterInfo;
 end
+
+function CharacterSelectUtil.GetForceRenameCharacterInstructions(message)
+	return ("%s\n%s"):format(message, CHAR_RENAME_INSTRUCTIONS);
+end

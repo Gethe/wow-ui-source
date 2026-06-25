@@ -336,8 +336,8 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = dialog:GetButton1():IsEnabled();
-		local encounterSupressRelease = IsEncounterSuppressingRelease();
-		if ( encounterSupressRelease ) then
+		local encounterSuppressRelease = C_InstanceEncounter.IsEncounterSuppressingRelease();
+		if ( encounterSuppressRelease ) then
 			dialog:GetButton1():SetEnabled(false);
 			dialog:GetButton1():SetText(DEATH_RELEASE);
 		else
@@ -352,7 +352,7 @@ StaticPopupDialogs["DEATH"] = {
 
 		if ( b1_enabled ~= dialog:GetButton1():IsEnabled() ) then
 			if ( b1_enabled ) then
-				if ( encounterSupressRelease ) then
+				if ( encounterSuppressRelease ) then
 					dialog:SetText(CAN_NOT_RELEASE_IN_COMBAT);
 				else
 					dialog:SetText(CAN_NOT_RELEASE_RIGHT_NOW);
@@ -855,7 +855,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
 	maxLetters = 48,
 	OnAccept = function(dialog, data)
@@ -887,7 +887,7 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteSource = C_AutoComplete.GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.INVITE.include, AUTOCOMPLETE_LIST.INVITE.exclude },
 	maxLetters = 77,
 	OnAccept = function(dialog, data)
@@ -1004,7 +1004,7 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 		C_GuildInfo.SetMOTD(dialog:GetEditBox():GetText());
 	end,
 	OnShow = function(dialog, data)
-		dialog:GetEditBox():SetText(GetGuildRosterMOTD());
+		dialog:GetEditBox():SetText(C_GuildInfo.GetMOTD());
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)

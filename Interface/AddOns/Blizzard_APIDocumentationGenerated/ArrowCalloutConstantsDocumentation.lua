@@ -32,6 +32,9 @@ local ArrowCalloutConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ArrowCalloutConstants);

@@ -2,6 +2,7 @@ local FrameAPIFogOfWarFrame =
 {
 	Name = "FrameAPIFogOfWarFrame",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -146,6 +147,9 @@ local FrameAPIFogOfWarFrame =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

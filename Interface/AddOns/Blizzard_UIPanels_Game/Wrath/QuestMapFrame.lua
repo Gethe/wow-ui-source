@@ -204,8 +204,8 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				TriggerTutorial(11);
 			end
 		end
-		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
-			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
+		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and GetNumQuestWatches() < Constants.QuestWatchConsts_Classic.MAX_QUEST_WATCHES then
+			AddQuestWatch(questID, true);
 		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
 		local prevQuest = QuestMapFrame.DetailsFrame.questID;

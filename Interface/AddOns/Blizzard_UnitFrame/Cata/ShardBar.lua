@@ -24,7 +24,7 @@ function ShardBar_SetShard(self, active)
 end
 
 function ShardBar_Update()
-	local numShards = UnitPower( ShardBarFrame:GetParent().unit, Enum.PowerType.SoulShards );
+	local numShards = UnitPower( PlayerFrame.unit, Enum.PowerType.SoulShards );
 	for i=1,SHARD_BAR_NUM_SHARDS do
 		local shard = _G["ShardBarFrameShard"..i];
 		local shouldShow = i <= numShards;
@@ -54,7 +54,7 @@ function ShardBar_OnEvent (self, event, arg1, arg2)
 		ShardBar_Update();	
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
 		ShardBar_Update();	
-	elseif ( (event == "UNIT_POWER_FREQUENT") and (arg1 == self:GetParent().unit) ) then
+	elseif ( (event == "UNIT_POWER_FREQUENT") and (arg1 == PlayerFrame.unit) ) then
 		if ( arg2 == "SOUL_SHARDS" ) then
 			ShardBar_Update();
 		end

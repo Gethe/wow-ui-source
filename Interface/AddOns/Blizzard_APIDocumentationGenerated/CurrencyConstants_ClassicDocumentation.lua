@@ -26,9 +26,9 @@ local CurrencyConstants_Classic =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 45,
+			NumValues = 47,
 			MinValue = 0,
-			MaxValue = 44,
+			MaxValue = 46,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -76,8 +76,13 @@ local CurrencyConstants_Classic =
 				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 42 },
 				{ Name = "SimulateLoot", Type = "CurrencySource", EnumValue = 43 },
 				{ Name = "ChallengeModeDungeon", Type = "CurrencySource", EnumValue = 44 },
+				{ Name = "InitiativeReward", Type = "CurrencySource", EnumValue = 45 },
+				{ Name = "AccountServerConversion", Type = "CurrencySource", EnumValue = 46 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -220,8 +220,10 @@ end
 
 function TalentButtonBaseMixin:GetTraitCurrenciesCost()
 	local nodeCost = self:GetTalentFrame():GetNodeCost(self.nodeID);
-	if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
-		return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+	if self:GetEntryInfo() ~= nil then
+		if self.nodeInfo and (self.nodeInfo.type == Enum.TraitNodeType.Tiered) then
+			return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+		end
 	end
 
 	return nodeCost;
@@ -230,11 +232,12 @@ end
 function TalentButtonBaseMixin:AddTooltipCost(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	-- Only show cost if we can refund or increase the rank.
-	if self:CanRefundRank() or not self:IsMaxed() then
-		local traitCurrenciesCost = self:GetTraitCurrenciesCost();
-		self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
+	-- Only show cost if we can increase the rank.
+	if self:IsMaxed() then
+		return;
 	end
+	local traitCurrenciesCost = self:GetTraitCurrenciesCost();
+	self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
 end
 
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)

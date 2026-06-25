@@ -110,8 +110,7 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 		if not showingBuffs and unitStatus then
 			local highestPriorityDebuff = self.debuffs:GetTop();
 			if highestPriorityDebuff then
-				local statusColor = DebuffTypeColor[highestPriorityDebuff.dispelName] or DebuffTypeColor["none"];
-				unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
+				AuraUtil.SetAuraBorderColor(unitStatus, highestPriorityDebuff.dispelName);
 				unitStatus:Show();
 			else
 				unitStatus:Hide();
@@ -120,7 +119,7 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 	end
 end
 
-function PartyMemberAuraMixin:ParseAllAuras(displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs) 
+function PartyMemberAuraMixin:ParseAllAuras(displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
 	if self.debuffs == nil then
 		self.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
 		self.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
@@ -168,8 +167,7 @@ function PartyAuraFrameMixin:Setup(unit, aura, isBuff)
 
 		self.DebuffBorder:SetShown(not isBuff);
 		if not isBuff then
-			local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
-			self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+			AuraUtil.SetAuraBorderColor(self.DebuffBorder, aura.dispelName);
 		end
 
 		local enabled = aura.expirationTime and aura.expirationTime ~= 0;

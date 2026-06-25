@@ -10,11 +10,7 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 SecureTemplatesBase.xml
 SecureTemplates.lua
-SecureStateDriver.lua
-SecureHoverDriver.lua
 SecureTemplates.xml
-SecureHandlerTemplates.xml
-SecureGroupHeaders.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
 Classic\CharacterFrameTemplates.xml
@@ -40,6 +36,7 @@ Classic\LowHealthFrame.xml
 Classic\CombatFeedback.lua
 Classic\RaidWarning.xml
 Shared\CinematicFrame.lua
+Classic\CinematicFrameButton.xml
 Shared\CinematicFrame.xml
 Classic\ColorPickerFrame.lua
 Classic\ColorPickerFrame.xml

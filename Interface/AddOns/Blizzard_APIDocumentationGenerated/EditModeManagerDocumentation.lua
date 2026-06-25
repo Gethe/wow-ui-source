@@ -3,6 +3,7 @@ local EditModeManager =
 	Name = "EditModeManager",
 	Type = "System",
 	Namespace = "C_EditMode",
+	Environment = "All",
 
 	Functions =
 	{
@@ -127,6 +128,7 @@ local EditModeManager =
 			Name = "EditModeLayoutsUpdated",
 			Type = "Event",
 			LiteralName = "EDIT_MODE_LAYOUTS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "layoutInfo", Type = "EditModeLayouts", Nilable = false },
@@ -190,6 +192,9 @@ local EditModeManager =
 				{ Name = "isInDefaultPosition", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

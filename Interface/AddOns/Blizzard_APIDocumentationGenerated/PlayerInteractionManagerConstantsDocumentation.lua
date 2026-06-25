@@ -89,9 +89,12 @@ local PlayerInteractionManagerConstants =
 				{ Name = "GuildRename", Type = "PlayerInteractionType", EnumValue = 76 },
 				{ Name = "OpenNeighborhoodCharterConfirmation", Type = "PlayerInteractionType", EnumValue = 77 },
 				{ Name = "OpenHouseFinder", Type = "PlayerInteractionType", EnumValue = 78 },
-				{ Name = "PlaceholderType79", Type = "PlayerInteractionType", EnumValue = 79 },
+				{ Name = "TieredEntrance", Type = "PlayerInteractionType", EnumValue = 79 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

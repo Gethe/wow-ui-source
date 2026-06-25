@@ -15,6 +15,9 @@ local ExpansionConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ExpansionConstants);

@@ -1,14 +1,19 @@
+
 -- Inbound files need to load under the global environment
 SwapToGlobalEnvironment();
+
+function CatalogShopTopUpFrame_GetFrame()
+	return CatalogShopTopUpFrame;
+end
 
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
 CatalogShopTopUpFlowInboundInterface = {};
 
-function CatalogShopTopUpFlowInboundInterface.SetShown(shown, contextKey)
+function CatalogShopTopUpFlowInboundInterface.SetShown(shown, parentFrame)
 	local wasShown = CatalogShopTopUpFlowInboundInterface.IsShown();
-	local contextKeyString = contextKey and tostring(contextKey) or nil;
 	if shown then
-		CatalogShopTopUpFrame:SetAttribute("contextkey", contextKeyString);
+		local frameToUse = parentFrame or GetAppropriateTopLevelParent();
+		CatalogShopTopUpFrame:SetAttribute("parentframe", frameToUse);
 	end
 	CatalogShopTopUpFrame:SetAttribute("action", shown and "Show" or "Hide");
 end
@@ -24,4 +29,12 @@ end
 
 function CatalogShopTopUpFlowInboundInterface.SetDesiredQuantity(quantity)
 	CatalogShopTopUpFrame:SetAttribute("setdesiredquantity", quantity);
+end
+
+function CatalogShopTopUpFlowInboundInterface.SetCurrentBalance(currentBalance)
+	CatalogShopTopUpFrame:SetAttribute("setcurrentbalance", currentBalance);
+end
+
+function CatalogShopTopUpFlowInboundInterface.SetSuggestedProduct(productID)
+	CatalogShopTopUpFrame:SetAttribute("setsuggestedproduct", productID);
 end

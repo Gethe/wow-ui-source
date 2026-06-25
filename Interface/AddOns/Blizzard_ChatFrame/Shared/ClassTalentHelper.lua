@@ -12,28 +12,44 @@ end
 
 ClassTalentHelper = {};
 
--- Loads loadout for the current specialization by name. Loads the first one found in the case of duplicate names.
-function ClassTalentHelper.SwitchToLoadoutByName(loadoutName)
+RegisterEventCallback("CLASS_TALENTS_SWITCH_TO_LOADOUT_BY_NAME", function(_nilOwner, loadoutName)
 	CheckLoadPlayerSpellsFrame();
 	PlayerSpellsFrame.TalentsFrame:LoadConfigByName(loadoutName);
+end);
+
+RegisterEventCallback("CLASS_TALENTS_SWITCH_TO_LOADOUT_BY_INDEX", function(_nilOwner, loadoutIndex)
+	CheckLoadPlayerSpellsFrame();
+	PlayerSpellsFrame.TalentsFrame:LoadConfigByIndex(loadoutIndex);
+end);
+
+RegisterEventCallback("CLASS_TALENTS_SWITCH_TO_SPECIALIZATION_BY_NAME", function(_nilOwner, specName)
+	CheckLoadPlayerSpellsFrame();
+	PlayerSpellsFrame.SpecFrame:ActivateSpecByName(specName);
+end);
+
+RegisterEventCallback("CLASS_TALENTS_SWITCH_TO_SPECIALIZATION_BY_INDEX", function(_nilOwner, specIndex)
+	CheckLoadPlayerSpellsFrame();
+	PlayerSpellsFrame.SpecFrame:ActivateSpecByIndex(specIndex);
+end);
+
+-- Loads loadout for the current specialization by name. Loads the first one found in the case of duplicate names.
+function ClassTalentHelper.SwitchToLoadoutByName(loadoutName)
+	C_ClassTalents.SwitchToLoadoutByName(loadoutName);
 end
 
 -- Loads loadout for the current specialization by dropdown index. Indices start at 1.
 function ClassTalentHelper.SwitchToLoadoutByIndex(loadoutIndex)
-	CheckLoadPlayerSpellsFrame();
-	PlayerSpellsFrame.TalentsFrame:LoadConfigByIndex(loadoutIndex);
+	C_ClassTalents.SwitchToLoadoutByIndex(loadoutIndex);
 end
 
 -- Activates specialization for the current class by spec name.
 function ClassTalentHelper.SwitchToSpecializationByName(specName)
-	CheckLoadPlayerSpellsFrame();
-	PlayerSpellsFrame.SpecFrame:ActivateSpecByName(specName);
+	C_ClassTalents.SwitchToSpecializationByName(specName);
 end
 
 -- Activates specialization for the current class by index in the order within the Specializations tab. Indices start at 1.
 function ClassTalentHelper.SwitchToSpecializationByIndex(specIndex)
-	CheckLoadPlayerSpellsFrame();
-	PlayerSpellsFrame.SpecFrame:ActivateSpecByIndex(specIndex);
+	C_ClassTalents.SwitchToSpecializationByIndex(specIndex);
 end
 
 --------------------------- Slash Command Helpers --------------------------------

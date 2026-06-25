@@ -110,7 +110,7 @@ local QuestConstants =
 				{ Name = "DragonRiderRacing", Type = "QuestTagType", EnumValue = 16 },
 				{ Name = "Capstone", Type = "QuestTagType", EnumValue = 17 },
 				{ Name = "WorldBoss", Type = "QuestTagType", EnumValue = 18 },
-				{ Name = "Placeholder_1", Type = "QuestTagType", EnumValue = 19 },
+				{ Name = "Prey", Type = "QuestTagType", EnumValue = 19 },
 			},
 		},
 		{
@@ -151,6 +151,9 @@ local QuestConstants =
 				{ Name = "MAX_WORLD_QUEST_HARD_WATCHES", Type = "number", Value = 5 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

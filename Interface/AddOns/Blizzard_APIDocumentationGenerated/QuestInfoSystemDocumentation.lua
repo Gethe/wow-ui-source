@@ -3,9 +3,24 @@ local QuestInfoSystem =
 	Name = "QuestInfoSystem",
 	Type = "System",
 	Namespace = "C_QuestInfoSystem",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "GetQuestHasShortExpirationWarning",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasShortExpirationWarning", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "GetQuestRewardSpellInfo",
 			Type = "Function",
@@ -85,6 +100,9 @@ local QuestInfoSystem =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

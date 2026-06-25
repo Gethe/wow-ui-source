@@ -138,6 +138,12 @@
 		</Scripts>
 	</Frame>
 	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="threatAnchorX" value="-6" type="number"/>
+			<KeyValue key="threatAnchorY" value="-3" type="number"/>
+			<KeyValue key="threatEliteAnchorX" value="-4" type="number"/>
+			<KeyValue key="threatEliteAnchorY" value="6" type="number"/>
+		</KeyValues>
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="19" right="21" top="12" bottom="15"/>
@@ -146,8 +152,9 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
 					<Size x="242" y="93"/>
+					<!--WARNING:: This is re-anchored in code.-->
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-24" y="0"/>
+						<Anchor point="TOPLEFT" x="-6" y="-3"/>
 					</Anchors>
 					<TexCoords left="0" right="0.9453125" top="0" bottom="0.181640625"/>
 				</Texture>

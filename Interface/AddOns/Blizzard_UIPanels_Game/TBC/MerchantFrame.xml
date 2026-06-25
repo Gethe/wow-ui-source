@@ -217,7 +217,7 @@
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
-							SetTooltipMoney(GameTooltip, repairAllCost);
+							GameTooltip_AddMoneyLine(GameTooltip, repairAllCost);
 						end
 						GameTooltip:Show();
 					</OnEnter>
@@ -297,7 +297,7 @@
 						local repairAllCost, canRepair = GetRepairAllCost();
 						if ( canRepair and (repairAllCost > 0) ) then
 							GameTooltip:SetText(REPAIR_ALL_ITEMS);
-							SetTooltipMoney(GameTooltip, repairAllCost);
+							GameTooltip_AddMoneyLine(GameTooltip, repairAllCost);
 							local amount = GetGuildBankWithdrawMoney();
 							local guildBankMoney = GetGuildBankMoney();
 							if ( amount == -1 ) then
@@ -307,7 +307,7 @@
 								amount = min(amount, guildBankMoney);
 							end
 							GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, true);
-							SetTooltipMoney(GameTooltip, amount, "GUILD_REPAIR");
+							GameTooltip_AddHighlightLine(GameTooltip, MoneyFormatterUtil.FormatMoney(amount, MoneyFormatterPresets.ShowLowerWithZero))
 							GameTooltip:Show();
 						end
 					</OnEnter>

@@ -3,23 +3,10 @@ local Transmog =
 	Name = "Transmogrify",
 	Type = "System",
 	Namespace = "C_Transmog",
+	Environment = "All",
 
 	Functions =
 	{
-		{
-			Name = "ApplyAllPending",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "currentSpecOnly", Type = "bool", Nilable = false, Default = false },
-			},
-
-			Returns =
-			{
-				{ Name = "requestSent", Type = "bool", Nilable = false },
-			},
-		},
 		{
 			Name = "CanHaveSecondaryAppearanceForSlotID",
 			Type = "Function",
@@ -33,56 +20,6 @@ local Transmog =
 			{
 				{ Name = "canHaveSecondaryAppearance", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "CanTransmogItem",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canBeTransmogged", Type = "bool", Nilable = false },
-				{ Name = "selfFailureReason", Type = "cstring", Nilable = true },
-				{ Name = "canTransmogOthers", Type = "bool", Nilable = false },
-				{ Name = "othersFailureReason", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "CanTransmogItemWithItem",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "targetItemInfo", Type = "ItemInfo", Nilable = false },
-				{ Name = "sourceItemInfo", Type = "ItemInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canTransmog", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "ClearAllPending",
-			Type = "Function",
-		},
-		{
-			Name = "ClearPending",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-		},
-		{
-			Name = "Close",
-			Type = "Function",
 		},
 		{
 			Name = "ExtractTransmogIDList",
@@ -99,39 +36,6 @@ local Transmog =
 			},
 		},
 		{
-			Name = "GetApplyCost",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "cost", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetApplyWarnings",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "warnings", Type = "table", InnerType = "TransmogApplyWarningInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetBaseCategory",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "transmogID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
-			},
-		},
-		{
 			Name = "GetItemIDForSource",
 			Type = "Function",
 
@@ -143,35 +47,6 @@ local Transmog =
 			Returns =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetPending",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSlotEffectiveCategory",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{
@@ -190,44 +65,6 @@ local Transmog =
 			},
 		},
 		{
-			Name = "GetSlotInfo",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isTransmogrified", Type = "bool", Nilable = false },
-				{ Name = "hasPending", Type = "bool", Nilable = false },
-				{ Name = "isPendingCollected", Type = "bool", Nilable = false },
-				{ Name = "canTransmogrify", Type = "bool", Nilable = false },
-				{ Name = "cannotTransmogrifyReason", Type = "number", Nilable = false },
-				{ Name = "hasUndo", Type = "bool", Nilable = false },
-				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "texture", Type = "fileID", Nilable = true },
-			},
-		},
-		{
-			Name = "GetSlotUseError",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "errorCode", Type = "number", Nilable = false },
-				{ Name = "errorString", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSlotVisualInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -239,15 +76,7 @@ local Transmog =
 
 			Returns =
 			{
-				{ Name = "baseSourceID", Type = "number", Nilable = false },
-				{ Name = "baseVisualID", Type = "number", Nilable = false },
-				{ Name = "appliedSourceID", Type = "number", Nilable = false },
-				{ Name = "appliedVisualID", Type = "number", Nilable = false },
-				{ Name = "pendingSourceID", Type = "number", Nilable = false },
-				{ Name = "pendingVisualID", Type = "number", Nilable = false },
-				{ Name = "hasUndo", Type = "bool", Nilable = false },
-				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "itemSubclass", Type = "number", Nilable = false },
+				{ Name = "slotVisualInfo", Type = "TransmogSlotVisualInfo", Nilable = false },
 			},
 		},
 		{
@@ -259,49 +88,6 @@ local Transmog =
 				{ Name = "isAtNPC", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "IsSlotBeingCollapsed",
-			Type = "Function",
-			Documentation = { "Returns true if the only pending for the location's slot is a ToggleOff for the secondary appearance." },
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isBeingCollapsed", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsTransmogEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isTransmogEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "LoadOutfit",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPending",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
-			},
-		},
 	},
 
 	Events =
@@ -310,11 +96,13 @@ local Transmog =
 			Name = "TransmogCollectionCameraUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_CAMERA_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogCollectionItemFavoriteUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
@@ -325,11 +113,13 @@ local Transmog =
 			Name = "TransmogCollectionItemUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TransmogCollectionSourceAdded",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_SOURCE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -339,6 +129,7 @@ local Transmog =
 			Name = "TransmogCollectionSourceRemoved",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_SOURCE_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -348,6 +139,8 @@ local Transmog =
 			Name = "TransmogCollectionUpdated",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "collectionIndex", Type = "luaIndex", Nilable = true },
@@ -360,6 +153,7 @@ local Transmog =
 			Name = "TransmogCosmeticCollectionSourceAdded",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -369,6 +163,7 @@ local Transmog =
 			Name = "TransmogSearchUpdated",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SEARCH_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searchType", Type = "TransmogSearchType", Nilable = false },
@@ -379,11 +174,13 @@ local Transmog =
 			Name = "TransmogSetsUpdateFavorite",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SETS_UPDATE_FAVORITE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogSourceCollectabilityUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -394,21 +191,25 @@ local Transmog =
 			Name = "TransmogrifyClose",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogrifyItemUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TransmogrifyOpen",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogrifySuccess",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
@@ -418,6 +219,7 @@ local Transmog =
 			Name = "TransmogrifyUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
@@ -493,6 +295,9 @@ local Transmog =
 				{ Name = "itemSubclass", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

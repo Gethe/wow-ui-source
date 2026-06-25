@@ -1,0 +1,1314 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_TransmogTemplates.lua"/>
+
+	<Frame name="TransmogOutfitEntryTemplate" mixin="TransmogOutfitEntryMixin" virtual="true">
+		<Size y="45"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="OutfitIcon" registerForClicks="LeftButtonUp, RightButtonUp">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="LEFT" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Border" atlas="transmog-outfit-spellframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="OverlayActive" atlas="transmog-outfit-spellframe-active" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+					<Frame parentKey="OverlayLocked" inherits="AutoCastOverlayTemplate" hidden="true">
+						<Size x="36" y="36"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<HighlightTexture parentKey="HighlightTexture" atlas="transmog-outfit-spellframe" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="OutfitButton" registerForClicks="LeftButtonUp, RightButtonUp">
+				<Size x="208" y="43"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OutfitIcon" relativePoint="RIGHT" x="3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Selected" atlas="transmog-outfit-card-selected" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="SelectedPurple" alpha="0" atlas="transmog-outfit-card-selected-purple" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Glow" alpha="0" atlas="transmog-outfit-card-lineGlw">
+							<Size x="215" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowPurple" alpha="0" atlas="transmog-outfit-card-lineGlw-purple">
+							<Size x="215" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="TextContent" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="fixedWidth" value="188" type="number"/>
+							<KeyValue key="spacing" value="3" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="188" y="43"/>
+						<Anchors>
+							<Anchor point="LEFT" x="12" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="1" type="number"/>
+									</KeyValues>
+									<Anchors>
+										<Anchor point="LEFT" x="10" y="6"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="SituationInfo" inherits="GameFontNormal" justifyH="LEFT">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="2" type="number"/>
+									</KeyValues>
+									<Size x="190" y="12"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<Color color="GRAY_FONT_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<NormalTexture parentKey="NormalTexture" atlas="transmog-outfit-card">
+					<Size x="208" y="43"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture parentKey="HighlightTexture" atlas="transmog-outfit-card" alphaMode="ADD">
+					<Size x="208" y="43"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</HighlightTexture>
+				<Animations>
+					<AnimationGroup parentKey="AnimSaved" setToFinalAlpha="true">
+						<Alpha childKey="GlowPurple" duration="1.2" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GlowPurple" duration="0.3" order="1" startDelay="1.2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SelectedPurple" duration="1.2" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="SelectedPurple" duration="0.3" order="1" startDelay="1.2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Selected" duration="1.2" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Selected" duration="0.3" order="1" startDelay="1.2" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AnimNew" setToFinalAlpha="true">
+						<Alpha childKey="Glow" duration="0.24" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.3" order="1" startDelay="0.24" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="TransmogAppearanceSlotTemplate" mixin="TransmogAppearanceSlotMixin" motionScriptsWhileDisabled="true" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size x="59" y="59"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="transmog-gearslot-default" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DisabledIcon" atlas="transmog-icon-disabled" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HiddenVisualIcon" atlas="transmog-icon-hidden" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShowEquippedIcon" atlas="transmog-icon-tick" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="FlyoutDropdown" mixin="TransmogSlotFlyoutDropdownMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="BOTTOM"/>
+					<KeyValue key="menuPointX" type="number" value="0"/>
+					<KeyValue key="menuPointY" type="number" value="-5"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOP"/>
+				</KeyValues>
+				<Size x="43" y="19"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="-4"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="transmog-button-pullup" useAtlasSize="true"/>
+				<PushedTexture parentKey="PushedTexture" atlas="transmog-button-pullup-pressed" useAtlasSize="true"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</DropdownButton>
+			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="transmog-gearSlot-pending" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow" atlas="transmog-gearSlot-transmogrified-Glw" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Highlight" atlas="transmog-gearSlot-transmogrified-HL" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FlipbookLeft" atlas="transmog-gearSlot-flipbook-loop-Left">
+							<Size x="9" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-20" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookRight" atlas="transmog-gearSlot-flipbook-loop-Right">
+							<Size x="9" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" x="20" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-gearSlot-flipbook-loop-Top">
+							<Size x="48" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="20"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-gearSlot-flipbook-loop-Bottom">
+							<Size x="48" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookStart" atlas="transmog-gearSlot-flipbook-start">
+							<Size x="85" y="85"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0.5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AnimStart" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookStart" duration="0.8" order="1" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookStart" duration="1" order="1" endDelay="0.8" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FlipbookStart" duration="1" order="1" startDelay="0.8" endDelay="0.81" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Highlight" duration="0.47" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Highlight" duration="0.5" order="1" startDelay="0.47" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Glow" duration="0.33" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.33" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AnimLoop" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookLeft" duration="2.3" order="1" flipBookRows="2" flipBookColumns="55" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="2.3" order="1" flipBookRows="2" flipBookColumns="55" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookTop" duration="2.3" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="2.3" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SavedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="transmog-gearSlot-transmogrified-Glw" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Highlight" atlas="transmog-gearSlot-transmogrified-HL" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LineSquare" atlas="transmog-gearSlot-lineSquare" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackgroundFX" atlas="transmog-gearSlot-FX-spark-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FrameGlow" atlas="transmog-gearSlot-transmogrified-Frame-Glw" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FlipbookSparks" atlas="transmog-gearSlot-flipbook-sparks">
+							<Size x="76" y="76"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookStart" atlas="transmog-gearSlot-flipbook-start">
+							<Size x="85" y="85"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookSparks" duration="0.8" order="1" startDelay="0.33" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.8" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BackgroundFX" duration="0.33" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BackgroundFX" duration="0.23" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="FrameGlow" duration="0.17" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FrameGlow" duration="0.17" order="1" startDelay="0.17" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FlipbookStart" duration="0.8" order="1" startDelay="0.5" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookStart" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookStart" duration="0.8" order="1" startDelay="0.5" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FlipbookStart" duration="0.1" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="LineSquare" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="LineSquare" duration="0.17" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Highlight" duration="0.73" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Highlight" duration="0.3" order="1" startDelay="0.73" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Glow" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.23" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SelectedFrame" setAllPoints="true" hidden="true" frameLevel="100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="transmog-gearslot-selected" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WarningFrame" setAllPoints="true" hidden="true" frameLevel="200">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="transmog-icon-warning" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-9" y="-9"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Button>
+
+	<Button name="TransmogIllusionSlotTemplate" mixin="TransmogIllusionSlotMixin" motionScriptsWhileDisabled="true" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size x="42" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="transmog-gearslot-unassigned-enchant" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="transmog-gearslot-default-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DisabledIcon" atlas="transmog-icon-disabled-small" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HiddenVisualIcon" atlas="transmog-icon-hidden-small" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShowEquippedIcon" atlas="transmog-icon-tick-small" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="transmog-gearSlot-pending">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow" atlas="transmog-gearSlot-transmogrified-Glw">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Highlight" atlas="transmog-gearSlot-transmogrified-HL">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FlipbookLeft" atlas="transmog-gearSlot-flipbook-loop-Left">
+							<Size x="9" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-13" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookRight" atlas="transmog-gearSlot-flipbook-loop-Right">
+							<Size x="9" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" x="13" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-gearSlot-flipbook-loop-Top">
+							<Size x="30" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-gearSlot-flipbook-loop-Bottom">
+							<Size x="30" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookStart" atlas="transmog-gearSlot-flipbook-start">
+							<Size x="54" y="54"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0.5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AnimStart" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookStart" duration="0.8" order="1" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookStart" duration="1" order="1" endDelay="0.8" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FlipbookStart" duration="1" order="1" startDelay="0.8" endDelay="0.81" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Highlight" duration="0.47" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Highlight" duration="0.5" order="1" startDelay="0.47" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Glow" duration="0.33" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.33" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AnimLoop" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookLeft" duration="2.3" order="1" flipBookRows="2" flipBookColumns="55" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="2.3" order="1" flipBookRows="2" flipBookColumns="55" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookTop" duration="2.3" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="2.3" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SavedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="transmog-gearSlot-transmogrified-Glw">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Highlight" atlas="transmog-gearSlot-transmogrified-HL">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LineSquare" atlas="transmog-gearSlot-lineSquare">
+							<Size x="26" y="26"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackgroundFX" atlas="transmog-gearSlot-FX-spark-BG">
+							<Size x="54" y="54"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FrameGlow" atlas="transmog-gearSlot-transmogrified-Frame-Glw">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FlipbookSparks" atlas="transmog-gearSlot-flipbook-sparks">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookStart" atlas="transmog-gearSlot-flipbook-start">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookSparks" duration="0.8" order="1" startDelay="0.33" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.8" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BackgroundFX" duration="0.33" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BackgroundFX" duration="0.23" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="FrameGlow" duration="0.17" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FrameGlow" duration="0.17" order="1" startDelay="0.17" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FlipbookStart" duration="0.8" order="1" startDelay="0.5" flipBookRows="4" flipBookColumns="6" flipBookFrames="24" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FlipbookStart" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookStart" duration="0.8" order="1" startDelay="0.5" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FlipbookStart" duration="0.1" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="LineSquare" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="LineSquare" duration="0.17" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Highlight" duration="0.73" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Highlight" duration="0.3" order="1" startDelay="0.73" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Glow" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.23" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SelectedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="transmog-gearslot-selected">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WarningFrame" setAllPoints="true" hidden="true" frameLevel="100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="transmog-icon-warning-small" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-6" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Button>
+
+	<Button name="TransmogWardrobeCollectionTabTemplate" mixin="TransmogWardrobeCollectionTabMixin" inherits="TabSystemTopButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="selectedFontObject" value="GameFontHighlight" type="string"/>
+			<KeyValue key="unselectedFontObject" value="GameFontNormal" type="string"/>
+			<KeyValue key="textOffsetY" value="3" type="number"/>
+			<KeyValue key="textPadding" value="17" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="SelectedHighlight" frameLevel="200" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="2" y="5"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Highlight" atlas="transmog-tab-hl" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
+
+	<EditBox name="TransmogSearchBoxTemplate" mixin="TransmogSearchBoxMixin" inherits="SearchBoxNineSliceTemplate" letters="40" virtual="true">
+		<Size x="142" y="19"/>
+		<Frames>
+			<Frame parentKey="ProgressFrame" mixin="TransmogSearchBoxProgressMixin" hidden="true">
+				<Size x="0" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-3"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="LoadingFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" text="SEARCH_LOADING_TEXT">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="14" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<StatusBar parentKey="ProgressBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BarBackground">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a=".4"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="BarBorder" setAllPoints="true">
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="BorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-6" y="5"/>
+												<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="BorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="6" y="5"/>
+												<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="BorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnTextChanged method="OnTextChanged"/>
+		</Scripts>
+	</EditBox>
+
+	<Button name="DisplayTypeButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="188" y="36"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="StateTexture" atlas="common-button-tertiary-depressed-normal-purple" setAllPoints="true" hidden="true">
+					<Size x="192" y="40"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-loop-Top">
+							<Size x="160" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="14"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-loop-Bottom">
+							<Size x="170" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="-13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PendingFX" atlas="common-button-tertiary-normal-pending-FX">
+							<Size x="192" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup  parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="PendingFX" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="PendingFX" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FlipbookTop" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SavedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-startTop">
+							<Size x="170" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="14"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-startBottom">
+							<Size x="170" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Electrified" atlas="common-button-tertiary-normal-electrified">
+							<Size x="192" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<FlipBook childKey="FlipbookTop" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="Electrified" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Electrified" duration="0.63" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Electrified" duration="0.23" order="1" startDelay="0.83" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="IconFrame" frameLevel="200">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="LEFT" x="-15" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-appearance-unassigned-head" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x ="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="transmog-appearance-circframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<ButtonText parentKey="Text" maxLines="2" justifyH="LEFT">
+			<Size x="150" y="0"/>
+			<Anchors>
+				<Anchor point="LEFT" x="30" y="1"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-tertiary-normal"/>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-tertiary-pressed"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-normal" alphaMode="ADD"/>
+	</Button>
+
+	<DressUpModel name="TransmogItemModelTemplate" mixin="TransmogItemModelMixin" virtual="true">
+		<Size x="100" y="132"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="transmog-itemcard-default" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="StateTexture" atlas="transmog-itemcard-transmogrified" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="BorderHighlight" atlas="transmog-itemcard-default" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SmokeFXRight" atlas="transmog-itemCard-transmogrified-pending-FX3" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="44" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXLeft" atlas="transmog-itemCard-transmogrified-pending-FX3" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-54" y="-10"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXTop" atlas="transmog-itemCard-transmogrified-pending-FX2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-10" y="65"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXBottom" atlas="transmog-itemCard-transmogrified-pending-FX2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="-63"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookRight" alpha="1" atlas="transmog-itemSlot-flipbook-loop-Right">
+							<Size x="17" y="134"/>
+							<Anchors>
+								<Anchor point="CENTER" x="52" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookLeft" atlas="transmog-itemSlot-flipbook-loop-Left">
+							<Size x="17" y="134"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-52" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-loop-Top">
+							<Size x="99" y="17"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="67"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-loop-Bottom">
+							<Size x="99" y="17"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-68"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PendingFX" atlas="transmog-itemCard-transmogrified-pending-FX1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="PendingFX" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="PendingFX" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FlipbookTop" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="2.33" order="1" flipBookRows="3" flipBookColumns="30" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookLeft" duration="2.33" order="1" flipBookRows="3" flipBookColumns="30" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Translation childKey="SmokeFXLeft" duration="2.33" order="1" offsetX="0" offsetY="30"/>
+						<Alpha childKey="SmokeFXLeft" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXLeft" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXRight" duration="2.33" order="1" offsetX="0" offsetY="-20"/>
+						<Alpha childKey="SmokeFXRight" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXRight" duration="1.83" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXTop" duration="2.33" order="1" offsetX="20" offsetY="0"/>
+						<Alpha childKey="SmokeFXTop" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXTop" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXBottom" duration="2.33" order="1" offsetX="-20" offsetY="0"/>
+						<Alpha childKey="SmokeFXBottom" duration="0.83" order="1" fromAlpha="0" toAlpha="0.6"/>
+						<Alpha childKey="SmokeFXBottom" duration="1.5" order="1" startDelay="0.83" fromAlpha="0.6" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SavedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlipbookRight" atlas="transmog-itemSlot-flipbook-startRight">
+							<Size x="35" y="165"/>
+							<Anchors>
+								<Anchor point="CENTER" x="53" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookLeft" atlas="transmog-itemSlot-flipbook-startLeft">
+							<Size x="35" y="165"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-53" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-startTop">
+							<Size x="112" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="68"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-startBottom">
+							<Size x="112" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-68"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Electrified1" atlas="transmog-itemCard-electrified" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Electrified2" atlas="transmog-itemCard-electrified" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookSparks" atlas="transmog-itemSlot-flipbook-sparks">
+							<Size x="150" y="208"/>
+							<Anchors>
+								<Anchor point="CENTER" x="8" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<Alpha childKey="FlipbookSparks" duration="0.0" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.0" order="1" startDelay="0.33" fromAlpha="0" toAlpha="1"/>
+						<FlipBook childKey="FlipbookSparks" duration="0.6" order="1" startDelay="0.33" flipBookRows="3" flipBookColumns="6" flipBookFrames="18" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookLeft" duration="0.4" order="1" flipBookRows="1" flipBookColumns="14" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="0.4" order="1" flipBookRows="1" flipBookColumns="14" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookTop" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="Electrified1" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Electrified1" duration="0.63" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Electrified1" duration="0.23" order="1" startDelay="0.83" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Electrified2" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Electrified2" duration="0.2" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="NewVisual" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
+							<Shadow>
+								<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="8"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="NewGlow" atlas="collections-newglow">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NewString" x="-20" y="10"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NewString" x="20" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="FavoriteVisual" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-icon-favorite" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-7" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="HideVisual" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-icon-hidden" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3" y="-2" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnModelLoaded method="OnModelLoaded"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</DressUpModel>
+
+	<DressUpModel name="TransmogSetBaseModelTemplate" mixin="TransmogSetBaseModelMixin" virtual="true">
+		<Size x="178" y="218"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IncompleteOverlay" setAllPoints="true" alpha="0.5" hidden="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+				<Texture parentKey="Border" atlas="transmog-setcard-default">
+					<Size x="194" y="234"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="TransmogStateTexture" atlas="transmog-setcard-transmogrified" hidden="true">
+					<Size x="194" y="234"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="transmog-itemcard-default" alphaMode="ADD">
+					<Size x="194" y="234"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SmokeFXRight" atlas="transmog-setCard-transmogrified-pending-FX3" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="88" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXLeft" atlas="transmog-setCard-transmogrified-pending-FX3" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-92" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXTop" atlas="transmog-setCard-transmogrified-pending-FX2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="108"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SmokeFXBottom" atlas="transmog-setCard-transmogrified-pending-FX2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-108"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookRight" alpha="1" atlas="transmog-itemSlot-flipbook-loop-Right">
+							<Size x="20" y="230"/>
+							<Anchors>
+								<Anchor point="CENTER" x="92" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookLeft" atlas="transmog-itemSlot-flipbook-loop-Left">
+							<Size x="20" y="226"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-92" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-loop-Top">
+							<Size x="180" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="111"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-loop-Bottom">
+							<Size x="180" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-112"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PendingFX" atlas="transmog-setCard-transmogrified-pending-FX1">
+							<Size x="194" y="234"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="PendingFX" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="PendingFX" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FlipbookTop" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="2.33" order="1" flipBookRows="7" flipBookColumns="10" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="2.33" order="1" flipBookRows="3" flipBookColumns="30" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookLeft" duration="2.33" order="1" flipBookRows="3" flipBookColumns="30" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Translation childKey="SmokeFXLeft" duration="2.33" order="1" offsetX="0" offsetY="30"/>
+						<Alpha childKey="SmokeFXLeft" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXLeft" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXRight" duration="2.33" order="1" offsetX="0" offsetY="-20"/>
+						<Alpha childKey="SmokeFXRight" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXRight" duration="1.83" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXTop" duration="2.33" order="1" offsetX="20" offsetY="0"/>
+						<Alpha childKey="SmokeFXTop" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXTop" duration="1.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="SmokeFXBottom" duration="2.33" order="1" offsetX="-20" offsetY="0"/>
+						<Alpha childKey="SmokeFXBottom" duration="0.83" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="SmokeFXBottom" duration="1.5" order="1" startDelay="0.83" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="SavedFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlipbookRight" atlas="transmog-itemSlot-flipbook-startRight">
+							<Size x="55" y="260"/>
+							<Anchors>
+								<Anchor point="CENTER" x="90" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookLeft" atlas="transmog-itemSlot-flipbook-startLeft">
+							<Size x="55" y="260"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-90" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookTop" atlas="transmog-itemSlot-flipbook-startTop">
+							<Size x="225" y="51"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="110"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookBottom" atlas="transmog-itemSlot-flipbook-startBottom">
+							<Size x="225" y="51"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-110"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Electrified1" atlas="transmog-itemCard-electrified">
+							<Size x="215" y="260"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Electrified2" atlas="transmog-itemCard-electrified">
+							<Size x="215" y="260"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlipbookSparks" atlas="transmog-itemSlot-flipbook-sparks">
+							<Size x="260" y="290"/>
+							<Anchors>
+								<Anchor point="CENTER" x="12" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<Alpha childKey="FlipbookSparks" duration="0.0" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FlipbookSparks" duration="0.6" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0.7"/>
+						<FlipBook childKey="FlipbookSparks" duration="0.6" order="1" startDelay="0.33" flipBookRows="3" flipBookColumns="6" flipBookFrames="18" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookRight" duration="0.4" order="1" flipBookRows="1" flipBookColumns="14" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookLeft" duration="0.4" order="1" flipBookRows="1" flipBookColumns="14" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookTop" duration="0.43" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook childKey="FlipbookBottom" duration="0.43" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="Electrified1" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Electrified1" duration="0.63" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Electrified1" duration="0.23" order="1" startDelay="0.83" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Electrified2" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Electrified2" duration="0.2" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Favorite" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-icon-favorite" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-2" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
+			<OnModelLoaded method="OnModelLoaded"/>
+		</Scripts>
+	</DressUpModel>
+
+	<DressUpModel name="TransmogSetModelTemplate" mixin="TransmogSetModelMixin" inherits="TransmogSetBaseModelTemplate" virtual="true">
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DressUpModel>
+
+	<DressUpModel name="TransmogCustomSetModelTemplate" mixin="TransmogCustomSetModelMixin" inherits="TransmogSetBaseModelTemplate" virtual="true">
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DressUpModel>
+
+	<Frame name="TransmogSituationTemplate" mixin="TransmogSituationMixin" virtual="true">
+		<Size x="554" y="50"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormal" maxLines="2" justifyH="LEFT">
+					<Size x="170" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="35" y="-19"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-35" y="-2"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

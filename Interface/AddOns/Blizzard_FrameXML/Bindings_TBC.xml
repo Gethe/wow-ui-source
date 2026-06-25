@@ -345,22 +345,22 @@
 	</Binding>
 
 	<Binding name="ACTIONPAGE1" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(1);
+		C_ActionBar.SetActionBarPage(1);
 	</Binding>
 	<Binding name="ACTIONPAGE2" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(2);
+		C_ActionBar.SetActionBarPage(2);
 	</Binding>
 	<Binding name="ACTIONPAGE3" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(3);
+		C_ActionBar.SetActionBarPage(3);
 	</Binding>
 	<Binding name="ACTIONPAGE4" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(4);
+		C_ActionBar.SetActionBarPage(4);
 	</Binding>
 	<Binding name="ACTIONPAGE5" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(5);
+		C_ActionBar.SetActionBarPage(5);
 	</Binding>
 	<Binding name="ACTIONPAGE6" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(6);
+		C_ActionBar.SetActionBarPage(6);
 	</Binding>
 	<Binding name="PREVIOUSACTIONPAGE" category="BINDING_HEADER_ACTIONBAR">
 		ActionBar_PageDown();
@@ -1073,13 +1073,13 @@
 	</Binding>
 
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		if ( SHOW_ENEMIES ) then
-			SetCVar("nameplateShowEnemies", 0);
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		if ( showEnemies ) then
+			Settings.SetValue("nameplateShowEnemies", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowEnemies", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -1087,13 +1087,15 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_FRIENDS ) then
-			SetCVar("nameplateShowFriends", 0);
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( showFriends ) then
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -1101,19 +1103,21 @@
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
-			SetCVar("nameplateShowEnemies", 1);
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( not showEnemies or not showFriends ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			end
 		else
-			SetCVar("nameplateShowEnemies", 0);
-			SetCVar("nameplateShowFriends", 0);
+			Settings.SetValue("nameplateShowEnemies", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>

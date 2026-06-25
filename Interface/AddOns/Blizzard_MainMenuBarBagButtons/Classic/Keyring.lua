@@ -2,6 +2,10 @@
 KeyringMixin = {};
 
 function KeyringMixin:OnLoad()
+	if(not IsKeyRingEnabled()) then
+		return; -- in versions that dont support the keyring, dont register for anything, early out
+	end
+
 	MainMenuBarBagManager:RegisterBagButton(self);
 	ItemAnim_OnLoad(self)
 	self:SetID(KEYRING_CONTAINER);

@@ -2,6 +2,7 @@ local SimpleFrameScriptObjectAPI =
 {
 	Name = "SimpleFrameScriptObjectAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -32,6 +33,46 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "HasAnySecretAspect",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretAspect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "aspect", Type = "SecretAspect", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretValues",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsForbidden",
 			Type = "Function",
 
@@ -59,6 +100,19 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "IsPreventingSecretValues",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isPreventingSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetForbidden",
 			Type = "Function",
 
@@ -70,7 +124,7 @@ local SimpleFrameScriptObjectAPI =
 			Name = "SetToDefaults",
 			Type = "Function",
 			IsProtectedFunction = true,
-			Documentation = { "Reset all script accessible values to their default values." },
+			Documentation = { "Reset all script accessible values to their default values. If possible, clears secret states." },
 
 			Arguments =
 			{
@@ -83,6 +137,9 @@ local SimpleFrameScriptObjectAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

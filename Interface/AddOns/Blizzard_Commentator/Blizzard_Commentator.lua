@@ -38,7 +38,17 @@ end
 
 function SetSpectatorModeForOtherFrames(spectatorMode)
 	if (UIWidgetTopCenterContainerFrame) then
-		UIWidgetTopCenterContainerFrame:SetSpectatorMode(spectatorMode, Commentator.Scoreboard.Clock);
+		-- Adjust downward to avoid overlap.
+		UIWidgetTopCenterContainerFrame:ClearAllPoints();
+		if (spectatorMode) then
+			if (Commentator.Scoreboard.Clock) then
+				UIWidgetTopCenterContainerFrame:SetPoint("TOP", Commentator.Scoreboard.Clock, "BOTTOM", 0, 0);
+			end
+			UIWidgetTopCenterContainerFrame:SetScale(1.5);
+		else
+			UIWidgetTopCenterContainerFrame:SetPoint("TOP", 0, -15);
+			UIWidgetTopCenterContainerFrame:SetScale(1.0);
+		end
 	end
 	if (BattlefieldMapFrame) then
 		BattlefieldMapFrame:SetSpectatorMode(spectatorMode);
@@ -213,6 +223,7 @@ function CommentatorMixin:SetDefaultBindings()
 end
 
 function CommentatorMixin:SetDefaultCVars()
+	SetCVar("nameplateStyle", Enum.NamePlateStyle.Modern);
 	SetCVar("UnitNameFriendlyPlayerName", 1);
 	SetCVar("UnitNameFriendlyPetName", 1);
 	SetCVar("UnitNameFriendlyGuardianName", 0);
@@ -227,39 +238,42 @@ function CommentatorMixin:SetDefaultCVars()
 	SetCVar("nameplateShowEnemyGuardians", 0);
 	SetCVar("nameplateShowEnemyTotems", 0);
 	SetCVar("nameplateShowEnemyMinus", 0);
-	SetCVar("nameplateShowFriends", 1);
-	SetCVar("nameplateShowFriendlyPets", 0);
-	SetCVar("nameplateShowFriendlyGuardians", 0);
-	SetCVar("nameplateShowFriendlyTotems", 0);
+	SetCVar("nameplateShowFriendlyPlayers", 1);
+	SetCVar("nameplateShowFriendlyPlayerPets", 0);
+	SetCVar("nameplateShowFriendlyPlayerGuardians", 0);
+	SetCVar("nameplateShowFriendlyPlayerTotems", 0);
 
 	local nativeScale = 1;
-	SetCVar("NamePlateHorizontalScale", nativeScale);
-	SetCVar("NamePlateVerticalScale", nativeScale);
-	SetCVar("nameplateGlobalScale", nativeScale);
 	SetCVar("nameplateMinScale", nativeScale);
 	SetCVar("nameplateMaxScale", nativeScale);
 	SetCVar("nameplateSelectedScale", nativeScale);
 
+	SetCVar("nameplateSize", 2);
 	SetCVar("nameplateShowAll", 1);
 	SetCVar("UnitNameFriendlySpecialNPCName", 0);
 	SetCVar("UnitNameHostleNPC", 0);
 	SetCVar("UnitNameInteractiveNPC", 0);
 	SetCVar("UnitNameNPC", 0);
 	SetCVar("ShowQuestUnitCircles", 0);
-	SetCVar("ShowClassColorInNameplate", 0);
-	SetCVar("nameplateMotion", 0);
 	SetCVar("showVKeyCastbar", 0);
+	SetCVar("threatWarning", 0);
 	SetCVar("deselectOnClick", 1);
 	SetCVar("maxfpsbk", 0);
 	SetCVar("showSpectatorTeamCircles", 1);
-	SetCVar("ShowClassColorInNameplate", "1");
-	SetCVar("nameplateMinAlpha", "1");
+	SetCVar("nameplateShowClassColor", "1");
+	SetCVar("nameplateShowFriendlyClassColor", "1");
+	SetCVar("nameplateMinAlpha", ".75");
 	SetCVar("nameplateOccludedAlphaMult", "1.0");
 	SetCVar("UnitNamePlayerGuild", "0");
 	SetCVar("UnitNameEnemyMinionName", "0");
 	SetCVar("UnitNameFriendlyMinionName", "0");
 	SetCVar("chatStyle", "classic");
-	SetCVar("countdownForCooldowns", 1)
+	SetCVar("countdownForCooldowns", 1);
+
+	local spellNameBit = bit.lshift(1, Enum.NamePlateCastBarDisplay.SpellName - 1);
+	local spellIconBit = bit.lshift(1, Enum.NamePlateCastBarDisplay.SpellIcon - 1);
+	local castBarDisplayMask = bit.bor(spellNameBit, spellIconBit);
+	CVarCallbackRegistry:SetCVarBitfieldMask("nameplateCastBarDisplay", castBarDisplayMask); -- SpellName and SpellIcon
 end
 
 function CommentatorMixin:ModifyCameraSpeed(speed)

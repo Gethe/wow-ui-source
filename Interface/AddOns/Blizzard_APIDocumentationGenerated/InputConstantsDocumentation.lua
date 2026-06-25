@@ -17,6 +17,9 @@ local InputConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(InputConstants);

@@ -116,23 +116,6 @@ function ReverseQuestObjective(text, objectiveType)
   end
 end
 
--- Note: Numeric abbreviation data is presently defined in game-specific files.
-NUMBER_ABBREVIATION_DATA = {};
-
-function GetLocalizedNumberAbbreviationData()
-	return NUMBER_ABBREVIATION_DATA;
-end
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(GetLocalizedNumberAbbreviationData()) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
-
 UIParentManagedFrameMixin = { };
 function UIParentManagedFrameMixin:OnShow()
 	self.layoutParent:AddManagedFrame(self);
@@ -827,19 +810,6 @@ function IsLevelAtEffectiveMaxLevel(level)
 	return level >= maxLevel;
 end
 
-function AbbreviateLargeNumbers(value)
-	local strLen = strlen(value);
-	local retString = value;
-	if ( strLen > 8 ) then
-		retString = string.sub(value, 1, -7)..SECOND_NUMBER_CAP;
-	elseif ( strLen > 5 ) then
-		retString = string.sub(value, 1, -4)..FIRST_NUMBER_CAP;
-	elseif (strLen > 3 ) then
-		retString = BreakUpLargeNumbers(value);
-	end
-	return retString;
-end
-
 function ConfirmOrLeaveLFGParty()
 	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 		return;
@@ -854,6 +824,19 @@ function ConfirmOrLeaveLFGParty()
 		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP and CONFIRM_LEAVE_BATTLEFIELD or CONFIRM_LEAVE_INSTANCE_PARTY);
 	else
 		LeaveInstanceParty();
+	end
+end
+
+function ConfirmOrLeaveParty()
+	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+		return;
+	end
+
+	if ( IsPartyLFG() ) then
+		ConfirmOrLeaveLFGParty();
+	-- If the party is walk-in (aka Delve) let the player leave
+	elseif ( C_PartyInfo.IsPartyWalkIn() ) then
+		LeaveWalkInParty();
 	end
 end
 

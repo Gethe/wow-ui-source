@@ -17,6 +17,9 @@ local ClubShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ClubShared);

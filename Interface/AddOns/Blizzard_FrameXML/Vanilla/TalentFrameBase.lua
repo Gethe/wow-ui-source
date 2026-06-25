@@ -1,7 +1,6 @@
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 3;
 MAX_NUM_TALENT_TIERS = 15;
-NUM_TALENT_COLUMNS = 4;
 MAX_NUM_TALENTS = 40;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
@@ -102,7 +101,7 @@ function TalentFrame_Update(TalentFrame)
 				_G[buttonName.."Rank"]:SetText(displayRank);
 				SetTalentButtonLocation(button, talentInfo.tier, talentInfo.column);
 				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
-			
+
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
 				forceDesaturated = (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0;
 
@@ -159,13 +158,13 @@ function TalentFrame_Update(TalentFrame)
 	TalentFrame_ResetBranchTextureCount(TalentFrame);
 	TalentFrame_ResetArrowTextureCount(TalentFrame);
 	for i=1, MAX_NUM_TALENT_TIERS do
-		for j=1, NUM_TALENT_COLUMNS do
+		for j=1, Constants.TalentConsts.NumTalentColumns do
 			node = TalentFrame.TALENT_BRANCH_ARRAY[i][j];
-			
+
 			-- Setup offsets
 			xOffset = ((j - 1) * 63) + INITIAL_TALENT_OFFSET_X + 2;
 			yOffset = -((i - 1) * 63) - INITIAL_TALENT_OFFSET_Y - 2;
-		
+
 			if ( node.id ) then
 				-- Has talent
 				if ( node.up ~= 0 ) then
@@ -183,13 +182,13 @@ function TalentFrame_Update(TalentFrame)
 				end
 				if ( node.right ~= 0 ) then
 					-- See if any connecting branches are gray and if so color them gray
-					tempNode = TalentFrame.TALENT_BRANCH_ARRAY[i][j+1];	
+					tempNode = TalentFrame.TALENT_BRANCH_ARRAY[i][j+1];
 					if ( tempNode.left ~= 0 and tempNode.down < 0 ) then
 						TalentFrame_SetBranchTexture(i, j-1, TALENT_BRANCH_TEXTURECOORDS["right"][tempNode.down], xOffset + TALENT_BUTTON_SIZE, yOffset, TalentFrame);
 					else
 						TalentFrame_SetBranchTexture(i, j, TALENT_BRANCH_TEXTURECOORDS["right"][node.right], xOffset + TALENT_BUTTON_SIZE + 1, yOffset, TalentFrame);
 					end
-					
+
 				end
 				-- Draw arrows
 				if ( node.rightArrow ~= 0 ) then

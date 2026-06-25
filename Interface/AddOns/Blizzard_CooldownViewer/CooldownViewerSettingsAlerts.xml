@@ -1,0 +1,88 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CooldownViewerSettingsEditAlert" mixin="CooldownViewerSettingsEditAlertMixin" toplevel="true" hidden="true">
+		<Size x="310" y="385"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontHighlightHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CooldownName" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="RIGHT" x="-25" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TypeLabel" inherits="GameFontNormalHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_TYPE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
+			<DropdownButton parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TypeLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="EventLabel" inherits="GameFontNormalHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_EVENT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TypeDropdown" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="EventDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EventLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="PayloadLabel" inherits="GameFontNormalHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_SOUND_TYPE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.EventDropdown" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="PayloadDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PayloadLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+			<Button parentKey="AddAlertButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp" text="COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_ADD_ALERT">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

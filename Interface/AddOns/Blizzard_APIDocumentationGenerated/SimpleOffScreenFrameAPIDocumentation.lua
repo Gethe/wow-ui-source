@@ -2,6 +2,7 @@ local SimpleOffScreenFrameAPI =
 {
 	Name = "SimpleOffScreenFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -113,6 +114,9 @@ local SimpleOffScreenFrameAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

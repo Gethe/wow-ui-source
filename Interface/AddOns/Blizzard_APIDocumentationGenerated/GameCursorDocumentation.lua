@@ -2,6 +2,7 @@ local GameCursor =
 {
 	Name = "GameCursor",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -130,6 +131,9 @@ local GameCursor =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

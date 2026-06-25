@@ -3,6 +3,7 @@ local KeyBindings =
 	Name = "KeyBindings",
 	Type = "System",
 	Namespace = "C_KeyBindings",
+	Environment = "All",
 
 	Functions =
 	{
@@ -142,11 +143,13 @@ local KeyBindings =
 			Name = "BindingsLoaded",
 			Type = "Event",
 			LiteralName = "BINDINGS_LOADED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ModifierStateChanged",
 			Type = "Event",
 			LiteralName = "MODIFIER_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "key", Type = "cstring", Nilable = false },
@@ -157,11 +160,13 @@ local KeyBindings =
 			Name = "NotifyTurnStrafeChange",
 			Type = "Event",
 			LiteralName = "NOTIFY_TURN_STRAFE_CHANGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBindings",
 			Type = "Event",
 			LiteralName = "UPDATE_BINDINGS",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -234,6 +239,9 @@ local KeyBindings =
 				{ Name = "keystate", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

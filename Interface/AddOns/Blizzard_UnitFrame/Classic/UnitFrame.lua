@@ -472,7 +472,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		if ( not manaBar.lockColor ) then
 			local playerDeadOrGhost = manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")) and not UnitIsFeignDeath("player");
 			if ( info.atlas ) then
-				manaBar:SetStatusBarAtlas(info.atlas);
+				manaBar:SetStatusBarTexture(info.atlas);
 				manaBar:SetStatusBarColor(1, 1, 1);
 				manaBar:GetStatusBarTexture():SetDesaturated(playerDeadOrGhost);
 				manaBar:GetStatusBarTexture():SetAlpha(playerDeadOrGhost and 0.5 or 1);
@@ -520,7 +520,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 
 	-- Setup newbie tooltip
 	if ( manaBar.unit ~= "pet") then
-	    if ( unitFrame:GetName() == "PlayerFrame" ) then
+	    if ( unitFrame:GetName() == "PlayerFrame" and powerType ~= nil ) then
 		    manaBar.tooltipTitle = prefix;
 		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR"..powerType];
 	    else

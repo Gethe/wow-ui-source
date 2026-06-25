@@ -2,6 +2,7 @@ local SimpleControlPointAPI =
 {
 	Name = "SimpleControlPointAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,9 @@ local SimpleControlPointAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

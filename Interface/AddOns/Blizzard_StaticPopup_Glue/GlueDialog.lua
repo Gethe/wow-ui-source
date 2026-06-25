@@ -201,6 +201,11 @@ function GlueDialogMixin:GetEditBox()
 	return self.EditBox;
 end
 
+function GlueDialogMixin:GetEditBoxText()
+	local editBox = self:GetEditBox();
+	return editBox and editBox:GetText() or "";
+end
+
 function GlueDialogMixin:GetButton1()
 	return self.Container.Button1;
 end

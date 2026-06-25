@@ -68,7 +68,7 @@ function PlayerFrame_OnLoad(self)
 			fromPlayerFrame = true;
 		};
 
-		if self.unit == "vehicle" then
+		if unit == "vehicle" then
 			which = "VEHICLE";
 			contextData.unit = "vehicle";
 		else
@@ -96,7 +96,7 @@ end
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
-		PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
+		PlayerLevelText:SetVertexColor(UNIT_LEVEL_NON_ATTACKABLE.r, UNIT_LEVEL_NON_ATTACKABLE.g, UNIT_LEVEL_NON_ATTACKABLE.b, 1.0);
 		PlayerLevelText:SetText(level);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
@@ -259,8 +259,21 @@ function PlayerFrame_OnEvent(self, event, ...)
 	end
 end
 
+local function PlayerFrame_SetTargetAnimationTargetPosition(self)
+	self.animationTargetPosition = {};
+	self.animationTargetPosition.point,
+	self.animationTargetPosition.relativeTo,
+	self.animationTargetPosition.relativePoint,
+	self.animationTargetPosition.xOfs,
+	self.animationTargetPosition.yOfs = self:GetPoint(1);
+end
+
 local function PlayerFrame_AnimPos(self, fraction)
-	return "TOPLEFT", UIParent, "TOPLEFT", -19, fraction*140-4;
+	return self.animationTargetPosition.point,
+	self.animationTargetPosition.relativeTo,
+	self.animationTargetPosition.relativePoint,
+	self.animationTargetPosition.xOfs,
+	fraction * 140 + self.animationTargetPosition.yOfs;
 end
 
 function PlayerFrame_ResetPosition(self)
@@ -284,6 +297,7 @@ function PlayerFrame_AnimateOut(self)
 	if ( self:IsUserPlaced() ) then
 		PlayerFrame_AnimFinished(PlayerFrame);
 	else
+		PlayerFrame_SetTargetAnimationTargetPosition(self);
 		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
 	end
 end
@@ -319,6 +333,7 @@ end
 function PlayerFrame_SequenceFinished(self)
 	self.isAnimatedOut = false;
 	self.inSequence = false;
+	self.animationTargetPosition = nil;
 	PetFrame:Update();
 end
 

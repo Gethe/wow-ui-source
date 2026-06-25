@@ -35,6 +35,12 @@ function StatusTrackingManagerMixin:UpdateBarVisuals()
 	firstBarContainer:UseMainMenuBarArt(inDefaultPosition);
 
 	MainMenuBar_SetMaxLevelBarShown(not inDefaultPositionAndVisible);
+
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		self:SetScale(self.WrathScale);
+	else
+		self:SetScale(self.ClassicScale);
+	end
 end
 
 function StatusTrackingBarContainerMixin:InitializeBars()

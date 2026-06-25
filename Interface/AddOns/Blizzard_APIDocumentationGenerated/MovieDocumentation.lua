@@ -2,6 +2,7 @@ local Movie =
 {
 	Name = "Movie",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,9 @@ local Movie =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

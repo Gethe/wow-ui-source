@@ -941,7 +941,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		--Special case code for keyrings
 		if ( id == KEYRING_CONTAINER ) then
 			_G[frame:GetName().."Name"]:SetText(KEYRING);
-			SetPortraitToTexture(frame:GetName().."Portrait", "Interface\\ContainerFrame\\KeyRing-Bag-Icon");
+			_G[frame:GetName().."Portrait"]:SetTexture("Interface\\ContainerFrame\\KeyRing-Bag-Icon");
 		else
 			_G[frame:GetName().."Name"]:SetText(C_Container.GetBagName(id));
 			C_Container.SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
@@ -1446,7 +1446,7 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
 		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
+		GameTooltip_AddMoneyLine(GameTooltip, repairCost);
 		GameTooltip:Show();
 	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
 		showSell = 1;

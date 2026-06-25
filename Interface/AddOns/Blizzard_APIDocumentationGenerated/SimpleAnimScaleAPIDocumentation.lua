@@ -2,6 +2,7 @@ local SimpleAnimScaleAPI =
 {
 	Name = "SimpleAnimScaleAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -110,6 +111,9 @@ local SimpleAnimScaleAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

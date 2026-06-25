@@ -5,15 +5,19 @@ local UIActionConstants =
 		{
 			Name = "UIActionType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "DefaultAction", Type = "UIActionType", EnumValue = 0 },
 				{ Name = "UpdateMapSystem", Type = "UIActionType", EnumValue = 1 },
+				{ Name = "Reserved1", Type = "UIActionType", EnumValue = 2 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 
