@@ -571,10 +571,10 @@
 								<Anchor point="TOPLEFT" x="7" y="-160"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontNormal" text="DISCORD_GUILD_SERVER_VALIDATE_ERROR" justifyH="CENTER" parentKey="serverError" nonspacewrap="true">
+						<FontString inherits="GameFontNormal" text="DISCORD_GUILD_SETTING_CHANNEL_LIST_EMPTY" justifyH="CENTER" parentKey="noChannelsError" nonspacewrap="true">
 							<Size x="285" y="40"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="7" y="-160"/>
+								<Anchor point="TOPLEFT" x="7" y="-260"/>
 							</Anchors>
 							<Color color="ERROR_COLOR"/>
 						</FontString>

@@ -31,10 +31,6 @@ function HousingBlueprintExportFrameMixin:StartExportFlow()
 		return false;
 	end
 
-	if HousingBlueprintImportFrame:IsShown() then
-		HousingBlueprintImportFrame:HideSelf();
-	end
-
 	self:ClearData();
 	self:ShowSelf();
 	self:ShowContent(self.InputContent);
@@ -72,6 +68,8 @@ function HousingBlueprintExportFrameMixin:OnSaveClicked()
 		return;
 	end
 
+	PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
+
 	self:UpdateLoadingState(--[[isWaitingForResult=]]true);
 	local selectedType, nameText = self.InputContent:GetInputValues();
 
@@ -84,6 +82,7 @@ function HousingBlueprintExportFrameMixin:OnSaveClicked()
 end
 
 function HousingBlueprintExportFrameMixin:OnCollectionButtonClicked()
+	PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 	if HousingFramesUtil.TryOpenBlueprintCollection() then
 		self:HideSelf();
 	end
@@ -94,10 +93,19 @@ function HousingBlueprintExportFrameMixin:UpdateLoadingState(isWaitingForResult)
 	self.LoadingOverlay:SetShown(self.isWaitingForResult);
 	self.InputContent:UpdateLoadingState(self.isWaitingForResult);
 	self.CloseButton:SetEnabled(not self.isWaitingForResult);
+
+	if isWaitingForResult and (not self.loopSoundHandle) then
+		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_EXPORT_LOOP);
+		self.loopSoundHandle = soundHandle;
+	elseif (not isWaitingForResult) and self.loopSoundHandle then
+		StopSound(self.loopSoundHandle);
+		self.loopSoundHandle = nil;
+	end
 end
 
 function HousingBlueprintExportFrameMixin:OnExportSuccess(shareCode)
 	self:UpdateLoadingState(--[[isWaitingForResult=]]false);
+	PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_EXPORT_SUCCESS);
 	local _, nameText = self.InputContent:GetInputValues();
 	self.SuccessContent:SetData(HOUSING_BLUEPRINT_EXPORT_NAME_SAVED_FMT:format(nameText), shareCode);
 	self:ShowContent(self.SuccessContent);
@@ -253,6 +261,7 @@ function HousingBlueprintExportSuccessContentMixin:OnLoad()
 	self.minimumWidth = largestShareButtonWidth + largestShareButtonWidth + 10;
 
 	self.ClipboardButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 		CopyToClipboard(self.ShareCodeBox.EditBox:GetText());
 		ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
 	end);
@@ -264,6 +273,7 @@ function HousingBlueprintExportSuccessContentMixin:OnLoad()
 	self.BlueprintsCollectionButton:Disable();
 
 	self.ChatLinkButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 		local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(self.ShareCodeBox.EditBox:GetText());
 		if not ChatFrameUtil.InsertLink(blueprintLink) then
 			ChatFrameUtil.OpenChat(blueprintLink);

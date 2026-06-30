@@ -4,8 +4,8 @@
 	<ScopedModifier useForbiddenObjectTable="true">
 		<AuraButton name="CustomAuraButtonTemplate" virtual="true">
 			<Mixins>
-				<Mixin key="CustomAuraButtonInboundMixin" source="local" inboundPartition="public"/>
-				<Mixin key="CustomAuraButtonPrivateMixin" source="local"/>
+				<Mixin key="CustomAuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="CustomAuraButtonPrivateMixin" source="secure"/>
 			</Mixins>
 		</AuraButton>
 	 </ScopedModifier>

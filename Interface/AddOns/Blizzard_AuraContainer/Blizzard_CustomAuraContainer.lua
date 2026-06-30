@@ -1,10 +1,82 @@
-local _addonName, addonTbl = ...;
+CustomAuraContainerSharedMixin = {};
 
-local CustomAuraContainerPrivateMixin = CreateFromMixins(addonTbl.AuraContainerPrivateMixin);
-addonTbl.CustomAuraContainerPrivateMixin = CustomAuraContainerPrivateMixin;
+function CustomAuraContainerSharedMixin:AddAuraFilter(filterString, options)
+	options = securecopy(options or {});
+
+	local isAssociative = true;
+	local auraFilter = {
+		auras = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, isAssociative),
+		filterString = filterString,
+		maxFrameCount = options and options.maxFrameCount or math.huge,
+		roundUpFrameIndex = options and options.roundUpFrameIndex or nil,
+	};
+
+	table.insert(self.auraFilters, auraFilter);
+	self:UpdateAllAuras();
+end
+
+function CustomAuraContainerSharedMixin:ClearAuraFilters()
+	self.auraFilters = {};
+	self:UpdateAllAuras();
+end
+
+function CustomAuraContainerSharedMixin:AddAuraFrame(auraFrame)
+	self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
+	self:RefreshAuraFrames();
+end
+
+function CustomAuraContainerSharedMixin:AddAuraFramesFromTable(auraFrames)
+	for _, auraFrame in ipairs(auraFrames) do
+		self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
+	end
+
+	self:RefreshAuraFrames();
+end
+
+function CustomAuraContainerSharedMixin:AddAuraFramesFromTemplate(templateName, count)
+	local frames = {};
+
+	for _i = 1, count do
+		local auraFrame = CreateFrame("AuraButton", nil, self, templateName);
+		table.insert(frames, auraFrame);
+		self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
+	end
+
+	self:RefreshAuraFrames();
+	return frames;
+end
+
+function CustomAuraContainerSharedMixin:RemoveAuraFrame(auraFrame)
+	local forbiddenAuraFrame = GetForbiddenObjectTable(auraFrame);
+	local index = tIndexOf(self.auraFrames, forbiddenAuraFrame);
+
+	if index then
+		self:RemoveAuraFrameInternal(index);
+		self:RefreshAuraFrames();
+	end
+end
+
+function CustomAuraContainerSharedMixin:RemoveAllAuraFrames()
+	for index, _auraFrame in ipairs_reverse(self.auraFrames) do
+		self:RemoveAuraFrameInternal(index);
+	end
+
+	self:RefreshAuraFrames();
+end
+
+function CustomAuraContainerSharedMixin:GetAuraFrame(index)
+	return self.auraFrames[index];
+end
+
+function CustomAuraContainerSharedMixin:GetAuraFrameCount()
+	return #self.auraFrames;
+end
+
+CustomAuraContainerInboundMixin = CreateFromMixins(CustomAuraContainerSharedMixin);
+CustomAuraContainerPrivateMixin = CreateFromMixins(AuraContainerPrivateMixin, CustomAuraContainerSharedMixin);
 
 function CustomAuraContainerPrivateMixin:OnLoad_Intrinsic()
-	addonTbl.AuraContainerPrivateMixin.OnLoad_Intrinsic(self);
+	AuraContainerPrivateMixin.OnLoad_Intrinsic(self);
 
 	self.auraFrames = {};
 	self.auraFilters = {};
@@ -154,80 +226,3 @@ function CustomAuraContainerPrivateMixin:RefreshAuraFrames()
 		self.auraFrames[i]:ClearAuraInstance();
 	end
 end
-
-local CustomAuraContainerInboundMixin = {};
-addonTbl.CustomAuraContainerInboundMixin = CustomAuraContainerInboundMixin;
-
-function CustomAuraContainerInboundMixin:AddAuraFilter(filterString, options)
-	options = securecopy(options or {});
-
-	local isAssociative = true;
-	local auraFilter = {
-		auras = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, isAssociative),
-		filterString = filterString,
-		maxFrameCount = options and options.maxFrameCount or math.huge,
-		roundUpFrameIndex = options and options.roundUpFrameIndex or nil,
-	};
-
-	table.insert(self.auraFilters, auraFilter);
-	self:UpdateAllAuras();
-end
-
-function CustomAuraContainerInboundMixin:ClearAuraFilters()
-	self.auraFilters = {};
-	self:UpdateAllAuras();
-end
-
-function CustomAuraContainerInboundMixin:AddAuraFrame(auraFrame)
-	self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
-	self:RefreshAuraFrames();
-end
-
-function CustomAuraContainerInboundMixin:AddAuraFramesFromTable(auraFrames)
-	for _, auraFrame in ipairs(auraFrames) do
-		self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
-	end
-
-	self:RefreshAuraFrames();
-end
-
-function CustomAuraContainerInboundMixin:AddAuraFramesFromTemplate(templateName, count)
-	local frames = {};
-
-	for _i = 1, count do
-		local auraFrame = CreateFrame("AuraButton", nil, self, templateName);
-		table.insert(frames, auraFrame);
-		self:AddAuraFrameInternal(GetForbiddenObjectTable(auraFrame));
-	end
-
-	self:RefreshAuraFrames();
-	return frames;
-end
-
-function CustomAuraContainerInboundMixin:RemoveAuraFrame(auraFrame)
-	local forbiddenAuraFrame = GetForbiddenObjectTable(auraFrame);
-	local index = tIndexOf(self.auraFrames, forbiddenAuraFrame);
-
-	if index then
-		self:RemoveAuraFrameInternal(index);
-		self:RefreshAuraFrames();
-	end
-end
-
-function CustomAuraContainerInboundMixin:RemoveAllAuraFrames()
-	for index, _auraFrame in ipairs_reverse(self.auraFrames) do
-		self:RemoveAuraFrameInternal(index);
-	end
-
-	self:RefreshAuraFrames();
-end
-
-function CustomAuraContainerInboundMixin:GetAuraFrame(index)
-	return self.auraFrames[index];
-end
-
-function CustomAuraContainerInboundMixin:GetAuraFrameCount()
-	return #self.auraFrames;
-end
-
-ApplySecureDelegatesToTable(CustomAuraContainerInboundMixin);

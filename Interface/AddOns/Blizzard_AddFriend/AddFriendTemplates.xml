@@ -1,40 +1,53 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="BattleNetInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true" mixin="BattleNetInviteFrameMixin">
+	<Frame name="BattleNetInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true" inherits="UserScaledFrameTemplate" mixin="BattleNetInviteFrameMixin">
 		<Size x="357" y="150"/>
+		<KeyValues>
+			<KeyValue key="baseWidth" value="357" type="number"/>
+			<KeyValue key="baseHeight" value="150" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="InviteText" inherits="FriendsFont_Normal" text="BATTLE_TAG_REQUEST">
+				<FontString parentKey="InviteText" inherits="UserScaledFontGameHighlight" text="BATTLE_TAG_REQUEST">
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="InviteeName" inherits="FriendsFont_Large" text="">
+				<FontString parentKey="InviteeName" inherits="UserScaledFontGameNormalLarge" text="">
 					<Anchors>
-						<Anchor point="TOP" y="-36"/>
+						<Anchor point="TOP" relativeKey="$parent.InviteText" relativePoint="BOTTOM" y="-5"/>
 					</Anchors>
 					<Color color="NORMAL_FONT_COLOR"/>
 				</FontString>
-				<FontString parentKey="InfoText" inherits="GameFontHighlightSmall" spacing="2" text="BATTLE_TAG_REQUEST_INFO">
-					<Size x="241" y="0"/>
+				<FontString parentKey="InfoText" inherits="UserScaledFontGameHighlightSmall" spacing="2" text="BATTLE_TAG_REQUEST_INFO">
 					<Anchors>
-						<Anchor point="CENTER" y="-10"/>
+						<Anchor point="LEFT" x="58" y="-10"/>
+						<Anchor point="RIGHT" x="-58" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Button parentKey="SendButton" inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
-				<Size x="128" y="22"/>
+			<Button parentKey="SendButton" inherits="UIPanelButtonUserScaledTemplate" text="SEND_REQUEST">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="43" y="15"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-10" y="15"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="98" y="22"/>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonUserScaledTemplate" text="CANCEL">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="128" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-43" y="15"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="10" y="15"/>
 				</Anchors>
 			</Button>
 		</Frames>

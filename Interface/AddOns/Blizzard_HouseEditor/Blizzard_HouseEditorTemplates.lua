@@ -287,7 +287,7 @@ end
 
 function HouseEditorBudgetCountMixin:OnEvent(event, ...)
 	-- If other non-update events get added, this will need to check that events is in updateEvents
-	self:UpdateCount();
+	self:UpdateCount(event);
 	self:Layout();
 end
 
@@ -317,11 +317,10 @@ end
 function HouseEditorDecorCountMixin:UpdateCount()
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
 	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
-	local petDecorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
-	local maxPetDecor = C_HousingDecor.GetMaxPetPlacementBudget();
-	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
 	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
 	-- Update tooltip text with context-appropriate base and populate with updated count info
+	local petDecorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
+	local maxPetDecor = C_HousingDecor.GetMaxPetPlacementBudget();
 	local baseTooltip = C_Housing.IsInsideHouse() and HOUSING_DECOR_BUDGET_TOOLTIP_INDOOR or HOUSING_DECOR_BUDGET_TOOLTIP_OUTDOOR;
 	self.tooltipText =  baseTooltip:format(decorPlaced, maxDecor, petDecorPlaced, maxPetDecor);
 end
@@ -333,18 +332,20 @@ function HouseEditorPetCountMixin:OnLoad()
 	self.tooltipText =  nil;
 end
 
-function HouseEditorPetCountMixin:UpdateCount()
-	local decorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
-	local maxDecor = C_HousingDecor.GetMaxPetPlacementBudget();
-	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
-
-	local shouldShowBudget = false;
-	if C_HousingBasicMode.IsDecorSelected() then
-		local info = C_HousingBasicMode.GetSelectedDecorInfo();
-		shouldShowBudget = info and info.canAttachPet;
+function HouseEditorPetCountMixin:UpdateCount(event)
+	if event and event == "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED" then
+		local shouldShowBudget = false;
+		if C_HousingBasicMode.IsDecorSelected() then
+			local info = C_HousingBasicMode.GetSelectedDecorInfo();
+			shouldShowBudget = info and info.canAttachPet;
+		end
+		self.Text:SetShown(shouldShowBudget);
+		self.Icon:SetShown(shouldShowBudget);
+	else
+		local decorPlaced = C_HousingDecor.GetSpentPetPlacementBudget();
+		local maxDecor = C_HousingDecor.GetMaxPetPlacementBudget();
+		self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
 	end
-	self.Text:SetShown(shouldShowBudget);
-	self.Icon:SetShown(shouldShowBudget);
 end
 
 HouseEditorRoomCountMixin = {};

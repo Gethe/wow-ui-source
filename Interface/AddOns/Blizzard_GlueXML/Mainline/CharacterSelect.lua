@@ -1985,10 +1985,13 @@ end
 
 function CharacterVASMixin:NarrationGetDescription()
 	if self.data then
+		local numberAvailable = self.upgradeInfo and self.upgradeInfo.amount and NARRATION_VAS_AVAILABLE_COUNT:format(self.upgradeInfo.amount) or nil;
+
 		if not self.data.isExpansionTrial and not self.data.isVAS then
-			return BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level);
+			return NarrationUtil.MakeNarrationString(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), numberAvailable);
 		elseif self.data.popupInfo then
-			return self.data.popupInfo.description;
+			local statusLine = GetVASTokenStatusTooltip(self.upgradeInfo);
+			return NarrationUtil.MakeNarrationString(self.data.popupInfo.description, statusLine, numberAvailable);
 		end
 	end
 

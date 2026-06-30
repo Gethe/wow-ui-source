@@ -22,6 +22,11 @@ Shared\PartyFrameTemplates.xml
 Mainline\PartyFrameTemplates.xml
 Shared\PartyFrame.xml
 Shared\TargetFrame.lua
+Shared\TargetFrameAuraShared.lua
+Shared\TargetFrameAuraContainer.lua [LoadIntoEnvironment secure]
+Shared\TargetFrameAuraContainer.xml
+Shared\TargetFrameAuraButton.lua [LoadIntoEnvironment secure]
+Shared\TargetFrameAuraButton.xml
 Mainline\TargetFrame.xml
 Mainline\TotemFrame.xml
 Mainline\PetFrame.xml

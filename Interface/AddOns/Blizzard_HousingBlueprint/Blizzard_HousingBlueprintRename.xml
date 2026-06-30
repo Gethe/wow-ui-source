@@ -8,6 +8,7 @@
 			<KeyValue key="minimumHeight" value="100" type="number"/>
 			<KeyValue key="widthPadding" value="15" type="number"/>
 			<KeyValue key="heightPadding" value="20" type="number"/>
+			<KeyValue key="closeSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_RENAME_CLOSE" type="global"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP"/>

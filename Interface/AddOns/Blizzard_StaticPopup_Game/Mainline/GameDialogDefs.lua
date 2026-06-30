@@ -1404,3 +1404,38 @@ StaticPopupDialogs["CONFIRM_PROFESSION_RESPEC"] = {
 	timeout = 0,
 	exclusive = true,
 }
+
+StaticPopupDialogs["SET_CUSTOM_TITLE_FRIEND_NAME"] = {
+	text = SET_CUSTOM_TITLE_FRIEND_NAME,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 20,
+	countInvisibleLetters = true,
+	editBoxWidth = 120,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	OnShow = function(dialog, data)
+		local currentCustomName = C_BattleNet.GetCustomTitleFriendName(data.bnetIDAccount);
+		if currentCustomName then
+			dialog:GetEditBox():SetText(currentCustomName);
+		end
+
+		dialog:GetEditBox():SetFocus();
+	end,
+	OnAccept = function(dialog, data)
+		C_BattleNet.SetCustomTitleFriendName(data.bnetIDAccount, dialog:GetEditBox():GetText());
+	end,
+	OnHide = function(dialog, _data)
+		ChatFrameUtil.FocusActiveWindow();
+		dialog:GetEditBox():SetText("");
+	end,
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		C_BattleNet.SetCustomTitleFriendName(data.bnetIDAccount, editBox:GetText());
+		dialog:Hide();
+	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+};

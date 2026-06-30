@@ -256,6 +256,12 @@ function FriendsFriendsFrameMixin:Open(bnetIDAccount)
 		return;
 	end
 
+	-- We don't support viewing the friends of a title friend
+	if FriendsListUtil.IsTitleFriend(accountInfo) then
+		self:Close();
+		return;
+	end
+
 	self.Title:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE .. accountInfo.accountName .. FONT_COLOR_CODE_CLOSE);
 	self.bnetIDAccount = accountInfo.bnetAccountID;
 	self.FriendsDropdown:Disable();

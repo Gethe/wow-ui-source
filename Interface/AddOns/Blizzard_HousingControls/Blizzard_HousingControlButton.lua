@@ -62,16 +62,18 @@ HouseEditorButtonMixin = {};
 
 function HouseEditorButtonMixin:CheckEnabled()
 	local availabilityResult = C_HouseEditor.GetHouseEditorAvailability();
-	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
-	if not canActivate then
-		if errorText then
-			errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE_FMT:format(errorText);
-		else
-			errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE;
-		end
+	if availabilityResult == Enum.HousingResult.Success then
+		return true;
 	end
 
-	return canActivate, errorText;
+	local errorText = HousingResultToErrorText[availabilityResult];
+	if errorText then
+		errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE_FMT:format(errorText);
+	else
+		errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE;
+	end
+
+	return false, errorText;
 end
 
 function HouseEditorButtonMixin:IsActive()
@@ -123,21 +125,49 @@ end
 HousingBlueprintActionButtonMixin = {};
 
 function HousingBlueprintActionButtonMixin:OnClick()
+	if self:IsEnabled() and self.clickSoundKit then
+		PlaySound(self.clickSoundKit);
+	end
+
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_BLUEPRINT_ACTION");
-		if C_HousingBlueprint.IsImportAvailable() then
+		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
+			self.contextMenuIsOpen = true;
+			-- Reevaluate tooltip so it's hidden
+			if self:IsMouseMotionFocus() then
+				self:OnEnter();
+			end
+		end);
+		rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
+			self.contextMenuIsOpen = false;
+			-- Reevaluate tooltip so it's shown
+			if self:IsMouseMotionFocus() then
+				self:OnEnter();
+			end
+		end);
+
+		if C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success then
 			rootDescription:CreateButton(HOUSING_CONTROLS_BLUEPRINT_IMPORT, function()
 				HousingFramesUtil.ShowBlueprintImport();
 			end);
 		end
 		
-		if C_HousingBlueprint.IsExportAvailable() then
+		if C_HousingBlueprint.GetExportAvailability() == Enum.HousingResult.Success then
 			rootDescription:CreateButton(HOUSING_CONTROLS_BLUEPRINT_EXPORT, function()
 				HousingFramesUtil.ShowBlueprintExport();
 			end);
 		end
 		
 	end);
+end
+
+function HousingBlueprintActionButtonMixin:AddEnabledTooltipText(tooltip)
+	-- Avoid showing tooltip text while the context menu is open
+	if self.contextMenuIsOpen then
+		return false;
+	end
+	GameTooltip_AddHighlightLine(tooltip, HOUSING_CONTROLS_BLUEPRINT_TOOLTIP);
+	return true;
 end
 
 function HousingBlueprintActionButtonMixin:IsActive()
@@ -149,11 +179,17 @@ function HousingBlueprintActionButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
+	local blueprintsAvailability = C_HousingBlueprint.GetFeatureAvailability();
+	if blueprintsAvailability ~= Enum.HousingResult.Success then
+		local errorText = HousingResultToErrorText[availabilityResult] or ERR_SYSTEM_DISABLED;
+		return false, errorText;
+	end
+
 	if C_HouseEditor.IsHouseEditorActive() then
 		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_EDITOR;
 	end
 
-	if not C_HousingBlueprint.IsExportAvailable() and not C_HousingBlueprint.IsImportAvailable() then
+	if C_HousingBlueprint.GetExportAvailability() ~= Enum.HousingResult.Success and C_HousingBlueprint.GetImportAvailability() ~= Enum.HousingResult.Success then
 		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_PERMISSION;
 	end
 
@@ -233,18 +269,11 @@ function HouseSettingsButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
-	-- TODO: in the future when non-owners can edit a house, we need to check for ownership properly.
-	-- For now we're just going to assume the same availability applies.
-	local availabilityResult = C_HouseEditor.GetHouseEditorAvailability();
-	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
-	if not canActivate then
-		if errorText then
-			errorText = HOUSING_CONTROLS_SETTINGS_UNAVAILABLE_FMT:format(errorText);
-		else
-			errorText = HOUSING_CONTROLS_SETTINGS_UNAVAILABLE;
-		end
+	local editorPlayerType = C_HouseEditor.GetHouseEditorPlayerType();
+	if editorPlayerType == Enum.HouseEditorPlayerType.Owner then
+		return true;
 	end
 
-	return canActivate, errorText;
+	return false, HOUSING_CONTROLS_SETTINGS_UNAVAILABLE;
 end
 

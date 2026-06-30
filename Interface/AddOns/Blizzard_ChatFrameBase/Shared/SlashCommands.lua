@@ -1131,14 +1131,16 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRIENDS, SLASH_COMMAND_CATEG
 		ToggleFriendsPanel();
 	else
 		local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if player then
+		if player and C_FriendList.IsLegacyFriendSystemEnabled() then
 			C_FriendList.AddOrRemoveFriend(player, note);
 		end
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	C_FriendList.RemoveFriend(msg);
+	if C_FriendList.IsLegacyFriendSystemEnabled() then
+		C_FriendList.RemoveFriend(msg);
+	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)

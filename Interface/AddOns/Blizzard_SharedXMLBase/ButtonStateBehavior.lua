@@ -5,6 +5,11 @@ function ButtonStateBehaviorMixin:OnLoad()
 	self:OnButtonStateChanged();
 end
 
+function ButtonStateBehaviorMixin:OnShow()
+	self.down = nil;
+	self.over = nil;
+end
+
 -- Will displace regions on mouse down and on mouse up.
 function ButtonStateBehaviorMixin:SetDisplacedRegions(x, y, ...)
 	self.displacedRegions = {...};
@@ -95,11 +100,12 @@ function ButtonStateBehaviorMixin:OnEnable()
 end
 
 function ButtonStateBehaviorMixin:OnDisable()
+	local wasDown = self.down;
+
 	self.over = nil;
 	self.down = nil;
 
-	if self.displacedRegions then
-		local x, y = self.displaceX, self.displaceY;
+	if wasDown and self.displacedRegions then
 		for index, region in ipairs(self.displacedRegions) do
 			region:ClearPointsOffset();
 		end

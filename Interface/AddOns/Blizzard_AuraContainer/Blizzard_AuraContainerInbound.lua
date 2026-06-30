@@ -1,7 +1,7 @@
-local _addonName, addonTbl = ...;
+local _addonName, addonTable = ...;
 
 AuraContainerInbound = {};
 
 function AuraContainerInbound.GetDefaultAuraDurationFormatter()
-	return addonTbl.DefaultAuraDurationFormatter;
+	return addonTable.DefaultAuraDurationFormatter;
 end

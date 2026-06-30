@@ -7,37 +7,44 @@ local CollectionWhileShownEvents = {
 	"HOUSING_BLUEPRINT_RENAME_SUCCESS",
 	"HOUSING_BLUEPRINT_DELETE_SUCCESS",
 	"HOUSING_BLUEPRINT_DELETE_FAILURE",
-	"HOUSE_RESET_FAILED",
-	"HOUSE_RESET_COMPLETED",
+	"HOUSING_BLUEPRINT_IMPORT_SUCCESS",
+	"HOUSING_BLUEPRINT_EXPORT_SUCCESS",
 	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
 };
 
-local ResetScopeAllMask = bit.band(Enum.HousingHouseScope.Interior, Enum.HousingHouseScope.Exterior);
+local ResetScopeAllMask = bit.bor(Enum.HousingHouseScope.Interior, Enum.HousingHouseScope.Exterior);
 function HousingBlueprintCollectionMixin:OnLoad()
-	self.ResetButton:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_BLUEPRINT_COLLECTIONS_RESET");
+	if self.showReset then
+		self.HeaderText:Hide();
+		self.ResetButton:Show();
+		self.ResetButton:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_BLUEPRINT_COLLECTIONS_RESET");
 
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_INTERIOR, function()
-			self:OnResetClicked(Enum.HousingHouseScope.Interior);
+			rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_INTERIOR, function()
+				self:OnResetClicked(Enum.HousingHouseScope.Interior);
+			end);
+			rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_EXTERIOR, function()
+				self:OnResetClicked(Enum.HousingHouseScope.Exterior);
+			end);
+			rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_ALL, function()
+				self:OnResetClicked(ResetScopeAllMask);
+			end);
 		end);
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_EXTERIOR, function()
-			self:OnResetClicked(Enum.HousingHouseScope.Exterior);
+		self.ResetButton:SetScript("OnEnter", function()
+			self.ResetButton.HoverIcon:Show();
+			GameTooltip:SetOwner(self.ResetButton, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, HOUSING_BLUEPRINT_COLLECTION_RESET_TOOLTIP);
+			GameTooltip:Show();
 		end);
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RESET_ALL, function()
-			self:OnResetClicked(ResetScopeAllMask);
+		self.ResetButton:SetScript("OnLeave", function()
+			self.ResetButton.HoverIcon:Hide();
+			GameTooltip:Hide();
 		end);
-	end);
-	self.ResetButton:SetScript("OnEnter", function()
-		self.ResetButton.HoverIcon:Show();
-		GameTooltip:SetOwner(self.ResetButton, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, HOUSING_BLUEPRINT_COLLECTION_RESET_TOOLTIP);
-		GameTooltip:Show();
-	end);
-	self.ResetButton:SetScript("OnLeave", function()
-		self.ResetButton.HoverIcon:Hide();
-		GameTooltip:Hide();
-	end);
-	self.ResetButton:Layout();
+		self.ResetButton:Layout();
+	else
+		self.ResetButton:Hide();
+		self.HeaderText:Show();
+	end
 	
 	self.SlotCountText:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.SlotCountText, "ANCHOR_BOTTOM");
@@ -59,7 +66,7 @@ function HousingBlueprintCollectionMixin:OnLoad()
 			factory("HousingBlueprintCollectionGroupTemplate", GroupInitializer);
 		elseif elementData.shareCode then
 			local function EntryInitializer(frame, node)
-				frame:Init(node);
+				frame:Init(node, --[[owner=]]self);
 			end
 			factory("HousingBlueprintCollectionEntryTemplate", EntryInitializer);
 		end
@@ -78,6 +85,7 @@ function HousingBlueprintCollectionMixin:OnLoad()
 		end
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	self.ScrollBox:SetEdgeFadeLength(75);
 end
 
 function HousingBlueprintCollectionMixin:OnEvent(event, ...)
@@ -87,10 +95,10 @@ function HousingBlueprintCollectionMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_BLUEPRINT_COLLECTION_FAILURE" then
 		local result = ...;
 		self:OnCollectionFailure(result);
-	elseif event == "HOUSING_BLUEPRINT_RENAME_SUCCESS" or event == "HOUSING_BLUEPRINT_DELETE_SUCCESS" then
+	elseif event == "HOUSING_BLUEPRINT_RENAME_SUCCESS" or event == "HOUSING_BLUEPRINT_DELETE_SUCCESS" or event == "HOUSING_BLUEPRINT_EXPORT_SUCCESS" or event == "HOUSING_BLUEPRINT_IMPORT_SUCCESS" then
 		self:RequestNewData();
 	elseif event == "HOUSING_BLUEPRINT_DELETE_FAILURE" then
-		local result = ...;
+		local _, result = ...;
 		self:OnDeleteFailure(result);
 	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
 		self:RefreshEntryStates();
@@ -152,7 +160,9 @@ function HousingBlueprintCollectionMixin:OnCollectionReceived(collectionInfo)
 	end
 
 	local maxBlueprints = Constants.HousingConsts.HOUSING_BLUEPRINTS_MAX_PER_BNET_ACCOUNT;
-	self.SlotCountText:SetText(HOUSING_BLUEPRINT_COLLECTION_COUNT_FMT:format(numPlayerMadeBlueprints, maxBlueprints));
+	-- If we're showing the header text, show simpler unlabeled count text, otherwise, we want the full one with the label
+	local countText = self.HeaderText:IsShown() and HOUSING_BLUEPRINT_COLLECTION_COUNT_SIMPLE_FMT or HOUSING_BLUEPRINT_COLLECTION_COUNT_FMT;
+	self.SlotCountText:SetText(countText:format(numPlayerMadeBlueprints, maxBlueprints));
 	local underMax = numPlayerMadeBlueprints < maxBlueprints;
 	local textColor = underMax and HIGHLIGHT_FONT_COLOR or RED_FONT_COLOR;
 	self.SlotCountText:SetTextColor(textColor:GetRGB());
@@ -184,6 +194,10 @@ local ResetStringsByScope = {
 	[Enum.HousingHouseScope.Exterior] = { title = HOUSING_BLUEPRINT_COLLECTION_RESET_CONFIRMATION_TITLE_EXTERIOR, subText = HOUSING_BLUEPRINT_COLLECTION_RESET_CONFIRMATION_SUBTEXT_EXTERIOR },
 };
 function HousingBlueprintCollectionMixin:OnResetClicked(scopeFlags)
+	if not C_Housing.IsInsideOwnedHouseOrPlot() then
+		return;
+	end
+
 	local confirmationStrings = ResetStringsByScope[scopeFlags];
 	if not confirmationStrings then
 		-- No handled scope, no reset
@@ -202,10 +216,15 @@ function HousingBlueprintCollectionMixin:OnResetClicked(scopeFlags)
 end
 
 function HousingBlueprintCollectionMixin:OnResetConfirmed(scopeFlags)
+	if not C_Housing.IsInsideOwnedHouseOrPlot() then
+		return;
+	end
+
 	if not scopeFlags then
 		return;
 	end
 
+	C_HouseEditor.LeaveHouseEditor();
 	C_Housing.ResetHouse(scopeFlags);
 end
 
@@ -220,6 +239,28 @@ function HousingBlueprintCollectionMixin:RefreshEntryStates()
 		if frame.UpdateStateVisuals then
 			frame:UpdateStateVisuals();
 		end
+	end
+end
+
+function HousingBlueprintCollectionMixin:SetBlueprintEntryClickedCallback(entryClickedCallback)
+	self.entryClickedCallback = entryClickedCallback;
+end
+
+function HousingBlueprintCollectionMixin:OnBlueprintEntryClicked(blueprintInfo)
+	if self.entryClickedCallback then
+		self.entryClickedCallback(blueprintInfo);
+		self:RefreshEntryStates();
+	elseif C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success then
+		HousingFramesUtil.ShowBlueprintImport(blueprintInfo.shareCode);
+	end
+end
+
+function HousingBlueprintCollectionMixin:ShouldShowContextImportOption(blueprintInfo)
+	if not self.entryClickedCallback then
+		-- If no left-lick override, then don't show import in context menu since left-click will do it
+		return false;
+	else
+		return C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success;
 	end
 end
 
@@ -276,11 +317,12 @@ end
 ----------------- Collection Entry -----------------
 HousingBlueprintCollectionEntryMixin = {};
 
-function HousingBlueprintCollectionEntryMixin:Init(node)
+function HousingBlueprintCollectionEntryMixin:Init(node, owner)
 	self.blueprintInfo = node:GetData();
+	self.owner = owner;
 	if self.blueprintInfo.isAutoSave then
 		-- Auto saves are all named the same thing, so stick their creation data to the end
-		local dateTimeStr = self:GetDateTimeStr();
+		local dateTimeStr = self:GetDateTimeStr(--[[excludeTime=]]true);
 		self.Text:SetText(self.blueprintInfo.name.." "..dateTimeStr);
 	else
 		self.Text:SetText(self.blueprintInfo.name);
@@ -293,14 +335,21 @@ function HousingBlueprintCollectionEntryMixin.Reset(pool, self)
 	self.blueprintInfo = nil;
 	self.HighlightBackground:Hide();
 	self.contextMenuIsOpen = false;
+	self.owner = nil;
 end
 
-function HousingBlueprintCollectionEntryMixin:GetDateTimeStr()
+function HousingBlueprintCollectionEntryMixin:GetDateTimeStr(excludeTime)
 	if not self.blueprintInfo then
 		return nil;
 	end
 	local creationDate = date("*t", self.blueprintInfo.creationTime);
-	return FormatShortDate(creationDate.day, creationDate.month, creationDate.year);
+	local dateStr = FormatShortDate(creationDate.day, creationDate.month, creationDate.year);
+	if excludeTime then
+		return dateStr;
+	end
+
+	local timeStr = GameTime_GetFormattedTime(creationDate.hour, creationDate.min, true);
+	return dateStr.." "..timeStr;
 end
 
 function HousingBlueprintCollectionEntryMixin:OnClick(button)
@@ -311,11 +360,13 @@ function HousingBlueprintCollectionEntryMixin:OnClick(button)
 	if button == "RightButton" then
 		self:ShowContextMenu();
 	else
-		if IsModifiedClick("CHATLINK") then
+		if IsModifiedClick("CHATLINK") and not self.blueprintInfo.isAutoSave then
 			local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(self.blueprintInfo.shareCode);
-			ChatFrameUtil.InsertLink(blueprintLink);
-		else
-			HousingFramesUtil.ShowBlueprintImport(self.blueprintInfo.shareCode);
+			if not ChatFrameUtil.InsertLink(blueprintLink) then
+				ChatFrameUtil.OpenChat(blueprintLink);
+			end
+		elseif self.owner then
+			self.owner:OnBlueprintEntryClicked(self.blueprintInfo);
 		end
 	end
 end
@@ -334,7 +385,7 @@ function HousingBlueprintCollectionEntryMixin:OnEnter()
 		GameTooltip_AddHighlightLine(tooltip, typeString);
 	end
 	
-	local dateTimeStr = self:GetDateTimeStr();
+	local dateTimeStr = self:GetDateTimeStr(--[[excludeTime=]]false);
 	GameTooltip_AddNormalLine(tooltip, HOUSING_BLUEPRINT_COLLECTION_TIMESTAMP_FMT:format(dateTimeStr));
 
 	GameTooltip:Show();
@@ -362,6 +413,12 @@ function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
 			self.contextMenuIsOpen = false;
 			self:UpdateStateVisuals();
 		end);
+
+		if self.owner and self.owner:ShouldShowContextImportOption(self.blueprintInfo) then
+			rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_IMPORT, function()
+				HousingFramesUtil.ShowBlueprintImport(self.blueprintInfo.shareCode);
+			end);
+		end
 
 		if self.blueprintInfo.isAutoSave then
 			rootDescription:CreateTitle(HOUSING_BLUEPRINT_COLLECTION_READONLY_BACKUP);
@@ -407,6 +464,10 @@ function HousingBlueprintCollectionEntryMixin:IsSelected()
 
 	-- If this blueprint is open in Import or Rename frame, show selected
 	if HousingBlueprintImportFrame:IsShowingBlueprint(self.blueprintInfo.shareCode) or HousingBlueprintRenameFrame:IsShowingBlueprint(self.blueprintInfo.shareCode) then
+		return true;
+	end
+
+	if HousingDashboardFrame and HousingDashboardFrame:IsShown() and HousingDashboardFrame.CollectionContent:IsBlueprintSelected(self.blueprintInfo.shareCode) then
 		return true;
 	end
 

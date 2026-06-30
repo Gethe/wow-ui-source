@@ -322,7 +322,8 @@ function PrivateAuraAnchorContainerMixin:ReadContainerSettings()
 		alwaysHideDuration = containerFrame:GetAttribute("always-hide-duration"),
 		setAuraSizeToIconSize = containerFrame:GetAttribute("set-aura-size-to-icon-size"),
 		displayLargerRoleSpecificDebuffs = containerFrame:GetAttribute("display-larger-role-specific-debuffs"),
-		showDispelIndicatorOverlay = containerFrame:GetAttribute("show-dispel-indicator-overlay"),
+		dispelIndicatorOverlayType = containerFrame:GetAttribute("dispel-indicator-overlay-type"),
+		dispelIndicatorOverlayAnimation = containerFrame:GetAttribute("dispel-indicator-overlay-animation"),
 		showBigDefensive = containerFrame:GetAttribute("show-big-defensive"),
 		bigDefensiveSize = containerFrame:GetAttribute("big-defensive-size"),
 		powerBarUsedHeight = containerFrame:GetAttribute("power-bar-used-height"),
@@ -633,9 +634,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelDebuff(dispellDebuffFrame, aur
 	dispellDebuffFrame.aura = aura;
 
 	-- The behavior is that the last one set will "win"
-	if self.containerSettings.showDispelIndicatorOverlay then
-		self:SetDispelOverlayAura(aura);
-	end
+	self:SetDispelOverlayAura(aura);
 end
 
 function PrivateAuraAnchorContainerMixin:CheckUpdateDispelIndicatorFrames(frame)
@@ -1006,7 +1005,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelOverlayAura(aura)
 		local shown = aura and aura.dispelName;
 		if shown ~= self.DispelOverlay:IsShown() then
 			if shown then
-				self.DispelOverlay:SetDispelType(aura.dispelName);
+				self.DispelOverlay:SetDispelType(aura.dispelName, self.containerSettings);
 				self.DispelOverlay:Show();
 				self.dispelOverlayAuraOffset = 2;
 			else
@@ -1340,9 +1339,34 @@ end
 
 CompactUnitFrameDispelOverlayMixin = {};
 
-function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType)
-	AuraUtil.SetAuraBorderColor(self.Gradient, dispelType);
-	AuraUtil.SetAuraBorderColor(self.Border, dispelType);
+local function GetDispelOverlayColor(dispelType, option)
+	if option == Enum.RaidDispelOverlayType.UseDebuffColor then
+		return AuraUtil.GetAuraBorderColor(dispelType);
+	elseif option == Enum.RaidDispelOverlayType.UseBlack then
+		return BLACK_FONT_COLOR;
+	end
+
+	return nil;
+end
+
+function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType, containerSettings)
+	local overlayColor = GetDispelOverlayColor(dispelType, containerSettings.dispelIndicatorOverlayType);
+	if overlayColor then
+		self.Gradient:SetVertexColor(overlayColor:GetRGBA());
+		self.Border:SetVertexColor(overlayColor:GetRGBA());
+		self.Background:SetAlpha(0.2); -- Default from layout if this is shown.
+
+		if containerSettings.dispelIndicatorOverlayAnimation then
+			self.PulseAnim:Play();
+		else
+			self.PulseAnim:Stop();
+		end
+	else
+		self.Gradient:SetAlpha(0);
+		self.Border:SetAlpha(0);
+		self.Background:SetAlpha(0);
+		self.PulseAnim:Stop();
+	end
 end
 
 local dispelOverlayAtlasLookup =

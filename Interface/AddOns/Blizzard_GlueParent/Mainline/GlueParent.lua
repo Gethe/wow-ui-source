@@ -23,6 +23,10 @@ GENERIC_DISCONNECTED_ERROR_CODE = 319;
 local function GlueParent_SetSecondaryScreen(secondaryScreen, contextKey)
 	GlueParent.currentSecondaryScreen = secondaryScreen;
 	GlueParent.currentSecondaryScreenContextKey = contextKey;
+
+	local screenInfo = secondaryScreen and GLUE_SECONDARY_SCREENS[secondaryScreen];
+	local fullscreen = screenInfo and screenInfo.fullScreen;
+	EventRegistry:TriggerEvent("GlueParent.SecondaryScreenChanged", secondaryScreen, fullscreen);
 end
 
 local function GetNotchHeight()

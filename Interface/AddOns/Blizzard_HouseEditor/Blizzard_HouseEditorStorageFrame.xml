@@ -134,6 +134,9 @@
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="showReset" value="true" type="boolean"/>
+				</KeyValues>
 			</Frame>
 
 			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">

@@ -110,10 +110,6 @@ function CooldownViewerItemDataMixin:SetOverrideSpell(overrideSpellID)
 end
 
 function CooldownViewerItemDataMixin:SetLinkedSpell(linkedSpellID)
-	if not self:UsesDynamicAppearance() then
-		return false;
-	end
-
 	local cooldownInfo = self:GetCooldownInfo();
 	if not cooldownInfo then
 		return false;
@@ -153,14 +149,16 @@ end
 
 function CooldownViewerItemDataMixin:UpdateFromSpellCategory(spellID, baseSpellID, spellCategory, itemID)
 	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and spellCategory and cooldownInfo.spellCategoryID == spellCategory and itemID then
-		-- These types of cooldowns are looking at generic spell categories, so whatever the spellID is that triggered the
-		-- cooldown is the base spell for this cooldown now, the item will be derived using similar logic.
-		cooldownInfo.spellID = baseSpellID or spellID;
-		cooldownInfo.overrideSpellID = baseSpellID and spellID;
-		cooldownInfo.lastItemIDForCategory = itemID;
-		cooldownInfo.lastItemIDForCategoryIcon = C_Item.GetItemIconByID(itemID);
-		return true;
+	if cooldownInfo and spellCategory and cooldownInfo.spellCategoryID == spellCategory then
+		if itemID then
+			-- These types of cooldowns are looking at generic spell categories, so whatever the spellID is that triggered the
+			-- cooldown is the base spell for this cooldown now, the item will be derived using similar logic.
+			cooldownInfo.spellID = baseSpellID or spellID;
+			cooldownInfo.overrideSpellID = baseSpellID and spellID;
+			cooldownInfo.lastItemIDForCategory = itemID;
+			cooldownInfo.lastItemIDForCategoryIcon = C_Item.GetItemIconByID(itemID);
+			return true;
+		end
 	end
 
 	return false;
@@ -202,14 +200,18 @@ end
 	In those cases, the aura/tooltip override is checked manually.
 --]]
 function CooldownViewerItemDataMixin:GetSpellID()
-	local auraSpellID = self:GetAuraSpellID();
-	if auraSpellID then
-		return auraSpellID;
+	local usesDynamicAppearance = self:UsesDynamicAppearance();
+
+	if usesDynamicAppearance then
+		local auraSpellID = self:GetAuraSpellID();
+		if auraSpellID then
+			return auraSpellID;
+		end
 	end
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo then
-		if cooldownInfo.linkedSpellID then
+		if usesDynamicAppearance and cooldownInfo.linkedSpellID then
 			return cooldownInfo.linkedSpellID;
 		end
 
@@ -308,10 +310,6 @@ function CooldownViewerItemDataMixin:GetAuraSpellInstanceID()
 end
 
 function CooldownViewerItemDataMixin:SetAuraInstanceInfo(auraInfo, unit)
-	if not self:UsesDynamicAppearance() then
-		return;
-	end
-
 	local auraSpellID, auraInstanceID = auraInfo.spellId, auraInfo.auraInstanceID;
 	if self.auraInstanceID ~= auraInstanceID or self.auraSpellID ~= auraSpellID then
 		self:ClearAuraInstanceInfo();
@@ -374,43 +372,105 @@ function CooldownViewerItemDataMixin:GetFallbackSpellTexture()
 	return nil;
 end
 
-local hackSpellCategoryToIconLookup =
+local spellCategoryMetadataLookup =
 {
 	-- Combat pot
-	[4] = { icon = "Interface/ICONS/INV_10_Specialization_Alchemy_PotionBatchProduction_Color2", tooltip = "Temp: Combat Potion" },
+	[4] =
+	{
+		icon = "Interface/ICONS/INV_POTION_114",
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_COMBAT_TITLE,
+		tooltipDescription = COOLDOWN_VIEWER_TOOLTIP_POTION_COMBAT_DESCRIPTION,
+	},
 
 	-- Health pot
-	[30] = { icon = "Interface/ICONS/INV_12_Profession_Alchemy_Flask_SindoreiPotion_Red  ", tooltip = "Temp: Health Potion" },
+	[30] =
+	{
+		icon = "Interface/ICONS/INV_POTION_54",
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTH_TITLE,
+		tooltipDescription = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTH_DESCRIPTION,
+	},
 
 	-- Healthstone
-	[1711] = { icon = "Interface/ICONS/Warlock_ Healthstone", tooltip = "Temp: Healthstone" },
+	[1711] =
+	{
+		icon = "Interface/ICONS/Warlock_ Healthstone",
+		tooltipItemIDFallback = 5512, -- If no specific healthstone was used, show the base version.
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTHSTONE_TITLE,
+	},
 };
 
-function CooldownViewerItemDataMixin:GetSpellTexture()
+function CooldownViewerItemDataMixin:GetSpellCategory()
 	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and cooldownInfo.spellCategoryID then
-		-- SpellCategories are used for generic item cooldowns (healthstones & potions), arbitrarily checked around the same time as equipment
-		-- If there's a spell category other information could be leveraged to look up which item triggered the cooldown so that item's icon can be used
-		-- but if there wasn't one then this will use the mapping of spellCategory to a default texture.
-		-- Current approach is to only return the hardcoded texture for the category type.
-		--[[
-		if cooldownInfo.lastItemIDForCategoryIcon then
-			return cooldownInfo.lastItemIDForCategoryIcon;
-		end
-		--]]
+	return cooldownInfo and cooldownInfo.spellCategoryID;
+end
 
-		-- Fallback to a default icon
-		local icon = hackSpellCategoryToIconLookup[cooldownInfo.spellCategoryID].icon;
-		if icon then
-			return icon;
+function CooldownViewerItemDataMixin:GetSpellCategoryDataEntry()
+	local spellCategory = self:GetSpellCategory();
+	return spellCategory and spellCategoryMetadataLookup[spellCategory];
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipTitle()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	return spellCategoryEntry and spellCategoryEntry.tooltipTitle;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipDescription()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	return spellCategoryEntry and spellCategoryEntry.tooltipDescription;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipItemID()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	if spellCategoryEntry then
+		-- These item-based cooldowns have some specific behaviors for the health and combat potions
+		-- Basically there are multiple views and conditions for which tooltips need to be shown
+		-- Views: cooldown layout manager (static), cooldown viewer (dynamic, cares about combat and real time updates)
+		-- Conditions: On the viewers Health/Combat pots can display BOTH types of tooltips depending on whether or not the cooldown is active
+		-- (note: Healthstones always display some kind of real item tooltip)
+		-- So, because of that conditional set up this first needs to check if we care about allowing an item id, and if so check that the
+		-- cooldown is actually active before allowing it, unless it's there's a fallback id, in which case we always return some itemID from here.
+		local shouldTryToUseItemID = (self:UsesDynamicAppearance() and self:IsOnCooldown()) or spellCategoryEntry.tooltipItemIDFallback;
+		if shouldTryToUseItemID then
+			-- Allow the actual item that the player last used in this category to override the item ID
+			-- while falling back to any hardcoded item id default.
+			local cooldownInfo = self:GetCooldownInfo();
+			return cooldownInfo and cooldownInfo.lastItemIDForCategory or spellCategoryEntry.tooltipItemIDFallback;
 		end
 	end
 
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryIcon()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	if spellCategoryEntry then
+		-- SpellCategories are used for generic item cooldowns (healthstones & potions), arbitrarily checked around the same time as equipment
+		-- If there's a spell category other information could be leveraged to look up which item triggered the cooldown so that item's icon can be used
+		-- but if there wasn't one then this will use the mapping of spellCategory to a default texture.
+		-- cooldownInfo.lastItemIDForCategoryIcon is the field to check if that behavior is desired.
+
+		-- NOTE: Current approach is to only return the hardcoded texture for the category type.
+		return spellCategoryEntry.icon;
+	end
+
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetSpellTexture()
+	local spellCategoryIcon = self:GetSpellCategoryIcon();
+	if spellCategoryIcon then
+		return spellCategoryIcon;
+	end
+
+	local usesDynamicAppearance = self:UsesDynamicAppearance();
+
 	-- Checking auraSpellID here is done instead of calling self:GetSpellID() because of the override texture logic.
 	-- This means that on items like trinkets will return the aura texture if it is currently active.
-	local auraSpellID = self:GetAuraSpellID();
-	if auraSpellID then
-		return C_Spell.GetSpellTexture(auraSpellID);
+	if usesDynamicAppearance then
+		local auraSpellID = self:GetAuraSpellID();
+		if auraSpellID then
+			return C_Spell.GetSpellTexture(auraSpellID);
+		end
 	end
 
 	-- EquipSlot cooldowns like trinkets will prefer to use the item icon unless one of their auras is active.
@@ -419,11 +479,14 @@ function CooldownViewerItemDataMixin:GetSpellTexture()
 		return equipSlotTexture;
 	end
 
-	local linkedSpellID = self:GetLinkedSpell();
-	if linkedSpellID then
-		return C_Spell.GetSpellTexture(linkedSpellID);
+	if usesDynamicAppearance then
+		local linkedSpellID = self:GetLinkedSpell();
+		if linkedSpellID then
+			return C_Spell.GetSpellTexture(linkedSpellID);
+		end
 	end
 
+	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
 		-- Overriding the tooltip also serves to override the texture
 		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
@@ -440,14 +503,17 @@ function CooldownViewerItemDataMixin:GetSpellTexture()
 end
 
 function CooldownViewerItemDataMixin:GetNameText()
-	local totemData = self:GetTotemData();
-	if totemData then
-		return totemData.name;
-	end
+	local usesDynamicAppearance = self:UsesDynamicAppearance();
+	if usesDynamicAppearance then
+		local totemData = self:GetTotemData();
+		if totemData then
+			return totemData.name;
+		end
 
-	local auraData = self:GetAuraDataCached();
-	if auraData then
-		return auraData.name;
+		local auraData = self:GetAuraDataCached();
+		if auraData then
+			return auraData.name;
+		end
 	end
 
 	local itemLocation = self:GetItemLocation();
@@ -465,6 +531,38 @@ function CooldownViewerItemDataMixin:GetNameText()
 	end
 
 	return "";
+end
+
+function CooldownViewerItemDataMixin:BuildFilterString()
+	local tags = {};
+	local itemLocation = self:GetItemLocation();
+	if itemLocation then
+		local itemName = C_Item.GetItemName(itemLocation);
+		if itemName then
+			table.insert(tags, itemName);
+		end
+	end
+
+	local equipSlot = self:GetEquipSlot();
+	if equipSlot then
+		local slotName = ItemUtil.GetEmptyEquipSlotTooltip(equipSlot);
+		if slotName then
+			table.insert(tags, slotName);
+		end
+	end
+
+	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+	if  spellCategoryTitle then
+		table.insert(tags, spellCategoryTitle);
+	end
+
+	local spellID = self:GetBaseSpellID();
+	if spellID then
+		local spellName = C_Spell.GetSpellName(spellID);
+		table.insert(tags, spellName);
+	end
+
+	return table.concat(tags, " ");
 end
 
 local function GetTargetAurasFilterString(unit)
@@ -494,6 +592,10 @@ local function GetUnitAurasCached(unit, timeNow)
 	end
 
 	return targetAuraCache[unit];
+end
+
+function CooldownViewer_MarkAuraCacheDirty()
+	targetAuraCacheTime = {};
 end
 
 local function IsAuraActive(aura, timeNow)
@@ -559,10 +661,6 @@ function CooldownViewerItemDataMixin:CanUseAuraForCooldown()
 end
 
 function CooldownViewerItemDataMixin:SetTotemData(totemData)
-	if not self:UsesDynamicAppearance() then
-		return;
-	end
-
 	self.totemData = totemData;
 end
 
@@ -774,22 +872,27 @@ end
 function CooldownViewerItemDataMixin:RefreshTooltipInternal()
 	local tooltip = GetAppropriateTooltip();
 
-	-- Temp hookup for items that are based on spell categories and don't have spellIDs assigned because they haven't been used
-	-- TODO: Still iterating on this, but the current idea is that we don't want to switch the icons or tooltips around, just show category cooldowns.
-	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and cooldownInfo.spellCategoryID then
-		local tooltipText = hackSpellCategoryToIconLookup[cooldownInfo.spellCategoryID].tooltip;
-		if tooltipText then
-			GameTooltip_SetTitle(tooltip, tooltipText);
+	local spellCategoryItemID = self:GetSpellCategoryTooltipItemID();
+	if spellCategoryItemID then
+		tooltip:SetItemByID(spellCategoryItemID);
+		return tooltip;
+	else
+		local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+		local spellCategoryDescription = self:GetSpellCategoryTooltipDescription();
+		if spellCategoryTitle and spellCategoryDescription then
+			GameTooltip_SetTitle(tooltip, spellCategoryTitle);
+			GameTooltip_AddNormalLine(tooltip, spellCategoryDescription);
 			return tooltip;
 		end
 	end
 
-	local auraInstanceID = self:GetAuraSpellInstanceID();
-	local auraUnit = self:GetAuraDataUnit();
-	if auraInstanceID and auraUnit then
-		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID, "INCLUDE_NAME_PLATE_ONLY");
-		return tooltip;
+	if self:UsesDynamicAppearance() then
+		local auraInstanceID = self:GetAuraSpellInstanceID();
+		local auraUnit = self:GetAuraDataUnit();
+		if auraInstanceID and auraUnit then
+			tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID, "INCLUDE_NAME_PLATE_ONLY");
+			return tooltip;
+		end
 	end
 
 	if self:CheckDisplayEquipSlotTooltip(tooltip) then
@@ -848,4 +951,10 @@ function CooldownViewerItemDataMixin:UsesDynamicAppearance()
 	-- Indicates whether or not this cooldown item will leverage runtime/combat data like auras, totems, or linkedSpell updates.
 	-- By default this is true, override as needed (for example, the layout manager will display only static data setup, it won't use aura instance data, etc...)
 	return true;
+end
+
+function CooldownViewerItemDataMixin:IsOnCooldown()
+	-- This is similar to the UsesDynamicAppearance API, and should generally return false for the base elements.
+	-- Cooldown viewer item logic for items that are displayed on the viewers will override this.
+	return false;
 end

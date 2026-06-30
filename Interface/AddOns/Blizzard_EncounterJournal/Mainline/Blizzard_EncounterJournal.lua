@@ -53,6 +53,12 @@ local EJ_LINK_INSTANCE 		= 0;
 local EJ_LINK_ENCOUNTER		= 1;
 local EJ_LINK_SECTION 		= 3;
 
+-- Add difficulties to this if you intend for them to display on the difficulty dropdown.
+-- If they map to a base but will display that base's name, don't add them here.
+-- Ex.
+--	"Mythic Flex" -> PrimaryRaidMythic -- *isn't* in this list because behaves as AND displays the base; "Mythic".
+--	"World" -> PrimaryRaidLFR -- *is* in this list because it behaves as LFR, BUT displays "World".
+---------------------------------------------------------------------------------------------------
 local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.DungeonNormal,
 	DifficultyUtil.ID.DungeonHeroic,
@@ -64,6 +70,7 @@ local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.Raid10Heroic,
 	DifficultyUtil.ID.Raid25Normal,
 	DifficultyUtil.ID.Raid25Heroic,
+	DifficultyUtil.ID.RaidWorld,
 	DifficultyUtil.ID.PrimaryRaidLFR,
 	DifficultyUtil.ID.PrimaryRaidNormal,
 	DifficultyUtil.ID.PrimaryRaidHeroic,
@@ -77,7 +84,8 @@ local function IsEJDifficulty(difficultyID)
 end
 
 local function GetEJDifficultySize(difficultyID)
-	if difficultyID ~= DifficultyUtil.ID.RaidTimewalker and not DifficultyUtil.IsPrimaryRaid(difficultyID) then
+	local baseDifficultyID = C_EncounterJournal.GetBaseDifficultyID(difficultyID);
+	if (baseDifficultyID ~= DifficultyUtil.ID.RaidTimewalker and not DifficultyUtil.IsPrimaryRaid(baseDifficultyID)) then
 		return DifficultyUtil.GetMaxPlayers(difficultyID);
 	end
 	return nil;
@@ -565,11 +573,35 @@ function EncounterJournal_SetupDifficultyDropdown(self)
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_EJ_DIFFICULTY");
 
+		-- Check for any new difficulties that will override their base difficulties by text display only.
+		-- These new difficulties map to a base difficulty that they behave identically to.
+		local difficultiesOverridden = {};
 		for index, difficultyID in ipairs(EJ_DIFFICULTIES) do
 			if EJ_IsValidInstanceDifficulty(difficultyID) then
+				local baseDifficultyID = C_EncounterJournal.GetBaseDifficultyID(difficultyID);
+				if (baseDifficultyID ~= difficultyID) and EJ_IsValidInstanceDifficulty(baseDifficultyID) then
+					-- This difficulty has a base so we will skip it in the loop below regardless.
+					difficultiesOverridden[difficultyID] = true;
+
+					-- Only do the text override functionality if the instance has the difficulty.
+					-- EJ_IsValidInstanceDifficulty alone doesn't suffice because new difficulties have IDs above the mask limit (64) that it checks.
+					if C_EncounterJournal.InstanceHasDifficultyID(difficultyID) then
+						local text = GetEJDifficultyString(difficultyID);
+						rootDescription:CreateRadio(text, IsSelected, SetSelected, baseDifficultyID);
+
+						-- We can now skip this in the loop below.
+						difficultiesOverridden[baseDifficultyID] = true;
+					end
+				end
+			end
+		end
+
+		-- Add all regular difficulties that didn't have a base or were not the base of one already overridden.
+		for index, difficultyID in ipairs(EJ_DIFFICULTIES) do
+			if EJ_IsValidInstanceDifficulty(difficultyID) and not difficultiesOverridden[difficultyID] then
 				local text = GetEJDifficultyString(difficultyID);
 				rootDescription:CreateRadio(text, IsSelected, SetSelected, difficultyID);
-			end
+			end 
 		end
 	end);
 end
@@ -1309,6 +1341,8 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		}
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
+
+	EncounterJournal_SetupDifficultyDropdown(self);
 end
 
 function EncounterJournal_DisplayEncounter(encounterID, noButton)

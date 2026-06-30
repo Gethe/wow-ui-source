@@ -19,6 +19,7 @@ DifficultyUtil.ID = {
 	RaidTimewalker = 33,
 	RaidStory = 220,
 	RaidMythicFlexible = 233,
+	RaidWorld = 250,
 };
 
 DifficultyUtil.DifficultyNames =
@@ -42,6 +43,7 @@ DifficultyUtil.DifficultyNames =
 	[DifficultyUtil.ID.Raid40] = PLAYER_DIFFICULTY1,
 	[DifficultyUtil.ID.RaidStory] = PLAYER_DIFFICULTY_STORY_RAID,
 	[DifficultyUtil.ID.RaidMythicFlexible] = PLAYER_DIFFICULTY_MYTHIC_FLEXIBLE,
+	[DifficultyUtil.ID.RaidWorld] = PLAYER_DIFFICULTY_WORLD_RAID,
 };
 
 DifficultyUtil.PrimaryRaids = { DifficultyUtil.ID.PrimaryRaidLFR, DifficultyUtil.ID.PrimaryRaidNormal, DifficultyUtil.ID.PrimaryRaidHeroic, DifficultyUtil.ID.PrimaryRaidMythic };

@@ -264,6 +264,16 @@ local FriendList =
 			},
 		},
 		{
+			Name = "IsLegacyFriendSystemEnabled",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "isLegacyFriendSystemEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnIgnoredList",
 			Type = "Function",
 			RequiresFriendList = true,
@@ -405,6 +415,12 @@ local FriendList =
 			Name = "BattleNetFriendTagEnabledStatusUpdated",
 			Type = "Event",
 			LiteralName = "BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BattleNetTitleFriendCustomNameEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "BATTLE_NET_TITLE_FRIEND_CUSTOM_NAME_ENABLED_STATUS_UPDATED",
 			SynchronousEvent = true,
 		},
 		{
@@ -571,6 +587,12 @@ local FriendList =
 			Name = "IgnorelistUpdate",
 			Type = "Event",
 			LiteralName = "IGNORELIST_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "LegacyFriendSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED",
 			SynchronousEvent = true,
 		},
 		{

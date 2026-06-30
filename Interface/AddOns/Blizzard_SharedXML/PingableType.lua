@@ -118,6 +118,24 @@ end
 function PingableType_CooldownViewerItemMixin:GetTargetInfo()
 	local targetInfo = {};
 
+	-- Check for equipped gear (trinkets).
+	local itemLocation = self:GetItemLocation();
+	if itemLocation then
+		local itemID = C_Item.GetItemID(itemLocation);
+		if itemID then
+			targetInfo.itemID = itemID;
+			return targetInfo;
+		end
+	end
+
+	-- Check if a spellCategoryID (health items).
+	local spellCategoryID = self:GetSpellCategory();
+	if spellCategoryID then
+		targetInfo.spellCategoryID = spellCategoryID;
+		return targetInfo;
+	end
+
+	-- Check for spells.
 	local spellID = self:GetSpellID();
 	if spellID then
 		targetInfo.spellID = spellID;

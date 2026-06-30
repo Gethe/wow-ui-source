@@ -22,7 +22,7 @@ local function RegisterWithPlayerInteractionManager()
 			showFunc = ShowRenameNeighborhoodDialog,
 		});
 
-	AddPlayerInteractionConditions(Enum.PlayerInteractionType.RenameNeighborhood,
+	SetPlayerInteractionConditions(Enum.PlayerInteractionType.RenameNeighborhood,
 		{
 			showCondition = function()
 				if not C_HousingNeighborhood.IsNeighborhoodManager() then

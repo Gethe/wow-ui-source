@@ -306,4 +306,7 @@ StaticPopupDialogs["SCREEN_NARRATOR_CHOICE"] = {
 	OnCancel = function(dialog, data)
 		SetCVar("accessibilityScreenNarrationEnabled", false);
 	end,
+	OnHide = function(dialog, data)
+		EventRegistry:TriggerEvent("ScreenNarratorChoice.PopupDialogHidden");
+	end,
 };

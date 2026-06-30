@@ -88,12 +88,16 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
 		self:UpdateShownInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_RECEIVED" then
-		local prevNumFloors, currNumFloors, isUpStairs = ...;
-		if not isUpStairs and prevNumFloors >= currNumFloors then
-			--upstairs rooms don't play a sound because downstairs is playing a sound
-			--downstairs rooms that add a new floor play the floor added sound instead
-			--revisit this code if we add basements
-			PlaySound(SOUNDKIT.HOUSING_ROOM_ADDED);
+		-- Check that we haven't temporarily paused room add sounds, or that we're past the pause end time
+		if (not self.roomAddSoundPauseEnd) or (GetTime() > self.roomAddSoundPauseEnd) then
+			self.roomAddSoundPauseEnd = nil;
+			local prevNumFloors, currNumFloors, isUpStairs = ...;
+			if not isUpStairs and prevNumFloors >= currNumFloors then
+				--upstairs rooms don't play a sound because downstairs is playing a sound
+				--downstairs rooms that add a new floor play the floor added sound instead
+				--revisit this code if we add basements
+				PlaySound(SOUNDKIT.HOUSING_ROOM_ADDED);
+			end
 		end
 	elseif event == "HOUSING_LAYOUT_ROOM_REMOVED" then
 		-- TODO: Guessing this should have a remove-specific sound played here?
@@ -128,6 +132,7 @@ end
 
 function HouseEditorLayoutModeMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
+	self.roomAddSoundPauseEnd = nil;
 
 	local referenceKey = self;
 	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
@@ -146,6 +151,12 @@ function HouseEditorLayoutModeMixin:TryHandleEscape()
 		return true;
 	end
 	return false;
+end
+
+function HouseEditorLayoutModeMixin:StartRoomAddSoundPause()
+	-- Refrain from playing any room add sounds for the next 30 seconds
+	-- Useful in cases like Blueprint importing where room add sounds would overlap with any Blueprint import sounds
+	self.roomAddSoundPauseEnd = GetTime() + 30;
 end
 
 function HouseEditorLayoutModeMixin:UpdateShownInstructions()

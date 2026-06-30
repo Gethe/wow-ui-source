@@ -8,10 +8,17 @@ function LocaleUtil.GetLanguageRestartAtlas(localeName)
 	return string.format("lang-alert-%s", localeName);
 end
 
--- Retrieves the localized display name for a locale
--- Note: We may want to make separate copies from LFG_LIST strings if we ever
--- want the localization to be different than it is in LFG.
+-- Retrieves the localized display name for a locale.
 function LocaleUtil.GetLocaleDisplayName(localeName)
-	local globalKey = "LFG_LIST_LANGUAGE_" .. string.upper(localeName);
+	localeName = string.upper(localeName);
+
+	-- LOCALE_DISPLAY_NAME_ strings take precedence and allow locale display names to differ from the
+	-- LFG_LIST_LANGUAGE_ strings (e.g. to add "Simplified/Traditional" qualifiers for Chinese locales).
+	local localeKey = "LOCALE_DISPLAY_NAME_" .. localeName;
+	if _G[localeKey] then
+		return _G[localeKey];
+	end
+
+	local globalKey = "LFG_LIST_LANGUAGE_" .. localeName;
 	return _G[globalKey] or localeName;
 end

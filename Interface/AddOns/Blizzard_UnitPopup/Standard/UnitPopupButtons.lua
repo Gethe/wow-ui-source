@@ -176,6 +176,33 @@ function UnitPopupBnetFriendTagRolesSubsectionTitleMixin:GetColor()
 	return NORMAL_FONT_COLOR:GetRGB();
 end
 
+UnitPopupSetCustomTitleFriendNameButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupSetCustomTitleFriendNameButtonMixin:GetText(_contextData)
+	return SOCIAL_UI_BATTLE_NET_TITLE_FRIEND_EDIT_NAME_BUTTON_LABEL;
+end
+
+function UnitPopupSetCustomTitleFriendNameButtonMixin:CanShow(contextData)
+	if not BNFeaturesEnabledAndConnected() or not C_BattleNet.AreTitleFriendsEnabled() or not C_BattleNet.AreTitleFriendCustomNamesEnabled() then
+		return false;
+	end
+
+	if not contextData.friendsList then
+		return false;
+	end
+
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return false;
+	end
+
+	return accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title;
+end
+
+function UnitPopupSetCustomTitleFriendNameButtonMixin:OnClick(contextData)
+	StaticPopup_Show("SET_CUSTOM_TITLE_FRIEND_NAME", nil, nil, { bnetIDAccount = contextData.bnetIDAccount });
+end
+
 UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
 
 function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)

@@ -1,26 +1,31 @@
-local internalEventFrame = CreateFrame("Frame");
-internalEventFrame:SetForbidden();
+local handlers = {};
+local eventFrame = CreateFrame("Frame");
 
-local internalEventHandlers = {};
-
-internalEventFrame:SetScript("OnEvent", function(self, event, ...)
-	local handler = internalEventHandlers[event];
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+	local handler = handlers[event];
 	if handler then
 		handler(self, event, ...);
 	end
 end);
 
 function GameEvent.RegisterInternalEvent(event, handler)
-	if internalEventHandlers[event] == nil then
-		internalEventFrame:RegisterEvent(event);
+	if handlers[event] == nil then
+		eventFrame:RegisterEvent(event);
 	end
 
-	internalEventHandlers[event] = handler;
+	handlers[event] = handler;
 end
 
 function GameEvent.RegisterInternalEvents(eventHandlers)
 	for event, handler in pairs(eventHandlers) do
 		GameEvent.RegisterInternalEvent(event, handler);
+	end
+end
+
+function GameEvent.UnregisterInternalEvent(event)
+	if handlers[event] ~= nil then
+		eventFrame:UnregisterEvent(event);
+		handlers[event] = nil;
 	end
 end
 

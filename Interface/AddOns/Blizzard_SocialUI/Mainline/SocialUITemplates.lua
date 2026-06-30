@@ -140,7 +140,7 @@ function SocialUIOnlineStatusDropdownMixin:InitializeMenu()
 		CreatePresenceRadio(Enum.SocialUIPresenceType.Online, SOCIAL_UI_PRESENCE_TYPE_LABEL_ONLINE);
 		CreatePresenceRadio(Enum.SocialUIPresenceType.Away, SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY);
 		CreatePresenceRadio(Enum.SocialUIPresenceType.Busy, SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY);
-		CreatePresenceRadio(Enum.SocialUIPresenceType.Offline, SOCIAL_UI_PRESENCE_TYPE_LABEL_APPEAR_OFFLINE);
+		CreatePresenceRadio(Enum.SocialUIPresenceType.AppearOffline, SOCIAL_UI_PRESENCE_TYPE_LABEL_APPEAR_OFFLINE);
 	end);
 
 	self:SetScript("OnEnter", function()

@@ -461,3 +461,157 @@ function AnchorUtil.AdjustPointByName(region, pointName, extraOffsetX, extraOffs
 	local point, relativeTo, relativePoint, offsetX, offsetY = region:GetPointByName(pointName);
 	region:SetPoint(point, relativeTo, relativePoint, offsetX + extraOffsetX, offsetY + extraOffsetY);
 end
+
+AnchorUtil.FlowDirection =
+{
+	Left = -1,
+	Right = 1,
+	Up = 1,
+	Down = -1,
+};
+
+local FlowLayoutDescriptionMixin = {};
+AnchorUtil.FlowLayoutDescriptionMixin = FlowLayoutDescriptionMixin;
+
+function FlowLayoutDescriptionMixin:GetAnchorPoint(_container)
+	-- Override to define the anchor point name that elements will use when
+	-- being positioned relatively within the container frame.
+	return "TOPLEFT";
+end
+
+function FlowLayoutDescriptionMixin:GetHorizontalGrowthDirection(_container)
+	-- Override to describe whether we're laying out elements such that they
+	-- wrap and grow rightwards or left.
+	return AnchorUtil.FlowDirection.Right;
+end
+
+function FlowLayoutDescriptionMixin:GetVerticalGrowthDirection(_container)
+	-- Override to describe whether we're laying out elements such that they
+	-- wrap and grow upwards or down,
+	return AnchorUtil.FlowDirection.Down;
+end
+
+function FlowLayoutDescriptionMixin:GetPadding(_container)
+	-- Override to define static padding within the layout. Note that padding
+	-- acts as an offset within a row, and so consumes available row width.
+	--
+	-- Return order should be left, right, top, bottom.
+	return 0, 0, 0, 0;
+end
+
+function FlowLayoutDescriptionMixin:GetRowWidth(_container, _rowIndex)
+	-- Override to define the maximum available width available for layout
+	-- on a specific row. Individual rows may have different widths.
+	return math.huge;
+end
+
+function FlowLayoutDescriptionMixin:GetElementSize(_container, element)
+	-- Override to return the space this element should consume in the
+	-- layout. This default implementation uses the natural size of the
+	-- element.
+	return element:GetSize();
+end
+
+function FlowLayoutDescriptionMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, _width, _height)
+	-- Override to apply calculated layout properties to elements. This should
+	-- at minimum apply the anchor point.
+	--
+	-- Width and height are ignored in this default implementation as we
+	-- use the element's natural size for layout.
+	element:ClearAllPoints();
+	element:SetPoint(anchorPoint, container, anchorPoint, offsetX, offsetY);
+end
+
+function FlowLayoutDescriptionMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, _rowCount)
+	-- Override to apply any final changes after the layout pass has been
+	-- completed.
+	container:SetSize(width, height);
+end
+
+function AnchorUtil.ApplyFlowLayout(container, groups, layoutDescription)
+	local anchorPoint = layoutDescription:GetAnchorPoint(container);
+	local horizontalDirection = layoutDescription:GetHorizontalGrowthDirection(container);
+	local verticalDirection = layoutDescription:GetVerticalGrowthDirection(container);
+	local paddingLeft, paddingRight, paddingTop, paddingBottom = layoutDescription:GetPadding(container);
+
+	-- Padding is applied relative to the layout growth direction.
+	local startPaddingX = horizontalDirection == AnchorUtil.FlowDirection.Right and paddingLeft or paddingRight;
+	local endPaddingX = horizontalDirection == AnchorUtil.FlowDirection.Right and paddingRight or paddingLeft;
+	local startPaddingY = verticalDirection == AnchorUtil.FlowDirection.Down and paddingTop or paddingBottom;
+	local endPaddingY = verticalDirection == AnchorUtil.FlowDirection.Down and paddingBottom or paddingTop;
+
+	-- Cursor offsets refer to our relative placement of elements. Elements are
+	-- anchored relative to the container, rather than chaining anchors between
+	-- one another.
+	local cursorX = startPaddingX * horizontalDirection;
+	local cursorY = startPaddingY * verticalDirection;
+
+	-- Row width and height are the logically consumed extents for this row.
+	local rowIndex = 1;
+	local rowWidth = 0;
+	local rowHeight = 0;
+
+	local layoutWidth = startPaddingX + endPaddingX;
+	local layoutHeight = startPaddingY + endPaddingY;
+	local hasPlacedElement = false;
+
+	local function AdvanceToNextRow(gapY)
+		cursorX = startPaddingX * horizontalDirection;
+		cursorY = cursorY + ((rowHeight + gapY) * verticalDirection);
+
+		rowIndex = rowIndex + 1;
+		rowWidth = 0;
+		rowHeight = 0;
+	end
+
+	for _groupIndex, group in ipairs(groups) do
+		local elements = GetValueOrCallFunction(group, "elements");
+		local elementSpacingX = group.elementSpacingX or 0;
+		local elementSpacingY = group.elementSpacingY or 0;
+		local gapX = group.gapX or 0;
+		local gapY = group.gapY or elementSpacingY;
+
+		-- Groups may either force a row break or continue on the current row
+		-- after an optional horizontal gap. The gap itself can trigger wrapping.
+		if hasPlacedElement and #elements > 0 then
+			if group.forceNewRow then
+				AdvanceToNextRow(gapY);
+			elseif gapX > 0 then
+				local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex);
+
+				if rowWidth > 0 and rowWidth + gapX > maxRowWidth then
+					AdvanceToNextRow(gapY);
+				else
+					cursorX = cursorX + (gapX * horizontalDirection);
+					rowWidth = rowWidth + gapX;
+				end
+			end
+		end
+
+		for _elementIndex, element in ipairs(elements) do
+			local width, height = layoutDescription:GetElementSize(container, element);
+			local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex);
+			local nextRowWidth = rowWidth > 0 and rowWidth + width or width;
+
+			if rowWidth > 0 and nextRowWidth > maxRowWidth then
+				AdvanceToNextRow(elementSpacingY);
+				nextRowWidth = width;
+			end
+
+			layoutDescription:ApplyElementLayout(container, element, anchorPoint, cursorX, cursorY, width, height);
+
+			cursorX = cursorX + ((width + elementSpacingX) * horizontalDirection);
+			rowWidth = nextRowWidth + elementSpacingX;
+			rowHeight = math.max(rowHeight, height);
+
+			-- Bounds intentionally exclude trailing element spacing.
+			layoutWidth = math.max(layoutWidth, startPaddingX + rowWidth - elementSpacingX + endPaddingX);
+			layoutHeight = math.max(layoutHeight, startPaddingY + math.abs(cursorY) + height + endPaddingY);
+
+			hasPlacedElement = true;
+		end
+	end
+
+	local rowCount = hasPlacedElement and rowIndex or 0;
+	layoutDescription:OnLayoutComplete(container, math.max(layoutWidth, 1), math.max(layoutHeight, 1), hasPlacedElement, rowCount);
+end

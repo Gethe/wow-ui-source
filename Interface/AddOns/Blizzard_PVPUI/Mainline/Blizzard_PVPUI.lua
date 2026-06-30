@@ -209,7 +209,7 @@ function PVPUIFrame_EvaluateHelpTips(self)
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};
-		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
+		HelpTip:Show(self, helpTipInfo, PVPQueueFrame.CategoryButton3);
 	end
 end
 

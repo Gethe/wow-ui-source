@@ -64,6 +64,17 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "GetBothSpentPlacementBudgets",
+			Type = "Function",
+			Documentation = { "Returns how much of both the interior and exterior placement budgets for the current owned house interior or plot's decor budget have been spent" },
+
+			Returns =
+			{
+				{ Name = "spentInteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
+				{ Name = "spentExteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
 			Name = "GetDecorAssignedPetName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

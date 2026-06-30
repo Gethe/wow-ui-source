@@ -118,7 +118,7 @@
 		</Layers>
 	</Button>
 
-	<Frame name="HousingCatalogCategoriesTemplate" mixin="HousingCatalogCategoriesMixin" inherits="VerticalLayoutFrame" virtual="true">
+	<Frame name="HousingCatalogCategoriesVisualsTemplate" inherits="VerticalLayoutFrame" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="75" type="number"/>
 			<KeyValue key="categoryButtonSize" value="64" type="number"/>
@@ -159,6 +159,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="HousingCatalogCategoriesTemplate" mixin="HousingCatalogCategoriesMixin" inherits="HousingCatalogCategoriesVisualsTemplate" virtual="true">
 		<Frames>
 			<Button parentKey="BackButton" inherits="HousingCategoryBackButtonTemplate" hidden="true">
 				<KeyValues>

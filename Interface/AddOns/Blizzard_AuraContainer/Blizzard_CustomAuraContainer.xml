@@ -4,8 +4,8 @@
 	<ScopedModifier useForbiddenObjectTable="true">
 		<AuraContainer name="CustomAuraContainerTemplate" virtual="true">
 			<Mixins>
-				<Mixin key="CustomAuraContainerInboundMixin" source="local" inboundPartition="public"/>
-				<Mixin key="CustomAuraContainerPrivateMixin" source="local"/>
+				<Mixin key="CustomAuraContainerInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="CustomAuraContainerPrivateMixin" source="secure"/>
 			</Mixins>
 		</AuraContainer>
 	 </ScopedModifier>

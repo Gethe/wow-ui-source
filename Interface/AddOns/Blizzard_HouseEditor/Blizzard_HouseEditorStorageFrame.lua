@@ -455,12 +455,13 @@ function HouseEditorStorageFrameMixin:IsTabAvailable(tabID)
 		return true;
 	end
 
-	local marketEnabled = self:ShouldShowMarketTab();
 	local showingRooms = self.catalogSearcher:GetEditorModeContext() == Enum.HouseEditorMode.Layout;
 	if tabID == self.marketTabID then
+		local marketEnabled = self:ShouldShowMarketTab();
 		return marketEnabled and not showingRooms;
 	elseif tabID == self.blueprintsTabID then
-		return showingRooms;
+		local blueprintsEnabled = C_HousingBlueprint.GetFeatureAvailability() == Enum.HousingResult.Success;
+		return blueprintsEnabled and showingRooms;
 	end
 end
 

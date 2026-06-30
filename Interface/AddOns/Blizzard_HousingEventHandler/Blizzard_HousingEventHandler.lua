@@ -314,7 +314,11 @@ function HousingFramesUtil.ShowBlueprintImport(optionalShareCode)
 end
 
 function HousingFramesUtil.IsBlueprintCollectionAvailable()
-	return C_Housing.IsInsideHouse() and HousingFramesUtil.IsHouseEditorModeAvailable(Enum.HouseEditorMode.Layout);
+	if not C_Housing.IsInsideHouse() and C_HouseEditor.IsHouseEditorActive() then
+		-- Can't open blueprint collections while editing your exterior
+		return false;
+	end
+	return true;
 end
 
 function HousingFramesUtil.TryOpenBlueprintCollection()
@@ -323,13 +327,22 @@ function HousingFramesUtil.TryOpenBlueprintCollection()
 		return false;
 	end
 
-	if C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.Layout) and HouseEditorFrame then
-		HousingFramesUtil.openBlueprintsOnEditorOpen = false;
-		HouseEditorFrame:TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+	if C_Housing.IsInsideHouse() and HousingFramesUtil.IsHouseEditorModeAvailable(Enum.HouseEditorMode.Layout) then
+		if C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.Layout) and HouseEditorFrame then
+			HousingFramesUtil.openBlueprintsOnEditorOpen = false;
+			HouseEditorFrame:TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+		else
+			HousingFramesUtil.openBlueprintsOnEditorOpen = true;
+			C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.Layout);
+		end
 	else
-		HousingFramesUtil.openBlueprintsOnEditorOpen = true;
-		C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.Layout);
+		if not HousingDashboardFrame then
+			C_AddOns.LoadAddOn("Blizzard_HousingDashboard");
+		end
+		EventRegistry:TriggerEvent("HousingDashboard.OpenToCollectionFrame");
 	end
+
+	
 	return true;
 end
 

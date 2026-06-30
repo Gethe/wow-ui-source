@@ -45,6 +45,11 @@
 					<Texture inherits="CompactDispelDebuffTemplate"/>
 				</Layer>
 			</Layers>
+			<Animations>
+				<AnimationGroup looping="BOUNCE" parentKey="PulseAnim">
+					<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" />
+				</AnimationGroup>
+			</Animations>
 		</Frame>
 
 		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidWarningFrameTemplate" mixin="PrivateRaidBossEmoteFrameMixin" frameStrata="HIGH">

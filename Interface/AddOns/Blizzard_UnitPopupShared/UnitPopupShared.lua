@@ -71,9 +71,9 @@ function UnitPopupManager:OpenMenu(which, contextData)
 			if entry:ShouldQueueDivider() then
 				description:QueueDivider(true);
 			end
-			if contextData.menuTitlePreInitializer then
+			if contextData.menuSubtitlePreInitializer then
 				local titleDescription = MenuUtil.CreateTitle(entry:GetText());
-				titleDescription:AddInitializer(contextData.menuTitlePreInitializer, 1);
+				titleDescription:AddInitializer(contextData.menuSubtitlePreInitializer, 1);
 				description:AddQueuedDescription(titleDescription);
 			else
 				description:QueueTitle(entry:GetText());
@@ -106,8 +106,8 @@ function UnitPopupManager:OpenMenu(which, contextData)
 		rootDescription:SetTag("MENU_UNIT_"..which, contextData);
 
 		local elementDescription = rootDescription:CreateTitle();
-		if contextData.menuTitlePreInitializer then
-			elementDescription:AddInitializer(contextData.menuTitlePreInitializer);
+		if contextData.menuMainTitlePreInitializer then
+			elementDescription:AddInitializer(contextData.menuMainTitlePreInitializer);
 		end
 		elementDescription:AddInitializer(function(frame, description, menu)
 			local title, class = GetNameAndClass(contextData.unit, contextData.name);
@@ -125,6 +125,10 @@ function UnitPopupManager:OpenMenu(which, contextData)
 				frame.fontString:SetTextColor(color:GetRGBA());
 			end
 		end);
+
+		if contextData.hasMainTitleDivider then
+			rootDescription:QueueDivider();
+		end
 
 		-- Section data for state relevant to each menu.
 		local sectionData = {};

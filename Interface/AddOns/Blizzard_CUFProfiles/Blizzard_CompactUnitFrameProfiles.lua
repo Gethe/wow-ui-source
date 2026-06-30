@@ -123,7 +123,8 @@ CompactUnitFrameProfiles:Init({
 	raidFramesDisplayLargerRoleSpecificDebuffs	= { option = "displayLargerRoleSpecificDebuffs", },
 	raidFramesDispelIndicatorType				= { option = "raidFramesDispelIndicatorType", accessor = CUF_GetCVarNumeric },
 	raidFramesHealthText						= { option = "healthText", accessor = CUF_GetCVarString },
-	raidFramesDispelIndicatorOverlay			= { option = "showDispelIndicatorOverlay", },
+	raidFramesDispelIndicatorOverlay			= { option = "dispelIndicatorOverlayType", accessor = CUF_GetCVarNumeric },
+	raidFramesDispelIndicatorOverlayAnimation	= { option = "dispelIndicatorOverlayAnimation" },
 	raidFramesCenterBigDefensive				= { option = "raidFramesCenterBigDefensive", },
 
 	-- Pvp

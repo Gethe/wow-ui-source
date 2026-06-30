@@ -50,76 +50,6 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetDebuffFrameTemplate" mixin="TargetDebuffFrameMixin" enableMouse="true" virtual="true">
-		<Size x="17" y="17"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size x="17" y="17"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="1"/>
-						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-					</Anchors>
-					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true" useParentLevel="true">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-1"/>
-				</Anchors>
-			</Cooldown>
-		</Frames>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Frame>
-	<Frame name="TargetBuffFrameTemplate" mixin="TargetBuffFrameMixin" virtual="true" enableMouse="true">
-		<Size x="21" y="21"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentStealable" parentKey="Stealable" file="Interface\TargetingFrame\UI-TargetingFrame-Stealable" hidden="true" alphaMode="ADD">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" useParentLevel="true">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-1"/>
-				</Anchors>
-			</Cooldown>
-		</Frames>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Frame>
 	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin, PingableType_UnitFrameMixin" virtual="true" frameLevel="500">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
@@ -391,12 +321,7 @@
 									<Anchor point="TOPRIGHT" x="-12" y="-16"/>
 								</Anchors>
 							</Frame>
-							<Frame parentKey="buffs" hidden="true">
-								<Size x="10" y="10"/>
-							</Frame>
-							<Frame parentKey="debuffs" hidden="true">
-								<Size x="10" y="10"/>
-							</Frame>
+							<AuraContainer parentKey="Auras" inherits="TargetFrameAuraContainerTemplate"/>
 							<Frame parentKey="NumericalThreat" hidden="true">
 								<Size x="49" y="18"/>
 								<Anchors>

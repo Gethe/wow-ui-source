@@ -1198,6 +1198,7 @@ local TooltipInfo =
 			Name = "GetUnitAura",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1217,6 +1218,7 @@ local TooltipInfo =
 			Name = "GetUnitAuraByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Obtains aura info like other functions with the caveat that the filters will always at least include the typically mutually exclusive HELPFUL|HARMFUL regardless of what the argument value is set to" },
@@ -1237,6 +1239,7 @@ local TooltipInfo =
 			Name = "GetUnitBuff",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1256,6 +1259,7 @@ local TooltipInfo =
 			Name = "GetUnitBuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1275,6 +1279,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuff",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1294,6 +1299,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 

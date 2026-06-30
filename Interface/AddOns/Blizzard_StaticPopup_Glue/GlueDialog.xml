@@ -18,6 +18,7 @@
 					<KeyValues>
 						<KeyValue key="baseWidth" value="512" type="number"/>
 						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+						<KeyValue key="scaleWeight" value="0.8" type="number"/>
 					</KeyValues>
 					<Size x="512" y="256"/>
 					<Anchors>

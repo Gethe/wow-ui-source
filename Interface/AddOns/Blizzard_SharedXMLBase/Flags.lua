@@ -17,6 +17,10 @@ function Flags_CreateMaskFromTable(flagsTable)
 	return mask;
 end
 
+FlagsUtilConstants = {
+	CombineShouldSet = true;
+};
+
 FlagsUtil = {};
 
 function FlagsUtil.MakeFlags(...)

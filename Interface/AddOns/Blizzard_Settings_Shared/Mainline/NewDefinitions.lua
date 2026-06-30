@@ -86,7 +86,6 @@ NewSettings["12.0.1"] = {
 	"raidFramesDisplayLargerRoleSpecificDebuffs",
 	"raidFramesCenterBigDefensive",
 	"raidFramesDispelIndicatorType",
-	"raidFramesDispelIndicatorOverlay",
 }
 
 NewSettings["12.1.0"] = {
@@ -97,6 +96,8 @@ NewSettings["12.1.0"] = {
 	"nameplateUseClassColorForFriendlyPlayerUnitNames",
 	"nameplateShowFriendlyRealmName",
 	"SOCIAL_ENABLE_DISCORD_FUNCTIONALITY",
+	"raidFramesDispelIndicatorOverlay",
+	"raidFramesDispelIndicatorOverlayAnimation",
 };
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()

@@ -17,6 +17,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "AreTitleFriendCustomNamesEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areTitleFriendCustomNamesEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AreTitleFriendsEnabled",
 			Type = "Function",
 
@@ -74,6 +83,22 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "accountInfo", Type = "BNetAccountInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCustomTitleFriendName",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "customName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -252,6 +277,17 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "SetAppearOffline",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isAppearOffline", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
 			Name = "SetCustomMessage",
 			Type = "Function",
 			HasRestrictions = true,
@@ -265,6 +301,17 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCustomTitleFriendName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "customName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -342,6 +389,7 @@ local BattleNet =
 				{ Name = "isOnline", Type = "bool", Nilable = false },
 				{ Name = "isGameBusy", Type = "bool", Nilable = false },
 				{ Name = "isGameAFK", Type = "bool", Nilable = false },
+				{ Name = "isAppearOffline", Type = "bool", Nilable = false },
 				{ Name = "wowProjectID", Type = "number", Nilable = true },
 				{ Name = "characterName", Type = "string", Nilable = true },
 				{ Name = "realmName", Type = "string", Nilable = true },

@@ -463,7 +463,7 @@ local FrameScript =
 			},
 		},
 		{
-			Name = "SetTableSecurityOption",
+			Name = "settablesecurity",
 			Type = "Function",
 			SecureHooksAllowed = false,
 			HasRestrictions = true,

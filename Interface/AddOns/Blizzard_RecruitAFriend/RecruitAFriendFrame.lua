@@ -637,7 +637,8 @@ function RecruitListButtonMixin:OnClick(button)
 			wowAccountGUID = recruitInfo.wowAccountGUID,
 			isRafRecruit = true,
 			menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
-			menuTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+			menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+			menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 		}
 		
 		local accountInfo = recruitInfo.accountInfo;

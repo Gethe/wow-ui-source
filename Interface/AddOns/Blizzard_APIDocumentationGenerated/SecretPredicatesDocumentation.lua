@@ -24,6 +24,11 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs reject access for tainted callers if the object has the secret Text aspect assigned." },
 		},
 		{
+			Name = "RequiresNonSecretAura",
+			Type = "Precondition",
+			Documentation = { "Guarded APIs require that that the requested aura be non-secret at the time of the API call. This does not raise a blocked action error - instead, protected APIs will return no values." },
+		},
+		{
 			Name = "RequiresScriptObjectAlphaAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnWithError",
@@ -37,6 +42,12 @@ local SecretPredicates =
 			Name = "RequiresStatusBarDesaturationAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnWithError",
+		},
+		{
+			Name = "RequiresUnitAuraAccess",
+			Type = "Precondition",
+			FailureMode = "Error",
+			Documentation = { "Guarded APIs and events require that callers have access to unit aura data." },
 		},
 		{
 			Name = "RequiresUnitIdentityAccess",

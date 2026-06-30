@@ -4,6 +4,8 @@ function BattleNetInviteFrameMixin:OnLoad()
 	self.exclusive = true;
 	self.hideOnEscape = true;
 
+	UserScaledElementMixin.OnLoad_UserScaledElement(self);
+
 	self:RegisterEvent("CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW");
 
 	self.SendButton:SetScript("OnClick", function()
@@ -46,7 +48,7 @@ function AddFriendFrame_Show()
 		name = GetUnitName("target", true);
 	end
 
-	if ( name and UnitIsHumanPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
+	if ( name and UnitIsHumanPlayer("target") and UnitCanCooperate("player", "target") and C_FriendList.IsLegacyFriendSystemEnabled() and not C_FriendList.GetFriendInfo(name) ) then
 		C_FriendList.AddFriend(name);
 		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	else
@@ -185,7 +187,7 @@ function AddFriendFrame_Accept()
 	local name = AddFriendNameEditBox:GetText();
 	if ( AddFriendFrame_IsValidBattlenetName(name) and AddFriendFrame.BNconnected ) then
 		BNSendFriendInvite(name, "");
-	else
+	elseif C_FriendList.IsLegacyFriendSystemEnabled() then
 		C_FriendList.AddFriend(name);
 	end
 	StaticPopupSpecial_Hide(AddFriendFrame);
@@ -205,7 +207,7 @@ end
 function GlueAddFriendAccept(name)
 	if ( IsValidBattlenetName(name) ) then
 		BNSendFriendInvite(name, "");
-	else
+	elseif C_FriendList.IsLegacyFriendSystemEnabled() then
 		C_FriendList.AddFriend(name);
 	end
 end

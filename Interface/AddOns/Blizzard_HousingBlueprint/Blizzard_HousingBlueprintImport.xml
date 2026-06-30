@@ -10,35 +10,6 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="HousingBlueprintBudgetTemplate" mixin="HousingBlueprintBudgetMixin" inherits="ResizeLayoutFrame" enableMouseMotion="true" hidden="true" virtual="true">
-		<KeyValues>
-			<!-- <KeyValue key="icon" value="house-decor-budget-icon" type="string"/> -->
-			<!-- <KeyValue key="tooltipText" value="" type="global" /> -->
-			<KeyValue key="fixedHeight" value="42" type="number"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" atlas="house-decor-budget-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyV="MIDDLE" justifyH="LEFT">
-					<Size x="0" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="HousingBlueprintImportLoadingFrame" mixin="HousingBlueprintImportLoadingFrameMixin" frameStrata="HIGH" frameLevel="4000" parent="UIParent" hidden="true" setAllPoints="true">
 		<Frames>
 			<!-- Prevents interacting with anything behind this dialog while open -->
@@ -73,6 +44,8 @@
 			<KeyValue key="heightPadding" value="20" type="number"/>
 			<KeyValue key="headerText" value="HOUSING_BLUEPRINT_IMPORT_HEADER" type="global"/>
 			<KeyValue key="isExclusive" value="true" type="boolean"/>
+			<KeyValue key="openSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_OPEN" type="global"/>
+			<KeyValue key="closeSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_CLOSE" type="global"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP"/>
@@ -118,6 +91,11 @@
 							<KeyValue key="align" value="center" type="string"/>
 						</KeyValues>
 					</Button>
+					<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.ShareCodeLabel" x="10" y="10"/>
+						</Anchors>
+					</DropdownButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -128,88 +106,18 @@
 				<KeyValues>
 					<KeyValue key="minimumWidth" value="100" type="number" />
 					<KeyValue key="spacing" value="10" type="number"/>
-					<KeyValue key="topPadding" value="12" type="number"/>
 					<KeyValue key="bottomPadding" value="0" type="number"/>
-					<KeyValue key="leftPadding" value="20" type="number"/>
-					<KeyValue key="rightPadding" value="20" type="number"/>
 				</KeyValues>
 				<Frames>
-					<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+					<Frame parentKey="ContentSummary" inherits="HousingBlueprintContentSummaryTemplate">
 						<KeyValues>
-							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>
-						<Size x="142" y="142"/>
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="0"/>
-						</Anchors>
-					</Frame>
-					<Frame parentKey="BudgetsContainer" inherits="GridLayoutFrame" hidden="true">
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="1" type="number" />
-							<KeyValue key="align" value="center" type="string"/>
-							<KeyValue key="stride" value="2" type="number"/>
-							<KeyValue key="isHorizontal" value="true" type="boolean"/>
-							<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
-							<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
-							<KeyValue key="paddingToLast" value="true" type="boolean"/>
-							<KeyValue key="childXPadding" value="15" type="number"/>
-							<KeyValue key="childYPadding" value="5" type="number"/>
-						</KeyValues>
-						<Frames>
-							<Frame parentKey="RoomBudget" inherits="HousingBlueprintBudgetTemplate">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="1" type="number" />
-									<KeyValue key="icon" value="house-room-limit-icon" type="string"/>
-									<KeyValue key="tooltipText" value="HOUSING_BLUEPRINT_ROOM_BUDGET_TOOLTIP" type="global" />
-								</KeyValues>
-							</Frame>
-							<Frame parentKey="IndoorDecorBudget" inherits="HousingBlueprintBudgetTemplate">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="2" type="number" />
-									<KeyValue key="icon" value="house-decor-budget-icon" type="string"/>
-									<KeyValue key="tooltipText" value="HOUSING_BLUEPRINT_DECOR_INTERIOR_BUDGET_TOOLTIP" type="global" />
-								</KeyValues>
-							</Frame>
-							<Frame parentKey="OutdoorDecorBudget" inherits="HousingBlueprintBudgetTemplate">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="3" type="number" />
-									<KeyValue key="icon" value="house-decor-exteriorbudget-icon" type="string"/>
-									<KeyValue key="tooltipText" value="HOUSING_BLUEPRINT_DECOR_EXTERIOR_BUDGET_TOOLTIP" type="global" />
-								</KeyValues>
-							</Frame>
-						</Frames>
-					</Frame>
-					<Frame parentKey="CountListContainer" inherits="HorizontalLayoutFrame" hidden="true">
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="2" type="number"/>
-							<KeyValue key="spacing" value="20" type="number"/>
-							<KeyValue key="bottomPadding" value="12" type="number"/>
-							<KeyValue key="align" value="center" type="string"/>
-						</KeyValues>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="ContentsCountText" inherits="GameFontHighlightMedium">
-									<Size y="20"/>
-									<KeyValues>
-										<KeyValue key="layoutIndex" value="1" type="number"/>
-										<KeyValue key="expand" value="true" type="boolean"/>
-									</KeyValues>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="ContentsListButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_IMPORT_VALIDATION_LIST_BUTTON" motionScriptsWhileDisabled="true">
-								<Size x ="60" y="28"/>
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="2" type="number"/>
-								</KeyValues>
-							</Button>
-						</Frames>
 					</Frame>
 					<Button parentKey="ImportButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_IMPORT_VALIDATION_IMPORT_BUTTON" motionScriptsWhileDisabled="true">
 						<Size x ="152" y="28"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="5" type="number"/>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
 							<KeyValue key="align" value="center" type="string"/>
 							<KeyValue key="topPadding" value="10" type="number"/>
 						</KeyValues>
@@ -219,31 +127,15 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="NoticeText" inherits="GameFontHighlight" wordwrap="true" hidden="true">
 							<KeyValues>
-								<KeyValue key="layoutIndex" value="4" type="number"/>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
 								<KeyValue key="expand" value="true" type="boolean"/>
 								<KeyValue key="topPadding" value="10" type="number"/>
 							</KeyValues>
 						</FontString>
 					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BudgetBackground">
-							<KeyValues>
-								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-							</KeyValues>
-							<Color r="0" g="0" b="0" a="0.6"/>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="RIGHT"/>
-								<Anchor point="BOTTOM" relativeKey="$parent.CountListContainer" relativePoint="BOTTOM" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-					<OnHide method="OnHide"/>
-					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 		</Frames>

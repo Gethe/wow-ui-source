@@ -304,7 +304,7 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		link = GetBNPlayerCommunityLink(name, displayName, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
 	elseif message.author.discordInfo and message.author.discordInfo.fromDiscord then
 		local playerName = ChatFrameUtil.GetNameForDiscordMessage(message.author.discordInfo);
-		link = GetDiscordUserCommunityLink(playerName, message.author.bnetAccountId, message.author.discordInfo.userID, clubId, streamId, message.messageId.epoch, message.messageId.position);
+		link = GetDiscordUserCommunityLink(playerName, message.author.bnetAccountId, message.author.discordInfo.userID, message.author.discordInfo.username, clubId, streamId, message.messageId.epoch, message.messageId.position);
 	elseif message.author.clubType == Enum.ClubType.Character or message.author.clubType == Enum.ClubType.Guild then
 		local classInfo = message.author.classID and C_CreatureInfo.GetClassInfo(message.author.classID);
 		if classInfo then

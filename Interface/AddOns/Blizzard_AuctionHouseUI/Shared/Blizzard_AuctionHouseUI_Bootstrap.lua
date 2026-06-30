@@ -26,7 +26,7 @@ local function RegisterWithPlayerInteractionManager()
 	};
 
 	RegisterPlayerInteraction(Enum.PlayerInteractionType.Auctioneer, frameInfo);
-	AddPlayerInteractionConditions(Enum.PlayerInteractionType.Auctioneer,
+	SetPlayerInteractionConditions(Enum.PlayerInteractionType.Auctioneer,
 		{
 			showCondition = function()
 				if GameLimitedMode_IsActive() then

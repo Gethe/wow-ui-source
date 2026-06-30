@@ -310,6 +310,12 @@ end
 
 OverrideActionBarButtonMixin = {};
 
+function OverrideActionBarButtonMixin:OnLoad()
+	RaiseFrameLevelByTwo(self);
+	RaiseFrameLevelByTwo(self.cooldown);
+	self.commandName = "ACTIONBUTTON"..self:GetID();
+end
+
 local START_JOB_SPELL_ID = 455055;
 
 function OverrideActionBarButtonMixin:EvaluateTutorials(spellType, id)

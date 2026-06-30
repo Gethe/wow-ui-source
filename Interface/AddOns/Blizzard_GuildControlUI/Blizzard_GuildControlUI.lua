@@ -272,7 +272,7 @@ function GuildControlUI_Discord_HideAll(self)
 	self.channelButton:Hide();
 	self.serverDropdown:Hide();
 	self.channelListTitle:Hide();
-	self.serverError:Hide();
+	self.noChannelsError:Hide();
 end
 
 
@@ -369,6 +369,13 @@ function GuildControlUI_Discord_Update(self)
 				self.channelButton:Show();
 				self.channelListTitle:Show();
 
+				local numChannels, channelsValid = C_Discord.GetNumDiscordChannels(GuildControlUI.selectedDiscordServer);
+				if(channelsValid and numChannels == 0) then
+					self.noChannelsError:Show();
+				else
+					self.noChannelsError:Hide();
+				end
+
 				local serverName = C_Discord.GetServerName(GuildControlUI.selectedDiscordServer);
 				local name = string.format(DISCORD_VALID_SERVER_CHANNEL_LIST, serverName);
 				self.channelListTitle:SetText(name);
@@ -382,13 +389,14 @@ function GuildControlUI_Discord_Update(self)
 				end
 
 				self.channelDropdown:SetupMenu(function(dropdown, rootDescription)
-					local numChannels = C_Discord.GetNumDiscordChannels(GuildControlUI.selectedDiscordServer);
+					local numChannels, _ = C_Discord.GetNumDiscordChannels(GuildControlUI.selectedDiscordServer);
 					for i = 1, numChannels do
-					local channelName = C_Discord.GetDiscordChannelName(GuildControlUI.selectedDiscordServer, i);
-						rootDescription:CreateRadio(channelName, IsChannelSelected, SetChannelSelected, i);
+						local channelName = C_Discord.GetDiscordChannelName(GuildControlUI.selectedDiscordServer, i);
+							rootDescription:CreateRadio(channelName, IsChannelSelected, SetChannelSelected, i);
+						end
+						rootDescription:SetScrollMode(400);
 					end
-					rootDescription:SetScrollMode(400);
-				end);
+				);
 			end
 		end
 	else

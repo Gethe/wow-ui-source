@@ -544,8 +544,8 @@ function PlunderstormQueueTutorialMixin:UpdateTutorialState()
 	if PVPUIFrame and PVPUIFrame:IsVisible() then
 		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PvpTabAcknowledged;
 
-		self:SetParent(PVPQueueFrameCategoryButton4);
-		self:SetPoint("RIGHT", PVPQueueFrameCategoryButton4, "TOPRIGHT", -4, 0);
+		self:SetParent(PVPQueueFrame.CategoryButton4);
+		self:SetPoint("RIGHT", PVPQueueFrame.CategoryButton4, "TOPRIGHT", -4, 0);
 
 		self:Show();
 		self.BadgeTexture:Hide();

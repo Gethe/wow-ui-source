@@ -36,6 +36,9 @@ local SpellConstants =
 			Values =
 			{
 				{ Name = "GLOBAL_RECOVERY_CATEGORY", Type = "number", Value = 133 },
+				{ Name = "COMBAT_POTION_CATEGORY", Type = "number", Value = 4 },
+				{ Name = "HEALTH_POTION_CATEGORY", Type = "number", Value = 30 },
+				{ Name = "HEALTHSTONE_CATEGORY", Type = "number", Value = 1711 },
 			},
 		},
 	},

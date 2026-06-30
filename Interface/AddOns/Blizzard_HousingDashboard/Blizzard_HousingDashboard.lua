@@ -26,12 +26,19 @@ function HousingDashboardFrameMixin:OnLoad()
 		titleText = HOUSING_DASHBOARD_CATALOG_FRAMETITLE,
 	};
 	table.insert(self.tabs, self.catalogTab);
+	self.collectionTab = {
+		tabButton = self.CollectionTabButton,
+		contentFrame = self.CollectionContent,
+		titleText = HOUSING_DASHBOARD_COLLECTION_FRAMETITLE,
+	};
+	table.insert(self.tabs, self.collectionTab);
 
 	self.activeTab = self.houseInfoTab;
 	self.baseWidth = self:GetWidth();
 	self.baseHeight = self:GetHeight();
 
-	EventRegistry:RegisterCallback("HousingDashboard.OpenToCatalogFrame", self.OnOpenToCatalogFrame, self);
+	EventRegistry:RegisterCallback("HousingDashboard.OpenToCatalogFrame", function() self:OpenToTab(self.catalogTab); end, self);
+	EventRegistry:RegisterCallback("HousingDashboard.OpenToCollectionFrame", function() self:OpenToTab(self.collectionTab); end, self);
 end
 
 function HousingDashboardFrameMixin:OnShow()
@@ -55,9 +62,9 @@ function HousingDashboardFrameMixin:OnTabButtonClicked(tabButton)
 	end
 end
 
-function HousingDashboardFrameMixin:OnOpenToCatalogFrame()
+function HousingDashboardFrameMixin:OpenToTab(tabID)
 	ShowUIPanel(self);
-	self:SetTab(self.catalogTab);
+	self:SetTab(tabID);
 end
 
 function HousingDashboardFrameMixin:SetTab(activeTab)

@@ -10,12 +10,13 @@ local HousingControlsShownEvents = {
 	"UPDATE_BINDINGS",
 	"HOUSE_INFO_UPDATED",
 	"CURRENT_HOUSE_INFO_UPDATED",
+	"HOUSING_BLUEPRINTS_AVAILABILITY_CHANGED",
 };
 
 HousingControlsMixin = {};
 
 function HousingControlsMixin:OnLoad()
-	self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
+	self:UpdateControlVisibility();
 
 	FrameUtil.RegisterFrameForEvents(self, HousingControlsEvents);
 	FrameUtil.RegisterForTopLevelParentChanged(self);
@@ -23,25 +24,31 @@ end
 
 function HousingControlsMixin:OnEvent(event, ...)
 	if event == "HOUSE_PLOT_ENTERED" then
-		self:UpdateControlVisibility(true);
+		self:UpdateControlVisibility();
 	elseif event == "HOUSE_PLOT_EXITED" then
-		self:UpdateControlVisibility(false);
-	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" or event == "CURRENT_HOUSE_INFO_RECIEVED" or event == "CURRENT_HOUSE_INFO_UPDATED" then
-		self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
-	elseif event == "UPDATE_BINDINGS" or event == "HOUSE_EDITOR_MODE_CHANGED" then
+		self:UpdateControlVisibility();
+	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" then
+		self:UpdateControlVisibility();
+	elseif event == "UPDATE_BINDINGS" or event == "HOUSE_EDITOR_MODE_CHANGED" 
+		or event == "HOUSING_BLUEPRINTS_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" 
+		or event == "CURRENT_HOUSE_INFO_RECIEVED" or event == "CURRENT_HOUSE_INFO_UPDATED" then
 		self:UpdateButtons();
 	end
 end
 
-function HousingControlsMixin:UpdateControlVisibility(isInsideHouseOrPlot)
-	-- Avoid showing controls until house editor is fully ready to process availability/switching of modes
-	if isInsideHouseOrPlot and C_HouseEditor.IsHouseEditorStatusAvailable() then
-		self:Show();
-	else
+function HousingControlsMixin:UpdateControlVisibility()
+	local editorPlayerType = C_HouseEditor.GetHouseEditorPlayerType();
+	if editorPlayerType == Enum.HouseEditorPlayerType.None then
 		self:Hide();
+	else
+		self:Show();
+
+		local isOwner =  editorPlayerType == Enum.HouseEditorPlayerType.Owner;
+		self.activeFrame = isOwner and self.OwnerControlFrame or self.VisitorControlFrame;
+		self.VisitorControlFrame:SetActive(not isOwner);
+		self.OwnerControlFrame:SetActive(isOwner);
 	end
 
-	self:UpdateActiveFrame();
 	self:UpdateButtons();
 end
 
@@ -58,13 +65,6 @@ function HousingControlsMixin:OnHide()
 
 	EventRegistry:UnregisterCallback("HousingInspectMode.Toggled", self);
 	EventRegistry:UnregisterCallback("HouseInfoFrame.Toggled", self);
-end
-
-function HousingControlsMixin:UpdateActiveFrame()
-	local isOwner = C_Housing.IsInsideOwnedHouseOrPlot();
-	self.activeFrame = isOwner and self.OwnerControlFrame or self.VisitorControlFrame;
-	self.VisitorControlFrame:SetActive(not isOwner);
-	self.OwnerControlFrame:SetActive(isOwner);
 end
 
 function HousingControlsMixin:GetActiveFrame()

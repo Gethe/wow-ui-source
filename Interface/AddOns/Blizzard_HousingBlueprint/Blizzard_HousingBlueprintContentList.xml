@@ -16,7 +16,9 @@
 
 	<Frame name="HousingBlueprintContentListFrame" mixin="HousingBlueprintContentListFrameMixin" inherits="HousingBlueprintBaseFrameTemplate" enableMouse="true" parent="UIParent" hidden="true">
 		<KeyValues>
+			<KeyValue key="topPadding" value="5" type="number"/>
 			<KeyValue key="headerText" value="HOUSING_BLUEPRINT_CONTENT_LIST_HEADER" type="global"/>
+			<KeyValue key="closeSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_CONTENTLIST_CLOSE" type="global"/>
 		</KeyValues>
 		<Size x="384" y="500"/>
 		<Anchors>
@@ -85,12 +87,11 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="ScrollBackground">
+				<Texture parentKey="ScrollBackground" atlas="housing-basic-panel-innerblackbox" alpha="0.6">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox"  x="-5" y="5"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" x="5" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox"  x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" x="10" y="-10"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.6"/>
 				</Texture>
 			</Layer>
 		</Layers>

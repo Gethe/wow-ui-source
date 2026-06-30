@@ -4,8 +4,8 @@
 	<ScopedModifier useForbiddenObjectTable="true">
 		<Button name="AuraButton" intrinsic="true" onUpdateMode="disabled">
 			<Mixins>
-				<Mixin key="AuraButtonInboundMixin" source="local" inboundPartition="public"/>
-				<Mixin key="AuraButtonPrivateMixin" source="local"/>
+				<Mixin key="AuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="AuraButtonPrivateMixin" source="secure"/>
 			</Mixins>
 			<ForbiddenAspects>
 				<ForbiddenAspect aspect="UntrustedScriptExecution"/>

@@ -1,5 +1,5 @@
-local registeredInteractionManagerFrameInfo = { };
-local registeredInteractionManagerConditions = { };
+local interactionManagerFrameInfo = { };
+local interactionManagerConditions = { };
 
 local function ValidateInteractionFrameInfo(interactionType, frameInfo)
 	if type(interactionType) ~= "number" then
@@ -31,23 +31,23 @@ end
 
 local function ValidateInteractionConditions(interactionType, conditions)
 	if type(interactionType) ~= "number" then
-		error("AddPlayerInteractionConditions expected interactionType to be a number.");
+		error("SetPlayerInteractionConditions expected interactionType to be a number.");
 	end
 
 	if type(conditions) ~= "table" then
-		error("AddPlayerInteractionConditions expected conditions to be a table.");
+		error("SetPlayerInteractionConditions expected conditions to be a table.");
 	end
 
 	if conditions.loadCondition and type(conditions.loadCondition) ~= "function" then
-		error("AddPlayerInteractionConditions expected conditions.loadCondition to be a function.");
+		error("SetPlayerInteractionConditions expected conditions.loadCondition to be a function.");
 	end
 
 	if conditions.showCondition and type(conditions.showCondition) ~= "function" then
-		error("AddPlayerInteractionConditions expected conditions.showCondition to be a function.");
+		error("SetPlayerInteractionConditions expected conditions.showCondition to be a function.");
 	end
 
 	if conditions.hideCondition and type(conditions.hideCondition) ~= "function" then
-		error("AddPlayerInteractionConditions expected conditions.hideCondition to be a function.");
+		error("SetPlayerInteractionConditions expected conditions.hideCondition to be a function.");
 	end
 
 	return conditions;
@@ -71,11 +71,7 @@ RegisterPlayerInteraction(Enum.PlayerInteractionType.Trainer,
 	});
 ]]
 function RegisterPlayerInteraction(interactionType, frameInfo)
-	if registeredInteractionManagerFrameInfo[interactionType] then
-		error("RegisterPlayerInteraction received a duplicate registration for interactionType "..interactionType..".");
-	end
-
-	registeredInteractionManagerFrameInfo[interactionType] = ValidateInteractionFrameInfo(interactionType, frameInfo);
+	interactionManagerFrameInfo[interactionType] = ValidateInteractionFrameInfo(interactionType, frameInfo);
 end
 
 --[[
@@ -86,29 +82,25 @@ showCondition = [OPTIONAL][FUNCTION] - Must return true before the interaction i
 hideCondition = [OPTIONAL][FUNCTION] - Must return true before the interaction is hidden.
 
 Example:
-AddPlayerInteractionConditions(Enum.PlayerInteractionType.Auctioneer,
+SetPlayerInteractionConditions(Enum.PlayerInteractionType.Auctioneer,
 	{
 		showCondition = function()
 			return not GameLimitedMode_IsActive();
 		end,
 	});
 ]]
-function AddPlayerInteractionConditions(interactionType, conditions)
-	if registeredInteractionManagerConditions[interactionType] then
-		error("AddPlayerInteractionConditions received duplicate conditions for interactionType "..interactionType..".");
-	end
-
-	registeredInteractionManagerConditions[interactionType] = ValidateInteractionConditions(interactionType, conditions);
+function SetPlayerInteractionConditions(interactionType, conditions)
+	interactionManagerConditions[interactionType] = ValidateInteractionConditions(interactionType, conditions);
 end
 
 PlayerInteractionFrameManagerMixin = { };
 
 local function GetFrameInfo(interactionType)
-	return registeredInteractionManagerFrameInfo[interactionType];
+	return interactionManagerFrameInfo[interactionType];
 end
 
 local function GetInteractionConditions(interactionType)
-	return registeredInteractionManagerConditions[interactionType];
+	return interactionManagerConditions[interactionType];
 end
 
 local function GetInteractionFrame(frameInfo)

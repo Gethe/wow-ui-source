@@ -317,11 +317,11 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUser,
 	function(link, text, linkData, contextData)
 		if ( contextData.button == "RightButton" ) then
 
-			local bnetIDAccount, discordUserID, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
+			local bnetIDAccount, discordUserID, globalName, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
 
 			local menuContextData = 
 			{
-				name = string.format(DISCORD_USER_WITH_ID, discordUserID);
+				name = string.format(DISCORD_USER_WITH_ID, globalName);
 				lineID = lineID,
 				communityClubID = nil,
 				communityStreamID = nil,
@@ -344,11 +344,11 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUserCommunity,
 	function(link, text, linkData, contextData)
 		if ( contextData.button == "RightButton" ) then
 
-			local bnetIDAccount, discordUserID, clubId, streamId, epoch, position = string.split(":", linkData.options);
+			local bnetIDAccount, discordUserID, username, clubId, streamId, epoch, position = string.split(":", linkData.options);
 
 			local menuContextData = 
 			{
-				name = string.format(DISCORD_USER_WITH_ID, discordUserID);
+				name = string.format(DISCORD_USER_WITH_ID, username);
 				lineID = nil,
 				communityClubID = clubId,
 				communityStreamID = streamId,

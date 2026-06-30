@@ -10,8 +10,13 @@
 # loaded into the secure environment.
 
 Blizzard_AuraContainerShared.lua
+Blizzard_AuraContainerUtil.lua
 Blizzard_AuraContainer.lua
 Blizzard_AuraContainer.xml [LoadIntoEnvironment global]
+Blizzard_AuraContainerSources.lua
+Blizzard_AuraContainerGroups.lua
+Blizzard_AuraContainerFrameProviders.lua
+Blizzard_AuraContainerManaged.lua
 Blizzard_AuraButton.lua
 Blizzard_AuraButton.xml [LoadIntoEnvironment global]
 [Family]\Blizzard_AuraButtonTooltip.xml

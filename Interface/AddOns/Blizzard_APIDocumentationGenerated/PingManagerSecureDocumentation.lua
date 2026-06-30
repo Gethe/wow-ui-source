@@ -78,6 +78,22 @@ local PingManagerSecure =
 			},
 		},
 		{
+			Name = "SendPlayerSpellCategoryPing",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellCategoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendPingResult", Nilable = false },
+			},
+		},
+		{
 			Name = "SendPlayerSpellPing",
 			Type = "Function",
 			HasRestrictions = true,
@@ -276,6 +292,7 @@ local PingManagerSecure =
 				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "textureFileDataID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "cooldownInfo", Type = "PingActionCooldownUIInfo", Nilable = true },
+				{ Name = "spellCategoryID", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{

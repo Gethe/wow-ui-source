@@ -1,7 +1,6 @@
-local _addonName, addonTbl = ...;
-
-local AuraButtonPrivateMixin = {};
-addonTbl.AuraButtonPrivateMixin = AuraButtonPrivateMixin;
+AuraButtonSharedMixin = {};
+AuraButtonInboundMixin = CreateFromMixins(AuraButtonSharedMixin);
+AuraButtonPrivateMixin = CreateFromMixins(AuraButtonSharedMixin);
 
 function AuraButtonPrivateMixin:OnLoad_Intrinsic()
 	self.auraContainer = nil;
@@ -76,6 +75,8 @@ function AuraButtonPrivateMixin:CanUpdateAuraInstance(newUnitToken, newAuraData)
 		return false;
 	end
 
+	-- Callers must clear/force assignment across full aura rebuilds, because
+	-- aura instance IDs may be reused for unrelated auras.
 	return true;
 end
 
@@ -128,8 +129,3 @@ function AuraButtonPrivateMixin:UpdateTooltip()
 		self:PopulateTooltip(self:GetAuraInstance());
 	end
 end
-
-local AuraButtonInboundMixin = {};
-addonTbl.AuraButtonInboundMixin = AuraButtonInboundMixin;
-
-ApplySecureDelegatesToTable(AuraButtonInboundMixin);

@@ -26,6 +26,7 @@ function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", UpdateLayoutForSpecChange, self);
 	EventRegistry:RegisterFrameEventAndCallback("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", UpdateLayoutForSpecChange, self);
 	EventRegistry:RegisterFrameEventAndCallback("ACTIVE_COMBAT_CONFIG_CHANGED", UpdateLayoutForSpecChange, self);
+	EventRegistry:RegisterFrameEventAndCallback("ACTIVE_TALENT_GROUP_CHANGED", UpdateLayoutForSpecChange, self);
 
 	local function RefreshFromExternalUpdate()
 		self:MarkDirty();

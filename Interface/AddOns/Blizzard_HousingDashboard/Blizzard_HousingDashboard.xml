@@ -12,6 +12,8 @@
 			</Frame>
 			<Frame parentKey="CatalogContent" inherits="HousingCatalogFrameTemplate" setAllPoints="true">
 			</Frame>
+			<Frame parentKey="CollectionContent" inherits="HousingDashboardCollectionFrameTemplate" setAllPoints="true">
+			</Frame>
 
 			<Frame parentKey="HouseInfoTabButton" parentArray="TabButtons" inherits="LargeSideTabButtonTemplate">
 				<KeyValues>
@@ -31,6 +33,16 @@
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.HouseInfoTabButton" relativePoint="BOTTOM" x="0" y="-12"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CollectionTabButton" parentArray="TabButtons" inherits="LargeSideTabButtonTemplate">
+				<KeyValues>
+					<KeyValue key="activeAtlas" value="common-icons-blueprints" type="string"/>
+					<KeyValue key="inactiveAtlas" value="common-icons-blueprints-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="HOUSING_DASHBOARD_COLLECTION_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CatalogTabButton" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 			</Frame>
 		</Frames>

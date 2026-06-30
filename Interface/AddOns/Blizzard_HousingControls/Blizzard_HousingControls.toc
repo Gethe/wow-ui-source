@@ -5,7 +5,6 @@
 ## AllowLoadGameType: standard
 
 Blizzard_HousingControls_Bootstrap.lua [Bootstrap]
-Blizzard_HousingControlsUtil.lua
 Blizzard_HousingControlButton.lua
 Blizzard_HousingControlButton.xml
 Blizzard_HousingControls.lua

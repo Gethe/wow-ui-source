@@ -69,6 +69,15 @@ local HouseEditorUI =
 			},
 		},
 		{
+			Name = "GetHouseEditorPlayerType",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerType", Type = "HouseEditorPlayerType", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHouseEditorActive",
 			Type = "Function",
 			Documentation = { "Returns whether the House Editor is active, in any mode" },
@@ -142,6 +151,19 @@ local HouseEditorUI =
 
 	Tables =
 	{
+		{
+			Name = "HouseEditorPlayerType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "HouseEditorPlayerType", EnumValue = 0, Documentation = { "Not in a house or plot, or at one without even sufficient visiting permissions" } },
+				{ Name = "Owner", Type = "HouseEditorPlayerType", EnumValue = 1, Documentation = { "Owner of the current house or plot" } },
+				{ Name = "Visitor", Type = "HouseEditorPlayerType", EnumValue = 2, Documentation = { "A visitor of the current house or plot" } },
+			},
+		},
 	},
 	Predicates =
 	{

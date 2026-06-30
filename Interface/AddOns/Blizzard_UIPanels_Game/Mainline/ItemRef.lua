@@ -123,9 +123,9 @@ function GetDiscordUserLink(linkDisplayText, bnetIDAccount, discordUserID, lineI
 	return LinkUtil.FormatLink(LinkTypes.DiscordUser, linkDisplayText, bnetIDAccount, discordUserID, lineID or 0, chatGroup, chatTarget or "");
 end
 
-function GetDiscordUserCommunityLink(linkDisplayText, bnetIDAccount, discordUserID, clubId, streamId, epoch, position)
+function GetDiscordUserCommunityLink(linkDisplayText, bnetIDAccount, discordUserID, username, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return LinkUtil.FormatLink(LinkTypes.DiscordUserCommunity, linkDisplayText, bnetIDAccount, discordUserID, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink(LinkTypes.DiscordUserCommunity, linkDisplayText, bnetIDAccount, discordUserID, username, clubId, streamId, epoch, position);
 end
 
 function GetClubTicketLink(ticketId, clubName, clubType)

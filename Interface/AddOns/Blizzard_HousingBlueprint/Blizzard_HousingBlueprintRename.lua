@@ -24,7 +24,7 @@ function HousingBlueprintRenameFrameMixin:OnEvent(event, ...)
 	if event == "HOUSING_BLUEPRINT_RENAME_SUCCESS" then
 		self:OnRenameSuccess();
 	elseif event == "HOUSING_BLUEPRINT_RENAME_FAILURE" then
-		local result = ...;
+		local _, result = ...;
 		self:OnRenameFailure(result);
 	end
 end

@@ -75,6 +75,7 @@ local Discord =
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "valid", Type = "bool", Nilable = false },
 			},
 		},
 		{

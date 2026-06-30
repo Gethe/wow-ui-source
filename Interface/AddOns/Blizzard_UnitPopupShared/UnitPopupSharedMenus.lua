@@ -486,8 +486,9 @@ end
 UnitPopupMenuDiscordUserSelf = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("DISCORD_USER_SELF", UnitPopupMenuDiscordUserSelf);
 function UnitPopupMenuDiscordUserSelf:GetEntries()
-	return { 
-		UnitPopupDeleteDiscordMessageButtonMixin,
+	return {
+		-- discord does not currently allow deletion of messages through the SocialSDK
+		-- UnitPopupDeleteDiscordMessageButtonMixin,
 	}
 end 
 

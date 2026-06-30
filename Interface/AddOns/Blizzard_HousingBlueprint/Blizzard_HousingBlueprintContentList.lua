@@ -14,16 +14,14 @@ local ContentListWhileShownEvents = {
 };
 
 function HousingBlueprintContentListFrameMixin:OnLoad()
-	self.CloseButton:SetScript("OnClick", function()
-		self:HideSelf();
-	end);
 	self.BottomCloseButton:SetScript("OnClick", function()
-		self:HideSelf();
+		self:TryHandleCloseInput();
 	end);
 		
 	self.MissingOnlyCheckbox.Checkbox:SetScript("OnClick", function (button)
 		-- Re-show contents, with the filter toggled
 		if not self.isReadonly and self.blueprintContentInfo then
+			PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 			local isFilterUpdate = true;
 			self:ShowBlueprintContents(self.blueprintContentInfo, self.isReadonly, isFilterUpdate);
 		end

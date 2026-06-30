@@ -8,6 +8,21 @@ local EncounterJournal =
 	Functions =
 	{
 		{
+			Name = "GetBaseDifficultyID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDungeonEntrancesForMap",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -147,6 +162,21 @@ local EncounterJournal =
 		{
 			Name = "InitalizeSelectedTier",
 			Type = "Function",
+		},
+		{
+			Name = "InstanceHasDifficultyID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasDifficultyID", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "InstanceHasLoot",

@@ -24,6 +24,10 @@ function FriendsListUtil.IsPlayingSameWoWProject(gameAccountInfo)
 	return FriendsListUtil.IsPlayingWoW(gameAccountInfo) and gameAccountInfo.wowProjectID == WOW_PROJECT_ID;
 end
 
+function FriendsListUtil.IsTitleFriend(accountInfo)
+	return accountInfo ~= nil and accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title;
+end
+
 function FriendsListUtil.GameStateUsesFactions()
 	return not C_Glue.IsOnGlueScreen() and not C_GameRules.IsCharacterlessLoginActive();
 end
@@ -322,10 +326,25 @@ function FriendsListUtil.GetFormattedCharacterName(accountInfo)
 	return characterName;
 end
 
+function FriendsListUtil.GetFriendNameOfflineDisplayColor(_accountInfo)
+	return FRIENDS_GRAY_COLOR;
+end
+
+function FriendsListUtil.GetFriendNameColorForFriendType(accountInfo)
+	return FriendsListUtil.IsTitleFriend(accountInfo) and HIGHLIGHT_FONT_COLOR or FRIENDS_BNET_NAME_COLOR;
+end
+
+function FriendsListUtil.GetFriendNameDisplayColor(accountInfo)
+	if not accountInfo then
+		return NORMAL_FONT_COLOR;
+	end
+
+	return accountInfo.gameAccountInfo.isOnline and FriendsListUtil.GetFriendNameColorForFriendType(accountInfo) or FriendsListUtil.GetFriendNameOfflineDisplayColor(accountInfo);
+end
+
 function FriendsListUtil.BuildFriendNameDisplayText(accountInfo)
 	local nameText = FriendsListUtil.GetFriendAccountNameText(accountInfo);
-	local isOnline = accountInfo and accountInfo.gameAccountInfo.isOnline;
-	local displayColor = isOnline and FRIENDS_BNET_NAME_COLOR or DARKGRAY_COLOR;
+	local displayColor = FriendsListUtil.GetFriendNameDisplayColor(accountInfo);
 	return displayColor:WrapTextInColorCode(nameText);
 end
 

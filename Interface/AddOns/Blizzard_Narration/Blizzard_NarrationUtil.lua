@@ -46,6 +46,8 @@ local NARRATION_SCREEN_CONTEXT = {
 	charcreate = NARRATION_CONTEXT_CHAR_CREATE,
 };
 
+local NARRATION_SECONDARY_SCREEN_CONTEXT = {}; -- Currently no secondary screens have narration context, but this is here for future expansion.
+
 local NARRATION_OBJECT_NAMES = {
 	Button = NARRATION_OBJECT_BUTTON,
 	CheckButton = NARRATION_OBJECT_CHECK_BUTTON,
@@ -307,6 +309,22 @@ end
 EventRegistry:RegisterCallback("GlueParent.ScreenChanged", function(_callbackEvent, screen, _oldScreen)
 	local text = NARRATION_SCREEN_CONTEXT[screen];
 	if not text then
+		return;
+	end
+
+	NarrationUtil.NarrateCurrentScreen(text);
+end);
+
+EventRegistry:RegisterCallback("GlueParent.SecondaryScreenChanged", function(_callbackEvent, secondaryScreen, fullscreen)
+	local text = NARRATION_SECONDARY_SCREEN_CONTEXT[secondaryScreen];
+	if not text then
+		-- While some secondary screens may not have text to narrate, at certain times (particularly at startup with
+		-- the photosensitivity and movie screens) they can instantly appear over primary screens. In these cases, stop
+		-- the narration of the primary screen so that it doesn't continue to narrate over the secondary screen.
+		if fullscreen then
+			C_VoiceChat.StopSpeakingText();
+		end
+
 		return;
 	end
 

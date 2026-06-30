@@ -32,6 +32,10 @@ function AuraUtil.GetAuraDataByAuraInstanceID(...)
 	return CallDataProviderMethod("GetAuraDataByAuraInstanceID", ...);
 end
 
+function AuraUtil.GetUnitAuras(...)
+	return CallDataProviderMethod("GetUnitAuras", ...);
+end
+
 -- For backwards compatibility with old APIs, this helper function returns aura data values unpacked in the same order as before.
 function AuraUtil.UnpackAuraData(auraData)
 	if not auraData then
@@ -177,6 +181,16 @@ AuraUtil.AuraFilters =
 
 function AuraUtil.CreateFilterString(...)
 	return string.join("|", ...);
+end
+
+function AuraUtil.IsValidFilterString(filterString)
+	for _index, component in ipairs({ string.split("|", filterString) }) do
+		if not EnumUtil.IsValid(AuraUtil.AuraFilters, component) then
+			return false, string.format("Unknown aura filter component: '%s'", component);
+		end
+	end
+
+	return true;
 end
 
 AuraUtil.DispellableDebuffTypes =
@@ -474,9 +488,13 @@ function AuraUtil.IsRoleAura(aura)
 	return aura.isTankRoleAura or aura.isHealerRoleAura or aura.isDPSRoleAura;
 end
 
-function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+function AuraUtil.GetAuraBorderColor(dispelType)
 	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
-	borderRegion:SetVertexColor(info.color:GetRGBA());
+	return info.color;
+end
+
+function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+	borderRegion:SetVertexColor(AuraUtil.GetAuraBorderColor(dispelType):GetRGBA());
 end
 
 function AuraUtil.SetAuraSymbol(fontstring, dispelType)

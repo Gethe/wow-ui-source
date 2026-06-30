@@ -45,6 +45,7 @@ local DiscordConstants =
 			{
 				{ Name = "userID", Type = "DiscordID", Nilable = false },
 				{ Name = "globalName", Type = "string", Nilable = false },
+				{ Name = "username", Type = "string", Nilable = false },
 				{ Name = "type", Type = "DiscordDisplayNameType", Nilable = false, Default = "Default" },
 				{ Name = "lastOnlineGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "lastOnlineName", Type = "string", Nilable = false },

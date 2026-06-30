@@ -42,6 +42,7 @@
 			<KeyValue key="exitTooltipKeybind" type="global" value="HOUSING_CONTROLS_EDITOR_BUTTON_EXIT_FMT"/>
 			<KeyValue key="keybindIconDefault" type="string" value="keybind-bg"/>
 			<KeyValue key="keybindIconActive" type="string" value="keybind-bg_active"/>
+			<KeyValue key="clickSoundKit" value="SOUNDKIT.HOUSING_MINOR_TOP_ACTION_BAR_INTERACT" type="global"/>
 		</KeyValues>
 	</Button>
 	
@@ -99,7 +100,6 @@
 			<KeyValue key="iconDefault" type="string" value="decor-controls-save-default"/>
 			<KeyValue key="iconActive" type="string" value="decor-controls-save-active"/>
 			<KeyValue key="iconPressed" type="string" value="decor-controls-save-pressed"/>
-			<KeyValue key="enabledTooltip" value="HOUSING_CONTROLS_BLUEPRINT_TOOLTIP" type="global"/>
 			<KeyValue key="clickSoundKit" value="SOUNDKIT.HOUSING_MINOR_TOP_ACTION_BAR_INTERACT" type="global"/>
 		</KeyValues>
 		<Scripts>

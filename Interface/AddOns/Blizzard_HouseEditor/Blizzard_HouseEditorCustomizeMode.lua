@@ -4,16 +4,45 @@ function DecorCustomizationsPaneMixin:OnLoad()
 	local function CloseDecorCustomizationsPane()
 		-- This will clear the preview dyes and close this pane by deselecting the decor
 		C_HousingCustomizeMode.CancelActiveEditing();
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_CANCEL);
 	end
+
+	self.CustomizeComponentContainer.DyePane:SetCustomizePane(self);
+	self.CustomizeComponentContainer.PetPane:SetCustomizePane(self);
 
 	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
 		self.CustomizeComponentContainer.DyePane:OnApply();
 		self.CustomizeComponentContainer.PetPane:OnApply();
-		CloseDecorCustomizationsPane();
+		C_HousingCustomizeMode.CancelActiveEditing();
 	end);
 
 	self.ButtonFrame.CancelButton:SetScript("OnClick", CloseDecorCustomizationsPane);
 	self.CloseButton:SetScript("OnClick", CloseDecorCustomizationsPane);
+end
+
+function DecorCustomizationsPaneMixin:RefreshApplyButtonState()
+	local canAffordChanges = true;
+	local hasAnyChanges = false;
+	local applyButton = self.ButtonFrame.ApplyButton;
+	if self.CustomizeComponentContainer.DyePane:IsShown() then
+		if self.CustomizeComponentContainer.DyePane:HasAnyChanges() then
+			hasAnyChanges = true;
+		end
+		if not self.CustomizeComponentContainer.DyePane:CanAffordDyes() then
+			canAffordChanges = false;
+			applyButton.disabledTooltip = HOUSING_DECOR_DYE_NOT_ENOUGH_DYE;
+		else
+			applyButton.disabledTooltip = nil;
+		end
+	end
+
+	if self.CustomizeComponentContainer.PetPane:IsShown() then
+		if self.CustomizeComponentContainer.PetPane:HasAnyChanges() then
+			hasAnyChanges = true;
+		end
+	end
+
+	applyButton:SetEnabled(canAffordChanges and hasAnyChanges);
 end
 
 function DecorCustomizationsPaneMixin:GetPetPane()
@@ -39,7 +68,7 @@ function DecorCustomizationsPaneMixin:SetDecorInfo(decorInstanceInfo)
 
 	self.CustomizeComponentContainer:Layout();
 	self:Layout();
-	self.CustomizeComponentContainer.DyePane:UpdateApplyButton(self.ButtonFrame.ApplyButton);
+	self:RefreshApplyButtonState();
 end
 
 function DecorCustomizationsPaneMixin:UpdateDecorInfo(decorInstanceInfo)

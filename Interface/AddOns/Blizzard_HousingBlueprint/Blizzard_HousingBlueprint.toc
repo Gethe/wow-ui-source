@@ -12,6 +12,9 @@ Blizzard_HousingBlueprintContentEntry.xml
 Blizzard_HousingBlueprintContentList.lua
 Blizzard_HousingBlueprintContentList.xml
 
+Blizzard_HousingBlueprintContentSummary.lua
+Blizzard_HousingBlueprintContentSummary.xml
+
 Blizzard_HousingBlueprintExport.lua
 Blizzard_HousingBlueprintExport.xml
 Blizzard_HousingBlueprintImport.lua

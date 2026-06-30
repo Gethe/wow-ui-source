@@ -74,13 +74,16 @@ function SocialUIUtil.GetLabelForPresenceType(presenceType)
 end
 
 function SocialUIUtil.GetPresenceTypeSelf()
-	local _deprecatedPresenceID, _battleTag, _opaqueID, _broadcastText, isAFK, isBusy, _isRealIDEnabled = BNGetInfo();
-	if isAFK then
+	local _deprecatedPresenceID, _battleTag, _opaqueID, _broadcastText, isAFK, isBusy, _isRealIDEnabled, isAppearOffline = BNGetInfo();
+
+	if isAppearOffline then
+		return Enum.SocialUIPresenceType.AppearOffline;
+	elseif isAFK then
 		return Enum.SocialUIPresenceType.Away;
 	elseif isBusy then
 		return Enum.SocialUIPresenceType.Busy;
 	end
-
+	
 	return Enum.SocialUIPresenceType.Online;
 end
 
@@ -92,6 +95,8 @@ function SocialUIUtil.GetPresenceTypeForBattleNetAccountInfo(accountInfo)
 	elseif accountInfo.isDND or accountInfo.gameAccountInfo.isGameBusy then
 		return Enum.SocialUIPresenceType.Busy;
 	end
+	--for appearOffline, other players will hit 'not accountInfo.gameAccountInfo.isOnline' above
+	--and GetPresenceTypeSelf would be used for self.  
 
 	return Enum.SocialUIPresenceType.Online;
 end
@@ -100,10 +105,13 @@ function SocialUIUtil.SetBattleNetPresenceFromSocialUIPresence(presenceType)
 	if presenceType == Enum.SocialUIPresenceType.Online then
 		C_BattleNet.SetAFK(false);
 		C_BattleNet.SetDND(false);
+		C_BattleNet.SetAppearOffline(false);
 	elseif presenceType == Enum.SocialUIPresenceType.Away then
 		C_BattleNet.SetAFK(true);
 	elseif presenceType == Enum.SocialUIPresenceType.Busy then
 		C_BattleNet.SetDND(true);
+	elseif presenceType == Enum.SocialUIPresenceType.AppearOffline then
+		C_BattleNet.SetAppearOffline(true);
 	end
 end
 
@@ -153,6 +161,13 @@ end
 
 function SocialUIUtil.InitializeUserScaledDropdownTitle(title)
 	title.fontString:SetFontObject(UserScaledFontGameNormal);
+
+	local scaledPadding = TextSizeManager:GetScaledValue(6);
+	title.fontString:SetHeight(title.fontString:GetLineHeight() + scaledPadding);
+end
+
+function SocialUIUtil.InitializeUserScaledDropdownMainTitle(title)
+	title.fontString:SetFontObject(UserScaledFontGameNormalMed2);
 
 	local scaledPadding = TextSizeManager:GetScaledValue(6);
 	title.fontString:SetHeight(title.fontString:GetLineHeight() + scaledPadding);

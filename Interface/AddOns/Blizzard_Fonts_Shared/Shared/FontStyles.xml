@@ -449,6 +449,8 @@
 	<Font name="UserScaledFontGameDisableSmall" inherits="GameFontDisableSmall" canBeUserScaled="true" virtual="true"/>
 	<Font name="UserScaledFontGameHighlightSmall" inherits="GameFontHighlightSmall" canBeUserScaled="true" virtual="true"/>
 
+	<Font name="UserScaledFontGameNormalMed2" inherits="GameFontNormalMed2" canBeUserScaled="true" virtual="true"/>
+
 	<Font name="UserScaledFontGame15Shadow" inherits="Game15Font_Shadow" canBeUserScaled="true" virtual="true"/>
 
 	<Font name="UserScaledFontGameNormalLarge" inherits="GameFontNormalLarge" canBeUserScaled="true" virtual="true"/>

@@ -617,6 +617,16 @@ function UnitPopupViewBnetFriendsButtonMixin:OnClick(contextData)
 	FriendsFriendsFrame_Show(contextData.bnetIDAccount);
 end
 
+function UnitPopupViewBnetFriendsButtonMixin:CanShow(contextData)
+	if not UnitPopupFriendsButtonMixin.CanShow(self, contextData) then
+		return false;
+	end
+
+	-- We don't support viewing the friends of a title friend
+	local isTitleFriend = contextData.accountInfo and (contextData.accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title);
+	return not isTitleFriend;
+end
+
 UnitPopupBnetBlockButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupBnetBlockButtonMixin:GetInviteName()
@@ -2191,6 +2201,10 @@ function UnitPopupAddFriendButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupAddFriendButtonMixin:CanShow(contextData)
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return false;
+	end
+
 	if UnitPopupSharedUtil.HasBattleTag() then
 		return false;
 	end
@@ -2251,6 +2265,10 @@ function UnitPopupAddFriendMenuButtonMixin:GetEntries()
 end
 
 UnitPopupAddCharacterFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupAddCharacterFriendButtonMixin:CanShow(contextData)
+	return C_FriendList.IsLegacyFriendSystemEnabled();
+end
 
 function UnitPopupAddCharacterFriendButtonMixin:GetText(contextData)
 	return ADD_CHARACTER_FRIEND;
@@ -3650,6 +3668,7 @@ function UnitPopupDeleteDiscordMessageButtonMixin:GetText(contextData)
 end
 
 function UnitPopupDeleteDiscordMessageButtonMixin:OnClick(contextData)
+	-- discord currently does not support deletion of messages through the SocialSDK
 end
 
 function UnitPopupDeleteDiscordMessageButtonMixin:CanShow(contextData)

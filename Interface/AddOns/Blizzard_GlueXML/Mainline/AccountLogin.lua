@@ -37,6 +37,12 @@ function AccountLogin_OnLoad(self)
 	end
 	EventRegistry:RegisterCallback("LoginWarningDialogs.DialogClosed", OnLoginWarningDialogClosed);
 
+	local function OnScreenNarratorChoicePopupDialogHidden()
+		-- Wait for StaticPopup_CollapseTable to be called so the StaticPopup_Visible check in WaitingForScreenNarrationChoice returns false.
+		RunNextFrame(AccountLogin_CheckAutoLogin);
+	end
+	EventRegistry:RegisterCallback("ScreenNarratorChoice.PopupDialogHidden", OnScreenNarratorChoicePopupDialogHidden);
+
 	AccountLogin_CheckLoginState(self);
 
 	local year = date:sub(#date - 3, #date);
@@ -502,8 +508,22 @@ function AccountLogin_OnTimerFinished()
 	AccountLogin_CheckAutoLogin();
 end
 
+local function WaitingForScreenNarrationChoice()
+	-- Ensure the auto login timer isn't started before the popup is shown.
+	if GetCVarBool("showScreenNarrationDialog") then
+		return true;
+	end
+
+	-- Block auto login until the popup is closed by the player so the login popups don't dismiss it.
+	if StaticPopup_Visible("SCREEN_NARRATOR_CHOICE") then
+		return true;
+	end
+
+	return false;
+end
+
 function AccountLogin_CanAutoLogin()
-	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or Kiosk.GetKioskLoginInfo()) and AccountLogin:IsVisible();
+	return not ShouldShowRegulationOverlay() and not WaitingForScreenNarrationChoice() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or Kiosk.GetKioskLoginInfo()) and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()

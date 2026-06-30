@@ -317,17 +317,32 @@ function DecorPetCustomizationMixin:SetPetID(petID)
 		self.AssignPetContainer.PetName:Hide();
 		self.AssignPetContainer.PetIcon:SetAtlas("ItemUpgrade_GreenPlusIcon");
 	end
+
+	if self.customizePane then
+		self.customizePane:RefreshApplyButtonState();
+	end
 end
 
 function DecorPetCustomizationMixin:OnApply()
-	if self:IsShown() then 
+	if self:IsShown() and self:HasAnyChanges() then 
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_PET_APPLY);
 		C_HousingCustomizeMode.ApplyPetToSelectedDecor(self.petID, self.selectedBehaviorType);
 	end
+end
+
+function DecorPetCustomizationMixin:SetCustomizePane(customizePane)
+	self.customizePane = customizePane;
+end
+
+function DecorPetCustomizationMixin:HasAnyChanges()
+	return self.petID ~= self.originalSelectedPet or self.selectedBehaviorType ~= self.originalSelectedBehaviorType;
 end
 
 function DecorPetCustomizationMixin:OnShow()
 	local petID, petBehavior = C_HousingCustomizeMode.GetSelectedDecorPetInfo();
 	self.selectedBehaviorType = petBehavior;
+	self.originalSelectedPet = petID;
+	self.originalSelectedBehaviorType = petBehavior;
 	self:SetupDropdown();
 	self:SetPetID(petID);
 end
@@ -335,6 +350,9 @@ end
 function DecorPetCustomizationMixin:SetupDropdown()
 	local function OnBehaviorSelected(behaviorType)
 		self.selectedBehaviorType = behaviorType;
+		if self.customizePane then
+			self.customizePane:RefreshApplyButtonState();
+		end
 	end
 
 	self.BehaviorDropdown:SetupMenu(function(dropdown, rootDescription)
@@ -400,6 +418,7 @@ function HousingPetEntryMixin:OnEnter()
 	end
 	GameTooltip_AddNormalLine(GameTooltip, self.name);
 	GameTooltip:Show();
+	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_PET_HOVER);
 end
 
 function HousingPetEntryMixin:OnLeave()
@@ -409,4 +428,5 @@ end
 
 function HousingPetEntryMixin:OnClick()
 	self.customizationPetPane:SetPetID(self.petID);
+	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_PET_SELECT);
 end

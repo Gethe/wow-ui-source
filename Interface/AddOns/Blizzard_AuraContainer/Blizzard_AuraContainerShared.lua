@@ -1,8 +1,8 @@
-local _addonName, addonTbl = ...;
+local _addonName, addonTable = ...;
 
 do
 	local DefaultAuraDurationFormatter = C_StringUtil.CreateSecondsFormatter();
-	addonTbl.DefaultAuraDurationFormatter = DefaultAuraDurationFormatter;
+	addonTable.DefaultAuraDurationFormatter = DefaultAuraDurationFormatter;
 
 	-- This curve is set up to format durations with an inflated bound on
 	-- interval brackets, such that values <= 90 seconds render as seconds

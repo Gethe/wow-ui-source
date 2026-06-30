@@ -119,13 +119,25 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 
 		local dispelSetting, dispelInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorType", Settings.VarType.Number, GetOptions, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE);
 
+		-- Dispel Color Overlay
 		local function IsModifiable()
 			return tonumber(dispelSetting:GetValue()) ~= Enum.RaidDispelDisplayType.Disabled;
 		end
 
-		-- Dispel Color Overlay
-		local _, dispelOverlayInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlay", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
+		local function GetDispelIndicatorOverlayOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelOverlayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelOverlayType.UseDebuffColor, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DEBUFF_COLOR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DEBUFF_COLOR);
+			container:Add(Enum.RaidDispelOverlayType.UseBlack, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_BLACK, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_BLACK);
+			return container:GetData();
+		end
+
+		local _, dispelOverlayInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorOverlay", Settings.VarType.Number, GetDispelIndicatorOverlayOptions, COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
 		dispelOverlayInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
+
+		-- Dispel Overlay Flashing Animation
+		local _, dispelOverlayAnimationInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlayAnimation", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION);
+		dispelOverlayAnimationInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
 	end
 
 	-- Health Text
@@ -177,7 +189,7 @@ function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 end
 
 function InterfaceOverrides.CreateHousingSettings(category, layout)
-	-----Housing 
+	-----Housing
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(HOUSING_SETTINGS_LABEL));
 
 	--Decor Light Radius indicators

@@ -509,11 +509,13 @@ local legalOriginalSourceCategoryToTargetCategory = {
 	[Enum.CooldownViewerCategory.EquipSlotEssential] = {
 		[Enum.CooldownViewerCategory.Essential] = true,
 		[Enum.CooldownViewerCategory.Utility] = true,
+		[Enum.CooldownViewerCategory.SpecAgnosticEssential] = true,
 	},
 
 	[Enum.CooldownViewerCategory.SpecAgnosticEssential] = {
 		[Enum.CooldownViewerCategory.Essential] = true,
 		[Enum.CooldownViewerCategory.Utility] = true,
+		[Enum.CooldownViewerCategory.EquipSlotEssential] = true,
 	},
 
 	[Enum.CooldownViewerCategory.HiddenActive] = {
@@ -534,11 +536,13 @@ local legalOriginalSourceCategoryToTargetCategory = {
 	[Enum.CooldownViewerCategory.EquipSlotTracked] = {
 		[Enum.CooldownViewerCategory.TrackedBuff] = true,
 		[Enum.CooldownViewerCategory.TrackedBar] = true,
+		[Enum.CooldownViewerCategory.SpecAgnosticTracked] = true,
 	},
 
 	[Enum.CooldownViewerCategory.SpecAgnosticTracked] = {
 		[Enum.CooldownViewerCategory.TrackedBuff] = true,
 		[Enum.CooldownViewerCategory.TrackedBar] = true,
+		[Enum.CooldownViewerCategory.EquipSlotTracked] = true,
 	},
 
 	[Enum.CooldownViewerCategory.HiddenPassive] = {
@@ -571,7 +575,6 @@ function CooldownViewerSettingsItemMixin:UsesDynamicAppearance()
 	-- Only show texture/tooltip info from the cooldownInfo data, don't use runtime/combat data.
 	return false;
 end
-
 
 CooldownViewerSettingsBarItemMixin = CreateFromMixins(CooldownViewerSettingsItemMixin);
 
@@ -1643,16 +1646,15 @@ function CooldownViewerSettingsMixin:GetFilterText()
 	return self.filterText;
 end
 
-local cooldownIDToTextFilterEntries = {};
+local cooldownIDToTextFilterEntries = {}; -- TODO: Might need to end up invalidating this cache at some point, especially with the addition of item slots.
 local function GetCooldownTextFilterEntry(cooldownItem)
 	local cooldownID = cooldownItem:GetCooldownID();
 	if cooldownID then
 		local entry = cooldownIDToTextFilterEntries[cooldownID];
 		if not entry then
-			local spellID = cooldownItem:GetSpellID();
-			local spellName = spellID and C_Spell.GetSpellName(cooldownItem:GetSpellID());
-			if spellName then
-				entry = { name = spellName:lower() };
+			local filterString = cooldownItem:BuildFilterString();
+			if filterString then
+				entry = { name = filterString:lower() };
 			end
 
 			cooldownIDToTextFilterEntries[cooldownID] = entry;

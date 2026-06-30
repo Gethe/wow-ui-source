@@ -261,6 +261,15 @@ function HousingLayoutRoomPinMixin:OnLoad()
 	end);
 
 	-- Export
+	self.OptionsContainer.ExportButton.extraDisabledCheck = (function()
+		local exportAvailability = C_HousingBlueprint.GetExportAvailability();
+		if exportAvailability == Enum.HousingResult.Success then
+			return false;
+		end
+
+		self.OptionsContainer.ExportButton.disabledTooltip = HousingResultToErrorText[exportAvailability];
+		return true;
+	end);
 	self.OptionsContainer.ExportButton:SetScript("OnClick", function()
 		if self:HasActivePin() then
 			local roomGUID = self:GetPin():GetRoomGUID();

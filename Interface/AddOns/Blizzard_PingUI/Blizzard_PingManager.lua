@@ -246,6 +246,8 @@ function PingManager:SendPing(type, uiTargetInfo, spotX, spotY)
 	local pingResult;
 	if uiTargetInfo.spellID then
 		pingResult = C_PingSecure.SendPlayerSpellPing(uiTargetInfo.spellID);
+	elseif uiTargetInfo.spellCategoryID then
+		pingResult = C_PingSecure.SendPlayerSpellCategoryPing(uiTargetInfo.spellCategoryID);
 	elseif uiTargetInfo.itemID then
 		pingResult = C_PingSecure.SendPlayerItemPing(uiTargetInfo.itemID);
 	elseif uiTargetInfo.guid then

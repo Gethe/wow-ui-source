@@ -3,7 +3,7 @@ HousingBlueprintBaseFrameMixin = {};
 function HousingBlueprintBaseFrameMixin:BaseOnLoad()
 	self.HeaderText:SetText(self.headerText);
 	self.CloseButton:SetScript("OnClick", function()
-		self:HideSelf();
+		self:TryHandleCloseInput();
 	end);
 end
 
@@ -39,6 +39,9 @@ end
 
 function HousingBlueprintBaseFrameMixin:ShowSelf()
 	if not self:IsShown() then
+		if self.openSoundKit then
+			PlaySound(self.openSoundKit);
+		end
 		EventRegistry:TriggerEvent("HousingBlueprint.FrameShown", self);
 	end
 
@@ -90,11 +93,17 @@ function HousingBlueprintBaseFrameMixin:SetFullInputBlockerEnabled(enabled)
 end
 
 function HousingBlueprintBaseFrameMixin:TryHandleEscape()
+	return self:TryHandleCloseInput();
+end
+
+function HousingBlueprintBaseFrameMixin:TryHandleCloseInput()
 	if not self:IsShown() then
 		return false;
 	end
 
-	if not self.isWaitingForResult then
+	-- If a loading state is shown, consume the Escape key input but don't close
+	if not self:IsOperationInProgress() then
+		PlaySound(self.closeSoundKit);
 		self:HideSelf();
 	end
 	return true;

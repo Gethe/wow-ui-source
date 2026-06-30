@@ -57,6 +57,12 @@
 						<Anchor point="TOPRIGHT" x="-20" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="HeaderText" inherits="GameFontHighlight" text="HOUSING_BLUEPRINT_COLLECTION_HEADER" justifyV="MIDDLE" justifyH="LEFT" hidden="true">
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-10"/>
+					</Anchors>
+				</FontString>
 				<Texture parentKey="Divider" atlas="housing-dashboard-divider-horz-tile">
 					<Size y="1"/>
 					<Anchors>
@@ -67,7 +73,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropdownButton parentKey="ResetButton" inherits="ResizeLayoutFrame">
+			<DropdownButton parentKey="ResetButton" inherits="ResizeLayoutFrame" hidden="true">
 				<Size y="24"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-10"/>
@@ -104,7 +110,7 @@
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="16" y="-50"/>
-					<Anchor point="BOTTOMRIGHT" x="-34" y="50"/>
+					<Anchor point="BOTTOMRIGHT" x="-28" y="10"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

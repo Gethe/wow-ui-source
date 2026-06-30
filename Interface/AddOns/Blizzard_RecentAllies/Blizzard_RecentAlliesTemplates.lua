@@ -920,8 +920,10 @@ function RecentAlliesSocialCardMixin:OpenMenu()
 		server = recentAllyData.characterData.realmName,
 		guid = recentAllyData.characterData.guid,
 		isOffline = not recentAllyData.stateData.isOnline,
+		menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownMainTitle,
+		menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 		menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
-		menuTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+		hasMainTitleDivider = true,
 	};
 
 	local bestMenu = recentAllyData.stateData.isOnline and "RECENT_ALLY" or "RECENT_ALLY_OFFLINE";

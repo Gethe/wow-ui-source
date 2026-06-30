@@ -870,6 +870,19 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "RaidDispelOverlayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Disabled", Type = "RaidDispelOverlayType", EnumValue = 0 },
+				{ Name = "UseDebuffColor", Type = "RaidDispelOverlayType", EnumValue = 1 },
+				{ Name = "UseBlack", Type = "RaidDispelOverlayType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "RaidGroupDisplayType",
 			Type = "Enumeration",
 			NumValues = 4,

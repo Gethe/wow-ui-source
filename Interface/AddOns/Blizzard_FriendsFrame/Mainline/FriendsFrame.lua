@@ -250,6 +250,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
 	self:RegisterEvent("SOCIAL_UI_SYSTEM_STATUS_UPDATED");
+	self:RegisterEvent("LEGACY_FRIEND_SYSTEM_STATUS_UPDATED");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
@@ -416,7 +417,9 @@ function FriendsFrame_Update()
 		end
 
 		if selectedHeaderTab == FriendsTabHeader.friendsTabID then
-			C_FriendList.ShowFriends();
+			if C_FriendList.IsLegacyFriendSystemEnabled() then
+				C_FriendList.ShowFriends();
+			end
 			FriendsFrame:SetTitle(CONTACTS_LIST_TITLE);
 			FriendsFrame_ShowSubFrame("FriendsListFrame");
 		elseif selectedHeaderTab == FriendsTabHeader.recentAlliesTabID then
@@ -754,9 +757,11 @@ function FriendsList_Update(forceUpdate)
 	local numWoWOffline = 0;
 
 	if not C_Glue.IsOnGlueScreen() and not InWoWLabs() then
-		numWoWTotal = C_FriendList.GetNumFriends();
-		numWoWOnline = C_FriendList.GetNumOnlineFriends();
-		numWoWOffline = numWoWTotal - numWoWOnline;
+		if C_FriendList.IsLegacyFriendSystemEnabled() then
+			numWoWTotal = C_FriendList.GetNumFriends();
+			numWoWOnline = C_FriendList.GetNumOnlineFriends();
+			numWoWOffline = numWoWTotal - numWoWOnline;
+		end
 		QuickJoinToastButton:UpdateDisplayedFriendCount();
 	end
 
@@ -860,8 +865,8 @@ function FriendsList_CheckRIDWarning()
 		if isRIDEnabled then
 			for i = 1, numInvites do
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(i);
-				local isBattleTag = inviteInfo and (inviteInfo.friendLevel == Enum.BattleNetFriendLevel.BattleTag) or nil;
-				if not isBattleTag then
+				local isRealID = inviteInfo and (inviteInfo.friendLevel == Enum.BattleNetFriendLevel.RealID) or nil;
+				if isRealID then
 					showRIDWarning = true;
 					break;
 				end
@@ -1017,13 +1022,9 @@ function WhoList_SetSelectedButton(button)
 	UpdateButtonSelection(oldSelectedWho,  false);
 	UpdateButtonSelection(WhoFrame.selectedWho, true);
 
-	if WhoFrame.selectedWho then
-		WhoFrameGroupInviteButton:Enable();
-		WhoFrameAddFriendButton:Enable();
-	else
-		WhoFrameGroupInviteButton:Disable();
-		WhoFrameAddFriendButton:Disable();
-	end
+	local hasSelectedWho = WhoFrame.selectedWho ~= nil;
+	WhoFrameGroupInviteButton:SetEnabled(hasSelectedWho);
+	WhoFrameAddFriendButton:SetEnabled(hasSelectedWho and C_FriendList.IsLegacyFriendSystemEnabled());
 end
 
 function WhoList_Update()
@@ -1244,6 +1245,16 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if C_SocialUI.IsSystemEnabled() then
 			HideUIPanel(FriendsFrame);
 		end
+	elseif ( event == "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED" ) then
+		-- Let's reset the selected friend if the legacy system status changes
+		-- We may be disabling it (in which case the selected friend is no longer valid)
+		local isLegacyFriendSelected = FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW;
+		if isLegacyFriendSelected then
+			FriendsFrame.selectedFriendType = nil;
+			FriendsFrame.selectedFriend = nil;
+		end
+
+		FriendsList_Update();
 	elseif ( event == "FRAMES_LOADED" ) then
 		FriendsFrame_CheckBattlenetStatus();
 	end
@@ -1364,12 +1375,20 @@ function FriendsFrame_RemoveFriend()
 end
 
 function FriendsFrame_SendMessage()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
 	ChatFrameUtil.SendTell(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function FriendsFrame_GroupInvite()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
 	C_PartyInfo.InviteUnit(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);

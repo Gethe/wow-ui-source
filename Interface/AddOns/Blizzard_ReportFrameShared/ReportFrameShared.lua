@@ -451,6 +451,7 @@ function ReportInfoMixin:Clear()
 	self.petGUID = nil;
 	self.neighborhoodGUID = nil;
 	self.plotIndex = nil;
+	self.blueprintShareCode = nil;
 end
 
 function ReportInfoMixin:SetMailIndex(mailIndex)
@@ -507,6 +508,10 @@ end
 
 function ReportInfoMixin:SetNeighborhoodGUID(neighborhoodGUID)
 	self.neighborhoodGUID = neighborhoodGUID;
+end
+
+function ReportInfoMixin:SetBlueprintShareCode(blueprintShareCode)
+	self.blueprintShareCode = blueprintShareCode;
 end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)

@@ -5,11 +5,12 @@
 		<Frame name="AuraContainer" intrinsic="true">
 			<KeyValues>
 				<KeyValue key="enabled" value="true" type="boolean"/>
-				<KeyValue key="unitToken" value="none" type="boolean"/>
+				<KeyValue key="privateAurasEnabled" value="false" type="boolean"/>
+				<KeyValue key="unitToken" value="none" type="string"/>
 			</KeyValues>
 			<Mixins>
-				<Mixin key="AuraContainerInboundMixin" source="local" inboundPartition="public"/>
-				<Mixin key="AuraContainerPrivateMixin" source="local"/>
+				<Mixin key="AuraContainerInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="AuraContainerPrivateMixin" source="secure"/>
 			</Mixins>
 			<Scripts>
 				<OnLoad method="OnLoad_Intrinsic"/>

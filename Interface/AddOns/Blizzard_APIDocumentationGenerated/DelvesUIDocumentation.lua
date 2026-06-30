@@ -577,6 +577,7 @@ local DelvesUI =
 				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
 				{ Name = "lockedReason", Type = "cstring", Nilable = true },
 				{ Name = "isLFG", Type = "bool", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
 			},
 		},
 	},

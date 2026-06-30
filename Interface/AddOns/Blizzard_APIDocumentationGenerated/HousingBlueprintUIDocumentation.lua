@@ -38,7 +38,7 @@ local HousingBlueprintUI =
 			Name = "ExportBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Saves out a new Blueprint of the specified type, using the specified name, if available, based on where the player is currently standing (see IsExportAvailable); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
+			Documentation = { "Saves out a new Blueprint of the specified type, using the specified name, if available, based on where the player is currently standing (see GetExportAvailability); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
 
 			Arguments =
 			{
@@ -50,7 +50,7 @@ local HousingBlueprintUI =
 			Name = "ExportRoomBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Saves out a new Blueprint of the specified room, using the specified name, if available (see IsExportAvailable); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
+			Documentation = { "Saves out a new Blueprint of the specified room, using the specified name, if available (see GetExportAvailability); Listen for HousingBlueprintExportSuccess and HousingBlueprintExportFailure for results" },
 
 			Arguments =
 			{
@@ -91,34 +91,44 @@ local HousingBlueprintUI =
 			},
 		},
 		{
+			Name = "GetExportAvailability",
+			Type = "Function",
+			Documentation = { "Returns success if the player can currently export Blueprints, or a specific error type (ex: invalid location or permissions)" },
+
+			Returns =
+			{
+				{ Name = "availability", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFeatureAvailability",
+			Type = "Function",
+			Documentation = { "Returns success if Blueprints as a feature is currently enabled and available" },
+
+			Returns =
+			{
+				{ Name = "blueprintsAvailability", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "GetImportAvailability",
+			Type = "Function",
+			Documentation = { "Returns success if the player can currently import Blueprints, or a specific error type (ex: invalid location or permissions)" },
+
+			Returns =
+			{
+				{ Name = "availability", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
 			Name = "ImportBlueprint",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Imports the specified blueprint, if available (see IsImportAvailable and CanImportTypeFromCurrentLocation); Listen for HousingBlueprintImportSuccess and HousingBlueprintImportFailure for results" },
+			Documentation = { "Imports the specified blueprint, if available (see GetImportAvailability and CanImportTypeFromCurrentLocation); Listen for HousingBlueprintImportSuccess and HousingBlueprintImportFailure for results" },
 
 			Arguments =
 			{
 				{ Name = "shareCode", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "IsExportAvailable",
-			Type = "Function",
-			Documentation = { "Returns true if the player is currently in a valid location and has permission to export Blueprints" },
-
-			Returns =
-			{
-				{ Name = "exportAvailable", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsImportAvailable",
-			Type = "Function",
-			Documentation = { "Returns true if the player is currently in a valid location and has permission to import Blueprints" },
-
-			Returns =
-			{
-				{ Name = "importAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -240,6 +250,7 @@ local HousingBlueprintUI =
 			SynchronousEvent = true,
 			Payload =
 			{
+				{ Name = "blueprintID", Type = "BigUInteger", Nilable = false },
 				{ Name = "result", Type = "HousingResult", Nilable = false },
 			},
 		},
@@ -248,6 +259,10 @@ local HousingBlueprintUI =
 			Type = "Event",
 			LiteralName = "HOUSING_BLUEPRINT_DELETE_SUCCESS",
 			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "blueprintID", Type = "BigUInteger", Nilable = false },
+			},
 		},
 		{
 			Name = "HousingBlueprintExportFailure",
@@ -280,6 +295,12 @@ local HousingBlueprintUI =
 			},
 		},
 		{
+			Name = "HousingBlueprintImportStarted",
+			Type = "Event",
+			LiteralName = "HOUSING_BLUEPRINT_IMPORT_STARTED",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "HousingBlueprintImportSuccess",
 			Type = "Event",
 			LiteralName = "HOUSING_BLUEPRINT_IMPORT_SUCCESS",
@@ -292,6 +313,7 @@ local HousingBlueprintUI =
 			SynchronousEvent = true,
 			Payload =
 			{
+				{ Name = "blueprintID", Type = "BigUInteger", Nilable = false },
 				{ Name = "result", Type = "HousingResult", Nilable = false },
 			},
 		},
@@ -299,6 +321,17 @@ local HousingBlueprintUI =
 			Name = "HousingBlueprintRenameSuccess",
 			Type = "Event",
 			LiteralName = "HOUSING_BLUEPRINT_RENAME_SUCCESS",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "blueprintID", Type = "BigUInteger", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingBlueprintsAvailabilityChanged",
+			Type = "Event",
+			LiteralName = "HOUSING_BLUEPRINTS_AVAILABILITY_CHANGED",
 			SynchronousEvent = true,
 		},
 	},

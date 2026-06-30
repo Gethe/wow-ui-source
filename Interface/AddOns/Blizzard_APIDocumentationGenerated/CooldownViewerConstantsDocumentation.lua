@@ -209,6 +209,9 @@ local CooldownViewerConstants =
 				{ Name = "COOLDOWN_VIEWER_LINKED_SPELLS_SIZE", Type = "number", Value = 4 },
 				{ Name = "COOLDOWN_VIEWER_CATEGORY_SET_SIZE", Type = "number", Value = 16 },
 				{ Name = "COOLDOWN_VIEWER_SPEC_AGNOSTIC_PARENT_ID", Type = "number", Value = 0 },
+				{ Name = "COOLDOWN_VIEWER_COMBAT_POTION_ICON_FID", Type = "number", Value = 134737 },
+				{ Name = "COOLDOWN_VIEWER_HEALTH_POTION_ICON_FID", Type = "number", Value = 134834 },
+				{ Name = "COOLDOWN_VIEWER_HEALTHSTONE_ICON_FID", Type = "number", Value = 538745 },
 			},
 		},
 		{

@@ -326,7 +326,7 @@ function FriendsListSocialCardMixin:InitializeDisplay()
 end
 
 function FriendsListSocialCardMixin:IsWowAccountFriend()
-	return false;
+	return FriendsListUtil.IsTitleFriend(self.elementData.accountInfo);
 end
 
 function FriendsListSocialCardMixin:IsOnline()
@@ -654,9 +654,11 @@ function FriendsListSocialCardMixin:OpenMenu()
 		bnetIDAccount = accountInfo.bnetAccountID,
 		friendsList = true,
 		name = accountInfo.accountName,
-		titleColor = FRIENDS_BNET_NAME_COLOR,
+		titleColor = FriendsListUtil.GetFriendNameColorForFriendType(accountInfo),
+		menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownMainTitle,
+		menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 		menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
-		menuTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+		hasMainTitleDivider = true,
 	};
 
 	if self:IsOnline() then
@@ -674,7 +676,7 @@ local function AddFriendNameHeaderToTooltip(tooltip, accountInfo)
 
 	local isOnline = accountInfo.gameAccountInfo.isOnline;
 	local nameText = FriendsListUtil.GetFriendAccountNameText(accountInfo);
-	local displayColor = isOnline and FRIENDS_BNET_NAME_COLOR or FRIENDS_GRAY_COLOR;
+	local displayColor = FriendsListUtil.GetFriendNameDisplayColor(accountInfo);
 	local wrap = false;
 	if accountInfo.isFavorite then
 		local atlasMarkup = CreateAtlasMarkup(isOnline and "friends-icon-favorites" or "friends-icon-favorites-dis", 16, 16);

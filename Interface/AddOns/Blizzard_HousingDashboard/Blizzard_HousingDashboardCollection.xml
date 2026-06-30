@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingDashboardBlueprintDetailsTemplate" mixin="HousingDashboardBlueprintDetailsMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="PreviewBackground" atlas="catalog-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NameText" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-24"/>
+						<Anchor point="TOPRIGHT" x="-20" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DateTimeText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NameText" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NoticeText" inherits="GameFontHighlight" text="HOUSING_CATALOG_MODEL_PREVIEW_UNAVAILABLE" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PreviewCornerLeft" atlas="catalog-corbel-bottom-left" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PreviewCornerRight" atlas="catalog-corbel-bottom-right" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ContentSummary" inherits="HousingBlueprintContentSummaryTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="backgroundAlpha" value="0.4" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DateTimeText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DateTimeText" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingDashboardCollectionFrameTemplate" mixin="HousingDashboardCollectionFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="housing-basic-panel-background" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-55"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Categories" inherits="HousingCatalogCategoriesVisualsTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="70" type="number"/>
+					<KeyValue key="topPadding" value="10" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-55"/>
+					<Anchor point="BOTTOMLEFT" y="2"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="CategoryPlaceholder">
+						<KeyValues>
+							<KeyValue key="align" value="center" type="string"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+						<Size x="48" y="48"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="category-icons_all_active" useAtlasSize="false" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="BlueprintCollection" inherits="HousingBlueprintCollectionTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.Categories" x="0" y="-12"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="37" y="10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="showReset" value="false" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="BlueprintDetails" inherits="HousingDashboardBlueprintDetailsTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="46" y="-55"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Divider" atlas="catalog-main-divider" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="48"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BlueprintDetails" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BlueprintDetails" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -17,6 +17,8 @@
 			<KeyValue key="heightPadding" value="20" type="number"/>
 			<KeyValue key="headerText" value="HOUSING_BLUEPRINT_EXPORT_HEADER" type="global"/>
 			<KeyValue key="isExclusive" value="true" type="boolean"/>
+			<KeyValue key="openSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_EXPORT_OPEN" type="global"/>
+			<KeyValue key="closeSoundKit" value="SOUNDKIT.HOUSING_BLUEPRINTS_EXPORT_CLOSE" type="global"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP"/>

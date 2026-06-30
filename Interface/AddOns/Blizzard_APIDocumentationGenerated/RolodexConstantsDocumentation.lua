@@ -17,6 +17,18 @@ local RolodexConstants =
 			},
 		},
 		{
+			Name = "RolodexDbFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "RolodexDbFlags", EnumValue = 0 },
+				{ Name = "PromotedFromContact", Type = "RolodexDbFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "RolodexType",
 			Type = "Enumeration",
 			NumValues = 21,

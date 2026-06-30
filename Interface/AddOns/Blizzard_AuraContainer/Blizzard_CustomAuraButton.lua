@@ -1,4 +1,4 @@
-local _addonName, addonTbl = ...;
+local _addonName, addonTable = ...;
 
 local function RequireObjectType(requiredType)
 	return function(object)
@@ -33,11 +33,199 @@ local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
 	return inboundObject;
 end
 
-local CustomAuraButtonPrivateMixin = CreateFromMixins(addonTbl.AuraButtonPrivateMixin);
-addonTbl.CustomAuraButtonPrivateMixin = CustomAuraButtonPrivateMixin;
+CustomAuraButtonSharedMixin = {};
+
+function CustomAuraButtonSharedMixin:GetApplicationCount()
+	return self.ApplicationCount;
+end
+
+local function AssertValidFormatter(formatter)
+	if formatter ~= nil then
+		-- If it's good enough for the C API, it's good enough for me!
+		C_DurationUtil.CreateDuration():FormatElapsedDuration(formatter);
+	end
+
+	return formatter;
+end
+
+function CustomAuraButtonSharedMixin:SetApplicationCount(fontString, options)
+	self.ApplicationCount = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	self.ApplicationCount.formatter = AssertValidFormatter(options.formatter);
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearApplicationCount()
+	self.ApplicationCount = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetAuraBorder()
+	return self.AuraBorder;
+end
+
+local DefaultAuraBorderOptions = {
+	showIcon = true,
+	showWhenHarmful = true,
+	showWhenHelpful = false,
+	style = AuraButtonBorderStyle.Atlas,
+};
+
+function CustomAuraButtonSharedMixin:SetAuraBorder(texture, options)
+	options = CreateFromMixins(DefaultAuraBorderOptions, securecopy(options or {}));
+
+	self.AuraBorder = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
+	self.AuraBorder.showIcon = options.showIcon;
+	self.AuraBorder.showWhenHarmful = options.showWhenHarmful;
+	self.AuraBorder.showWhenHelpful = options.showWhenHelpful;
+	self.AuraBorder.style = options.style;
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraBorder()
+	self.AuraBorder = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetAuraSymbol()
+	return self.AuraSymbol;
+end
+
+local DefaultAuraSymbolOptions = {
+	showIcon = false,
+	showWhenHarmful = true,
+	showWhenHelpful = false,
+	style = AuraButtonBorderStyle.Color,
+};
+
+function CustomAuraButtonSharedMixin:SetAuraSymbol(fontString, options)
+	options = CreateFromMixins(DefaultAuraSymbolOptions, securecopy(options or {}));
+
+	self.AuraSymbol = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	self.AuraSymbol.showWhenHarmful = options.showWhenHarmful;
+	self.AuraSymbol.showWhenHelpful = options.showWhenHelpful;
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraSymbol()
+	self.AuraSymbol = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetDurationCooldown()
+	return self.DurationCooldown;
+end
+
+function CustomAuraButtonSharedMixin:SetDurationCooldown(cooldownFrame)
+	self.DurationCooldown = GetValidatedForbiddenObjectTable(self, cooldownFrame, RequireObjectType("Cooldown"));
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearDurationCooldown()
+	self.DurationCooldown = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetDurationText()
+	return self.DurationText;
+end
+
+function CustomAuraButtonSharedMixin:SetDurationText(fontString, options)
+	options = securecopy(options or {});
+
+	self.DurationText = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+
+	if not self.DurationTextBinding then
+		self.DurationTextBinding = C_DurationUtil.CreateDurationTextBinding();
+	else
+		self.DurationTextBinding:SetToDefaults();
+	end
+
+	if options.formatter then
+		self.DurationTextBinding:SetFormatter(options.formatter);
+	elseif options.textFormat then
+		self.DurationTextBinding:SetTextFormat(options.textFormat);
+	else
+		self.DurationTextBinding:SetFormatter(addonTable.DefaultAuraDurationFormatter);
+	end
+
+	if options.textColorCurve then
+		self.DurationTextBinding:SetTextColorCurve(options.textColorCurve);
+	end
+
+	if options.timeModifier then
+		self.DurationTextBinding:SetTimeModifier(options.timeModifier);
+	end
+
+	if options.updateInterval then
+		self.DurationTextBinding:SetUpdateInterval(options.updateInterval);
+	end
+
+	self.DurationTextBinding:SetExpiredText(options.expiredText);
+	self.DurationTextBinding:SetZeroDurationText(options.zeroDurationText);
+	self.DurationTextBinding:SetFontString(self.DurationText);
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearDurationText()
+	self.DurationText = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetDurationBar()
+	return self.DurationBar;
+end
+
+function CustomAuraButtonSharedMixin:SetDurationBar(statusBar, options)
+	options = securecopy(options or {});
+	assert(options.interpolation == nil or EnumUtil.IsValid(Enum.StatusBarInterpolation, options.interpolation));
+	assert(options.direction == nil or EnumUtil.IsValid(Enum.StatusBarTimerDirection, options.direction));
+
+	self.DurationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
+
+	if options.interpolation then
+		self.DurationBar.interpolation = options.interpolation;
+	end
+
+	if options.direction then
+		self.DurationBar.direction = options.direction;
+	end
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearDurationBar()
+	self.DurationBar = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetIcon()
+	return self.Icon;
+end
+
+function CustomAuraButtonSharedMixin:SetIcon(texture)
+	self.Icon = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearIcon()
+	self.Icon = nil;
+end
+
+function CustomAuraButtonSharedMixin:GetSpellName()
+	return self.SpellName;
+end
+
+function CustomAuraButtonSharedMixin:SetSpellName(fontString)
+	self.SpellName = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearSpellName()
+	self.SpellName = nil;
+end
+
+CustomAuraButtonInboundMixin = CreateFromMixins(CustomAuraButtonSharedMixin);
+CustomAuraButtonPrivateMixin = CreateFromMixins(AuraButtonPrivateMixin, CustomAuraButtonSharedMixin);
 
 function CustomAuraButtonPrivateMixin:OnLoad_Intrinsic()
-	addonTbl.AuraButtonPrivateMixin.OnLoad_Intrinsic(self);
+	AuraButtonPrivateMixin.OnLoad_Intrinsic(self);
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceAssigned(unitToken, auraData)
@@ -106,7 +294,7 @@ function CustomAuraButtonPrivateMixin:ApplyAuraSymbol(auraData)
 		-- SetAuraSymbol only conditionally sets secret text; we need this
 		-- to be unconditional as it could be observed externally. Also make
 		-- sure visibility is secret as a precaution.
-	
+
 		self.AuraSymbol:SetShown(secretwrap(false));
 		self.AuraSymbol:SetText(secretwrap(""));
 
@@ -184,195 +372,3 @@ end
 --[[override]] function CustomAuraButtonPrivateMixin:UpdateAuraDisplay()
 	self:ApplyAuraInstance(self:GetAuraInstance());
 end
-
-local CustomAuraButtonInboundMixin = {};
-addonTbl.CustomAuraButtonInboundMixin = CustomAuraButtonInboundMixin;
-
-function CustomAuraButtonInboundMixin:GetApplicationCount()
-	return self.ApplicationCount;
-end
-
-local function AssertValidFormatter(formatter)
-	if formatter ~= nil then
-		-- If it's good enough for the C API, it's good enough for me!
-		C_DurationUtil.CreateDuration():FormatElapsedDuration(formatter);
-	end
-
-	return formatter;
-end
-
-function CustomAuraButtonInboundMixin:SetApplicationCount(fontString, options)
-	self.ApplicationCount = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-	self.ApplicationCount.formatter = AssertValidFormatter(options.formatter);
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearApplicationCount()
-	self.ApplicationCount = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetAuraBorder()
-	return self.AuraBorder;
-end
-
-local DefaultAuraBorderOptions = {
-	showIcon = true,
-	showWhenHarmful = true,
-	showWhenHelpful = false,
-	style = AuraButtonBorderStyle.Atlas,
-};
-
-function CustomAuraButtonInboundMixin:SetAuraBorder(texture, options)
-	options = CreateFromMixins(DefaultAuraBorderOptions, securecopy(options or {}));
-
-	self.AuraBorder = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
-	self.AuraBorder.showIcon = options.showIcon;
-	self.AuraBorder.showWhenHarmful = options.showWhenHarmful;
-	self.AuraBorder.showWhenHelpful = options.showWhenHelpful;
-	self.AuraBorder.style = options.style;
-
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearAuraBorder()
-	self.AuraBorder = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetAuraSymbol()
-	return self.AuraSymbol;
-end
-
-local DefaultAuraSymbolOptions = {
-	showIcon = false,
-	showWhenHarmful = true,
-	showWhenHelpful = false,
-	style = AuraButtonBorderStyle.Color,
-};
-
-
-function CustomAuraButtonInboundMixin:SetAuraSymbol(fontString, options)
-	options = CreateFromMixins(DefaultAuraSymbolOptions, securecopy(options or {}));
-
-	self.AuraSymbol = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-	self.AuraSymbol.showWhenHarmful = options.showWhenHarmful;
-	self.AuraSymbol.showWhenHelpful = options.showWhenHelpful;
-
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearAuraSymbol()
-	self.AuraSymbol = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetDurationCooldown()
-	return self.DurationCooldown;
-end
-
-function CustomAuraButtonInboundMixin:SetDurationCooldown(cooldownFrame)
-	self.DurationCooldown = GetValidatedForbiddenObjectTable(self, cooldownFrame, RequireObjectType("Cooldown"));
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearDurationCooldown()
-	self.DurationCooldown = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetDurationText()
-	return self.DurationText;
-end
-
-function CustomAuraButtonInboundMixin:SetDurationText(fontString, options)
-	options = securecopy(options or {});
-
-	self.DurationText = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-
-	if not self.DurationTextBinding then
-		self.DurationTextBinding = C_DurationUtil.CreateDurationTextBinding();
-	else
-		self.DurationTextBinding:SetToDefaults();
-	end
-
-	if options.formatter then
-		self.DurationTextBinding:SetFormatter(options.formatter);
-	elseif options.textFormat then
-		self.DurationTextBinding:SetTextFormat(options.textFormat);
-	else
-		self.DurationTextBinding:SetFormatter(addonTbl.DefaultAuraDurationFormatter);
-	end
-
-	if options.textColorCurve then
-		self.DurationTextBinding:SetTextColorCurve(options.textColorCurve);
-	end
-
-	if options.timeModifier then
-		self.DurationTextBinding:SetTimeModifier(options.timeModifier);
-	end
-
-	if options.updateInterval then
-		self.DurationTextBinding:SetUpdateInterval(options.updateInterval);
-	end
-
-	self.DurationTextBinding:SetExpiredText(options.expiredText);
-	self.DurationTextBinding:SetZeroDurationText(options.zeroDurationText);
-	self.DurationTextBinding:SetFontString(self.DurationText);
-
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearDurationText()
-	self.DurationText = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetDurationBar()
-	return self.DurationBar;
-end
-
-function CustomAuraButtonInboundMixin:SetDurationBar(statusBar, options)
-	options = securecopy(options or {});
-	assert(options.interpolation == nil or EnumUtil.IsValid(Enum.StatusBarInterpolation, options.interpolation));
-	assert(options.direction == nil or EnumUtil.IsValid(Enum.StatusBarTimerDirection, options.direction));
-
-	self.DurationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
-
-	if options.interpolation then
-		self.DurationBar.interpolation = options.interpolation;
-	end
-
-	if options.direction then
-		self.DurationBar.direction = options.direction;
-	end
-
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearDurationBar()
-	self.DurationBar = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetIcon()
-	return self.Icon;
-end
-
-function CustomAuraButtonInboundMixin:SetIcon(texture)
-	self.Icon = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearIcon()
-	self.Icon = nil;
-end
-
-function CustomAuraButtonInboundMixin:GetSpellName()
-	return self.SpellName;
-end
-
-function CustomAuraButtonInboundMixin:SetSpellName(fontString)
-	self.SpellName = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonInboundMixin:ClearSpellName()
-	self.SpellName = nil;
-end
-
-ApplySecureDelegatesToTable(CustomAuraButtonInboundMixin);
