@@ -1228,6 +1228,7 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
+			<OnLoad function="WorldStateProvingGrounds_OnLoad"/>
 			<OnEvent function="WorldStateProvingGrounds_OnEvent"/>
 		</Scripts>
 	</Frame>

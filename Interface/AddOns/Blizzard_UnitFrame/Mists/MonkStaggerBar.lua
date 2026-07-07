@@ -64,7 +64,7 @@ function MonkStaggerBarMixin:UpdateValue()
 	if not self:GetParent() then
 		return;
 	end
-	local currstagger = UnitStagger(self:GetParent().unit);
+	local currstagger = UnitStagger(PlayerFrame.unit);
 	if (not currstagger) then
 		return;
 	end
@@ -88,7 +88,7 @@ function MonkStaggerBarMixin:UpdateValue()
 end
 
 function MonkStaggerBarMixin:UpdateMaxValues()
-	local maxhealth = UnitHealthMax(self:GetParent().unit);
+	local maxhealth = UnitHealthMax(PlayerFrame.unit);
 	self:SetMinMaxValues(0, maxhealth);
 	self:UpdateTextString();
 end

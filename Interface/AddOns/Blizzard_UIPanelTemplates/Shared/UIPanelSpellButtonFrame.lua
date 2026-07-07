@@ -23,9 +23,24 @@ function UIPanelSpellButtonFrameMixin:OnLoad()
 	button:SetScript("OnLeave", GenerateClosure(self.OnIconLeave, self));
 	button.UpdateTooltip =  GenerateClosure(self.UpdateTooltip, self);
 
-	if not self.resizeToText then
-		self.Label:SetPoint("LEFT", self.textPadLeft, 0);
-		self.Label:SetPoint("RIGHT", self.Button.Border, "LEFT", -self.textPadRight, 0);
+	-- Is the spell anchored on the left or right side of the frame.
+	self.Button:ClearAllPoints();
+	if self.spellButtonJustifyLeft then
+		self.Button:SetPoint("LEFT");
+		self.Label:SetJustifyH("LEFT");
+
+		if not self.resizeToText then
+			self.Label:SetPoint("LEFT", self.Button.Border, "RIGHT", self.textPadLeft, 0);
+			self.Label:SetPoint("RIGHT", -self.textPadRight, 0);
+		end
+	else
+		self.Button:SetPoint("RIGHT");
+		self.Label:SetJustifyH("RIGHT");
+
+		if not self.resizeToText then
+			self.Label:SetPoint("LEFT", self.textPadLeft, 0);
+			self.Label:SetPoint("RIGHT", self.Button.Border, "LEFT", -self.textPadRight, 0);
+		end
 	end
 
 	self:UpdateDisplay();
@@ -78,11 +93,18 @@ function UIPanelSpellButtonFrameMixin:UpdateDisplay()
 
 	if self.resizeToText then
 		self.Label:ClearAllPoints();
-		self.Label:SetPoint("LEFT", self.textPadLeft, 0);
+
+		if self.spellButtonJustifyLeft then
+			self.Label:SetPoint("LEFT", self.Button.Border, "RIGHT", self.textPadLeft, 0);
+			self.Label:SetPoint("RIGHT", -self.textPadRight, 0);
+		else
+			self.Label:SetPoint("LEFT", self.textPadLeft, 0);
+			self.Label:SetPoint("RIGHT", self.Button.Border, "LEFT", -self.textPadRight, 0);
+		end
+
 		local fontStringWidth = self.Label:GetWidth();
 		local buttonWidth = self.Button:GetWidth();
 		self:SetWidth(fontStringWidth + buttonWidth + self.textPadLeft + self.textPadRight + 1);	-- add 1 to account for rounding errors
-		self.Label:SetPoint("RIGHT", self.Button.Border, "LEFT", -self.textPadRight, 0);
 	end
 
 	if self:IsShown() then

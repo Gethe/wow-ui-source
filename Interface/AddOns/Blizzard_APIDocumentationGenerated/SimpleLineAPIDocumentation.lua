@@ -2,6 +2,7 @@ local SimpleLineAPI =
 {
 	Name = "SimpleLineAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -121,6 +122,9 @@ local SimpleLineAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

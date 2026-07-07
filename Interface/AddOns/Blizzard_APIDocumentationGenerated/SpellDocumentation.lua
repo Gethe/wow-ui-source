@@ -3,6 +3,7 @@ local Spell =
 	Name = "Spell",
 	Type = "System",
 	Namespace = "C_Spell",
+	Environment = "All",
 
 	Functions =
 	{
@@ -72,6 +73,22 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellChargeDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns a duration object describing the active recharge time for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellCharges",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -104,6 +121,23 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns a duration object describing the active cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellDescription",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -117,6 +151,23 @@ local Spell =
 			Returns =
 			{
 				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellDisplayCount",
+			Type = "Function",
+			Documentation = { "Depending on the spell, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = false, Default = 9999 },
+				{ Name = "replacementString", Type = "cstring", Nilable = false, Default = "*" },
+			},
+
+			Returns =
+			{
+				{ Name = "displayCount", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -181,6 +232,52 @@ local Spell =
 			Returns =
 			{
 				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLossOfControlCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLossOfControlCooldownInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellMaxCumulativeAuraApplications",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cumulativeAura", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -274,6 +371,24 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetVisibilityInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "visibilityType", Type = "SpellAuraVisibilityType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasCustom", Type = "bool", Nilable = false },
+				{ Name = "alwaysShowMine", Type = "bool", Nilable = false },
+				{ Name = "showForMySpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAutoAttackSpell",
 			Type = "Function",
 			Documentation = { "Returns true if the spell is the player's melee Auto Attack spell" },
@@ -304,6 +419,20 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsConsumableSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "consumable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCurrentSpell",
 			Type = "Function",
 			Documentation = { "Returns true if the spell is currently being cast or is queued to be cast" },
@@ -316,6 +445,21 @@ local Spell =
 			Returns =
 			{
 				{ Name = "isCurrentSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsExternalDefensive",
+			Type = "Function",
+			Documentation = { "Returns true if an aura is considered an external defensive." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isExternalDefensive", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -334,6 +478,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsPriorityAura",
+			Type = "Function",
+			Documentation = { "Returns true if an aura is considered high priority and should be ordered ahead of other auras in the UI." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHighPriority", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRangedAutoAttackSpell",
 			Type = "Function",
 			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
@@ -346,6 +505,36 @@ local Spell =
 			Returns =
 			{
 				{ Name = "isRangedAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSelfBuff",
+			Type = "Function",
+			Documentation = { "Returns true if an aura only applies effects to the player, and no other units." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSelfEffectsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellCrowdControl",
+			Type = "Function",
+			Documentation = { "Returns true if the spell causes a crowd control effect when cast on a valid target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrowdControl", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -391,6 +580,21 @@ local Spell =
 			Returns =
 			{
 				{ Name = "isHelpful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellImportant",
+			Type = "Function",
+			Documentation = { "Returns true if the spell is considered important. For example a spell that's lethal if not interrupted would be considered important." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isImportant", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -474,20 +678,6 @@ local Spell =
 			},
 		},
 		{
-			Name = "SpellIsPriorityAura",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isPriorityAura", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "TargetSpellIsEnchanting",
 			Type = "Function",
 
@@ -522,6 +712,7 @@ local Spell =
 			Name = "EnchantSpellCompleted",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "successful", Type = "bool", Nilable = false },
@@ -532,11 +723,13 @@ local Spell =
 			Name = "EnchantSpellSelected",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_SELECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellDataLoadResult",
 			Type = "Event",
 			LiteralName = "SPELL_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -547,6 +740,7 @@ local Spell =
 			Name = "SpellRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
 			Payload =
 			{
@@ -559,6 +753,7 @@ local Spell =
 			Name = "SpellTextUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_TEXT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -568,6 +763,7 @@ local Spell =
 			Name = "UpdateSpellTargetItemContext",
 			Type = "Event",
 			LiteralName = "UPDATE_SPELL_TARGET_ITEM_CONTEXT",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -596,6 +792,9 @@ local Spell =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

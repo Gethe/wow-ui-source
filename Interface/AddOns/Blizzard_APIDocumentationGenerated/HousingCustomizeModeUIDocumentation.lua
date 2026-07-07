@@ -3,22 +3,25 @@ local HousingCustomizeModeUI =
 	Name = "HousingCustomizeModeUI",
 	Type = "System",
 	Namespace = "C_HousingCustomizeMode",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ApplyDyeToSelectedDecor",
 			Type = "Function",
+			Documentation = { "If a dyeable decor is selected, applies a specific dye color in a specific slot as a preview; See CommitDyesForSelectedDecor to actually save applied dye changes" },
 
 			Arguments =
 			{
 				{ Name = "dyeSlotID", Type = "number", Nilable = false },
-				{ Name = "dyeColorID", Type = "number", Nilable = true },
+				{ Name = "dyeColorID", Type = "number", Nilable = true, Documentation = { "If not provided, clears the dye from the specified dye slot, returning that part of the decor asset to its default color" } },
 			},
 		},
 		{
 			Name = "ApplyThemeToRoom",
 			Type = "Function",
+			Documentation = { "Attempt to apply a specific theme set (aka style) to all applicable room components in the current room" },
 
 			Arguments =
 			{
@@ -28,6 +31,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyThemeToSelectedRoomComponent",
 			Type = "Function",
+			Documentation = { "Attempt to apply a specific theme set (aka style) to the currently selected room component only" },
 
 			Arguments =
 			{
@@ -37,6 +41,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyWallpaperToAllWalls",
 			Type = "Function",
+			Documentation = { "Attempt to apply a specific wallpaper (aka material/texture) to all applicable room components in the current room" },
 
 			Arguments =
 			{
@@ -46,6 +51,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "ApplyWallpaperToSelectedRoomComponent",
 			Type = "Function",
+			Documentation = { "Attempt to apply a specific wallpaper (aka material/texture) to the currently selected room component only" },
 
 			Arguments =
 			{
@@ -55,27 +61,32 @@ local HousingCustomizeModeUI =
 		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unapplied customization changes and deselect the active target" },
 		},
 		{
 			Name = "ClearDyesForSelectedDecor",
 			Type = "Function",
+			Documentation = { "Clears all previewed dye changes on the selected decor; Does not clear any already saved dyes that were previously applied" },
 		},
 		{
 			Name = "ClearTargetRoomComponent",
 			Type = "Function",
+			Documentation = { "Deselect the currently selected room component, if there is one" },
 		},
 		{
 			Name = "CommitDyesForSelectedDecor",
 			Type = "Function",
+			Documentation = { "Attempt to save all previewed dye changes made to the selected decor" },
 
 			Returns =
 			{
-				{ Name = "hasChanges", Type = "bool", Nilable = false },
+				{ Name = "hasChanges", Type = "bool", Nilable = false, Documentation = { "True if there were any changes to save" } },
 			},
 		},
 		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -85,6 +96,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetHoveredRoomComponentInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the room component currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -94,6 +106,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetNumDyesToRemoveOnSelectedDecor",
 			Type = "Function",
+			Documentation = { "If a dyeable decor instance is selected, returns how many dye slots would be cleared on applying all currently previewed dye changes" },
 
 			Returns =
 			{
@@ -103,6 +116,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetNumDyesToSpendOnSelectedDecor",
 			Type = "Function",
+			Documentation = { "If a dyeable decor instance is selected, returns how many dye items would be spent on applying all currently previewed dye changes" },
 
 			Returns =
 			{
@@ -112,6 +126,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetPreviewDyesOnSelectedDecor",
 			Type = "Function",
+			Documentation = { "If a dyeable decor instance is selected, returns info structs for each new/changed dye currently being previewed" },
 
 			Returns =
 			{
@@ -121,6 +136,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetRecentlyUsedDyes",
 			Type = "Function",
+			Documentation = { "Returns a list of ids for the dyes most recently applied by the player, if any" },
 
 			Returns =
 			{
@@ -130,6 +146,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetRecentlyUsedThemeSets",
 			Type = "Function",
+			Documentation = { "Returns a list of ids for the theme sets (aka styles) most recently applied by the player, if any" },
 
 			Returns =
 			{
@@ -139,6 +156,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetRecentlyUsedWallpapers",
 			Type = "Function",
+			Documentation = { "Returns a list of ids for the wallpapers most recently applied by the player, if any" },
 
 			Returns =
 			{
@@ -148,6 +166,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetSelectedDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the decor instance that's currently selected, if there is one" },
 
 			Returns =
 			{
@@ -157,6 +176,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetSelectedRoomComponentInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the currently selected room component, if there is one" },
 
 			Returns =
 			{
@@ -166,6 +186,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetThemeSetInfo",
 			Type = "Function",
+			Documentation = { "Returns the name of the specified theme set (aka style) if it exists" },
 
 			Arguments =
 			{
@@ -180,6 +201,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "GetWallpapersForRoomComponentType",
 			Type = "Function",
+			Documentation = { "Get all wallpapers (aka materials/textures) available for the selected room component type, if any" },
 
 			Arguments =
 			{
@@ -194,6 +216,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "IsDecorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a decor instance is currently selected for customization" },
 
 			Returns =
 			{
@@ -201,8 +224,19 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "IsHouseExteriorDoorHovered",
+			Type = "Function",
+			Documentation = { "Returns true if the entry door of the house's exterior is currently being hovered" },
+
+			Returns =
+			{
+				{ Name = "isHouseExteriorDoorHovered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently being hovered" },
 
 			Returns =
 			{
@@ -212,6 +246,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "IsHoveringRoomComponent",
 			Type = "Function",
+			Documentation = { "Returns true if a room component is currently being hovered" },
 
 			Returns =
 			{
@@ -221,6 +256,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "IsRoomComponentSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a room component is currently selected for customization" },
 
 			Returns =
 			{
@@ -230,6 +266,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "RoomComponentSupportsVariant",
 			Type = "Function",
+			Documentation = { "Check whether a specific room component supports a particular variant; What kind of id or enum 'variant' equates to is complicated, as it depends on the component type" },
 
 			Arguments =
 			{
@@ -243,8 +280,26 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "RoomConnectionSupportsDoorType",
+			Type = "Function",
+			Documentation = { "Check whether a specific room component, within a specific room, supports a particular doorType" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "newDoortype", Type = "HousingRoomComponentDoorType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doorTypeSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRoomComponentCeilingType",
 			Type = "Function",
+			Documentation = { "Attempt to set a specific ceiling component, within a specific room, to a specific new ceiling type" },
 
 			Arguments =
 			{
@@ -256,6 +311,7 @@ local HousingCustomizeModeUI =
 		{
 			Name = "SetRoomComponentDoorType",
 			Type = "Function",
+			Documentation = { "Attempt to set a specific door component, within a specific room, to a specific new door type" },
 
 			Arguments =
 			{
@@ -272,6 +328,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingCustomizeModeHoveredTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
@@ -282,6 +339,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingCustomizeModeSelectedTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelectedTarget", Type = "bool", Nilable = false },
@@ -292,6 +350,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingDecorCustomizationChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_CUSTOMIZATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -301,6 +360,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingDecorDyeFailure",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_DYE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -311,6 +371,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingRoomComponentCustomizationChangeFailed",
 			Type = "Event",
 			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGE_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -322,6 +383,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingRoomComponentCustomizationChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -381,6 +443,9 @@ local HousingCustomizeModeUI =
 				{ Name = "roomComponentTextureRecID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

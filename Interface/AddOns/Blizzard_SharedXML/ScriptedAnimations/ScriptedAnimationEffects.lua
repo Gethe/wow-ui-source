@@ -107,7 +107,7 @@ local function GenerateRecoilCallback(magnitude, duration)
 
 		local easingFunction = nil;
 		local reverseVariationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, -distanceX, -distanceY);
-		local reversePosition = GenerateClosure(ScriptAnimationUtil.StartScriptAnimation, source, reverseVariationCallback, recoilDuration);
+		local reversePosition = GenerateFlatClosure(ScriptAnimationUtil.StartScriptAnimation, source, reverseVariationCallback, recoilDuration);
 
 		local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY);
 		local cancelFunction = ScriptAnimationUtil.StartScriptAnimation(source, variationCallback, recoilDuration, reversePosition);

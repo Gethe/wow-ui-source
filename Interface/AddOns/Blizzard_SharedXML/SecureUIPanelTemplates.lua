@@ -25,7 +25,7 @@ function ScrollFrame_OnLoad(self)
 		if not scrollBarTemplate then
 			error("SCROLL_FRAME_SCROLL_BAR_TEMPLATE undefined. Check ScrollDefine.lua")
 		end
-		
+
 		local left = self.scrollBarX or SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT;
 		if not left then
 			error("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT undefined. Check ScrollDefine.lua")
@@ -124,9 +124,13 @@ function InputScrollFrame_OnLoad(self)
 
 	self.EditBox:SetWidth(self:GetWidth() - 18);
 	self.EditBox:SetMaxLetters(self.maxLetters);
-	self.EditBox.Instructions:SetText(self.instructions);
+	InputScrollFrame_SetInstructions(self, self.instructions);
 	self.EditBox.Instructions:SetWidth(self:GetWidth());
 	self.CharCount:SetShown(not self.hideCharCount);
+end
+
+function InputScrollFrame_SetInstructions(self, instructions)
+	self.EditBox.Instructions:SetText(instructions);
 end
 
 function InputScrollFrame_OnMouseDown(self)
@@ -135,14 +139,11 @@ end
 
 InputScrollFrame_OnTabPressed = EditBox_OnTabPressed;
 
-function InputScrollFrame_OnTextChanged(self)
+function InputScrollFrame_OnTextChanged(self, _isUserChange)
 	local scrollFrame = self:GetParent();
 	ScrollingEdit_OnTextChanged(self, scrollFrame);
-	if ( self:GetText() ~= "" ) then
-		self.Instructions:Hide();
-	else
-		self.Instructions:Show();
-	end
+	self.Instructions:SetShown(self:GetText() == "");
+
 	scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
 
 	if scrollFrame.ScrollBar then

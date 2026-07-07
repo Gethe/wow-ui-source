@@ -113,17 +113,19 @@
 				<Size x="45" y="45"/>
 			</Frame>
 
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">
-				<KeyValues>
-					<KeyValue key="edgeTextureNormal" value="Interface\Cooldown\edge-LoC" type="string"/>
-					<KeyValue key="edgeTextureLOC" value="Interface\Cooldown\edge" type="string"/>
-				</KeyValues>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false" useParentLevel="true" parentKey="cooldown">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>			
+				</Anchors>
 				<SwipeTexture>
-					<Color r="1" g="1" b="1" a="0.8"/>
+					<Color r="0" g="0" b="0" a="0.8"/>
 				</SwipeTexture>
+			</Cooldown>
+			<Cooldown parentKey="chargeCooldown" inherits="CooldownFrameTemplate" drawSwipe="false" hideCountdownNumbers="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-2" y="2"/>
+				</Anchors>
 			</Cooldown>
 		</Frames>
 
@@ -172,7 +174,7 @@
 			<OnDragStart method="ActionBarButtonMixin_OnDragStart"/>
 		</Scripts>
 	</CheckButton>
-	
+
 	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="hotkeyX" value="0" type="number"/>

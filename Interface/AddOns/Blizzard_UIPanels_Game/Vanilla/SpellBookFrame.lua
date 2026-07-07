@@ -244,6 +244,7 @@ function SpellButtonMixin:UpdateButton()
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self:SetChecked(false);
 		self:Disable();
+		self:ClearPopup();
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		return;

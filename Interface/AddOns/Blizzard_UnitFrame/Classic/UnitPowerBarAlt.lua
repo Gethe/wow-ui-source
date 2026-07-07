@@ -481,8 +481,16 @@ end
 function UnitPowerBarAltStatus_UpdateText(self)
 	local powerBar = self:GetParent();
 	if ( powerBar.displayedValue and self:IsShown() ) then
-		self:UpdateTextStringWithValues(self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
+		UnitPowerBarAltStatus_UpdateTextStringWithValues(self, self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
 	end
+end
+
+function UnitPowerBarAltStatus_UpdateTextStringWithValues(self, textString, value, valueMin, valueMax)
+	if not textString then
+		return;
+	end
+
+	textString:SetText(tostring(value) .. ' / ' .. tostring(valueMax));
 end
 
 function UnitPowerBarAltStatus_OnEvent(self, event, ...)

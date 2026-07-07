@@ -15,7 +15,7 @@
 				<FontString name="$parentSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true" parentKey="slot2">
 					<Size x="800" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentSlot1" relativePoint="BOTTOM"/>
+						<Anchor point="TOP" relativeKey="$parent.slot1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
 			</Layer>

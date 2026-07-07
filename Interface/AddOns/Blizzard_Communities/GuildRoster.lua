@@ -175,7 +175,14 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	end
 	
 	self.RemoveButton:SetEnabled(CanGuildRemove() and rankOrder > myRankOrder);
-	self.GroupInviteButton:SetEnabled(memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat and memberInfo.presence ~= Enum.ClubMemberPresence.OnlineMobile);
+
+	-- These fields on memberInfo are secret and SetEnabled does not allow secrets.
+	-- In this particular case, workaround that by checking the condition directly.
+	if memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat and memberInfo.presence ~= Enum.ClubMemberPresence.OnlineMobile then
+		self.GroupInviteButton:Enable();
+	else
+		self.GroupInviteButton:Disable();
+	end
 
 	self:SetupRankDropdown();
 

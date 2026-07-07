@@ -2,6 +2,7 @@ local SimpleModelFFXAPI =
 {
 	Name = "SimpleModelFFXAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -50,6 +51,9 @@ local SimpleModelFFXAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

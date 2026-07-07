@@ -3,6 +3,7 @@ local GameRules =
 	Name = "GameRules",
 	Type = "System",
 	Namespace = "C_GameRules",
+	Environment = "All",
 
 	Functions =
 	{
@@ -226,6 +227,16 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsPersonalResourceDisplayEnabled",
+			Type = "Function",
+			Documentation = { "Checks the game rule as well as nameplateShowSelf" },
+
+			Returns =
+			{
+				{ Name = "isPersonalResourceDisplayEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlunderstorm",
 			Type = "Function",
 
@@ -269,6 +280,7 @@ local GameRules =
 			Name = "ActiveGameModeUpdated",
 			Type = "Event",
 			LiteralName = "ACTIVE_GAME_MODE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gameMode", Type = "GameMode", Nilable = false },
@@ -278,11 +290,13 @@ local GameRules =
 			Name = "AvailableGameModesUpdated",
 			Type = "Event",
 			LiteralName = "AVAILABLE_GAME_MODES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EventRealmQueuesUpdated",
 			Type = "Event",
 			LiteralName = "EVENT_REALM_QUEUES_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "eventRealmQueues", Type = "EventRealmQueues", Nilable = false },
@@ -292,11 +306,13 @@ local GameRules =
 			Name = "GameModeDisplayInfoUpdated",
 			Type = "Event",
 			LiteralName = "GAME_MODE_DISPLAY_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GameModeDisplayModeToggleDisabled",
 			Type = "Event",
 			LiteralName = "GAME_MODE_DISPLAY_MODE_TOGGLE_DISABLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
@@ -321,6 +337,9 @@ local GameRules =
 				{ Name = "characterCreateOuterBorder", Type = "fileID", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

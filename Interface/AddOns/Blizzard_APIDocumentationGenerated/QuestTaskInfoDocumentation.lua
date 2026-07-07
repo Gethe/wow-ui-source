@@ -3,6 +3,7 @@ local QuestTaskInfo =
 	Name = "QuestTaskInfo",
 	Type = "System",
 	Namespace = "C_TaskQuest",
+	Environment = "All",
 
 	Functions =
 	{
@@ -169,6 +170,9 @@ local QuestTaskInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

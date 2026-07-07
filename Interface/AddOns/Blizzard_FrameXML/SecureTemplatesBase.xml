@@ -9,4 +9,10 @@
 			<Attribute name="useparent*" type="boolean" value="true"/>
 		</Attributes>
 	</Frame>
+
+	<!-- Insecure Templates for use by addons -->
+	<Frame name="InsecureMouseMotionPropagatorTemplate" propagateMouseInput="Motion" virtual="true"/>
+	<Frame name="InsecureMouseClicksPropagatorTemplate" propagateMouseInput="Clicks" virtual="true"/>
+	<Frame name="InsecureKeyboardInputPropagatorTemplate" propagateKeyboardInput="true" virtual="true"/>
+	<Frame name="InsecureHyperlinkPropagatorTemplate" propagateHyperlinksToParent="true" virtual="true"/>
 </Ui>

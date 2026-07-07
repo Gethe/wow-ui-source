@@ -82,6 +82,7 @@ function GameRulesUtil.EJIsDisabled()
 
 	-- At least one tab needs to be active for the Encounter Journal to be enabled.
 	local tabFunctions = {
+		GameRulesUtil.EJShouldShowJourneys,
 		GameRulesUtil.EJShouldShowTravelersLog,
 		GameRulesUtil.EJShouldShowSuggestedContent,
 		GameRulesUtil.EJShouldShowDungeons,
@@ -96,6 +97,10 @@ function GameRulesUtil.EJIsDisabled()
 	end
 
 	return true;
+end
+
+function GameRulesUtil.EJShouldShowJourneys()
+	return not C_GameRules.IsGameRuleActive(Enum.GameRule.EjJourneysDisabled);
 end
 
 function GameRulesUtil.EJShouldShowTravelersLog()

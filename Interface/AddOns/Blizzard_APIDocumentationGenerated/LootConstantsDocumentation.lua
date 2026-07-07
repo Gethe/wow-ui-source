@@ -26,7 +26,7 @@ local LootConstants =
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "PersonalOnly", Type = "LootMethodStyles", EnumValue = 0 },
+				{ Name = "Mainline", Type = "LootMethodStyles", EnumValue = 0 },
 				{ Name = "Vanilla", Type = "LootMethodStyles", EnumValue = 1 },
 			},
 		},
@@ -52,6 +52,9 @@ local LootConstants =
 				{ Name = "MasterLootQualityThreshold", Type = "number", Value = 5 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

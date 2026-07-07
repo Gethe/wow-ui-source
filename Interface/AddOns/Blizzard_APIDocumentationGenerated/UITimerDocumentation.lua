@@ -3,6 +3,7 @@ local UITimer =
 	Name = "UITimer",
 	Type = "System",
 	Namespace = "C_Timer",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,9 @@ local UITimer =
 			Name = "TimerCallback",
 			Type = "CallbackType",
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -8,6 +8,9 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
 	for _, checkButton in pairs(self.settingsCheckButtons) do
 		checkButton.shouldHide = false;
 	end
+
+	-- Except for the totem bar, which only Classic will show.
+	self.settingsCheckButtons.TotemActionBar.shouldHide = true;
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameSetup()

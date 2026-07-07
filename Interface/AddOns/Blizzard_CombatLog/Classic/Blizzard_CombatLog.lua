@@ -27,45 +27,7 @@ AURA_TYPE_DEBUFF = "DEBUFF"
 
 -- Message Limit
 COMBATLOG_LIMIT_PER_FRAME = 1;
-COMBATLOG_HIGHLIGHT_MULTIPLIER = 1.5;
 
--- Default Colors
-COMBATLOG_DEFAULT_COLORS = {
-	-- Unit names
-	unitColoring = {
-		[COMBATLOG_FILTER_MINE] 		= {a=1.0,r=0.70,g=0.70,b=0.70}; --{a=1.0,r=0.14,g=1.00,b=0.15};
-		[COMBATLOG_FILTER_MY_PET] 		= {a=1.0,r=0.70,g=0.70,b=0.70}; --{a=1.0,r=0.14,g=0.80,b=0.15};
-		[COMBATLOG_FILTER_FRIENDLY_UNITS] 	= {a=1.0,r=0.34,g=0.64,b=1.00};
-		[COMBATLOG_FILTER_HOSTILE_UNITS] 	= {a=1.0,r=0.75,g=0.05,b=0.05};
-		[COMBATLOG_FILTER_HOSTILE_PLAYERS] 	= {a=1.0,r=0.75,g=0.05,b=0.05};
-		[COMBATLOG_FILTER_NEUTRAL_UNITS] 	= {a=1.0,r=0.75,g=0.05,b=0.05}; -- {a=1.0,r=0.80,g=0.80,b=0.14};
-		[COMBATLOG_FILTER_UNKNOWN_UNITS] 	= {a=1.0,r=0.75,g=0.75,b=0.75};
-	};
-	-- School coloring
-	schoolColoring = {
-		[SCHOOL_MASK_NONE]	= {a=1.0,r=1.00,g=1.00,b=1.00};
-		[SCHOOL_MASK_PHYSICAL]	= {a=1.0,r=1.00,g=1.00,b=0.00};
-		[SCHOOL_MASK_HOLY] 	= {a=1.0,r=1.00,g=0.90,b=0.50};
-		[SCHOOL_MASK_FIRE] 	= {a=1.0,r=1.00,g=0.50,b=0.00};
-		[SCHOOL_MASK_NATURE] 	= {a=1.0,r=0.30,g=1.00,b=0.30};
-		[SCHOOL_MASK_FROST] 	= {a=1.0,r=0.50,g=1.00,b=1.00};
-		[SCHOOL_MASK_SHADOW] 	= {a=1.0,r=0.50,g=0.50,b=1.00};
-		[SCHOOL_MASK_ARCANE] 	= {a=1.0,r=1.00,g=0.50,b=1.00};
-	};
-	-- Defaults
-	defaults = {
-		spell = {a=1.0,r=1.00,g=1.00,b=1.00};
-		damage = {a=1.0,r=1.00,g=1.00,b=0.00};
-	};
-	-- Line coloring
-	eventColoring = {
-	};
-
-	-- Highlighted events
-	highlightedEvents = {
-		["PARTY_KILL"] = true;
-	};
-};
 COMBATLOG_DEFAULT_SETTINGS = {
 	-- Settings
 	fullText = true;
@@ -106,18 +68,6 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	hideDebuffs = false;
 	--unitTokens = true;
 };
-
---
--- Combat Log Icons
---
-COMBATLOG_ICON_RAIDTARGET1			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET2			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET3			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_3.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET4			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_4.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET5			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_5.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET6			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_6.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET7			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7.blp:0|t";
-COMBATLOG_ICON_RAIDTARGET8			= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8.blp:0|t";
 
 --
 -- Default Event List
@@ -280,38 +230,38 @@ local gsub = _G.gsub;
 local strsub = _G.strsub;
 
 -- Make all the constants upvalues. This prevents the global environment lookup + table lookup each time we use one (and they're used a lot)
-local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE;
-local COMBATLOG_OBJECT_AFFILIATION_PARTY = COMBATLOG_OBJECT_AFFILIATION_PARTY;
-local COMBATLOG_OBJECT_AFFILIATION_RAID = COMBATLOG_OBJECT_AFFILIATION_RAID;
-local COMBATLOG_OBJECT_AFFILIATION_OUTSIDER = COMBATLOG_OBJECT_AFFILIATION_OUTSIDER;
-local COMBATLOG_OBJECT_AFFILIATION_MASK = COMBATLOG_OBJECT_AFFILIATION_MASK;
-local COMBATLOG_OBJECT_REACTION_FRIENDLY = COMBATLOG_OBJECT_REACTION_FRIENDLY;
-local COMBATLOG_OBJECT_REACTION_NEUTRAL = COMBATLOG_OBJECT_REACTION_NEUTRAL;
-local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE;
-local COMBATLOG_OBJECT_REACTION_MASK = COMBATLOG_OBJECT_REACTION_MASK;
-local COMBATLOG_OBJECT_CONTROL_PLAYER = COMBATLOG_OBJECT_CONTROL_PLAYER;
-local COMBATLOG_OBJECT_CONTROL_NPC = COMBATLOG_OBJECT_CONTROL_NPC;
-local COMBATLOG_OBJECT_CONTROL_MASK = COMBATLOG_OBJECT_CONTROL_MASK;
-local COMBATLOG_OBJECT_TYPE_PLAYER = COMBATLOG_OBJECT_TYPE_PLAYER;
-local COMBATLOG_OBJECT_TYPE_NPC = COMBATLOG_OBJECT_TYPE_NPC;
-local COMBATLOG_OBJECT_TYPE_PET = COMBATLOG_OBJECT_TYPE_PET;
-local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN;
-local COMBATLOG_OBJECT_TYPE_OBJECT = COMBATLOG_OBJECT_TYPE_OBJECT;
-local COMBATLOG_OBJECT_TYPE_MASK = COMBATLOG_OBJECT_TYPE_MASK;
-local COMBATLOG_OBJECT_TARGET = COMBATLOG_OBJECT_TARGET;
-local COMBATLOG_OBJECT_FOCUS = COMBATLOG_OBJECT_FOCUS;
-local COMBATLOG_OBJECT_MAINTANK = COMBATLOG_OBJECT_MAINTANK;
-local COMBATLOG_OBJECT_MAINASSIST = COMBATLOG_OBJECT_MAINASSIST;
-local COMBATLOG_OBJECT_RAIDTARGET1 = COMBATLOG_OBJECT_RAIDTARGET1;
-local COMBATLOG_OBJECT_RAIDTARGET2 = COMBATLOG_OBJECT_RAIDTARGET2;
-local COMBATLOG_OBJECT_RAIDTARGET3 = COMBATLOG_OBJECT_RAIDTARGET3;
-local COMBATLOG_OBJECT_RAIDTARGET4 = COMBATLOG_OBJECT_RAIDTARGET4;
-local COMBATLOG_OBJECT_RAIDTARGET5 = COMBATLOG_OBJECT_RAIDTARGET5;
-local COMBATLOG_OBJECT_RAIDTARGET6 = COMBATLOG_OBJECT_RAIDTARGET6;
-local COMBATLOG_OBJECT_RAIDTARGET7 = COMBATLOG_OBJECT_RAIDTARGET7;
-local COMBATLOG_OBJECT_RAIDTARGET8 = COMBATLOG_OBJECT_RAIDTARGET8;
-local COMBATLOG_OBJECT_NONE = COMBATLOG_OBJECT_NONE;
-local COMBATLOG_OBJECT_SPECIAL_MASK = COMBATLOG_OBJECT_SPECIAL_MASK;
+local COMBATLOG_OBJECT_AFFILIATION_MINE = Enum.CombatLogObject.AffiliationMine;
+local COMBATLOG_OBJECT_AFFILIATION_PARTY = Enum.CombatLogObject.AffiliationParty;
+local COMBATLOG_OBJECT_AFFILIATION_RAID = Enum.CombatLogObject.AffiliationRaid;
+local COMBATLOG_OBJECT_AFFILIATION_OUTSIDER = Enum.CombatLogObject.AffiliationOutsider;
+local COMBATLOG_OBJECT_REACTION_FRIENDLY = Enum.CombatLogObject.ReactionFriendly;
+local COMBATLOG_OBJECT_REACTION_NEUTRAL = Enum.CombatLogObject.ReactionNeutral;
+local COMBATLOG_OBJECT_REACTION_HOSTILE = Enum.CombatLogObject.ReactionHostile;
+local COMBATLOG_OBJECT_CONTROL_PLAYER = Enum.CombatLogObject.ControlPlayer;
+local COMBATLOG_OBJECT_CONTROL_NPC = Enum.CombatLogObject.ControlNpc;
+local COMBATLOG_OBJECT_TYPE_PLAYER = Enum.CombatLogObject.TypePlayer;
+local COMBATLOG_OBJECT_TYPE_NPC = Enum.CombatLogObject.TypeNpc;
+local COMBATLOG_OBJECT_TYPE_PET = Enum.CombatLogObject.TypePet;
+local COMBATLOG_OBJECT_TYPE_GUARDIAN = Enum.CombatLogObject.TypeGuardian;
+local COMBATLOG_OBJECT_TYPE_OBJECT = Enum.CombatLogObject.TypeObject;
+local COMBATLOG_OBJECT_TARGET = Enum.CombatLogObject.Target;
+local COMBATLOG_OBJECT_FOCUS = Enum.CombatLogObject.Focus;
+local COMBATLOG_OBJECT_MAINTANK = Enum.CombatLogObject.Maintank;
+local COMBATLOG_OBJECT_MAINASSIST = Enum.CombatLogObject.Mainassist;
+local COMBATLOG_OBJECT_NONE = Enum.CombatLogObject.None;
+local COMBATLOG_OBJECT_RAIDTARGET1 = Enum.CombatLogObjectTarget.Raidtarget1;
+local COMBATLOG_OBJECT_RAIDTARGET2 = Enum.CombatLogObjectTarget.Raidtarget2;
+local COMBATLOG_OBJECT_RAIDTARGET3 = Enum.CombatLogObjectTarget.Raidtarget3;
+local COMBATLOG_OBJECT_RAIDTARGET4 = Enum.CombatLogObjectTarget.Raidtarget4;
+local COMBATLOG_OBJECT_RAIDTARGET5 = Enum.CombatLogObjectTarget.Raidtarget5;
+local COMBATLOG_OBJECT_RAIDTARGET6 = Enum.CombatLogObjectTarget.Raidtarget6;
+local COMBATLOG_OBJECT_RAIDTARGET7 = Enum.CombatLogObjectTarget.Raidtarget7;
+local COMBATLOG_OBJECT_RAIDTARGET8 = Enum.CombatLogObjectTarget.Raidtarget8;
+local COMBATLOG_OBJECT_AFFILIATION_MASK = Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_AFFILIATION_MASK;
+local COMBATLOG_OBJECT_CONTROL_MASK = Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_CONTROL_MASK;
+local COMBATLOG_OBJECT_REACTION_MASK = Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_REACTION_MASK;
+local COMBATLOG_OBJECT_SPECIAL_MASK = Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_SPECIAL_MASK;
+local COMBATLOG_OBJECT_TYPE_MASK = Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_TYPE_MASK;
 local COMBATLOG_FILTER_ME = COMBATLOG_FILTER_ME;
 local COMBATLOG_FILTER_MINE = COMBATLOG_FILTER_MINE;
 local COMBATLOG_FILTER_MY_PET = COMBATLOG_FILTER_MY_PET;
@@ -333,21 +283,11 @@ local SCHOOL_MASK_FROST = SCHOOL_MASK_FROST;
 local SCHOOL_MASK_SHADOW = SCHOOL_MASK_SHADOW;
 local SCHOOL_MASK_ARCANE = SCHOOL_MASK_ARCANE;
 local COMBATLOG_LIMIT_PER_FRAME = COMBATLOG_LIMIT_PER_FRAME;
-local COMBATLOG_HIGHLIGHT_MULTIPLIER = COMBATLOG_HIGHLIGHT_MULTIPLIER;
 local COMBATLOG_DEFAULT_COLORS = COMBATLOG_DEFAULT_COLORS;
 local COMBATLOG_DEFAULT_SETTINGS = COMBATLOG_DEFAULT_SETTINGS;
-local COMBATLOG_ICON_RAIDTARGET1 = COMBATLOG_ICON_RAIDTARGET1;
-local COMBATLOG_ICON_RAIDTARGET2 = COMBATLOG_ICON_RAIDTARGET2;
-local COMBATLOG_ICON_RAIDTARGET3 = COMBATLOG_ICON_RAIDTARGET3;
-local COMBATLOG_ICON_RAIDTARGET4 = COMBATLOG_ICON_RAIDTARGET4;
-local COMBATLOG_ICON_RAIDTARGET5 = COMBATLOG_ICON_RAIDTARGET5;
-local COMBATLOG_ICON_RAIDTARGET6 = COMBATLOG_ICON_RAIDTARGET6;
-local COMBATLOG_ICON_RAIDTARGET7 = COMBATLOG_ICON_RAIDTARGET7;
-local COMBATLOG_ICON_RAIDTARGET8 = COMBATLOG_ICON_RAIDTARGET8;
 local COMBATLOG_EVENT_LIST = COMBATLOG_EVENT_LIST;
 
 local CombatLog_OnEvent		-- for later
-local CombatLog_Object_IsA = CombatLog_Object_IsA
 
 
 -- Create a dummy CombatLogQuickButtonFrame for line 803 of FloatingChatFrame.lua. It causes inappropriate show/hide behavior. Instead, we'll use our own frame display handling.
@@ -559,7 +499,7 @@ function Blizzard_CombatLog_ApplyFilters(config)
 	if ( not config ) then
 		return;
 	end
-	CombatLogResetFilter()
+	C_CombatLog.ClearEventFilters()
 
 	-- Loop over all associated filters
 	local eventList;
@@ -616,9 +556,9 @@ function Blizzard_CombatLog_ApplyFilters(config)
 
 		-- This is a HACK!!!  Need filters to be able to accept empty or zero sourceFlags or destFlags
 		if ( sourceFlags == 0 or destFlags == 0 ) then
-			CombatLogAddFilter("", COMBATLOG_FILTER_MINE, nil);
+			C_CombatLog.AddEventFilter("", COMBATLOG_FILTER_MINE, nil);
 		else
-			CombatLogAddFilter(eList, sourceFlags, destFlags);
+			C_CombatLog.AddEventFilter(eList, sourceFlags, destFlags);
 		end
 	end
 end
@@ -627,22 +567,19 @@ end
 -- Combat Log Repopulation Code
 --
 
--- Message Limit
-
-COMBATLOG_MESSAGE_LIMIT = 300;
-
 --
 -- Repopulate the combat log with message history
 --
 function Blizzard_CombatLog_Refilter()
-	local count = CombatLogGetNumEntries();
+	local count = C_CombatLog.GetEntryCount();
+	local limit = C_CombatLog.GetMessageLimit();
 
-	COMBATLOG:SetMaxLines(COMBATLOG_MESSAGE_LIMIT);
+	COMBATLOG:SetMaxLines(limit);
 
-	-- count should be between 1 and COMBATLOG_MESSAGE_LIMIT
-	count = max(1, min(count, COMBATLOG_MESSAGE_LIMIT));
+	-- count should be between 1 and limit
+	count = max(1, min(count, limit));
 
-	CombatLogSetCurrentEntry(0);
+	C_CombatLog.SeekToNewestEntry();
 
 	-- Clear the combat log
 	COMBATLOG:Clear();
@@ -664,13 +601,13 @@ end
 -- This is a single frame "step" in the refiltering process
 --
 function Blizzard_CombatLog_RefilterUpdate()
-	local valid = CombatLogGetCurrentEntry(); -- CombatLogAdvanceEntry(0);
+	local valid = C_CombatLog.GetCurrentEntryInfo();
 
 	-- Clear the combat log
 	local total = 0;
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do
 		-- Log to the window
-		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, C_CombatLog.GetCurrentEntryInfo());
 		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
 		if ( text ) then
 			COMBATLOG:BackFillMessage(text, r, g, b);
@@ -679,14 +616,14 @@ function Blizzard_CombatLog_RefilterUpdate()
 		-- count can be
 		--  positive to advance from oldest to newest
 		--  negative to advance from newest to oldest
-		valid = CombatLogAdvanceEntry(-1)
+		valid = C_CombatLog.SeekToPreviousEntry()
 		total = total + 1;
 	end
 
 	-- Show filtering progress bar
 	CombatLogQuickButtonFrameProgressBar:SetValue(CombatLogQuickButtonFrameProgressBar:GetValue() + total);
 
-	if ( not valid or (CombatLogQuickButtonFrameProgressBar:GetValue() >= COMBATLOG_MESSAGE_LIMIT) ) then
+	if ( not valid or (CombatLogQuickButtonFrameProgressBar:GetValue() >= C_CombatLog.GetMessageLimit()) ) then
 		CombatLogUpdateFrame.refiltering = false
 		CombatLogUpdateFrame:SetScript("OnUpdate", nil)
 		CombatLogQuickButtonFrameProgressBar:Hide();
@@ -1524,9 +1461,9 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 
 		if ( event == "EVERYTHING" ) then
 			-- Reset all filtering.
-			CombatLogResetFilter()
+			C_CombatLog.ClearEventFilters()
 			--Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.contextMenu[event];
-			CombatLogAddFilter(nil, nil, nil)
+			C_CombatLog.AddEventFilter(nil, nil, nil)
 			tinsert ( Blizzard_CombatLog_CurrentSettings.filters, {} );
 		end
 		if ( event == "INCOMING" or event == "BOTH" ) then
@@ -1593,8 +1530,8 @@ function Blizzard_CombatLog_QuickButtonRightClick(event, filterId)
 	elseif ( event == "RESET" ) then
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
 		Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[filterId];
-		--CombatLogAddFilter(nil, nil, COMBATLOG_FILTER_MINE)
-		--CombatLogAddFilter(nil, COMBATLOG_FILTER_MINE, nil)
+		--C_CombatLog.AddEventFilter(nil, nil, COMBATLOG_FILTER_MINE)
+		--C_CombatLog.AddEventFilter(nil, COMBATLOG_FILTER_MINE, nil)
 	else
 		-- Copy the current settings
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
@@ -1609,7 +1546,7 @@ function Blizzard_CombatLog_QuickButtonRightClick(event, filterId)
 		Blizzard_CombatLog_CurrentSettings.filters = {};  -- We want to be careful not to destroy the active data, so the user can reset
 
 		if ( event == "EVERYTHING" ) then
-			CombatLogAddFilter(nil, nil, nil)
+			C_CombatLog.AddEventFilter(nil, nil, nil)
 			table.insert ( Blizzard_CombatLog_CurrentSettings.filters, {} );
 		end
 
@@ -1672,315 +1609,6 @@ end
 Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
 Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
 local Blizzard_CombatLog_UnitTokens = {};
-
---[[
---	Converts 4 floats into FF code
---
---]]
-local function CombatLog_Color_FloatToText(r,g,b,a)
-	if ( type(r) == "table" ) then
-		r, g, b, a = r.r, r.g, r.b, r.a;
-	end
-	a = min(1, a or 1) * 255
-	r = min(1, r) * 255
-	g = min(1, g) * 255
-	b = min(1, b) * 255
-
-	-- local fmt = "%.2x";
-	return ("%.2x%.2x%.2x%.2x"):format(math_floor(a), math_floor(r), math_floor(g), math_floor(b))
-end
-_G.CombatLog_Color_FloatToText = CombatLog_Color_FloatToText
-
-
---
---	Gets the appropriate color for an event type
---
-
--- If this needs to return a new table per event (ie, the table gets modified), then just replace the "defaultColorArray" in the function with
--- a new table creation.
-local defaultColorArray = {a=1.0,r=0.5,g=0.5,b=0.5}
-local function CombatLog_Color_ColorArrayByEventType( event )
-	return Blizzard_CombatLog_CurrentSettings.colors.eventColoring[event] or defaultColorArray
-end
-_G.CombatLog_Color_ColorArrayByEventType = CombatLog_Color_ColorArrayByEventType
-
---
---	Gets the appropriate color for a unit type
---
-
-local function CombatLog_Color_ColorArrayByUnitType(unitFlags, settings)
-	local array = nil;
-	if ( not settings ) then
-		settings = Blizzard_CombatLog_CurrentSettings;
-	end
-	for mask,colorArray in pairs( settings.colors.unitColoring ) do
-		if ( CombatLog_Object_IsA (unitFlags, mask) )then
-			array = colorArray;
-			break;
-		end
-	end
-	return array or defaultColorArray
-end
-_G.CombatLog_Color_ColorArrayByUnitType = CombatLog_Color_ColorArrayByUnitType
-
---
---	Gets the appropriate color for a  spell school
---
-local function CombatLog_Color_ColorArrayBySchool(school, settings)
-	if ( not settings ) then
-		settings = Blizzard_CombatLog_CurrentSettings;
-	end
-	if ( not school ) then
-		return settings.colors.schoolColoring.default;
-	end
-
-	return settings.colors.schoolColoring[school] or settings.colors.defaults.spell;
-end
-_G.CombatLog_Color_ColorArrayBySchool = CombatLog_Color_ColorArrayBySchool
-
---
---	Gets the appropriate color for a  spell school
---
-
-local highlightColorTable = {}
-local function CombatLog_Color_HighlightColorArray(colorArray)
-	highlightColorTable.r = colorArray.r * COMBATLOG_HIGHLIGHT_MULTIPLIER;
-	highlightColorTable.g = colorArray.g * COMBATLOG_HIGHLIGHT_MULTIPLIER;
-	highlightColorTable.b = colorArray.b * COMBATLOG_HIGHLIGHT_MULTIPLIER;
-	highlightColorTable.a = colorArray.a;
-
-	return highlightColorTable
-end
-_G.CombatLog_Color_HighlightColorArray = CombatLog_Color_HighlightColorArray
-
---
--- Returns a string associated with a numeric power type
---
-
-local powerTypeToStringLookup =
-{
-	[Enum.PowerType.Mana] = MANA,
-	[Enum.PowerType.Rage] = RAGE,
-	[Enum.PowerType.Focus] = FOCUS,
-	[Enum.PowerType.Energy] = ENERGY,
-	[Enum.PowerType.Happiness] = HAPPINESS,
-	[Enum.PowerType.Runes] = RUNES,
-	[Enum.PowerType.RunicPower] = RUNIC_POWER,
-	[Enum.PowerType.SoulShards] = SOUL_SHARDS,
-	[Enum.PowerType.LunarPower] = LUNAR_POWER,
-	[Enum.PowerType.HolyPower] = HOLY_POWER,
-	[Enum.PowerType.Maelstrom] = MAELSTROM_POWER,
-	[Enum.PowerType.Chi] = CHI_POWER,
-	[Enum.PowerType.Insanity] = INSANITY_POWER,
-	[Enum.PowerType.ComboPoints] = COMBO_POINTS,
-	[Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
-	[Enum.PowerType.Fury] = FURY,
-	[Enum.PowerType.Pain] = PAIN,
-	[Enum.PowerType.Balance] = BALANCE,
-};
-
-local alternatePowerEnumValue = Enum.PowerType.Alternate; -- Upvalue for marginally faster access.
-
-local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
-	-- Previous behavior was specifically returning an empty string in this case
-	if ( not powerType ) then
-		return "";
-	end
-
-	if ( powerType == alternatePowerEnumValue and alternatePowerType ) then
-		local name, tooltip, cost = GetUnitPowerBarStringsByID(alternatePowerType);
-		return cost; --cost could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
-	end
-
-	-- Previous behavior was returning nil if powerType didn't match one of the explicitly checked types
-	return powerTypeToStringLookup[powerType];
-end
-_G.CombatLog_String_PowerType = CombatLog_String_PowerType
-
-local function CombatLog_String_SchoolString(school)
-	if ( not school or school == SCHOOL_MASK_NONE ) then
-		return STRING_SCHOOL_UNKNOWN;
-	end
-
-	local schoolString = C_Spell.GetSchoolString(school);
-	return schoolString or STRING_SCHOOL_UNKNOWN
-end
-_G.CombatLog_String_SchoolString = CombatLog_String_SchoolString
-
-local function CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overenergize )
-	local resultStr;
-	-- Result String formatting
-	local useOverhealing = overhealing and overhealing > 0;
-	local useOverkill = overkill and overkill > 0;
-	local useOverEnergize = overenergize and overenergize > 0;
-	local useAbsorbed = absorbed and absorbed > 0;
-	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed or overenergize ) then
-		resultStr = nil;
-
-		if ( resisted ) then
-			if ( resisted < 0 ) then	--Its really a vulnerability
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_VULNERABILITY, BreakUpLargeNumbers(-resisted));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_RESIST, BreakUpLargeNumbers(resisted));
-			end
-		end
-		if ( blocked ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_BLOCK, BreakUpLargeNumbers(blocked));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_BLOCK, BreakUpLargeNumbers(blocked));
-			end
-		end
-		if ( useAbsorbed ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_ABSORB, BreakUpLargeNumbers(absorbed));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_ABSORB, BreakUpLargeNumbers(absorbed));
-			end
-		end
-		if ( glancing ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_GLANCING;
-			else
-				resultStr = TEXT_MODE_A_STRING_RESULT_GLANCING;
-			end
-		end
-		if ( crushing ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_CRUSHING;
-			else
-				resultStr = TEXT_MODE_A_STRING_RESULT_CRUSHING;
-			end
-		end
-		if ( useOverhealing ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERHEALING, BreakUpLargeNumbers(overhealing));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERHEALING, BreakUpLargeNumbers(overhealing));
-			end
-		end
-		if ( useOverkill ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERKILLING, BreakUpLargeNumbers(overkill));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERKILLING, BreakUpLargeNumbers(overkill));
-			end
-		end
-		if ( useOverEnergize ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERENERGIZE, BreakUpLargeNumbers(overenergize));
-			else
-				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERENERGIZE, BreakUpLargeNumbers(overenergize));
-			end
-		end
-		if ( critical ) then
-			local critString = TEXT_MODE_A_STRING_RESULT_CRITICAL;
-			if ( spellId ) then
-				critString = TEXT_MODE_A_STRING_RESULT_CRITICAL_SPELL;
-			end
-			if ( resultStr ) then
-				resultStr = resultStr.." "..critString;
-			else
-				resultStr = critString;
-			end
-		end
-	end
-
-	return resultStr;
-end
-_G.CombatLog_String_DamageResultString = CombatLog_String_DamageResultString
-
---
--- Get the appropriate raid icon for a unit
---
-local function CombatLog_String_GetIcon ( unitFlags, direction )
-
-	-- Check for an appropriate icon for this unit
-	local raidTarget = bit_band(unitFlags, COMBATLOG_OBJECT_RAIDTARGET_MASK);
-	if ( raidTarget == 0 ) then
-		return "";
-	end
-
-	local iconString = "";
-	local icon = nil;
-	local iconBit = 0;
-
-	if ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET1 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET1;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET1;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET2 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET2;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET2;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET3 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET3;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET3;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET4 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET4;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET4;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET5 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET5;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET5;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET6 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET6;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET6;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET7 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET7;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET7;
-	elseif ( raidTarget == COMBATLOG_OBJECT_RAIDTARGET8 ) then
-		icon = COMBATLOG_ICON_RAIDTARGET8;
-		iconBit = COMBATLOG_OBJECT_RAIDTARGET8;
-	end
-
-	-- Insert the Raid Icon if it exists
-	if ( icon ) then
-		--
-		-- Insert a hyperlink for that icon
-
-		if ( direction == "source" ) then
-			iconString = format(TEXT_MODE_A_STRING_SOURCE_ICON, iconBit, icon);
-		else
-			iconString = format(TEXT_MODE_A_STRING_DEST_ICON, iconBit, icon);
-		end
-	end
-
-	return iconString;
-end
-_G.CombatLog_String_GetIcon = CombatLog_String_GetIcon
-
---
---	Gets the appropriate color for a unit type
---
---
-local function CombatLog_Color_ColorStringByUnitType(unitFlags)
-	local colorArray = CombatLog_Color_ColorArrayByUnitType(unitFlags);
-
-	return  CombatLog_Color_FloatToText(colorArray.r, colorArray.g, colorArray.b, colorArray.a )
-end
-_G.CombatLog_Color_ColorStringByUnitType = CombatLog_Color_ColorStringByUnitType
-
-
---[[
---	Gets the appropriate color for a school
---
---]]
-local function CombatLog_Color_ColorStringBySchool(school)
-	local colorArray = CombatLog_Color_ColorArrayBySchool(school);
-
-	return  CombatLog_Color_FloatToText(colorArray.r, colorArray.g, colorArray.b, colorArray.a )
-end
-_G.CombatLog_Color_ColorStringBySchool = CombatLog_Color_ColorStringBySchool
-
---
---	Gets the appropriate color for an event type
---
---
-local function CombatLog_Color_ColorStringByEventType(unitFlags)
-	local colorArray = CombatLog_Color_ColorArrayByEventType(unitFlags);
-
-	return  CombatLog_Color_FloatToText(colorArray.r, colorArray.g, colorArray.b, colorArray.a )
-end
-_G.CombatLog_Color_ColorStringByEventType = CombatLog_Color_ColorStringByEventType
-
 
 --[[
 --	Handles events and dumps them to the specified frame.
@@ -2067,10 +1695,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local unconsciousOnDeath = 0;
 
 	-- Generic disabling stuff
-	if ( not sourceName or CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
+	if ( not sourceName or C_CombatLog.DoesObjectMatchFilter(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
 		sourceEnabled = false;
 	end
-	if ( not destName or CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
+	if ( not destName or C_CombatLog.DoesObjectMatchFilter(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		destEnabled = false;
 	end
 
@@ -2088,7 +1716,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+		resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		if ( not resultStr ) then
 			resultEnabled = false;
@@ -2129,7 +1757,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+			resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2166,7 +1794,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overhealing, absorbed, critical = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+			resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2188,7 +1816,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overEnergize, powerType, alternatePowerType = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+			resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2205,7 +1833,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+					resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end
@@ -2223,7 +1851,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+				resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2238,7 +1866,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				amount, overhealing, absorbed, critical = select(4, ...);
 
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+				resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2276,7 +1904,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				valueType = 2;
 
 				-- Result String
-				resultStr = format(_G["ACTION_SPELL_PERIODIC_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType, amount, alternatePowerType), nil, extraAmount) --"($extraAmount $powerType Gained)"
+				resultStr = format(_G["ACTION_SPELL_PERIODIC_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLogUtil.GetPowerTypeString(powerType, amount, alternatePowerType), nil, extraAmount) --"($extraAmount $powerType Gained)"
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2293,7 +1921,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				-- Parse the result string
 				--resultStr = _G[textModeString .. "RESULT"];
 				--resultStr = gsub(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]);
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+				resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2367,7 +1995,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueType = 2;
 
 			-- Result String
-			resultStr = format(_G["ACTION_SPELL_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType, amount, alternatePowerType), nil, extraAmount)
+			resultStr = format(_G["ACTION_SPELL_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLogUtil.GetPowerTypeString(powerType, amount, alternatePowerType), nil, extraAmount)
 
 			-- Disable appropriate sections
 			if ( not resultStr ) then
@@ -2536,7 +2164,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize);
+			resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize);
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2576,7 +2204,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+		resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		-- Disable appropriate sections
 		if ( not resultStr ) then
@@ -2634,7 +2262,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		-- handle death recaps
 		if ( destGUID == UnitGUID("player") ) then
 			lineColor = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_MINE];
-			return GetDeathRecapLink(recapID), lineColor.r, lineColor.g, lineColor.b;
+			return C_DeathRecap.GetRecapLink(recapID), lineColor.r, lineColor.g, lineColor.b;
 		end
 
 		-- Swap Source with Dest
@@ -2659,7 +2287,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		nameIsNotSpell = true;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+		resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		-- Environmental Event
 		if ( settings.fullText and environmentalType ) then
@@ -2678,7 +2306,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
+		resultStr = CombatLogUtil.GenerateDamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		if ( not resultStr ) then
 			resultEnabled = false
@@ -2802,21 +2430,21 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Special changes for localization when not in full text mode
 	if ( not settings.fullText and COMBAT_LOG_UNIT_YOU_ENABLED == "1" ) then
 		-- Replace your name with "You";
-		if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
+		if ( sourceName and C_CombatLog.DoesObjectMatchFilter(sourceFlags, COMBATLOG_FILTER_MINE) ) then
 				sourceNameStr = UNIT_YOU_SOURCE;
 		end
-		if ( destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE) ) then
+		if ( destName and C_CombatLog.DoesObjectMatchFilter(destFlags, COMBATLOG_FILTER_MINE) ) then
 				destNameStr = UNIT_YOU_DEST;
 		end
 		-- Apply the possessive form to the source
 		if ( sourceName and spellName and _G[actionEvent.."_POSSESSIVE"] == "1" ) then
-			if ( sourceName and CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE) ) then
+			if ( sourceName and C_CombatLog.DoesObjectMatchFilter(sourceFlags, COMBATLOG_FILTER_MINE) ) then
 				sourceNameStr = UNIT_YOU_SOURCE_POSSESSIVE;
 			end
 		end
 		-- Apply the possessive form to the source
 		if ( destName and ( extraSpellName or itemName ) ) then
-			if ( destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE) ) then
+			if ( destName and C_CombatLog.DoesObjectMatchFilter(destFlags, COMBATLOG_FILTER_MINE) ) then
 				destNameStr = UNIT_YOU_DEST_POSSESSIVE;
 			end
 		end
@@ -2837,41 +2465,41 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Unit Icons
 	if ( settings.unitIcons ) then
 		if ( sourceName ) then
-			sourceIcon = CombatLog_String_GetIcon(sourceRaidFlags, "source");
+			sourceIcon = CombatLogUtil.GetUnitIcon(sourceRaidFlags, "source");
 		end
 		if ( destName ) then
-			destIcon = CombatLog_String_GetIcon(destRaidFlags, "dest");
+			destIcon = CombatLogUtil.GetUnitIcon(destRaidFlags, "dest");
 		end
 	end
 
 	-- Get the source color
 	if ( sourceName ) then
-		sourceColor	= CombatLog_Color_ColorStringByUnitType( sourceFlags );
+		sourceColor	= CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 	end
 
 	-- Get the dest color
 	if ( destName ) then
-		destColor	= CombatLog_Color_ColorStringByUnitType( destFlags );
+		destColor	= CombatLogUtil.GetColorByUnitType( destFlags, filterSettings );
 	end
 
 	-- Whole line coloring
 	if ( settings.lineColoring ) then
 		if ( settings.lineColorPriority == 3 or ( not sourceName and not destName) ) then
-			lineColor = CombatLog_Color_ColorArrayByEventType( event, filterSettings );
+			lineColor = CombatLogUtil.GetColorByEventType( event, filterSettings );
 		else
 			if ( ( settings.lineColorPriority == 1 and sourceName ) or not destName ) then
-				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+				lineColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 			elseif ( ( settings.lineColorPriority == 2 and destName ) ) then
-				lineColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
+				lineColor = CombatLogUtil.GetColorByUnitType( destFlags, filterSettings );
 			else
-				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+				lineColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 			end
 		end
 	end
 
 	-- Power Type
 	if ( powerType ) then
-		powerTypeString =  CombatLog_String_PowerType(powerType, amount, alternatePowerType);
+		powerTypeString =  CombatLogUtil.GetPowerTypeString(powerType, amount, alternatePowerType);
 		if powerTypeString == BALANCE_NEGATIVE_ENERGY then
 			amount = abs(amount);
 		end
@@ -2888,12 +2516,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				-- Do nothing
 			elseif ( settings.amountActorColoring ) then
 				if ( sourceName ) then
-					amountColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+					amountColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 				elseif ( destName ) then
-					amountColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
+					amountColor = CombatLogUtil.GetColorByUnitType( destFlags, filterSettings );
 				end
 			elseif ( settings.amountSchoolColoring ) then
-				amountColor = CombatLog_Color_ColorArrayBySchool(school, filterSettings);
+				amountColor = CombatLogUtil.GetColorBySchool(school, filterSettings);
 			else
 				amountColor = filterSettings.colors.defaults.damage;
 			end
@@ -2907,28 +2535,27 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			else
 				colorArray = amountColor;
 			end
-			amountColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			amountColor  = CombatLogUtil.HighlightColor (colorArray);
 		end
 
 		amount = BreakUpLargeNumbers(amount);
 		if ( amountColor ) then
-			amountColor = CombatLog_Color_FloatToText(amountColor);
-			amount = format("|c%s%s|r", amountColor, amount);
+			amount = CombatLogUtil.WrapTextInColor(amount, amountColor);
 		end
 
-		schoolString = CombatLog_String_SchoolString(school);
+		schoolString = CombatLogUtil.GetSpellSchoolString(school);
 		local schoolNameColor = nil;
 		-- Color school names
 		if ( settings.schoolNameColoring ) then
 			if ( settings.noMeleeSwingColoring and school == SCHOOL_MASK_PHYSICAL and not spellId )  then
 			elseif ( settings.schoolNameActorColoring ) then
 					if ( sourceName ) then
-						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+						schoolNameColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 					elseif ( destName ) then
-						schoolNameColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
+						schoolNameColor = CombatLogUtil.GetColorByUnitType( destFlags, filterSettings );
 					end
 			else
-				schoolNameColor = CombatLog_Color_ColorArrayBySchool( school, filterSettings );
+				schoolNameColor = CombatLogUtil.GetColorBySchool( school, filterSettings );
 			end
 		end
 		-- Highlighting
@@ -2939,11 +2566,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			else
 				colorArray = schoolNameColor;
 			end
-			schoolNameColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			schoolNameColor  = CombatLogUtil.HighlightColor (colorArray);
 		end
 		if ( schoolNameColor ) then
-			schoolNameColor = CombatLog_Color_FloatToText(schoolNameColor);
-			schoolString = format("|c%s%s|r", schoolNameColor, schoolString);
+			schoolString = CombatLogUtil.WrapTextInColor(schoolString, schoolNameColor);
 		end
 
 	end
@@ -2951,10 +2577,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Color source names
 	if ( settings.unitColoring ) then
 		if ( sourceName and settings.sourceColoring ) then
-			sourceNameStr = format("|c%s%s|r", sourceColor, sourceNameStr);
+			sourceNameStr = CombatLogUtil.WrapTextInColor(sourceNameStr, sourceColor);
 		end
 		if ( destName and settings.destColoring ) then
-			destNameStr = format("|c%s%s|r", destColor, destNameStr);
+			destNameStr = CombatLogUtil.WrapTextInColor(destNameStr, destColor);
 		end
 	end
 
@@ -2966,14 +2592,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 			if ( settings.actionActorColoring ) then
 				if ( sourceName ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+					actionColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 				elseif ( destName ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
+					actionColor = CombatLogUtil.GetColorByUnitType( destFlags, filterSettings );
 				end
 			elseif ( settings.actionSchoolColoring and spellSchool ) then
-				actionColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
+				actionColor = CombatLogUtil.GetColorBySchool( spellSchool, filterSettings );
 			else
-				actionColor = CombatLog_Color_ColorArrayByEventType(event);
+				actionColor = CombatLogUtil.GetColorByEventType(event, filterSettings);
 			end
 		-- Special option to only color "Miss" if there's no damage
 		elseif ( settings.missColoring ) then
@@ -2984,11 +2610,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				event ~= "SPELL_PERIODIC_DAMAGE" ) then
 
 				if ( settings.actionActorColoring ) then
-					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+					actionColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 				elseif ( settings.actionSchoolColoring ) then
-					actionColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
+					actionColor = CombatLogUtil.GetColorBySchool( spellSchool, filterSettings );
 				else
-					actionColor = CombatLog_Color_ColorArrayByEventType(event);
+					actionColor = CombatLogUtil.GetColorByEventType(event, filterSettings);
 				end
 
 			end
@@ -3002,12 +2628,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			else
 				colorArray = actionColor;
 			end
-			actionColor = CombatLog_Color_HighlightColorArray (colorArray);
+			actionColor = CombatLogUtil.HighlightColor (colorArray);
 		end
 
 		if ( actionColor ) then
-			actionColor = CombatLog_Color_FloatToText(actionColor);
-			actionStr = format("|c%s%s|r", actionColor, actionStr);
+			actionStr = CombatLogUtil.WrapTextInColor(actionStr, actionColor);
 		end
 
 	end
@@ -3017,9 +2642,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		-- Color ability names
 		if ( settings.abilityColoring ) then
 			if ( settings.abilityActorColoring ) then
-				spellAbilityColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+				spellAbilityColor = CombatLogUtil.GetColorByUnitType( sourceFlags, filterSettings );
 			elseif ( settings.abilitySchoolColoring ) then
-				spellAbilityColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
+				spellAbilityColor = CombatLogUtil.GetColorBySchool( spellSchool, filterSettings );
 			else
 				if ( spellSchool ) then
 					spellAbilityColor = filterSettings.colors.defaults.spell;
@@ -3035,14 +2660,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			else
 				colorArray = spellAbilityColor;
 			end
-			spellAbilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			spellAbilityColor  = CombatLogUtil.HighlightColor (colorArray);
 		end
 		if ( spellAbilityColor ) then
-			spellAbilityColor = CombatLog_Color_FloatToText(spellAbilityColor);
 			if ( itemId ) then
 				spellNameStr = spellName;
 			else
-				spellNameStr = format("|c%s%s|r", spellAbilityColor, spellName);
+				spellNameStr = CombatLogUtil.WrapTextInColor(spellName, spellAbilityColor);
 			end
 		end
 	end
@@ -3054,12 +2678,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		if ( settings.abilityColoring ) then
 
 			if ( settings.abilitySchoolColoring ) then
-				extraAbilityColor = CombatLog_Color_ColorArrayBySchool( extraSpellSchool, filterSettings );
+				extraAbilityColor = CombatLogUtil.GetColorBySchool( extraSpellSchool, filterSettings );
 			else
 				if ( extraSpellSchool ) then
-					extraAbilityColor = CombatLog_Color_ColorArrayBySchool( SCHOOL_MASK_HOLY, filterSettings );
+					extraAbilityColor = CombatLogUtil.GetColorBySchool( SCHOOL_MASK_HOLY, filterSettings );
 				else
-					extraAbilityColor = CombatLog_Color_ColorArrayBySchool( nil, filterSettings );
+					extraAbilityColor = CombatLogUtil.GetColorBySchool( nil, filterSettings );
 				end
 			end
 		end
@@ -3071,18 +2695,17 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			else
 				colorArray = extraAbilityColor;
 			end
-			extraAbilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			extraAbilityColor  = CombatLogUtil.HighlightColor (colorArray);
 		end
 		if ( extraAbilityColor ) then
-			extraAbilityColor = CombatLog_Color_FloatToText(extraAbilityColor);
-			extraSpellNameStr = format("|c%s%s|r", extraAbilityColor, extraSpellName);
+			extraSpellNameStr = CombatLogUtil.WrapTextInColor(extraSpellName, extraAbilityColor);
 		end
 	end
 
 	-- Whole line highlighting
 	if ( settings.lineHighlighting ) then
 		if ( filterSettings.colors.highlightedEvents[event] ) then
-			lineColor = CombatLog_Color_HighlightColorArray (lineColor);
+			lineColor = CombatLogUtil.HighlightColor (lineColor);
 		end
 	end
 
@@ -3245,7 +2868,7 @@ local original_OnEvent = COMBATLOG:GetScript("OnEvent");
 
 COMBATLOG:SetScript("OnEvent", function(self, event, ...)
 		if ( event == "COMBAT_LOG_EVENT" ) then
-			CombatLog_AddEvent(CombatLogGetCurrentEventInfo());
+			CombatLog_AddEvent(C_CombatLog.GetCurrentEventInfo());
 		else
 			original_OnEvent(self, event, ...);
 		end
@@ -3267,7 +2890,6 @@ function Blizzard_CombatLog_QuickButtonFrame_OnEvent(self, event, ...)
 		if ( arg1 == "Blizzard_CombatLog" ) then
 			Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters or Blizzard_CombatLog_Filters
 			Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
-			_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
 
 			Blizzard_CombatLog_QuickButton_OnClick(	Blizzard_CombatLog_Filters.currentFilter );
 			Blizzard_CombatLog_Refilter();
@@ -3326,10 +2948,11 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 
 	-- Hook the frame's hide/show events so we can hide/show the quick buttons as appropriate.
 	local show, hide = COMBATLOG:GetScript("OnShow"), COMBATLOG:GetScript("OnHide")
+	COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
 	COMBATLOG:SetScript("OnShow", function(self)
 		CombatLogQuickButtonFrame_Custom:Show()
 
-		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
+		C_CombatLog.SetFilteredEventsEnabled(true);
 
 		Blizzard_CombatLog_QuickButton_OnClick(Blizzard_CombatLog_Filters.currentFilter);
 		return show and show(self)
@@ -3337,14 +2960,15 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	COMBATLOG:SetScript("OnHide", function(self)
 		CombatLogQuickButtonFrame_Custom:Hide()
 
-		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
+		C_CombatLog.SetFilteredEventsEnabled(false);
 		return hide and hide(self)
 	end)
 	if ( COMBATLOG:IsShown() ) then
-		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
+		C_CombatLog.SetFilteredEventsEnabled(true);
 	end
 
 	FCF_SetButtonSide(COMBATLOG, COMBATLOG.buttonSide, true);
+	FloatingChatFrame_UpdateBackgroundAnchors(COMBATLOG);
 end
 
 local oldFCF_DockUpdate = FCF_DockUpdate;
@@ -3356,34 +2980,6 @@ end
 --
 -- Combat Log Global Functions
 --
-
---[[
---
---  Returns the correct {} code for the combat log bit
---
---  args:
--- 		bit - a bit exactly equal to a raid target icon.
---]]
-local function Blizzard_CombatLog_BitToBraceCode(bit)
-	if ( bit == COMBATLOG_OBJECT_RAIDTARGET1 ) then
-		return "{"..strlower(RAID_TARGET_1).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET2 ) then
-		return "{"..strlower(RAID_TARGET_2).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET3 ) then
-		return "{"..strlower(RAID_TARGET_3).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET4 ) then
-		return "{"..strlower(RAID_TARGET_4).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET5 ) then
-		return "{"..strlower(RAID_TARGET_5).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET6 ) then
-		return "{"..strlower(RAID_TARGET_6).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET7 ) then
-		return "{"..strlower(RAID_TARGET_7).."}";
-	elseif ( bit == COMBATLOG_OBJECT_RAIDTARGET8 ) then
-		return "{"..strlower(RAID_TARGET_8).."}";
-	end
-	return "";
-end
 
 -- The format of the data describing context menu entries was originally written for the legacy menus
 -- but is being funneled into the updated menu system to minimize any changes.
@@ -3426,9 +3022,9 @@ LinkUtil.RegisterLinkHandler(LinkTypes.RaidTargetIcon, function(link, text, link
 	-- Show Popup Menu
 	if( contextData.button == "RightButton") then
 		-- need to fix this to be actual texture
-		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
+		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateUnitMenu(CombatLogUtil.GetRaidTargetBraceCode(tonumber(bit)), nil, tonumber(bit)));
 	elseif ( IsModifiedClick("CHATLINK") ) then
-		ChatFrameUtil.InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
+		ChatFrameUtil.InsertLink (CombatLogUtil.GetRaidTargetBraceCode(tonumber(bit)));
 	end
 end);
 

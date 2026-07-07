@@ -60,3 +60,5 @@ function CreateFrameFactory()
 	frameFactory:Init();
 	return frameFactory;
 end
+
+AddSourceLocationExclude("FrameFactory.lua");

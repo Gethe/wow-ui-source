@@ -47,6 +47,7 @@ ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnG
 ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["ENCOUNTER_EVENT"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["INSTANCE_CHAT"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["INSTANCE_CHAT_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };

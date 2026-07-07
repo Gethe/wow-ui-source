@@ -2,6 +2,7 @@ local SimpleMaskTextureAPI =
 {
 	Name = "SimpleMaskTextureAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,9 @@ local SimpleMaskTextureAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -141,8 +141,8 @@ function GMChatFrame_OnShow(self)
 	table.wipe(self.lastGM);
 	if ( self.lastGMForCVar ) then
 		SetCVar("lastTalkedToGM", self.lastGMForCVar);
-		GMChatFrameEditBox:SetAttribute("tellTarget", self.lastGMForCVar);
-		GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
+		GMChatFrameEditBox:SetTellTarget(self.lastGMForCVar);
+		GMChatFrameEditBox:SetChatType("WHISPER");
 	end
 
 	if ( GetCVarBool("chatMouseScroll") ) then

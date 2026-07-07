@@ -85,7 +85,7 @@ AuctionSort["bidder_buyout"] = {
 	{ column =  "duration",	reverse = false	},
 	{ column =  "buyout",	reverse = false	},
 };
- 
+
 AuctionSort["bidder_status"] = {
 	{ column =  "quantity",	reverse = true	},
 	{ column =  "name",		reverse = false	},

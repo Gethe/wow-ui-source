@@ -77,7 +77,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" function="AutoComplete_OnLoad"/>
-			<OnShow inherit="prepend" function="AutoComplete_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

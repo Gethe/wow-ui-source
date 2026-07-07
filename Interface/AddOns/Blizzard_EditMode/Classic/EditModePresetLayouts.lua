@@ -284,8 +284,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
@@ -304,8 +304,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
@@ -341,6 +341,18 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			point = "TOPRIGHT",
 			relativeTo = "UIParent",
 			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
 			offsetY = 0,
 		},
@@ -421,7 +433,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			point = "BOTTOMLEFT",
 			relativeTo = "MainMenuBarArtFrame",
 			relativePoint = "BOTTOM",
-			offsetX = 40,
+			offsetX = MICRO_MENU_ANCHOR_OFFSET_X,
 			offsetY = 2,
 		},
 	},
@@ -431,13 +443,13 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
 			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
 			[Enum.EditModeBagsSetting.Size] = 5,
-			[Enum.EditModeBagsSetting.BagSlotPadding] = 5,
+			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_SETTINGS_SLOT_PADDING,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
 			relativeTo = "MainMenuBarArtFrame",
 			relativePoint = "BOTTOMRIGHT",
-			offsetX = -6,
+			offsetX = BAGS_ANCHOR_OFFSET_X,
 			offsetY = 2,
 		},
 	},
@@ -445,6 +457,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -456,6 +469,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -477,6 +491,31 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativePoint = "RIGHT",
 			offsetX = 0,
 			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] = {
+		settings = {
+			[Enum.EditModeVehicleSeatIndicatorSetting.Size] = 10,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.TotemActionBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = -240,
+			offsetY = 46,
 		},
 	},
 };
@@ -754,8 +793,8 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
@@ -774,8 +813,8 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
@@ -811,6 +850,18 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			point = "TOPRIGHT",
 			relativeTo = "UIParent",
 			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
 			offsetY = 0,
 		},
@@ -891,7 +942,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			point = "BOTTOMLEFT",
 			relativeTo = "MainMenuBarArtFrame",
 			relativePoint = "BOTTOM",
-			offsetX = 40,
+			offsetX = MICRO_MENU_ANCHOR_OFFSET_X,
 			offsetY = 2,
 		},
 	},
@@ -901,13 +952,13 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
 			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
 			[Enum.EditModeBagsSetting.Size] = 5,
-			[Enum.EditModeBagsSetting.BagSlotPadding] = 5,
+			[Enum.EditModeBagsSetting.BagSlotPadding] = BAGS_SETTINGS_SLOT_PADDING,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
 			relativeTo = "MainMenuBarArtFrame",
 			relativePoint = "BOTTOMRIGHT",
-			offsetX = -6,
+			offsetX = BAGS_ANCHOR_OFFSET_X,
 			offsetY = 2,
 		},
 	},
@@ -915,6 +966,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -926,6 +978,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 		},
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
+				[Enum.EditModeStatusTrackingBarSetting.Size] = 10,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -949,4 +1002,30 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] = {
+		settings = {
+			[Enum.EditModeVehicleSeatIndicatorSetting.Size] = 10,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.TotemActionBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = -240,
+			offsetY = 46,
+		},
+	},
+
 };

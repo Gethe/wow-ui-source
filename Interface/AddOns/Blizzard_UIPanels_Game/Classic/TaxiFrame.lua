@@ -155,7 +155,7 @@ function TaxiNodeOnButtonEnter(button)
 	end
 	
 	if ( type == "REACHABLE" ) then
-		SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
+		GameTooltip_AddMoneyLine(GameTooltip, TaxiNodeCost(button:GetID()));
 
 		-- Show the path to this node
 		if ( numRoutes > NUM_TAXI_ROUTES ) then

@@ -1,6 +1,6 @@
 
 function InputBoxInstructions_OnTextChanged(self)
-	self.Instructions:SetShown(self:GetText() == "")
+	self.Instructions:SetShown(self:GetText() == "");
 end
 
 function InputBoxInstructions_UpdateColorForEnabledState(self, color)
@@ -19,11 +19,7 @@ end
 
 function SearchBoxTemplate_OnLoad(self)
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-	self:SetTextInsets(16, 20, 0, 0);
 	self.Instructions:SetText(self.instructionText);
-	self.Instructions:ClearAllPoints();
-	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
-	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
 end
 
 function SearchBoxTemplate_OnEditFocusLost(self)
@@ -61,21 +57,21 @@ end
 
 ClearButtonMixin = {};
 function ClearButtonMixin:OnEnter()
-	self.texture:SetAlpha(1.0);
+	self.Icon:SetAlpha(1.0);
 end
 
 function ClearButtonMixin:OnLeave()
-	self.texture:SetAlpha(0.5);
+	self.Icon:SetAlpha(0.5);
 end
 
 function ClearButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
-		self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
 	end
 end
 
 function ClearButtonMixin:OnMouseUp()
-	self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -3);
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -3);
 end
 
 function ClearButtonMixin:OnClick()

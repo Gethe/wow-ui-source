@@ -1,0 +1,6 @@
+## Title: Blizzard Code of Conduct
+## AllowLoad: game
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLBase, Blizzard_ChatFrameBase
+
+Blizzard_CodeOfConduct.lua

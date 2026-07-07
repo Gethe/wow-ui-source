@@ -46,3 +46,34 @@ StaticPopupDialogs["REALM_IS_LOCKED"] = {
 		RealmList_OnConnectToRealm();
 	end
 };
+
+local function DoCharacterRename(dialog)
+	local characterID = GetCharIDFromIndex(CharacterSelect.selectedIndex);
+	local newName = dialog:GetEditBoxText();
+	RenameCharacter(characterID, newName);
+end
+
+StaticPopupDialogs["FORCE_RENAME_CHARACTER"] = {
+	button1 = OKAY,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 12,
+	showAlert = 1,
+	OnShow = function(dialog, data)
+		dialog:GetEditBox():SetFocus();
+	end,
+	OnHide = function(dialog, data)
+		dialog:GetEditBox():SetText("");
+	end,
+	OnAccept = function(dialog, data)
+		DoCharacterRename(dialog);
+	end,
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		DoCharacterRename(dialog);
+		dialog:Hide();
+	end,
+	EditBoxOnEscapePressed = function(editBox, data)
+		editBox:GetParent():Hide();
+	end,
+};

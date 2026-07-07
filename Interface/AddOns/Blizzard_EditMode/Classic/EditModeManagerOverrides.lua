@@ -20,6 +20,12 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
 	self.settingsCheckButtons.StanceBar.shouldHide = false;
 	self.settingsCheckButtons.PetActionBar.shouldHide = false;
 	self.settingsCheckButtons.PossessActionBar.shouldHide = false;
+
+	self:PrepareSettingCheckButtonVisibilityForClassicFlavor();
+end
+
+function EditModeAccountSettingsMixin:PrepareSettingCheckButtonVisibilityForClassicFlavor()
+	-- Overridden
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameSetup()
@@ -40,6 +46,12 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
 	self:RefreshPetFrame();
+
+	self:EditModeFrameSetupForClassicFlavor();
+end
+
+function EditModeAccountSettingsMixin:EditModeFrameSetupForClassicFlavor()
+	-- Overridden
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()

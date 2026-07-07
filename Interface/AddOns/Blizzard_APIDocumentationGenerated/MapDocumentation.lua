@@ -3,6 +3,7 @@ local Map =
 	Name = "MapUI",
 	Type = "System",
 	Namespace = "C_Map",
+	Environment = "All",
 
 	Functions =
 	{
@@ -398,21 +399,25 @@ local Map =
 			Name = "NewWmoChunk",
 			Type = "Event",
 			LiteralName = "NEW_WMO_CHUNK",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChanged",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedIndoors",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_INDOORS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedNewArea",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_NEW_AREA",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -490,6 +495,9 @@ local Map =
 				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

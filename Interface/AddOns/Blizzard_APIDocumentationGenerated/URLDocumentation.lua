@@ -2,6 +2,7 @@ local URL =
 {
 	Name = "URL",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,9 @@ local URL =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

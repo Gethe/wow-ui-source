@@ -120,6 +120,9 @@ local ContentTrackingTypes =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ContentTrackingTypes);

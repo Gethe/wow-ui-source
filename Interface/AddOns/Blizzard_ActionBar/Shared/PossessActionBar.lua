@@ -9,7 +9,7 @@ end
 
 function PossessActionBarMixin:Update()
 	if ( not MainActionBar.busy and not UnitHasVehicleUI("player") ) then	--Don't change while we're animating out MainActionBar for vehicle UI
-		if ( IsPossessBarVisible() ) then
+		if ( C_ActionBar.IsPossessBarVisible() ) then
 			if ( not self:IsShown() ) then
 				self:Show();
 			end

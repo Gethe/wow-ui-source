@@ -2,6 +2,7 @@ local FrameAPICharacterModelBase =
 {
 	Name = "FrameAPICharacterModelBase",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -258,6 +259,9 @@ local FrameAPICharacterModelBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

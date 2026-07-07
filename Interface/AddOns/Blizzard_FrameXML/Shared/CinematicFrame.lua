@@ -101,7 +101,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 
 		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 
-		MovieFrame_OnCinematicStopped();
+		MovieFrame:OnCinematicStopped();
 		EventRegistry:TriggerEvent("CinematicFrame.CinematicStopped");
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
 		if (self:IsShown()) then

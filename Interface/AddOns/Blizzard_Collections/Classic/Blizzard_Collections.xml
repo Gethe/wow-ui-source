@@ -47,7 +47,7 @@
 				self:SetTitle(COLLECTIONS);
 				PanelTemplates_SetNumTabs(self, 5);
 
-				SetPortraitToTexture(self.portrait, "Interface\\CHARACTERFRAME\\TempPortrait");
+				self.portrait:SetTexture("Interface\\CHARACTERFRAME\\TempPortrait");
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
 			</OnLoad>
 			<OnShow function="CollectionsJournal_OnShow"/>

@@ -2,6 +2,7 @@ local MinimapFrameAPI =
 {
 	Name = "MinimapFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -142,6 +143,9 @@ local MinimapFrameAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

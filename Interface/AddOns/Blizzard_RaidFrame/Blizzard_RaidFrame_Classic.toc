@@ -4,5 +4,6 @@
 ## Dependencies: Blizzard_UIPanels_Game, Blizzard_UnitFrame
 ## AllowLoadGameType: classic
 Classic\RaidFrame.lua
-Classic\RaidFrame.xml
+Classic\RaidFrame.xml [AllowLoadGameType vanilla, tbc]
+Wrath\RaidFrame.xml [AllowLoadGameType wrath, cata, mists]
 

@@ -12,7 +12,9 @@ Classic\SocialOverrides.lua
 Classic\ColorblindOverrides.lua
 Classic\KeybindingsOverrides.lua
 Classic\AccessibilityOverrides.lua
+Classic\NameplatesOverrides.lua
 Controls.xml
+Interface.lua
 Interface.xml
 Combat.lua
 ActionBars.lua
@@ -21,5 +23,9 @@ Keybindings.xml
 # NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of this lua file.
 Accessibility.lua
 Classic\Colorblind.xml
-TextToSpeech.xml
+CombatAudioAlertUtil.lua
+AudioAssist.lua
+AudioAssist.xml
 Subtitles.xml
+Nameplates.lua
+Nameplates.xml

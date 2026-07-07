@@ -1,13 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<StatusBar name="CastingBarFrameTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true">
+	<StatusBar name="CastingBarFrameAnimsFXTemplate" inherits="CastingBarFrameAnimsTemplate" virtual="true">
+		<!-- Classic has a much more limited set of FX than Mainline. -->
+		<!-- Additionally, in Classic, this Flash is used by both the standard and small cast bars. -->
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.08"/>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+	<StatusBar name="CastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="classicStyleCastBar" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size x="256" y="64"/>
 					<Anchors>
@@ -15,7 +27,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size x="256" y="64"/>
 					<Anchors>
@@ -47,6 +59,7 @@
 					<Anchors>
 						<Anchor point="TOP" x="0" y="28"/>
 					</Anchors>
+					<Color r="1.0" g="0.7" b="0.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -61,15 +74,18 @@
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
-	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true">
+	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" virtual="true">
 		<Size x="150" y="10"/>
+		<KeyValues>
+			<KeyValue key="classicStyleCastBar" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="0" y="56"/>
 					<Anchors>
@@ -78,7 +94,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size x="0" y="56"/>
 					<Anchors>
@@ -113,6 +129,7 @@
 						<Anchor point="TOPLEFT" x="-23" y="23"/>
 						<Anchor point="TOPRIGHT" x="23" y="23"/>
 					</Anchors>
+					<Color r="1.0" g="0.7" b="0.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -139,6 +156,19 @@
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
 			<OnShow method="OnShow"/>
+		</Scripts>
+	</StatusBar>
+	
+	<StatusBar name="OverlayPlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate" parent="UIParent" hidden="true" frameStrata="HIGH" mixin="OverlayPlayerCastingBarMixin">
+		<Size x="195" y="13"/>
+		<KeyValues>
+			<KeyValue key="playCastFX" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

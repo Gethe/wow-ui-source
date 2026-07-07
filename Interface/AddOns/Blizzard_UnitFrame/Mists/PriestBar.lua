@@ -20,7 +20,7 @@ function PriestBarMixin:OnLoad()
 end
 
 function PriestBarMixin:OnEvent(event, arg1, arg2)
-	if ( (event == "UNIT_POWER_FREQUENT") and (arg1 == self:GetParent().unit) ) then
+	if ( (event == "UNIT_POWER_FREQUENT") and (arg1 == PlayerFrame.unit) ) then
 		if ( arg2 == "SHADOW_ORBS" ) then
 			self:Update();
 		end
@@ -80,7 +80,7 @@ function PriestBarMixin:CheckAndShow()
 end
 
 function PriestBarMixin:Update()
-	local numOrbs = UnitPower( PriestBarFrame:GetParent().unit, Enum.PowerType.ShadowOrbs );
+	local numOrbs = UnitPower( PlayerFrame.unit, Enum.PowerType.ShadowOrbs );
 	for i = 1, PRIEST_BAR_NUM_ORBS do
 		local orb = _G["PriestBarFrameOrb"..i];
 		local shouldShow = i <= numOrbs;

@@ -82,9 +82,9 @@ function DropdownButtonMixin:OnLoad_Intrinsic()
 	self:EnableMouseWheel(false);
 	self:RegisterForMouse("LeftButtonDown", "LeftButtonUp");
 
-	self.onMenuClosedCallback = function(menu)
+	self.onMenuClosedCallback = function(menu, closeReason)
 		self.menu = nil;
-		self:OnMenuClosed(menu);
+		self:OnMenuClosed(menu, closeReason);
 	end
 
 	local anchor = AnchorUtil.CreateAnchor(self.menuPoint, self, self.menuRelativePoint, self.menuPointX, self.menuPointY);
@@ -317,10 +317,10 @@ function DropdownButtonMixin:OnMenuOpened(menu)
 	self:TriggerEvent(DropdownButtonMixin.Event.OnMenuOpen, self);
 end
 
-function DropdownButtonMixin:OnMenuClosed(menu)
+function DropdownButtonMixin:OnMenuClosed(menu, closeReason)
 	PlaySound(MenuVariants.GetDropdownCloseSoundKit());
 
-	self:TriggerEvent(DropdownButtonMixin.Event.OnMenuClose, self);
+	self:TriggerEvent(DropdownButtonMixin.Event.OnMenuClose, self, menu, closeReason);
 end
 
 function DropdownButtonMixin:UpdateSelections(selections)
@@ -356,6 +356,12 @@ function DropdownButtonMixin:Rotate(forward)
 	else
 		self:Decrement();
 	end
+end
+
+function DropdownButtonMixin:HasAnyRadioDescriptions()
+	return MenuUtil.TraverseMenu(self:GetMenuDescription(), function(description)
+		return description:IsRadio();
+	end);
 end
 
 function DropdownButtonMixin:Increment()

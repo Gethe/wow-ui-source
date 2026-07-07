@@ -89,11 +89,16 @@ end
 MicroMenuMixin = {};
 
 function MicroMenuMixin:OnLoad()
+	self:ApplyMicroMenuOverrides();
 	self:InitializeButtons();
 	self:SetNormalScale(1);
 end
 
 function MicroMenuMixin:GenerateButtonInfos()
+	-- Override function.
+end
+
+function MicroMenuMixin:ApplyMicroMenuOverrides()
 	-- Override function.
 end
 
@@ -128,6 +133,8 @@ function MicroMenuMixin:AddButton(button)
 	self.numButtons = (self.numButtons or 0) + 1;
 	button.layoutIndex = self.numButtons;
 	button:SetParent(self);
+	button:PostAddButtonCallback();
+
 	self.stride = self.isStacked and math.floor(self.numButtons / 2) or self.numButtons;
 	self:MarkDirty();
 end

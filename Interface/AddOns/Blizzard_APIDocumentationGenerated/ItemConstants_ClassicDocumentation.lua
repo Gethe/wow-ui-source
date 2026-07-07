@@ -24,9 +24,9 @@ local ItemConstants_Classic =
 		{
 			Name = "ReforgeFailedReason",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "None", Type = "ReforgeFailedReason", EnumValue = 0 },
@@ -34,7 +34,6 @@ local ItemConstants_Classic =
 				{ Name = "ReforgeInsufficientSrcStat", Type = "ReforgeFailedReason", EnumValue = 2 },
 				{ Name = "ReforgeAlreadyHasDstStat", Type = "ReforgeFailedReason", EnumValue = 3 },
 				{ Name = "ReforgeItemTooLowLevel", Type = "ReforgeFailedReason", EnumValue = 4 },
-				{ Name = "NumReforgeFailedReason", Type = "ReforgeFailedReason", EnumValue = 5 },
 			},
 		},
 		{
@@ -61,6 +60,9 @@ local ItemConstants_Classic =
 				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

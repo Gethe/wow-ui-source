@@ -42,6 +42,7 @@ function MainMenu_GetMovieDownloadProgress(id)
 end
 
 local ipTypes = { "IPv4", "IPv6" }
+local protocolTypes = { "TCP", "UDP" }
 
 function MainMenuBarPerformanceBarFrame_UseDetailedTooltip(self)
 	-- Off by default. Override if needed.
@@ -75,6 +76,12 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		end
 		GameTooltip:AddLine(" ");
 	end
+
+	-- Communication Protocol
+	local protocolHome, protocolWorld = GetProtocolTypes();
+	string = format(MAINMENUBAR_COMMUNICATION_PROTOCOL_LABEL, protocolTypes[protocolHome or 0] or UNKNOWN,  protocolTypes[protocolWorld or 0] or UNKNOWN)
+	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
+	GameTooltip:AddLine(" ");
 
 	-- framerate
 	string = format(MAINMENUBAR_FPS_LABEL, GetFramerate());

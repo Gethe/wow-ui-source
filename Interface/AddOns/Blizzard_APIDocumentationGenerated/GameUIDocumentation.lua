@@ -2,6 +2,7 @@ local GameUI =
 {
 	Name = "GameUI",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -30,6 +31,9 @@ local GameUI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

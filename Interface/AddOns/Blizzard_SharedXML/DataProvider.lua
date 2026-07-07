@@ -145,6 +145,17 @@ function DataProviderMixin:Remove(...)
 	return removedIndex;
 end
 
+function DataProviderMixin:RemoveAllByPredicate(predicate)
+	local index = self:GetSize();
+	while index >= 1 do
+		local elementData = self:Find(index);
+		if predicate(elementData) then
+			self:RemoveIndex(index);
+		end
+		index = index - 1;
+	end
+end
+
 function DataProviderMixin:RemoveByPredicate(predicate)
 	local index, elementData = self:FindByPredicate(predicate);
 	if elementData then
@@ -194,15 +205,20 @@ function DataProviderMixin:HasSortComparator()
 	return self.sortComparator ~= nil;
 end
 
-function DataProviderMixin:Sort()
-	if self.sortComparator then
-		table.sort(self.collection, self.sortComparator);
+function DataProviderMixin:Sort(sortComparator)
+	local comparator = self.sortComparator or sortComparator;
+	if comparator then
+		table.sort(self.collection, comparator);
 		self:TriggerEvent(DataProviderMixin.Event.OnSort);
 	end
 end
 
 function DataProviderMixin:Find(index)
 	return self.collection[index];
+end
+
+function DataProviderMixin:FindLast()
+	return self.collection[self:GetSize()];
 end
 
 function DataProviderMixin:FindIndex(elementData)

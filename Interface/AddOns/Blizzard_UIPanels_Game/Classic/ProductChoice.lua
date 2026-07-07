@@ -20,7 +20,9 @@ function ProductChoiceFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_LOGIN" ) then
 		ProductChoiceFrame_ShowAlerts(self);
 	elseif ( event == "PRODUCT_ASSIGN_TO_TARGET_FAILED" ) then
-		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+		local errorCode = ...;
+		local errorText = VASAssignErrorData_GetMessage(errorCode);
+		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", errorText);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if ( ProductChoiceFrame.Inset.NoTakeBacksies.Dialog.ItemPreview:IsVisible() ) then
 			ProductChoiceFrame_RefreshConfirmationModel(ProductChoiceFrame.Inset.NoTakeBacksies, true);
@@ -124,7 +126,7 @@ function ProductChoiceFrameItem_SetUpDisplay(self, data, forceUpdate)
 		self.Shadow:Hide();
 		self.ModelScene:Hide();
 		self.Shadow:Hide();
-		SetPortraitToTexture(self.Icon, data.textureName);
+		self.Icon:SetTexture(data.textureName);
 		self.Icon:Show();
 		self.IconBorder:Show();
 	end
@@ -216,7 +218,7 @@ function ProductChoiceFrame_ClaimItem()
 			ProductChoiceFrame_ShowAlerts(ProductChoiceFrame, false, true);
 		end
 	else
-		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", BLIZZARD_STORE_INTERNAL_ERROR);
 	end
 	ProductChoiceFrame.data = nil;
 	ProductChoiceFrame:Hide();

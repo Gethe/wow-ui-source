@@ -17,10 +17,10 @@ TradeSkillTypePrefix = {
 
 -- Used to denote skill types outside of Colorblind mode
 TradeSkillTypeColor = { };
-TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };       
-TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };       
-TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };   
-TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };         
+TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };
+TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };
+TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };
+TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };
 TradeSkillTypeColor["subheader"]= { r = 1.00, g = 0.82, b = 0,	font = "GameFontNormalLeft" };
 
@@ -44,7 +44,7 @@ function TradeSkillFrame_OnShow(self)
 	end
 	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
 	TradeSkillListScrollFrameScrollBar.doNotHide = true;
-	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
+	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0);
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
 	SetPortraitTexture(TradeSkillFramePortrait, "player");
 	TradeSkillFrame_Update(self);
@@ -368,12 +368,11 @@ function TradeSkillFrame_Update(self)
 					skillButton.isHighlighted = false;
 				end
 			end
-			
 		else
 			skillButton:Hide();
 		end
 	end
-	
+
 	-- Set the expand/collapse all button texture
 	local numHeaders = 0;
 	local notExpanded = 0;
@@ -497,7 +496,7 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillSkillIconCount:SetText("");
 	end
-	
+
 	-- Reagents
 	local numReagents = GetTradeSkillNumReagents(id);
 
@@ -538,7 +537,7 @@ function TradeSkillFrame_SetSelection(id)
 	if ( (numReagents > 0) and (mod(numReagents, 2) == 0) ) then
 		reagentToAnchorTo = reagentToAnchorTo - 1;
 	end
-	
+
 	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
 		_G["TradeSkillReagent"..i]:Hide();
 	end

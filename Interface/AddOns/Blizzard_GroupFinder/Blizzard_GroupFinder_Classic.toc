@@ -26,3 +26,6 @@ Shared\RaidFinder.xml
 Shared\ScenarioFinder_Shared.lua
 Classic\ScenarioFinder.lua
 Shared\ScenarioFinder.xml
+Classic\LFGEye.lua
+Classic\LFGFrame_Minimap.lua
+Classic\LFGFrame_Minimap.xml

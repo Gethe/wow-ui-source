@@ -322,6 +322,10 @@ end
 
 -- TimeManagerClockButton
 function TimeManagerClockButton_OnLoad(self)
+	if ( CLOCK_Y_OVERRIDE ) then
+		TimeManagerClockButton:SetPoint("CENTER", select(4, TimeManagerClockButton:GetPoint(1)), CLOCK_Y_OVERRIDE);
+	end
+
 	if ( CLOCK_TICKER_Y_OVERRIDE ) then
 		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint(1)), CLOCK_TICKER_Y_OVERRIDE);
 	end

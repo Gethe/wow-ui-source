@@ -1,19 +1,21 @@
+local assert = assert;
+local ContainsIf = ContainsIf;
+local FindInTableIf = FindInTableIf;
+local ipairs = ipairs;
+local ipairs_reverse = ipairs_reverse;
+local issecretvalue = issecretvalue;
+local Mixin = Mixin;
+local next = next;
+local pairs = pairs;
+local rawget = rawget;
 local securecallfunction = securecallfunction;
 local secureexecuterange = secureexecuterange;
 local setmetatable = setmetatable;
-local pairs = pairs;
-local ipairs = ipairs;
-local next = next;
-local ipairs_reverse = ipairs_reverse;
-local rawget = rawget;
+local tContains = tContains;
+local tCount = table.count;
 local tDeleteItem = tDeleteItem;
 local tinsert = table.insert;
 local tremove = table.remove;
-local tContains = tContains;
-local FindInTableIf = FindInTableIf;
-local ContainsIf = ContainsIf;
-local CountTable = CountTable;
-local Mixin = Mixin;
 local wipe = wipe;
 
 -- Secure types are expected to be used by Blizzard code to prevent taint propagation
@@ -29,6 +31,8 @@ do
 	end
 
 	function SecureMap:SetValue(key, value)
+		assert(not issecretvalue(key), "attempted to store a secret key in a SecureMap");
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureMap");
 		self.tbl[key] = value;
 	end
 
@@ -45,7 +49,8 @@ do
 	end
 
 	function SecureMap:GetSize()
-		return securecallfunction(CountTable, self.tbl);
+		local count = securecallfunction(tCount, self.tbl);
+		return count;
 	end
 
 	function SecureMap:IsEmpty()
@@ -106,6 +111,9 @@ do
 	end
 
 	function SecureArray:Insert(value, index)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureArray");
+		assert(not issecretvalue(index), "attempted to store a secret index in a SecureArray");
+
 		if index == nil then
 			tinsert(self.tbl, value);
 		else
@@ -223,6 +231,7 @@ function SecureTypes.CreateSecureStack()
 	local SecureStack = {};
 
 	function SecureStack:Push(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureStack");
 		tinsert(tbl, value);
 	end
 
@@ -241,17 +250,21 @@ do
 	local SecureValue = {};
 	SecureValue.__index = SecureValue;
 
+	local function GetValueSecure(self)
+		return self.value;
+	end
+
 	function SecureValue:GetValue()
-		return securecallfunction(function()
-			return self.value;
-		end);
+		return securecallfunction(GetValueSecure, self);
 	end
 
 	function SecureValue:SetValue(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureValue");
 		self.value = value;
 	end
 
 	function SecureTypes.CreateSecureValue(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureValue");
 		local tbl = {value = value};
 		setmetatable(tbl, SecureValue);
 		return tbl;
@@ -262,13 +275,16 @@ do
 	local SecureNumber = {};
 	SecureNumber.__index = SecureNumber;
 
+	local function GetValueSecure(self)
+		return self.value;
+	end
+
 	function SecureNumber:GetValue()
-		return securecallfunction(function()
-			return self.value;
-		end);
+		return securecallfunction(GetValueSecure, self);
 	end
 
 	function SecureNumber:SetValue(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureNumber");
 		self.value = value;
 	end
 
@@ -289,6 +305,7 @@ do
 	end
 
 	function SecureTypes.CreateSecureNumber(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureNumber");
 		local tbl = {value = value or 0};
 		setmetatable(tbl, SecureNumber);
 		return tbl;
@@ -299,14 +316,21 @@ do
 	local SecureBoolean = {};
 	SecureBoolean.__index = SecureBoolean;
 
+	local function GetValueSecure(self)
+		return self.value;
+	end
+
 	function SecureBoolean:GetValue()
-		return securecallfunction(function()
-			return self.value;
-		end);
+		return securecallfunction(GetValueSecure, self);
 	end
 
 	function SecureBoolean:SetValue(value)
+		assert(not issecretvalue(value), "attempted to store a secret value in a SecureBoolean");
 		self.value = value;
+	end
+
+	function SecureBoolean:ToggleValue()
+		self:SetValue(not self:GetValue());
 	end
 
 	function SecureBoolean:IsTrue()
@@ -314,6 +338,7 @@ do
 	end
 
 	function SecureTypes.CreateSecureBoolean(v)
+		assert(not issecretvalue(v), "attempted to store a secret value in a SecureBoolean");
 		local tbl = {value = (v == true)};
 		setmetatable(tbl, SecureBoolean);
 		return tbl;
@@ -329,6 +354,8 @@ do
 	end
 
 	function SecureFunction:SetFunction(func)
+		assert(not issecretvalue(func), "attempted to store a secret value in a SecureFunction");
+
 		if func then
 			self.wrapper = function(...)
 				return func(...);
@@ -338,10 +365,12 @@ do
 		end
 	end
 
+	local function GetWrapperSecure(self)
+		return self.wrapper;
+	end
+
 	function SecureFunction:GetWrapperSecure()
-		return securecallfunction(function()
-			return self.wrapper;
-		end);
+		return securecallfunction(GetWrapperSecure, self);
 	end
 
 	function SecureFunction:CallFunction(...)

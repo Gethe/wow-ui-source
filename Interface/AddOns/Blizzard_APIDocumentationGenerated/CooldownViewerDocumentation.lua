@@ -3,6 +3,7 @@ local CooldownViewer =
 	Name = "CooldownViewer",
 	Type = "System",
 	Namespace = "C_CooldownViewer",
+	Environment = "All",
 
 	Functions =
 	{
@@ -46,6 +47,20 @@ local CooldownViewer =
 			},
 		},
 		{
+			Name = "GetValidAlertTypes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "cooldownID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "validAlertTypes", Type = "table", InnerType = "CooldownViewerAlertEventType", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCooldownViewerAvailable",
 			Type = "Function",
 
@@ -72,11 +87,13 @@ local CooldownViewer =
 			Name = "CooldownViewerDataLoaded",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_DATA_LOADED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CooldownViewerSpellOverrideUpdated",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "baseSpellID", Type = "number", Nilable = false, Documentation = { "The base spell that is either being overridden or losing its override spell." } },
@@ -87,6 +104,7 @@ local CooldownViewer =
 			Name = "CooldownViewerTableHotfixed",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_TABLE_HOTFIXED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -97,6 +115,7 @@ local CooldownViewer =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "cooldownID", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
 				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = true },
@@ -106,8 +125,12 @@ local CooldownViewer =
 				{ Name = "charges", Type = "bool", Nilable = false },
 				{ Name = "isKnown", Type = "bool", Nilable = false },
 				{ Name = "flags", Type = "CooldownSetSpellFlags", Nilable = false },
+				{ Name = "category", Type = "CooldownViewerCategory", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

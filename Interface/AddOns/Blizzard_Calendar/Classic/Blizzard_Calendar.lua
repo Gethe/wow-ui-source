@@ -2286,7 +2286,7 @@ function GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventB
 			dayButton:LockHighlight();
 		end);
 
-		rootDescription:AddMenuReleasedCallback(function(menuFrame)
+		rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
 			if CalendarFrame.selectedDayButton ~= dayButton then
 				dayButton:UnlockHighlight();
 			end
@@ -3156,7 +3156,7 @@ function CalendarViewEventInviteListButton_OnClick(self, button)
 					self:LockHighlight();
 				end);
 
-				rootDescription:AddMenuReleasedCallback(function(menuFrame)
+				rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
 					if CalendarFrame.selectedEventButton ~= self then
 						self:UnlockHighlight();
 					end
@@ -3911,7 +3911,7 @@ function CalendarCreateEventInviteListButton_OnClick(self, button)
 				self:LockHighlight();
 			end);
 
-			rootDescription:AddMenuReleasedCallback(function(menuFrame)
+			rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
 				if CalendarFrame.selectedEventButton ~= self then
 					self:UnlockHighlight();
 				end

@@ -2,6 +2,7 @@ local SimpleAnimTranslationAPI =
 {
 	Name = "SimpleAnimTranslationAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -36,6 +37,9 @@ local SimpleAnimTranslationAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

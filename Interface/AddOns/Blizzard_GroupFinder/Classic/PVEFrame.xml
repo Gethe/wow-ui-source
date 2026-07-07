@@ -34,6 +34,15 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" x="0" y="0" />
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 				<FontString name="$parentName" inherits="GameFontNormalLarge" parentKey="name" spacing="2" justifyH="LEFT">
 					<Size x="106" y="0"/>
 					<Anchors>

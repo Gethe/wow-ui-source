@@ -3,6 +3,7 @@ local FogOfWar =
 	Name = "FogOfWar",
 	Type = "System",
 	Namespace = "C_FogOfWar",
+	Environment = "All",
 
 	Functions =
 	{
@@ -25,6 +26,9 @@ local FogOfWar =
 				{ Name = "maskScalar", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

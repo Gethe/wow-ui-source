@@ -40,10 +40,10 @@ local AccountConstants =
 			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "AccountDataUpdateSuccess", Type = "AccountDataUpdateStatus", EnumValue = 0 },
-				{ Name = "AccountDataUpdateFailed", Type = "AccountDataUpdateStatus", EnumValue = 1 },
-				{ Name = "AccountDataUpdateCorrupt", Type = "AccountDataUpdateStatus", EnumValue = 2 },
-				{ Name = "AccountDataUpdateToobig", Type = "AccountDataUpdateStatus", EnumValue = 3 },
+				{ Name = "Success", Type = "AccountDataUpdateStatus", EnumValue = 0 },
+				{ Name = "Failed", Type = "AccountDataUpdateStatus", EnumValue = 1 },
+				{ Name = "Corrupt", Type = "AccountDataUpdateStatus", EnumValue = 2 },
+				{ Name = "Toobig", Type = "AccountDataUpdateStatus", EnumValue = 3 },
 			},
 		},
 		{
@@ -86,9 +86,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 65,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 64,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -156,14 +156,16 @@ local AccountConstants =
 				{ Name = "WarbandSceneCollection", Type = "AccountTransType", EnumValue = 62 },
 				{ Name = "EventRecords", Type = "AccountTransType", EnumValue = 63 },
 				{ Name = "HousingItem", Type = "AccountTransType", EnumValue = 64 },
+				{ Name = "TransmogOutfitCollection", Type = "AccountTransType", EnumValue = 65 },
+				{ Name = "HouseInitiativeFavor", Type = "AccountTransType", EnumValue = 66 },
 			},
 		},
 		{
 			Name = "BnetAccountFlag",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 524288,
+			MaxValue = 1048576,
 			Fields =
 			{
 				{ Name = "None", Type = "BnetAccountFlag", EnumValue = 0 },
@@ -187,6 +189,7 @@ local AccountConstants =
 				{ Name = "IsLegacy", Type = "BnetAccountFlag", EnumValue = 131072 },
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
+				{ Name = "MopQuestLogFlagsFixUp", Type = "BnetAccountFlag", EnumValue = 1048576 },
 			},
 		},
 		{
@@ -247,25 +250,28 @@ local AccountConstants =
 			Type = "Enumeration",
 			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 13,
 			Fields =
 			{
-				{ Name = "ItemCollectionNone", Type = "ItemCollectionType", EnumValue = 0 },
-				{ Name = "ItemCollectionToy", Type = "ItemCollectionType", EnumValue = 1 },
-				{ Name = "ItemCollectionHeirloom", Type = "ItemCollectionType", EnumValue = 2 },
-				{ Name = "ItemCollectionTransmog", Type = "ItemCollectionType", EnumValue = 3 },
-				{ Name = "ItemCollectionTransmogSetFavorite", Type = "ItemCollectionType", EnumValue = 4 },
-				{ Name = "ItemCollectionRuneforgeLegendaryAbility", Type = "ItemCollectionType", EnumValue = 5 },
-				{ Name = "ItemCollectionTransmogIllusion", Type = "ItemCollectionType", EnumValue = 6 },
-				{ Name = "ItemCollectionWarbandScene", Type = "ItemCollectionType", EnumValue = 7 },
-				{ Name = "ItemCollectionRoom", Type = "ItemCollectionType", EnumValue = 8 },
-				{ Name = "ItemCollectionExteriorFixture", Type = "ItemCollectionType", EnumValue = 9 },
-				{ Name = "ItemCollectionRoomTheme", Type = "ItemCollectionType", EnumValue = 10 },
-				{ Name = "ItemCollectionRoomMaterial", Type = "ItemCollectionType", EnumValue = 11 },
-				{ Name = "ItemCollectionTransmogOutfit", Type = "ItemCollectionType", EnumValue = 12 },
-				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 12 },
+				{ Name = "None", Type = "ItemCollectionType", EnumValue = 0 },
+				{ Name = "Toy", Type = "ItemCollectionType", EnumValue = 1 },
+				{ Name = "Heirloom", Type = "ItemCollectionType", EnumValue = 2 },
+				{ Name = "Transmog", Type = "ItemCollectionType", EnumValue = 3 },
+				{ Name = "TransmogSetFavorite", Type = "ItemCollectionType", EnumValue = 4 },
+				{ Name = "RuneforgeLegendaryAbility", Type = "ItemCollectionType", EnumValue = 5 },
+				{ Name = "TransmogIllusion", Type = "ItemCollectionType", EnumValue = 6 },
+				{ Name = "WarbandScene", Type = "ItemCollectionType", EnumValue = 7 },
+				{ Name = "Room", Type = "ItemCollectionType", EnumValue = 8 },
+				{ Name = "ExteriorFixture", Type = "ItemCollectionType", EnumValue = 9 },
+				{ Name = "RoomTheme", Type = "ItemCollectionType", EnumValue = 10 },
+				{ Name = "RoomMaterial", Type = "ItemCollectionType", EnumValue = 11 },
+				{ Name = "TransmogOutfit", Type = "ItemCollectionType", EnumValue = 12 },
+				{ Name = "HouseType", Type = "ItemCollectionType", EnumValue = 13 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

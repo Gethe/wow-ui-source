@@ -88,6 +88,9 @@ local PowerTypeConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PowerTypeConstants);

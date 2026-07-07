@@ -2,6 +2,7 @@ local SimpleAnimVertexColorAPI =
 {
 	Name = "SimpleAnimVertexColorAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -56,6 +57,9 @@ local SimpleAnimVertexColorAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -2,6 +2,7 @@ local Title =
 {
 	Name = "Title",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,9 @@ local Title =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

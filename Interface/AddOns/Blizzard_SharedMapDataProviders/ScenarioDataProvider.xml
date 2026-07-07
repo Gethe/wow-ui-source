@@ -8,8 +8,7 @@
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" file="Interface\Minimap\ObjectIconsAtlas">
-					<Size x="16" y="16"/>
+				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

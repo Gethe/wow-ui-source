@@ -178,6 +178,7 @@
 	<Button name="TimeManagerClockButton" parent="MinimapBackdrop">
 		<Size x="60" y="28"/>
 		<Anchors>
+			<!-- Reanchored in Lua. -->
 			<Anchor point="CENTER" x="0" y="-68"/>
 		</Anchors>
 		<HitRectInsets>
@@ -192,7 +193,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="TimeManagerClockTicker" inherits="WhiteNormalNumberFont">
 					<Anchors>
-						<Anchor point="CENTER" x="1" y="0"/>
+						<Anchor point="CENTER" x="3" y="1.5"/>
 					</Anchors>
 				</FontString>
 				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true" setAllPoints="true">

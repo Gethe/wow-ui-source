@@ -3,6 +3,7 @@ local TransmogSets =
 	Name = "TransmogrifySets",
 	Type = "System",
 	Namespace = "C_TransmogSets",
+	Environment = "All",
 
 	Functions =
 	{
@@ -51,6 +52,15 @@ local TransmogSets =
 			Returns =
 			{
 				{ Name = "sources", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAvailableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
 			},
 		},
 		{
@@ -208,6 +218,21 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetSetsFilter",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -297,6 +322,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "HasAvailableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAvailableSets", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasUsableSets",
 			Type = "Function",
 
@@ -357,6 +391,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "IsUsingDefaultSetsFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultSetsFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
 
@@ -368,6 +411,10 @@ local TransmogSets =
 		},
 		{
 			Name = "SetDefaultBaseSetsFilters",
+			Type = "Function",
+		},
+		{
+			Name = "SetDefaultSetsFilters",
 			Type = "Function",
 		},
 		{
@@ -410,6 +457,16 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "SetSetsFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTransmogSetsClassFilter",
 			Type = "Function",
 
@@ -446,6 +503,7 @@ local TransmogSets =
 				{ Name = "favorite", Type = "bool", Nilable = false },
 				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
 				{ Name = "validForCharacter", Type = "bool", Nilable = false },
+				{ Name = "grantAsPrecedingVariant", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -457,6 +515,9 @@ local TransmogSets =
 				{ Name = "collected", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

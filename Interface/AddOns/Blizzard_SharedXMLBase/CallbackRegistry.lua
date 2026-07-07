@@ -6,38 +6,61 @@ local error = error;
 local pairs = pairs;
 local rawset = rawset;
 local next = next;
+local GetOrCreateTableEntry = GetOrCreateTableEntry;
+
+local CallbackType = EnumUtil.MakeEnum("Closure", "Function");
+
+local function IsCallbackTypeValid(callbackType)
+	return callbackType == CallbackType.Closure or callbackType == CallbackType.Function;
+end
 
 -- Callbacks can be registered without an owner as a matter of convenience. Generally this is fine when you never
 -- intend to release the callback.
 local generateOwnerID = CreateCounter();
 
 local InsertEventAttribute = "insert-secure-event";
+local CreateDeferredCallbackAttribute = "create-deferred-callback";
+local CreateDeferredCallbackResultAttribute = "create-deferred-callback-result";
 local AttributeDelegate = CreateFrame("FRAME");
 AttributeDelegate:SetForbidden();
 AttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, value)
 	if attribute == InsertEventAttribute then
 		local registry, event = securecallfunction(unpack, value);
 		if type(event) ~= "string" then
-			error("AttributeDelegate OnAttributeChanged 'event' requires string type.")
+			error("CallbackRegistry InsertEventAttribute 'event' requires string type.")
 		end
 		for callbackType, callbackTable in pairs(registry:GetCallbackTables()) do
 			if not callbackTable[event] then
 				rawset(callbackTable, event, {});
 			end
 		end
+	elseif attribute == CreateDeferredCallbackAttribute then
+		local registry, event, callbackType = securecallfunction(unpack, value);
+		if type(event) ~= "string" then
+			error("CallbackRegistry CreateDeferredCallbackAttribute 'event' requires string type.")
+		end
+		if not IsCallbackTypeValid(callbackType) then
+			error("CallbackRegistry CreateDeferredCallbackAttribute 'callbackType' is invalid.")
+		end
+		local deferrals = GetOrCreateTableEntry(registry.deferredCallbacks, event);
+		local callbacks = GetOrCreateTableEntry(deferrals, callbackType);
+		AttributeDelegate:SetAttribute(CreateDeferredCallbackResultAttribute, callbacks);
 	end
 end);
 
-local CallbackType = EnumUtil.MakeEnum("Closure", "Function");
 
 CallbackRegistryMixin = {};
 
 function CallbackRegistryMixin:OnLoad()
 	local callbackTables = {};
 	for callbackType, value in pairs(CallbackType) do
-		callbackTables[value] = {};
+		local callbacks = {};
+		callbackTables[value] = callbacks;
 	end
 	self.callbackTables = callbackTables;
+
+	self.executingEvents = {};
+	self.deferredCallbacks = {};
 end
 
 function CallbackRegistryMixin:SetUndefinedEventsAllowed(allowed)
@@ -55,6 +78,19 @@ end
 function CallbackRegistryMixin:GetCallbacksByEvent(callbackType, event)
 	local callbackTable = self:GetCallbackTable(callbackType);
 	return callbackTable[event];
+end
+
+-- Returns either the underlying callback table or a temporary table depending
+-- on if the event is currently being dispatched. The callbacks stored in the
+-- temporary table will be merged into the underlying callback table after the
+-- dispatch is complete.
+function CallbackRegistryMixin:GetMutableCallbacksByEvent(callbackType, event)
+	if securecallfunction(rawget, self.executingEvents, event) == nil then
+		return self:GetCallbacksByEvent(callbackType, event);
+	end
+
+	AttributeDelegate:SetAttribute(CreateDeferredCallbackAttribute, {self, event, callbackType});
+	return AttributeDelegate:GetAttribute(CreateDeferredCallbackResultAttribute);
 end
 
 function CallbackRegistryMixin:HasRegistrantsForEvent(event)
@@ -89,17 +125,16 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 	-- Taint barrier for inserting event key into callback tables.
 	self:SecureInsertEvent(event);
 
-	for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
-		local callbacks = callbackTable[event];
-		callbacks[owner] = nil;
-	end
-
+	-- An owner can have a single callback per event. The simpliest way to ensure
+	-- this is to remove all callbacks for the owner prior to new registration.
+	self:UnregisterCallback(event, owner);
+	
 	local count = select("#", ...);
 	if count > 0 then
-		local callbacks = self:GetCallbacksByEvent(CallbackType.Closure, event);
+		local callbacks = self:GetMutableCallbacksByEvent(CallbackType.Closure, event);
 		callbacks[owner] = GenerateClosure(func, owner, ...);
 	else
-		local callbacks = self:GetCallbacksByEvent(CallbackType.Function, event);
+		local callbacks = self:GetMutableCallbacksByEvent(CallbackType.Function, event);
 		callbacks[owner] = func;
 	end
 
@@ -122,6 +157,30 @@ function CallbackRegistryMixin:RegisterCallbackWithHandle(event, func, owner, ..
 	return CreateCallbackHandle(self, event, owner);
 end
 
+function CallbackRegistryMixin:ReconcileDeferredCallbacks(event, closures, funcs)
+	self:CopyDeferredCallbacks(CallbackType.Closure, event, closures);
+	self:CopyDeferredCallbacks(CallbackType.Function, event, funcs);
+	self.deferredCallbacks[event] = nil;
+end
+
+function CallbackRegistryMixin:CopyDeferredCallbacks(callbackType, event, target)
+	local deferrals = self.deferredCallbacks[event];
+	if deferrals == nil then
+		return;
+	end
+
+	local callbacks = deferrals[callbackType];
+	if callbacks == nil then
+		return;
+	end
+
+	local function ExecuteAssignCallback(owner, callback)
+		target[owner] = callback;
+	end
+
+	secureexecuterange(callbacks, ExecuteAssignCallback);
+end
+
 function CallbackRegistryMixin:TriggerEvent(event, ...)
 	if type(event) ~= "string" then
 		error("CallbackRegistryMixin:TriggerEvent 'event' requires string type.");
@@ -129,22 +188,37 @@ function CallbackRegistryMixin:TriggerEvent(event, ...)
 		error(string.format("CallbackRegistryMixin:TriggerEvent event '%s' doesn't exist.", event));
 	end
 
+	-- TriggerEvent appears to need to support reentrant calls for now.
+	local count = (self.executingEvents[event] or 0) + 1;
+
+	-- Set before invoking any callback so a reentrant call does not
+	-- attempt to call ReconcileDeferredCallbacks.
+	self.executingEvents[event] = count;
+
 	local closures = self:GetCallbacksByEvent(CallbackType.Closure, event);
 	if closures then
-		local function CallbackRegistryExecuteClosurePair(owner, closure, ...)
+		local function ExecuteClosurePair(owner, closure, ...)
 			securecallfunction(closure, ...);
 		end
 
-		secureexecuterange(closures, CallbackRegistryExecuteClosurePair, ...);
+		secureexecuterange(closures, ExecuteClosurePair, ...);
 	end
 
 	local funcs = self:GetCallbacksByEvent(CallbackType.Function, event);
 	if funcs then
-		local function CallbackRegistryExecuteOwnerPair(owner, func, ...)
+		local function ExecuteOwnerPair(owner, func, ...)
 			securecallfunction(func, owner, ...);
 		end
 
-		secureexecuterange(funcs, CallbackRegistryExecuteOwnerPair, ...);
+		secureexecuterange(funcs, ExecuteOwnerPair, ...);
+	end
+
+	-- The local count is the only value we care about for the purpose
+	-- of flushing the event key and reconciling the deferred callbacks.
+	if count == 1 then
+		self.executingEvents[event] = nil;
+
+		self:ReconcileDeferredCallbacks(event, closures, funcs);
 	end
 end
 
@@ -156,35 +230,52 @@ function CallbackRegistryMixin:UnregisterCallback(event, owner)
 	end
 
 	for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
+		-- Only assign nil if the owner is present in the table, otherwise
+		-- its insertion could cause a rehash during iteration by secureexecuterange.
 		local callbacks = callbackTable[event];
-		if callbacks then
+		if callbacks and callbacks[owner] then
+			callbacks[owner] = nil;
+		end
+	end
+
+	local deferrals = self.deferredCallbacks[event];
+	if deferrals then
+		for callbackType, callbacks in pairs(deferrals) do
+			-- Freely assign nil because deferredCallbacks are not subject
+			-- to secureexecuterange table mutilation stress disorder.
 			callbacks[owner] = nil;
 		end
 	end
 end
 
-function CallbackRegistryMixin:UnregisterEvents(eventTable)
-	if eventTable then
-		for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
-			for event in pairs(eventTable) do
-				if callbackTable[event] then
-					callbackTable[event] = nil;
-				end
-			end
-		end
-	else
-		for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
-			wipe(callbackTable);
-		end
-	end	
+function CallbackRegistryMixin:UnregisterEvents()
+	for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
+		wipe(callbackTable);
+	end
 end
 
-function CallbackRegistryMixin:GenerateCallbackEvents(events)
+function CallbackRegistryMixin:UnregisterEventsByEventTable(eventTable)
+	if type(eventTable) ~= "table" then
+		error("CallbackRegistryMixin:UnregisterEventsByEventTable 'eventTable' requires table type.");
+	end
+
+	for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
+		for event in pairs(eventTable) do
+			callbackTable[event] = nil;
+		end
+	end
+end
+
+function CallbackRegistryMixin:GenerateCallbackEvents(eventTable)
 	if not self.Event then
 		self.Event = {};
 	end
-	
-	for eventIndex, eventName in ipairs(events) do
+
+	if type(eventTable) ~= "table" then
+		error("CallbackRegistryMixin:GenerateCallbackEvents 'eventTable' requires table type.");
+	end
+
+	for eventIndex, eventName in ipairs(eventTable) do
 		if self.Event[eventName] then
 			error(string.format("CallbackRegistryMixin:GenerateCallbackEvents: event '%s' already exists.", eventName));
 		end

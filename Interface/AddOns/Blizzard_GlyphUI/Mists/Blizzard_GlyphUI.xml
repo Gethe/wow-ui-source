@@ -149,6 +149,15 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.glyph" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.glyph" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="glyph"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentHighlight" file="Interface\TalentFrame\glyph-main" alphaMode="ADD" parentKey="highlight">
@@ -278,6 +287,15 @@
 						<Anchor point="CENTER" relativeTo="$parentSpecRing" x="1" y="1"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.specIcon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.specIcon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="specIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>

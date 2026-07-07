@@ -8,9 +8,9 @@ local function GetAddOnDependenciesRecursive(addonName, dependencyArray, depende
 	local dependencies = { C_AddOns.GetAddOnDependencies(addonName) };
 	for _, depAddonName in ipairs(dependencies) do
 		if not dependencyTable[depAddonName] then
+			dependencyTable[depAddonName] = true;
 			GetAddOnDependenciesRecursive(depAddonName, dependencyArray, dependencyTable);
 			table.insert(dependencyArray, depAddonName);
-			dependencyTable[depAddonName] = true;
 		end
 	end
 

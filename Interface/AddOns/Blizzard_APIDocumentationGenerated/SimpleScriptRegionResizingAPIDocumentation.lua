@@ -2,6 +2,7 @@ local SimpleScriptRegionResizingAPI =
 {
 	Name = "SimpleScriptRegionResizingAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -172,6 +173,9 @@ local SimpleScriptRegionResizingAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -2,6 +2,7 @@ local FrameAPIQuestPOI =
 {
 	Name = "FrameAPIQuestPOI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -55,6 +56,9 @@ local FrameAPIQuestPOI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

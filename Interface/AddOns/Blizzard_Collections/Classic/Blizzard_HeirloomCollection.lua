@@ -17,7 +17,7 @@ function HeirloomsJournal_OnShow(self)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true);
 
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\Icons\\inv_misc_enggizmos_19");
+	self:GetParent().portrait:SetTexture("Interface\\Icons\\inv_misc_enggizmos_19");
 
 	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
 	if self.filtersSet == nil then

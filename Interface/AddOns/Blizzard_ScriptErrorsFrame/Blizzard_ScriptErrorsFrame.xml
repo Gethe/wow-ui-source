@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\AddOns\Blizzard_SharedXML\UI.xsd">
 	<ScopedModifier addToSecureEnv="true">
-		<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" mixin="ScriptErrorsFrameMixin" frameStrata="TOOLTIP" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
+		<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" mixin="ScriptErrorsFrameMixin" secureMixin="ScriptErrorsFrameSecureMixin" frameStrata="TOOLTIP" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
 			<Size x="784" y="260"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
@@ -32,7 +32,7 @@
 						<Anchor point="TOPLEFT" x="12" y="-30"/>
 					</Anchors>
 					<ScrollChild>
-						<EditBox parentKey="Text" multiLine="true" letters="4000" autoFocus="false">
+						<EditBox parentKey="Text" multiLine="true" autoFocus="false">
 							<Size x="743" y="194"/>
 							<Scripts>
 								<OnLoad function="ScrollingEdit_OnLoad"/>

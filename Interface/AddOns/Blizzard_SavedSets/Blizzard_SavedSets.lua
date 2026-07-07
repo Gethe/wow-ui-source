@@ -70,6 +70,41 @@ function SavedSetsUtil.Check(savedSetKey, idOrTable)
 	end
 end
 
+function SavedSetsUtil.Empty(savedSetKey)
+	if not loaded then
+		SavedSetsUtil.ContinueOnLoad(function() SavedSetsUtil.Empty(savedSetKey); end);
+		return;
+	end
+	GlobalBlizzardSavedSets[savedSetKey] = {};
+end
+
+function SavedSetsUtil.Print(savedSetKey)
+	if not loaded then
+		SavedSetsUtil.ContinueOnLoad(function() SavedSetsUtil.Print(savedSetKey); end);
+		return;
+	end
+	local savedSet = GetOrCreateTableEntry(GlobalBlizzardSavedSets, savedSetKey);
+	for id, v in pairs(savedSet) do
+		print(id .. " " .. tostring(v));
+	end
+end
+
+function SavedSet_IsLoaded()
+	return SavedSetsUtil and SavedSetsUtil.IsLoaded();
+end
+
+function SavedSet_HasAny()
+	return SavedSetsUtil.HasAny(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs);
+end
+
+function SavedSet_Set(idOrTable)
+	return SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, idOrTable);
+end
+
+function SavedSet_Check(idOrTable)
+	return SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, idOrTable);
+end
+
 local function TriggerPendingCallbacks()
 	loaded = true;
 	for _, callback in ipairs(pendingCallbacks) do

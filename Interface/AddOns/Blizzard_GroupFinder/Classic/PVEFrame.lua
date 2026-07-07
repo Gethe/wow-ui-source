@@ -192,13 +192,13 @@ end
 local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub", "ScenarioFinderFrame" }
 
 function GroupFinderFrame_OnLoad(self)
-	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
+	self.groupButton1.icon:SetTexture("Interface\\Icons\\INV_Helmet_08");
 	self.groupButton1.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
-	SetPortraitToTexture(self.groupButton2.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self.groupButton2.icon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
-	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.groupButton3.icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	self.groupButton3.name:SetText(LFGLIST_NAME);
-	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton4.icon:SetTexture("Interface\\Icons\\Icon_Scenarios");
 	self.groupButton4.name:SetText(SCENARIOS_PVEFRAME);
 
 	GroupFinderFrame_EvaluateButtonVisibility(self);

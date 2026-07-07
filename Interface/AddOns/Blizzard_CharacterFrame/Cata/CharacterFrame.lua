@@ -105,7 +105,7 @@ function CharacterFrameMixin:UpdatePortrait()
 	else
 		local _, _, _, icon = C_SpecializationInfo.GetSpecializationInfo(masteryIndex);
 		CharacterFramePortrait:SetTexCoord(0, 1, 0, 1);
-		SetPortraitToTexture(CharacterFramePortrait, icon);	
+		CharacterFramePortrait:SetTexture(icon);	
 	end
 end
 
@@ -206,22 +206,19 @@ function CharacterFrameMixin:OnShow()
 	PlayerFrameHealthBar.showNumeric = true;
 	PlayerFrameManaBar.showNumeric = true;
 	PlayerFrameAlternateManaBar.showNumeric = true;
-	MainMenuExpBar.showNumeric = true;
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
 	PlayerFrameHealthBar:ShowStatusBarText();
 	PlayerFrameManaBar:ShowStatusBarText();
 	PlayerFrameAlternateManaBar:ShowStatusBarText();
-	MainMenuExpBar:ShowStatusBarText();
 	PetFrameHealthBar:ShowStatusBarText();
 	PetFrameManaBar:ShowStatusBarText();
+	StatusTrackingBarManager:SetTextLocked(true);
 
 	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
 		MonkStaggerBar.showNumeric = true;
 		MonkStaggerBar:ShowStatusBarText();
 	end
-
-	ShowWatchedReputationBarText();
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 	EventRegistry:TriggerEvent("CharacterFrame.Show");
@@ -236,22 +233,19 @@ function CharacterFrameMixin:OnHide()
 	PlayerFrameHealthBar.showNumeric = nil;
 	PlayerFrameManaBar.showNumeric = nil;
 	PlayerFrameAlternateManaBar.showNumeric = nil;
-	MainMenuExpBar.showNumeric =nil;
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
 	PlayerFrameHealthBar:HideStatusBarText();
 	PlayerFrameManaBar:HideStatusBarText();
 	PlayerFrameAlternateManaBar:HideStatusBarText();
-	MainMenuExpBar:HideStatusBarText();
 	PetFrameHealthBar:HideStatusBarText();
 	PetFrameManaBar:HideStatusBarText();
+	StatusTrackingBarManager:SetTextLocked(false);
 
 	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
 		MonkStaggerBar.showNumeric = nil;
 		MonkStaggerBar:HideStatusBarText();
 	end
-
-	HideWatchedReputationBarText();
 
 	PaperDollFrame.currentSideBar = nil;
 	EventRegistry:TriggerEvent("CharacterFrame.Hide");

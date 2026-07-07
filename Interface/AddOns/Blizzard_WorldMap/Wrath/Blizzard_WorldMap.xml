@@ -26,14 +26,10 @@
 		</Anchors>
 	</Frame>
 	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" ignoreParentScale="true" frameBuffer="true">
-		<Size>
-			<AbsDimension x="1024" y="768" />
-		</Size>
+		<Size x="1024" y="768" />
 		<Anchors>
 			<Anchor point="CENTER" relativePoint="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0" />
-				</Offset>
+				<Offset x="0" y="0" />
 			</Anchor>
 		</Anchors>
 		<Frames>
@@ -515,7 +511,6 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-		
-	</Frames>
+		</Frames>
 	</Frame>
 </Ui>

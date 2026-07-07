@@ -2,6 +2,7 @@ local SimpleAnimTextureCoordTranslationAPI =
 {
 	Name = "SimpleAnimTextureCoordTranslationAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -36,6 +37,9 @@ local SimpleAnimTextureCoordTranslationAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

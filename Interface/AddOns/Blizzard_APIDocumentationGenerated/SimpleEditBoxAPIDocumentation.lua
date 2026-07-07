@@ -2,6 +2,7 @@ local SimpleEditBoxAPI =
 {
 	Name = "SimpleEditBoxAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -653,6 +654,8 @@ local SimpleEditBoxAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
@@ -899,6 +902,9 @@ local SimpleEditBoxAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

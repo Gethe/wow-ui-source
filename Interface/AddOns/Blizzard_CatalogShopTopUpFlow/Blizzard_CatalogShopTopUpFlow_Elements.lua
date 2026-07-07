@@ -1,14 +1,5 @@
 
-TestProductIDs = {
-	{productID=2023436},
-	{productID=2023431},
-	{productID=2023432},
-	{productID=2023435},
-	{productID=2023434},
-	{productID=2023433},
-};
-
-local SmallCardWidth = 195;
+local SmallCardWidth = 301;
 
 local function IsElementDataItemInfo(elementData)
 	return (elementData and (elementData.elementType ~= CatalogShopConstants.ScrollViewElementType.Header)) or false;
@@ -42,33 +33,42 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 		end
 
 		productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
-		productInfo.categoryID = categoryID;
-		productInfo.sectionID = sectionID;
+		--productInfo.categoryID = categoryID;
+		--productInfo.sectionID = sectionID;
 		dataProvider:Insert(productInfo);
 		return true;
 	end
-	
+
 	local function InitializeButton(frame, productInfo)
 		local isSelected = self.selectionBehavior:IsElementDataSelected(productInfo);
 
 		frame:Init();
 		frame:SetProductInfo(productInfo);
 		frame:SetSelected(isSelected);
-		frame:SetScript("OnClick", function(button, buttonName)
-			self.selectionBehavior:ToggleSelect(button);
+		frame.PurchaseButton:SetScript("OnClick", function(button, buttonName)
+			CatalogShopTopUpFrame:PurchaseProduct(productInfo.catalogShopProductID);
+			PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_SELECT_OPTION);
 		end);
+		-- Use the HoverTexture for the glowing effect UX requested
+		if self.suggestedProductID == productInfo.catalogShopProductID then
+			frame.ForegroundContainer.HoverTexture:Show();
+		else
+			frame.ForegroundContainer.HoverTexture:Hide();
+		end
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
-		factory("SmallCatalogShopProductWithBuyButtonCardTemplate", InitializeButton)
+		factory("SmallCatalogShopHousingCurrencyCardTemplate", InitializeButton)
 	end
 	self:SetupScrollView(GetProductContainerElementFactory);
 
 	local dataProvider = CreateDataProvider();
-	for _, product in ipairs(TestProductIDs) do
-		local productID = product.productID;
-		local productAdded = addProductToDataProvider(dataProvider, productID);
+	local vcProductInfos = C_CatalogShop.GetVCProductInfos();
+	for _, vcProductInfo in ipairs(vcProductInfos) do
+		local vcProductID = vcProductInfo.vcProductID;
+		addProductToDataProvider(dataProvider, vcProductID);
 	end
+
 	self.ScrollBox:SetDataProvider(dataProvider);
 end
 
@@ -76,15 +76,18 @@ function TopUpProductContainerFrameMixin:OnProductSelected(productInfo)
 	self:SetSelectedProductInfo(productInfo);
 end
 
+function TopUpProductContainerFrameMixin:SetSuggestedProductID(productID)
+	self.suggestedProductID = productID;
+end
+
 function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)
 	local topPadding = 0;
 	local bottomPadding = 0;
 	local leftPadding = 0;
 	local rightPadding = 0;
-	local horizontalSpacing = 0;
-	local verticalSpacing = 0;
+	local elementSpacing = -10;
 
-	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, -0.05);
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 	view:SetVirtualized(false);
 	view:SetHorizontal(true);
 	view:SetElementFactory(elementFactory);
@@ -92,7 +95,6 @@ function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)
 		return SmallCardWidth;
 	end);
 	self.ScrollBox:Init(view);
-	--ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local function OnSelectionChanged(o, elementData, selected)
 		-- Cannot select, or it's meaningless to select a Header element

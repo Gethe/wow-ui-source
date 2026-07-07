@@ -69,7 +69,7 @@ MoneyStringConstants =
 	ShowZeroAsLowerDenomination = false,
 };
 
-function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAsGold)
+function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAsGold, color)
 	local goldString, silverString, copperString;
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
@@ -94,7 +94,7 @@ function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAs
 	end
 
 	if showZeroAsGold and ( money == 0 ) then
-		return goldString;
+		return color and color:WrapTextInColorCode(goldString) or goldString;
 	end
 
 	copper = FormatDisplayCopper(checkGoldThreshold, gold, silver, copper);
@@ -113,7 +113,7 @@ function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAs
 		moneyString = moneyString..separator..copperString;
 	end
 
-	return moneyString;
+	return color and color:WrapTextInColorCode(moneyString) or moneyString;
 end
 
 function FormatDisplayCopper(checkGoldThreshold, gold, silver, copper)
@@ -128,6 +128,11 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	end
 
 	return PERCENTAGE_STRING:format(percentage);
+end
+
+function FormatPercentageRounded(value)
+	local roundToNearestInteger = true;
+	return FormatPercentage(value, roundToNearestInteger);
 end
 
 function FormatFraction(numerator, denominator)

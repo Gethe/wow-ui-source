@@ -2,6 +2,7 @@ local Connection =
 {
 	Name = "ConnectionScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -47,6 +48,15 @@ local Connection =
 			},
 		},
 		{
+			Name = "GetProtocolTypes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "protocolTypes", Type = "ConnectionProtocol", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
 			Name = "GetRealmID",
 			Type = "Function",
 
@@ -88,6 +98,9 @@ local Connection =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

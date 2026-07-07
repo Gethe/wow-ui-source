@@ -32,7 +32,6 @@ BenchmarkUtil.lua
 EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
-AnchorUtil.lua
 GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua
@@ -187,6 +186,7 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
+Classic\GameTooltipTemplate.lua
 Classic\GameTooltipTemplate.xml
 MixinUtil.lua
 DebugBarManager.lua [AllowLoadEnvironment Global]
@@ -215,3 +215,4 @@ AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
 Shared\VASErrorLookup.lua
+MoneyFormatter.lua

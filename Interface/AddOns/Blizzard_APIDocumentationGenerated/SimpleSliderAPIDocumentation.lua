@@ -2,6 +2,7 @@ local SimpleSliderAPI =
 {
 	Name = "SimpleSliderAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -220,6 +221,9 @@ local SimpleSliderAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

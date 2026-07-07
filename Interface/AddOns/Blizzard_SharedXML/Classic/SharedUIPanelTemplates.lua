@@ -945,6 +945,16 @@ function DropdownWithSteppersMixin:HideSteppers()
 	self.IncrementButton:Hide();
 end
 
+function DropdownWithSteppersMixin:ShowSteppers()
+	self.DecrementButton:Show();
+	self.IncrementButton:Show();
+end
+
+function DropdownWithSteppersMixin:SetSteppersShown(shown)
+	self.DecrementButton:SetShown(shown);
+	self.IncrementButton:SetShown(shown);
+end
+
 function DropdownWithSteppersMixin:SetSteppersEnabled(canDecrement, canIncrement)
 	if self.Dropdown:IsEnabled() then
 		self.DecrementButton:SetEnabled(canDecrement);
@@ -1010,6 +1020,12 @@ PanelDragBarMixin = {};
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self:SetTarget(self:GetParent());
+	self.suspendDrag = false;
+end
+
+
+function PanelDragBarMixin:SetDragSuspended(suspendDrag)
+	self.suspendDrag = suspendDrag;
 end
 
 function PanelDragBarMixin:Init(target)
@@ -1021,6 +1037,10 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStart = true;
@@ -1042,6 +1062,10 @@ function PanelDragBarMixin:OnDragStart()
 end
 
 function PanelDragBarMixin:OnDragStop()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStop = true;
@@ -1218,6 +1242,14 @@ function PanelResizeButtonMixin:SetMinHeight(minHeight)
 	self.minHeight = minHeight;
 end
 
+function PanelResizeButtonMixin:SetMaxWidth(maxWidth)
+	self.maxWidth = maxWidth;
+end
+
+function PanelResizeButtonMixin:SetMaxHeight(maxHeight)
+	self.maxHeight = maxHeight;
+end
+
 function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)
 	local rotationRadians = (rotationDegrees / 180) * math.pi;
 	self:SetRotationRadians(rotationRadians);
@@ -1260,7 +1292,8 @@ local ValidIconSelectorCursorTypes = {
 	"spell",
 	"mount",
 	"battlepet",
-	"macro"
+	"macro",
+	"outfit"
 };
 
 local function IconSelectorPopupFrame_IconFilterToIconTypes(filter)
@@ -1378,6 +1411,11 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 				icon = select(9, C_PetJournal.GetPetInfoByPetID(ID));
 			elseif ( cursorType == "macro" ) then
 				icon = select(2, GetMacroInfo(ID));
+			elseif ( cursorType == "outfit" ) then
+				local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(ID);
+				if ( outfitInfo ) then
+					icon = outfitInfo.icon;
+				end
 			end
 
 			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(icon));
@@ -1983,21 +2021,21 @@ end
 
 ClearButtonMixin = {};
 function ClearButtonMixin:OnEnter()
-	self.texture:SetAlpha(1.0);
+	self.Icon:SetAlpha(1.0);
 end
 
 function ClearButtonMixin:OnLeave()
-	self.texture:SetAlpha(0.5);
+	self.Icon:SetAlpha(0.5);
 end
 
 function ClearButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
-		self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
 	end
 end
 
 function ClearButtonMixin:OnMouseUp()
-	self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 end
 
 function ClearButtonMixin:OnClick()

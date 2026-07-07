@@ -15,6 +15,9 @@ local TimerunningConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TimerunningConstants);

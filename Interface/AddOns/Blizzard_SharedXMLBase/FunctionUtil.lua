@@ -129,6 +129,14 @@ end
 
 FunctionUtil = {};
 
+function FunctionUtil.CheckInvokeMethod(table, methodName, ...)
+	if table then
+		return table[methodName](table, ...);
+	end
+
+	return nil;
+end
+
 function FunctionUtil.SafeInvokeMethod(table, methodName, ...)
 	local method = table[methodName];
 	if method then

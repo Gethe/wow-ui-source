@@ -35,6 +35,7 @@ EventTraceSavedVars =
 	LogEventsWhenHidden = false,
 	ShowArguments = true,
 	ShowTimestamp = true,
+	ShowSecretValues = true,
 	LogCREvents = true,
 	Filters =
 	{
@@ -148,6 +149,7 @@ function EventTracePanelMixin:SaveVariables()
 	EventTraceSavedVars.LogEventsWhenHidden = self:IsLoggingEventsWhenHidden();
 	EventTraceSavedVars.ShowArguments = self:IsShowingArguments();
 	EventTraceSavedVars.ShowTimestamp = self:IsShowingTimestamp();
+	EventTraceSavedVars.ShowSecretValues = self:IsShowingSecretValues();
 	EventTraceSavedVars.LogCREvents = self:IsLoggingCREvents();
 end
 
@@ -161,6 +163,7 @@ function EventTracePanelMixin:LoadVariables()
 	self:SetLoggingEventsWhenHidden(EventTraceSavedVars.LogEventsWhenHidden);
 	self:SetShowingArguments(EventTraceSavedVars.ShowArguments);
 	self:SetShowingTimestamp(EventTraceSavedVars.ShowTimestamp);
+	self:SetShowingSecretValues(EventTraceSavedVars.ShowSecretValues);
 	self:SetLoggingCREvents(EventTraceSavedVars.LogCREvents);
 end
 
@@ -310,7 +313,7 @@ function EventTracePanelMixin:InitializeLog()
 		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
 				factory("EventTraceLogEventButtonTemplate", function(button, elementData)
-					button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
+					button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp(), self:IsShowingSecretValues());
 
 					button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
 						AddEventToFilter(self.Filter.ScrollBox, elementData);
@@ -368,7 +371,7 @@ function EventTracePanelMixin:InitializeLog()
 		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
 				factory("EventTraceLogEventButtonTemplate", function(button, elementData)
-					button:Init(elementData, self:IsShowingArguments());
+					button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp(), self:IsShowingSecretValues());
 
 					button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
 						AddEventToFilter(self.Log.Search.ScrollBox, elementData);
@@ -507,6 +510,18 @@ function EventTracePanelMixin:InitializeOptions()
 
 		do
 			local function IsSelected()
+				return self:IsShowingSecretValues();
+			end
+
+			local function SetSelected()
+				self:SetShowingSecretValues(not self:IsShowingSecretValues());
+			end
+
+			rootDescription:CreateCheckbox(EVENTTRACE_SHOW_SECRET_VALUES, IsSelected, SetSelected);
+		end
+
+		do
+			local function IsSelected()
 				return self:IsLoggingCREvents();
 			end
 
@@ -554,6 +569,18 @@ end
 
 function EventTracePanelMixin:IsShowingTimestamp()
 	return self.showingTimestamp;
+end
+
+function EventTracePanelMixin:IsShowingSecretValues()
+	return self.showingSecretValues;
+end
+
+function EventTracePanelMixin:SetShowingSecretValues(show)
+	self.showingSecretValues = show;
+
+	self:UpdateLogScrollBoxes(function(frame)
+		frame:OnShowSecretValuesChanged(frame:GetElementData(), show);
+	end);
 end
 
 function EventTracePanelMixin:IsLoggingCREvents()
@@ -753,15 +780,24 @@ local function GetArgumentColor(arg)
 	return ArgumentColors[type(arg)] or HIGHLIGHT_FONT_COLOR;
 end
 
-local function FormatArgument(arg)
+local function FormatArgument(arg, showSecretValues)
 	local color = GetArgumentColor(arg);
 	local t = type(arg);
+	local formattedArg;
+
 	if t == "string" then
-		return color:WrapTextInColorCode(string.format('"%s"', arg));
+		formattedArg = color:WrapTextInColorCode(string.format('"%s"', arg));
 	elseif t == "nil" then
-		return color:WrapTextInColorCode(t);
+		formattedArg = color:WrapTextInColorCode(t);
+	else
+		formattedArg = color:WrapTextInColorCode(tostring(arg));
 	end
-	return color:WrapTextInColorCode(tostring(arg));
+
+	if showSecretValues and issecretvalue(arg) then
+		formattedArg = string.format(EVENTTRACE_SECRET_FMT, formattedArg);
+	end
+
+	return formattedArg;
 end
 
 local function FormatLogID(elementData)
@@ -774,11 +810,11 @@ end
 
 EventTraceLogEventButtonMixin = {};
 
-local function AddTooltipArguments(...)
+local function AddTooltipArguments(showSecretValues, ...)
 	local count = select("#", ...);
 	for index = 1, count do
 		local arg = select(index, ...);
-		GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_ARG_FMT:format(index), FormatArgument(arg), HIGHLIGHT_FONT_COLOR, GetArgumentColor(arg));
+		GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_ARG_FMT:format(index), FormatArgument(arg, showSecretValues), HIGHLIGHT_FONT_COLOR, GetArgumentColor(arg));
 	end
 end
 
@@ -795,7 +831,7 @@ function EventTraceLogEventButtonMixin:OnEnter()
 	GameTooltip_AddHighlightLine(EventTraceTooltip, GetDisplayEvent(elementData), HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_TIMESTAMP, elementData.systemTimestamp, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
 
-	AddTooltipArguments(SafeUnpack(elementData.args));
+	AddTooltipArguments(self:IsShowingSecretValues(), SafeUnpack(elementData.args));
 
 	EventTraceTooltip:Show();
 end
@@ -806,12 +842,12 @@ function EventTraceLogEventButtonMixin:OnLeave()
 	EventTraceTooltip:Hide();
 end
 
-local function AddLineArguments(...)
+local function AddLineArguments(showSecretValues, ...)
 	local words = {};
 	local count = select("#", ...);
 	for index = 1, count do
 		local arg = select(index, ...);
-		table.insert(words, FormatArgument(arg));
+		table.insert(words, FormatArgument(arg, showSecretValues));
 	end
 
 	local wordCount = #words;
@@ -823,18 +859,38 @@ local function AddLineArguments(...)
 	return table.concat(words, ", ");
 end
 
-function EventTraceLogEventButtonMixin:Init(elementData, showArguments, showTimestamp)
+function EventTraceLogEventButtonMixin:Init(elementData, showArguments, showTimestamp, showSecretValues)
 	local id = FormatLogID(elementData);
 	local message = elementData.displayMessage or elementData.event;
 	elementData.lineWithoutArguments = FormatLine(id, message);
 
-	elementData.arguments = AddLineArguments(SafeUnpack(elementData.args));
-	elementData.formattedArguments = GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments);
+	self.showArguments = showArguments;
+	self.showTimestamp = showTimestamp;
+	self.showSecretValues = showSecretValues;
+
+	self:GenerateFormattedArguments(elementData, showSecretValues);
 	self:SetLeftText(elementData, showArguments);
 
 	local clock = CreateClock(elementData.relativeTimestamp);
 	elementData.formattedTimestamp = string.format("%s %s", clock, elementData.eventDelta and elementData.eventDelta or "");
 	self:SetRightText(elementData, showTimestamp);
+end
+
+function EventTraceLogEventButtonMixin:IsShowingArguments()
+	return self.showArguments == true;
+end
+
+function EventTraceLogEventButtonMixin:IsShowingTimestamp()
+	return self.showTimestamp == true;
+end
+
+function EventTraceLogEventButtonMixin:IsShowingSecretValues()
+	return self.showSecretValues == true;
+end
+
+function EventTraceLogEventButtonMixin:GenerateFormattedArguments(elementData, showSecretValues)
+	elementData.arguments = AddLineArguments(showSecretValues, SafeUnpack(elementData.args));
+	elementData.formattedArguments = GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments);
 end
 
 function EventTraceLogEventButtonMixin:SetLeftText(elementData, showArguments)
@@ -854,11 +910,19 @@ function EventTraceLogEventButtonMixin:SetRightText(elementData, showTimestamp)
 end
 
 function EventTraceLogEventButtonMixin:OnShowArgumentsChanged(elementData, showArguments)
+	self.showArguments = showArguments;
 	self:SetLeftText(elementData, showArguments);
 end
 
 function EventTraceLogEventButtonMixin:OnShowTimestampChanged(elementData, showTimestamp)
+	self.showTimestamp = showTimestamp;
 	self:SetRightText(elementData, showTimestamp);
+end
+
+function EventTraceLogEventButtonMixin:OnShowSecretValuesChanged(elementData, showSecretValues)
+	self.showSecretValues = showSecretValues;
+	self:GenerateFormattedArguments(elementData, showSecretValues);
+	self:SetLeftText(elementData, self:IsShowingArguments());
 end
 
 EventTraceLogMessageButtonMixin = {};
@@ -875,11 +939,14 @@ function EventTraceLogMessageButtonMixin:SetLeftText(elementData)
 	self.LeftLabel:SetText(elementData.lineWithoutArguments);
 end
 
-function EventTraceLogMessageButtonMixin:OnShowArgumentsChanged(elementData, showArguments)
+function EventTraceLogMessageButtonMixin:OnShowArgumentsChanged(elementData, _showArguments)
 	self:SetLeftText(elementData);
 end
 
-function EventTraceLogMessageButtonMixin:OnShowTimestampChanged(elementData, showTimestamp)
+function EventTraceLogMessageButtonMixin:OnShowTimestampChanged(_elementData, _showTimestamp)
+end
+
+function EventTraceLogMessageButtonMixin:OnShowSecretValuesChanged(_elementData, _showSecretValues)
 end
 
 function EventTraceLogMessageButtonMixin:SetRightText(elementData)

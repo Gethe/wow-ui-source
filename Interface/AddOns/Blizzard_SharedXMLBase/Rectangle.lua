@@ -92,6 +92,14 @@ function RectangleMixin:GetCenter()
 	return Lerp(self.left, self.right, .5), Lerp(self.top, self.bottom, .5);
 end
 
+function RectangleMixin:GetCenterH()
+	return Lerp(self.left, self.right, .5);
+end
+
+function RectangleMixin:GetCenterV()
+	return Lerp(self.top, self.bottom, .5);
+end
+
 function RectangleMixin:SetTop(top)
 	self.top = top;
 end

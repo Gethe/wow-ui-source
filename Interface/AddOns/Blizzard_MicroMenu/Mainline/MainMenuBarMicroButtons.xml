@@ -300,6 +300,9 @@
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
+		</Frames>
 	</Button>
 
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" mixin="MainMenuMicroButtonMixin">

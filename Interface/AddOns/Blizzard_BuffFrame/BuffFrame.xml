@@ -1,7 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="BuffFrame" parent="UIParent" inherits="AuraFrameEditModeTemplate" mixin="BuffFrameMixin" frameStrata="LOW">
+	<Frame name="BaseAuraFrameTemplate" inherits="AuraFrameEditModeTemplate" mixin="BaseAuraFrameMixin" parent="UIParent" frameStrata="LOW" virtual="true"/>
+
+	<Frame name="BuffFrame" inherits="BaseAuraFrameTemplate" mixin="BuffFrameMixin">
 		<KeyValues>
 			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
 			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
@@ -82,7 +84,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="DebuffFrame" parent="UIParent" inherits="AuraFrameEditModeTemplate" mixin="DebuffFrameMixin" frameStrata="LOW">
+	<Frame name="DebuffFrame" inherits="BaseAuraFrameTemplate" mixin="DebuffFrameMixin">
+		<KeyValues>
+			<KeyValue key="maxPrivateAuras" value="6" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="BOTTOMRIGHT" x="-13" y="-5" />
 		</Anchors>
@@ -104,6 +109,26 @@
 					<KeyValue key="auraIndex" value="2" type="number"/>
 				</KeyValues>
 			</Frame>
+			<Frame parentKey="privateAuraAnchor3" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor4" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor5" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor6" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="6" type="number"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>
@@ -119,7 +144,7 @@
 		<Layers>
 			<Layer level="BORDER">
 				<FontString parentKey="WarningText" inherits="GameFontNormalHuge">
-					<Size x="400" y="30"/>
+					<Size x="800" y="30"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>

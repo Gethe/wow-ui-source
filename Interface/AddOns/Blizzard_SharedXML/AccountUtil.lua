@@ -39,7 +39,7 @@ end
 
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
-	return GetAutoCompletePresenceID(name);
+	return C_AutoComplete.GetAutoCompletePresenceID(name);
 end
 
 function BNet_GetBNetAccountName(accountInfo)

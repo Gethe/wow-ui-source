@@ -46,6 +46,9 @@ local MythicPlusInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(MythicPlusInfoShared);

@@ -2,6 +2,7 @@ local SimpleMovieAPI =
 {
 	Name = "SimpleMovieAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -62,6 +63,9 @@ local SimpleMovieAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

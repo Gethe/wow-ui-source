@@ -41,7 +41,7 @@ end
 
 function WowSurveyStatusMixin:OnEvent(event, ...)
 	if event == "SURVEY_DELIVERED" then
-		self:Show();
+		C_Timer.After(1, function() self:Show() end);
 	end
 end
 

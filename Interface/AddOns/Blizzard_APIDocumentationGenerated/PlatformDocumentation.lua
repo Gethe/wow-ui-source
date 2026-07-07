@@ -3,6 +3,7 @@ local Platform =
 	Name = "Platform",
 	Type = "System",
 	Namespace = "C_Platform",
+	Environment = "All",
 
 	Functions =
 	{
@@ -26,6 +27,9 @@ local Platform =
 				{ Name = "Macintosh", Type = "ClientPlatformType", EnumValue = 1 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

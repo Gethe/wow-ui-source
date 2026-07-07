@@ -1,0 +1,9 @@
+## Title: Blizzard_TradeSkillUI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+[Game]\Blizzard_TradeSkillUI.lua [AllowLoadGameType vanilla, tbc, mists]
+[Game]\Blizzard_TradeSkillUI.xml [AllowLoadGameType vanilla, tbc, mists]
+Wrath\Blizzard_TradeSkillUI.lua [AllowLoadGameType wrath, cata]
+Wrath\Blizzard_TradeSkillUI.xml [AllowLoadGameType wrath, cata]
+Localization.lua

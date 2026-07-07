@@ -34,7 +34,7 @@ function ScriptAnimationUtil.StartFadeAnimation(region, duration, onFinish, easi
 	return ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, duration, function()
 		region:SetAlpha(0);
 		if onFinish then
-			onFinish();
+			onFinish(region);
 		end
 	end);
 end
@@ -108,7 +108,7 @@ end
 function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, duration, onFinish)
 	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
 		if onFinish then
-			onFinish();
+			onFinish(region);
 		end
 		return nop;
 	end
@@ -136,7 +136,7 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 		region.translationTicker = nil;
 		ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
 		if onFinish then
-			onFinish();
+			onFinish(region);
 		end
 	end
 
@@ -160,7 +160,7 @@ end
 function ScriptAnimationUtil.StartScriptAnimationGeneric(region, variationCallback, duration, frequency, onFinish)
 	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
 		if onFinish then
-			onFinish();
+			onFinish(region);
 		end
 		return nop;
 	end
@@ -172,7 +172,7 @@ function ScriptAnimationUtil.StartScriptAnimationGeneric(region, variationCallba
 			region.scriptAnimationTicker = nil;
 			ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
 			if onFinish then
-				onFinish();
+				onFinish(region);
 			end
 		end
 	end

@@ -214,20 +214,8 @@ end
 
 local BACKPACK_FREESLOTS_FORMAT = "(%s)";
 
-function CalculateTotalNumberOfFreeBagSlots()
-	local totalFree, freeSlots, bagFamily = 0;
-	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
-		if ( bagFamily == 0 ) then
-			totalFree = totalFree + freeSlots;
-		end
-	end
-	
-	return totalFree;
-end
-
 function MainMenuBarBackpackButton_UpdateFreeSlots()
-	local totalFree = CalculateTotalNumberOfFreeBagSlots();
+	local totalFree = C_Container.CalculateTotalNumberOfFreeBagSlots();
 	if ( totalFree == 3) then
 		TriggerTutorial(59);
 	end
@@ -238,4 +226,68 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 	MainMenuBarBackpackButton.freeSlots = totalFree;
 
 	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
+end
+
+BagSlotButtonMixin = {};
+
+function BagSlotButtonMixin:OnLoad()
+	MainMenuBarBagManager:RegisterBagButton(self);
+	ItemAnim_OnLoad(self)
+	PaperDollItemSlotButton_OnLoad(self);
+	self:RegisterEvent("BAG_UPDATE_DELAYED");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+	self.isBag = 1;
+	self.UpdateTooltip = BagSlotButton_OnEnter;
+	_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
+	_G[self:GetName().."NormalTexture"]:SetSize(MainMenuBarBagButtonsConsts.BAGS_BAR_SLOT_NORMAL_TEXTURE_SIZE, MainMenuBarBagButtonsConsts.BAGS_BAR_SLOT_NORMAL_TEXTURE_SIZE);
+	self.maxDisplayCount = 999;
+	self:SetSize(MainMenuBarBagButtonsConsts.BAGS_BAR_SLOT_SIZE, MainMenuBarBagButtonsConsts.BAGS_BAR_SLOT_SIZE);
+end
+
+function BagSlotButtonMixin:OnEvent(event, ...)
+	ItemAnim_OnEvent(self, event, ...);
+	if ( event == "BAG_UPDATE_DELAYED" ) then
+		PaperDollItemSlotButton_Update(self);
+	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		if ( C_Container.IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+			self.searchOverlay:Show();
+		else
+			self.searchOverlay:Hide();
+		end
+	else
+		PaperDollItemSlotButton_OnEvent(self, event, ...);
+	end
+end
+
+function BagSlotButtonMixin:OnShow()
+	PaperDollItemSlotButton_OnShow(self, true);
+end
+
+function BagSlotButtonMixin:OnHide()
+	PaperDollItemSlotButton_OnHide(self);
+end
+
+function BagSlotButtonMixin:OnClick()
+	if ( IsModifiedClick() ) then
+		BagSlotButton_OnModifiedClick(self, button);
+	else
+		BagSlotButton_OnClick(self, button);
+	end
+end
+
+function BagSlotButtonMixin:OnDragStart()
+	BagSlotButton_OnDrag(self, button);
+end
+
+function BagSlotButtonMixin:OnReceiveDrag()
+	BagSlotButton_OnClick(self);
+end
+
+function BagSlotButtonMixin:OnEnter()
+	BagSlotButton_OnEnter(self, motion);
+end
+
+function BagSlotButtonMixin:OnLeave()
+	GameTooltip:Hide();
+	ResetCursor();
 end

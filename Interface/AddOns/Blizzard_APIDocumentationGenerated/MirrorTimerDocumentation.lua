@@ -2,6 +2,7 @@ local MirrorTimer =
 {
 	Name = "MirrorTimer",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -62,6 +63,9 @@ local MirrorTimer =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -258,7 +258,7 @@ function TargetFrameMixin:CheckLevel()
 		self.highLevelTexture:Show();
 	elseif (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
 		local petLevel = UnitBattlePetLevel(self.unit);
-		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+		self.levelText:SetVertexColor(UNIT_LEVEL_NON_ATTACKABLE.r, UNIT_LEVEL_NON_ATTACKABLE.g, UNIT_LEVEL_NON_ATTACKABLE.b);
 		self.levelText:SetText(petLevel);
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
@@ -270,7 +270,7 @@ function TargetFrameMixin:CheckLevel()
 			local color = GetCreatureDifficultyColor(targetEffectiveLevel);
 			self.levelText:SetVertexColor(color.r, color.g, color.b);
 		else
-			self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+			self.levelText:SetVertexColor(UNIT_LEVEL_NON_ATTACKABLE.r, UNIT_LEVEL_NON_ATTACKABLE.g, UNIT_LEVEL_NON_ATTACKABLE.b);
 		end
 
 		self.levelText:Show();
@@ -365,12 +365,12 @@ function TargetFrameMixin:CheckClassification(forceNormalTexture)
 				self.threatIndicator:SetTexCoord(0, 1, 0, 1);
 				self.threatIndicator:SetWidth(256);
 				self.threatIndicator:SetHeight(128);
-				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
+				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", self.threatAnchorX, self.threatAnchorY);
 			else
 				self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625);
 				self.threatIndicator:SetWidth(242);
 				self.threatIndicator:SetHeight(93);
-				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
+				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", self.threatAnchorX, self.threatAnchorY);
 			end
 		end
 	else
@@ -381,7 +381,7 @@ function TargetFrameMixin:CheckClassification(forceNormalTexture)
 			self.threatIndicator:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
 			self.threatIndicator:SetWidth(242);
 			self.threatIndicator:SetHeight(112);
-			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -22, 9);
+			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", self.threatEliteAnchorX, self.threatEliteAnchorY);
 		end
 	end
 
@@ -562,13 +562,8 @@ function TargetFrameMixin:UpdateAuras()
 					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
 					-- set debuff type color
-					if ( debuffType ) then
-						color = DebuffTypeColor[debuffType];
-					else
-						color = DebuffTypeColor["none"];
-					end
 					frameBorder = _G[frameName.."Border"];
-					frameBorder:SetVertexColor(color.r, color.g, color.b);
+					AuraUtil.SetAuraBorderColor(frameBorder, debuffType);
 
 					-- set the debuff to be big if the buff is cast by the player or his pet
 					debuffIndex = debuffIndex + 1;
@@ -1142,7 +1137,7 @@ function BossTargetFrameMixin:OnLoad(unit, event)
 end
 
 function BossTargetFrame_OpenMenu()
-	local contextData = 
+	local contextData =
 	{
 		fromTargetFrame = true;
 		unit = self.unit,

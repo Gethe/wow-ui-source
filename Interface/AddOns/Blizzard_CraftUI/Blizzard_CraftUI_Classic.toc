@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## AllowLoad: Game
-## AllowLoadGameType: tbc, wrath
+## AllowLoadGameType: tbc, wrath, mists
 TBC\Blizzard_CraftUI.lua
 TBC\Blizzard_CraftUI.xml
 Localization.lua

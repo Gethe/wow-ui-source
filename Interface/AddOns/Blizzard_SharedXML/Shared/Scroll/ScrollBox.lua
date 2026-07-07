@@ -38,6 +38,9 @@ function ScrollBoxBaseMixin:OnLoad()
 	self.scrollInternal = GenerateClosure(self.SetScrollPercentageInternal, self);
 
 	local scrollTarget = self:GetScrollTarget();
+	if not scrollTarget then
+		error("ScrollBoxBaseMixin:OnLoad expected a scroll target frame.");
+	end
 	scrollTarget:RegisterCallback(BaseScrollBoxEvents.OnSizeChanged, self.OnScrollTargetSizeChanged, self);
 
 	self.Shadows:SetFrameLevel(scrollTarget:GetFrameLevel() + 2);
@@ -51,6 +54,15 @@ function ScrollBoxBaseMixin:Init(view)
 end
 
 function ScrollBoxBaseMixin:SetView(view)
+	if not view then
+		error("ScrollBoxBaseMixin:SetView requires a valid view.");
+	end
+
+	-- A few loose checks to verify this is an expected view object.
+	if type(view.SetScrollBox) ~= "function" or type(view.IsHorizontal) ~= "function" then
+		error("ScrollBoxBaseMixin:SetView requires a ScrollBoxViewMixin-compatible view.");
+	end
+
 	local oldDataProvider = nil;
 	local oldView = self:GetView();
 	if oldView then
@@ -77,7 +89,7 @@ function ScrollBoxBaseMixin:SetView(view)
 	if oldDataProvider then
 		view:SetDataProvider(oldDataProvider);
 	end
-	
+
 	if oldView then
 		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	end
@@ -113,10 +125,10 @@ function ScrollBoxBaseMixin:OnSizeChanged(width, height)
 		self:Update(forceLayout);
 	end
 
-	self:TriggerEvent("OnSizeChanged", width, height, self:GetVisibleExtentPercentage());
+	self:TriggerEvent(BaseScrollBoxEvents.OnSizeChanged, width, height, self:GetVisibleExtentPercentage());
 end
 
--- Fixme: Replace calls to FullUpdate() with Rebuild() where appropriate so that existing frames 
+-- Fixme: Replace calls to FullUpdate() with Rebuild() where appropriate so that existing frames
 -- will also be reinitialized, which is probably the expectation given this function's name.
 function ScrollBoxBaseMixin:FullUpdate(immediately)
 	if immediately then
@@ -157,32 +169,20 @@ function ScrollBoxBaseMixin:FullUpdateInternal()
 	]]--
 	local oldScrollOffset = self:GetDerivedScrollOffset();
 
-	--[[
-	When identical element extents are not used, this will require iterating through every element
-	in the data provider and calling a calculation function to obtain the total extent. While it would
-	be more efficient to correct the extent based on the elements added or removed from the data provider,
-	it is a difficult optimization to implement because ScrollBox utilizes multiple different data
-	providers with different data structures.
-
-	An optimization to start with might be to have each data provider implement a counter that is updated
-	on any insertion, replacement, or removal. While this wouldn't provide full context about the change,
-	it would serve as an indicator that the data provider was unmodified since the last update, making an
-	extent calculation unnecessary. Note however that this would be a view dependent optimization as Biaxal
-	views can have their extents changed as a result of width changes, regardless of the data provider
-	remaining unchanged.
-	]]--
-	self:RecalculateDerivedExtent();
+	-- Recalculate extents, if necessary.
+	local view = self:GetView();
+	view:RecalculateExtent(self);
 
 	-- After the extent is calculated, correct the scroll position to undo the displacement.
 	local scrollRange = self:GetDerivedScrollRange();
 	if scrollRange > 0 then
 		local deltaScrollOffset = (self:GetDerivedScrollOffset() - oldScrollOffset);
 		local scrollPercentage = self:GetScrollPercentage() - (deltaScrollOffset / scrollRange);
-		self:SetScrollPercentageInternal(scrollPercentage, ScrollBoxConstants.NoScrollInterpolation);
+		self:SetScrollPercentageInternal(scrollPercentage);
 	else
 		self:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 	end
-	
+
 	self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
 
 	local forceLayout = true;
@@ -197,7 +197,7 @@ function ScrollBoxBaseMixin:Layout()
 	local view = self:GetView();
 	if view then
 		view:Layout(self);
-		
+
 		-- No longer bothering calculating the exact extent since there wasn't a
 		-- useful use case. All that is necessary is for the scroll extent to be non-zero
 		-- so that any children have valid rects for measurement purposes.
@@ -210,7 +210,7 @@ function ScrollBoxBaseMixin:SetEdgeFadeLength(length)
 	-- Each length is the size of the alpha gradient to use when more data is available to be scrolled into view
 	-- Create the base vector assuming that the orientation is vertical and swap if not.
 	self.edgeFade = CreateVector2D(0, math.abs(length));
-	
+
 	if self:IsHorizontal() then
 		local y, x = self.edgeFade:GetXY(); -- swapped!!
 		self.edgeFade:SetXY(x, y); -- do the swap.
@@ -279,7 +279,7 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 		if self:ShouldUseShadowsForEdgeFade() then
 			local hasScrollableExtent = self:HasScrollableExtent();
 			local showUpper = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
-			local showLower = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
+			local showLower = hasScrollableExtent and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
 			self:SetShadowsShown(showLower, showUpper);
 		end
 
@@ -315,14 +315,6 @@ function ScrollBoxBaseMixin:SetScrollPercentageInternal(scrollPercentage)
 	ScrollControllerMixin.SetScrollPercentage(self, scrollPercentage);
 
 	self:Update();
-end
-
-function ScrollBoxBaseMixin:GetVisibleExtentPercentage()
-	local extent = self:GetExtent();
-	if extent > 0 then
-		return self:GetVisibleExtent() / extent;
-	end
-	return 0;
 end
 
 function ScrollBoxBaseMixin:GetPanExtent()
@@ -416,7 +408,7 @@ function ScrollBoxBaseMixin:SanitizeAlignment(alignment, extent)
 	if not self:IsAlignmentOverlapIgnored() and extent > self:GetVisibleExtent() then
 		return 0;
 	end
-	
+
 	return alignment and Saturate(alignment) or ScrollBoxConstants.AlignCenter;
 end
 
@@ -623,7 +615,7 @@ function ScrollBoxListMixin:ReinitializeFrames()
 	self:GetView():ReinitializeFrames();
 end
 
--- Considering doing a conversion to rename EntireRange to become Enumerate, 
+-- Considering doing a conversion to rename EntireRange to become Enumerate,
 -- and Enumerate to be renamed to EnumerateRange(min, max). It is a bit counter-intuitive
 -- for Enumerate to do anything other than iterate the entire range, and additionally
 -- confusing that this newly added EntireRange function does exactly that.
@@ -713,7 +705,7 @@ function ScrollBoxListMixin:SetDataProvider(dataProvider, retainScrollPosition)
 	if not view then
 		error("A view is required before assigning the data provider.");
 	end
-	
+
 	view:SetDataProvider(dataProvider);
 
 	if not retainScrollPosition then
@@ -780,7 +772,7 @@ function ScrollBoxListMixin:Update(forceLayout)
 	if not view:IsInitialized() then
 		return;
 	end
-	
+
 	self:SetUpdateLocked(true);
 
 	local changed = view:ValidateDataRange(self);
@@ -793,7 +785,7 @@ function ScrollBoxListMixin:Update(forceLayout)
 	local dataScrollOffset = view:GetDataScrollOffset(self);
 	self:SetScrollTargetOffset(derivedScrollOffset - dataScrollOffset);
 	self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
-	
+
 	if changed then
 		view:InvokeInitializers();
 
@@ -801,13 +793,13 @@ function ScrollBoxListMixin:Update(forceLayout)
 	end
 
 	self:TriggerEvent(ScrollBoxListMixin.Event.OnUpdate);
-	
+
 	self:SetUpdateLocked(false);
 end
 
 --[[
 Be very careful calling ScrollToNearest or ScrollToElementDataIndex to be certain the index is correct.
-While linear views are unlikely to misbehave, Tree views return indices differently depending on if the 
+While linear views are unlikely to misbehave, Tree views return indices differently depending on if the
 tree is skipping, or traversed past collapsed elements. If you attempt to scroll to an index of child of
 a collapsed tree node, either a bounds error or an incorrect scroll will happen. For these cases, use
 ScrollToElementData and ScrollToElementDataByPredicate to correctly scroll (and expand to) the desired element.
@@ -836,7 +828,7 @@ function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, offse
 	if not elementData then
 		return nil;
 	end
-	
+
 	offset = offset or 0;
 	alignment = alignment or ScrollBoxConstants.AlignCenter;
 
@@ -869,7 +861,7 @@ function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, offset, 
 	offset = offset or 0;
 	alignment = alignment or ScrollBoxConstants.AlignCenter;
 
-	-- Tree view must expand each of the element's ancestor nodes in order for the desired element to be displayed. 
+	-- Tree view must expand each of the element's ancestor nodes in order for the desired element to be displayed.
 	view:PrepareScrollToElementData(elementData);
 
 	local dataIndex = self:FindElementDataIndex(elementData);
@@ -883,7 +875,7 @@ function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment,
 	if not view then
 		return;
 	end
-	
+
 	offset = offset or 0;
 	alignment = alignment or ScrollBoxConstants.AlignCenter;
 
@@ -918,7 +910,7 @@ end
 
 function ScrollBoxMixin:SetView(view)
 	ScrollBoxBaseMixin.SetView(self, view);
-	
+
 	view:ReparentScrollChildren(self:GetChildren());
 
 	local forceLayout = true;
@@ -940,7 +932,7 @@ function ScrollBoxMixin:Update(forceLayout)
 	end
 
 	self:SetUpdateLocked(true);
-	
+
 	if forceLayout then
 		self:Layout(self);
 	end

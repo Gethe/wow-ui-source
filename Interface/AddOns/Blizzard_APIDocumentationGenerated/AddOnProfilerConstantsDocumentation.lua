@@ -38,6 +38,9 @@ local AddOnProfilerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AddOnProfilerConstants);

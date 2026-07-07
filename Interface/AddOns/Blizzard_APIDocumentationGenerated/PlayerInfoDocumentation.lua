@@ -3,6 +3,7 @@ local PlayerInfo =
 	Name = "PlayerInfo",
 	Type = "System",
 	Namespace = "C_PlayerInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -105,6 +106,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsPlayerInRPE",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInRPE", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerNPERestricted",
 			Type = "Function",
 
@@ -138,6 +148,9 @@ local PlayerInfo =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

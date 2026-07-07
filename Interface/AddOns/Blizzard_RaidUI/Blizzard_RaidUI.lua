@@ -18,9 +18,9 @@ do
 	for index, value in ipairs(CLASS_SORT_ORDER) do
 		RAID_CLASS_BUTTONS[value] = { button = index, coords = CLASS_ICON_TCOORDS[value] };
 	end
-	RAID_CLASS_BUTTONS["PETS"]			= { button = 11, coords = {0, 1, 0, 1} };
-	RAID_CLASS_BUTTONS["MAINTANK"]		= { button = 12, coords = {0, 1, 0, 1} };
-	RAID_CLASS_BUTTONS["MAINASSIST"]	= { button = 13, coords = {0, 1, 0, 1} };
+	RAID_CLASS_BUTTONS["PETS"]			= { button = MAX_CLASSES + 1, coords = {0, 1, 0, 1} };
+	RAID_CLASS_BUTTONS["MAINTANK"]		= { button = MAX_CLASSES + 2, coords = {0, 1, 0, 1} };
+	RAID_CLASS_BUTTONS["MAINASSIST"]	= { button = MAX_CLASSES + 3, coords = {0, 1, 0, 1} };
 end
 MAX_RAID_CLASS_BUTTONS = MAX_CLASSES + 3;
 
@@ -105,7 +105,7 @@ function RaidClassButton_Update()
 				button.id = RAID_SUBGROUP_LISTS[index][1];
 				count:Hide();
 			else
-				button.class, button.fileName = UnitClassBase("raid"..RAID_SUBGROUP_LISTS[index][1]);
+				button.class, button.fileName = UnitClass("raid"..RAID_SUBGROUP_LISTS[index][1]);
 			end
 			button:Enable();
 		else
@@ -116,6 +116,7 @@ function RaidClassButton_Update()
 			button.class = nil;
 			button.fileName = nil;
 		end
+
 	end
 end
 
@@ -251,7 +252,7 @@ function RaidGroupFrame_Update()
 			raid_groupFrames[i]:Show();
 		end
 		for i=1, MAX_RAID_CLASS_BUTTONS do
-			--classes[i]:Show();
+			classes[i]:Show();
 		end
 	end
 

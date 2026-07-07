@@ -5,5 +5,6 @@
 ## AllowLoad: game
 ## AllowLoadGameType: classic
 Classic\Blizzard_TimeManager.lua
+Cata\Blizzard_TimeManagerOverrides.lua	[AllowLoadGameType cata, mists]
 Classic\Blizzard_TimeManager.xml
 Classic\Localization.lua

@@ -4,11 +4,23 @@ function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	self:SetLayoutManager(layoutManager);
 	self:SwitchToBestLayoutForSpec();
 
-	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", self.SwitchToBestLayoutForSpec, self);
+	-- This can be called very easily when the CooldownViewerSettings are hidden
+	-- If the player switches specs the last active layout for a spec needs to be updated
+	-- in the save data, so ensure that happens and that the PendingChanges on the layout manager are cleared
+	local function OnTraitConfigUpdated()
+		self:SwitchToBestLayoutForSpec();
+		self:GetLayoutManager():SaveLayouts();
+	end
+
+	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", OnTraitConfigUpdated, self);
 
 	local function RefreshFromExternalUpdate()
 		self:MarkDirty();
-		self:TriggerDataChangeInternal();
+
+		local layoutManager = self:GetLayoutManager();
+		if layoutManager then
+			layoutManager:NotifyListeners();
+		end
 	end
 
 	EventRegistry:RegisterFrameEventAndCallback("COOLDOWN_VIEWER_TABLE_HOTFIXED", RefreshFromExternalUpdate, self);
@@ -75,9 +87,6 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 		for cooldownIndex, cooldownID in ipairs(cooldownIDs) do
 			local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID);
 			if info then
-				info.category = cooldownCategory;
-				info.cooldownID = cooldownID;
-
 				-- Experimental, this should disable the cooldown and put it into the right display bucket
 				-- It should also allow the saved data to completely override whatever gets set here.
 				-- The thing to test, even before moving this into an API somewhere is whether or not marking the provider dirty will overwrite saved data...
@@ -99,11 +108,15 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 	end
 
 	local layoutManager = self:GetLayoutManager();
-	local currentTag = layoutManager and layoutManager:GetSerializer():GetCurrentClassAndSpecTag();
+	local currentTag = CooldownViewerUtil.GetCurrentClassAndSpecTag();
 	local activeLayout = layoutManager and layoutManager:GetActiveLayout();
-	local activeLayoutMatchesCurrentSpec = (activeLayout and currentTag) and (layoutManager:GetSpecTagForLayout(activeLayout) == currentTag);
-	local persistedLayoutOrderedCooldownIDs = activeLayoutMatchesCurrentSpec and layoutManager:ReadCooldownOrderFromLayout(activeLayout);
+	local activeLayoutMatchesCurrentSpec = (activeLayout and currentTag) and (CooldownManagerLayout_GetClassAndSpecTag(activeLayout) == currentTag);
+	local persistedLayoutOrderedCooldownIDs = activeLayoutMatchesCurrentSpec and CooldownManagerLayout_GetOrderedCooldownIDs(activeLayout);
 	local layoutOrderedCooldownIDs = persistedLayoutOrderedCooldownIDs and CopyTable(persistedLayoutOrderedCooldownIDs);
+
+	if layoutManager then
+		layoutManager:CheckDisableNotifications();
+	end
 
 	if layoutOrderedCooldownIDs then
 		-- Ensure there's nothing in saved data that's not in static data (don't save things that cannot exist)
@@ -135,6 +148,10 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 		end
 	end
 
+	if layoutManager then
+		layoutManager:EnableNotifications();
+	end
+
 	self.displayDataDirty = false;
 	self.displayData = {
 		cooldownInfoByID = cooldownInfoByID,
@@ -144,51 +161,50 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 	};
 end
 
-function CooldownViewerSettingsDataProviderMixin:ResetCurrentToDefaults()
-	local layoutManager = self:GetLayoutManager();
-	if layoutManager and self:GetDisplayData() then
-		layoutManager:ResetCurrentToDefaults();
-		self:MarkDirty();
-		self:TriggerDataChangeInternal();
+local function RunDataProviderCallbackThatRequiresLayoutNotifications(dataProvider, callback)
+	local layoutManager = dataProvider:GetLayoutManager();
+	if layoutManager and dataProvider:GetDisplayData() then
+		layoutManager:LockNotifications();
+
+		dataProvider:MarkDirty();
+		callback(layoutManager);
+
+		-- Always make sure that a notification is sent after running the callback; even if it didn't result in state changes
+		-- other systems still need to know that something needs to be rebuilt.
+		local forceNotify = true;
+		layoutManager:UnlockNotifications(forceNotify);
 	end
+end
+
+function CooldownViewerSettingsDataProviderMixin:ResetCurrentToDefaults()
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:ResetCurrentToDefaults();
+	end);
 end
 
 -- Non-destructive, just deactivates the current layout, but doesn't delete anything
 function CooldownViewerSettingsDataProviderMixin:UseDefaultLayout()
-	local layoutManager = self:GetLayoutManager();
-	if layoutManager and self:GetDisplayData() then
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
 		layoutManager:UseDefaultLayout();
-		self:MarkDirty();
-		self:TriggerDataChangeInternal();
-	end
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:ResetToRestorePoint()
-	local layoutManager = self:GetLayoutManager();
-	if layoutManager and self:GetDisplayData() then
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
 		layoutManager:ResetToRestorePoint();
-		self:MarkDirty();
-		self:TriggerDataChangeInternal();
-	end
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SwitchToBestLayoutForSpec()
-	local layoutManager = self:GetLayoutManager();
-	if layoutManager then
-		self:MarkDirty();
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
 		layoutManager:SwitchToBestLayoutForSpec();
-		self:TriggerDataChangeInternal();
-	end
+	end);
 end
 
-function CooldownViewerSettingsDataProviderMixin:SetActiveLayoutName(layoutName)
-	local layoutManager = self:GetLayoutManager();
-	if layoutManager then
-		self:MarkDirty();
-		if layoutManager:SetActiveLayoutName(layoutName) then
-			self:TriggerDataChangeInternal();
-		end
-	end
+function CooldownViewerSettingsDataProviderMixin:SetActiveLayoutByID(layoutID)
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:SetActiveLayoutByID(layoutID);
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:MarkDirty()
@@ -229,24 +245,28 @@ function CooldownViewerSettingsDataProviderMixin:GetCooldownInfoForID(cooldownID
 	return displayData and displayData.cooldownInfoByID[cooldownID];
 end
 
-function CooldownViewerSettingsDataProviderMixin:AreIndicesLegal(sourceIndex, destIndex, cooldownIDs)
-	cooldownIDs = cooldownIDs or self:GetOrderedCooldownIDs();
-	local len = #cooldownIDs;
-	return (sourceIndex > 0 and sourceIndex <= len) and (destIndex > 0 and destIndex <= len);
-end
-
 function CooldownViewerSettingsDataProviderMixin:ChangeOrderIndex(sourceIndex, destIndex, reorderOffset)
 	local cooldownIDs = self:GetOrderedCooldownIDs();
 	local layoutManager = self:GetLayoutManager();
-	if layoutManager and self:AreIndicesLegal(sourceIndex, destIndex, cooldownIDs) and sourceIndex ~= destIndex then
+	if layoutManager and sourceIndex ~= destIndex then
+		local orderChangeStatus = layoutManager:GetCooldownOrderChangeStatus(sourceIndex, destIndex, cooldownIDs);
+		if orderChangeStatus ~= Enum.CooldownLayoutStatus.Success then
+			return orderChangeStatus;
+		end
+
 		-- Lookup the objects before attempting any reordering.
 		-- Also note that the order may remain the same, maybe just the category is changing (e.g. drag 1 from essential -> disabled, now order is still 1.
 		-- Then drag 2 to after 1 in disabled, the order of 2 remains the same as well, it just becomes disabled.)
 		local sourceID = cooldownIDs[sourceIndex];
 		local destID = cooldownIDs[destIndex];
 
-		local preventEventTrigger = true;
-		self:ChangeCooldownInfoCategoryByID(sourceID, destID, preventEventTrigger);
+		layoutManager:LockNotifications();
+
+		local categoryChangeStatus = self:ChangeCooldownInfoCategoryByID(sourceID, destID);
+		if categoryChangeStatus ~= Enum.CooldownLayoutStatus.Success then
+			layoutManager:UnlockNotifications();
+			return categoryChangeStatus;
+		end
 
 		-- NOTE: Reorder offset is intended to mean "insert before" or "insert after" destIndex, reduce shenanigans by clamping.
 		reorderOffset = Clamp(reorderOffset, 0, 1);
@@ -263,43 +283,47 @@ function CooldownViewerSettingsDataProviderMixin:ChangeOrderIndex(sourceIndex, d
 			table.remove(cooldownIDs, sourceIndex);
 			table.insert(cooldownIDs, finalDestIndex, sourceID);
 
-			layoutManager:WriteCooldownOrderToActiveLayout(cooldownIDs);
+			layoutManager:WriteCooldownOrderToActiveLayout(cooldownIDs, Enum.CDMLayoutMode.AllowCreate);
 		end
 
-		-- Updates were prevented in the first change, ensure that things are updated now.
-		self:TriggerDataChangeInternal();
+		layoutManager:UnlockNotifications();
 	end
+
+	return Enum.CooldownLayoutStatus.Success;
 end
 
-function CooldownViewerSettingsDataProviderMixin:SetCooldownToCategory(sourceCooldownID, category, preventEventTrigger)
+function CooldownViewerSettingsDataProviderMixin:SetCooldownToCategory(sourceCooldownID, category)
 	local sourceInfo = self:GetCooldownInfoForID(sourceCooldownID);
 	if sourceInfo then
-		self:ChangeCooldownInfoInternal(preventEventTrigger, sourceInfo, category);
+		return self:ChangeCooldownInfoInternal(sourceInfo, category);
 	end
+
+	return Enum.CooldownLayoutStatus.Success;
 end
 
-function CooldownViewerSettingsDataProviderMixin:ChangeCooldownInfoCategoryByID(sourceCooldownID, destCooldownID, preventEventTrigger)
+function CooldownViewerSettingsDataProviderMixin:ChangeCooldownInfoCategoryByID(sourceCooldownID, destCooldownID)
 	local sourceInfo = self:GetCooldownInfoForID(sourceCooldownID);
 	local destInfo = self:GetCooldownInfoForID(destCooldownID);
 
 	if sourceInfo and destInfo then
-		self:ChangeCooldownInfoInternal(preventEventTrigger, sourceInfo, destInfo.category);
+		return self:ChangeCooldownInfoInternal(sourceInfo, destInfo.category);
 	end
+
+	return Enum.CooldownLayoutStatus.Success;
 end
 
-function CooldownViewerSettingsDataProviderMixin:ChangeCooldownInfoInternal(preventEventTrigger, info, category)
+function CooldownViewerSettingsDataProviderMixin:ChangeCooldownInfoInternal(info, category)
 	local layoutManager = self:GetLayoutManager();
 	if layoutManager then
-		layoutManager:WriteCooldownInfo_Category(info, category);
-
-		if not preventEventTrigger then
-			self:TriggerDataChangeInternal();
+		local status = layoutManager:GetCooldownCategoryChangeStatus(info.cooldownID, category);
+		if status ~= Enum.CooldownLayoutStatus.Success then
+			return status;
 		end
-	end
-end
 
-function CooldownViewerSettingsDataProviderMixin:TriggerDataChangeInternal()
-	EventRegistry:TriggerEvent("CooldownViewerSettings.OnDataChanged");
+		return layoutManager:WriteCooldownInfo_Category(info, category);
+	end
+
+	return Enum.CooldownLayoutStatus.Success;
 end
 
 function CooldownViewerSettingsDataProviderMixin:GetCooldownDefaults(cooldownID)

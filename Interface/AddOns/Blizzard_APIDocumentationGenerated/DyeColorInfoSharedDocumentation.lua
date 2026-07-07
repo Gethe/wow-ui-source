@@ -27,6 +27,9 @@ local DyeColorInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(DyeColorInfoShared);

@@ -10,11 +10,6 @@ BNET_CLIENT_APP = "App";
 BNET_CLIENT_HEROES = "Hero";
 BNET_CLIENT_CLNT = "CLNT";
 
---Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
-function BNet_GetBNetIDAccount(name)
-	return GetAutoCompletePresenceID(name);
-end
-
 --Name must be a character name from your friends list.
 function BNet_GetBNetIDAccountFromCharacterName(name)
 	local _, numBNetOnline = BNGetNumFriends();

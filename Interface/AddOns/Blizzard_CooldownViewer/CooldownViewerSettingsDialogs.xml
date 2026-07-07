@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CooldownViewerLayoutDialog" inherits="EditModeLayoutDialogTemplate" mixin="CooldownViewerBaseDialogMixin">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="CooldownViewerImportLayoutDialog" inherits="EditModeImportLayoutDialogTemplate" mixin="CooldownViewerBaseDialogMixin, CooldownViewerImportLayoutDialogMixin">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+</Ui>

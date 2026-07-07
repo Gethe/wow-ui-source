@@ -3,6 +3,7 @@ local UIModelInfo =
 	Name = "ModelInfo",
 	Type = "System",
 	Namespace = "C_ModelInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -119,62 +120,12 @@ local UIModelInfo =
 			Name = "UiModelSceneInfoUpdated",
 			Type = "Event",
 			LiteralName = "UI_MODEL_SCENE_INFO_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 
 	Tables =
 	{
-		{
-			Name = "ModelSceneSetting",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "ModelSceneType",
-			Type = "Enumeration",
-			NumValues = 16,
-			MinValue = 0,
-			MaxValue = 15,
-			Fields =
-			{
-				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
-				{ Name = "PetJournalCard", Type = "ModelSceneType", EnumValue = 1 },
-				{ Name = "ShopCard", Type = "ModelSceneType", EnumValue = 2 },
-				{ Name = "EncounterJournal", Type = "ModelSceneType", EnumValue = 3 },
-				{ Name = "PetJournalLoadout", Type = "ModelSceneType", EnumValue = 4 },
-				{ Name = "ArtifactTier2", Type = "ModelSceneType", EnumValue = 5 },
-				{ Name = "ArtifactTier2ForgingScene", Type = "ModelSceneType", EnumValue = 6 },
-				{ Name = "ArtifactTier2SlamEffect", Type = "ModelSceneType", EnumValue = 7 },
-				{ Name = "CommentatorVictoryFanfare", Type = "ModelSceneType", EnumValue = 8 },
-				{ Name = "ArtifactRelicTalentEffect", Type = "ModelSceneType", EnumValue = 9 },
-				{ Name = "PvPWarModeOrb", Type = "ModelSceneType", EnumValue = 10 },
-				{ Name = "PvPWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
-				{ Name = "PartyPose", Type = "ModelSceneType", EnumValue = 12 },
-				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
-				{ Name = "AzeritePowers", Type = "ModelSceneType", EnumValue = 14 },
-				{ Name = "AzeriteRewardGlow", Type = "ModelSceneType", EnumValue = 15 },
-			},
-		},
-		{
-			Name = "UIModelSceneActorFlag",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
-			MaxValue = 8,
-			Fields =
-			{
-				{ Name = "Deprecated1", Type = "UIModelSceneActorFlag", EnumValue = 1 },
-				{ Name = "UseCenterForOriginX", Type = "UIModelSceneActorFlag", EnumValue = 2 },
-				{ Name = "UseCenterForOriginY", Type = "UIModelSceneActorFlag", EnumValue = 4 },
-				{ Name = "UseCenterForOriginZ", Type = "UIModelSceneActorFlag", EnumValue = 8 },
-			},
-		},
 		{
 			Name = "UIModelSceneActorDisplayInfo",
 			Type = "Structure",
@@ -229,6 +180,9 @@ local UIModelInfo =
 				{ Name = "flags", Type = "ModelSceneSetting", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

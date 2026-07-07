@@ -266,3 +266,8 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AddOn, function(link, text, linkData, con
 	-- local links only
 	EventRegistry:TriggerEvent("SetItemRef", link, text, contextData.button, contextData.frame);
 end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.URLIndex, function(link, text, linkData, contextData)
+	local index = string.split(":", linkData.options);
+	LoadURLIndex(tonumber(index));
+end);

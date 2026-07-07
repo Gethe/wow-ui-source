@@ -24,4 +24,7 @@ function assertsafe(cond, msgStringOrFunction, ...)
 		end
 		SetErrorCallstackHeight(nil);
 	end
+
+	-- Parity with regular 'assert' which returns the input.
+	return cond;
 end

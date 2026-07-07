@@ -1,0 +1,88 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CDMVISBaseTemplate" inherits="AnimateWhileShownTemplate" mixin="CDMVISBaseMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_GOLD" type="global"/>
+			<KeyValue key="durationSeconds" value="2" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow method="CDMVISBase_OnLoad" inherit="append"/>
+			<OnShow method="CDMVISBase_OnShow" inherit="append"/>
+			<OnUpdate method="CDMVISBase_OnUpdate" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CDMVISMarchingAntsBase" inherits="CDMVISBaseTemplate" mixin="CDMVISMarchingAntsBaseMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Flipbook" atlas="VisualAlert_Ants_Flipbook" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+				<FlipBook childKey="Flipbook" duration="1" order="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="CDMVISMarchingAntsCyan" inherits="CDMVISMarchingAntsBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_CYAN" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISMarchingAntsRed" inherits="CDMVISMarchingAntsBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_RED" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISMarchingAntsGreen" inherits="CDMVISMarchingAntsBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_GREEN" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISMarchingAntsBlue" inherits="CDMVISMarchingAntsBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_BLUE" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISFlashBase" inherits="CDMVISBaseTemplate" mixin="CDMVISFlashBaseMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" atlas="UI-CooldownManager-VisualAlert-Glow" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup looping="BOUNCE" setToFinalAlpha="true">
+				<Alpha childKey="Glow" duration="0.5" order="1" smoothing="IN_OUT" fromAlpha="0.25" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="CDMVISFlashCyan" inherits="CDMVISFlashBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_CYAN" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISFlashRed" inherits="CDMVISFlashBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_RED" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISFlashGreen" inherits="CDMVISFlashBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_GREEN" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CDMVISFlashBlue" inherits="CDMVISFlashBase" virtual="true">
+		<KeyValues>
+			<KeyValue key="vertexColor" value="CDMVIS_ALERT_COLOR_BLUE" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

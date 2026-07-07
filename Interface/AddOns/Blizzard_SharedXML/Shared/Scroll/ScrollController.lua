@@ -1,6 +1,39 @@
 
 ScrollDirectionMixin = {};
 
+ScrollDirectionUtil = {};
+
+function ScrollDirectionUtil.GetFrameExtent(frame, isHorizontal)
+	local width, height = frame:GetSize();
+	return isHorizontal and width or height;
+end
+
+function ScrollDirectionUtil.SetFrameExtent(frame, value, isHorizontal)
+	if isHorizontal then
+		frame:SetWidth(value);
+	else
+		frame:SetHeight(value);
+	end
+end
+
+function ScrollDirectionUtil.GetUpper(frame, isHorizontal)
+	return isHorizontal and frame:GetLeft() or frame:GetTop();
+end
+
+function ScrollDirectionUtil.GetLower(frame, isHorizontal)
+	return isHorizontal and frame:GetRight() or frame:GetBottom();
+end
+
+function ScrollDirectionUtil.SelectCursorComponent(parent, isHorizontal)
+	local x, y = InputUtil.GetCursorPosition(parent);
+	return isHorizontal and x or y;
+end
+
+function ScrollDirectionUtil.SelectPointComponent(frame, isHorizontal)
+	local index = isHorizontal and 4 or 5;
+	return select(index, frame:GetPointByName("TOPLEFT"));
+end
+
 function ScrollDirectionMixin:SetHorizontal(isHorizontal)
 	self.isHorizontal = isHorizontal;
 end
@@ -10,34 +43,27 @@ function ScrollDirectionMixin:IsHorizontal()
 end
 
 function ScrollDirectionMixin:GetFrameExtent(frame)
-	local width, height = frame:GetSize();
-	return self.isHorizontal and width or height;
+	return ScrollDirectionUtil.GetFrameExtent(frame, self.isHorizontal);
 end
 
 function ScrollDirectionMixin:SetFrameExtent(frame, value)
-	if self.isHorizontal then
-		frame:SetWidth(value);
-	else
-		frame:SetHeight(value);
-	end
+	ScrollDirectionUtil.SetFrameExtent(frame, value, self.isHorizontal);
 end
 
 function ScrollDirectionMixin:GetUpper(frame)
-	return self.isHorizontal and frame:GetLeft() or frame:GetTop();
+	return ScrollDirectionUtil.GetUpper(frame, self.isHorizontal);
 end
 
 function ScrollDirectionMixin:GetLower(frame)
-	return self.isHorizontal and frame:GetRight() or frame:GetBottom();
+	return ScrollDirectionUtil.GetLower(frame, self.isHorizontal);
 end
 
 function ScrollDirectionMixin:SelectCursorComponent(parent)
-	local x, y = InputUtil.GetCursorPosition(parent);
-	return self.isHorizontal and x or y;
+	return ScrollDirectionUtil.SelectCursorComponent(parent, self.isHorizontal);
 end
 
 function ScrollDirectionMixin:SelectPointComponent(frame)
-	local index = self.isHorizontal and 4 or 5;
-	return select(index, frame:GetPointByName("TOPLEFT"));
+	return ScrollDirectionUtil.SelectPointComponent(frame, self.isHorizontal);
 end
 
 ScrollControllerMixin = CreateFromMixins(ScrollDirectionMixin);
@@ -48,13 +74,19 @@ ScrollControllerMixin.Directions =
 	Decrease = -1,
 }
 
+ScrollControllerMixin.Defaults =
+{
+	PanExtentPercentage = .1,
+	WheelPanScalar = 2.0,
+}
+
 function ScrollControllerMixin:OnLoad()
 	self.isScrollController = true;
-	self.panExtentPercentage = .1;
+	self.panExtentPercentage = ScrollControllerMixin.Defaults.PanExtentPercentage;
 	self.allowScroll = true;
 
 	if not self.wheelPanScalar then
-		self.wheelPanScalar = 2.0;
+		self.wheelPanScalar = ScrollControllerMixin.Defaults.WheelPanScalar;
 	end
 end
 
