@@ -11,12 +11,16 @@ function AuraContainerAuraSourceMixin:GetAuraDataByAuraInstanceID(_unitToken, _a
 	return nil;
 end
 
-function AuraContainerAuraSourceMixin:GetAllAuras(_unitToken, _filterString)
-	return {};
+function AuraContainerAuraSourceMixin:GetAllAuraInstanceIDs(_unitToken, _filterString)
+	local auraInstanceIDs = {};
+	local hasMatchedFilterString = true;
+
+	return auraInstanceIDs, hasMatchedFilterString;
 end
 
 function AuraContainerAuraSourceMixin:ApplySourceMetadata(auraData)
 	-- Source-specific metadata can be added here before the aura is stored.
+	auraData.auraType = AuraContainerAuraDataType.Aura;
 	auraData.isPrivate = self:IsPrivate();
 end
 
@@ -26,8 +30,11 @@ function AuraContainerPublicAuraSourceMixin:GetAuraDataByAuraInstanceID(unitToke
 	return C_UnitAuras.GetAuraDataByAuraInstanceID(unitToken, auraInstanceID);
 end
 
-function AuraContainerPublicAuraSourceMixin:GetAllAuras(unitToken, filterString)
-	return C_UnitAuras.GetUnitAuras(unitToken, filterString);
+function AuraContainerPublicAuraSourceMixin:GetAllAuraInstanceIDs(unitToken, filterString)
+	local auraInstanceIDs = C_UnitAuras.GetUnitAuraInstanceIDs(unitToken, filterString);
+	local hasMatchedFilterString = true;
+
+	return auraInstanceIDs, hasMatchedFilterString;
 end
 
 -- Private auras currently have their own source and APIs. The reason this has
@@ -45,8 +52,13 @@ function AuraContainerPrivateAuraSourceMixin:GetAuraDataByAuraInstanceID(unitTok
 	return C_UnitAurasPrivate.GetAuraDataByAuraInstanceIDPrivate(unitToken, auraInstanceID);
 end
 
-function AuraContainerPrivateAuraSourceMixin:GetAllAuras(unitToken, filterString)
-	return C_UnitAurasPrivate.GetAllPrivateAuras(unitToken, filterString);
+function AuraContainerPrivateAuraSourceMixin:GetAllAuraInstanceIDs(unitToken, _filterString)
+	-- Private auras currently ignore filter strings in this query. We instead
+	-- filter them out over in ShouldIncludeAuraForFilterString.
+	local auraInstanceIDs = C_UnitAurasPrivate.GetAllPrivateAuraInstanceIDs(unitToken);
+	local hasMatchedFilterString = false;
+
+	return auraInstanceIDs, hasMatchedFilterString;
 end
 
 -- Edit Mode uses AuraUtil so containers can display placeholder/test aura data
@@ -58,8 +70,16 @@ function AuraContainerEditModeAuraSourceMixin:GetAuraDataByAuraInstanceID(unitTo
 	return AuraUtil.GetAuraDataByAuraInstanceID(unitToken, auraInstanceID);
 end
 
-function AuraContainerEditModeAuraSourceMixin:GetAllAuras(unitToken, filterString)
-	return AuraUtil.GetUnitAuras(unitToken, filterString);
+function AuraContainerEditModeAuraSourceMixin:GetAllAuraInstanceIDs(unitToken, filterString)
+	local auras = AuraUtil.GetUnitAuras(unitToken, filterString);
+	local auraInstanceIDs = table.create(#auras);
+	local hasMatchedFilterString = true;
+
+	for index, auraData in ipairs(auras) do
+		auraInstanceIDs[index] = auraData.auraInstanceID;
+	end
+
+	return auraInstanceIDs, hasMatchedFilterString;
 end
 
 AuraContainerPublicAuraSource = CreateFromMixins(AuraContainerPublicAuraSourceMixin);

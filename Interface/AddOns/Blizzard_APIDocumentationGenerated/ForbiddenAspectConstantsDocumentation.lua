@@ -5,9 +5,9 @@ local ForbiddenAspectConstants =
 		{
 			Name = "ForbiddenAspect",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 256,
+			MaxValue = 128,
 			Fields =
 			{
 				{ Name = "SetToDefaults", Type = "ForbiddenAspect", EnumValue = 1, Documentation = { "Restricts resetting this object to a default state. Implied automatically when any other forbidden aspect is set." } },
@@ -18,7 +18,6 @@ local ForbiddenAspectConstants =
 				{ Name = "AlwaysPropagateInput", Type = "ForbiddenAspect", EnumValue = 32, Documentation = { "Forces propagation of mouse and keypress input for this object. Propagates to any children." } },
 				{ Name = "ScriptedInput", Type = "ForbiddenAspect", EnumValue = 64, Documentation = { "Restricts APIs that trigger synthetic input interactions on objects from Lua scripts." } },
 				{ Name = "QueryFocus", Type = "ForbiddenAspect", EnumValue = 128, Documentation = { "Restricts APIs that query input focus state." } },
-				{ Name = "Shown", Type = "ForbiddenAspect", EnumValue = 256, Documentation = { "Restricts control of the shown state for a region." } },
 			},
 		},
 		{

@@ -3,8 +3,6 @@
 	<ScopedModifier useForbiddenObjectTable="true">
 		<AuraContainer name="TargetFrameAuraContainerTemplate" virtual="true">
 			<KeyValues>
-				<KeyValue key="privateAurasEnabled" value="true" type="boolean"/>
-
 				<KeyValue key="maxBuffs" value="TargetFrameAuraContainerDefaults.MaxBuffs" type="global"/>
 				<KeyValue key="maxDebuffs" value="TargetFrameAuraContainerDefaults.MaxDebuffs" type="global"/>
 

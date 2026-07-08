@@ -17,7 +17,7 @@ local function AssertNonNegativeInteger(value, argumentName)
 	return value;
 end
 
-TargetFrameAuraContainerSharedMixin = CreateFromMixins(AuraContainerManagedSharedMixin);
+TargetFrameAuraContainerSharedMixin = CreateFromMixins(ManagedAuraContainerSharedMixin);
 
 function TargetFrameAuraContainerSharedMixin:GetBuffTemplate()
 	return addonTable.GetTargetFrameBuffButtonTemplate();
@@ -252,8 +252,8 @@ function TargetFrameAuraContainerSharedMixin:GetNumVisibleAuraRows()
 	return self.numVisibleAuraRows;
 end
 
-TargetFrameAuraContainerInboundMixin = CreateFromMixins(AuraContainerManagedInboundMixin, TargetFrameAuraContainerSharedMixin);
-TargetFrameAuraContainerPrivateMixin = CreateFromMixins(AuraContainerManagedMixin, TargetFrameAuraContainerSharedMixin);
+TargetFrameAuraContainerInboundMixin = CreateFromMixins(ManagedAuraContainerInboundMixin, TargetFrameAuraContainerSharedMixin);
+TargetFrameAuraContainerPrivateMixin = CreateFromMixins(ManagedAuraContainerPrivateMixin, TargetFrameAuraContainerSharedMixin);
 
 function TargetFrameAuraContainerPrivateMixin:OnLoad()
 	self.flowLayoutDescription = TargetFrameAuraFlowLayoutDescription;
@@ -266,13 +266,13 @@ function TargetFrameAuraContainerPrivateMixin:OnLoad()
 	self.auraPools:CreatePool("AuraButton", self, self:GetBuffTemplate(), GenerateClosure(self.ResetPooledAuraFrame, self));
 	self.auraPools:CreatePool("AuraButton", self, self:GetDebuffTemplate(), GenerateClosure(self.ResetPooledAuraFrame, self));
 
-	self.buffAuraGroup = self:AddAuraGroup({
+	self.buffAuraGroup = self:RegisterAuraGroup("Buffs", {
 		filterString = self:GetBuffFilterString(),
 		frameProvider = AuraContainerUtil.CreateFramePoolProvider(self.auraPools:GetPool(self:GetBuffTemplate())),
 		maxFrameCount = self:GetMaxBuffs()
 	});
 
-	self.debuffAuraGroup = self:AddAuraGroup({
+	self.debuffAuraGroup = self:RegisterAuraGroup("Debuffs", {
 		filterString = self:GetDebuffFilterString(),
 		frameProvider = AuraContainerUtil.CreateFramePoolProvider(self.auraPools:GetPool(self:GetDebuffTemplate())),
 		maxFrameCount = self:GetMaxDebuffs()
@@ -283,7 +283,7 @@ function TargetFrameAuraContainerPrivateMixin:OnLoad()
 	self:MarkDirty(AuraContainerDirtyMask.All);
 end
 
---[[override]] function TargetFrameAuraContainerPrivateMixin:ShouldIncludeAuraInGroup(auraGroup, auraData)
+--[[override]] function TargetFrameAuraContainerPrivateMixin:ShouldIncludeAuraInGroup(auraGroup, _unitToken, auraData, _hasMatchedFilterString)
 	if auraGroup == self.buffAuraGroup then
 		return self:ShouldShowAuraAsBuff(auraData);
 	elseif auraGroup == self.debuffAuraGroup then
@@ -293,34 +293,36 @@ end
 	return false;
 end
 
---[[override]] function TargetFrameAuraContainerPrivateMixin:InitializeAuraFrameForGroup(auraFrame, auraData, auraGroup)
+--[[override]] function TargetFrameAuraContainerPrivateMixin:InitializeAuraGroupFrame(auraGroup, auraFrame, unitToken, auraData)
 	if auraGroup == self.buffAuraGroup then
 		auraFrame:SetStealableBorderEnabled(not self:IsPlayerTarget());
 	end
 
 	auraFrame:SetShowAuraCount(self:ShouldShowAuraCount());
-	auraFrame:SetAuraInstance(self:GetUnit(), auraData);
+	auraFrame:SetAuraInstance(unitToken, auraData);
 	auraFrame:Show();
 end
 
 --[[override]] function TargetFrameAuraContainerPrivateMixin:RefreshAuraFrameDisplay()
 	local stealableBorderEnabled = not self:IsPlayerTarget();
 
-	for _index, auraFrame in ipairs(self.buffAuraGroup:GetFrames()) do
+	for _index, auraFrame in ipairs(self.buffAuraGroup:GetFramesByIndex()) do
 		auraFrame:SetStealableBorderEnabled(stealableBorderEnabled);
 		auraFrame:SetShowAuraCount(self:ShouldShowAuraCount());
 	end
 
-	for _index, auraFrame in ipairs(self.debuffAuraGroup:GetFrames()) do
+	for _index, auraFrame in ipairs(self.debuffAuraGroup:GetFramesByIndex()) do
 		auraFrame:SetShowAuraCount(self:ShouldShowAuraCount());
 	end
 end
 
 --[[override]] function TargetFrameAuraContainerPrivateMixin:RebuildLayoutGroups()
 	local elementSpacingX, elementSpacingY = self:GetAuraSpacing();
-
 	local firstAuraGroup, secondAuraGroup;
-	if self:IsTargetFriendly() or #self.debuffAuraGroup:GetFrames() == 0 then
+
+	-- Note that flow layout collapses groups with no elements, and so the
+	-- second group here will shift up if the first is empty.
+	if self:IsTargetFriendly() then
 		firstAuraGroup = self.buffAuraGroup;
 		secondAuraGroup = self.debuffAuraGroup;
 	else
@@ -330,11 +332,10 @@ end
 
 	self.flowLayoutGroups =
 	{
-		-- Closures for the elements here is intentional; aura processing
-		-- builds new visible frame lists and so we can't hold a reference
-		-- here or we'll apply stale layout data.
+		-- Closures are intentional because aura processing replaces each group's
+		-- visible frame list during refresh.
 		{
-			elements = function() return firstAuraGroup:GetFrames(); end,
+			elements = function() return firstAuraGroup:GetFramesByIndex(); end,
 			elementSpacingX = elementSpacingX,
 			elementSpacingY = elementSpacingY,
 			forceNewRow = false,
@@ -342,7 +343,7 @@ end
 			gapY = 0,
 		},
 		{
-			elements = function() return secondAuraGroup:GetFrames(); end,
+			elements = function() return secondAuraGroup:GetFramesByIndex(); end,
 			elementSpacingX = elementSpacingX,
 			elementSpacingY = elementSpacingY,
 			forceNewRow = true,
@@ -452,7 +453,7 @@ function TargetFrameAuraContainerPrivateMixin:ShouldShowAuraWithLargeSize(auraDa
 	return false;
 end
 
-TargetFrameAuraFlowLayoutDescription = CreateFromMixins(AnchorUtil.FlowLayoutDescriptionMixin);
+TargetFrameAuraFlowLayoutDescription = CreateFromMixins(AnchorUtil.FlowLayoutDescriptionBaseMixin);
 
 function TargetFrameAuraFlowLayoutDescription:GetAnchorPoint(container)
 	if container:ShouldMirrorAurasVertically() then

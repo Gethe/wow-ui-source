@@ -402,49 +402,21 @@ function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
 		return;
 	end
 
-	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
-		rootDescription:SetTag("MENU_HOUSING_BLUEPRINT_ENTRY");
-		
-		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
-			self.contextMenuIsOpen = true;
-			self:UpdateStateVisuals();
-		end);
-		rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
-			self.contextMenuIsOpen = false;
-			self:UpdateStateVisuals();
-		end);
-
-		if self.owner and self.owner:ShouldShowContextImportOption(self.blueprintInfo) then
-			rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_IMPORT, function()
-				HousingFramesUtil.ShowBlueprintImport(self.blueprintInfo.shareCode);
-			end);
-		end
-
-		if self.blueprintInfo.isAutoSave then
-			rootDescription:CreateTitle(HOUSING_BLUEPRINT_COLLECTION_READONLY_BACKUP);
-			return;			
-		end
-
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_COPY, function()
-			CopyToClipboard(self.blueprintInfo.shareCode);
-			ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
-		end);
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RENAME, function()
-			HousingBlueprintRenameFrame:ShowForBlueprint(self.blueprintInfo);
-		end);
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_DELETE, function()
-			local popupData = {
-				owner = self,
-				confirmationString = HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING,
-			};
-			StaticPopup_Show("CONFIRM_BLUEPRINT_DELETE", HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING, nil, popupData);
-			self:UpdateStateVisuals();
-		end);
+	MenuUtil.CreateContextMenu(self, function(self, rootDescription)
+		local menuParams = {
+			shouldShowImport = self.owner and self.owner:ShouldShowContextImportOption(self.blueprintInfo),
+			onDeleteConfirm = function() self:OnDeleteConfirmed(); end,
+			onStateChange = function() self:UpdateStateVisuals(); end,
+			onMenuOpenChanged = function(isMenuOpen) self.contextMenuIsOpen = isMenuOpen; self:UpdateStateVisuals(); end,
+		};
+		HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, self.blueprintInfo, menuParams)
 	end);
 end
 
 function HousingBlueprintCollectionEntryMixin:OnDeleteConfirmed()
-	C_HousingBlueprint.DeleteBlueprint(self.blueprintInfo.blueprintID);
+	if self.blueprintInfo and not self.blueprintInfo.isAutoSave then
+		C_HousingBlueprint.DeleteBlueprint(self.blueprintInfo.blueprintID);
+	end
 end
 
 function HousingBlueprintCollectionEntryMixin:UpdateStateVisuals()
@@ -473,7 +445,7 @@ function HousingBlueprintCollectionEntryMixin:IsSelected()
 
 	-- If Delete confirmation for this blueprint is open, show selected
 	local dialogName, dialog = StaticPopup_Visible("CONFIRM_BLUEPRINT_DELETE");
-	if dialog and dialog.data and dialog.data.owner == self then
+	if dialog and dialog.data and dialog.data.shareCode == self.blueprintInfo.shareCode then
 		return true;
 	end
 
@@ -502,55 +474,6 @@ function HousingBlueprintCollectionEntryMixin:GetDebugName()
 	end
 	return "Unused Entry";
 end
-
------------------ Static Popups -----------------
-StaticPopupDialogs["CONFIRM_BLUEPRINT_DELETE"] = {
-	text = HOUSING_BLUEPRINT_DELETE_CONFIRMATION_TEXT,
-	button1 = HOUSING_BLUEPRINT_DELETE_CONFIRM,
-	button2 = CANCEL,
-	hideOnEscape = 1,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hasEditBox = 1,
-	maxLetters = 32,
-	selectCallbackByIndex = true,
-
-	OnButton1 = function(self, data)
-		-- Confirm
-		data.owner:OnDeleteConfirmed();
-		self:Hide();
-	end,
-	OnButton2 = function(self, data)
-		-- Cancel
-		data.owner:UpdateStateVisuals();
-		self:Hide();
-	end,
-	OnShow = function(dialog, data)
-		dialog:GetButton1():Disable();
-		dialog:GetButton2():Enable();
-		dialog:GetEditBox():SetFocus();
-	end,
-	OnHide = function(dialog, data)
-		dialog:GetEditBox():SetText("");
-		data.owner:UpdateStateVisuals();
-	end,
-	EditBoxOnEnterPressed = function(editBox, data)
-		local dialog = editBox:GetParent();
-		if dialog:GetButton1():IsEnabled() then
-			data.owner:OnDeleteConfirmed();
-			dialog:Hide();
-		end
-	end,
-	EditBoxOnTextChanged = function(editBox, data)
-		StaticPopup_StandardConfirmationTextHandler(editBox, data.confirmationString);
-	end,
-	EditBoxOnEscapePressed = function(editBox, data)
-		editBox:GetParent():Hide();
-		data.owner:UpdateStateVisuals();
-		ClearCursor();
-	end
-};
 
 StaticPopupDialogs["CONFIRM_RESET_HOUSE"] = {
 	text = "%s",

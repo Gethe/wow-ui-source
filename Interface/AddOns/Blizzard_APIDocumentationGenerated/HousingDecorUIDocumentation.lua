@@ -42,6 +42,17 @@ local HousingDecorUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetAllMaxPlacementBudgets",
+			Type = "Function",
+			Documentation = { "Returns the interior and exterior max decor placement budgets for the current owned house interior or plot; Can be increased via house level" },
+
+			Returns =
+			{
+				{ Name = "interiorMaxBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to max budget amount; Will be nil if not in an owned House or Plot" } },
+				{ Name = "exteriorMaxBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to max budget amount; Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
 			Name = "GetAllPlacedDecor",
 			Type = "Function",
 			HasRestrictions = true,
@@ -53,25 +64,14 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "GetBothMaxPlacementBudgets",
+			Name = "GetAllSpentPlacementBudgets",
 			Type = "Function",
-			Documentation = { "Returns both the interior and exterior max decor placement budgets for the current owned house interior or plot; Can be increased via house level" },
+			Documentation = { "Returns how much of the interior and exterior placement budgets for the current owned house interior or plot's decor budget have been spent" },
 
 			Returns =
 			{
-				{ Name = "maxInteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
-				{ Name = "maxExteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
-			},
-		},
-		{
-			Name = "GetBothSpentPlacementBudgets",
-			Type = "Function",
-			Documentation = { "Returns how much of both the interior and exterior placement budgets for the current owned house interior or plot's decor budget have been spent" },
-
-			Returns =
-			{
-				{ Name = "spentInteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
-				{ Name = "spentExteriorBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
+				{ Name = "interiorSpentBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to spent budget amount; Will be nil if not in an owned House or Plot" } },
+				{ Name = "exteriorSpentBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to spent budget amount; Will be nil if not in an owned House or Plot" } },
 			},
 		},
 		{

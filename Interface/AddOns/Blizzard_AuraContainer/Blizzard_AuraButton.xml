@@ -19,6 +19,7 @@
 				<OnEnter method="OnEnter_Intrinsic"/>
 				<OnLeave method="OnLeave_Intrinsic"/>
 				<OnUpdate method="OnUpdate_Intrinsic"/>
+				<OnClick method="OnClick_Intrinsic"/>
 			</Scripts>
 		</Button>
 	 </ScopedModifier>

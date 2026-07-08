@@ -20,10 +20,10 @@ function HousingBlueprintContentListFrameMixin:OnLoad()
 		
 	self.MissingOnlyCheckbox.Checkbox:SetScript("OnClick", function (button)
 		-- Re-show contents, with the filter toggled
-		if not self.isReadonly and self.blueprintContentInfo then
+		if self:HasTargetHouse() and self.blueprintContentInfo then
 			PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 			local isFilterUpdate = true;
-			self:ShowBlueprintContents(self.blueprintContentInfo, self.isReadonly, isFilterUpdate);
+			self:ShowBlueprintContents(self.blueprintContentInfo, self:GetTargetGUID(), isFilterUpdate);
 		end
 	end);
 
@@ -34,12 +34,12 @@ function HousingBlueprintContentListFrameMixin:OnLoad()
 		local elementData = node:GetData();
 		if elementData.entries then
 			local function GroupInitializer(frame, node)
-				frame:Init(node, self.isReadonly);
+				frame:Init(node, --[[isReadonly=]]not self:HasTargetHouse());
 			end
 			factory("HousingBlueprintContentGroupTemplate", GroupInitializer);
 		elseif elementData.recordID then
 			local function EntryInitializer(frame, node)
-				frame:Init(node, self.isReadonly);
+				frame:Init(node,  --[[isReadonly=]]not self:HasTargetHouse());
 			end
 			factory("HousingBlueprintContentEntryTemplate", EntryInitializer);
 		end
@@ -86,6 +86,14 @@ local function SortEntriesByName(nodeA, nodeB)
 	return strcmputf8i(elementA.name, elementB.name) < 0;
 end
 
+function HousingBlueprintContentListFrameMixin:GetTargetGUID()
+	return self.targetHouseGUID;
+end
+
+function HousingBlueprintContentListFrameMixin:HasTargetHouse()
+	return self:GetTargetGUID() ~= nil;
+end
+
 function HousingBlueprintContentListFrameMixin:IsShowingBlueprintForTarget(shareCode, houseGUID)
 	if not self.blueprintContentInfo then
 		return false;
@@ -98,7 +106,7 @@ function HousingBlueprintContentListFrameMixin:IsOperationInProgress()
 	return false;
 end
 
-function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintContentInfo, isReadonly, isFilterUpdate)
+function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintContentInfo, targetHouseGUID, isFilterUpdate)
 	local isDataUpdate = not isFilterUpdate and blueprintContentInfo and self:IsShowingBlueprintForTarget(blueprintContentInfo.shareCode, blueprintContentInfo.targetHouseGUID);
 	self:ClearData();
 
@@ -107,9 +115,9 @@ function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintCo
 	end
 
 	self.blueprintContentInfo = blueprintContentInfo;
-	self.isReadonly = isReadonly;
+	self.targetHouseGUID = targetHouseGUID;
 	
-	local showMissingOnly = (not self.isReadonly) and self.MissingOnlyCheckbox.Checkbox:GetChecked();
+	local showMissingOnly = self:HasTargetHouse() and self.MissingOnlyCheckbox.Checkbox:GetChecked();
 
 	local dataProvider = CreateTreeDataProvider();
 	local affectChildren = false;
@@ -140,14 +148,14 @@ function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintCo
 		end
 	end
 
-	if self.isReadonly then
-		self.CountText:SetText(HOUSING_BLUEPRINT_CONTENT_COUNT_FMT:format(numItems));
-	else
+	if self:HasTargetHouse() then
 		local numAvailable = numItems - numMissing;
 		self.CountText:SetText(HOUSING_BLUEPRINT_CONTENT_COUNT_COMPARE_FMT:format(numAvailable, numItems));
+	else
+		self.CountText:SetText(HOUSING_BLUEPRINT_CONTENT_COUNT_FMT:format(numItems));
 	end
 
-	self.MissingOnlyCheckbox:SetShown(not self.isReadonly);
+	self.MissingOnlyCheckbox:SetShown(self:HasTargetHouse());
 
 	self:ShowSelf();
 
@@ -157,7 +165,7 @@ end
 function HousingBlueprintContentListFrameMixin:ClearData()
 	self.ScrollBox:RemoveDataProvider();
 	self.blueprintContentInfo = nil;
-	self.isReadonly = nil;
+	self.targetHouseGUID = nil;
 end
 
 function HousingBlueprintContentListFrameMixin:OnEvent(event, ...)
@@ -187,7 +195,7 @@ function HousingBlueprintContentListFrameMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_BLUEPRINT_CONTENTS_RECEIVED" then
 		local contentInfo = ...;
 		if contentInfo and self:IsShowingBlueprintForTarget(contentInfo.shareCode, contentInfo.targetHouseGUID) then
-			self:ShowBlueprintContents(contentInfo, self.isReadonly);
+			self:ShowBlueprintContents(contentInfo, self:GetTargetGUID());
 		end
 	end
 end
@@ -229,7 +237,7 @@ function HousingBlueprintContentListFrameMixin:UpdateBlueprintContentsData()
 		return;
 	end
 
-	C_HousingBlueprint.RequestBlueprintContents(self.blueprintContentInfo.shareCode);
+	C_HousingBlueprint.RequestBlueprintContentsForContext(self.blueprintCode, self:GetTargetGUID());
 end
 
 ----------------- Content Group -----------------

@@ -1203,13 +1203,6 @@ function PrivateAuraUnitWatcher:HandleUpdateInfo(privateAuraSource, updateInfo)
 		if self:ProcessAuras(privateAuraSource, updateInfo.addedAuras) then
 			aurasChanged = true;
 		end
-
-		for _, aura in ipairs(updateInfo.addedAuras) do
-			local appliedSounds = C_UnitAurasPrivate.GetAuraAppliedSoundsForSpell(self.unit, aura.spellId);
-			for _, sound in pairs(appliedSounds) do
-				PlaySoundFile(sound.soundFileName or sound.soundFileID, sound.outputChannel);
-			end
-		end
 	end
 
 	if updateInfo.updatedAuraInstanceIDs then

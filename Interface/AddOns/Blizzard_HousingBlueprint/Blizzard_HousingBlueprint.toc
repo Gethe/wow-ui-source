@@ -4,6 +4,8 @@
 ## Dependencies: Blizzard_HousingTemplates, Blizzard_GameMenuEsc
 ## AllowLoadGameType: standard
 
+Blizzard_HousingBlueprintUtils.lua
+
 Blizzard_HousingBlueprintFrameTemplates.lua
 Blizzard_HousingBlueprintFrameTemplates.xml
 

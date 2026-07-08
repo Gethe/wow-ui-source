@@ -46,8 +46,10 @@ function InstanceDifficultyMixin:IsGuildGroup()
 end
 
 function InstanceDifficultyMixin:IsInDelve()
-	local _x, _y, _z, mapID = UnitPosition("player");
-	return C_DelvesUI.HasActiveDelve(mapID);
+	local isInDelve = C_DelvesUI.HasActiveDelve();
+	local isInLair = C_DelvesUI.HasActiveLair();
+	-- every lair is a delve, but not every delve is a lair.
+	return isInDelve and not isInLair;
 end
 
 function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, displayChallengeMode, displayMythic, displayHeroic, hasWorldTier)

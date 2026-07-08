@@ -81,6 +81,11 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs and events produce secret values when combat, encounter, challenge mode, or PvP match addon restrictions are in effect. Individual spells may be flagged as never or always secret, which takes priority over restrictions." },
 		},
 		{
+			Name = "SecretWhenAurasRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values when combat, encounter, challenge mode, or PvP match addon restrictions are in effect." },
+		},
+		{
 			Name = "SecretWhenCooldownsRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when combat, encounter, challenge mode, or PvP match addon restrictions are in effect. Individual spells may be flagged as never or always secret, which takes priority over restrictions." },

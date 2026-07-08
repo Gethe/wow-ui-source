@@ -18,18 +18,21 @@ function HousingDashboardFrameMixin:OnLoad()
 		tabButton = self.HouseInfoTabButton,
 		contentFrame = self.HouseInfoContent,
 		titleText = HOUSING_DASHBOARD_HOUSEINFO_FRAMETITLE,
+		showHouseDropdown = true,
 	};
 	table.insert(self.tabs, self.houseInfoTab);
 	self.catalogTab = {
 		tabButton = self.CatalogTabButton,
 		contentFrame = self.CatalogContent,
 		titleText = HOUSING_DASHBOARD_CATALOG_FRAMETITLE,
+		showHouseDropdown = false,
 	};
 	table.insert(self.tabs, self.catalogTab);
 	self.collectionTab = {
 		tabButton = self.CollectionTabButton,
 		contentFrame = self.CollectionContent,
 		titleText = HOUSING_DASHBOARD_COLLECTION_FRAMETITLE,
+		showHouseDropdown = true,
 	};
 	table.insert(self.tabs, self.collectionTab);
 
@@ -80,6 +83,7 @@ function HousingDashboardFrameMixin:SetTab(activeTab)
 		end
 	end
 
+	self.HouseDropdown:SetShown(activeTabInfo and activeTabInfo.showHouseDropdown);
 	self:SetTitle(activeTabInfo and activeTabInfo.titleText or HOUSING_DASHBOARD_HOUSEINFO_FRAMETITLE);
 end
 

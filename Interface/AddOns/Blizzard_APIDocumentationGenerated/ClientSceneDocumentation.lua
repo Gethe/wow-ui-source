@@ -7,6 +7,21 @@ local ClientScene =
 
 	Functions =
 	{
+		{
+			Name = "IsSceneTypeActive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "desiredSceneType", Type = "ClientSceneType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isPlaying", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

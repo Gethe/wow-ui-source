@@ -1,10 +1,10 @@
 local eventHandlers = {
-	["CONFIRM_TALENT_WIPE"] = GameEvent.HandleConfirmTalentWipe,
-	["CONFIRM_XP_LOSS"] = GameEvent.HandleConfirmXpLoss,
-	["ENABLE_TAXI_BENCHMARK"] = GameEvent.HandleEnableTaxiBenchmark,
-	["SPELL_CONFIRMATION_PROMPT"] = GameEvent.HandleSpellConfirmationPrompt,
-	["SPELL_CONFIRMATION_TIMEOUT"] = GameEvent.HandleSpellConfirmationTimeout,
-	["USE_GLYPH"] = GameEvent.HandleUseGlyph,
+	["CONFIRM_TALENT_WIPE"] = function(...) GameEvent.HandleConfirmTalentWipe(...) end,
+	["CONFIRM_XP_LOSS"] = function(...) GameEvent.HandleConfirmXpLoss(...) end,
+	["ENABLE_TAXI_BENCHMARK"] = function(...) GameEvent.HandleEnableTaxiBenchmark(...) end,
+	["SPELL_CONFIRMATION_PROMPT"] = function(...) GameEvent.HandleSpellConfirmationPrompt(...) end,
+	["SPELL_CONFIRMATION_TIMEOUT"] = function(...) GameEvent.HandleSpellConfirmationTimeout(...) end,
+	["USE_GLYPH"] = function(...) GameEvent.HandleUseGlyph(...) end,
 };
 
 function GameEvent.RegisterWrathEvents()

@@ -9,9 +9,21 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.But
 
 UIWidgetTemplateButtonHeaderMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local buttonHeaderTextureKitRegions = {
+local textureKitRegions = {
 	["Frame"] = "%s-frame",
 }
+
+local textureKitAnchorInfo = {
+	["evergreen-scenario-widget-short"] = {
+		buttonContainer = { point = "RIGHT", xOffset = -13, yOffset = 0 },
+		headerText = { point = "LEFT", xOffset = 12, yOffset = 0 },
+	},
+};
+
+local defaultAnchorInfo = {
+	buttonContainer = { point = "BOTTOMRIGHT", xOffset = -13, yOffset = 9 },
+	headerText = { point = "LEFT", xOffset = 21, yOffset = 0 },
+};
 
 function UIWidgetTemplateButtonHeaderMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
@@ -19,7 +31,14 @@ function UIWidgetTemplateButtonHeaderMixin:Setup(widgetInfo, widgetContainer)
 	self:SetTooltip(widgetInfo.tooltip);
 	self.HeaderText:SetText(widgetInfo.headerText);
 
-	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, buttonHeaderTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, textureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+
+	local anchorInfo = textureKitAnchorInfo[widgetInfo.frameTextureKit] or defaultAnchorInfo;
+
+	self.ButtonContainer:ClearAllPoints();
+	self.ButtonContainer:SetPoint(anchorInfo.buttonContainer.point, self, anchorInfo.buttonContainer.point, anchorInfo.buttonContainer.xOffset, anchorInfo.buttonContainer.yOffset);
+
+	self.HeaderText:SetPoint(anchorInfo.headerText.point, self, anchorInfo.headerText.point, anchorInfo.headerText.xOffset, anchorInfo.headerText.yOffset);
 
 	self.buttonPool:ReleaseAll();
 

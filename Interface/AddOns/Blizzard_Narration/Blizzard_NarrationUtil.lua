@@ -16,11 +16,6 @@
 --			Returns positional information (e.g. "3 of 10") for items in a list.
 --			Use NarrationUtil.MakeIndexInfo.
 --
---		NarrationIgnoreCheckedState() -> boolean
---			Returns true if the checked/unchecked state should be omitted from the context narration,
---			typically for check buttons whose checked state represents selection rather than a
---			traditional on/off toggle.
---
 --		NarrationNavigationShouldSkipTooltips() -> boolean
 --			Returns true if tooltip narration should be suppressed when this region is focused,
 --			typically because the region already includes the tooltip information in its own narration.
@@ -85,12 +80,10 @@ local function GetRegionContext(region)
 	end
 
 	if objectType == "CheckButton" and region.GetChecked then
-		if not region.NarrationIgnoreCheckedState or not region:NarrationIgnoreCheckedState() then
-			if region:GetChecked() then
-				return string.format(NARRATION_STATUS_CHECKED_FORMAT, objectName);
-			else
-				return string.format(NARRATION_STATUS_UNCHECKED_FORMAT, objectName);
-			end
+		if region:GetChecked() then
+			return string.format(NARRATION_STATUS_CHECKED_FORMAT, objectName);
+		else
+			return string.format(NARRATION_STATUS_UNCHECKED_FORMAT, objectName);
 		end
 	end
 

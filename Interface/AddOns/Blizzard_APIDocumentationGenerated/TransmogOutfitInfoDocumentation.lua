@@ -20,6 +20,21 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "CanPlayerTransmogSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ChangeDisplayedOutfit",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

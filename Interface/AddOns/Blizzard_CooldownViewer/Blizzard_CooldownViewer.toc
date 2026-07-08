@@ -6,6 +6,7 @@
 ## Dep: Blizzard_ManagedFrameSystem
 CooldownViewerSettingsConstants.lua
 CooldownViewerUtil.lua
+CooldownViewerSecure.lua [LoadIntoEnvironment secure]
 CooldownViewerVisualAlertTarget.lua
 CooldownViewerSoundAlertData.lua
 CooldownViewerAlert.lua

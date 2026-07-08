@@ -202,6 +202,23 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetTemporaryEnchantmentInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries information about active temporary enchants on inventory slot items." },
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "LuaInventorySlot", Nilable = false, Documentation = { "An appropriate INVSLOT_ constant." } },
+			},
+
+			Returns =
+			{
+				{ Name = "enchantInfo", Type = "TemporaryItemEnchantInfo", Nilable = false, Documentation = { "Returns nothing if no temporary enchantment is active for this slot." } },
+			},
+		},
+		{
 			Name = "IsInventorySlotEnabled",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -447,6 +464,17 @@ local PaperDollInfo =
 				{ Name = "rating", Type = "number", Nilable = false },
 				{ Name = "played", Type = "number", Nilable = false },
 				{ Name = "won", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "TemporaryItemEnchantInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "enchantID", Type = "number", Nilable = false },
+				{ Name = "remainingTimeMs", Type = "number", Nilable = false },
+				{ Name = "chargesRemaining", Type = "number", Nilable = false },
+				{ Name = "hasExpirationTime", Type = "bool", Nilable = false },
 			},
 		},
 	},

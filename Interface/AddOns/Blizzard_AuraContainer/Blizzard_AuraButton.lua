@@ -1,11 +1,41 @@
 AuraButtonSharedMixin = {};
+
+local function ParseCancelAuraButtons(cancelAuraButtons)
+	if cancelAuraButtons == nil then
+		return nil;
+	end
+
+	cancelAuraButtons = securecopy(cancelAuraButtons);
+
+	assert(type(cancelAuraButtons) == "string", "cancelAuraButtons must be a string or nil.");
+
+	local parsedButtonArray = {};
+	for clickToken in string.gmatch(cancelAuraButtons, "[^,%s]+") do
+		table.insert(parsedButtonArray, clickToken);
+	end
+
+	assert(#parsedButtonArray > 0, "cancelAuraButtons must contain at least one click token when set.");
+
+	return parsedButtonArray;
+end
+
+function AuraButtonSharedMixin:SetCancelAuraButtons(cancelAuraButtons)
+	self.cancelAuraButtonsArray = ParseCancelAuraButtons(cancelAuraButtons);
+
+	if self.cancelAuraButtonsArray ~= nil then
+		self:RegisterForClicks(unpack(self.cancelAuraButtonsArray));
+	else
+		self:RegisterForClicks();
+	end
+end
+
 AuraButtonInboundMixin = CreateFromMixins(AuraButtonSharedMixin);
 AuraButtonPrivateMixin = CreateFromMixins(AuraButtonSharedMixin);
 
 function AuraButtonPrivateMixin:OnLoad_Intrinsic()
-	self.auraContainer = nil;
 	self.auraData = nil;
 	self.unitToken = nil;
+	self.cancelAuraButtonsArray = nil;
 end
 
 function AuraButtonPrivateMixin:OnEnter_Intrinsic(_isFromMouseMotion)
@@ -18,6 +48,17 @@ end
 
 function AuraButtonPrivateMixin:OnUpdate_Intrinsic(_elapsedTime)
 	self:UpdateTooltip();
+end
+
+function AuraButtonPrivateMixin:OnClick_Intrinsic(button, isDown)
+	if not self:CanCancelAuraOnClick(button, isDown) then
+		return;
+	end
+
+	local unitToken, auraData = self:GetAuraInstance();
+	if unitToken and auraData and auraData.auraInstanceID then
+		C_UnitAuras.CancelAuraByInstanceID(unitToken, auraData.auraInstanceID);
+	end
 end
 
 function AuraButtonPrivateMixin:OnAuraInstanceAssigned(_unitToken, _auraData)
@@ -35,26 +76,6 @@ function AuraButtonPrivateMixin:OnAuraInstanceCleared()
 	-- longer display an aura instance.
 end
 
-function AuraButtonPrivateMixin:GetAuraContainer()
-	return self.auraContainer;
-end
-
-function AuraButtonPrivateMixin:HasAuraContainer()
-	return self.auraContainer ~= nil;
-end
-
-function AuraButtonPrivateMixin:ClearAuraContainer()
-	self:ClearAuraInstance();
-	self.auraContainer = nil;
-end
-
-function AuraButtonPrivateMixin:SetAuraContainer(auraContainer)
-	assert(self.auraContainer == nil, "attempted to assign an aura frame owned by another aura container");
-
-	self.auraContainer = auraContainer;
-	self:UpdateAuraDisplay();
-end
-
 function AuraButtonPrivateMixin:GetAuraInstance()
 	return self.unitToken, self.auraData;
 end
@@ -63,32 +84,15 @@ function AuraButtonPrivateMixin:HasAuraInstance()
 	return self.auraData ~= nil;
 end
 
-function AuraButtonPrivateMixin:CanUpdateAuraInstance(newUnitToken, newAuraData)
-	local oldUnitToken = self.unitToken;
-	local oldAuraData = self.auraData;
-
-	if not oldAuraData then
-		-- No existing aura; new aura must be an assignment.
-		return false;
-	elseif oldUnitToken ~= newUnitToken or oldAuraData.auraInstanceID ~= newAuraData.auraInstanceID then
-		-- Existing aura is for a different unit, or a different aura on the same unit.
-		return false;
-	end
-
-	-- Callers must clear/force assignment across full aura rebuilds, because
-	-- aura instance IDs may be reused for unrelated auras.
-	return true;
+function AuraButtonPrivateMixin:SetAuraInstance(unitToken, auraData)
+	self.unitToken = unitToken;
+	self.auraData = auraData;
+	self:OnAuraInstanceAssigned(unitToken, auraData);
 end
 
-function AuraButtonPrivateMixin:SetAuraInstance(unitToken, auraData, isFullUpdate)
-	if not isFullUpdate and self:CanUpdateAuraInstance(unitToken, auraData) then
-		self.auraData = auraData;
-		self:OnAuraInstanceUpdated(unitToken, auraData);
-	else
-		self.unitToken = unitToken;
-		self.auraData = auraData;
-		self:OnAuraInstanceAssigned(unitToken, auraData);
-	end
+function AuraButtonPrivateMixin:UpdateAuraInstance(unitToken, auraData)
+	self.auraData = auraData;
+	self:OnAuraInstanceUpdated(unitToken, auraData);
 end
 
 function AuraButtonPrivateMixin:ClearAuraInstance()
@@ -116,7 +120,11 @@ function AuraButtonPrivateMixin:ShowTooltip()
 end
 
 function AuraButtonPrivateMixin:PopulateTooltip(unitToken, auraData)
-	AuraButtonTooltip:ShowAuraTooltip(unitToken, auraData);
+	if auraData.auraType == AuraContainerAuraDataType.Aura then
+		AuraButtonTooltip:ShowAuraTooltip(unitToken, auraData);
+	elseif auraData.auraType == AuraContainerAuraDataType.ItemEnchantment then
+		AuraButtonTooltip:SetInventoryItem(unitToken, auraData.inventorySlot);
+	end
 end
 
 function AuraButtonPrivateMixin:HideTooltip()
@@ -128,4 +136,19 @@ function AuraButtonPrivateMixin:UpdateTooltip()
 	if AuraButtonTooltip:IsOwned(self) then
 		self:PopulateTooltip(self:GetAuraInstance());
 	end
+end
+
+function AuraButtonPrivateMixin:CanCancelAuraOnClick(button, isDown)
+	if self.cancelAuraButtonsArray == nil then
+		return false;
+	end
+
+	local clickToken = string.format("%s%s", button, isDown and "Down" or "Up");
+	for index = 1, #self.cancelAuraButtonsArray do
+		if self.cancelAuraButtonsArray[index] == clickToken then
+			return true;
+		end
+	end
+
+	return false;
 end

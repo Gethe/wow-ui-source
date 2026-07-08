@@ -4,7 +4,7 @@ local BUTTON_SLIDE_DURATION = 0.15;
 CustomizeDecorPetFrameMixin = {};
 
 function CustomizeDecorPetFrameMixin:OnLoad()
-	local stride = 4;
+	local stride = 3;
 	local view = CreateScrollBoxListGridView(stride, self.OptionsContainer.topPadding, self.OptionsContainer.bottomPadding, self.OptionsContainer.leftPadding, self.OptionsContainer.rightPadding, self.OptionsContainer.horizontalSpacing, self.OptionsContainer.verticalSpacing);
 	view:SetElementInitializer("HousingPetEntryTemplate", function(button, elementData)
 			button:Init(elementData);
@@ -321,6 +321,8 @@ function DecorPetCustomizationMixin:SetPetID(petID)
 	if self.customizePane then
 		self.customizePane:RefreshApplyButtonState();
 	end
+
+	EventRegistry:TriggerEvent("DecorSelectedPetChanged", self);
 end
 
 function DecorPetCustomizationMixin:OnApply()
@@ -408,6 +410,24 @@ function HousingPetEntryMixin:Init(elementData)
 	self.customName = elementData.customName;
 	self.petID = elementData.petID;
 	self.customizationPetPane = elementData.customizationPetPane;
+
+	self:UpdateSelectedState();
+	EventRegistry:RegisterCallback("DecorSelectedPetChanged", self.UpdateSelectedState, self);
+end
+
+function HousingPetEntryMixin:UpdateSelectedState()
+	self.isSelected = self.petID == self.customizationPetPane.petID;
+	self:UpdateBackground();
+end
+
+function HousingPetEntryMixin:UpdateBackground()
+	local backgroundAtlas = self.backgroundDefault;
+	if self.isSelected then
+		backgroundAtlas = self.backgroundActive;
+	end
+
+	self.Background:SetAtlas(backgroundAtlas);
+	self.HoverBackground:SetAtlas(backgroundAtlas);
 end
 
 function HousingPetEntryMixin:OnEnter()

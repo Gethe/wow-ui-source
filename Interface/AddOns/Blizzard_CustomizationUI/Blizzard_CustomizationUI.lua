@@ -70,17 +70,21 @@ end
 ----------------- Randomize Appearance Button -----------------
 
 -- Expects to inherit CustomizationSmallButtonMixin
-CustomizationRandomizeAppearanceButtonMixin = {};
+CustomizationRandomizeAppearanceButtonMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function CustomizationRandomizeAppearanceButtonMixin:OnClick()
 	CustomizationSmallButtonMixin.OnClick(self);
 	self:GetCustomizationFrame():RandomizeAppearance();
 end
 
+function CustomizationRandomizeAppearanceButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Reset Camera Button -----------------
 
 -- Expects to inherit CustomizationSmallButtonMixin
-CustomizationResetCameraButtonMixin = {};
+CustomizationResetCameraButtonMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function CustomizationResetCameraButtonMixin:OnClick()
 	CustomizationSmallButtonMixin.OnClick(self);
@@ -89,9 +93,13 @@ function CustomizationResetCameraButtonMixin:OnClick()
 	customizationFrame:UpdateCameraMode();
 end
 
+function CustomizationResetCameraButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Zoom Button -----------------
 
-CustomizationZoomButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin);
+CustomizationZoomButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin, NarrationSkipTooltipsMixin);
 
 function CustomizationZoomButtonMixin:DoClickAction()
 	self:GetCustomizationFrame():ZoomCamera(self.clickAmount);
@@ -101,9 +109,13 @@ function CustomizationZoomButtonMixin:DoHoldAction(elapsed)
 	self:GetCustomizationFrame():ZoomCamera(self.holdAmountPerSecond * elapsed);
 end
 
+function CustomizationZoomButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Rotate Button -----------------
 
-CustomizationRotateButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin);
+CustomizationRotateButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin, NarrationSkipTooltipsMixin);
 
 function CustomizationRotateButtonMixin:DoClickAction()
 	self:GetCustomizationFrame():RotateSubject(self.clickAmount);
@@ -111,6 +123,10 @@ end
 
 function CustomizationRotateButtonMixin:DoHoldAction(elapsed)
 	self:GetCustomizationFrame():RotateSubject(self.holdAmountPerSecond * elapsed);
+end
+
+function CustomizationRotateButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
 end
 
 ----------------- Category Button -----------------
@@ -184,8 +200,9 @@ function CustomizationCategoryButtonMixin:NarrationGetName()
 	return self.categoryData and self.categoryData.name or nil;
 end
 
-function CustomizationCategoryButtonMixin:NarrationIgnoreCheckedState()
-	return true;
+function CustomizationCategoryButtonMixin:NarrationGetContext()
+	-- This is a selection button, not a checkbox; narrate as a plain button.
+	return NARRATION_OBJECT_BUTTON;
 end
 
 ----------------- Customization Frame -----------------

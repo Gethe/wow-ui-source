@@ -561,7 +561,7 @@ SECURE_ACTIONS.click =
     function (self, unit, button)
         local delegate =
             SecureButton_GetModifiedAttribute(self, "clickbutton", button);
-        if ( delegate and not delegate:IsForbidden() ) then
+        if ( delegate and not delegate:IsForbidden() and not button:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
             delegate:Click(button);
         end
     end;

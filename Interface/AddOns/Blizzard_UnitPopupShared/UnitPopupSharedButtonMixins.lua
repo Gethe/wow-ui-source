@@ -581,10 +581,12 @@ UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendBut
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 	local accountInfo = contextData.accountInfo;
 	local promptText;
-	if not C_Glue.IsOnGlueScreen() then 
-	if accountInfo then
-		if accountInfo.isBattleTagFriend then
-			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
+	if not C_Glue.IsOnGlueScreen() then
+		if accountInfo then
+			if accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title then
+				promptText = string.format(REMOVE_TITLE_FRIEND_CONFIRMATION, accountInfo.accountName);
+			elseif accountInfo.isBattleTagFriend then
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			else
 				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			end
@@ -595,8 +597,6 @@ function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 		local text2 = nil;
 		StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, text2, contextData.bnetIDAccount);
 	end
-
-
 end
 
 UnitPopupSetBNetNoteButtonMixin = CreateFromMixins(UnitPopupSetNoteButtonMixin);
@@ -2357,7 +2357,8 @@ function UnitPopupAddBtagFriendButtonMixin:OnClick(contextData)
 			C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 		else
 			local accountInfo = contextData.accountInfo;
-			if accountInfo then
+			local hasValidBattleTag = accountInfo and accountInfo.battleTag and accountInfo.battleTag ~= "";
+			if hasValidBattleTag then
 				BNSendFriendInvite(accountInfo.battleTag);
 			else
 				BNCheckBattleTagInviteToUnit(contextData.unit);
@@ -2424,7 +2425,7 @@ function UnitPopupAddTitleFriendButtonMixin:OnClick(contextData)
 		local clubInfo = contextData.clubInfo;
 		local clubMemberInfo = contextData.clubMemberInfo;
 		if clubInfo and clubMemberInfo then
-			--C_Club.SendTitleFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
+			C_Club.SendTitleFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 		else
 			C_BattleNet.BNCheckTitleFriendInviteToUnit(contextData.unit);
 		end
@@ -2444,7 +2445,13 @@ function UnitPopupAddTitleFriendButtonMixin:IsEnabled(contextData)
 	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isPlayer, Enum.BattleNetFriendLevel.Title);
 end
 
-function UnitPopupAddTitleFriendButtonMixin:CanShow(_contextData)
+function UnitPopupAddTitleFriendButtonMixin:CanShow(contextData)
+	local clubInfo = contextData.clubInfo;
+	local isBattleNetClub = clubInfo and clubInfo.clubType == Enum.ClubType.BattleNet;
+	if isBattleNetClub then
+		return false;
+	end
+
 	return BNFeaturesEnabledAndConnected() and C_BattleNet.AreTitleFriendsEnabled();
 end
 

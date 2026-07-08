@@ -8,6 +8,22 @@ local UnitAura =
 	Functions =
 	{
 		{
+			Name = "AddAuraAppliedSound",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "sound", Type = "UnitAuraAppliedSoundInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "auraAppliedSoundID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "AddBlockedAura",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -31,22 +47,6 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "anchorID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "AddPrivateAuraAppliedSound",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "sound", Type = "UnitPrivateAuraAppliedSoundInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "privateAuraSoundID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -77,6 +77,19 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "isPrivate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CancelAuraByInstanceID",
+			Type = "Function",
+			RequiresUnitAuraAccess = true,
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -473,6 +486,16 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "RemoveAuraAppliedSound",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "auraAppliedSoundID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RemovePrivateAuraAnchor",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -480,16 +503,6 @@ local UnitAura =
 			Arguments =
 			{
 				{ Name = "anchorID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "RemovePrivateAuraAppliedSound",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "privateAuraSoundID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -586,6 +599,7 @@ local UnitAura =
 			Name = "UnitAura",
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
+			SecretWhenAurasRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{

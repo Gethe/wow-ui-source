@@ -79,6 +79,7 @@ end
 
 function InitiativesTabMixin:OnHouseListUpdated(playerHouseList)
 	self.playerHouseList = playerHouseList;
+	C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
 end
 
 function InitiativesTabMixin:RefreshInitiativeTab()
@@ -236,14 +237,7 @@ function InitiativesTabMixin:UpdateBackground(selectedHouseInfo)
 	end
 end
 
-function InitiativesTabMixin:RefreshHouseDropdown()
-	--TODO: remove this.
-end
-
 function InitiativesTabMixin:OnHouseSelected(houseInfoID)
-	if not self.playerHouseList then
-		self:RefreshHouseDropdown();
-	end
 	local neighborhoodGUID = self.playerHouseList[houseInfoID].neighborhoodGUID;
 	C_NeighborhoodInitiative.SetViewingNeighborhood(neighborhoodGUID);
 	self:UpdateBackground(self.playerHouseList[houseInfoID]);

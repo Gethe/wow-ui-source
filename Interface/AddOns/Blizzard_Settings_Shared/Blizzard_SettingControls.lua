@@ -670,6 +670,8 @@ function SettingsSliderControlMixin:OnLoad()
 		NarrationSkipTooltipsMixin
 	);
 
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
+
 	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
 
 	Mixin(self.SliderWithSteppers.Slider, NarrationForwardToParentMixin, DefaultTooltipMixin);
@@ -721,6 +723,14 @@ function SettingsSliderControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
+function SettingsSliderControlMixin:NarrationGetContext()
+	return self.SliderWithSteppers:NarrationGetContext();
+end
+
+function SettingsSliderControlMixin:NarrationGetDescription()
+	return self.SliderWithSteppers:NarrationGetDescription();
+end
+
 SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);
 
 function SettingsDropdownControlMixin:OnLoad()
@@ -736,6 +746,8 @@ function SettingsDropdownControlMixin:OnLoad()
 		SettingsDropdownNarrationContextMixin,
 		NarrationSkipTooltipsMixin
 	);
+
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
 
 	self.Control.Dropdown:SetWidth(220);
 
@@ -796,6 +808,10 @@ end
 
 function SettingsDropdownControlMixin:Release()
 	SettingsControlMixin.Release(self);
+end
+
+function SettingsDropdownControlMixin:NarrationGetContext()
+	return self.Control:NarrationGetContext();
 end
 
 function SettingsDropdownControlMixin:OnSettingValueChanged(setting, value)

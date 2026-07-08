@@ -53,7 +53,6 @@ function HousingBlueprintImportFrameMixin:StartImportFlow(prepopulatedShareCode)
 end
 
 function HousingBlueprintImportFrameMixin:ClearData()
-	self.isReadOnly = nil;
 	self.InputContent:ClearData();
 	self.ValidationContent:ClearData();
 end
@@ -276,7 +275,7 @@ function HousingBlueprintImportValidationContentMixin:UpdateImportButton()
 	local canImport, disabledText = self:CanImport();
 	self.ImportButton:SetEnabled(canImport);
 
-	if not canImport and self.ContentSummary:IsReadonly() then
+	if not canImport and not self.ContentSummary:HasTargetHouse() then
 		-- Only show location error text as a disabled tooltip, all other messaging is shown through Notice Text
 		self.ImportButton:SetDisabledTooltip(ERR_HOUSING_BLUEPRINT_REQUIREMENT_LOCATION, "ANCHOR_BOTTOM");
 	else

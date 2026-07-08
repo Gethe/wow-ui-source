@@ -1297,8 +1297,8 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
 
-	-- hide loot tab when there isn't loot
-	EncounterJournal_SetTabVisibe(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
+	--disable loot tab if there's no loot
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 	
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
@@ -1365,8 +1365,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
 
-	-- hide loot tab when there isn't loot
-	EncounterJournal_SetTabVisibe(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
+	--disable loot tab if there's no loot
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 
@@ -2251,13 +2251,6 @@ function EncounterJournal_SetTabEnabled(tab, enabled)
 	end
 end
 
-function EncounterJournal_SetTabVisibe(tab, visible)
-	tab:SetShown(visible);
-	if not visible then
-		EncounterJournal_ValidateSelectedTab();
-	end
-end
-
 function EncounterJournal_ValidateSelectedTab()
 	local info = EncounterJournal.encounter.info;
 	local selectedTabButton = info[EJ_Tabs[info.tab].button];
@@ -2730,6 +2723,16 @@ function EncounterJournal_OpenToJourney(factionID)
 		EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
 		EncounterJournal.JourneysFrame:ResetView(majorFactionData);
 	end
+end
+
+function EncounterJournal_OpenToTieredEntrance(instanceID, difficultyID)
+	assertsafe(instanceID, "A valid instanceID is required to open to a tiered entrance.");
+	ShowUIPanel(EncounterJournal);
+	EJ_ContentTab_Select(EncounterJournal.raidsTab:GetID());
+	EncounterJournal_DisplayInstance(instanceID);
+	if difficultyID then
+		EJ_SetDifficulty(difficultyID);
+	end		
 end
 
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)

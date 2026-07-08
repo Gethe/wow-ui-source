@@ -40,6 +40,18 @@ local UnitConstants =
 			},
 		},
 		{
+			Name = "UnitAuraAppliedSoundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "soundFileName", Type = "string", Nilable = true },
+				{ Name = "soundFileID", Type = "number", Nilable = true },
+				{ Name = "outputChannel", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitAuraUpdateInfo",
 			Type = "Structure",
 			Fields =
@@ -67,18 +79,6 @@ local UnitConstants =
 				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 				{ Name = "isContainer", Type = "bool", Nilable = true },
 				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitPrivateAuraAppliedSoundInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "soundFileName", Type = "string", Nilable = true },
-				{ Name = "soundFileID", Type = "number", Nilable = true },
-				{ Name = "outputChannel", Type = "string", Nilable = true },
 			},
 		},
 	},

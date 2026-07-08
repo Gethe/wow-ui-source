@@ -38,6 +38,19 @@ local HousingBlueprintConstants =
 			},
 		},
 		{
+			Name = "HousingBlueprintBudgetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "interiorDecorBudgetMax", Type = "number", Nilable = false },
+				{ Name = "exteriorDecorBudgetMax", Type = "number", Nilable = false },
+				{ Name = "roomBudgetMax", Type = "number", Nilable = false },
+				{ Name = "interiorDecorBudgetCurrent", Type = "number", Nilable = false },
+				{ Name = "exteriorDecorBudgetCurrent", Type = "number", Nilable = false },
+				{ Name = "roomBudgetCurrent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingBlueprintCollection",
 			Type = "Structure",
 			Documentation = { "List of Blueprints, separated into like groups" },
@@ -78,6 +91,7 @@ local HousingBlueprintConstants =
 			{
 				{ Name = "shareCode", Type = "string", Nilable = false },
 				{ Name = "targetHouseGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "targetHouseBudgetInfo", Type = "HousingBlueprintBudgetInfo", Nilable = true },
 				{ Name = "contentGroups", Type = "table", InnerType = "HousingBlueprintContentGroup", Nilable = false },
 				{ Name = "unmetRequirementFlags", Type = "HousingBlueprintUnmetRequirementFlags", Nilable = false },
 				{ Name = "blockingRequirementFlags", Type = "HousingBlueprintUnmetRequirementFlags", Nilable = false },

@@ -2084,7 +2084,7 @@ function CharacterCreateEditBoxMixin:OnEvent(event, ...)
 	end
 end
 
-CharacterCreateNameAvailabilityStateMixin = CreateFromMixins(TimedCallbackMixin);
+CharacterCreateNameAvailabilityStateMixin = CreateFromMixins(TimedCallbackMixin, NarrationSkipTooltipsMixin);
 
 function CharacterCreateNameAvailabilityStateMixin:OnLoad()
 	self:SetCheckDelaySeconds(1);
@@ -2169,7 +2169,13 @@ function CharacterCreateNameAvailabilityStateMixin:NarrationGetName()
 	return nil;
 end
 
-CharacterCreateRandomNameButtonMixin = {};
+function CharacterCreateNameAvailabilityStateMixin:NarrationGetContext()
+	-- This is a visual-only status indicator, not an interactive button.
+	-- Suppress the default behavior in GetRegionContext that narrates the object type.
+	return nil;
+end
+
+CharacterCreateRandomNameButtonMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function CharacterCreateRandomNameButtonMixin:OnClick()
 	if not self.pendingRequest then
@@ -2178,6 +2184,10 @@ function CharacterCreateRandomNameButtonMixin:OnClick()
 		C_CharacterCreation.RequestRandomName();
 		self.pendingRequest = true;
 	end
+end
+
+function CharacterCreateRandomNameButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
 end
 
 CharacterCreateClassTrialSpecsMixin = {};

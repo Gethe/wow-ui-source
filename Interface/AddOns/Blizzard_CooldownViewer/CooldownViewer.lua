@@ -1,3 +1,5 @@
+local _addonName, addonTable = ...;
+
 --[[
 debugSpells = {};
 debugCooldowns = {};
@@ -1667,10 +1669,7 @@ function CooldownViewerMixin:OnLoad()
 	self.tooltipsShown = true;
 
 	-- Used for quick lookup when handling UNIT_AURA events, requires the items to register/unregister their auraInstanceID when it changes.
-	-- This table disallows tainted access. This implicitly permits it to store secret keys without wrapping all of its
-	-- contents in secrets - which is important to avoid errors when reads of this table produce secret frame handles.
-	self.auraInstanceIDToItemFramesMap = {};
-	settablesecurity(self.auraInstanceIDToItemFramesMap, Enum.TableSecurityOption.DisallowTaintedAccess);
+	self.auraInstanceIDToItemFramesMap = addonTable.CreateSecureAuraInstanceMap();
 
 	-- Used for selective target update calls; items register when they care about target state (range check or target aura).
 	self.itemFramesNeedingTargetUpdateMap = {};

@@ -15,6 +15,11 @@ local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
 		error(string.format("bad object '%s' in function call (must not be a forbidden object)", inboundObject:GetDebugName()));
 	end
 
+	local _isProtected, isProtectedExplicitly = inboundObject:IsProtected();
+	if isProtectedExplicitly then
+		error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", inboundObject:GetDebugName()));
+	end
+
 	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Parent)) then
 		-- This can error when attempting to attach a region that isn't parented to an aura button.
 		error(string.format("bad object '%s' in function call (must inherit all forbidden parent aspects from owner)", inboundObject:GetDebugName()));
@@ -49,6 +54,8 @@ local function AssertValidFormatter(formatter)
 end
 
 function CustomAuraButtonSharedMixin:SetApplicationCount(fontString, options)
+	options = securecopy(options or {});
+
 	self.ApplicationCount = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
 	self.ApplicationCount.formatter = AssertValidFormatter(options.formatter);
 	self:UpdateAuraDisplay();
@@ -289,7 +296,7 @@ end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraSymbol(auraData)
 	if self.AuraSymbol then
-		local dispelType = ShouldShowDispelTypeForAura(self.AuraBorder, auraData) and auraData.dispelName or nil;
+		local dispelType = ShouldShowDispelTypeForAura(self.AuraSymbol, auraData) and auraData.dispelName or nil;
 
 		-- SetAuraSymbol only conditionally sets secret text; we need this
 		-- to be unconditional as it could be observed externally. Also make
@@ -328,10 +335,13 @@ end
 
 function CustomAuraButtonPrivateMixin:ApplyDuration(unitToken, auraData)
 	if self:HasAnyDurationDisplay() then
-		local auraDuration = auraData and C_UnitAuras.GetAuraDuration(unitToken, auraData.auraInstanceID) or nil;
+		local auraDuration = C_DurationUtil.CreateDuration();
 
-		if not auraDuration then
-			auraDuration = C_DurationUtil.CreateDuration();
+		if auraData and auraData.expirationTime > 0 then
+			-- Avoiding the use of C_UnitAuras.GetAuraDuration as that API
+			-- isn't equipped to handle private auras. Build it manually.
+			auraDuration:SetTimeFromEnd(secretwrap(auraData.expirationTime, auraData.duration, auraData.timeMod));
+		else
 			auraDuration:SetTimeSpan(secretwrap(0, 0));
 		end
 
@@ -343,15 +353,13 @@ end
 
 function CustomAuraButtonPrivateMixin:ApplyIcon(auraData)
 	if self.Icon then
-		local icon = auraData and auraData.icon or QUESTION_MARK_ICON;
-		self.Icon:SetTexture(secretwrap(icon));
+		AuraContainerUtil.SetIconTextureForAura(self, self.Icon, auraData);
 	end
 end
 
 function CustomAuraButtonPrivateMixin:ApplySpellName(auraData)
 	if self.SpellName then
-		local text = auraData and auraData.name or "";
-		self.SpellName:SetText(secretwrap(text));
+		AuraContainerUtil.SetSpellNameForAura(self, self.SpellName, auraData);
 	end
 end
 

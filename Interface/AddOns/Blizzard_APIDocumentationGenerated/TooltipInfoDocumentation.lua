@@ -525,7 +525,7 @@ local TooltipInfo =
 			Arguments =
 			{
 				{ Name = "dungeonID", Type = "number", Nilable = false },
-				{ Name = "shortageSeverity", Type = "number", Nilable = false },
+				{ Name = "shortageSeverity", Type = "luaIndex", Nilable = false },
 				{ Name = "lootIndex", Type = "luaIndex", Nilable = false },
 			},
 

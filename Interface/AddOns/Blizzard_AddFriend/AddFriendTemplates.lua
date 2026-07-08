@@ -94,6 +94,9 @@ function AddFriendFrameMixin:OnShow()
 	else
 		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Hide();
 	end
+
+	local areTitleFriendsEnabled = C_BattleNet.AreTitleFriendsEnabled();
+	AddFriendInfoFrame.InfoContainer.RightTextContainer.Description:SetText(areTitleFriendsEnabled and WOW_FRIEND_DESCRIPTION or CHARACTER_FRIEND_INFO);
 end
 
 function AddFriendFrameMixin:OnHide()
@@ -122,7 +125,7 @@ function AddFriendFrameMixin:ShowEntry()
 		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.FriendIcon:SetVertexColor(1, 1, 1);
 		local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
 		if ( battleTag and isRIDEnabled ) then
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(REAL_ID);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(BATTLETAG_OR_REAL_ID_LABEL);
 			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_BATTLETAG_FRIEND_LABEL);
 			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG_OR_EMAIL);
 		elseif ( isRIDEnabled ) then
@@ -168,7 +171,7 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 end
 
 function AddFriendEntryFrame_Init(clearText)
-	AddFriendEntryFrameAcceptButton:SetText(ADD_FRIEND);
+	AddFriendEntryFrameAcceptButton:SetText(SEND_REQUEST);
 	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Title:SetAlpha(1);
 	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Description:SetAlpha(1);
 	AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:SetVertexColor(1, 1, 1);

@@ -470,28 +470,28 @@ AnchorUtil.FlowDirection =
 	Down = -1,
 };
 
-local FlowLayoutDescriptionMixin = {};
-AnchorUtil.FlowLayoutDescriptionMixin = FlowLayoutDescriptionMixin;
+local FlowLayoutDescriptionBaseMixin = {};
+AnchorUtil.FlowLayoutDescriptionBaseMixin = FlowLayoutDescriptionBaseMixin;
 
-function FlowLayoutDescriptionMixin:GetAnchorPoint(_container)
+function FlowLayoutDescriptionBaseMixin:GetAnchorPoint(_container)
 	-- Override to define the anchor point name that elements will use when
 	-- being positioned relatively within the container frame.
 	return "TOPLEFT";
 end
 
-function FlowLayoutDescriptionMixin:GetHorizontalGrowthDirection(_container)
+function FlowLayoutDescriptionBaseMixin:GetHorizontalGrowthDirection(_container)
 	-- Override to describe whether we're laying out elements such that they
 	-- wrap and grow rightwards or left.
 	return AnchorUtil.FlowDirection.Right;
 end
 
-function FlowLayoutDescriptionMixin:GetVerticalGrowthDirection(_container)
+function FlowLayoutDescriptionBaseMixin:GetVerticalGrowthDirection(_container)
 	-- Override to describe whether we're laying out elements such that they
 	-- wrap and grow upwards or down,
 	return AnchorUtil.FlowDirection.Down;
 end
 
-function FlowLayoutDescriptionMixin:GetPadding(_container)
+function FlowLayoutDescriptionBaseMixin:GetPadding(_container)
 	-- Override to define static padding within the layout. Note that padding
 	-- acts as an offset within a row, and so consumes available row width.
 	--
@@ -499,20 +499,20 @@ function FlowLayoutDescriptionMixin:GetPadding(_container)
 	return 0, 0, 0, 0;
 end
 
-function FlowLayoutDescriptionMixin:GetRowWidth(_container, _rowIndex)
+function FlowLayoutDescriptionBaseMixin:GetRowWidth(_container, _rowIndex, _group)
 	-- Override to define the maximum available width available for layout
 	-- on a specific row. Individual rows may have different widths.
 	return math.huge;
 end
 
-function FlowLayoutDescriptionMixin:GetElementSize(_container, element)
+function FlowLayoutDescriptionBaseMixin:GetElementSize(_container, element, _group)
 	-- Override to return the space this element should consume in the
 	-- layout. This default implementation uses the natural size of the
 	-- element.
 	return element:GetSize();
 end
 
-function FlowLayoutDescriptionMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, _width, _height)
+function FlowLayoutDescriptionBaseMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, _width, _height)
 	-- Override to apply calculated layout properties to elements. This should
 	-- at minimum apply the anchor point.
 	--
@@ -522,7 +522,7 @@ function FlowLayoutDescriptionMixin:ApplyElementLayout(container, element, ancho
 	element:SetPoint(anchorPoint, container, anchorPoint, offsetX, offsetY);
 end
 
-function FlowLayoutDescriptionMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, _rowCount)
+function FlowLayoutDescriptionBaseMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, _rowCount)
 	-- Override to apply any final changes after the layout pass has been
 	-- completed.
 	container:SetSize(width, height);
@@ -577,7 +577,7 @@ function AnchorUtil.ApplyFlowLayout(container, groups, layoutDescription)
 			if group.forceNewRow then
 				AdvanceToNextRow(gapY);
 			elseif gapX > 0 then
-				local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex);
+				local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex, group);
 
 				if rowWidth > 0 and rowWidth + gapX > maxRowWidth then
 					AdvanceToNextRow(gapY);
@@ -589,8 +589,8 @@ function AnchorUtil.ApplyFlowLayout(container, groups, layoutDescription)
 		end
 
 		for _elementIndex, element in ipairs(elements) do
-			local width, height = layoutDescription:GetElementSize(container, element);
-			local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex);
+			local width, height = layoutDescription:GetElementSize(container, element, group);
+			local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex, group);
 			local nextRowWidth = rowWidth > 0 and rowWidth + width or width;
 
 			if rowWidth > 0 and nextRowWidth > maxRowWidth then
@@ -604,9 +604,14 @@ function AnchorUtil.ApplyFlowLayout(container, groups, layoutDescription)
 			rowWidth = nextRowWidth + elementSpacingX;
 			rowHeight = math.max(rowHeight, height);
 
-			-- Bounds intentionally exclude trailing element spacing.
+			-- Bounds exclude trailing element spacing because spacing belongs
+			-- between elements, not after the final element in a row.
+			--
+			-- Note that width uses rowWidth, which excludes start padding.
 			layoutWidth = math.max(layoutWidth, startPaddingX + rowWidth - elementSpacingX + endPaddingX);
-			layoutHeight = math.max(layoutHeight, startPaddingY + math.abs(cursorY) + height + endPaddingY);
+
+			-- Height uses cursorY, which already includes start padding.
+			layoutHeight = math.max(layoutHeight, math.abs(cursorY) + height + endPaddingY);
 
 			hasPlacedElement = true;
 		end

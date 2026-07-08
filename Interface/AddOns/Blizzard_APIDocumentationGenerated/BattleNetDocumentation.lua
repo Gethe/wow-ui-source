@@ -55,6 +55,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "CanToggleHighResTexturesWithoutClientReload",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canToggle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -767,11 +767,11 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 	end
 
 	function t:GetTop()
-		return #sortedArray > 0 and sortedArray[1];
+		return #sortedArray > 0 and sortedArray[1] or nil;
 	end
 
 	function t:GetBottom()
-		return #sortedArray > 0 and sortedArray[#sortedArray];
+		return #sortedArray > 0 and sortedArray[#sortedArray] or nil;
 	end
 
 	function t:Pop()

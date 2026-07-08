@@ -132,7 +132,7 @@
 				<Size x="1" y="1"/>
 				<KeyValues>
 					<KeyValue key="widthPadding" value="80" type="number"/>
-					<KeyValue key="heightPadding" value="16" type="number"/>
+					<KeyValue key="heightPadding" value="26" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -165,15 +165,15 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLENET_FRIEND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLETAG_OR_REAL_ID_LABEL">
 											<KeyValues>
-												<KeyValue key="baseWidth" value="200" type="number"/>
+												<KeyValue key="baseWidth" value="240" type="number"/>
 											</KeyValues>
 											<Anchors>
 												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
 											</Anchors>
 										</FontString>
-										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="BATTLETAG_AND_REAL_ID_DESCRIPTION">
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
 												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
@@ -204,15 +204,15 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
 											<KeyValues>
-												<KeyValue key="baseWidth" value="200" type="number"/>
+												<KeyValue key="baseWidth" value="240" type="number"/>
 											</KeyValues>
 											<Anchors>
 												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
 											</Anchors>
 										</FontString>
-										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="CHARACTER_FRIEND_INFO">
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="WOW_FRIEND_DESCRIPTION">
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
 												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
@@ -223,7 +223,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Button parentKey="ContinueButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="CONTINUE">
+					<Button parentKey="OkayButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="OKAY">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="20"/>
 						</Anchors>
@@ -241,15 +241,31 @@
 				<KeyValues>
 					<KeyValue key="widthPadding" value="40" type="number"/>
 					<KeyValue key="heightPadding" value="8" type="number"/>
+					<KeyValue key="minimumWidth" value="450" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
 				<Frames>
+					<Button name="$parentInfoButton" inherits="UIPanelInfoButton, UserScaledFrameTemplate" mixin="AddFriendEntryFrameInfoButtonMixin">
+						<Size x="16" y="16"/>
+						<KeyValues>
+							<KeyValue key="baseWidth" value="16" type="number"/>
+							<KeyValue key="baseHeight" value="16" type="number"/>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="16" y="-16"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="TitleContainer" inherits="ResizeLayoutFrame">
 						<Size x="1" y="1"/>
 						<KeyValues>
-							<KeyValue key="widthPadding" value="10" type="number"/>
+							<KeyValue key="widthPadding" value="70" type="number"/>
 							<KeyValue key="heightPadding" value="6" type="number"/>
 						</KeyValues>
 						<Anchors>
@@ -257,29 +273,13 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge" text="ADD_FRIEND" justifyH="CENTER">
+								<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge" text="ADD_NEW_FRIEND" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOP" relativePoint="TOP" x="-12"/>
+										<Anchor point="TOP"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Button name="$parentInfoButton" inherits="UIPanelInfoButton, UserScaledFrameTemplate" mixin="AddFriendEntryFrameInfoButtonMixin">
-								<Size x="16" y="16"/>
-								<KeyValues>
-									<KeyValue key="baseWidth" value="16" type="number"/>
-									<KeyValue key="baseHeight" value="16" type="number"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Title" x="8" y="0" />
-								</Anchors>
-								<Scripts>
-									<OnLoad method="OnLoad"/>
-									<OnClick method="OnClick"/>
-								</Scripts>
-							</Button>
-						</Frames>
 					</Frame>
 					<Frame parentKey="OptionsContainer" inherits="ResizeLayoutFrame">
 						<Size x="1" y="1"/>
@@ -301,7 +301,7 @@
 								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOP"/>
-									<Anchor point="RIGHT" relativeKey="$parent.OrLabel" relativePoint="LEFT" x="-15"/>
+									<Anchor point="RIGHT" relativeKey="$parent.OrLabel" relativePoint="LEFT" x="-25"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="heightPadding" value="4" type="number"/>
@@ -318,7 +318,7 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLENET_FRIEND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLETAG_OR_REAL_ID_LABEL">
 											<KeyValues>
 												<KeyValue key="baseWidth" value="150" type="number"/>
 											</KeyValues>
@@ -339,7 +339,7 @@
 								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOP"/>
-									<Anchor point="LEFT" relativeKey="$parent.OrLabel" relativePoint="RIGHT" x="15"/>
+									<Anchor point="LEFT" relativeKey="$parent.OrLabel" relativePoint="RIGHT" x="25"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="heightPadding" value="4" type="number"/>
@@ -357,7 +357,7 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
 											<KeyValues>
 												<KeyValue key="baseWidth" value="150" type="number"/>
 											</KeyValues>
@@ -383,7 +383,7 @@
 							<Anchor point="BOTTOMRIGHT" x="-25" y="20"/>
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="heightPadding" value="10" type="number"/>
+							<KeyValue key="heightPadding" value="20" type="number"/>
 						</KeyValues>
 						<Frames>
 							<EditBox name="AddFriendNameEditBox" parentKey="NameEditBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate, UserScaledFrameTemplate">
@@ -449,9 +449,9 @@
 								</Scripts>
 								<FontString inherits="UserScaledFontGameHighlightSmall" justifyH="LEFT" justifyV="MIDDLE"/>
 							</EditBox>
-							<Button name="$parentAcceptButton" parentKey="AcceptButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="ADD_FRIEND">
+							<Button name="$parentAcceptButton" parentKey="AcceptButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="SEND_REQUEST">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="8" y="3"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-25" y="3"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="AddFriendFrame_Accept"/>
@@ -459,7 +459,7 @@
 							</Button>
 							<Button name="$parentCancelButton" parentKey="CancelButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="CANCEL">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-8" y="3"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="25" y="3"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -468,6 +468,20 @@
 								</Scripts>
 							</Button>
 						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="RequestInfoText" inherits="UserScaledFontGameHighlight, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLE_TAG_REQUEST_INFO">
+									<KeyValues>
+										<KeyValue key="baseWidth" value="300" type="number"/>
+										<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+										<KeyValue key="scaleWeight" value="0.8" type="number"/>
+									</KeyValues>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.NameEditBox" relativePoint="BOTTOM" x="-5" y="-15"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 					</Frame>
 				</Frames>
 			</Frame>

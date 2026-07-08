@@ -100,7 +100,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
+				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = true },
 			},
 
 			Returns =

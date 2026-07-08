@@ -25,6 +25,21 @@ local DetailsLifetimeEvents = {
 function HousingDashboardBlueprintDetailsMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, DetailsLifetimeEvents);
 	self:ClearData();
+	EventRegistry:RegisterCallback("HouseDropdown.HouseSelected", self.OnHouseSelected, self);
+
+	self.GearDropdown:SetupMenu(function(_dropdown, rootDescription)
+		local menuParams = {
+			shouldShowImport = C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success,
+			onDeleteConfirm = function() self:OnDeleteConfirmed(); end,
+		};
+		HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, self.blueprintInfo, menuParams);
+	end);
+end
+
+function HousingDashboardBlueprintDetailsMixin:OnDeleteConfirmed()
+	if self.blueprintInfo and not self.blueprintInfo.isAutoSave then
+		C_HousingBlueprint.DeleteBlueprint(self.blueprintInfo.blueprintID);
+	end
 end
 
 function HousingDashboardBlueprintDetailsMixin:OnEvent(event, ...)
@@ -41,14 +56,19 @@ function HousingDashboardBlueprintDetailsMixin:OnEvent(event, ...)
 	end
 end
 
+function HousingDashboardBlueprintDetailsMixin:OnShow()
+	self:SyncSummaryInfo();
+end
+
 function HousingDashboardBlueprintDetailsMixin:IsShowingBlueprint(shareCode)
 	return self.blueprintInfo and self.blueprintInfo.shareCode == shareCode;
 end
 
 function HousingDashboardBlueprintDetailsMixin:ShowBlueprint(blueprintInfo)
 	self.blueprintInfo = blueprintInfo;
+	self.GearDropdown:Show();
 	self.ContentSummary:Show();
-	self.ContentSummary:SetShareCode(blueprintInfo.shareCode);
+	self.ContentSummary:SetShareCode(blueprintInfo.shareCode, self.targetHouseGUID);
 	self.NameText:SetText(blueprintInfo.name);
 
 	local creationDate = date("*t", blueprintInfo.creationTime);
@@ -64,4 +84,18 @@ function HousingDashboardBlueprintDetailsMixin:ClearData()
 	self.ContentSummary:Hide();
 	self.NameText:SetText(nil);
 	self.DateTimeText:SetText(nil);
+	self.GearDropdown:Hide();
+end
+
+function HousingDashboardBlueprintDetailsMixin:OnHouseSelected(houseInfoID, houseInfo)
+	self.targetHouseGUID = houseInfo.houseGUID;
+	if self:IsVisible() then
+		self:SyncSummaryInfo();
+	end
+end
+
+function HousingDashboardBlueprintDetailsMixin:SyncSummaryInfo()
+	if self.blueprintInfo and not self.ContentSummary:IsShowingBlueprintForTarget(self.blueprintInfo.shareCode, self.targetHouseGUID) then
+		self.ContentSummary:SetShareCode(self.blueprintInfo.shareCode, self.targetHouseGUID);
+	end
 end

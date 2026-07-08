@@ -1,8 +1,8 @@
 local eventHandlers = {
-	["CORPSE_IN_RANGE"] = GameEvent.HandleCorpseInRange,
-	["CORPSE_OUT_OF_RANGE"] = GameEvent.HandleCorpseOutOfRange,
-	["PLAYER_DEAD"] = GameEvent.HandlePlayerDead,
-	["PLAYER_GUILD_UPDATE"] = GameEvent.HandlePlayerGuildUpdate,
+	["CORPSE_IN_RANGE"] = function(...) GameEvent.HandleCorpseInRange(...) end,
+	["CORPSE_OUT_OF_RANGE"] = function(...) GameEvent.HandleCorpseOutOfRange(...) end,
+	["PLAYER_DEAD"] = function(...) GameEvent.HandlePlayerDead(...) end,
+	["PLAYER_GUILD_UPDATE"] = function(...) GameEvent.HandlePlayerGuildUpdate(...) end,
 };
 
 function GameEvent.RegisterHardcoreEvents()

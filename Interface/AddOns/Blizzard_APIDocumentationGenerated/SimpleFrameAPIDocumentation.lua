@@ -686,7 +686,6 @@ local SimpleFrameAPI =
 			Name = "Hide",
 			Type = "Function",
 			IsProtectedFunction = true,
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -995,6 +994,7 @@ local SimpleFrameAPI =
 			Name = "RegisterAllEvents",
 			Type = "Function",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1005,6 +1005,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1021,6 +1022,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1048,6 +1050,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1065,6 +1068,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1457,7 +1461,6 @@ local SimpleFrameAPI =
 			IsProtectedFunction = true,
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Shown },
 			SecretArguments = "AllowedWhenUntainted",
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -1511,7 +1514,6 @@ local SimpleFrameAPI =
 			Name = "Show",
 			Type = "Function",
 			IsProtectedFunction = true,
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -1561,6 +1563,7 @@ local SimpleFrameAPI =
 			Name = "UnregisterAllEvents",
 			Type = "Function",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{
@@ -1571,6 +1574,7 @@ local SimpleFrameAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
+			AddsForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.EventRegistrations } },
 
 			Arguments =
 			{

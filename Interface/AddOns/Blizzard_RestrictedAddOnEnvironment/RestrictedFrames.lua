@@ -56,7 +56,7 @@ local LOCAL_CHECK_Button = CopyTable(GetButtonMetatable().__index);
 local LOCAL_CHECK_Frame = CopyTable(GetFrameMetatable().__index);
 
 local function CheckForbidden(frame)
-	return LOCAL_CHECK_Frame.IsForbidden(frame);
+	return LOCAL_CHECK_Frame.IsForbidden(frame) or LOCAL_CHECK_Frame.HasAnyForbiddenAspects(frame);
 end
 
 ---------------------------------------------------------------------------
@@ -236,7 +236,7 @@ function HANDLE:GetEffectiveAttribute(name, button, prefix, suffix)
 end
 
 local function ShouldAllowAccessToFrame(nolockdown, frame)
-	if LOCAL_CHECK_Frame.IsForbidden(frame) then
+	if CheckForbidden(frame) then
 		return false;
 	end
 

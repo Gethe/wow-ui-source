@@ -1,4 +1,6 @@
 ## Title: Blizzard_AuraContainer
+## Dep: Blizzard_FrameXMLBase
+## Dep: Blizzard_ObjectAPI
 ## Dep: Blizzard_PrivateAurasUI
 ## Dep: Blizzard_SharedXML
 ## AllowLoad: game
@@ -16,7 +18,9 @@ Blizzard_AuraContainer.xml [LoadIntoEnvironment global]
 Blizzard_AuraContainerSources.lua
 Blizzard_AuraContainerGroups.lua
 Blizzard_AuraContainerFrameProviders.lua
-Blizzard_AuraContainerManaged.lua
+Blizzard_AuraContainerSlots.lua
+Blizzard_AuraContainerEnchantments.lua
+Blizzard_ManagedAuraContainer.lua
 Blizzard_AuraButton.lua
 Blizzard_AuraButton.xml [LoadIntoEnvironment global]
 [Family]\Blizzard_AuraButtonTooltip.xml

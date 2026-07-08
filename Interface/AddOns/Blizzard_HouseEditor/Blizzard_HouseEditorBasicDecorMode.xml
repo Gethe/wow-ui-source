@@ -3,7 +3,7 @@
 	<Frame name="HouseEditorBasicDecorModeTemplate" mixin="HouseEditorBasicDecorModeMixin" inherits="BaseHouseEditorModeTemplate" enableKeyboard="true" virtual="true">
 		<Frames>
 			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
-			<Frame parentKey="PetCount" inherits="HouseEditorPetCountTemplate" hidden="true">
+			<Frame parentKey="PetCount" inherits="HouseEditorPetCountTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DecorCount" x="0" y="-5"/>
 				</Anchors>

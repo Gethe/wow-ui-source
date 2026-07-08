@@ -330,6 +330,8 @@ HouseEditorPetCountMixin = {};
 function HouseEditorPetCountMixin:OnLoad()
 	self.updateEvents = {"HOUSING_NUM_DECOR_PLACED_CHANGED", "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED"};
 	self.tooltipText =  nil;
+	self.Text:Hide();
+	self.Icon:Hide();
 end
 
 function HouseEditorPetCountMixin:UpdateCount(event)

@@ -125,6 +125,18 @@ do
 	end
 end
 
+local function IsAuraFromPlayer(auraData)
+	return (auraData.sourceUnit ~= nil) and UnitIsUnit("player", auraData.sourceUnit) or false;
+end
+
+local function GetExpirationTimeForSort(auraData)
+	if auraData.expirationTime == nil or auraData.expirationTime == 0 then
+		return math.huge;
+	end
+
+	return auraData.expirationTime;
+end
+
 function AuraUtil.DefaultAuraCompare(a, b)
 	local aFromPlayer = (a.sourceUnit ~= nil) and UnitIsUnit("player", a.sourceUnit) or false;
 	local bFromPlayer = (b.sourceUnit ~= nil) and UnitIsUnit("player", b.sourceUnit) or false;
@@ -162,6 +174,95 @@ function AuraUtil.BigDefensiveAuraCompare(a, b)
 	return a.auraInstanceID < b.auraInstanceID;
 end
 
+function AuraUtil.UnitFrameDebuffComparator(a, b)
+	if a.debuffType ~= b.debuffType then
+		return a.debuffType < b.debuffType;
+	end
+
+	return AuraUtil.DefaultAuraCompare(a, b);
+end
+
+function AuraUtil.ImportantOnlyAuraCompare(auraA, auraB)
+	local aImportant = auraA.spellId ~= nil and C_Spell.IsSpellImportant(auraA.spellId);
+	local bImportant = auraB.spellId ~= nil and C_Spell.IsSpellImportant(auraB.spellId);
+
+	if aImportant ~= bImportant then
+		return aImportant;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.ExpirationAuraCompare(auraA, auraB)
+	local aFromPlayer = IsAuraFromPlayer(auraA);
+	local bFromPlayer = IsAuraFromPlayer(auraB);
+	if aFromPlayer ~= bFromPlayer then
+		return aFromPlayer;
+	end
+
+	if auraA.isPriorityAura ~= auraB.isPriorityAura then
+		return auraA.isPriorityAura;
+	end
+
+	if auraA.canApplyAura ~= auraB.canApplyAura then
+		return auraA.canApplyAura;
+	end
+
+	-- Permanent auras sort after timed auras.
+	local aExpirationTime = GetExpirationTimeForSort(auraA);
+	local bExpirationTime = GetExpirationTimeForSort(auraB);
+	if aExpirationTime ~= bExpirationTime then
+		return aExpirationTime < bExpirationTime;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.ExpirationOnlyAuraCompare(auraA, auraB)
+	-- Permanent auras sort after timed auras.
+	local aExpirationTime = GetExpirationTimeForSort(auraA);
+	local bExpirationTime = GetExpirationTimeForSort(auraB);
+	if aExpirationTime ~= bExpirationTime then
+		return aExpirationTime < bExpirationTime;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.NameAuraCompare(auraA, auraB)
+	local aFromPlayer = IsAuraFromPlayer(auraA);
+	local bFromPlayer = IsAuraFromPlayer(auraB);
+	if aFromPlayer ~= bFromPlayer then
+		return aFromPlayer;
+	end
+
+	if auraA.isPriorityAura ~= auraB.isPriorityAura then
+		return auraA.isPriorityAura;
+	end
+
+	if auraA.canApplyAura ~= auraB.canApplyAura then
+		return auraA.canApplyAura;
+	end
+
+	local aName = auraA.name or "";
+	local bName = auraB.name or "";
+	if aName ~= bName then
+		return aName < bName;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.NameOnlyAuraCompare(auraA, auraB)
+	local aName = auraA.name or "";
+	local bName = auraB.name or "";
+	if aName ~= bName then
+		return aName < bName;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
 AuraUtil.AuraFilters =
 {
 	Helpful = "HELPFUL",
@@ -170,7 +271,8 @@ AuraUtil.AuraFilters =
 	IncludeNameplateOnly = "INCLUDE_NAME_PLATE_ONLY",
 	Player = "PLAYER",
 	Cancelable = "CANCELABLE",
-	NotCancelable = "NOT_CANCELABLE",
+	-- NotCancelable ("NOT_CANCELABLE") was removed; use "!"..AuraUtil.AuraFilters.Cancelable ("!CANCELABLE").
+	-- A temporary fallback is provided by Blizzard_DeprecatedAuraFilters.
 	Maw = "MAW",
 	ExternalDefensive = "EXTERNAL_DEFENSIVE",
 	CrowdControl = "CROWD_CONTROL",
@@ -183,9 +285,26 @@ function AuraUtil.CreateFilterString(...)
 	return string.join("|", ...);
 end
 
+-- A leading "!" negates a filter component, e.g. "!PLAYER" returns auras NOT cast by the player.
+AuraUtil.AuraFilterNegationPrefix = "!";
+
 function AuraUtil.IsValidFilterString(filterString)
-	for _index, component in ipairs({ string.split("|", filterString) }) do
-		if not EnumUtil.IsValid(AuraUtil.AuraFilters, component) then
+	-- Splitting here intentionally tokenizes on "|" and space characters to
+	-- permit callers to "TYPE | OUT | THEIR | STRINGS". This requires skipping
+	-- empty components as strsplit's tokenizer doesn't skip chains of delimiters.
+	for _index, component in ipairs({ string.split("| ", filterString) }) do
+		local negated = component:sub(1, 1) == AuraUtil.AuraFilterNegationPrefix;
+		if negated then
+			component = component:sub(2);
+		end
+
+		-- A bare "!" (negation prefix with nothing after it) is invalid; genuine empty components
+		-- from delimiter chains (e.g. "HELPFUL|PLAYER") are still skipped below.
+		if negated and component == "" then
+			return false, "A negation prefix ('!') must be followed by a filter component.";
+		end
+
+		if component ~= "" and not EnumUtil.IsValid(AuraUtil.AuraFilters, component) then
 			return false, string.format("Unknown aura filter component: '%s'", component);
 		end
 	end
@@ -216,14 +335,6 @@ AuraUtil.UnitFrameDebuffType = EnumUtil.MakeEnum(
 	"NonBossRaidDebuff",
 	"NonBossDebuff"
 );
-
-function AuraUtil.UnitFrameDebuffComparator(a, b)
-	if a.debuffType ~= b.debuffType then
-		return a.debuffType < b.debuffType;
-	end
-
-	return AuraUtil.DefaultAuraCompare(a, b);
-end
 
 function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
 	if aura == nil then

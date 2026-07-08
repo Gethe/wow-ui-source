@@ -4,6 +4,8 @@
 ## Dependencies: Blizzard_HousingTemplates, Blizzard_HousingModelPreview, Blizzard_FrameXMLUtil, Blizzard_HousingBlueprint
 ## AllowLoadGameType: standard
 
+Blizzard_HousingDashboardHouseDropdown.lua
+Blizzard_HousingDashboardHouseDropdown.xml
 Blizzard_HousingDashboardHouseUpgrade.lua
 Blizzard_HousingDashboardHouseUpgrade.xml
 Blizzard_HousingDashboardInitiatives.lua

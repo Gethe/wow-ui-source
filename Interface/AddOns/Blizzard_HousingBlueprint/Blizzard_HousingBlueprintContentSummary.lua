@@ -15,10 +15,9 @@ function HousingBlueprintContentSummaryMixin:OnLoad()
 	self.CountListContainer.ContentsListButton:SetScript("OnClick", function()
 		if self.blueprintContentInfo then
 			PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
-			HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, self.isReadonly);
+			HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, self:GetTargetGUID());
 		end
 	end);
-	self.Background:SetAlpha(self.backgroundAlpha);
 end
 
 function HousingBlueprintContentSummaryMixin:OnEvent(event, ...)
@@ -27,12 +26,12 @@ function HousingBlueprintContentSummaryMixin:OnEvent(event, ...)
 		or event == "HOUSING_LAYOUT_ROOM_RECEIVED" 
 		or event == "HOUSING_LAYOUT_ROOM_REMOVED"
 		or event == "HOUSE_LEVEL_CHANGED" then
-		if not self.isReadonly then
+		if self:HasTargetHouse() then
 			self:UpdateBlueprintContentsData();
 		end
 	elseif event == "HOUSING_STORAGE_ENTRY_UPDATED" then
 		local entryVariantID = ...;
-		if not self.isReadonly and self:DoesBlueprintContainCatalogEntry(entryVariantID) then
+		if self:HasTargetHouse() and self:DoesBlueprintContainCatalogEntry(entryVariantID) then
 			self:UpdateBlueprintContentsData();
 		end
 	elseif event == "HOUSING_BLUEPRINT_CONTENTS_FAILURE" then
@@ -40,7 +39,8 @@ function HousingBlueprintContentSummaryMixin:OnEvent(event, ...)
 		self:OnContentRequestFailure(result);
 	elseif event == "HOUSING_BLUEPRINT_CONTENTS_RECEIVED" then
 		local contentInfo = ...;
-		if contentInfo and self.blueprintCode == contentInfo.shareCode then
+		local currentTarget = self:GetTargetGUID();
+		if contentInfo and self.blueprintCode == contentInfo.shareCode and (not currentTarget or currentTarget == contentInfo.targetHouseGUID) then
 			self:OnBlueprintContentsReceived(contentInfo);
 		end
 	end
@@ -65,15 +65,12 @@ function HousingBlueprintContentSummaryMixin:SetContentUpdatedCallback(contentUp
 	self.contentUpdatedCallback = contentUpdatedCallback;
 end
 
-function HousingBlueprintContentSummaryMixin:SetShareCode(shareCode, isReadonly)
+function HousingBlueprintContentSummaryMixin:SetShareCode(shareCode, targetHouseGUID)
+	self:ClearData();
 	self.blueprintCode = shareCode;
 	self.blueprintType = C_HousingBlueprint.GetBlueprintTypeForCode(self.blueprintCode);
 
-	if isReadonly ~= nil then
-		self.isReadonly = isReadonly;
-	else
-		self.isReadonly = not C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintType);
-	end
+	self.targetHouseGUID = targetHouseGUID;
 
 	if self:IsShown() then
 		self:UpdateBlueprintContentsData();
@@ -83,7 +80,7 @@ end
 function HousingBlueprintContentSummaryMixin:ClearData()
 	self.blueprintCode = nil;
 	self.blueprintType = nil;
-	self.isReadonly = nil;
+	self.targetHouseGUID = nil;
 	self.isWaitingForContent = nil;
 	self.showLoadingState = nil;
 	self.blueprintContentInfo = nil;
@@ -96,6 +93,14 @@ function HousingBlueprintContentSummaryMixin:GetWaitingState()
 	return self.isWaitingForContent, self.showLoadingState;
 end
 
+function HousingBlueprintContentSummaryMixin:GetTargetGUID()
+	return self.targetHouseGUID;
+end
+
+function HousingBlueprintContentSummaryMixin:HasTargetHouse()
+	return self:GetTargetGUID() ~= nil;
+end
+
 function HousingBlueprintContentSummaryMixin:IsShowingBlueprint(shareCode)
 	return self.blueprintContentInfo and self.blueprintContentInfo.shareCode == shareCode;
 end
@@ -105,7 +110,7 @@ function HousingBlueprintContentSummaryMixin:IsShowingBlueprintForTarget(shareCo
 		return false;
 	end
 
-	return self.blueprintContentInfo.shareCode == shareCode and self.blueprintContentInfo.targetHouseGUID == houseGUID;
+	return self.blueprintContentInfo.shareCode == shareCode and self:GetTargetGUID() == houseGUID;
 end
 
 function HousingBlueprintContentSummaryMixin:GetBlueprintValues()
@@ -116,16 +121,16 @@ function HousingBlueprintContentSummaryMixin:HasUnmetRequirements()
 	return self.blueprintContentInfo ~= nil and FlagsUtil.IsAnythingSet(self.blueprintContentInfo.unmetRequirementFlags);
 end
 
-function HousingBlueprintContentSummaryMixin:IsReadonly()
-	return self.isReadonly;
-end
-
 function HousingBlueprintContentSummaryMixin:IsContentImportable()
 	if not self.blueprintContentInfo then
 		return false;
 	end
 
-	if self.isReadonly then
+	if not self:HasTargetHouse() then
+		return false;
+	end
+
+	if not C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintType) then
 		return false;
 	end
 
@@ -161,36 +166,54 @@ function HousingBlueprintContentSummaryMixin:UpdateBlueprintContentsData()
 		return;
 	end
 
+	local isFirstTimeUpdate = (not self.blueprintContentInfo) or (self.blueprintContentInfo.shareCode ~= self.blueprintCode);
+
 	-- Avoid showing loading state if we're requesting an update on blueprint contents we're already displaying
-	local showLoadingState = not self.blueprintContentInfo or self.blueprintContentInfo.shareCode ~= self.blueprintCode;
-	self:UpdateWaitingState(--[[isWaitingForContent]] true, showLoadingState);
+	self:UpdateWaitingState(--[[isWaitingForContent]] true, --[[showLoadingState]] isFirstTimeUpdate);
 	
-	C_HousingBlueprint.RequestBlueprintContents(self.blueprintCode);
+	-- If we have a specific target, or we're updating existing shown content, stick with our current target, even  if that target is nil, so that it doesn't change across in-place data refreshes
+	if self:HasTargetHouse() or not isFirstTimeUpdate then
+		C_HousingBlueprint.RequestBlueprintContentsForContext(self.blueprintCode, self:GetTargetGUID());
+	else
+		C_HousingBlueprint.RequestBlueprintContents(self.blueprintCode);
+	end
 end
 
-function HousingBlueprintContentSummaryMixin:OnContentRequestFailure()
+function HousingBlueprintContentSummaryMixin:OnContentRequestFailure(result)
 	self:UpdateWaitingState(--[[isWaitingForContent]] false, --[[showLoadingState]] false);
 	if self.contentUpdatedCallback then
 		self.contentUpdatedCallback();
 	end
-	local errorText = HousingResultToErrorText[result] or ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_IMPORT_ERROR;
-	UIErrorsFrame:AddExternalErrorMessage(HOUSING_BLUEPRINT_IMPORT_ERROR_FMT:format(errorText));
+	local errorText = HousingResultToErrorText[result] or ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_CONTENT_ERROR;
+	UIErrorsFrame:AddExternalErrorMessage(HOUSING_BLUEPRINT_CONTENT_ERROR_FMT:format(errorText));
+end
+
+function HousingBlueprintContentSummaryMixin:IsShowingAnyBudgets()
+	for _, entry in ipairs(self.BudgetsContainer.BudgetEntries) do
+		if entry:IsShown() then
+			return true;
+		end
+	end
+	return false;
 end
 
 function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(contentInfo)
 	self:UpdateWaitingState(--[[isWaitingForContent]] false, --[[showLoadingState]] false);
 	self.blueprintContentInfo = contentInfo;
 
+	-- Update target houseGUID as what we got the data back with, because if we didn't specify a context at all, it'll be based on where the player is currently standing
+	self.targetHouseGUID = self.blueprintContentInfo.targetHouseGUID;
+
 	local availableInteriorBudget, availableExteriorBudget, availableRoomBudget = nil, nil, nil;
-	if not self.isReadonly then
-		availableInteriorBudget, availableExteriorBudget = C_HousingDecor.GetBothMaxPlacementBudgets();
-		availableRoomBudget = C_HousingLayout.GetRoomPlacementBudget();
+	if self.blueprintContentInfo.targetHouseBudgetInfo then
+		availableInteriorBudget = self.blueprintContentInfo.targetHouseBudgetInfo.interiorDecorBudgetMax;
+		availableExteriorBudget = self.blueprintContentInfo.targetHouseBudgetInfo.exteriorDecorBudgetMax;
+		availableRoomBudget = self.blueprintContentInfo.targetHouseBudgetInfo.roomBudgetMax;
+
 		-- Rooms are the only blueprint type that add to the existing spent budgets rather than replace them, so need to display "available" rather than "max"
-		if availableInteriorBudget and self.blueprintType == Enum.HousingBlueprintType.Room then
-			local spentInteriorDecorBudget, _ = C_HousingDecor.GetBothSpentPlacementBudgets();
-			local spentRoomBudget = C_HousingLayout.GetSpentPlacementBudget();
-			availableInteriorBudget = availableInteriorBudget - spentInteriorDecorBudget;
-			availableRoomBudget = availableRoomBudget - spentRoomBudget;
+		if self.blueprintType == Enum.HousingBlueprintType.Room then
+			availableInteriorBudget = availableInteriorBudget - self.blueprintContentInfo.targetHouseBudgetInfo.interiorDecorBudgetCurrent;
+			availableRoomBudget = availableRoomBudget - self.blueprintContentInfo.targetHouseBudgetInfo.roomBudgetCurrent;
 		end
 	end
 
@@ -204,6 +227,8 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	self:UpdateBudget(self.BudgetsContainer.OutdoorDecorBudget, self.blueprintContentInfo.exteriorDecorBudgetCost, availableExteriorBudget, self.budgetInfo.insufficientExterior);
 	self:UpdateBudget(self.BudgetsContainer.RoomBudget, self.blueprintContentInfo.roomBudgetCost, availableRoomBudget, self.budgetInfo.insufficientRoom);
 
+	self.BudgetsContainer:SetShown(self:IsShowingAnyBudgets());
+
 	local numItems = 0;
 	local numMissing = 0;
 	for _, contentGroup in ipairs(self.blueprintContentInfo.contentGroups) do
@@ -216,11 +241,11 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 			end
 		end
 	end
-	if self.isReadonly then
-		self.CountListContainer.ContentsCountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_FMT:format(numItems));
-	else
+	if self:HasTargetHouse() then
 		local numAvailable = numItems - numMissing;
 		self.CountListContainer.ContentsCountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_COMPARE_FMT:format(numAvailable, numItems));
+	else
+		self.CountListContainer.ContentsCountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_FMT:format(numItems));
 	end
 
 	self:MarkDirty();
@@ -230,8 +255,9 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	end
 
 	-- If we got new content data for the blueprint the List frame is also showing, make sure it gets updated too
-	if HousingBlueprintContentListFrame:IsShown() and HousingBlueprintContentListFrame:IsShowingBlueprintForTarget(self.blueprintContentInfo.shareCode, self.blueprintContentInfo.targetHouseGUID)  then
-		HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, self.isReadonly);
+	local target = self:GetTargetGUID();
+	if HousingBlueprintContentListFrame:IsShown() and HousingBlueprintContentListFrame:IsShowingBlueprintForTarget(self.blueprintContentInfo.shareCode, target)  then
+		HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, target);
 	end
 end
 
@@ -281,7 +307,7 @@ function HousingBlueprintContentSummaryMixin:UpdateWaitingState(isWaitingForCont
 	self.isWaitingForContent = isWaitingForContent;
 	self.showLoadingState = showLoadingState;
 	self.LoadingSpinner:SetShown(self.showLoadingState);
-	self.BudgetsContainer:SetShown(not self.showLoadingState);
+	self.BudgetsContainer:SetShown((not self.showLoadingState) and self:IsShowingAnyBudgets());
 	self.CountListContainer:SetShown(not self.showLoadingState);
 end
 

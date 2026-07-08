@@ -1094,7 +1094,7 @@ function TransmogCharacterMixin:RefreshSheatheWeaponToggle()
 end
 
 function TransmogCharacterMixin:RefreshPreviewedWeaponToggle()
-	if not C_PaperDollInfo.IsRangedSlotShown() then
+	if not C_TransmogOutfitInfo.CanPlayerTransmogSlot(Enum.TransmogOutfitSlot.WeaponRanged) then
 		self.ToggleOptions.PreviewedWeaponToggle:Hide();
 		return;
 	end

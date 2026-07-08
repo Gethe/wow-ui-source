@@ -5,7 +5,6 @@
 		<Frame name="AuraContainer" intrinsic="true">
 			<KeyValues>
 				<KeyValue key="enabled" value="true" type="boolean"/>
-				<KeyValue key="privateAurasEnabled" value="false" type="boolean"/>
 				<KeyValue key="unitToken" value="none" type="string"/>
 			</KeyValues>
 			<Mixins>

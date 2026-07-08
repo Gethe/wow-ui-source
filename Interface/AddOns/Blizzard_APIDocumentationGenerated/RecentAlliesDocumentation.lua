@@ -277,6 +277,7 @@ local RecentAllies =
 				{ Name = "isOnline", Type = "bool", Nilable = false },
 				{ Name = "isDND", Type = "bool", Nilable = false },
 				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isConvertedLegacyFriend", Type = "bool", Nilable = false },
 				{ Name = "pinExpirationDate", Type = "time_t", Nilable = true },
 				{ Name = "friendRequestSentThisSession", Type = "bool", Nilable = false },
 				{ Name = "currentLocation", Type = "string", Nilable = true },

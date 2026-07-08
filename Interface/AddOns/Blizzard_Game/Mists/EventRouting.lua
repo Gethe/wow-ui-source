@@ -1,11 +1,11 @@
 local eventHandlers = {
-	["CONFIRM_DISENCHANT_ROLL"] = GameEvent.HandleConfirmDisenchantRoll,
-	["PET_BATTLE_PVP_DUEL_REQUEST_CANCEL"] = GameEvent.HandlePetBattlePvpDuelRequestCancel,
-	["PET_BATTLE_PVP_DUEL_REQUESTED"] = GameEvent.HandlePetBattlePvpDuelRequested,
-	["PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED"] = GameEvent.HandlePetBattleQueueProposalResult,
-	["PET_BATTLE_QUEUE_PROPOSAL_DECLINED"] = GameEvent.HandlePetBattleQueueProposalResult,
-	["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = GameEvent.HandlePetBattleQueueProposeMatch,
-	["QUEST_CHOICE_UPDATE"] = GameEvent.HandleQuestChoiceUpdate,
+	["CONFIRM_DISENCHANT_ROLL"] = function(...) GameEvent.HandleConfirmDisenchantRoll(...) end,
+	["PET_BATTLE_PVP_DUEL_REQUEST_CANCEL"] = function(...) GameEvent.HandlePetBattlePvpDuelRequestCancel(...) end,
+	["PET_BATTLE_PVP_DUEL_REQUESTED"] = function(...) GameEvent.HandlePetBattlePvpDuelRequested(...) end,
+	["PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED"] = function(...) GameEvent.HandlePetBattleQueueProposalResult(...) end,
+	["PET_BATTLE_QUEUE_PROPOSAL_DECLINED"] = function(...) GameEvent.HandlePetBattleQueueProposalResult(...) end,
+	["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = function(...) GameEvent.HandlePetBattleQueueProposeMatch(...) end,
+	["QUEST_CHOICE_UPDATE"] = function(...) GameEvent.HandleQuestChoiceUpdate(...) end,
 };
 
 function GameEvent.RegisterMistsEvents()

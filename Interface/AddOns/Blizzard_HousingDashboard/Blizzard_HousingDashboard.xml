@@ -8,6 +8,13 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 		<Frames>
+			<Frame parentKey="HouseDropdown" inherits="HousingDashboardHouseDropdownTemplate">
+				<Size x="200" y="25"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-28"/>
+				</Anchors>
+			</Frame>
+
 			<Frame parentKey="HouseInfoContent" inherits="HousingDashboardHouseInfoTemplate" setAllPoints="true">
 			</Frame>
 			<Frame parentKey="CatalogContent" inherits="HousingCatalogFrameTemplate" setAllPoints="true">

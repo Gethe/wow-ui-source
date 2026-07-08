@@ -1095,26 +1095,14 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="CONTACTS_TAB_TITLE">
+			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="CONTACTS_TAB_TITLE" collapsesLayout="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="5" y="-30"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="2"/>
 				</Anchors>
 			</Button>
-			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="WHO">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT" x="-15" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="RAID">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="QUICK_JOIN">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT" x="-15" />
-				</Anchors>
-			</Button>
+			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="WHO" collapsesLayout="true"/>
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="RAID" collapsesLayout="true"/>
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="QUICK_JOIN" collapsesLayout="true"/>
 			<Frame name="FriendsTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate">
 				<Size x="200" y="200"/>
 				<Layers>

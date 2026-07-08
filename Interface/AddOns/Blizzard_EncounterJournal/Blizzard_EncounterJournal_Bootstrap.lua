@@ -22,6 +22,12 @@ function OpenEncounterJournalToJourney(factionID)
 	end
 end
 
+function OpenEncounterJournalToTieredEntrance(instanceID, difficultyID)
+	if EncounterJournal_LoadUI() then
+		EncounterJournal_OpenToTieredEntrance(instanceID, difficultyID);
+	end
+end
+
 local function ShowAdventureJournal()
 	if C_AdventureJournal.CanBeShown() then
 		ShowUIPanel(EncounterJournal);

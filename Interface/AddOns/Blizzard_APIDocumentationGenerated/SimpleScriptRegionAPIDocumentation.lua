@@ -319,7 +319,6 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "Hide",
 			Type = "Function",
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -655,7 +654,6 @@ local SimpleScriptRegionAPI =
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Shown },
 			SecretArguments = "AllowedWhenUntainted",
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{
@@ -680,7 +678,6 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "Show",
 			Type = "Function",
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.Shown } },
 
 			Arguments =
 			{

@@ -11,7 +11,7 @@ do
 	};
 	local contentListAttributes = 
 	{ 
-		area = "centerOrLeft",
+		area = "left",
 		pushable = 1,
 	};
 	local renameAttributes = 

@@ -601,14 +601,43 @@ local function TryInsertRecentAlliesSubTree(dataProvider, headerFormatString, al
 	newSubTree:GetData().headerText = headerFormatString:format(onlineCount, #allies);
 end
 
+local function PartitionRecentAlliesByPinAndLegacyState(allies)
+	local convertedLegacyFriends = {};
+	local pinnedAllies = {};
+	local unpinnedAllies = {};
+
+	for _index, ally in ipairs(allies) do
+		local stateData = ally.stateData;
+		local isPinned = stateData.pinExpirationDate ~= nil;
+		local isConvertedLegacyFriend = stateData.isConvertedLegacyFriend;
+
+		if isPinned and isConvertedLegacyFriend then
+			table.insert(convertedLegacyFriends, ally);
+		elseif isPinned then
+			table.insert(pinnedAllies, ally);
+		else
+			table.insert(unpinnedAllies, ally);
+		end
+	end
+
+	return convertedLegacyFriends, pinnedAllies, unpinnedAllies;
+end
+
 function RecentAlliesSocialViewMixin:GenerateDataProvider()
 	local dataProvider = CreateTreeDataProvider();
 
-	local pinnedAllies, unpinnedAllies = PartitionRecentAlliesByPinState(C_RecentAllies.GetRecentAllies());
+	local convertedLegacyFriends, pinnedAllies, unpinnedAllies = PartitionRecentAlliesByPinAndLegacyState(C_RecentAllies.GetRecentAllies());
+	TryInsertRecentAlliesSubTree(dataProvider, SOCIAL_UI_RECENT_ALLIES_VIEW_HEADER_LEGACY_FRIENDS, convertedLegacyFriends);
+
+	local listWillShowLegacyAndPinnedTrees = (#convertedLegacyFriends > 0) and (#pinnedAllies > 0);
+	if listWillShowLegacyAndPinnedTrees then
+		dataProvider:Insert({ isSpacer = true });
+	end
+
 	TryInsertRecentAlliesSubTree(dataProvider, SOCIAL_UI_RECENT_ALLIES_VIEW_HEADER_PINNED, pinnedAllies);
 
-	local listWillShowBothTrees = (#pinnedAllies > 0) and (#unpinnedAllies > 0);
-	if listWillShowBothTrees then
+	local listWillShowPinnedAndUnpinnedTrees = ((#convertedLegacyFriends + #pinnedAllies) > 0) and (#unpinnedAllies > 0);
+	if listWillShowPinnedAndUnpinnedTrees then
 		dataProvider:Insert({ isSpacer = true });
 	end
 
@@ -667,7 +696,7 @@ function RecentAlliesSocialCardMixin:InitializeCardDisplayText()
 	self:RefreshMostRecentInteractionDisplayText();
 	self:RefreshLocationDisplayText();
 
-	-- The state display is holds icons that are anchored to the side of the character data display text 
+	-- The state display is holds icons that are anchored to the side of the character data display text
 	-- We need to initialize it here before we layout/anchor the strings
 	self:InitializeStateDisplay();
 
@@ -867,7 +896,7 @@ function RecentAlliesSocialCardMixin:LayoutCardDisplayTextExpanded()
 	local nameWidth = math.min(self.Name:GetUnboundedStringWidth(), remainingRow1UsableWidth);
 	self.Name:SetWidth(nameWidth);
 
-	-- Row 2: 
+	-- Row 2:
 	-- We start with the entire width of the text holder available to us
 	local remainingRow2UsableWidth = availableWidth;
 

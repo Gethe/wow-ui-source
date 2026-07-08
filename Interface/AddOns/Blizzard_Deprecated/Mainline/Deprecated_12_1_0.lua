@@ -5,19 +5,6 @@ if not GetCVarBool("loadDeprecationFallbacks") then
 	return;
 end
 
-function getglobal(var)
-	return _G[var];
-end
-
-local forceinsecure = forceinsecure;
-function setglobal(var, val)
-	if forceinsecure then
-		forceinsecure();
-	end
-
-	_G[var] = val;
-end
-
 C_SuperTrack.GetNextWaypointForMap = C_Navigation.GetNextWaypointForMap;
 
 

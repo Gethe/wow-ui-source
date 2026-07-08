@@ -1,3 +1,24 @@
+local function CreatePrivateAuraUpdateCallback(callback)
+	local registeredUnitToken = nil;
+	local callbackContainer = C_FunctionContainers.CreateCallback(callback);
+	local handle = {};
+
+	function handle:Register(unitToken)
+		self:Unregister();
+		C_UnitAurasPrivate.AddPrivateAuraUpdateCallback(unitToken, callbackContainer);
+		registeredUnitToken = unitToken;
+	end
+
+	function handle:Unregister()
+		if registeredUnitToken then
+			C_UnitAurasPrivate.RemovePrivateAuraUpdateCallback(registeredUnitToken, callbackContainer);
+			registeredUnitToken = nil;
+		end
+	end
+
+	return handle;
+end
+
 AuraContainerSharedMixin = {};
 
 function AuraContainerSharedMixin:IsEnabled()
@@ -7,7 +28,8 @@ end
 function AuraContainerSharedMixin:SetEnabled(enabled)
 	if self.enabled ~= enabled then
 		self.enabled = enabled;
-		self:OnEnabledChanged(enabled);
+		self:UpdateEventRegistrations();
+		self:UpdateAllAuras();
 	end
 end
 
@@ -20,28 +42,30 @@ function AuraContainerSharedMixin:SetUnit(unitToken)
 
 	if self.unitToken ~= unitToken then
 		self.unitToken = unitToken;
-		self:OnUnitChanged(unitToken);
+		self:UpdateEventRegistrations();
+		self:UpdateAllAuras();
 	end
 end
 
 function AuraContainerSharedMixin:UpdateAllAuras()
-	-- No-op; overridden by the private mixin to do actual work. Exposed to
-	-- allow external events to trigger refreshes where needed (e.g. target
-	-- changes).
+	-- No-op; implement in a derived container to fully refresh the aura
+	-- display. Exposed to allow external events to trigger refreshes where
+	-- needed (e.g. target changes).
 end
 
 AuraContainerInboundMixin = CreateFromMixins(AuraContainerSharedMixin);
-
 AuraContainerPrivateMixin = CreateFromMixins(AuraContainerSharedMixin);
-AuraContainerPrivateMixin.StaticEvents = { "AURA_DATA_PROVIDER_SWITCH" };
-AuraContainerPrivateMixin.DynamicEvents = {};
-AuraContainerPrivateMixin.DynamicUnitEvents = { "UNIT_AURA" };
 
 function AuraContainerPrivateMixin:OnLoad_Intrinsic()
-	self.privateAurasUpdateCallback = nil;
-	self.privateAurasUnit = nil;
+	local function OnPrivateAurasUpdated(unitAuraUpdateInfo)
+		self:OnUnitPrivateAuraUpdate(self:GetUnit(), unitAuraUpdateInfo);
+	end
 
-	FrameUtil.RegisterFrameForEvents(self, self.StaticEvents);
+	self.dynamicFrameEvents = {};
+	self.dynamicUnitEvents = {};
+	self.privateAurasUpdateCallback = CreatePrivateAuraUpdateCallback(OnPrivateAurasUpdated);
+
+	FrameUtil.RegisterFrameForEvents(self, self:GetStaticFrameEvents());
 end
 
 function AuraContainerPrivateMixin:OnShow_Intrinsic()
@@ -56,19 +80,23 @@ end
 
 function AuraContainerPrivateMixin:OnEvent_Intrinsic(event, ...)
 	if event == "UNIT_AURA" then
-		local _unitToken, unitAuraUpdateInfo = ...;
-		self:OnUnitAuraUpdate(unitAuraUpdateInfo);
+		local unitToken, unitAuraUpdateInfo = ...;
+		self:OnUnitAuraUpdate(unitToken, unitAuraUpdateInfo);
+	elseif event == "WEAPON_ENCHANT_CHANGED" then
+		self:OnWeaponEnchantChanged();
+	elseif event == "WEAPON_SLOT_CHANGED" then
+		self:OnWeaponSlotChanged();
 	elseif event == "AURA_DATA_PROVIDER_SWITCH" then
 		local useRealDataProvider = ...;
 		self:OnAuraDataProviderSwitch(useRealDataProvider);
 	end
 end
 
-function AuraContainerPrivateMixin:OnUnitAuraUpdate(_unitAuraUpdateInfo)
+function AuraContainerPrivateMixin:OnUnitAuraUpdate(_unitToken, _unitAuraUpdateInfo)
 	-- Implement processing in a derived mixin.
 end
 
-function AuraContainerPrivateMixin:OnUnitPrivateAuraUpdate(_unitAuraUpdateInfo)
+function AuraContainerPrivateMixin:OnUnitPrivateAuraUpdate(_unitToken, _unitAuraUpdateInfo)
 	-- Implement processing in a derived mixin.
 end
 
@@ -76,75 +104,80 @@ function AuraContainerPrivateMixin:OnAuraDataProviderSwitch(_useRealDataProvider
 	-- Implement in a derived mixin to be notified when data providers change.
 end
 
-function AuraContainerPrivateMixin:OnEnabledChanged(_enabled)
-	self:UpdateEventRegistrations();
-	self:UpdateAllAuras();
+function AuraContainerPrivateMixin:OnWeaponEnchantChanged()
+	-- Implement processing in a derived mixin.
 end
 
-function AuraContainerPrivateMixin:OnUnitChanged(_unitToken)
-	self:UpdateEventRegistrations();
-	self:UpdateAllAuras();
+function AuraContainerPrivateMixin:OnWeaponSlotChanged()
+	-- Implement processing in a derived mixin.
 end
 
-function AuraContainerPrivateMixin:GetPrivateAuraUpdateCallback()
-	if not self.privateAurasUpdateCallback then
-		local function OnPrivateAurasUpdated(unitAuraUpdateInfo)
-			self:OnUnitPrivateAuraUpdate(unitAuraUpdateInfo);
-		end
+function AuraContainerPrivateMixin:ShouldRegisterForUnitAuraEvents()
+	-- Override in a derived mixin to control registration of unit aura updates.
+	return true;
+end
 
-		self.privateAurasUpdateCallback = C_FunctionContainers.CreateCallback(OnPrivateAurasUpdated);
+function AuraContainerPrivateMixin:ShouldRegisterForPrivateAuraEvents()
+	-- Override in a derived mixin to control registration of private aura updates.
+	return true;
+end
+
+function AuraContainerPrivateMixin:ShouldRegisterForItemEnchantmentEvents()
+	-- Override in a derived mixin to control registration of item enchantment updates.
+	return false;
+end
+
+function AuraContainerPrivateMixin:GetStaticFrameEvents()
+	local events = {};
+	table.insert(events, "AURA_DATA_PROVIDER_SWITCH");
+	return events;
+end
+
+function AuraContainerPrivateMixin:GetDynamicFrameEvents()
+	local events = {};
+
+	if self:ShouldRegisterForItemEnchantmentEvents() then
+		table.insert(events, "WEAPON_ENCHANT_CHANGED");
+		table.insert(events, "WEAPON_SLOT_CHANGED");
 	end
 
-	return self.privateAurasUpdateCallback;
+	return events;
 end
 
-function AuraContainerPrivateMixin:IsRegisteredForPrivateAuras()
-	return self.privateAurasUnit ~= nil;
-end
+function AuraContainerPrivateMixin:GetDynamicUnitEvents()
+	local events = {};
 
-function AuraContainerPrivateMixin:RegisterForPrivateAuras()
-	self:UnregisterForPrivateAuras();
-
-	self.privateAurasUnit = self:GetUnit();
-	C_UnitAurasPrivate.AddPrivateAuraUpdateCallback(self.privateAurasUnit, self:GetPrivateAuraUpdateCallback());
-end
-
-function AuraContainerPrivateMixin:UnregisterForPrivateAuras()
-	if self:IsRegisteredForPrivateAuras() then
-		C_UnitAurasPrivate.RemovePrivateAuraUpdateCallback(self.privateAurasUnit, self:GetPrivateAuraUpdateCallback());
-		self.privateAurasUnit = nil;
+	if self:ShouldRegisterForUnitAuraEvents() then
+		table.insert(events, "UNIT_AURA");
 	end
+
+	return events;
 end
 
-function AuraContainerPrivateMixin:ShouldRegisterForPrivateAuras()
-	return self.privateAurasEnabled;
-end
-
-function AuraContainerPrivateMixin:SetPrivateAurasEnabled(enabled)
-	enabled = (enabled == true);
-
-	if enabled ~= self.privateAurasEnabled then
-		self.privateAurasEnabled = enabled;
-		self:UpdateEventRegistrations();
-	end
-end
-
-function AuraContainerPrivateMixin:ShouldRegisterForEvents()
+function AuraContainerPrivateMixin:ShouldRegisterForDynamicEvents()
 	return self:IsVisible() and self:IsEnabled();
 end
 
 function AuraContainerPrivateMixin:UpdateEventRegistrations()
-	self:UnregisterForPrivateAuras();
+	-- Current dynamic event lists should be unregistered first and then
+	-- replaced with new registrations if we're allowed to enable them.
 
-	if self:ShouldRegisterForEvents() then
-		FrameUtil.RegisterFrameForEvents(self, self.DynamicEvents);
-		FrameUtil.RegisterFrameForUnitEvents(self, self.DynamicUnitEvents, self:GetUnit());
+	FrameUtil.UnregisterFrameForEvents(self, self.dynamicFrameEvents);
+	FrameUtil.UnregisterFrameForEvents(self, self.dynamicUnitEvents);
+	self.privateAurasUpdateCallback:Unregister();
 
-		if self:ShouldRegisterForPrivateAuras() then
-			self:RegisterForPrivateAuras();
+	if self:ShouldRegisterForDynamicEvents() then
+		self.dynamicFrameEvents = self:GetDynamicFrameEvents();
+		self.dynamicUnitEvents = self:GetDynamicUnitEvents();
+
+		FrameUtil.RegisterFrameForEvents(self, self.dynamicFrameEvents);
+		FrameUtil.RegisterFrameForUnitEvents(self, self.dynamicUnitEvents, self:GetUnit());
+
+		if self:ShouldRegisterForPrivateAuraEvents() then
+			self.privateAurasUpdateCallback:Register(self:GetUnit());
 		end
 	else
-		FrameUtil.UnregisterFrameForEvents(self, self.DynamicEvents);
-		FrameUtil.UnregisterFrameForEvents(self, self.DynamicUnitEvents);
+		self.dynamicFrameEvents = {};
+		self.dynamicUnitEvents = {};
 	end
 end

@@ -1,12 +1,12 @@
 local eventHandlers = {
-	["ARENA_TEAM_INVITE_CANCEL"] = GameEvent.HandleArenaTeamInviteCancel,
-	["ARCHAEOLOGY_SURVEY_CAST"] = GameEvent.HandleArchaeologySurveyCast,
-	["ARCHAEOLOGY_TOGGLE"] = GameEvent.HandleArchaeologyToggle,
-	["FORGE_MASTER_CLOSED"] = GameEvent.HandleForgeMasterClosed,
-	["FORGE_MASTER_OPENED"] = GameEvent.HandleForgeMasterOpened,
-	["PLAYER_ALIVE"] = GameEvent.HandlePlayerAlive,
-	["PLAYER_UNGHOST"] = GameEvent.HandlePlayerUnghost,
-	["RAISED_AS_GHOUL"] = GameEvent.HandlePlayerAlive,
+	["ARENA_TEAM_INVITE_CANCEL"] = function(...) GameEvent.HandleArenaTeamInviteCancel(...) end,
+	["ARCHAEOLOGY_SURVEY_CAST"] = function(...) GameEvent.HandleArchaeologySurveyCast(...) end,
+	["ARCHAEOLOGY_TOGGLE"] = function(...) GameEvent.HandleArchaeologyToggle(...) end,
+	["FORGE_MASTER_CLOSED"] = function(...) GameEvent.HandleForgeMasterClosed(...) end,
+	["FORGE_MASTER_OPENED"] = function(...) GameEvent.HandleForgeMasterOpened(...) end,
+	["PLAYER_ALIVE"] = function(...) GameEvent.HandlePlayerAlive(...) end,
+	["PLAYER_UNGHOST"] = function(...) GameEvent.HandlePlayerUnghost(...) end,
+	["RAISED_AS_GHOUL"] = function(...) GameEvent.HandlePlayerAlive(...) end,
 };
 
 function GameEvent.RegisterCataEvents()

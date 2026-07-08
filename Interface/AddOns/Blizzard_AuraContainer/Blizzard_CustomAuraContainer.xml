@@ -7,6 +7,10 @@
 				<Mixin key="CustomAuraContainerInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
 				<Mixin key="CustomAuraContainerPrivateMixin" source="secure"/>
 			</Mixins>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnUpdate method="OnUpdate"/>
+			</Scripts>
 		</AuraContainer>
 	 </ScopedModifier>
 </Ui>

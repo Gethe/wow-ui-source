@@ -299,6 +299,24 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellDescriptionForItemLocation",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
 			Name = "GetSpellDisplayCount",
 			Type = "Function",
 			SecretWhenCooldownsRestricted = true,

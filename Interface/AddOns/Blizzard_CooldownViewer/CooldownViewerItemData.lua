@@ -200,9 +200,7 @@ end
 	In those cases, the aura/tooltip override is checked manually.
 --]]
 function CooldownViewerItemDataMixin:GetSpellID()
-	local usesDynamicAppearance = self:UsesDynamicAppearance();
-
-	if usesDynamicAppearance then
+	if self:PreferAuraDataOverSpellData() then
 		local auraSpellID = self:GetAuraSpellID();
 		if auraSpellID then
 			return auraSpellID;
@@ -211,6 +209,7 @@ function CooldownViewerItemDataMixin:GetSpellID()
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo then
+		local usesDynamicAppearance = self:UsesDynamicAppearance();
 		if usesDynamicAppearance and cooldownInfo.linkedSpellID then
 			return cooldownInfo.linkedSpellID;
 		end
@@ -456,6 +455,15 @@ function CooldownViewerItemDataMixin:GetSpellCategoryIcon()
 	return nil;
 end
 
+local function GetSpellTextureForSpellID(spellID, usesDynamicAppearance)
+	local iconID, originalIconID, conditionalIconID = C_Spell.GetSpellTexture(spellID);
+	if usesDynamicAppearance then
+		return conditionalIconID or iconID;
+	end
+
+	return originalIconID;
+end
+
 function CooldownViewerItemDataMixin:GetSpellTexture()
 	local spellCategoryIcon = self:GetSpellCategoryIcon();
 	if spellCategoryIcon then
@@ -466,10 +474,10 @@ function CooldownViewerItemDataMixin:GetSpellTexture()
 
 	-- Checking auraSpellID here is done instead of calling self:GetSpellID() because of the override texture logic.
 	-- This means that on items like trinkets will return the aura texture if it is currently active.
-	if usesDynamicAppearance then
-		local auraSpellID = self:GetAuraSpellID();
-		if auraSpellID then
-			return C_Spell.GetSpellTexture(auraSpellID);
+	if self:PreferAuraDataOverSpellData() then
+		local auraData = self:GetAuraDataCached();
+		if auraData then
+			return auraData.icon or QUESTION_MARK_ICON;
 		end
 	end
 
@@ -482,21 +490,20 @@ function CooldownViewerItemDataMixin:GetSpellTexture()
 	if usesDynamicAppearance then
 		local linkedSpellID = self:GetLinkedSpell();
 		if linkedSpellID then
-			return C_Spell.GetSpellTexture(linkedSpellID);
+			return GetSpellTextureForSpellID(linkedSpellID, usesDynamicAppearance);
 		end
 	end
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
 		-- Overriding the tooltip also serves to override the texture
-		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
+		return GetSpellTextureForSpellID(cooldownInfo.overrideTooltipSpellID, usesDynamicAppearance);
 	end
 
 	-- Intentionally always use the base spell when calling C_Spell.GetSpellTexture. Its internal logic will handle the override if needed.
 	local spellID = self:GetBaseSpellID();
 	if spellID then
-		local returnTexture, _, overrideTexture = C_Spell.GetSpellTexture(spellID);
-		return overrideTexture or returnTexture;
+		return GetSpellTextureForSpellID(spellID, usesDynamicAppearance);
 	end
 
 	return self:GetFallbackSpellTexture();
@@ -832,7 +839,7 @@ function CooldownViewerItemDataMixin:DisplayEquipSlotTrackedTooltip(tooltip, equ
 
 				GameTooltip_AddHighlightLine(tooltip, COOLDOWN_VIEWER_TRINKET_AURA_TOOLTIP_LABEL, false, 40);
 				GameTooltip_AddBlankLineToTooltip(tooltip);
-				GameTooltip_AddInstructionLine(tooltip, spell:GetSpellDescription());
+				GameTooltip_AddInstructionLine(tooltip, spell:GetSpellDescriptionForItemLocation(itemLocation));
 			end
 
 			return true;
@@ -957,4 +964,23 @@ function CooldownViewerItemDataMixin:IsOnCooldown()
 	-- This is similar to the UsesDynamicAppearance API, and should generally return false for the base elements.
 	-- Cooldown viewer item logic for items that are displayed on the viewers will override this.
 	return false;
+end
+
+function CooldownViewerItemDataMixin:PreferAuraDataOverSpellData()
+	-- Indicates whether or not this cooldown item will get spellID/icon (among other related things) from the aura or the spells.
+	-- Usually auras do override everything, however the typical case with actively cast items is that the active spellID is the source of
+	-- most of the data (unless the item happens to be tracking an aura application of a cast on a target) while tracked/passively cast items
+	-- should be displaying info directly for the aura they're tracking.
+	-- Most of this logic can be implemented here by just checking the overridden APIs like UsesDynamicAppearance and IsActivelyCast.
+
+	if self:UsesDynamicAppearance() then
+		if self:IsActivelyCast() then
+			-- Prefer the aura if this is on a target, otherwise use the spell data.
+			return self:GetAuraDataUnit() == "target";
+		end
+
+		return true; -- It's passive, this should be looking at auras/totems.
+	end
+
+	return false; -- Use the spell data by default; this is typically for the layout manager.
 end

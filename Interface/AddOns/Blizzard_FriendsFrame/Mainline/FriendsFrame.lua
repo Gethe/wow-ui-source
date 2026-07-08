@@ -59,8 +59,20 @@ local whoSortValue = 1;
 
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "RecentAlliesFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
 FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame" };
+FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES = { "WhoFrame" };
+
+local function GetValidSubFrames()
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES
+	elseif C_SocialUI.IsSystemEnabled() then
+		return FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES;
+	else
+		return FRIENDSFRAME_SUBFRAMES;
+	end
+end
+
 function FriendsFrame_ShowSubFrame(frameName)
-	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+	local subFrames = GetValidSubFrames();
 	for index, value in pairs(subFrames) do
 		if ( value == frameName ) then
 			_G[value]:Show()
@@ -225,6 +237,41 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 	end
 end
 
+local function FriendsFrame_UpdateTabHiddenStates(self)
+	local showFriends = true;
+	local showWho = true;
+	local showRaid = true;
+	local showQuickJoin = true;
+
+	local hideAllTabs = C_Glue.IsOnGlueScreen() or C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if hideAllTabs then
+		showFriends = false;
+		showWho = false;
+		showRaid = false;
+		showQuickJoin = false;
+		PanelTemplates_ShowTab(self, FRIEND_TAB_FRIENDS);
+		PanelTemplates_HideTab(self, FRIEND_TAB_WHO);
+		PanelTemplates_HideTab(self, FRIEND_TAB_RAID);
+		PanelTemplates_HideTab(self, FRIEND_TAB_QUICK_JOIN);
+	end
+	if C_SocialUI.IsSystemEnabled() then
+		showFriends = false;
+		showRaid = false;
+		showQuickJoin = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
+		showRaid = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
+		showQuickJoin = false;
+	end
+
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_FRIENDS, showFriends);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_WHO, showWho);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_RAID, showRaid);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_QUICK_JOIN, showQuickJoin);
+end
+
 function FriendsFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, FRIEND_TAB_COUNT);
 	self.selectedTab = FRIEND_TAB_FRIENDS;
@@ -268,19 +315,9 @@ function FriendsFrame_OnLoad(self)
 		-- disable non glue friend Tabs
 		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recentAlliesTabID, false);
 		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recruitAFriendTabID, false);
-		FriendsFrameTab1:Hide();
-		FriendsFrameTab2:Hide();
-		FriendsFrameTab3:Hide();
-		FriendsFrameTab4:Hide();
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
-		FriendsFrameTab3:Hide();
-	end
-
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
-		FriendsFrameTab4:Hide();
-	end
+	FriendsFrame_UpdateTabHiddenStates(self);
 
 	if C_Glue.IsOnGlueScreen() then
 		self:RegisterEvent("FRAMES_LOADED");
@@ -352,6 +389,7 @@ function FriendsFrame_OnShow(self)
 	EventRegistry:RegisterCallback("FriendsFrame.IgnoreListVisibilityChanged", FriendsFrame_UpdateUIPanelWidth);
 
 	FriendsFrame_UpdateUIPanelWidth();
+	FriendsFrame_UpdateTabHiddenStates(self);
 
 	local onGlues =  C_Glue.IsOnGlueScreen();
 	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
@@ -377,10 +415,11 @@ function FriendsFrame_OnShow(self)
 		self:Hide();
 	end, self);
 
+	local enableRaidTab = false;
 	if not onGlues then
 		-- Raid tab is unavailable while in raid story content.
 		local inStoryRaid = DifficultyUtil.InStoryRaid();
-		local enableRaidTab = not inStoryRaid;
+		enableRaidTab = not inStoryRaid;
 		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
 	end
 
@@ -472,7 +511,7 @@ function FriendsFrame_OnHide(self)
 	end;
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 
-	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+	local subFrames = GetValidSubFrames();
 	for index, value in pairs(subFrames) do
 		if ( value == "RaidFrame" ) then
 			if ( RaidFrame:GetParent() == FriendsFrame ) then
@@ -1429,8 +1468,11 @@ function ToggleFriendsFrame(requestedTab)
 		elseif not requestedTab then
 			SocialUIControl.Toggle();
 		end
-
-		return;
+		if requestedTab == FRIEND_TAB_WHO then
+			-- Special case we want to drop down to the old Frame handling
+		else
+			return;
+		end
 	end
 
 	if ( not requestedTab ) then
@@ -1555,10 +1597,6 @@ function WhoFrameEditBoxMixin:OnEnterPressed()
 end
 
 function ShowWhoPanel()
-	if IsSocialUIReplacingFriendsFrame() then
-		return;
-	end
-
 	PanelTemplates_SetTab(FriendsFrame, 2);
 	if ( FriendsFrame:IsShown() ) then
 		FriendsFrame_OnShow(FriendsFrame);

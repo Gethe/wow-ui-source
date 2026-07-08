@@ -13,3 +13,5 @@ SecureStateDriver.lua
 SecureHoverDriver.lua
 SecureGroupHeaders.lua
 SecureGroupHeaders.xml
+SecureAuraHeader.lua [AllowLoadGameType classic]
+SecureAuraHeader.xml [AllowLoadGameType classic]

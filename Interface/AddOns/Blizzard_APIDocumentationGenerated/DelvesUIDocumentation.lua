@@ -379,6 +379,15 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "HasActiveLair",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDelveEntranceTierEnabled",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

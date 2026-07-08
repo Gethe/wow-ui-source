@@ -439,11 +439,11 @@ local FrameScript =
 			Type = "Function",
 			SecureHooksAllowed = false,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Securely copies a Lua value. Tables are deep-copied with recursive and shared references preserved; script objects are preserved by reference. Copied values receive the current execution taint." },
+			Documentation = { "Securely copies a Lua value. Tables are deep-copied with recursive and shared references preserved. Copied values receive the current execution taint." },
 
 			Arguments =
 			{
-				{ Name = "value", Type = "LuaValueReference", Nilable = false, Documentation = { "The Lua value to copy." } },
+				{ Name = "value", Type = "LuaValueReference", Nilable = true, Documentation = { "The Lua value to copy." } },
 				{ Name = "options", Type = "SecureCopyOptions", Nilable = true, Documentation = { "Optional settings controlling value copying behavior. If omitted, default secure copy options are used." } },
 			},
 
@@ -543,6 +543,7 @@ local FrameScript =
 			{
 				{ Name = "maxTraversalDepth", Type = "number", Nilable = false, Default = 100, Documentation = { "Maximum table nesting depth allowed during recursive copying." } },
 				{ Name = "wrapUntrustedFunctions", Type = "bool", Nilable = false, Default = true, Documentation = { "Wrap function values in secure closures that call through using the original function taint." } },
+				{ Name = "permitScriptObjects", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve references to script objects in the copied output. By default, script objects will raise an error." } },
 			},
 		},
 		{

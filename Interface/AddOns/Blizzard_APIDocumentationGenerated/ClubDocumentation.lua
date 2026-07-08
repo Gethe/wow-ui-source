@@ -1038,6 +1038,19 @@ local Club =
 			},
 		},
 		{
+			Name = "SendTitleFriendRequest",
+			Type = "Function",
+			HasRestrictions = true,
+			RequiresClubsInitialized = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "guildClubId", Type = "ClubId", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAutoAdvanceStreamViewMarker",
 			Type = "Function",
 			RequiresClubsInitialized = true,

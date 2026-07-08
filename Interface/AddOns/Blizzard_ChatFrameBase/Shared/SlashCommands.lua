@@ -733,7 +733,7 @@ SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.CLICK, SLASH_COMMAND_C
 		down = StringToBoolean(down or "", false);
 
 		local button = GetClickFrame(name);
-		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
+		if ( button and button:IsObjectType("Button") and not button:IsForbidden() and not button:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
 			button:Click(mouseButton, down);
 		end
 	end

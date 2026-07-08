@@ -24,7 +24,12 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="FrameStackHighlight" inherits="FrameHighlightTemplate"/>
+	<Frame name="FrameStackHighlight" inherits="FrameHighlightTemplate">
+		<ForbiddenAspects>
+			<!-- Permits the highlight to anchor to regions that would disallow OnSizeChanged script execution. -->
+			<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
+		</ForbiddenAspects>
+	</Frame>
 
 	<Frame name="FrameStackAnchorHighlightTemplate" parentArray="AnchorHighlights" virtual="true" enableMouse="false" frameStrata="TOOLTIP">
 		<Layers>
