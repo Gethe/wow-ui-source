@@ -316,7 +316,7 @@ function NamePlateAurasMixin:GetLossOfControlAura()
 		return self.explicitAuraList.GetTop();
 	end
 
-	local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, LOSS_OF_CONTROL_ACTIVE_INDEX);
+	local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if not lossOfControlData then
 		return nil;
 	end
