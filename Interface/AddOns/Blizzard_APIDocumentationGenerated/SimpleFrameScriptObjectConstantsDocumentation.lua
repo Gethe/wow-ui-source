@@ -31,6 +31,17 @@ local SimpleFrameScriptObjectConstants =
 			},
 		},
 		{
+			Name = "ScriptObjectAccessRestriction",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "DenyTaintedAccessWhenAurasAreSecret", Type = "ScriptObjectAccessRestriction", EnumValue = 1, Documentation = { "Denies access to this script object from tainted execution while aura information is secret." } },
+			},
+		},
+		{
 			Name = "ScriptObjectMetatable",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -52,6 +63,18 @@ local SimpleFrameScriptObjectConstants =
 			{
 				{ Name = "Public", Type = "ScriptObjectPartition", EnumValue = 0 },
 				{ Name = "Forbidden", Type = "ScriptObjectPartition", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ScriptObjectPropagationPath",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Hierarchy", Type = "ScriptObjectPropagationPath", EnumValue = 0, Documentation = { "Propagation through script object hierarchy relationships, such as parent-child ownership." } },
+				{ Name = "Layout", Type = "ScriptObjectPropagationPath", EnumValue = 1, Documentation = { "Propagation through layout dependency relationships, such as frames anchored relative to one another." } },
 			},
 		},
 	},

@@ -171,7 +171,7 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 	elseif event == "LOSS_OF_CONTROL_COMMENTATOR_UPDATE" then
 		local guid = ...;
 		if self:GetGUID() == guid then
-			self:ApplyLossOfControlAtIndex(LOSS_OF_CONTROL_ACTIVE_INDEX);
+			self:ApplyLossOfControlAtIndex(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 		end
 	end
 end

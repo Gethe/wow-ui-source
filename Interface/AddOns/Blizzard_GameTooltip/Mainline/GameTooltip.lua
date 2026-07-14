@@ -190,7 +190,7 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
+function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style, context)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
@@ -206,7 +206,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
-		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style);
+		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style, context);
 
 		if hasAnySingleLineRewards and tooltip.ItemTooltip and tooltip.ItemTooltip:IsShown() then
 			GameTooltip_AddBlankLinesToTooltip(tooltip, 1);

@@ -12,6 +12,7 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnterPressed method="OnEnterPressed"/>
 		</Scripts>
 	</EditBox>
 
@@ -88,7 +89,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="SocialUIScrollableSpacerTemplate" mixin="SocialUIScrollableSpacerMixin" virtual="true">
+	<Frame name="SocialUIScrollableSpacerTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="baseHeight" value="2" type="number"/>
 		</KeyValues>

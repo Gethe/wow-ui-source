@@ -20,12 +20,12 @@ local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
 		error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", inboundObject:GetDebugName()));
 	end
 
-	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Parent)) then
+	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Hierarchy)) then
 		-- This can error when attempting to attach a region that isn't parented to an aura button.
 		error(string.format("bad object '%s' in function call (must inherit all forbidden parent aspects from owner)", inboundObject:GetDebugName()));
 	end
 
-	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Layout)) then
+	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout)) then
 		-- This can error when attempting to attach a region that isn't anchored to an aura button.
 		error(string.format("bad object '%s' in function call (must inherit all forbidden layout aspects from owner)", inboundObject:GetDebugName()));
 	end

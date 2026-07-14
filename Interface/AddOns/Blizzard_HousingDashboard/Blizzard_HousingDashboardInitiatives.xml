@@ -577,14 +577,11 @@
 						</Layer>
 					</Layers>
 					<Frames>
-						<Button parentKey="SwitchActiveNeighborhoodBtn" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_SET_AS_ACTIVE_INITIATIVE_LABEL" mixin="InitiativeActiveNeighborhoodSwitcherMixin">
+						<Button parentKey="SwitchActiveNeighborhoodBtn" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_SET_AS_ACTIVE_INITIATIVE_LABEL">
 							<Size x="200" y="22"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.ActiveEndeavorHelpText" relativePoint="TOP" y="20"/>
 							</Anchors>
-							<Scripts>
-								<OnClick method="OnClick"/>
-							</Scripts>
 						</Button>
 
 						<Frame parentKey="CurrentlyActiveInfo">

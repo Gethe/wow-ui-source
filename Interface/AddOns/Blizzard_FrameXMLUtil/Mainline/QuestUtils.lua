@@ -752,7 +752,9 @@ function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplaya
 	return output .. text;
 end
 
-function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
+
+
+function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style, context)
 	local hasAnySingleLineRewards = false;
 	local isWarModeDesired = C_PvP.IsWarModeDesired();
 	local questHasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
@@ -775,6 +777,10 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- favor
 	local favor = C_QuestInfoSystem.GetQuestLogRewardFavor(questID, style.clampFavorToCycleCap);
 	if ( favor > 0 ) then
+		local initiativeTaskID = context and context.initiativeTaskID;
+		if initiativeTaskID then
+			favor = C_NeighborhoodInitiative.GetInitiativeTaskRewardScaling(initiativeTaskID, favor);
+		end
 		GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_HOUSING_FAVOR_FORMAT:format(favor, HOUSING_DASHBOARD_REWARD_ESTATE_XP), HIGHLIGHT_FONT_COLOR);
 		hasAnySingleLineRewards = true;
 	end
@@ -783,7 +789,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	local mainRewardIsFirstTimeReputationBonus = false;
 	local secondaryRewardsContainFirstTimeRepBonus = false;
 	if not style.atLeastShowAzerite then
-		local numAddedQuestCurrencies, usingCurrencyContainer, primaryCurrencyRewardInfo = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
+		local numAddedQuestCurrencies, usingCurrencyContainer, primaryCurrencyRewardInfo = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip, context);
 		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
 		end
@@ -889,7 +895,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 end
 
 --currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
-function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
+function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip, context)
 	local currencies = { };
 	local uniqueCurrencyIDs = { };
 	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
@@ -925,11 +931,16 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first.
 	local alreadyUsedCurrencyContainerInfo = nil;  --In the case of multiple currency containers needing to displayed, we only display the first.
 	local warModeBonus = C_PvP.GetWarModeRewardBonus();
+	local initiativeTaskID = context and context.initiativeTaskID;
 
 	for i, currencyInfo in ipairs(currencies) do
-		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems);
+		local numItems = currencyInfo.numItems;
+		if initiativeTaskID then
+			numItems = C_NeighborhoodInitiative.GetInitiativeTaskRewardScaling(initiativeTaskID, numItems);
+		end
+		local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, numItems);
 		if ( currencyContainerTooltip and isCurrencyContainer and (alreadyUsedCurrencyContainerId == 0) ) then
-			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, currencyInfo.numItems) ) then
+			if ( EmbeddedItemTooltip_SetCurrencyByID(currencyContainerTooltip, currencyInfo.currencyID, numItems) ) then
 				if ShouldShowWarModeBonus(questID, currencyInfo.currencyID, currencyInfo.firstInstance) then
 					currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_FORMAT:format(warModeBonus));
 					currencyContainerTooltip.Tooltip:Show();
@@ -946,7 +957,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 		elseif ( tooltip ) then
 			if( alreadyUsedCurrencyContainerId ~= currencyInfo.currencyID ) then --if there's already a currency container of this same type skip it entirely
 				if isCurrencyContainer then
-					local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID, currencyInfo.numItems);
+					local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID, numItems);
 					local text = BONUS_OBJECTIVE_REWARD_FORMAT:format(texture, name);
 
 					local colorData = ColorManager.GetColorDataForItemQuality(quality);
@@ -956,8 +967,8 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 						tooltip:AddLine(text);
 					end
 				else
-					local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
-					local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
+					local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, numItems, currencyInfo.name);
+					local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, numItems);
 					tooltip:AddLine(text, currencyColor:GetRGB());
 				end
 

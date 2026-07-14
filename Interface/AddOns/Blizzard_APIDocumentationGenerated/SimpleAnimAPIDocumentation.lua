@@ -284,6 +284,7 @@ local SimpleAnimAPI =
 			Name = "SetChildKey",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -397,6 +398,7 @@ local SimpleAnimAPI =
 			Name = "SetTarget",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -412,6 +414,7 @@ local SimpleAnimAPI =
 			Name = "SetTargetKey",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -427,6 +430,7 @@ local SimpleAnimAPI =
 			Name = "SetTargetName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -441,6 +445,7 @@ local SimpleAnimAPI =
 		{
 			Name = "SetTargetParent",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{

@@ -67,10 +67,10 @@ function AddFriendFrame_Show()
 				end
 			end
 		else
-			if InGlue() then
+			if C_FriendList.IsLegacyFriendSystemEnabled() then
 				StaticPopup_Show("ADD_FRIEND");
-			else
-				StaticPopup_Show("ADD_FRIEND");
+			elseif not InGlue() then
+				UIErrorsFrame:AddExternalErrorMessage(BATTLENET_UNAVAILABLE);
 			end
 		end
 	end
@@ -84,17 +84,6 @@ function AddFriendFrameMixin:OnLoad()
 end
 
 function AddFriendFrameMixin:OnShow()
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup and factionGroup ~= "Neutral" ) then
-		local textureFile = "Interface\\FriendsFrame\\PlusManz-"..factionGroup;
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
-		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
-		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
-	else
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Hide();
-	end
-
 	local areTitleFriendsEnabled = C_BattleNet.AreTitleFriendsEnabled();
 	AddFriendInfoFrame.InfoContainer.RightTextContainer.Description:SetText(areTitleFriendsEnabled and WOW_FRIEND_DESCRIPTION or CHARACTER_FRIEND_INFO);
 end
@@ -190,8 +179,12 @@ function AddFriendFrame_Accept()
 	local name = AddFriendNameEditBox:GetText();
 	if ( AddFriendFrame_IsValidBattlenetName(name) and AddFriendFrame.BNconnected ) then
 		BNSendFriendInvite(name, "");
+	elseif C_BattleNet.AreTitleFriendsEnabled() then
+		C_BattleNet.SendTitleFriendInviteByName(name);
 	elseif C_FriendList.IsLegacyFriendSystemEnabled() then
 		C_FriendList.AddFriend(name);
+	else
+		UIErrorsFrame:AddExternalErrorMessage(ERR_SYSTEM_DISABLED);
 	end
 	StaticPopupSpecial_Hide(AddFriendFrame);
 end
@@ -210,6 +203,8 @@ end
 function GlueAddFriendAccept(name)
 	if ( IsValidBattlenetName(name) ) then
 		BNSendFriendInvite(name, "");
+	elseif C_BattleNet.AreTitleFriendsEnabled() then
+		C_BattleNet.SendTitleFriendInviteByName(name);
 	elseif C_FriendList.IsLegacyFriendSystemEnabled() then
 		C_FriendList.AddFriend(name);
 	end
@@ -229,14 +224,9 @@ end
 AddFriendIconHolderMixin = {};
 
 function AddFriendIconHolderMixin:OnLoad()
-	self.SecondaryIcon:SetPoint("BOTTOMLEFT", self.FriendIcon, "BOTTOM", self.secondaryIconXOffset or 0, 7);
-	if self.secondaryIcon then
-		self:SetSecondaryIcon(self.secondaryIcon);
+	if self.secondaryIconAtlas then
+		self.SecondaryIcon:SetAtlas(self.secondaryIconAtlas, TextureKitConstants.UseAtlasSize);
 	end
-end
-
-function AddFriendIconHolderMixin:SetSecondaryIcon(icon)
-	self.SecondaryIcon:SetTexture(icon);
 end
 
 AddFriendEntryFrameInfoButtonMixin = {};

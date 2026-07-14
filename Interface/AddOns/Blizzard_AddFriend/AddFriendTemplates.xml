@@ -61,22 +61,21 @@
 		<Size x="100" y="72"/>
 		<!-- 
 			<KeyValues>
-				<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
-				<KeyValue key="secondaryIconXOffset" value="-10" type="number"/>
+				<KeyValue key="secondaryIconAtlas" value="friends-icon-addFriend-logo-WoW" type="string"/>
 			</KeyValues>
 		-->
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FriendIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
+				<Texture parentKey="FriendIcon" atlas="friends-icon-addFriend" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="BOTTOM" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="SecondaryIcon" file="Interface\FriendsFrame\PlusManz-BattleNet">
+				<Texture parentKey="SecondaryIcon" atlas="friends-icon-addFriend-logo-battleNet" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.FriendIcon" relativePoint="BOTTOM" y="7"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.FriendIcon" relativePoint="BOTTOM" x="0" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -155,9 +154,6 @@
 								</KeyValues>
 								<Frames>
 									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
-										<KeyValues>
-											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-BattleNet" type="string"/>
-										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" y="-5"/>
 										</Anchors>
@@ -194,8 +190,7 @@
 								<Frames>
 									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
 										<KeyValues>
-											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
-											<KeyValue key="secondaryIconXOffset" value="-15" type="number"/>
+											<KeyValue key="secondaryIconAtlas" value="friends-icon-addFriend-logo-WoW" type="string"/>
 										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" y="-5"/>
@@ -308,9 +303,6 @@
 								</KeyValues>
 								<Frames>
 									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
-										<KeyValues>
-											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-BattleNet" type="string"/>
-										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" y="-5"/>
 										</Anchors>
@@ -347,8 +339,7 @@
 								<Frames>
 									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
 										<KeyValues>
-											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
-											<KeyValue key="secondaryIconXOffset" value="-15" type="number"/>
+											<KeyValue key="secondaryIconAtlas" value="friends-icon-addFriend-logo-WoW" type="string"/>
 										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" y="-5"/>

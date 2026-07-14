@@ -588,7 +588,8 @@ function PrivateAuraAnchorContainerMixin:CheckUpdateBuffFrames()
 				local bigDefensiveAura = self.bigDefensives:GetTop();
 				self:AddBlockedAura(bigDefensiveAura.auraInstanceID);
 
-				self.BigDefensiveBuff:Update(bigDefensiveAura, self.watcher:GetUnit(), self);
+				local visualAlert = PrivateGroupBuffsManager:GetGroupBuffVisualAlert(bigDefensiveAura.spellId);
+				self.BigDefensiveBuff:Update(bigDefensiveAura, self.watcher:GetUnit(), self, visualAlert);
 			else
 				self.BigDefensiveBuff:Hide();
 			end

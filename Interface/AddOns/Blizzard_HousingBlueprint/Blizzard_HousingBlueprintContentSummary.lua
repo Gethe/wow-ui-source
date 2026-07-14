@@ -12,12 +12,16 @@ local ContentWhileShownEvents = {
 };
 
 function HousingBlueprintContentSummaryMixin:OnLoad()
-	self.CountListContainer.ContentsListButton:SetScript("OnClick", function()
+	self.ContentsListButton:SetScript("OnClick", function()
 		if self.blueprintContentInfo then
 			PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 			HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, self:GetTargetGUID());
 		end
 	end);
+
+	if self.backgroundAlpha then
+		self.BudgetsContainer:SetBackgroundAlpha(self.backgroundAlpha);
+	end
 end
 
 function HousingBlueprintContentSummaryMixin:OnEvent(event, ...)
@@ -78,15 +82,15 @@ function HousingBlueprintContentSummaryMixin:SetShareCode(shareCode, targetHouse
 end
 
 function HousingBlueprintContentSummaryMixin:ClearData()
+	self.BudgetsContainer:ClearData();
 	self.blueprintCode = nil;
 	self.blueprintType = nil;
 	self.targetHouseGUID = nil;
 	self.isWaitingForContent = nil;
 	self.showLoadingState = nil;
 	self.blueprintContentInfo = nil;
-	self.budgetInfo = nil;
 
-	self.CountListContainer.ContentsCountText:SetText("");
+	self.CountText:SetText("");
 end
 
 function HousingBlueprintContentSummaryMixin:GetWaitingState()
@@ -141,12 +145,16 @@ function HousingBlueprintContentSummaryMixin:IsContentImportable()
 	local disabledTooltip = nil;
 	-- If insufficient budget, convey that in the most precise way
 	if FlagsUtil.IsSet(self.blueprintContentInfo.blockingRequirementFlags, Enum.HousingBlueprintUnmetRequirementFlags.InsufficientBudget) then
-		if self.budgetInfo.insufficientRoom and (self.budgetInfo.insufficientInterior or self.budgetInfo.insufficientExterior) then
+		local insufficientBudgetTypes = self.BudgetsContainer:GetInsufficientBudgetTypes();
+		local numInsufficientTypes = CountTable(insufficientBudgetTypes);
+		if numInsufficientTypes > 1 then
 			disabledTooltip = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGETS;
-		elseif self.budgetInfo.insufficientRoom then
+		elseif insufficientBudgetTypes[Enum.HousingBudgetType.RoomPlacement] then
 			disabledTooltip = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGET_ROOM;
-		else
+		elseif insufficientBudgetTypes[Enum.HousingBudgetType.DecorPlacement] then
 			disabledTooltip = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGET_DECOR;
+		elseif insufficientBudgetTypes[Enum.HousingBudgetType.PetDecor] then
+			disabledTooltip = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGET_PET_DECOR;
 		end
 	else
 		-- Otherwise, choose the first other blocking requirement flag we have a tooltip for
@@ -188,46 +196,19 @@ function HousingBlueprintContentSummaryMixin:OnContentRequestFailure(result)
 	UIErrorsFrame:AddExternalErrorMessage(HOUSING_BLUEPRINT_CONTENT_ERROR_FMT:format(errorText));
 end
 
-function HousingBlueprintContentSummaryMixin:IsShowingAnyBudgets()
-	for _, entry in ipairs(self.BudgetsContainer.BudgetEntries) do
-		if entry:IsShown() then
-			return true;
-		end
-	end
-	return false;
-end
-
 function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(contentInfo)
+	local wasShowingLoadingState = self.showLoadingState;
 	self:UpdateWaitingState(--[[isWaitingForContent]] false, --[[showLoadingState]] false);
 	self.blueprintContentInfo = contentInfo;
+
+	if wasShowingLoadingState and self.playLoadCompleteSound then
+		PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_OPEN);
+	end
 
 	-- Update target houseGUID as what we got the data back with, because if we didn't specify a context at all, it'll be based on where the player is currently standing
 	self.targetHouseGUID = self.blueprintContentInfo.targetHouseGUID;
 
-	local availableInteriorBudget, availableExteriorBudget, availableRoomBudget = nil, nil, nil;
-	if self.blueprintContentInfo.targetHouseBudgetInfo then
-		availableInteriorBudget = self.blueprintContentInfo.targetHouseBudgetInfo.interiorDecorBudgetMax;
-		availableExteriorBudget = self.blueprintContentInfo.targetHouseBudgetInfo.exteriorDecorBudgetMax;
-		availableRoomBudget = self.blueprintContentInfo.targetHouseBudgetInfo.roomBudgetMax;
-
-		-- Rooms are the only blueprint type that add to the existing spent budgets rather than replace them, so need to display "available" rather than "max"
-		if self.blueprintType == Enum.HousingBlueprintType.Room then
-			availableInteriorBudget = availableInteriorBudget - self.blueprintContentInfo.targetHouseBudgetInfo.interiorDecorBudgetCurrent;
-			availableRoomBudget = availableRoomBudget - self.blueprintContentInfo.targetHouseBudgetInfo.roomBudgetCurrent;
-		end
-	end
-
-	self.budgetInfo = {
-		insufficientInterior = availableInteriorBudget and self.blueprintContentInfo.interiorDecorBudgetCost > availableInteriorBudget,
-		insufficientExterior = availableExteriorBudget and self.blueprintContentInfo.exteriorDecorBudgetCost > availableExteriorBudget,
-		insufficientRoom = availableRoomBudget and self.blueprintContentInfo.roomBudgetCost > availableRoomBudget,
-	};
-
-	self:UpdateBudget(self.BudgetsContainer.IndoorDecorBudget, self.blueprintContentInfo.interiorDecorBudgetCost, availableInteriorBudget, self.budgetInfo.insufficientInterior);
-	self:UpdateBudget(self.BudgetsContainer.OutdoorDecorBudget, self.blueprintContentInfo.exteriorDecorBudgetCost, availableExteriorBudget, self.budgetInfo.insufficientExterior);
-	self:UpdateBudget(self.BudgetsContainer.RoomBudget, self.blueprintContentInfo.roomBudgetCost, availableRoomBudget, self.budgetInfo.insufficientRoom);
-
-	self.BudgetsContainer:SetShown(self:IsShowingAnyBudgets());
+	self.BudgetsContainer:SetInfo(self.blueprintContentInfo.budgetInfo);
 
 	local numItems = 0;
 	local numMissing = 0;
@@ -243,9 +224,9 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	end
 	if self:HasTargetHouse() then
 		local numAvailable = numItems - numMissing;
-		self.CountListContainer.ContentsCountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_COMPARE_FMT:format(numAvailable, numItems));
+		self.CountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_COMPARE_FMT:format(numAvailable, numItems));
 	else
-		self.CountListContainer.ContentsCountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_FMT:format(numItems));
+		self.CountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_FMT:format(numItems));
 	end
 
 	self:MarkDirty();
@@ -258,21 +239,6 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	local target = self:GetTargetGUID();
 	if HousingBlueprintContentListFrame:IsShown() and HousingBlueprintContentListFrame:IsShowingBlueprintForTarget(self.blueprintContentInfo.shareCode, target)  then
 		HousingBlueprintContentListFrame:ShowBlueprintContents(self.blueprintContentInfo, target);
-	end
-end
-
-function HousingBlueprintContentSummaryMixin:UpdateBudget(budgetFrame, budgetCost, budgetAvailable, isInsufficient)
-	if budgetCost > 0 then
-		if not budgetAvailable then
-			budgetFrame.Text:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_BUDGET_FMT:format(budgetCost));
-		else
-			budgetFrame.Text:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_BUDGET_COMPARE_FMT:format(budgetCost, budgetAvailable));
-		end
-		local textColor = isInsufficient and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-		budgetFrame.Text:SetTextColor(textColor:GetRGB());
-		budgetFrame:Show();
-	else
-		budgetFrame:Hide();
 	end
 end
 
@@ -306,23 +272,17 @@ end
 function HousingBlueprintContentSummaryMixin:UpdateWaitingState(isWaitingForContent, showLoadingState)
 	self.isWaitingForContent = isWaitingForContent;
 	self.showLoadingState = showLoadingState;
+
+	self.BudgetsContainer:SetShown((not self.showLoadingState) and self.BudgetsContainer:IsShowingAnyBudgets());
+	self.ContentsListButton:SetShown(not self.showLoadingState);
+	self.CountText:SetShown(not self.showLoadingState);
+
 	self.LoadingSpinner:SetShown(self.showLoadingState);
-	self.BudgetsContainer:SetShown((not self.showLoadingState) and self:IsShowingAnyBudgets());
-	self.CountListContainer:SetShown(not self.showLoadingState);
-end
-
-HousingBlueprintBudgetMixin = {};
-
-function HousingBlueprintBudgetMixin:OnLoad()
-	self.Icon:SetAtlas(self.icon);
-end
-
-function HousingBlueprintBudgetMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
-	GameTooltip_AddHighlightLine(GameTooltip, self.tooltipText);
-	GameTooltip:Show();
-end
-
-function HousingBlueprintBudgetMixin:OnLeave()
-	GameTooltip:Hide();
+	if showLoadingState and (not self.loopSoundHandle) then
+		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_LOOP);
+		self.loopSoundHandle = soundHandle;
+	elseif (not showLoadingState) and self.loopSoundHandle then
+		StopSound(self.loopSoundHandle);
+		self.loopSoundHandle = nil;
+	end
 end

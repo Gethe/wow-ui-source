@@ -34,6 +34,7 @@ function AuraContainerCustomFrameProviderMixin:Init(parent, description)
 	self.templateString = string.join(", ", "CustomAuraButtonTemplate", unpack(description.templateNames or {}));
 	self.initializeFrame = description.initializeFrame;
 	self.batchSize = description.batchSize;
+	self.accessRestrictions = description.accessRestrictions;
 
 	self.ownedFrames = {};
 	self.activeFrames = {};
@@ -69,6 +70,12 @@ function AuraContainerCustomFrameProviderMixin:CreateFrame()
 
 	if self.initializeFrame ~= nil then
 		securecallfunction(self.initializeFrame, auraFrame:GetObjectTable());
+	end
+
+	-- Access restrictions should be applied immediately after (potentially
+	-- tainted) post-creation callbacks.
+	if self.accessRestrictions then
+		auraFrame:AddAccessRestrictions(self.accessRestrictions);
 	end
 
 	-- Force an immediate display update to apply initial secrets and suitable

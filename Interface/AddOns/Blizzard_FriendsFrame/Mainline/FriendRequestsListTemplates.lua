@@ -27,6 +27,7 @@ function FriendRequestsListSocialViewMixin:OnLoad()
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
 	self:InitializeRealIDWarning();
+	self:SetFilterBarShown(false);
 end
 
 function FriendRequestsListSocialViewMixin:InitializeActionButton()

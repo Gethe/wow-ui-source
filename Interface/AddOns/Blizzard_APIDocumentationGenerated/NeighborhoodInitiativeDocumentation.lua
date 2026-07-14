@@ -75,6 +75,22 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "GetInitiativeTaskRewardScaling",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "taskID", Type = "number", Nilable = false },
+				{ Name = "numItems", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scaledAmount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNeighborhoodInitiativeInfo",
 			Type = "Function",
 

@@ -170,8 +170,9 @@
 
 	<Button name="RecruitActivityButtonSocialTemplate" inherits="RecruitActivityButtonTemplate" virtual="true" >
 		<KeyValues>
-			<KeyValue key="Icon_CursorOverChecked" value="friends-RAF-chest-claimed" type="string"/>
-			<KeyValue key="Icon_CursorOver" value="friends-raf-chest-default" type="string"/>
+			<KeyValue key="Icon_TrialAccount" value="friends-RAF-chest-locked" type="string"/>
+			<KeyValue key="Icon_CursorOverChecked" value="friends-RAF-chest-claimed-hover" type="string"/>
+			<KeyValue key="Icon_CursorOver" value="friends-RAF-chest-default-hover" type="string"/>
 			<KeyValue key="Icon_ActiveChest" value="friends-raf-chest-default" type="string"/>
 			<KeyValue key="Icon_OpenChest" value="friends-raf-chest-ready" type="string"/>
 			<KeyValue key="Icon_ClaimedChest" value="friends-RAF-chest-claimed" type="string"/>

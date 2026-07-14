@@ -498,6 +498,7 @@ LocalizationSharedDocumentation.lua
 LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+LossOfControlConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
 LuaDurationObjectSharedDocumentation.lua
 MacroConstantsDocumentation.lua

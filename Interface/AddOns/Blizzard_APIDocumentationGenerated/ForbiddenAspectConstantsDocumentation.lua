@@ -5,9 +5,9 @@ local ForbiddenAspectConstants =
 		{
 			Name = "ForbiddenAspect",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 1,
-			MaxValue = 128,
+			MaxValue = 256,
 			Fields =
 			{
 				{ Name = "SetToDefaults", Type = "ForbiddenAspect", EnumValue = 1, Documentation = { "Restricts resetting this object to a default state. Implied automatically when any other forbidden aspect is set." } },
@@ -18,18 +18,7 @@ local ForbiddenAspectConstants =
 				{ Name = "AlwaysPropagateInput", Type = "ForbiddenAspect", EnumValue = 32, Documentation = { "Forces propagation of mouse and keypress input for this object. Propagates to any children." } },
 				{ Name = "ScriptedInput", Type = "ForbiddenAspect", EnumValue = 64, Documentation = { "Restricts APIs that trigger synthetic input interactions on objects from Lua scripts." } },
 				{ Name = "QueryFocus", Type = "ForbiddenAspect", EnumValue = 128, Documentation = { "Restricts APIs that query input focus state." } },
-			},
-		},
-		{
-			Name = "ForbiddenAspectInheritance",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "Parent", Type = "ForbiddenAspectInheritance", EnumValue = 0, Documentation = { "Category for aspects that can propagate through object hierarchies from parent objects." } },
-				{ Name = "Layout", Type = "ForbiddenAspectInheritance", EnumValue = 1, Documentation = { "Category for aspects that can propagate through the anchor graph from relative dependencies." } },
+				{ Name = "ChangeAnimationTarget", Type = "ForbiddenAspect", EnumValue = 256, Documentation = { "Restricts APIs that can change the target object of an animation." } },
 			},
 		},
 	},

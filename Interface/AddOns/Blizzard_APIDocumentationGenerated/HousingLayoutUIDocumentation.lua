@@ -69,21 +69,30 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "GetHighestOccupiedFloorIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "highestFloorIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLowestOccupiedFloorIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lowestFloorIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveRooms",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "numRooms", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetNumFloors",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "numFloors", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -450,14 +459,14 @@ local HousingLayoutUI =
 			},
 		},
 		{
-			Name = "HousingLayoutNumFloorsChanged",
+			Name = "HousingLayoutOccupiedFloorRangeChanged",
 			Type = "Event",
-			LiteralName = "HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+			LiteralName = "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "prevNumFloors", Type = "number", Nilable = false },
-				{ Name = "numFloors", Type = "number", Nilable = false },
+				{ Name = "lowestFloor", Type = "number", Nilable = false },
+				{ Name = "highestFloor", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -520,9 +529,7 @@ local HousingLayoutUI =
 			Documentation = { "Fired when info for a newly placed room has been recieved while in Layout Mode" },
 			Payload =
 			{
-				{ Name = "prevNumFloors", Type = "number", Nilable = false },
-				{ Name = "currNumFloors", Type = "number", Nilable = false },
-				{ Name = "isUpstairs", Type = "bool", Nilable = false },
+				{ Name = "playAddedSound", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1702,6 +1702,11 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.cooldown:ClearAllPoints();
 	self.cooldown:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 1.7, -1.7);
 	self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -1, 1);
+	self:ApplyOverrides();
+end
+
+function SmallActionButtonMixin:ApplyOverrides()
+	-- overridden
 end
 
 function SmallActionButtonMixin:UpdateButtonArt()

@@ -71,9 +71,30 @@ end
 
 SocialUISearchBoxMixin = {};
 
+local function GetOwningSocialViewForSearchBox(searchBox)
+	local filterBar = searchBox:GetParent();
+	return filterBar and filterBar:GetParent() or nil;
+end
+
+local function GetFilterInfoForSearchBox(searchBox)
+	local filterBar = searchBox:GetParent();
+	local filterDropdown = filterBar and filterBar.SearchFilterDropdown;
+	return filterDropdown and filterDropdown:GetSelectionData() or nil;
+end
+
 function SocialUISearchBoxMixin:OnLoad()
 	SearchBoxTemplate_OnLoad(self);
 	self:InitializeUserScaledFontSystem();
+end
+
+function SocialUISearchBoxMixin:OnEnterPressed()
+	local socialView = GetOwningSocialViewForSearchBox(self);
+	if socialView and socialView.OnSearchEnterPressed then
+		socialView:OnSearchEnterPressed(self:GetText());
+		return;
+	end
+
+	EditBox_ClearFocus(self);
 end
 
 function SocialUISearchBoxMixin:InitializeUserScaledFontSystem()
@@ -91,6 +112,29 @@ SocialUIOnlineSearchFilterDropdownMixin = {};
 function SocialUIOnlineSearchFilterDropdownMixin:OnLoad()
 	WowStyle1FilterDropdownMixin.OnLoad(self);
 	self:InitializeUserScaledFontSystem();
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		local socialView = self:GetSocialView();
+		if socialView then
+			if socialView.SetupStatusFilterDropdown then
+				local statusDescription = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_STATUS);
+				socialView:SetupStatusFilterDropdown(dropdown, statusDescription);
+			end
+
+			if socialView.SetupTagsFilterDropdown then
+				local tagsDescription = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
+				socialView:SetupTagsFilterDropdown(dropdown, tagsDescription);
+			end
+		end
+	end);
+end
+
+function SocialUIOnlineSearchFilterDropdownMixin:SetSocialView(view)
+	self.socialView = view;
+end
+
+function SocialUIOnlineSearchFilterDropdownMixin:GetSocialView()
+	return self.socialView;
 end
 
 function SocialUIOnlineSearchFilterDropdownMixin:InitializeUserScaledFontSystem()
@@ -101,6 +145,18 @@ function SocialUIOnlineSearchFilterDropdownMixin:InitializeUserScaledFontSystem(
 end
 
 SocialUIContactsFrameMixin = {};
+
+function SocialUIContactsFrameMixin:SetFilterBarShown(shown)
+	self.FilterBar:SetShown(shown);
+	self.TopDivider:ClearAllPoints();
+	if shown then
+		self.TopDivider:SetPoint("TOPLEFT", self.FilterBar, "BOTTOMLEFT", 5, -3);
+		self.TopDivider:SetPoint("TOPRIGHT", self.FilterBar, "BOTTOMRIGHT", -5, -3);
+	else
+		self.TopDivider:SetPoint("TOPLEFT", self, "TOPLEFT", 5, -14);
+		self.TopDivider:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -14);
+	end
+end
 
 function SocialUIContactsFrameMixin:RefreshActionButtonEnabledState()
 	self.ActionButton:RefreshEnabledState();
@@ -145,8 +201,6 @@ end
 function SocialUIScrollableHeaderMixin:SetText(text)
 	self.ButtonText:SetText(text);
 end
-
-SocialUIScrollableSpacerMixin = {};
 
 SocialCardPresenceHolderMixin = {};
 

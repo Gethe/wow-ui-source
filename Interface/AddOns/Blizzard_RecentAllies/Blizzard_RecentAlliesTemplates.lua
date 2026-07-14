@@ -422,6 +422,20 @@ function RecentAlliesEntryPinDisplayMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+local RecentAlliesSearchFilterOptions = {
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_ONLINE,                  searchInfo = { isOnline = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY,                    searchInfo = { isAFK = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY,                    searchInfo = { isDND = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_OFFLINE,                 searchInfo = { isOffline = true } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PROFESSIONS,     searchInfo = { interests = { Enum.RecentAlliesFriendTag.Professions } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PVP,             searchInfo = { interests = { Enum.RecentAlliesFriendTag.PvP } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_RAIDING,         searchInfo = { interests = { Enum.RecentAlliesFriendTag.Raiding } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Dungeons } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,           searchInfo = { interests = { Enum.RecentAlliesFriendTag.Delves } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Questing } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_ROLEPLAYING,     searchInfo = { interests = { Enum.RecentAlliesFriendTag.RolePlaying } } },
+};
+
 RecentAlliesSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrollableElementExtentPreviewerMixin);
 
 local RecentAlliesSocialViewEvents =
@@ -436,11 +450,78 @@ function RecentAlliesSocialViewMixin:OnLoad()
 	SocialUIScrollableElementExtentPreviewerMixin.OnLoad(self);
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
+	self.FilterBar.SearchFilterDropdown:SetSocialView(self);
 end
 
 function RecentAlliesSocialViewMixin:InitializeActionButton()
 	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_RECENT_ALLIES_ADD_FRIEND_BUTTON_LABEL);
+end
+
+local function AddSearchFilterOptionsToDescription(socialView, description, predicate)
+	socialView.selectedSearchFilterOptions = socialView.selectedSearchFilterOptions or {};
+
+	local function IsSelected(filterOption)
+		return socialView.selectedSearchFilterOptions[filterOption] == true;
+	end
+
+	local function SetSelected(filterOption)
+		socialView.selectedSearchFilterOptions[filterOption] = not socialView.selectedSearchFilterOptions[filterOption];
+		socialView:OnSearchEnterPressed(socialView.FilterBar.SearchBar:GetText());
+	end
+
+	for _, filterOption in ipairs(RecentAlliesSearchFilterOptions) do
+		if predicate(filterOption) then
+			local checkbox = description:CreateCheckbox(filterOption.label, IsSelected, SetSelected, filterOption);
+			checkbox:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+		end
+	end
+end
+
+function RecentAlliesSocialViewMixin:SetupStatusFilterDropdown(_dropdown, statusDescription)
+	AddSearchFilterOptionsToDescription(self, statusDescription, function(filterOption)
+		return not filterOption.searchInfo.interests;
+	end);
+end
+
+function RecentAlliesSocialViewMixin:SetupTagsFilterDropdown(_dropdown, tagsDescription)
+	AddSearchFilterOptionsToDescription(self, tagsDescription, function(filterOption)
+		return filterOption.searchInfo.interests ~= nil;
+	end);
+end
+
+function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
+	local compositeSearchInfo = {
+		isOnline = false,
+		isAFK = false,
+		isDND = false,
+		isOffline = false,
+		interests = {},
+	};
+
+	for filterOption, isChecked in pairs(self.selectedSearchFilterOptions) do
+		if isChecked then
+			local searchInfo = filterOption.searchInfo;
+			if searchInfo.interests then
+				for _, interest in ipairs(searchInfo.interests) do
+					table.insert(compositeSearchInfo.interests, interest);
+				end
+			else
+				for field, value in pairs(searchInfo) do
+					compositeSearchInfo[field] = compositeSearchInfo[field] or value;
+				end
+			end
+		end
+	end
+
+	return compositeSearchInfo;
+end
+
+function RecentAlliesSocialViewMixin:OnSearchEnterPressed(text)
+	local activeSearchInfo = self:BuildActiveSearchInfo();
+	activeSearchInfo.searchText = text;
+	local searchedAllies = C_RecentAllies.SearchRecentAllies(activeSearchInfo);
+	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(searchedAllies), ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function RecentAlliesSocialViewMixin:InitializeScrollBox()
@@ -623,10 +704,11 @@ local function PartitionRecentAlliesByPinAndLegacyState(allies)
 	return convertedLegacyFriends, pinnedAllies, unpinnedAllies;
 end
 
-function RecentAlliesSocialViewMixin:GenerateDataProvider()
+function RecentAlliesSocialViewMixin:GenerateDataProvider(allies)
 	local dataProvider = CreateTreeDataProvider();
 
-	local convertedLegacyFriends, pinnedAllies, unpinnedAllies = PartitionRecentAlliesByPinAndLegacyState(C_RecentAllies.GetRecentAllies());
+	local alliesToDisplay = allies or C_RecentAllies.GetRecentAllies();
+	local convertedLegacyFriends, pinnedAllies, unpinnedAllies = PartitionRecentAlliesByPinAndLegacyState(alliesToDisplay);
 	TryInsertRecentAlliesSubTree(dataProvider, SOCIAL_UI_RECENT_ALLIES_VIEW_HEADER_LEGACY_FRIENDS, convertedLegacyFriends);
 
 	local listWillShowLegacyAndPinnedTrees = (#convertedLegacyFriends > 0) and (#pinnedAllies > 0);

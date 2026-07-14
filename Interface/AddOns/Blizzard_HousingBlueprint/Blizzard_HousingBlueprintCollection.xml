@@ -1,31 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Button name="HousingBlueprintCollectionEntryTemplate" mixin="HousingBlueprintCollectionEntryMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
-		<Size y="20" />
-		<KeyValues>
-			<KeyValue key="expand" value="true" type="boolean"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="HighlightBackground" atlas="common-dropdown-customize-mouseover" alpha="0.15" hidden="true" setAllPoints="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="LEFT" wordwrap="false">
-					<Size y="20" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="14" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
-
 	<Frame name="HousingBlueprintCollectionGroupTemplate" mixin="HousingBlueprintCollectionGroupMixin" virtual="true">
 		<Size y="36"/>
 		<KeyValues>

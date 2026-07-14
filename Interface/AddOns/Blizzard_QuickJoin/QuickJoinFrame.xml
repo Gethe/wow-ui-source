@@ -1,61 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="QuickJoinFrameSocialTemplate" inherits="CallbackRegistrantTemplate" mixin="QuickJoinFrameSocialMixin" virtual="true">
+	<Frame name="QuickJoinSocialViewTemplate" inherits="SocialUIContactsFrameTemplate" mixin="QuickJoinSocialViewMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="buttonBackgroundAtlas" value="friends-card-quickJoin" type="string"/>
 			<KeyValue key="buttonSelectedAtlas" value="friends-card-quickJoin-selected" type="string"/>
+			<KeyValue key="buttonHighlightAtlas" value="friends-card-quickJoin-selected" type="string"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="TopSeparator" atlas="GM-bgOpen-divider-horizontal">
-					<Size x="0" y="2"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
-						<Anchor point="TOPRIGHT" x="-10" y="-10"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomSeparator" atlas="GM-bgOpen-divider-horizontal">
-					<Size x="0" y="2"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="35"/>
-						<Anchor point="BOTTOMRIGHT" x="-10" y="35"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="FriendsDisabledText" inherits="UserScaledFontBody" hidden="true" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-18"/>
-						<Anchor point="BOTTOMRIGHT" x="-35" y="37"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="15" y="-18"/>
-					<Anchor point="BOTTOMRIGHT" x="-35" y="37"/>
-				</Anchors>
-			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-7"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="2"/>
-				</Anchors>
-			</EventFrame>
-			<Button parentKey="JoinQueueButton" inherits="SharedButtonTemplate" text="JOIN_QUEUE" mixin="JoinQueueButtonMixin">
-				<Size x="200" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOM" y="6"/>
-				</Anchors>
-				<NormalFont style="UserScaledFontGameNormalSmall"/>
-				<HighlightFont style="UserScaledFontGameNormalSmall"/>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

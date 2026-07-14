@@ -207,6 +207,7 @@ local TradeSkillUITypes =
 				{ Name = "barBackgroundCap", Type = "textureAtlas", Nilable = false },
 				{ Name = "barHighlight", Type = "textureAtlas", Nilable = false },
 				{ Name = "iconChat", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconQuestObjective", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{

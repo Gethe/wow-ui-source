@@ -231,7 +231,6 @@ function HousingBlueprintImportValidationContentMixin:OnLoad()
 		self:GetParent():OnValidationNextClicked();
 	end);
 	self.ContentSummary:SetContentUpdatedCallback(GenerateClosure(self.OnContentUpdated, self));
-			PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 end
 
 function HousingBlueprintImportValidationContentMixin:IsShowingBlueprint(shareCode)
@@ -261,14 +260,6 @@ end
 
 function HousingBlueprintImportValidationContentMixin:OnContentUpdated()
 	self:UpdateImportButton();
-
-	if showLoadingState and (not self.loopSoundHandle) then
-		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_LOOP);
-		self.loopSoundHandle = soundHandle;
-	elseif (not showLoadingState) and self.loopSoundHandle then
-		StopSound(self.loopSoundHandle);
-		self.loopSoundHandle = nil;
-	end
 end
 
 function HousingBlueprintImportValidationContentMixin:UpdateImportButton()

@@ -7,6 +7,18 @@ local SimpleFrameScriptObjectAPI =
 	Functions =
 	{
 		{
+			Name = "AddAccessRestrictions",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "NotAllowed",
+			Documentation = { "Adds access restrictions to a script object, preventing it from being used in API calls when enforced." },
+
+			Arguments =
+			{
+				{ Name = "restrictions", Type = "ScriptObjectAccessRestriction", Nilable = false },
+			},
+		},
+		{
 			Name = "AddForbiddenAspects",
 			Type = "Function",
 			HasRestrictions = true,
@@ -16,6 +28,21 @@ local SimpleFrameScriptObjectAPI =
 			Arguments =
 			{
 				{ Name = "aspects", Type = "ForbiddenAspect", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAccessRestrictions",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			Documentation = { "Returns the mask of all access restrictions applied to this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "restrictions", Type = "ScriptObjectAccessRestriction", Nilable = false },
 			},
 		},
 		{
@@ -42,7 +69,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "inheritance", Type = "ForbiddenAspectInheritance", Nilable = false },
+				{ Name = "path", Type = "ScriptObjectPropagationPath", Nilable = false },
 			},
 
 			Returns =
@@ -89,6 +116,23 @@ local SimpleFrameScriptObjectAPI =
 			Returns =
 			{
 				{ Name = "objectType", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAnyAccessRestrictions",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if this object has any of the supplied access restrictions applied." },
+
+			Arguments =
+			{
+				{ Name = "restrictions", Type = "ScriptObjectAccessRestriction", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasAnyAccessRestriction", Type = "bool", Nilable = false },
 			},
 		},
 		{

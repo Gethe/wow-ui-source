@@ -1168,7 +1168,7 @@ function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, button
 	return initializer;
 end
 
-SettingsCheckboxSliderControlMixin = CreateFromMixins(SettingsListElementMixin, SettingsCheckboxNarrationContextMixin);
+SettingsCheckboxSliderControlMixin = CreateFromMixins(SettingsListElementMixin);
 
 function SettingsCheckboxSliderControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
@@ -1189,6 +1189,7 @@ function SettingsCheckboxSliderControlMixin:OnLoad()
 	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
 
 	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
 	Mixin(self.SliderWithSteppers.Slider, NarrationForwardToParentMixin, DefaultTooltipMixin);
 
 	self.SliderWithSteppers.NarrationGetDescription = function()
@@ -1279,6 +1280,25 @@ function SettingsCheckboxSliderControlMixin:EvaluateState()
 	self.Checkbox:SetEnabled(enabled);
 	self.SliderWithSteppers:SetEnabled(enabled and self.Checkbox:GetChecked());
 	self:DisplayEnabled(enabled);
+end
+
+function SettingsCheckboxSliderControlMixin:NarrationGetContext()
+	local checkboxContext = NarrationUtil.GetCheckboxContext(self.Checkbox);
+	local sliderContext = nil;
+	local sliderValue = nil;
+	if self.Checkbox:GetChecked() then
+		sliderContext = NarrationSliderMixin.NarrationGetContext(self.SliderWithSteppers.Slider);
+		sliderValue = NarrationSliderMixin.NarrationGetDescription(self.SliderWithSteppers.Slider);
+	end
+	local indexString = self:GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(checkboxContext, sliderContext, sliderValue, indexString);
+end
+
+function SettingsCheckboxSliderControlMixin:NarrationGetDescription()
+	if self.Checkbox:GetChecked() then
+		return self.SliderWithSteppers:NarrationGetDescription();
+	end
+	return SettingsListElementMixin.NarrationGetDescription(self);
 end
 
 function SettingsCheckboxSliderControlMixin:Release()

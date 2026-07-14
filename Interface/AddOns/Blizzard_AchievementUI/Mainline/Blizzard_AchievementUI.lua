@@ -16,7 +16,7 @@ ACHIEVEMENTUI_CATEGORIESWIDTH = 175;
 ACHIEVEMENTUI_PROGRESSIVEHEIGHT = 50;
 ACHIEVEMENTUI_PROGRESSIVEWIDTH = 42;
 
-ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 4;
+ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 3;
 
 ACHIEVEMENTUI_MAXCONTENTWIDTH = 330;
 ACHIEVEMENTUI_CRITERIACHECKWIDTH = 20;
@@ -190,6 +190,26 @@ local function AchievementFrame_OnAchievementLinkedInChat(achievementID)
 	end
 end
 
+-- Used for back button functionality.
+local g_achievementSelectionHistory = {};
+local function HasAchievementSelectionHistory()
+	return not TableIsEmpty(g_achievementSelectionHistory);
+end
+
+local function ClearAchievementSelectionHistory()
+	g_achievementSelectionHistory = {};
+end
+
+local function AddNextAchievementSelectionHistoryID(achievementID)
+	table.insert(g_achievementSelectionHistory, achievementID);
+end
+
+local function GetNextAchievementSelectionHistoryID()
+	local achievementID = g_achievementSelectionHistory[#g_achievementSelectionHistory];
+	g_achievementSelectionHistory[#g_achievementSelectionHistory] = nil;
+	return achievementID;
+end
+
 -- [[ AchievementFrame ]] --
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
@@ -250,9 +270,10 @@ function AchievementFrame_OnLoad (self)
 		end
 	end
 
-	AchievementFrameFilterDropdown:SetWidth(112);
-	AchievementFrameFilterDropdown:SetFrameLevel(AchievementFrameFilterDropdown:GetFrameLevel() + 1);
-	AchievementFrameFilterDropdown:SetupMenu(function(dropdown, rootDescription)
+	local filterDropdown = AchievementFrame.HeaderDetails.Filters.FilterDropdown;
+	filterDropdown:SetWidth(112);
+	filterDropdown:SetFrameLevel(filterDropdown:GetFrameLevel() + 1);
+	filterDropdown:SetupMenu(function(_dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
 
 		for i, filter in ipairs(AchievementFrameFilters) do
@@ -265,6 +286,11 @@ function AchievementFrame_OnLoad (self)
 	end);
 
 	self.PlaceholderHiddenDescription:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
+
+	self.HeaderDetails.Back:SetScript("OnClick", function()
+		local achievementId = GetNextAchievementSelectionHistoryID();
+		AchievementFrame_SelectAchievement(achievementId);
+	end);
 end
 
 function AchievementFrame_OnShow (self)
@@ -283,7 +309,7 @@ function AchievementFrame_OnHide (self)
 	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_CLOSE);
 	AchievementFrame_HideSearchPreview();
 	self.SearchResults:Hide();
-	self.SearchBox:SetText("");
+	self.HeaderDetails.Filters.SearchBox:SetText("");
 	UpdateMicroButtons();
 end
 
@@ -292,9 +318,10 @@ function AchievementFrame_SetRestrictedMode (self, restrictedCategoryID)
 
 	local isRestricted = restrictedCategoryID ~= nil;
 	self.Header:SetShown(not isRestricted);
-	self.SearchBox:SetShown(not isRestricted);
+	local searchBox = self.HeaderDetails.Filters.SearchBox;
+	searchBox:SetShown(not isRestricted);
 	if isRestricted then
-		self.searchProgressBar:Hide();
+		searchBox.SearchProgressBar:Hide();
 	end
 
 	PanelTemplates_SetAllTabsShown(self, not isRestricted);
@@ -303,14 +330,14 @@ function AchievementFrame_SetRestrictedMode (self, restrictedCategoryID)
 end
 
 function AchievementFrame_HideFilterDropdown (self)
-	self.FilterDropdown:Hide();
-	self.Header.LeftDDLInset:Hide();
+	self.HeaderDetails.Filters.FilterDropdown:Hide();
+	self.HeaderDetails.Filters:Layout();
 end
 
 function AchievementFrame_TryShowFilterDropdown (self)
 	if not self.restrictedCategoryID then
-		self.FilterDropdown:Show();
-		self.Header.LeftDDLInset:Show();
+		self.HeaderDetails.Filters.FilterDropdown:Show();
+		self.HeaderDetails.Filters:Layout();
 	end
 end
 
@@ -378,6 +405,14 @@ function AchievementFrame_RefreshView()
 	AchievementFrame.Header.Points:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(InGuildView())));
 end
 
+function AchievementFrame_RefreshBackButton(showBackButton)
+	if showBackButton ~= nil then
+		AchievementFrame.HeaderDetails.Back:SetShown(showBackButton);
+	end
+
+	AchievementFrame.HeaderDetails.Back:SetEnabled(HasAchievementSelectionHistory());
+end
+
 local function OpenToSelectedCategory()
 	-- Build out the data provider of our new categories, then get or select an appropriate category.
 	AchievementFrameCategories_UpdateDataProvider();
@@ -431,6 +466,10 @@ function AchievementFrameBaseTab_OnClick (tabIndex)
 	end
 
 	SwitchAchievementSearchTab(tabIndex);
+
+	ClearAchievementSelectionHistory();
+	local showBackButton = tabIndex ~= StatisticsCategoryIndex;
+	AchievementFrame_RefreshBackButton(showBackButton);
 end
 
 AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
@@ -697,6 +736,8 @@ end
 
 function AchievementFrameCategories_OnCategoryClicked(button)
 	AchievementFrameCategories_SelectElementData(button:GetElementData());
+	ClearAchievementSelectionHistory();
+	AchievementFrame_RefreshBackButton();
 end
 
 function AchievementFrameCategories_OnShow (self)
@@ -948,7 +989,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "ACHIEVEMENT_SEARCH_UPDATED" ) then
-		AchievementFrame.SearchBox.fullSearchFinished = true;
+		AchievementFrame.HeaderDetails.Filters.SearchBox.fullSearchFinished = true;
 		AchievementFrame_UpdateSearch(self);
 	end
 end
@@ -1849,7 +1890,7 @@ function AchievementFrame_SetFilter(value)
 	if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
 		ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 		AchievementFrameAchievements_ForceUpdate();
-		AchievementFrameFilterDropdown:GenerateMenu();
+		AchievementFrame.HeaderDetails.Filters.FilterDropdown:GenerateMenu();
 	end
 end
 
@@ -1936,6 +1977,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				metaCriteria.date = nil;
 			end
 
+			metaCriteria.parentID = id;
 			metaCriteria.id = achievementId;
 			metaCriteria.Label:SetText(achievementName);
 			metaCriteria.Icon:SetTexture(iconpath);
@@ -2572,6 +2614,7 @@ end
 AchievementMetaCriteriaMixin = {};
 
 function AchievementMetaCriteriaMixin:OnClick()
+	AddNextAchievementSelectionHistoryID(self.parentID);
 	AchievementFrame_SelectAchievement(self.id);
 end
 
@@ -2638,6 +2681,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	else
 		AchievementFrame_SelectAndScrollToAchievementId(AchievementFrameAchievements.ScrollBox, displayedId);
 	end
+
+	AchievementFrame_RefreshBackButton();
 end
 
 function AchievementFrame_SelectAndScrollToAchievementId(scrollBox, achievementId)
@@ -2784,10 +2829,10 @@ local AchievementFrameComparisonShownEvents =
 function AchievementFrameComparison_OnShow(self)
 	AchievementFrameStats:Hide();
 	AchievementFrameAchievements:Hide();
-	AchievementFrame:SetWidth(890);
-	SetUIPanelAttribute(AchievementFrame, "xOffset", 38);
-	UpdateUIPanelPositions(AchievementFrame);
-	AchievementFrame.isComparison = true;
+
+	local isComparison = true;
+	AchievementFrame_SetComparisonMode(isComparison);
+
 	C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
 	FrameUtil.RegisterFrameForEvents(self, AchievementFrameComparisonShownEvents);
 	AchievementFrameComparison_ForceUpdate();
@@ -2795,10 +2840,10 @@ end
 
 function AchievementFrameComparison_OnHide(self)
 	AchievementFrame.selectedTab = nil;
-	AchievementFrame:SetWidth(768);
-	SetUIPanelAttribute(AchievementFrame, "xOffset", 80);
-	UpdateUIPanelPositions(AchievementFrame);
-	AchievementFrame.isComparison = false;
+
+	local isComparison = false;
+	AchievementFrame_SetComparisonMode(isComparison);
+
 	ClearAchievementComparisonUnit();
 	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameComparisonShownEvents);
 end
@@ -3100,6 +3145,34 @@ function AchievementComparisonFriendButton_OnLoad (self)
 	self:Desaturate();
 end
 
+function AchievementFrame_SetComparisonMode(isComparison)
+	AchievementFrame.isComparison = isComparison;
+
+	-- Note the search box needs to be in different locations depending on comparison state.
+	local rightDDLInset = AchievementFrame.Header.RightDDLInset;
+	local backButton = AchievementFrame.HeaderDetails.Back;
+	local searchBox = AchievementFrame.HeaderDetails.Filters.SearchBox;
+	searchBox:ClearAllPoints();
+
+	if AchievementFrame.isComparison then
+		AchievementFrame:SetWidth(890);
+		SetUIPanelAttribute(AchievementFrame, "xOffset", 38);
+
+		rightDDLInset:Show();
+		backButton:Hide();
+		searchBox:SetPoint("TOPRIGHT", -193, 39);
+	else
+		AchievementFrame:SetWidth(768);
+		SetUIPanelAttribute(AchievementFrame, "xOffset", 80);
+
+		rightDDLInset:Hide();
+		backButton:Show();
+		searchBox:SetPoint("TOPRIGHT", -8, -6);
+	end
+
+	UpdateUIPanelPositions(AchievementFrame);
+end
+
 function AchievementFrame_IsComparison()
 	return AchievementFrame.isComparison;
 end
@@ -3242,7 +3315,8 @@ function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
 end
 
 function AchievementFrame_HideSearchPreview()
-	local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+	local searchBox = AchievementFrame.HeaderDetails.Filters.SearchBox;
+	local searchPreviewContainer = searchBox.SearchPreviewContainer;
 	local searchPreviews = searchPreviewContainer.searchPreviews;
 	searchPreviewContainer:Hide();
 
@@ -3251,19 +3325,20 @@ function AchievementFrame_HideSearchPreview()
 	end
 
 	searchPreviewContainer.ShowAllSearchResults:Hide();
-	AchievementFrame.searchProgressBar:Hide();
+	searchBox.SearchProgressBar:Hide();
 end
 
 function AchievementFrame_UpdateSearchPreview()
-	if ( not AchievementFrame.SearchBox:HasFocus() or strlen(AchievementFrame.SearchBox:GetText()) < MIN_CHARACTER_SEARCH) then
+	local searchBox = AchievementFrame.HeaderDetails.Filters.SearchBox;
+	if ( not searchBox:HasFocus() or strlen(searchBox:GetText()) < MIN_CHARACTER_SEARCH) then
 		AchievementFrame_HideSearchPreview();
 		return;
 	end
 
-	AchievementFrame.SearchBox.searchPreviewUpdateDelay = 0;
+	searchBox.searchPreviewUpdateDelay = 0;
 
-	if ( AchievementFrame.SearchBox:GetScript("OnUpdate") == nil ) then
-		AchievementFrame.SearchBox:SetScript("OnUpdate", AchievementFrameSearchBox_OnUpdate);
+	if ( searchBox:GetScript("OnUpdate") == nil ) then
+		searchBox:SetScript("OnUpdate", AchievementFrameSearchBox_OnUpdate);
 	end
 end
 
@@ -3284,10 +3359,12 @@ function AchievementFrameSearchBox_OnUpdate (self, elapsed)
 		self.searchPreviewUpdateDelay = 0;
 		self:SetScript("OnUpdate", nil);
 
-		if ( AchievementFrame.searchProgressBar:GetScript("OnUpdate") == nil ) then
-			AchievementFrame.searchProgressBar:SetScript("OnUpdate", AchievementFrameSearchProgressBar_OnUpdate);
+		local searchBox = AchievementFrame.HeaderDetails.Filters.SearchBox;
+		local searchProgressBar = searchBox.SearchProgressBar;
+		if ( searchProgressBar:GetScript("OnUpdate") == nil ) then
+			searchProgressBar:SetScript("OnUpdate", AchievementFrameSearchProgressBar_OnUpdate);
 
-			local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+			local searchPreviewContainer = searchBox.SearchPreviewContainer;
 			local searchPreviews = searchPreviewContainer.searchPreviews;
 			for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
 				searchPreviews[index]:Hide();
@@ -3299,7 +3376,7 @@ function AchievementFrameSearchBox_OnUpdate (self, elapsed)
 			searchPreviewContainer.Background:Show();
 			searchPreviewContainer:Show();
 
-			AchievementFrame.searchProgressBar:Show();
+			searchProgressBar:Show();
 			return;
 		end
 	end
@@ -3322,7 +3399,8 @@ function AchievementFrameSearchProgressBar_OnUpdate(self, elapsed)
 end
 
 function AchievementFrame_ShowSearchPreviewResults()
-	AchievementFrame.searchProgressBar:Hide();
+	local searchBox = AchievementFrame.HeaderDetails.Filters.SearchBox;
+	searchBox.SearchProgressBar:Hide();
 
 	local numResults = GetNumFilteredAchievements();
 
@@ -3330,7 +3408,7 @@ function AchievementFrame_ShowSearchPreviewResults()
 		AchievementFrame_SetSearchPreviewSelection(1);
 	end
 
-	local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+	local searchPreviewContainer = searchBox.SearchPreviewContainer;
 	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local lastButton;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
@@ -3370,8 +3448,8 @@ function AchievementFrameSearchBox_OnTextChanged(self)
 	SearchBoxTemplate_OnTextChanged(self);
 
 	if ( strlen(self:GetText()) >= MIN_CHARACTER_SEARCH ) then
-		AchievementFrame.SearchBox.fullSearchFinished = SetAchievementSearchString(self:GetText());
-		if ( not AchievementFrame.SearchBox.fullSearchFinished ) then
+		AchievementFrame.HeaderDetails.Filters.SearchBox.fullSearchFinished = SetAchievementSearchString(self:GetText());
+		if ( not AchievementFrame.HeaderDetails.Filters.SearchBox.fullSearchFinished ) then
 			AchievementFrame_UpdateSearchPreview();
 		else
 			AchievementFrame_ShowSearchPreviewResults();
@@ -3422,8 +3500,7 @@ end
 function AchievementFrameSearchBox_OnLoad(self)
 	SearchBoxTemplate_OnLoad(self);
 	self.HasStickyFocus = function()
-		local ancestry = self:GetParent().SearchPreviewContainer;
-		return DoesAncestryIncludeAny(ancestry, GetMouseFoci());
+		return DoesAncestryIncludeAny(AchievementFrame.HeaderDetails.Filters.SearchBox.SearchPreviewContainer, GetMouseFoci());
 	end
 end
 
@@ -3440,7 +3517,7 @@ function AchievementFrameSearchBox_OnEnterPressed(self)
 		return;
 	end
 
-	local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+	local searchPreviewContainer = AchievementFrame.HeaderDetails.Filters.SearchBox.SearchPreviewContainer;
 	if ( self.selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
 		if ( searchPreviewContainer.ShowAllSearchResults:IsShown() ) then
 			searchPreviewContainer.ShowAllSearchResults:Click();
@@ -3466,14 +3543,14 @@ end
 
 function AchievementFrameSearchBox_OnKeyDown(self, key)
 	if ( key == "UP" ) then
-		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.SearchBox.selectedIndex - 1);
+		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.HeaderDetails.Filters.SearchBox.selectedIndex - 1);
 	elseif ( key == "DOWN" ) then
-		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.SearchBox.selectedIndex + 1);
+		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.HeaderDetails.Filters.SearchBox.selectedIndex + 1);
 	end
 end
 
 function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
-	local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+	local searchPreviewContainer = AchievementFrame.HeaderDetails.Filters.SearchBox.SearchPreviewContainer;
 	local searchPreviews = searchPreviewContainer.searchPreviews;
 	local numShown = 0;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
@@ -3498,7 +3575,7 @@ function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
 		selectedIndex = (selectedIndex - 1) % numShown + 1;
 	end
 
-	AchievementFrame.SearchBox.selectedIndex = selectedIndex;
+	AchievementFrame.HeaderDetails.Filters.SearchBox.selectedIndex = selectedIndex;
 
 	if ( selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
 		searchPreviewContainer.ShowAllSearchResults.SelectedTexture:Show();
@@ -3523,7 +3600,7 @@ function AchievementFrame_ShowFullSearch()
 	end
 
 	AchievementFrame_HideSearchPreview();
-	AchievementFrame.SearchBox:ClearFocus();
+	AchievementFrame.HeaderDetails.Filters.SearchBox:ClearFocus();
 	AchievementFrame.SearchResults:Show();
 end
 
@@ -3558,7 +3635,7 @@ function AchievementFrame_UpdateFullSearchResults()
 	local newDataProvider = CreateDataProviderByIndexCount(numResults);
 	AchievementFrame.SearchResults.ScrollBox:SetDataProvider(newDataProvider);
 
-	AchievementFrame.SearchResults.TitleText:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, AchievementFrame.SearchBox:GetText(), numResults));
+	AchievementFrame.SearchResults.TitleText:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, AchievementFrame.HeaderDetails.Filters.SearchBox:GetText(), numResults));
 end
 
 function AchievementFrame_SelectSearchItem(id)
@@ -3575,7 +3652,7 @@ function AchievementSearchPreviewButton_OnShow(self)
 end
 
 function AchievementSearchPreviewButton_OnLoad(self)
-	local searchPreviewContainer = AchievementFrame.SearchPreviewContainer;
+	local searchPreviewContainer = AchievementFrame.HeaderDetails.Filters.SearchBox.SearchPreviewContainer;
 	local searchPreviews = searchPreviewContainer.searchPreviews;
 	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
 		if ( searchPreviews[index] == self ) then
@@ -3594,7 +3671,7 @@ function AchievementSearchPreviewButton_OnClick(self)
 		AchievementFrame_SelectSearchItem(self.achievementID);
 		AchievementFrame.SearchResults:Hide();
 		AchievementFrame_HideSearchPreview();
-		AchievementFrame.SearchBox:ClearFocus();
+		AchievementFrame.HeaderDetails.Filters.SearchBox:ClearFocus();
 	end
 end
 

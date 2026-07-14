@@ -236,6 +236,21 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "SearchFriends",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "searchInfo", Type = "AuroraFriendsSearchInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "friendsData", Type = "table", InnerType = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "SendGameData",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -250,6 +265,17 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendTitleFriendInviteByName",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -353,6 +379,21 @@ local BattleNet =
 
 	Tables =
 	{
+		{
+			Name = "AuroraFriendsSearchInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "searchText", Type = "string", Nilable = false },
+				{ Name = "isOnline", Type = "bool", Nilable = false },
+				{ Name = "isOffline", Type = "bool", Nilable = false },
+				{ Name = "isDND", Type = "bool", Nilable = false },
+				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isInQueue", Type = "bool", Nilable = false },
+				{ Name = "isAvailableForQueue", Type = "bool", Nilable = false },
+				{ Name = "tags", Type = "table", InnerType = "BattleNetFriendTag", Nilable = false },
+			},
+		},
 		{
 			Name = "BNetAccountInfo",
 			Type = "Structure",

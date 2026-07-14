@@ -23,10 +23,10 @@
 	</Frame>
 
 	<Frame name="RaidFrameSocialGroupTemplate" virtual="true" mixin="RaidFrameSocialGroupMixin">
-		<Size x="192" y="132"/>
+		<Size x="195" y="135"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="friends-card-raidBG" setAllPoints="true"/>
+				<Texture atlas="friends-card-raidBG" useAtlasSize="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="GroupNumberText" inherits="GameFontHighlight" text="GROUP_NUMBER">
@@ -39,59 +39,81 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="PlayersFrame" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="1" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
 			</Frame>
 		</Frames>
 	</Frame>
 	
+	<Frame name="RaidFrameSocialPlayerRoleIconTemplate" mixin="RaidFrameSocialPlayerRoleIconMixin" enableMouse="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="RaidFrameSocialPlayerTemplate" inherits="UIButtonTemplate" mixin="RaidFrameSocialPlayerMixin" virtual="true" movable="true" registerForClicks="LeftButtonUp, RightButtonUp" registerForDrag="LeftButton">
-		<Size x="180" y="21"/>
+		<Size x="187" y="20"/>
+		<Frames>
+			<Frame parentKey="LeaderIcon" inherits="RaidFrameSocialPlayerRoleIconTemplate">
+				<Size x="17" y="15"/>
+				<Anchors>
+					<Anchor point="LEFT" x="2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RoleIcon" inherits="RaidFrameSocialPlayerRoleIconTemplate">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeaderIcon" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="useRaidIcons" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LeaderIcon" relativePoint="RIGHT" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="friends-card-raid" setAllPoints="true" />
+				<Texture parentKey="Background" atlas="friends-card-raid" setAllPoints="true" />
+				<Texture parentKey="DragBackground" atlas="friends-card-raid-drag" setAllPoints="true" hidden="true" />
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="LeaderIcon" atlas="friends-icon-raidAssist">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" x="2"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="CharacterName" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="66" y="20"/>
+					<Size x="66" y="18"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LeaderIcon" relativePoint="RIGHT" x="14"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeaderIcon" relativePoint="RIGHT" x="15"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="CharacterLevel" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="20" y="20"/>
+					<Size x="20" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.CharacterName" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="CharacterClass" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="66" y="20"/>
+					<Size x="60" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.CharacterLevel" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="useRaidIcons" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="11" y="11"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.LeaderIcon" relativePoint="RIGHT"  x="2" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnDragStart method="OnDragStart"/>
@@ -107,7 +129,7 @@
 				<FontString parentKey="RaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyV="TOP" justifyH="LEFT" parentArray="NoRaid">
 					<Size x="350" y="400"/>
 					<Anchors>
-						<Anchor point="TOP" y="-40"/>
+						<Anchor point="TOP" y="-60"/>
 						<Anchor point="LEFT" x="12"/>
 						<Anchor point="RIGHT" x="-5"/>
 						<Anchor point="BOTTOM"/>
@@ -117,28 +139,32 @@
 		</Layers>
 
 		<Frames>
-			<CheckButton parentKey="AllAssistCheckButton" inherits="UICheckButtonTemplate" mixin="RaidFrameSocialAllAssistMixin" parentArray="YesRaid">
+			<CheckButton parentKey="AllAssistCheckButton" inherits="UICheckButtonTemplate" mixin="RaidFrameSocialAllAssistMixin" parentArray="YesRaid" motionScriptsWhileDisabled="true">
 				<Size x="24" y="24"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon" atlas="friends-icon-raidAssist" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="3"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="2"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="AllText" inherits="GameFontNormal" text="ALL">
+						<FontString parentKey="AllText" inherits="GameFontNormalMed1" text="ALL_ASSIST_LABEL_SHORT">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3"/>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
 							</Anchors>
-							<Color color="GRAY_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="-16"/>
+					<Anchor point="TOPLEFT" x="16" y="-10"/>
 				</Anchors>
 				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</CheckButton>
 
@@ -148,7 +174,7 @@
 					<KeyValue key="iconAtlas" value="UI-LFG-RoleIcon-Tank" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="-50" y="-16"/>
+					<Anchor point="TOP" x="-50" y="-10"/>
 				</Anchors>
 			</Frame>
 
@@ -158,7 +184,7 @@
 					<KeyValue key="iconAtlas" value="UI-LFG-RoleIcon-Healer" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-16"/>
+					<Anchor point="TOP" x="0" y="-10"/>
 				</Anchors>
 			</Frame>
 
@@ -168,16 +194,19 @@
 					<KeyValue key="iconAtlas" value="UI-LFG-RoleIcon-DPS" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="50" y="-16"/>
+					<Anchor point="TOP" x="50" y="-10"/>
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="RaidInfoButton" inherits="SharedButtonTemplate" text="RAID_INFO" mixin="SocialRaidInfoMixin, SocialUISystemMixin" parentArray="YesRaid">
+			<Button parentKey="RaidInfoButton" inherits="SharedButtonTemplate" text="RAID_INFO" mixin="SocialRaidInfoMixin, SocialUISystemMixin">
 				<Size x="100" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-16" y="-14"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-6"/>
 				</Anchors>
 				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
@@ -185,7 +214,7 @@
 			<Frame parentKey="GroupsFrame" parentArray="YesRaid">
 				<Size x="350" y="400"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.AllAssistCheckButton" relativePoint="BOTTOM" y="-5"/>
+					<Anchor point="TOP" relativeKey="$parent.AllAssistCheckButton" relativePoint="BOTTOM" y="-3"/>
 					<Anchor point="LEFT"/>
 					<Anchor point="RIGHT"/>
 					<Anchor point="BOTTOM"/>

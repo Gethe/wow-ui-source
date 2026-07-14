@@ -81,6 +81,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="CooldownViewerUtilityItemTemplate" inherits="CooldownViewerBaseItemTemplate, PingableCooldownViewerItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
@@ -147,6 +150,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="CooldownViewerBuffIconItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">

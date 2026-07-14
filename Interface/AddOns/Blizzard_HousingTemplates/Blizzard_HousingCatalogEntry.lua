@@ -582,7 +582,7 @@ end
 function HousingCatalogDecorEntryMixin:GetTypeSpecificIsValid()
 	local isValid, invalidTooltip, invalidError = true, nil, nil;
 
-	local canAttachPet = C_HousingDecor.GetDecorCanAttachPet(self.entryVariantID.recordID);
+	local canAttachPet = self.entryVariantID and C_HousingDecor.GetDecorCanAttachPet(self.entryVariantID.recordID);
 	if canAttachPet then
 		local spentPetPlacementBudget = C_HousingDecor.GetSpentPetPlacementBudget();
 		local maxPetPlacementBudget = C_HousingDecor.GetMaxPetPlacementBudget();

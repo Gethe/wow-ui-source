@@ -1099,7 +1099,11 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "JoinRandomTrainingGround",
+			Name = "JoinRandomTrainingGroundArena",
+			Type = "Function",
+		},
+		{
+			Name = "JoinRandomTrainingGroundBattleground",
 			Type = "Function",
 		},
 		{

@@ -2710,7 +2710,9 @@ function TrainingGroundsFrameMixin:InitializeQueueButton()
 		local queueOption = self:GetSelectedQueueOption();
 		if queueOption then
 			if queueOption == "RandomTrainingGround" then
-				C_PvP.JoinRandomTrainingGround();
+				C_PvP.JoinRandomTrainingGroundBattleground();
+			elseif queueOption == "RandomTrainingGroundArena" then
+				C_PvP.JoinRandomTrainingGroundArena();
 			else
 				C_PvP.JoinTrainingGround(queueOption);
 			end
@@ -2915,6 +2917,7 @@ TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixi
 
 local queueOptionToRewardGetter = {
 	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
+	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundRewards;
 };
 
 function TrainingGroundActivityButtonMixin:OnLoad()

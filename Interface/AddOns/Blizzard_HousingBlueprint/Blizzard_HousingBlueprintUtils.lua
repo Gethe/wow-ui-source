@@ -14,7 +14,7 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 	end);
 	rootDescription:AddMenuReleasedCallback(function(menuFrame, closeReason)
 		if params.onMenuOpenChanged then
-			params.onMenuOpenChanged(true);
+			params.onMenuOpenChanged(false);
 		end
 	end);
 
@@ -28,8 +28,14 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 		rootDescription:CreateTitle(HOUSING_BLUEPRINT_COLLECTION_READONLY_BACKUP);
 		return;			
 	end
-
-	rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_COPY, function()
+	
+	rootDescription:CreateButton(HOUSING_BLUEPRINT_EXPORT_CHAT_LINK_BUTTON, function()
+		local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(blueprintInfo.shareCode);
+		if not ChatFrameUtil.InsertLink(blueprintLink) then
+			ChatFrameUtil.OpenChat(blueprintLink);
+		end
+	end);
+	rootDescription:CreateButton(TALENT_FRAME_DROP_DOWN_EXPORT_CLIPBOARD, function()
 		CopyToClipboard(blueprintInfo.shareCode);
 		ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
 	end);

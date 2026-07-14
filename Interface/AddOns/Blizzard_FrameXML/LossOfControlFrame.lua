@@ -29,8 +29,6 @@ local DISPLAY_TYPE_FULL = 2;
 local DISPLAY_TYPE_ALERT = 1;
 local DISPLAY_TYPE_NONE = 0;
 
-LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
-
 local LOSS_OF_CONTROL_STUNNED_ICON = 135860;
 
 LossOfControlMixin = {};
@@ -69,7 +67,7 @@ function LossOfControlMixin:OnEvent(event, ...)
 			end
 			return;
 		end
-		if ( eventIndex == LOSS_OF_CONTROL_ACTIVE_INDEX ) then
+		if ( eventIndex == Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX ) then
 			self.fadeDelayTime = nil;
 			self.fadeTime = nil;
 			self:SetUpDisplay(true);
@@ -143,7 +141,7 @@ end
 
 function LossOfControlMixin:SetUpDisplay(animate, data)
 	if ( not data ) then
-		data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
+		data = C_LossOfControl.GetActiveLossOfControlData(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	end
 
 	local locType = data.locType;
@@ -228,7 +226,7 @@ function LossOfControlMixin:UpdateDisplay()
 		return;
 	end
 
-	local data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
+	local data = C_LossOfControl.GetActiveLossOfControlData(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if ( data and data.displayText and data.displayType == DISPLAY_TYPE_FULL ) then
 		if ( data.spellID ~= self.spellID or data.startTime ~= self.startTime ) then
 			self:SetUpDisplay(false, data);

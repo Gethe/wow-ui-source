@@ -102,6 +102,9 @@ CustomAuraContainerConstants =
 	-- Number of frames to allocate in our batched allocator. Must be sufficiently
 	-- high to obfuscate the number of auras as this invokes initialization callbacks.
 	FrameCreationBatchSize = 10;
+
+	-- Access restrictions to be applied post-creation of new aura frames.
+	AccessRestrictionFlags = Enum.ScriptObjectAccessRestriction.DenyTaintedAccessWhenAurasAreSecret;
 };
 
 -- Default container-level layout settings for the shared flow layout pass.

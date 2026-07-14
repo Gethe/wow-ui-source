@@ -11,5 +11,5 @@ SocialUISideWindowType = EnumUtil.MakeEnum(
 	"BattleNetBroadcastFrame",
 	"BattleNetUnavailableNoticeFrame",
 	"IgnoreListFrame",
-	"RaidInfo"
+	"RaidInfoFrame"
 );

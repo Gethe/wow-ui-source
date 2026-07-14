@@ -9,16 +9,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="PlayerIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
+				<Texture parentKey="PlayerIcon" atlas="friends-icon-addFriend" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" y="-55"/>
+						<Anchor point="TOP" y="-67"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="BattleNetIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
+				<Texture parentKey="BattleNetIcon" atlas="friends-icon-addFriend-logo-battleNet" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PlayerIcon" relativePoint="TOP" x="-11" y="10"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.PlayerIcon" relativePoint="BOTTOM" y="10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -36,7 +36,7 @@
 
 			<Frame parentKey="ScrollableWarningText" inherits="ScrollingFontTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.PlayerIcon" relativePoint="BOTTOM" y="-20"/>
+					<Anchor point="TOP" relativeKey="$parent.PlayerIcon" relativePoint="BOTTOM" y="-27"/>
 					<Anchor point="LEFT" x="30"/>
 					<Anchor point="RIGHT" x="-30"/>
 					<Anchor point="BOTTOM" relativeKey="$parent.ContinueButton" relativePoint="TOP" y="20"/>

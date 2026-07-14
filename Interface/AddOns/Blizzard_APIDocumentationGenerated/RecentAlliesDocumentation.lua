@@ -142,6 +142,22 @@ local RecentAllies =
 			},
 		},
 		{
+			Name = "SearchRecentAllies",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "searchInfo", Type = "RecentAlliesSearchInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recentAlliesData", Type = "table", InnerType = "RecentAllyData", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
@@ -213,6 +229,19 @@ local RecentAllies =
 
 	Tables =
 	{
+		{
+			Name = "RecentAlliesSearchInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "searchText", Type = "cstring", Nilable = false },
+				{ Name = "isOnline", Type = "bool", Nilable = false },
+				{ Name = "isDND", Type = "bool", Nilable = false },
+				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isOffline", Type = "bool", Nilable = false },
+				{ Name = "interests", Type = "table", InnerType = "RecentAlliesFriendTag", Nilable = false },
+			},
+		},
 		{
 			Name = "RecentAllyCharacterData",
 			Type = "Structure",

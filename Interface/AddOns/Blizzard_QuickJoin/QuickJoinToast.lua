@@ -304,13 +304,19 @@ function QuickJoinToastMixin:HideToast()
 	self.ToastToFriendAnim:Play();
 end
 
+local function GetQuickJoinFrameForCurrentSocialUI()
+	local isSocialUIReplacingFriendsFrame = SocialUIControl and SocialUIControl.IsEnabled() and SocialUIFrame and SocialUIFrame.QuickJoinFrame;
+	return isSocialUIReplacingFriendsFrame and SocialUIFrame.QuickJoinFrame or QuickJoinFrame;
+end
+
 function QuickJoinToastMixin:OnClick(button)
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		self:QuickKeybindButtonOnClick(button);
 	elseif ( self.displayedToast ) then
 		ToggleQuickJoinPanel();
-		QuickJoinFrame:SelectGroup(self.displayedToast.guid);
-		QuickJoinFrame:ScrollToGroup(self.displayedToast.guid);
+		local quickJoinFrame = GetQuickJoinFrameForCurrentSocialUI();
+		quickJoinFrame:SelectGroup(self.displayedToast.guid);
+		quickJoinFrame:ScrollToGroup(self.displayedToast.guid);
 	elseif C_RecruitAFriend.IsSystemEnabled() and HelpTip:IsShowing(self, RAF_REWARD_TUTORIAL_TEXT) then
 		ToggleRAFPanel();
 	else

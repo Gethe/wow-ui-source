@@ -497,6 +497,7 @@ UnitPopupManager:RegisterMenu("RECENT_ALLY", UnitPopupMenuRecentAlly);
 function UnitPopupMenuRecentAlly:GetEntries()
 	return {
 		UnitPopupAddRecentAllyBattleTagFriendButtonMixin,
+		UnitPopupAddRecentAllyTitleFriendButtonMixin,
 		UnitPopupTargetButtonMixin,
 		UnitPopupRecentAllyNoteButtonMixin,
 		UnitPopupInteractSubsectionTitle,

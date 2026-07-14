@@ -113,9 +113,10 @@ function HousingLayoutDoorPinMixin:Update()
 	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;
 
 	local isDraggingRoom = C_HousingLayout.IsDraggingRoom();
+	local isInvolvedInDrag = isDraggingRoom and (pin:IsPartOfDraggingRoom() or pin:IsConnectedToDraggingRoom());
 
-	if (isOccupied) then
-		if (isDraggingRoom and (pin:IsPartOfDraggingRoom() or pin:IsConnectedToDraggingRoom())) then
+	if isOccupied then
+		if isInvolvedInDrag then
 			self:Show();
 			self:SetAlpha(1);
 		else
@@ -123,13 +124,13 @@ function HousingLayoutDoorPinMixin:Update()
 		end
 	elseif C_HousingLayout.HasSelectedRoom() then
 		self.NodeAvailable:Hide();
-		self:SetShown(pin:IsAnyPartOfRoomSelected());
+		self:SetShown(pin:IsAnyPartOfRoomSelected() and pin:IsValidForSelectedFloorplan());
 	elseif C_HousingLayout.HasSelectedFloorplan() then
 		local showWithAvailableAnim = pin:IsValidForSelectedFloorplan();
 		self:SetShown(showWithAvailableAnim);
 		self.NodeAvailable:SetShown(showWithAvailableAnim);
 	else
-		self:SetShown(isDraggingRoom and pin:IsConnectedToDraggingRoom() or pin:IsValidForSelectedFloorplan());
+		self:SetShown(isInvolvedInDrag or pin:IsValidForSelectedFloorplan());
 		self.NodeAvailable:Hide();
 	end
 

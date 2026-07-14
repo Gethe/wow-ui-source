@@ -111,7 +111,7 @@ function AuraButtonPrivateMixin:ShowTooltip()
 	local unitToken, auraData = self:GetAuraInstance();
 
 	if auraData then
-		AuraButtonTooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ForbiddenAspectInheritance.Layout));
+		AuraButtonTooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout));
 		AuraButtonTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 		RaiseFrameLevelByTwo(AuraButtonTooltip);
 		self:PopulateTooltip(unitToken, auraData);

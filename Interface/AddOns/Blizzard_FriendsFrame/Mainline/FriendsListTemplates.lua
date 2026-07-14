@@ -1,3 +1,46 @@
+local FriendsListStatusFilterOptions = {
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_ONLINE,              searchInfo = { isOnline = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY,                searchInfo = { isAFK = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY,                searchInfo = { isDND = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_OFFLINE,             searchInfo = { isOffline = true } },
+	{ label = SOCIAL_UI_FRIENDS_LIST_IN_QUEUE_FILTER_LABEL,              searchInfo = { isInQueue = true } },
+	{ label = SOCIAL_UI_FRIENDS_LIST_AVAILABLE_FOR_QUEUE_FILTER_LABEL,  searchInfo = { isAvailableForQueue = true } },
+};
+
+local FriendsListTagInterestFilterOptions = {
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PROFESSIONS, searchInfo = { tags = { Enum.BattleNetFriendTag.Professions } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PVP,         searchInfo = { tags = { Enum.BattleNetFriendTag.PvP } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_RAIDING,     searchInfo = { tags = { Enum.BattleNetFriendTag.Raiding } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,    searchInfo = { tags = { Enum.BattleNetFriendTag.Dungeons } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,       searchInfo = { tags = { Enum.BattleNetFriendTag.Delves } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,    searchInfo = { tags = { Enum.BattleNetFriendTag.Questing } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_ROLEPLAYING, searchInfo = { tags = { Enum.BattleNetFriendTag.Roleplaying } } },
+};
+
+local FriendsListTagRoleFilterOptions = {
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DPS,         searchInfo = { tags = { Enum.BattleNetFriendTag.DamagerRole } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_HEALER,      searchInfo = { tags = { Enum.BattleNetFriendTag.HealerRole } } },
+	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_TANK,        searchInfo = { tags = { Enum.BattleNetFriendTag.TankRole } } },
+};
+
+local function AddFriendsSearchFilterOptionsToDescription(socialView, description, filterOptions)
+	socialView.selectedSearchFilterOptions = socialView.selectedSearchFilterOptions or {};
+
+	local function IsSelected(filterOption)
+		return socialView.selectedSearchFilterOptions[filterOption] == true;
+	end
+
+	local function SetSelected(filterOption)
+		socialView.selectedSearchFilterOptions[filterOption] = not socialView.selectedSearchFilterOptions[filterOption];
+		socialView:OnSearchEnterPressed(socialView.FilterBar.SearchBar:GetText());
+	end
+
+	for _, filterOption in ipairs(filterOptions) do
+		local checkbox = description:CreateCheckbox(filterOption.label, IsSelected, SetSelected, filterOption);
+		checkbox:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+	end
+end
+
 FriendsListSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrollableElementExtentPreviewerMixin);
 
 local FriendsListSocialViewDynamicEvents =
@@ -15,11 +58,66 @@ function FriendsListSocialViewMixin:OnLoad()
 
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
+	self.FilterBar.SearchFilterDropdown:SetSocialView(self);
 end
 
 function FriendsListSocialViewMixin:InitializeActionButton()
 	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_FRIENDS_LIST_ADD_FRIEND_BUTTON_LABEL);
+end
+
+function FriendsListSocialViewMixin:SetupStatusFilterDropdown(_dropdown, statusDescription)
+	AddFriendsSearchFilterOptionsToDescription(self, statusDescription, FriendsListStatusFilterOptions);
+end
+
+function FriendsListSocialViewMixin:SetupTagsFilterDropdown(_dropdown, tagsDescription)
+	local interestsTitle = tagsDescription:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_INTERESTS);
+	interestsTitle:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownTitle);
+	AddFriendsSearchFilterOptionsToDescription(self, tagsDescription, FriendsListTagInterestFilterOptions);
+
+	tagsDescription:CreateDivider();
+
+	local rolesTitle = tagsDescription:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_ROLES_LABEL);
+	rolesTitle:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownTitle);
+	AddFriendsSearchFilterOptionsToDescription(self, tagsDescription, FriendsListTagRoleFilterOptions);
+end
+
+function FriendsListSocialViewMixin:OnSearchEnterPressed(text)
+	local activeSearchInfo = self:BuildActiveSearchInfo();
+	activeSearchInfo.searchText = text or "";
+
+	local friendsData = C_BattleNet.SearchFriends(activeSearchInfo);
+	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(friendsData), ScrollBoxConstants.DiscardScrollPosition);
+end
+
+function FriendsListSocialViewMixin:BuildActiveSearchInfo()
+	local compositeSearchInfo = {
+		searchText = "",
+		isOnline = false,
+		isOffline = false,
+		isDND = false,
+		isAFK = false,
+		isInQueue = false,
+		isAvailableForQueue = false,
+		tags = {},
+	};
+
+	for filterOption, isChecked in pairs(self.selectedSearchFilterOptions or {}) do
+		if isChecked then
+			local searchInfo = filterOption.searchInfo;
+			if searchInfo.tags then
+				for _, tag in ipairs(searchInfo.tags) do
+					table.insert(compositeSearchInfo.tags, tag);
+				end
+			else
+				for field, value in pairs(searchInfo) do
+					compositeSearchInfo[field] = compositeSearchInfo[field] or value;
+				end
+			end
+		end
+	end
+
+	return compositeSearchInfo;
 end
 
 function FriendsListSocialViewMixin:InitializeScrollBox()
@@ -252,16 +350,37 @@ local function TryInsertFriendsSubTree(dataProvider, headerString, numEntriesOnl
 	return newSubTree;
 end
 
-local function InsertFriendsIntoDataProvider(dataProvider)
-	local numFriends, numFriendsOnline, numFavorites, numFavoritesOnline = BNGetNumFriends();
-	if numFriends == 0 then
+local function InsertFriendsIntoDataProvider(dataProvider, friendsData)
+	local totalFriends, numFriendsOnline, numFavorites, numFavoritesOnline = BNGetNumFriends();
+	if totalFriends == 0 then
 		return;
 	end
 
-	local favoritesSubTree = TryInsertFriendsSubTree(dataProvider, SOCIAL_UI_FAVORITE_FRIENDS_LIST_HEADER, numFavoritesOnline, numFavorites);
-
+	local allowedFriendIndices;
+	local numNonFavorites = totalFriends - numFavorites;
 	local numNonFavoritesOnline = numFriendsOnline - numFavoritesOnline;
-	local numNonFavorites = numFriends - numFavorites;
+
+	if friendsData then
+		allowedFriendIndices = {};
+		numFavorites, numFavoritesOnline = 0, 0;
+		numNonFavorites, numNonFavoritesOnline = 0, 0;
+		for _, friendIndex in ipairs(friendsData) do
+			allowedFriendIndices[friendIndex] = true;
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+			if accountInfo then
+				local isOnline = accountInfo.gameAccountInfo.isOnline;
+				if accountInfo.isFavorite then
+					numFavorites = numFavorites + 1;
+					if isOnline then numFavoritesOnline = numFavoritesOnline + 1; end
+				else
+					numNonFavorites = numNonFavorites + 1;
+					if isOnline then numNonFavoritesOnline = numNonFavoritesOnline + 1; end
+				end
+			end
+		end
+	end
+
+	local favoritesSubTree = TryInsertFriendsSubTree(dataProvider, SOCIAL_UI_FAVORITE_FRIENDS_LIST_HEADER, numFavoritesOnline, numFavorites);
 
 	local listWillShowBothTrees = favoritesSubTree and (numNonFavorites > 0);
 	if listWillShowBothTrees then
@@ -270,9 +389,9 @@ local function InsertFriendsIntoDataProvider(dataProvider)
 
 	local nonFavoriteSubTree = TryInsertFriendsSubTree(dataProvider, SOCIAL_UI_FRIENDS_LIST_HEADER, numNonFavoritesOnline, numNonFavorites);
 
-	for index = 1, numFriends do
+	for index = 1, totalFriends do
 		local accountInfo = C_BattleNet.GetFriendAccountInfo(index);
-		if accountInfo then
+		if accountInfo and (not allowedFriendIndices or allowedFriendIndices[index]) then
 			local bestSubTree = accountInfo.isFavorite and favoritesSubTree or nonFavoriteSubTree;
 			if bestSubTree then
 				bestSubTree:Insert({ friendIndex = index, accountInfo = accountInfo });
@@ -281,9 +400,9 @@ local function InsertFriendsIntoDataProvider(dataProvider)
 	end
 end
 
-function FriendsListSocialViewMixin:GenerateDataProvider()
+function FriendsListSocialViewMixin:GenerateDataProvider(friendsData)
 	local dataProvider = CreateTreeDataProvider();
-	InsertFriendsIntoDataProvider(dataProvider);
+	InsertFriendsIntoDataProvider(dataProvider, friendsData);
 	return dataProvider;
 end
 

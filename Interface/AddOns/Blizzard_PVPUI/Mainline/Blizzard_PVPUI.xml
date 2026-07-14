@@ -1552,6 +1552,18 @@
 											<KeyValue key="tooltipDescription" value="BONUS_BUTTON_RANDOM_TRAINING_GROUND_DESC" type="global"/>
 										</KeyValues>
 									</Button>
+									<Button parentKey="RandomTrainingGroundArenaButton" inherits="PVPTrainingGroundActivityButtonTemplate" parentArray="BonusTrainingGroundButtons">
+										<Size x="365" y="54"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.RandomTrainingGroundButton" relativePoint="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="titleText" value="RANDOM_TRAINING_GROUNDS_ARENAS_LABEL" type="global"/>
+											<KeyValue key="queueOption" value="RandomTrainingGroundArena" type="string"/>
+											<KeyValue key="tooltipTitle" value="RANDOM_TRAINING_GROUNDS_ARENAS_LABEL" type="global"/>
+											<KeyValue key="tooltipDescription" value="RANDOM_TRAINING_GROUNDS_ARENA_DESC" type="global"/>
+										</KeyValues>
+									</Button>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.WorldBattlesTexture" relativePoint="TOPLEFT" x="0" y="0"/>

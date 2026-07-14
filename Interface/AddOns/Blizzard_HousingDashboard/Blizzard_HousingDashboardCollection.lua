@@ -23,9 +23,7 @@ local DetailsLifetimeEvents = {
 };
 
 function HousingDashboardBlueprintDetailsMixin:OnLoad()
-	FrameUtil.RegisterFrameForEvents(self, DetailsLifetimeEvents);
 	self:ClearData();
-	EventRegistry:RegisterCallback("HouseDropdown.HouseSelected", self.OnHouseSelected, self);
 
 	self.GearDropdown:SetupMenu(function(_dropdown, rootDescription)
 		local menuParams = {
@@ -34,6 +32,9 @@ function HousingDashboardBlueprintDetailsMixin:OnLoad()
 		};
 		HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, self.blueprintInfo, menuParams);
 	end);
+
+	FrameUtil.RegisterFrameForEvents(self, DetailsLifetimeEvents);
+	EventRegistry:RegisterCallback("HouseDropdown.HouseSelected", self.OnHouseSelected, self);
 end
 
 function HousingDashboardBlueprintDetailsMixin:OnDeleteConfirmed()
@@ -57,6 +58,8 @@ function HousingDashboardBlueprintDetailsMixin:OnEvent(event, ...)
 end
 
 function HousingDashboardBlueprintDetailsMixin:OnShow()
+	-- Since ContentSummary isn't inside of a layout frame with variable width, ensure it works with the width it has via anchors
+	self.ContentSummary.fixedWidth = self.ContentSummary:GetWidth();
 	self:SyncSummaryInfo();
 end
 

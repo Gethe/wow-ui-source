@@ -1669,6 +1669,16 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DISMISSBATTLEPET, SLASH_COMM
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CATEGORY.RAID, function(msg)
+	if SocialUIControl and SocialUIControl.IsEnabled() then
+		local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
+		if hasRaidLockoutData then
+			SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.RaidList, SocialUISideWindowType.RaidInfoFrame);
+		else
+			SocialUIControl.ToggleToTab(SocialUITabType.RaidList);
+		end
+		return;
+	end
+
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
 		ToggleRaidFrame();

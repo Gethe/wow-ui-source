@@ -316,7 +316,8 @@ function CustomAuraContainerSharedMixin:AddAuraGroup(groupKey, filterString, opt
 		{
 			batchSize = CustomAuraContainerConstants.FrameCreationBatchSize,
 			templateNames = options.templateNames,
-			initializeFrame = options.initializeFrame
+			initializeFrame = options.initializeFrame,
+			accessRestrictions = CustomAuraContainerConstants.AccessRestrictionFlags,
 		});
 
 	-- Allocate a batch of frames up-front to make it harder to observe the
@@ -697,6 +698,7 @@ function CustomAuraContainerPrivateMixin:CreateAuraSlotFrame(options)
 		batchSize = 1,
 		templateNames = options.templateNames,
 		initializeFrame = options.initializeFrame,
+		accessRestrictions = CustomAuraContainerConstants.AccessRestrictionFlags,
 	});
 
 	return frameProvider:AcquireFrame();

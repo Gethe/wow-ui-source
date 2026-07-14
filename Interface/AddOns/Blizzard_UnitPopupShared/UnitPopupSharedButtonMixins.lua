@@ -3738,6 +3738,32 @@ function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:IsEnabled(contextData)
 	return BNFeaturesEnabledAndConnected();
 end
 
+UnitPopupAddRecentAllyTitleFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:GetText(_contextData)
+	return ADD_WOW_FRIEND;
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:CanShow(_contextData)
+	return BNFeaturesEnabledAndConnected() and C_BattleNet.AreTitleFriendsEnabled();
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:IsDisabledInKioskMode()
+	return true;
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:OnClick(contextData)
+	local battleTag = select(2, BNGetInfo());
+	if not battleTag then
+		StaticPopupSpecial_Show(CreateBattleTagFrame);
+	else
+		local characterName = contextData.recentAllyData.characterData.fullName;
+		C_BattleNet.SendTitleFriendInviteByName(characterName);
+	end
+
+	return MenuResponse.Close;
+end
+
 UnitPopupReportRecentAllyButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 
 function UnitPopupReportRecentAllyButtonMixin:GetText(contextData)

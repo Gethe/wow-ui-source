@@ -3,7 +3,7 @@
 	<Frame name="HousingDashboardBlueprintDetailsTemplate" mixin="HousingDashboardBlueprintDetailsMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="PreviewBackground" atlas="catalog-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false" setAllPoints="true"/>
+				<Texture parentKey="PreviewBackground" atlas="blueprints-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="NameText" inherits="GameFontHighlightLarge" justifyH="LEFT">
@@ -26,20 +26,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="PreviewCornerLeft" atlas="catalog-corbel-bottom-left" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-					<Size x="66" y="50"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="PreviewCornerRight" atlas="catalog-corbel-bottom-right" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-					<Size x="66" y="50"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
 			<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate" hidden="true">
@@ -48,11 +34,18 @@
 					<Anchor point="LEFT" relativeKey="$parent.NameText" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 			</DropdownButton>
-			<Frame parentKey="ContentSummary" inherits="HousingBlueprintContentSummaryVerticalTemplate" hidden="true">
+			<Frame parentKey="ContentSummary" inherits="HousingBlueprintContentSummaryTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DateTimeText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.DateTimeText" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.DateTimeText" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="playLoadCompleteSound" value="false" type="boolean"/>
+					<KeyValue key="backgroundAlpha" value="0.4" type="number"/>
+					<KeyValue key="leftPadding" value="24" type="number"/>
+					<KeyValue key="rightPadding" value="24" type="number"/>
+				</KeyValues>	
 			</Frame>
 		</Frames>
 	</Frame>

@@ -38,16 +38,23 @@ local HousingBlueprintConstants =
 			},
 		},
 		{
+			Name = "HousingBlueprintBudgetEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "budgetType", Type = "HousingBudgetType", Nilable = false },
+				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "max", Type = "number", Nilable = true, Documentation = { "Will be nil if there is no target house or information for it is unavailable" } },
+				{ Name = "current", Type = "number", Nilable = true, Documentation = { "Will be nil if there is no target house or information for it is unavailable" } },
+			},
+		},
+		{
 			Name = "HousingBlueprintBudgetInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "interiorDecorBudgetMax", Type = "number", Nilable = false },
-				{ Name = "exteriorDecorBudgetMax", Type = "number", Nilable = false },
-				{ Name = "roomBudgetMax", Type = "number", Nilable = false },
-				{ Name = "interiorDecorBudgetCurrent", Type = "number", Nilable = false },
-				{ Name = "exteriorDecorBudgetCurrent", Type = "number", Nilable = false },
-				{ Name = "roomBudgetCurrent", Type = "number", Nilable = false },
+				{ Name = "exteriorBudgets", Type = "table", InnerType = "HousingBlueprintBudgetEntry", KeyType = "HousingBudgetType", Nilable = false, Documentation = { "Map of budget type to budget entry" } },
+				{ Name = "interiorBudgets", Type = "table", InnerType = "HousingBlueprintBudgetEntry", KeyType = "HousingBudgetType", Nilable = false, Documentation = { "Map of budget type to budget entry" } },
 			},
 		},
 		{
@@ -91,13 +98,10 @@ local HousingBlueprintConstants =
 			{
 				{ Name = "shareCode", Type = "string", Nilable = false },
 				{ Name = "targetHouseGUID", Type = "WOWGUID", Nilable = true },
-				{ Name = "targetHouseBudgetInfo", Type = "HousingBlueprintBudgetInfo", Nilable = true },
+				{ Name = "budgetInfo", Type = "HousingBlueprintBudgetInfo", Nilable = false },
 				{ Name = "contentGroups", Type = "table", InnerType = "HousingBlueprintContentGroup", Nilable = false },
 				{ Name = "unmetRequirementFlags", Type = "HousingBlueprintUnmetRequirementFlags", Nilable = false },
 				{ Name = "blockingRequirementFlags", Type = "HousingBlueprintUnmetRequirementFlags", Nilable = false },
-				{ Name = "interiorDecorBudgetCost", Type = "number", Nilable = false },
-				{ Name = "exteriorDecorBudgetCost", Type = "number", Nilable = false },
-				{ Name = "roomBudgetCost", Type = "number", Nilable = false },
 			},
 		},
 		{

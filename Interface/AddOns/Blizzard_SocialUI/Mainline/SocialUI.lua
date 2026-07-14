@@ -199,7 +199,7 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			tabName = SOCIAL_UI_QUICK_JOIN_TAB_NAME,
 			iconAtlas = "friends-icon-tab-quickjoin",
 			iconInactiveAtlas = "friends-icon-tab-quickjoin-inactive",
-			contentFrameTemplate = "QuickJoinFrameSocialTemplate",
+			contentFrameTemplate = "QuickJoinSocialViewTemplate",
 			contentFrameParentKey = "QuickJoinFrame",
 			countGenerator = function() return #C_SocialQueue.GetAllGroups(); end,
 			helpTipGenerator = function()
@@ -262,10 +262,11 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			iconInactiveAtlas = "friends-icon-tab-raid-inactive",
 			sideWindows =
 			{
-				{ sideWindowType = SocialUISideWindowType.RaidInfo, template = "SocialUIRaidInfoFrameTemplate", key = "RaidInfoFrame" },
+				{ sideWindowType = SocialUISideWindowType.RaidInfoFrame, template = "SocialUIRaidInfoFrameTemplate", key = "RaidInfoFrame" },
 			},
 			contentFrameTemplate = "RaidFrameSocialTemplate",
 			contentFrameParentKey = "RaidFrame",
+			IsSupported = OnlyAvailableInGame,
 			IsAvailable = OnlyAvailableInGame,
 		},
 	};
@@ -606,7 +607,6 @@ function SocialUIFrameMixin:InitializeSideWindows()
 		[SocialUISideWindowType.BattleNetBroadcastFrame] = self.BattleNetBroadcastFrame,
 		[SocialUISideWindowType.BattleNetUnavailableNoticeFrame] = self.BattleNetUnavailableNoticeFrame,
 		[SocialUISideWindowType.IgnoreListFrame] = self.IgnoreListFrame,
-		[SocialUISideWindowType.RaidInfo] = self.RaidInfoFrame,
 	};
 
 	-- Create and register side windows defined by supported tabs

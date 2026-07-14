@@ -2,10 +2,10 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="QuickJoin.lua"/>
 
-	<FontString name="QuickJoinButtonMemberTemplate" virtual="true" inherits="UserScaledFontGameNormalSmall" maxLines="1" justifyH="LEFT">
+	<FontString name="QuickJoinButtonMemberTemplate" virtual="true" inherits="UserScaledFontGameNormal" maxLines="1" justifyH="LEFT">
 		<Size x="120"/>
 	</FontString>
-	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="UserScaledFontGameNormalSmall" maxLines="1" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
+	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="UserScaledFontGameNormal" maxLines="1" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
 		<Size x="200"/>
 	</FontString>
 	<Button name="QuickJoinButtonTemplate" hyperlinksEnabled="true" mixin="QuickJoinButtonMixin" virtual="true">

@@ -265,20 +265,22 @@ end
 
 AuraUtil.AuraFilters =
 {
-	Helpful = "HELPFUL",
-	Harmful = "HARMFUL",
-	Raid = "RAID",
-	IncludeNameplateOnly = "INCLUDE_NAME_PLATE_ONLY",
-	Player = "PLAYER",
-	Cancelable = "CANCELABLE",
+	Helpful = "HELPFUL",								-- Include only helpful auras (buffs)
+	Harmful = "HARMFUL",								-- Include only harmful auras (debuffs)
+	Player = "PLAYER",									-- Include only auras that were cast by the player, or by the player's pet or vehicle
+	Raid = "RAID",										-- Include only helpful auras the player can apply and harmful auras the player can dispel
+	Cancelable = "CANCELABLE",							-- Include only auras that can be canceled by the player
 	-- NotCancelable ("NOT_CANCELABLE") was removed; use "!"..AuraUtil.AuraFilters.Cancelable ("!CANCELABLE").
 	-- A temporary fallback is provided by Blizzard_DeprecatedAuraFilters.
-	Maw = "MAW",
-	ExternalDefensive = "EXTERNAL_DEFENSIVE",
-	CrowdControl = "CROWD_CONTROL",
-	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
-	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
-	BigDefensive = "BIG_DEFENSIVE",
+	IncludeNameplateOnly = "INCLUDE_NAME_PLATE_ONLY",	-- When set, auras that are flagged as being nameplate-only will be included. When not set, nameplate-only auras will be filtered out.
+	Maw = "MAW",										-- When set, ONLY Torghast auras will be returned. When not set, Torghast auras will be filtered out.
+	ExternalDefensive = "EXTERNAL_DEFENSIVE",			-- Include only auras that are external defensives
+	CrowdControl = "CROWD_CONTROL",						-- Include only auras that have a crowd control effect (stun, fear, etc.)
+	RaidInCombat = "RAID_IN_COMBAT",					-- Include only auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
+	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Include only auras someone in the player's raid can dispel (including helpful enrages on enemies)
+	BigDefensive = "BIG_DEFENSIVE",						-- Include only auras that are big defensives
+	Important = "IMPORTANT",							-- Include only auras that are flagged as important (helpful auras that show on enemy nameplates even if non-stealable)
+	Dispellable = "DISPELLABLE",						-- Include only auras that are dispellable, regardless of whether the player's raid can dispel them
 };
 
 function AuraUtil.CreateFilterString(...)
@@ -286,6 +288,7 @@ function AuraUtil.CreateFilterString(...)
 end
 
 -- A leading "!" negates a filter component, e.g. "!PLAYER" returns auras NOT cast by the player.
+-- IncludeNameplateOnly and Maw filters are not negatable (negation will be ignored if applied)
 AuraUtil.AuraFilterNegationPrefix = "!";
 
 function AuraUtil.IsValidFilterString(filterString)

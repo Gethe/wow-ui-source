@@ -45,7 +45,7 @@ function CommentatorNamePlateMixin:OnEvent(event, ...)
 	elseif event == "LOSS_OF_CONTROL_COMMENTATOR_UPDATE" then
 		local guid = ...;
 		if UnitGUID(self.unit) == guid then
-			self:ApplyLossOfControlAtIndex(LOSS_OF_CONTROL_ACTIVE_INDEX);
+			self:ApplyLossOfControlAtIndex(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 		end
 	elseif event == "UPDATE_ACTIVE_BATTLEFIELD" then
 		self:SetBorderColors();

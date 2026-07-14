@@ -110,6 +110,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetLastCategoryCooldownSource",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Searches for the most recent spellID and itemID that started a cooldown in this category" },
+
+			Arguments =
+			{
+				{ Name = "spellCategory", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "The most recent spell associated with the category" } },
+				{ Name = "itemID", Type = "number", Nilable = true, Documentation = { "The item used to trigger this spell" } },
+			},
+		},
+		{
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,

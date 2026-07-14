@@ -43,6 +43,10 @@ function InitiativesTabMixin:OnLoad()
 
 	self:SetupTaskList();
 	self:SetupActivityLog();
+
+	self.InitiativeSetFrame.InitiativeActiveNeighborhoodSwitcher.SwitchActiveNeighborhoodBtn:SetScript("OnClick", function ()
+		self:OnSetActiveNeighborhoodClicked();
+	end);
 end
 
 function InitiativesTabMixin:OnEvent(event, ...)
@@ -148,7 +152,14 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 		self.InitiativeSetFrame:Hide();
 	end
 
-	local lastPoints = GetCVarTableValue(LAST_POINTS_CVAR, self.currentInitiative.neighborhoodGUID, 0);
+	local lastPoints;
+	local success, resultOrError = pcall(GetCVarTableValue, LAST_POINTS_CVAR, self.currentInitiative.neighborhoodGUID, 0);
+	if success then
+		lastPoints = resultOrError;
+	else
+		SetCVar(LAST_POINTS_CVAR, "");
+		lastPoints = 0;
+	end
 	self:SetCurrentPoints(lastPoints, false);
 	if not ApproximatelyEqual(self.currentInitiative.currentProgress, lastPoints) then
 		self.targetValue = self.currentInitiative.currentProgress;
@@ -230,16 +241,16 @@ function InitiativesTabMixin:SetProgressBarThresholds()
 	end
 end
 
-function InitiativesTabMixin:UpdateBackground(selectedHouseInfo)
-	if selectedHouseInfo and selectedHouseInfo.neighborhoodGUID then
-		local atlas = "housing-dashboard-bg-" .. C_Housing.GetNeighborhoodTextureSuffix(selectedHouseInfo.neighborhoodGUID);
+function InitiativesTabMixin:UpdateBackground()
+	if self.currentlyViewedNeighborhoodGUID then
+		local atlas = "housing-dashboard-bg-" .. C_Housing.GetNeighborhoodTextureSuffix(self.currentlyViewedNeighborhoodGUID);
 		self.InitiativesArt.InitiativesBG:SetAtlas(atlas);
 	end
 end
 
 function InitiativesTabMixin:OnHouseSelected(houseInfoID)
-	local neighborhoodGUID = self.playerHouseList[houseInfoID].neighborhoodGUID;
-	C_NeighborhoodInitiative.SetViewingNeighborhood(neighborhoodGUID);
+	self.currentlyViewedNeighborhoodGUID = self.playerHouseList[houseInfoID].neighborhoodGUID;
+	C_NeighborhoodInitiative.SetViewingNeighborhood(self.currentlyViewedNeighborhoodGUID);
 	self:UpdateBackground(self.playerHouseList[houseInfoID]);
 	C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
 end
@@ -480,6 +491,16 @@ function InitiativesTabMixin:SetCurrentPoints(barValue, playSound)
 	end
 end
 
+function InitiativesTabMixin:OnSetActiveNeighborhoodClicked()
+	if not self.currentlyViewedNeighborhoodGUID then
+		return;
+	end
+
+	C_NeighborhoodInitiative.SetActiveNeighborhood(self.currentlyViewedNeighborhoodGUID);
+	
+	PlaySound(SOUNDKIT.HOUSING_ENDEAVORS_SET_ACTIVE_ENDEAVOR);
+end
+
 ---------------------Initiatives Tab: Task Button-------------------------------
 InitiativeTaskButtonMixin = {};
 
@@ -609,7 +630,8 @@ function InitiativeTaskButtonMixin:ShowTooltip()
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	local rewardQuestID = data.rewardQuestID;
 	if rewardQuestID then
-		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, data.rewardQuestID, TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK);
+		local context = { initiativeTaskID = data.ID };
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, data.rewardQuestID, TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK, context);
 	end
 
 	if data.tracked and not data.completed then
@@ -662,7 +684,11 @@ function ProgressThresholdMixin:ShowTooltip()
 				local info = C_CurrencyInfo.GetCurrencyInfo(currencyReward.currencyID);
 				GameTooltip_AddNormalLine(GameTooltip, info.description);
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				GameTooltip_AddColoredLine(GameTooltip, ENDEAVOR_TOOLTIP_CURRENCY_TOTAL:format(info.quantity, info.maxQuantity), currencyColor);
+				if info.maxQuantity == 0 then
+					GameTooltip_AddColoredLine(GameTooltip, CURRENCY_TOTAL:format("", info.quantity), currencyColor);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, ENDEAVOR_TOOLTIP_CURRENCY_TOTAL:format(info.quantity, info.maxQuantity), currencyColor);
+				end
 			end
 		end);
 	end
@@ -721,20 +747,4 @@ function ProgressThresholdMixin:SetCurrentPoints(points, playSound)
 		end
 	end
 	self.Reward.EarnedCheckmark:SetShown(aboveThreshold);
-end
-
----------------------Initiatives Tab: Active Neighborhood Switcher -------------------------------
-InitiativeActiveNeighborhoodSwitcherMixin = {};
-
-function InitiativeActiveNeighborhoodSwitcherMixin:OnClick()
-
-	local houseList = HousingDashboardFrame.HouseInfoContent.playerHouseList;
-	local selectedHouseID = HousingDashboardFrame.HouseInfoContent.selectedHouseID;
-	local houseInfo = houseList and houseList[selectedHouseID] or nil;
-	local neighborhoodGUID = houseInfo and houseInfo.neighborhoodGUID or nil;
-
-	if neighborhoodGUID then
-		C_NeighborhoodInitiative.SetActiveNeighborhood(neighborhoodGUID);
-	end
-	PlaySound(SOUNDKIT.HOUSING_ENDEAVORS_SET_ACTIVE_ENDEAVOR);
 end

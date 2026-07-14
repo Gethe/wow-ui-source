@@ -9,6 +9,7 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "GetFromAlpha",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -22,6 +23,7 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "GetToAlpha",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -35,7 +37,8 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "SetFromAlpha",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,7 +48,8 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "SetToAlpha",
 			Type = "Function",
-			SecretArguments = "NotAllowed",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

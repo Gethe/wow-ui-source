@@ -511,6 +511,10 @@ end
 
 function RecruitActivityButtonMixin:UpdateIcon()
 	local useAtlasSize = true;
+	if self.Icon_TrialAccount and self.isTrialAccount then
+		self.Icon:SetAtlas(self.Icon_TrialAccount, useAtlasSize);
+		return;
+	end
 	if self:IsMouseOver() then
 		if self.activityInfo.state == Enum.RafRecruitActivityState.RewardClaimed then
 			self.Icon:SetAtlas(self.Icon_CursorOverChecked, useAtlasSize);
@@ -537,6 +541,7 @@ function RecruitActivityButtonMixin:Setup(activityInfo, recruitInfo)
 		return;
 	end
 
+	self.isTrialAccount = recruitInfo.subStatus == Enum.RafRecruitSubStatus.Trial;
 	self:UpdateQuestName();
 	self:UpdateIcon();
 

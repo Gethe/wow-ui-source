@@ -329,6 +329,9 @@ function DecorPetCustomizationMixin:OnApply()
 	if self:IsShown() and self:HasAnyChanges() then 
 		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_PET_APPLY);
 		C_HousingCustomizeMode.ApplyPetToSelectedDecor(self.petID, self.selectedBehaviorType);
+		if self.petID then
+			UIErrorsFrame:AddExternalWarningMessage(format(HOUSING_DECOR_CUSTOMIZATION_PET_APPEAR));
+		end
 	end
 end
 

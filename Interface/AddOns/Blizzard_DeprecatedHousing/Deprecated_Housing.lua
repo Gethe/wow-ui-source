@@ -55,3 +55,11 @@ end
 
 -- API was renamed to be consistent with other similar APIs
 C_Housing.IsInsideOwnHouse = C_Housing.IsInsideOwnedHouse;
+
+-- Old: Returned the number of floors, which was always the maximum floor.
+-- New: Returns the total number of floors based on the highest and lowest floor values.
+C_HousingLayout.GetNumFloors = function()
+	local highestIndex = C_HousingLayout.GetHighestOccupiedFloorIndex();
+	local lowestIndex = C_HousingLayout.GetLowestOccupiedFloorIndex();
+	return (highestIndex - lowestIndex) + 1;
+end

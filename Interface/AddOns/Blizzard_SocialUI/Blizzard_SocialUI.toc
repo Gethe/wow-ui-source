@@ -1,6 +1,6 @@
 ## Title: Blizzard_SocialUI
 ## Dependencies: Blizzard_SocialUIShared
-## OptionalDeps: Blizzard_GlueStubs, Blizzard_FriendsFrame, Blizzard_RecentAllies, Blizzard_QuickJoin, Blizzard_RecruitAFriend
+## OptionalDeps: Blizzard_GlueStubs, Blizzard_FriendsFrame, Blizzard_RecentAllies, Blizzard_QuickJoin, Blizzard_RecruitAFriend, Blizzard_RaidFrame
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 
@@ -9,9 +9,6 @@ Mainline\SocialUITemplates.xml
 
 Mainline\RecruitAFriendFrame.lua
 Mainline\RecruitAFriendFrame.xml
-
-Mainline\RaidFrame.lua
-Mainline\RaidFrame.xml
 
 Mainline\SocialUI.lua
 Mainline\SocialUI.xml
