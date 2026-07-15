@@ -96,7 +96,11 @@ function GraphicsOverrides.CreateHiResOptions(category, layout)
 
 	local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
 	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, SetValue);
-	setting:SetCommitFlags(Settings.CommitFlag.Apply);
+	if (C_BattleNet.CanToggleHighResTexturesWithoutClientReload()) then
+		setting:SetCommitFlags(Settings.CommitFlag.Apply);
+	else
+		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.ClientRestart);
+	end
 
 	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);
 	initializer:AddShownPredicate(BNConnected);
