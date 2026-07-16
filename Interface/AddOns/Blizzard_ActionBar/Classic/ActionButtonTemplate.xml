@@ -110,7 +110,7 @@
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Size x="45" y="45"/>
+				<Size x="28" y="28"/>
 			</Frame>
 
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false" useParentLevel="true" parentKey="cooldown">

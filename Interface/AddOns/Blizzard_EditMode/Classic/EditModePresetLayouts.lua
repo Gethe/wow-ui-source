@@ -288,6 +288,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
+				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
+				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -307,6 +310,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
+				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
+				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -787,44 +793,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			},
 		},
 
-		[Enum.EditModeUnitFrameSystemIndices.Party] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
-				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
-				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
-				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
-			},
-			anchorInfo = {
-				point = "TOPLEFT",
-				relativeTo = "CompactRaidFrameManager",
-				relativePoint = "TOPRIGHT",
-				offsetX = 0,
-				offsetY = 12,
-			},
-		},
+		[Enum.EditModeUnitFrameSystemIndices.Party] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Party],
 
-		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
-				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
-				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
-				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
-			},
-			anchorInfo = {
-				point = "TOPLEFT",
-				relativeTo = "CompactRaidFrameManager",
-				relativePoint = "TOPRIGHT",
-				offsetX = 0,
-				offsetY = -5,
-			},
-		},
+		[Enum.EditModeUnitFrameSystemIndices.Raid] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Raid],
 
 		[Enum.EditModeUnitFrameSystemIndices.Pet] = {
 			settings = {

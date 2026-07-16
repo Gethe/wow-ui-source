@@ -19,6 +19,7 @@ Shared\ReputationBar.xml
 Classic\MainMenuBar.lua
 Classic\MainMenuBar.xml
 Shared\ActionButton.lua
+Classic\ActionButtonOverrides.lua
 Shared\ActionButtonComponentTemplate.xml
 Classic\ActionButtonTemplate.xml
 Shared\ActionBar.lua

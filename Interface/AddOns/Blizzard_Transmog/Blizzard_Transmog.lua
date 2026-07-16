@@ -677,6 +677,11 @@ function ShowEquippedGearSpellFrameMixin:OnLoad()
 
 	self.Button:ClearPushedTexture();
 	self.Button:SetHighlightAtlas("transmog-outfit-spellframe", "ADD");
+	self:ApplyOverrides(); 
+end
+
+function ShowEquippedGearSpellFrameMixin:ApplyOverrides()
+	-- overridden
 end
 
 function ShowEquippedGearSpellFrameMixin:OnIconClick(_button, buttonName)

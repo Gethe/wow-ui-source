@@ -569,6 +569,7 @@ Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Classic.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Mainline.toc
+Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonTemplate.xml
 Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonUtilOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Classic\ExpBar.xml
