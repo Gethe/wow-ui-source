@@ -323,7 +323,7 @@ function HouseEditorStorageFrameMixin:OnTabChanged()
 end
 
 function HouseEditorStorageFrameMixin:GetCurrentSavedStateKey()
-	return self:GetTab();
+	return C_HouseEditor.GetActiveHouseEditorMode().."_"..self:GetTab();
 end
 
 function HouseEditorStorageFrameMixin:GetDefaultFocusedCategoryID()
