@@ -89,7 +89,6 @@ function WardrobeCollectionFrameMixin:GoToSet(setID)
 	local classID = C_TransmogSets.GetValidClassForSet(setID);
 	if classID then
 		C_TransmogSets.SetTransmogSetsClassFilter(classID);
-		self.ClassDropdown:Update();
 	end
 	self.SetsCollectionFrame:SelectSet(setID);
 end

@@ -1,36 +1,38 @@
 InterfaceOverrides = {}
 
 function InterfaceOverrides.AdjustDisplaySettings(category)
-	do
-		-- Show Helm
-		local function GetValue()
-			return ShowingHelm();
+	if (not C_TransmogOutfitInfo.IsTransmogEnabled()) then
+		do
+			-- Show Helm
+			local function GetValue()
+				return ShowingHelm();
+			end
+			
+			local function SetValue(value)
+				ShowHelm(value);
+			end
+			
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_HELM",
+				Settings.VarType.Boolean, SHOW_HELM, defaultValue, GetValue, SetValue);
+			Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_HELM);
 		end
-		
-		local function SetValue(value)
-			ShowHelm(value);
+	
+		do
+			-- Show Cloak
+			local function GetValue()
+				return ShowingCloak();
+			end
+			
+			local function SetValue(value)
+				ShowCloak(value);
+			end
+			
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_CLOAK",
+				Settings.VarType.Boolean, SHOW_CLOAK, defaultValue, GetValue, SetValue);
+			Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_CLOAK);
 		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_HELM",
-			Settings.VarType.Boolean, SHOW_HELM, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_HELM);
-	end
-
-	do
-		-- Show Cloak
-		local function GetValue()
-			return ShowingCloak();
-		end
-		
-		local function SetValue(value)
-			ShowCloak(value);
-		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_CLOAK",
-			Settings.VarType.Boolean, SHOW_CLOAK, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_CLOAK);
 	end
 
 	if (C_GameRules.IsHardcoreActive()) then
