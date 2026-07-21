@@ -17,14 +17,6 @@ CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
 
 TargetFrameMixin = {};
 
-local function TargetFrame_UpdateForClientScene(self, sceneType)
-	if sceneType == Enum.ClientSceneType.MinigameSceneType then
-		self:Hide();
-	else
-		self:Update();
-	end
-end
-
 function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -101,8 +93,6 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self:Update();
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("CLIENT_SCENE_OPENED");
-	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 	self:RegisterEvent("UNIT_HEALTH");
 	if ( self.showLevel ) then
 		self:RegisterEvent("UNIT_LEVEL");
@@ -170,11 +160,6 @@ function TargetFrameMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self:Update();
-	elseif (event == "CLIENT_SCENE_OPENED") then
-		local sceneType = ...;
-		TargetFrame_UpdateForClientScene(self, sceneType);
-	elseif (event == "CLIENT_SCENE_CLOSED") then
-		TargetFrame_UpdateForClientScene(self, nil);
 	elseif (event == "PLAYER_TARGET_CHANGED" ) then
 		-- Moved here to avoid taint from functions below
 		self:Update();

@@ -10,6 +10,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "CanApproximate",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the given number of seconds is within an appropriate range for approximated formatting." },
 
@@ -54,6 +55,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateDesiredUnitCount",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the unit count that a given number of seconds will use for formatting." },
 
@@ -70,6 +72,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMaxInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the maximum interval band that a given number of seconds will use for formatting." },
 
@@ -86,6 +89,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMinInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the minimum interval band that a given number of seconds will use for formatting." },
 
@@ -102,6 +106,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "Format",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a number of seconds and returns the resulting string." },
 
@@ -119,6 +124,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "FormatZero",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns formatted string representing a zero second duration." },
 

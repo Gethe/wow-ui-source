@@ -139,7 +139,7 @@ end
 
 function GroupBuffFilterItemMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.groupBuffItem.name, 1, 1, 1);
+	GameTooltip:SetSpellByID(self.groupBuffItem.spellID);
 	GameTooltip:Show();
 end
 

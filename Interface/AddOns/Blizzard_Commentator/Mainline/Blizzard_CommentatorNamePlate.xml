@@ -2,7 +2,7 @@
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Cooldown name="CommentatorNPRadialCooldownTemplate" hideCountdownNumbers="true" hidden="true" virtual="true">
 		<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay">
-			<Color r="0" g="0" b="0" a="0.64"/>
+			<Color r="0" g="0" b="0" a="0.8"/>
 		</SwipeTexture>
 	</Cooldown>
 	

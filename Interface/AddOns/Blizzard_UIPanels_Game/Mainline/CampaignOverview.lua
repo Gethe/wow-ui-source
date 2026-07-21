@@ -33,7 +33,10 @@ end
 
 function CampaignOverviewMixin:OnEvent(event, ...)
 	if event == "LORE_TEXT_UPDATED_CAMPAIGN" then
-		self:UpdateCampaignLoreText(...);
+		local campaignID, textEntries = ...;
+		if campaignID == self:GetCampaignID() then
+			self:UpdateCampaignLoreText(campaignID, textEntries);
+		end
 	else
 		self:RequestLoreText();
 	end
@@ -45,7 +48,11 @@ function CampaignOverviewMixin:SetCampaign(campaignID)
 end
 
 function CampaignOverviewMixin:RequestLoreText()
-	C_LoreText.RequestLoreTextForCampaignID(self.Header:GetCampaign():GetID());
+	C_LoreText.RequestLoreTextForCampaignID(self:GetCampaignID());
+end
+
+function CampaignOverviewMixin:GetCampaignID()
+	return self.Header:GetCampaign():GetID();
 end
 
 function CampaignOverviewMixin:SetupEntry(index, entry)

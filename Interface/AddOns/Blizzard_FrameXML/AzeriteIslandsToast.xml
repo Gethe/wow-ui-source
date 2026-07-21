@@ -1,17 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="AzeriteIslandsToast.lua"/> 
 	<Frame name="AzeriteIslandsPlayerToastTextTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="IsPlayer" value="true" type="boolean" />
 		</KeyValues>
 		<Size x="200" y="100"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="30"/> 
+			<Anchor point="CENTER" x="0" y="30"/>
 		</Anchors>
-		<Layers> 
+		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="Game27Font" justifyH="CENTER" justifyV="MIDDLE"> 
+				<FontString parentKey="Text" inherits="Game27Font" justifyH="CENTER" justifyV="MIDDLE">
 					<Color r=".901" g=".8" b=".501"/>
 					<Shadow>
 						<Offset x="1" y="-1"/>
@@ -32,15 +31,15 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="AzeriteIslandsPartyToastTextTemplate" virtual="true">
 		<Size x="200" y="100"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="100"/> 
+			<Anchor point="CENTER" x="0" y="100"/>
 		</Anchors>
-		<Layers> 
+		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="Game18Font" justifyH="CENTER" justifyV="MIDDLE"> 
+				<FontString parentKey="Text" inherits="Game18Font" justifyH="CENTER" justifyV="MIDDLE">
 					<Color r=".901" g=".8" b=".501"/>
 					<Shadow>
 						<Offset x="1" y="-1"/>
@@ -61,7 +60,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="AzeriteIslandsToast" parent="UIParent" mixin="AzeriteIslandsToastMixin" hidden="true" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="PlayerToast" inherits="AzeriteIslandsPlayerToastTextTemplate" />

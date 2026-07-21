@@ -479,7 +479,7 @@ SECURE_ACTIONS.cancelaura =
         else
             local slot = tonumber(SecureButton_GetModifiedAttribute(self, "target-slot", button));
             if ( slot and CANCELABLE_ITEMS[slot] ) then
-                CancelItemTempEnchantment(CANCELABLE_ITEMS[slot]);
+                C_PaperDollInfo.CancelTemporaryEnchantment(slot);
             else
                 local index = SecureButton_GetModifiedAttribute(self, "index", button) or self:GetID();
                 if ( index ) then
@@ -561,7 +561,7 @@ SECURE_ACTIONS.click =
     function (self, unit, button)
         local delegate =
             SecureButton_GetModifiedAttribute(self, "clickbutton", button);
-        if ( delegate and not delegate:IsForbidden() and not delegate:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
+        if ( delegate and not delegate:HasAccessConstraints() and not delegate:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
             delegate:Click(button);
         end
     end;

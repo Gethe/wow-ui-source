@@ -18,15 +18,6 @@ local s_spellIDToHelpTipInfo = {
 	},
 };
 
-
---AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon..
---Which just seems wrong, so I still have to talk to designers and see if we want to invest in a system to show temp enchants other than weapon
-local textureMapping = {
-	[1] = 16,	--Main hand
-	[2] = 17,	--Off-hand
-	[3] = 18,	--Ranged
-};
-
 local CollapseAndExpandButton_Orientation_Horizontal = 0;
 local CollapseAndExpandButton_Orientation_Vertical = 1;
 local CollapseAndExpandButton_ExpandDirection_Left = 0;
@@ -673,42 +664,29 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 	end, usePackedAura);
 end
 
---AubrieTODO: Figure out how we want to refactor this function to include non-weapon enchants..
-function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs(...)
-	local RETURNS_PER_ITEM = 4;
-	local numVals = select("#", ...);
-	local numItems = numVals / RETURNS_PER_ITEM;
-
-	if numItems == 0 then
-		return;
-	end
-
-	for itemIndex = numItems, 1, -1 do	--Loop through the items from the back.
+function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs()
+	-- Process slots in reverse equipment order to preserve legacy display ordering.
+	for _itemIndex, slot in ipairs({ INVSLOT_RANGED, INVSLOT_OFFHAND, INVSLOT_MAINHAND }) do
 		-- If we can't display any more buffs then stop
 		if #self.auraInfo > self.maxAuras then
 			break;
 		end
 
-		local hasEnchant, enchantExpiration, enchantCharges = select(RETURNS_PER_ITEM * (itemIndex - 1) + 1, ...);
-		if hasEnchant and enchantExpiration then
-			-- Show buff durations if necessary
-			if enchantExpiration then
-				enchantExpiration = enchantExpiration / 1000;
-			end
-			local expirationTime =  GetTime() + enchantExpiration;
-
-			local hideUnlessExpanded = enchantExpiration > BUFF_DURATION_WARNING_TIME;
+		local enchantmentInfo = C_PaperDollInfo.GetTemporaryEnchantmentInfo(slot);
+		if enchantmentInfo and enchantmentInfo.hasExpirationTime then
+			local expirationTime = GetTime() + (enchantmentInfo.remainingTimeMs / 1000);
+			local hideUnlessExpanded = (enchantmentInfo.remainingTimeMs / 1000) > BUFF_DURATION_WARNING_TIME;
 			if hideUnlessExpanded then
 				self.numHideableBuffs = self.numHideableBuffs + 1;
 			end
 
 			local aura = {
 				auraType = "TempEnchant",
-				texture = GetInventoryItemTexture("player", textureMapping[itemIndex]),
-				count = enchantCharges,
+				texture = GetInventoryItemTexture("player", slot),
+				count = enchantmentInfo.chargesRemaining,
 				hideUnlessExpanded = hideUnlessExpanded,
 				expirationTime = expirationTime,
-				ID = textureMapping[itemIndex]
+				ID = slot
 			};
 			table.insert(self.auraInfo, aura);
 		end
@@ -720,7 +698,7 @@ function BuffFrameMixin:UpdateAuras()
 
 	-- Update our auraInfo.
 	self.numHideableBuffs = 0;
-	self:UpdateTemporaryEnchantmentBuffs(GetWeaponEnchantInfo());
+	self:UpdateTemporaryEnchantmentBuffs();
 	self:UpdatePlayerBuffs();
 
 	-- Sync to ConsolidatedBuffs frame, if needed.
@@ -902,14 +880,7 @@ function AuraButtonMixin:OnClick(button)
 		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
 	elseif self.auraType == "TempEnchant" then
 		if button == "RightButton" then
-			--AubrieTODO: Figure out what we want to do with temp item enchants.
-			if self:GetID() == 16 then
-				CancelItemTempEnchantment(1);
-			elseif self:GetID() == 17 then
-				CancelItemTempEnchantment(2);
-			elseif self:GetID() == 18 then
-				CancelItemTempEnchantment(3);
-			end
+			C_PaperDollInfo.CancelTemporaryEnchantment(self:GetID());
 		end
 	end
 end

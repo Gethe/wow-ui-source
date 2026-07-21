@@ -74,7 +74,6 @@
 							</KeyValues>
 						</FontString>
 						<FontString parentKey="ErrorText" inherits="Game13FontShadow">
-							<Size y="12"/>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="4" type="number"/>
 								<KeyValue key="expand" value="true" type="boolean" />

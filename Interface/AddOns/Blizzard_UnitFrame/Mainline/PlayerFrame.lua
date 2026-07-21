@@ -1,13 +1,5 @@
 REQUIRED_REST_HOURS = 5;
 
-local function PlayerFrame_UpdateForClientScene(self, sceneType)
-	if sceneType == Enum.ClientSceneType.MinigameSceneType then
-		self:Hide();
-	else
-		self:SetShown(not C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerFrameDisabled));
-	end
-end
-
 function PlayerFrame_OnLoad(self)
 	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
@@ -69,8 +61,6 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("CLIENT_SCENE_OPENED");
-	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
@@ -161,11 +151,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdateReadyCheck();
-	elseif (event == "CLIENT_SCENE_OPENED") then
-		local sceneType = ...;
-		PlayerFrame_UpdateForClientScene(self, sceneType);
-	elseif (event == "CLIENT_SCENE_CLOSED") then
-		PlayerFrame_UpdateForClientScene(self, nil);
 	elseif (event == "PLAYTIME_CHANGED") then
 		PlayerFrame_UpdatePlaytime();
 	elseif (event == "READY_CHECK" or event == "READY_CHECK_CONFIRM") then

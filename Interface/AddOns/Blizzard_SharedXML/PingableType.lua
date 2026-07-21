@@ -78,10 +78,11 @@ function PingableType_ActionButtonMixin:GetIsPingable()
 		if actionButtonInfo.actionType then
 			-- Only allow spells and items to be pinged if this action button allows different types of actions.
 			if actionButtonInfo.actionType == "spell" or actionButtonInfo.actionType == "item" then
-				isPingable = actionButtonInfo.isUsable;
+				isPingable = true;
 			end
 		else
-			-- Otherwise, assume this action is a spell, which should be pingable.
+			-- Otherwise, no actionType means this probably comes from other ActionBars like ZoneAbility or StanceBar
+			-- assume this action is a spell, which should be pingable.
 			isPingable = true;
 		end
 	end
@@ -101,6 +102,8 @@ function PingableType_ActionButtonMixin:GetTargetInfo()
 		if actionButtonInfo.actionType and actionButtonInfo.actionType == "item" then
 			targetInfo.itemID = actionButtonInfo.id;
 		else
+			-- this is under the assumption that invalid actionType has been blocked by GetIsPingable
+			-- so id passed back by Script_GetActionInfo should only be spellID
 			targetInfo.spellID = actionButtonInfo.id;
 		end
 	end

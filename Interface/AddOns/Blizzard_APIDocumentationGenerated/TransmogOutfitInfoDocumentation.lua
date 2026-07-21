@@ -628,6 +628,15 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "IsTransmogEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsableDiscountAvailable",
 			Type = "Function",
 

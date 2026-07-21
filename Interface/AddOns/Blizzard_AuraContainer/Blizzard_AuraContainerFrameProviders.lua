@@ -57,6 +57,10 @@ function AuraContainerCustomFrameProviderMixin:GetOwnedFrameCount()
 	return #self.ownedFrames;
 end
 
+function AuraContainerCustomFrameProviderMixin:GetOwnedFrame(index)
+	return self.ownedFrames[index];
+end
+
 function AuraContainerCustomFrameProviderMixin:GetAvailableFrameCount()
 	return #self.availableFrames;
 end
@@ -112,8 +116,9 @@ function AuraContainerCustomFrameProviderMixin:ReleaseFrame(auraFrame)
 
 	self.activeFrames[auraFrame] = nil;
 
+	-- Avoid clearing anchor points for now as this can leak some information
+	-- about whether a button is actively in use.
 	auraFrame:ClearAuraInstance();
-	auraFrame:ClearAllPoints();
 	auraFrame:Hide();
 
 	table.insert(self.availableFrames, auraFrame);
@@ -124,11 +129,7 @@ function AuraContainerCustomFrameProviderMixin:ReleaseAllFrames()
 	self.activeFrames = {};
 
 	for _index, auraFrame in ipairs(self.ownedFrames) do
-		auraFrame:ClearAuraInstance();
-		auraFrame:ClearAllPoints();
-		auraFrame:Hide();
-
-		table.insert(self.availableFrames, auraFrame);
+		self:ReleaseFrame(auraFrame);
 	end
 end
 

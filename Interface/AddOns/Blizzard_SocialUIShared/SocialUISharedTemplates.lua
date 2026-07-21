@@ -153,8 +153,8 @@ function SocialUIContactsFrameMixin:SetFilterBarShown(shown)
 		self.TopDivider:SetPoint("TOPLEFT", self.FilterBar, "BOTTOMLEFT", 5, -3);
 		self.TopDivider:SetPoint("TOPRIGHT", self.FilterBar, "BOTTOMRIGHT", -5, -3);
 	else
-		self.TopDivider:SetPoint("TOPLEFT", self, "TOPLEFT", 5, -14);
-		self.TopDivider:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -14);
+		self.TopDivider:SetPoint("TOPLEFT", self, "TOPLEFT", 5, -15);
+		self.TopDivider:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -15);
 	end
 end
 

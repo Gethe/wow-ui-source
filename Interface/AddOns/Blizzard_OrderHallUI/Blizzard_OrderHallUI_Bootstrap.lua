@@ -10,9 +10,9 @@ function ToggleOrderHallTalentUI()
 	end
 end
 
-function OpenOrderHallTalentUI(garrisonType)
+function OpenOrderHallTalentUI(garrisonType, garrTalentTreeID)
 	if OrderHall_LoadUI() then
-		OrderHallTalentFrame:SetGarrisonType(garrisonType);
+		OrderHallTalentFrame:SetGarrisonType(garrisonType, garrTalentTreeID)
 		OrderHallTalentFrame_ToggleFrame();
 	end
 end

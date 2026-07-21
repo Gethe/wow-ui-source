@@ -326,8 +326,16 @@ function HouseEditorStorageFrameMixin:OnTabChanged()
 	EventRegistry:TriggerEvent("HouseEditorStorage.TabChanged", self:GetTab());
 end
 
+local ModeNameTranslator;
+if Enum.HouseEditorMode then
+	ModeNameTranslator = EnumUtil.GenerateNameTranslation(Enum.HouseEditorMode);
+else
+	ModeNameTranslator = function(mode) return ""..mode; end
+end
 function HouseEditorStorageFrameMixin:GetCurrentSavedStateKey()
-	return self:GetTab();
+	-- Ensure state key is unique per mode AND tab, so that switching to modes that use the same tabs
+	-- don't end up cross-contaminating their filter save states
+	return ModeNameTranslator(C_HouseEditor.GetActiveHouseEditorMode()).."_Tab"..self:GetTab();
 end
 
 function HouseEditorStorageFrameMixin:GetDefaultFocusedCategoryID()
@@ -723,25 +731,18 @@ function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
 
 	if self.lastEditorMode ~= newEditorMode then
 		if newEditorMode == Enum.HouseEditorMode.Layout then
-			self.Filters:ResetFiltersToDefault();
 			self.catalogSearcher:SetSortType(Enum.HousingCatalogSortType.Alphabetical);
-			self.Filters:SetEnabled(false);
 			self:ClearSearchText();
-		else
-			if self.lastEditorMode == Enum.HouseEditorMode.Layout then
-				self:ClearSearchText();
-			end
+		elseif self.lastEditorMode == Enum.HouseEditorMode.Layout then
+			self:ClearSearchText();
 		end
 
 		self:UpdateTabVisibilities();
-
 		self.lastEditorMode = newEditorMode;
 	end
 
-	if newEditorMode == Enum.HouseEditorMode.BasicDecor then
-		self:RestoreFilterAndFocusState();
-		self.Filters:SetEnabled(true);
-	end
+	self:RestoreFilterAndFocusState();
+	self.Filters:SetEnabled(newEditorMode ~= Enum.HouseEditorMode.Layout);
 
 	self:UpdateCategoryTotal();
 end
@@ -790,11 +791,19 @@ function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryVariantID)
 	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryVariantID);
 
 	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryVariantID);
-	
-	-- If option was added or removed entirely, reset our options list
-	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
-		self.catalogSearcher:RunSearch();
-		return;
+
+	if self.catalogSearcher then
+		-- If option was added or removed entirely, reset our list
+		local shouldRedoSearch = (entryInfo and not elementData) or (not entryInfo and elementData);
+		if (not shouldRedoSearch) and entryInfo then
+			-- Otherwise, if option no longer has any instances stored and we're only showing stored, reset our list
+			shouldRedoSearch = self.catalogSearcher:IsStoredOnlyActive() and Blizzard_HousingCatalogUtil.GetEntryNumStored(entryInfo) <= 0;
+		end
+
+		if shouldRedoSearch then
+			self.catalogSearcher:RunSearch();
+			return;
+		end
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data

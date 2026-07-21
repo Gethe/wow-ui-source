@@ -2930,6 +2930,7 @@ function EditModeCooldownViewerSystemMixin:AddExtraButtons(extraButtonPool)
 		settingsButton:SetText(HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS);
 		local fromEditMode = true;
 		settingsButton:SetOnClickHandler(function() CooldownViewerSettings:ShowUIPanel(fromEditMode); end);
+		settingsButton:SetNewTagID("ADVANCED_COOLDOWN_SETTINGS1"); -- These are shared so they must be set each time they're used.
 		settingsButton:Show();
 	end
 

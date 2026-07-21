@@ -897,6 +897,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsRolesetFiltered",
+			Type = "Function",
+			Documentation = { "Returns whether this frame is hidden because of its rolesets being filtered." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isRolesetFiltered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsShown",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.Shown },

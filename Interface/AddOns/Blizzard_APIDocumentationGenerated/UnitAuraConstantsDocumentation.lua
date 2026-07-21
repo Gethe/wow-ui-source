@@ -3,6 +3,19 @@ local UnitAuraConstants =
 	Tables =
 	{
 		{
+			Name = "UnitAuraSoundTrigger",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Added", Type = "UnitAuraSoundTrigger", EnumValue = 0 },
+				{ Name = "ApplicationsIncreased", Type = "UnitAuraSoundTrigger", EnumValue = 1 },
+				{ Name = "Removed", Type = "UnitAuraSoundTrigger", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UnitAuraUIConstants",
 			Type = "Constants",
 			Values =

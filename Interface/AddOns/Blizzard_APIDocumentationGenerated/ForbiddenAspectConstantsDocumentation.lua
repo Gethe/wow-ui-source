@@ -5,9 +5,9 @@ local ForbiddenAspectConstants =
 		{
 			Name = "ForbiddenAspect",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 11,
 			MinValue = 1,
-			MaxValue = 256,
+			MaxValue = 1024,
 			Fields =
 			{
 				{ Name = "SetToDefaults", Type = "ForbiddenAspect", EnumValue = 1, Documentation = { "Restricts resetting this object to a default state. Implied automatically when any other forbidden aspect is set." } },
@@ -19,6 +19,8 @@ local ForbiddenAspectConstants =
 				{ Name = "ScriptedInput", Type = "ForbiddenAspect", EnumValue = 64, Documentation = { "Restricts APIs that trigger synthetic input interactions on objects from Lua scripts." } },
 				{ Name = "QueryFocus", Type = "ForbiddenAspect", EnumValue = 128, Documentation = { "Restricts APIs that query input focus state." } },
 				{ Name = "ChangeAnimationTarget", Type = "ForbiddenAspect", EnumValue = 256, Documentation = { "Restricts APIs that can change the target object of an animation." } },
+				{ Name = "RemoveSecretAspects", Type = "ForbiddenAspect", EnumValue = 512, Documentation = { "Restricts APIs that clear secret aspects from objects." } },
+				{ Name = "ChangeParent", Type = "ForbiddenAspect", EnumValue = 1024, Documentation = { "Restricts APIs that change the parent of an object." } },
 			},
 		},
 	},

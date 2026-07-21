@@ -91,7 +91,7 @@ local SimpleScrollFrameAPI =
 			Name = "SetScrollChild",
 			Type = "Function",
 			IsProtectedFunction = true,
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

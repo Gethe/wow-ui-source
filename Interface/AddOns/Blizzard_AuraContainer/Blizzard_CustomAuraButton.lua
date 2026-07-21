@@ -11,8 +11,8 @@ end
 local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
 	inboundObject = GetForbiddenObjectTable(inboundObject);
 
-	if inboundObject:IsForbidden() then
-		error(string.format("bad object '%s' in function call (must not be a forbidden object)", inboundObject:GetDebugName()));
+	if inboundObject:HasAccessConstraints() then
+		error(string.format("bad object '%s' in function call (must not be an access-constrained object)", inboundObject:GetDebugName()));
 	end
 
 	local _isProtected, isProtectedExplicitly = inboundObject:IsProtected();
@@ -39,6 +39,24 @@ local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
 end
 
 CustomAuraButtonSharedMixin = {};
+
+function CustomAuraButtonSharedMixin:GetApplicationBar()
+	return self.ApplicationBar;
+end
+
+
+function CustomAuraButtonSharedMixin:SetApplicationBar(statusBar, options)
+	options = securecopy(options or {});
+
+	self.ApplicationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
+	self.ApplicationBar.maxApplications = options.maxApplications;
+
+	self:UpdateAuraDisplay();
+end
+
+function CustomAuraButtonSharedMixin:ClearApplicationBar()
+	self.ApplicationBar = nil;
+end
 
 function CustomAuraButtonSharedMixin:GetApplicationCount()
 	return self.ApplicationCount;
@@ -69,21 +87,16 @@ function CustomAuraButtonSharedMixin:GetAuraBorder()
 	return self.AuraBorder;
 end
 
-local DefaultAuraBorderOptions = {
-	showIcon = true,
-	showWhenHarmful = true,
-	showWhenHelpful = false,
-	style = AuraButtonBorderStyle.Atlas,
-};
-
 function CustomAuraButtonSharedMixin:SetAuraBorder(texture, options)
-	options = CreateFromMixins(DefaultAuraBorderOptions, securecopy(options or {}));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonBorderOptions(securecopy(options));
+	texture = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
 
-	self.AuraBorder = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
-	self.AuraBorder.showIcon = options.showIcon;
-	self.AuraBorder.showWhenHarmful = options.showWhenHarmful;
-	self.AuraBorder.showWhenHelpful = options.showWhenHelpful;
-	self.AuraBorder.style = options.style;
+	texture:AddSecretAspect(Enum.SecretAspect.Alpha);
+	texture:AddSecretAspect(Enum.SecretAspect.VertexColor);
+	texture:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.AuraBorder = texture;
+	self.AuraBorderOptions = options;
 
 	self:UpdateAuraDisplay();
 end
@@ -97,10 +110,8 @@ function CustomAuraButtonSharedMixin:GetAuraSymbol()
 end
 
 local DefaultAuraSymbolOptions = {
-	showIcon = false,
 	showWhenHarmful = true,
 	showWhenHelpful = false,
-	style = AuraButtonBorderStyle.Color,
 };
 
 function CustomAuraButtonSharedMixin:SetAuraSymbol(fontString, options)
@@ -248,6 +259,16 @@ function CustomAuraButtonPrivateMixin:OnAuraInstanceCleared()
 	self:ApplyAuraInstance(unitToken, auraData);
 end
 
+function CustomAuraButtonPrivateMixin:ApplyApplicationBar(auraData)
+	if self.ApplicationBar then
+		local applications = auraData and auraData.applications or 0;
+		local maxApplications = self.ApplicationBar.maxApplications;
+
+		self.ApplicationBar:SetMinMaxValues(secretwrap(0, math.max(maxApplications, 1)));
+		self.ApplicationBar:SetValue(secretwrap(applications));
+	end
+end
+
 function CustomAuraButtonPrivateMixin:ApplyApplicationCount(auraData)
 	if self.ApplicationCount then
 		local text = "";
@@ -267,30 +288,65 @@ function CustomAuraButtonPrivateMixin:ApplyApplicationCount(auraData)
 	end
 end
 
-local function ShouldShowDispelTypeForAura(auraBorder, auraData)
+local function ShouldShowDispelTypeForAura(options, auraData)
 	if not auraData then
 		return false;
-	elseif auraData.isHarmful and not auraBorder.showWhenHarmful then
+	elseif auraData.isHarmful and not options.showWhenHarmful then
 		return false;
-	elseif auraData.isHelpful and not auraBorder.showWhenHelpful then
+	elseif auraData.isHelpful and not options.showWhenHelpful then
+		return false;
+	elseif auraData.dispelName == nil and not options.showWithoutDispelType then
 		return false;
 	end
 
 	return true;
 end
 
-function CustomAuraButtonPrivateMixin:ApplyAuraBorder(auraData)
-	if self.AuraBorder then
-		local dispelType = ShouldShowDispelTypeForAura(self.AuraBorder, auraData) and auraData.dispelName or nil;
-		local style = self.AuraBorder.style;
+local function GetCustomAuraBorderColor(options, unitToken, auraData)
+	local dispelType = auraData.dispelName or "";
+	local color;
 
-		if style == AuraButtonBorderStyle.Atlas then
-			AuraUtil.SetAuraBorderAtlas(self.AuraBorder, dispelType, self.AuraBorder.showIcon);
-		elseif style == AuraButtonBorderStyle.Color then
-			AuraUtil.SetAuraBorderColor(self.AuraBorder, dispelType);
+	if options.customDispelColorMap then
+		color = options.customDispelColorMap[dispelType];
+
+		if color == nil then
+			-- Supporting "" as a fallback for auras with no dispel type.
+			color = options.customDispelColorMap[""];
 		end
+	end
 
-		self.AuraBorder:SetShown(dispelType ~= nil);
+	if options.customDispelColorCurve then
+		color = C_UnitAuras.GetAuraDispelTypeColor(unitToken, auraData.auraInstanceID, options.customDispelColorCurve);
+	end
+
+	return color;
+end
+
+local function SetAuraBorderColor(auraBorder, options, unitToken, auraData)
+	local color = GetCustomAuraBorderColor(options, unitToken, auraData);
+
+	if color then
+		auraBorder:SetVertexColor(color:GetRGBA());
+	else
+		AuraUtil.SetAuraBorderColor(auraBorder, auraData.dispelName);
+	end
+end
+
+function CustomAuraButtonPrivateMixin:ApplyAuraBorder(unitToken, auraData)
+	if self.AuraBorder then
+		if ShouldShowDispelTypeForAura(self.AuraBorderOptions, auraData) then
+			local style = self.AuraBorderOptions.style;
+
+			if style == Enum.CustomAuraButtonBorderStyle.Atlas then
+				AuraUtil.SetAuraBorderAtlas(self.AuraBorder, auraData.dispelName, self.AuraBorderOptions.showIcon);
+			elseif style == Enum.CustomAuraButtonBorderStyle.Color then
+				SetAuraBorderColor(self.AuraBorder, self.AuraBorderOptions, unitToken, auraData);
+			end
+
+			self.AuraBorder:Show();
+		else
+			self.AuraBorder:Hide();
+		end
 	end
 end
 
@@ -368,8 +424,9 @@ function CustomAuraButtonPrivateMixin:ApplyVisibility(auraData)
 end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData)
+	self:ApplyApplicationBar(auraData);
 	self:ApplyApplicationCount(auraData);
-	self:ApplyAuraBorder(auraData);
+	self:ApplyAuraBorder(unitToken, auraData);
 	self:ApplyAuraSymbol(auraData);
 	self:ApplyDuration(unitToken, auraData);
 	self:ApplyIcon(auraData);

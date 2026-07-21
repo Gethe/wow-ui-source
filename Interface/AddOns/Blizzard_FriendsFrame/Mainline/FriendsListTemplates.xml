@@ -78,7 +78,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-4" y="5"/>
 				</Anchors>
 				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
-					<Color color="BLACK_FONT_COLOR" a="0.36"/>
+					<Color color="BLACK_FONT_COLOR" a="0.6"/>
 				</SwipeTexture>
 			</Cooldown>
 		</Frames>

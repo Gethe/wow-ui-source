@@ -156,6 +156,9 @@ local function Register()
 	-- Housing Settings
 	InterfaceOverrides.CreateHousingSettings(category, layout);
 
+	-- Coordinates Settings
+	InterfaceOverrides.CreateCoordinatesSettings(category, layout);
+
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

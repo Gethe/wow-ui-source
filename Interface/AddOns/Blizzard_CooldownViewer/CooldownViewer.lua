@@ -1798,6 +1798,8 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 end
 
 function CooldownViewerMixin:OnUnitAura(_unit, unitAuraUpdateInfo)
+	CooldownViewer_MarkAuraCacheDirty();
+
 	if not unitAuraUpdateInfo or unitAuraUpdateInfo.isFullUpdate then
 		self:RefreshLayout();
 		return;

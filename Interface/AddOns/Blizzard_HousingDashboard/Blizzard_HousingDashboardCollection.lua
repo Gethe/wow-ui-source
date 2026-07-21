@@ -27,7 +27,7 @@ function HousingDashboardBlueprintDetailsMixin:OnLoad()
 
 	self.GearDropdown:SetupMenu(function(_dropdown, rootDescription)
 		local menuParams = {
-			shouldShowImport = C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success,
+			shouldShowImport = self.blueprintInfo and C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success and C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintInfo.blueprintType),
 			onDeleteConfirm = function() self:OnDeleteConfirmed(); end,
 		};
 		HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, self.blueprintInfo, menuParams);

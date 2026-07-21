@@ -1081,27 +1081,31 @@ function ChatFrameUtil.FormatDiscordMessage(discordInfo, message)
 		local modifiedMessage = message;
 
 		if discordInfo.hasAttachment then
-			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_ATTACHMENT).." "..message;
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_ATTACHMENT).." "..modifiedMessage;
 		end
 
 		if discordInfo.hasPoll then
-			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_POLL).." "..message;
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_POLL).." "..modifiedMessage;
 		end
 
 		if discordInfo.hasEmbed then
-			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMBED).." "..message;
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMBED).." "..modifiedMessage;
 		end
 
 		if discordInfo.hasSticker then
-			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_STICKER).." "..message;
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_STICKER).." "..modifiedMessage;
 		end
 
 		if discordInfo.hasEmoji then
-			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMOJI).." "..message;
+			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_EMOJI).." "..modifiedMessage;
 		end
 
 		if discordInfo.hasForwardedMessage then
 			modifiedMessage = YELLOW_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_FORWARD).." "..discordInfo.forwardedMessage;
+		end
+
+		if discordInfo.hasError then
+			modifiedMessage = RED_FONT_COLOR:WrapTextInColorCode(DISCORD_MESSAGE_FAILED_TO_SEND);
 		end
 
 		return modifiedMessage;

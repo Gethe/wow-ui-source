@@ -135,7 +135,7 @@ function HousingBlueprintContentSummaryMixin:IsContentImportable()
 	end
 
 	if not C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintType) then
-		return false;
+		return false, ERR_HOUSING_RESULT_BLUEPRINT_TYPE_LOCATION_INVALID;
 	end
 
 	if not FlagsUtil.IsAnythingSet(self.blueprintContentInfo.blockingRequirementFlags) then

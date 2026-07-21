@@ -400,7 +400,7 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "cstring", Nilable = true },
+				{ Name = "failureReason", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -584,7 +584,7 @@ local DelvesUI =
 				{ Name = "tierDescription", Type = "string", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "TieredEntranceRewardInfo", Nilable = false },
 				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
-				{ Name = "lockedReason", Type = "cstring", Nilable = true },
+				{ Name = "lockedReason", Type = "string", Nilable = true },
 				{ Name = "isLFG", Type = "bool", Nilable = false },
 				{ Name = "difficultyID", Type = "number", Nilable = false },
 			},

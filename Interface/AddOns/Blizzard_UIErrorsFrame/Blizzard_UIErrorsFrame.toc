@@ -1,0 +1,4 @@
+## Title: Blizzard_UIErrorsFrame
+## Dep: Blizzard_SharedXML
+[Family]\UIErrorsFrame.lua
+[Family]\UIErrorsFrame.xml

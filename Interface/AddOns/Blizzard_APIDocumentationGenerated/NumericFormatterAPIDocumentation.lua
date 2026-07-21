@@ -10,6 +10,7 @@ local NumericFormatterAPI =
 		{
 			Name = "FormatNumber",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

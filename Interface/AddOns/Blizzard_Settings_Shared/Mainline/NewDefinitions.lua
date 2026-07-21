@@ -89,6 +89,7 @@ NewSettings["12.0.1"] = {
 }
 
 NewSettings["12.1.0"] = {
+	"SETTINGS_MAP_COORDS_SECTION", -- entire section is new
 	"pingTarget",
 	"showPingsOnRaidFrames",
 	"TOGGLEPINGTARGET",
@@ -98,6 +99,9 @@ NewSettings["12.1.0"] = {
 	"SOCIAL_ENABLE_DISCORD_FUNCTIONALITY",
 	"raidFramesDispelIndicatorOverlay",
 	"raidFramesDispelIndicatorOverlayAnimation",
+	"ADVANCED_COOLDOWN_SETTINGS",
+	"ADVANCED_COOLDOWN_SETTINGS1",
+	"accessibilityScreenNarrationEnabled",
 };
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()

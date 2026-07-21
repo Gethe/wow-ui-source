@@ -317,7 +317,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarTexture",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

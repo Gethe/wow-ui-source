@@ -30,13 +30,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="RecruitAFriendFrame" inherits="RecruitAFriendFrameSocialTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BattleNetBar" relativePoint="BOTTOMLEFT" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg"/>
-				</Anchors>
-			</Frame>
-
 			<Frame parentKey="BattleNetUnavailableNoticeFrame" inherits="SocialUIBattleNetUnavailableNoticeFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="45"/>

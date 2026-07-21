@@ -31,6 +31,32 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "AddSecretAspect",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "aspect", Type = "SecretAspect", Nilable = false, NeverSecret = true },
+			},
+		},
+		{
+			Name = "CanBeAccessedInContext",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			Documentation = { "Returns whether the current Lua execution context has permission to access this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canAccess", Type = "bool", Nilable = false, Documentation = { "False if access is denied, such as when execution is tainted and the object is forbidden or enforcing access restrictions." } },
+			},
+		},
+		{
 			Name = "GetAccessRestrictions",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
@@ -119,6 +145,21 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "HasAccessConstraints",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			Documentation = { "Returns whether this object has any access constraints that may limit access from some Lua execution contexts." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasAccessConstraints", Type = "bool", Nilable = false, Documentation = { "True if this object is forbidden or subject to conditional access restrictions." } },
+			},
+		},
+		{
 			Name = "HasAnyAccessRestrictions",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
@@ -201,6 +242,7 @@ local SimpleFrameScriptObjectAPI =
 			Name = "IsForbidden",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
+			Documentation = { "Returns whether this object has been explicitly marked as forbidden." },
 
 			Arguments =
 			{
@@ -208,7 +250,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Returns =
 			{
-				{ Name = "isForbidden", Type = "bool", Nilable = false },
+				{ Name = "isForbidden", Type = "bool", Nilable = false, Documentation = { "True if this object has been explicitly marked as forbidden, regardless of the current Lua execution context." } },
 			},
 		},
 		{
@@ -245,6 +287,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "SetForbidden",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -254,7 +297,7 @@ local SimpleFrameScriptObjectAPI =
 			Name = "SetToDefaults",
 			Type = "Function",
 			IsProtectedFunction = true,
-			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.SetToDefaults } },
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.SetToDefaults }, { Argument = "self", Aspect = Enum.ForbiddenAspect.RemoveSecretAspects } },
 			Documentation = { "Reset all script accessible values to their default values. If possible, clears secret states." },
 
 			Arguments =

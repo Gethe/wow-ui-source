@@ -19,7 +19,6 @@ local HouseEditorLayoutModeShownEvents =
 	"GLOBAL_MOUSE_DOWN",
 	"UPDATE_BINDINGS",
 	"HOUSING_LAYOUT_ROOM_RECEIVED",
-	"HOUSING_LAYOUT_ROOM_REMOVED",
 	"HOUSING_LAYOUT_ROOM_MOVED",
 	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
 	"HOUSING_LAYOUT_ROOM_SNAPPED",
@@ -94,8 +93,6 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 			self.roomAddSoundPauseEnd = nil;
 			PlaySound(SOUNDKIT.HOUSING_ROOM_ADDED);
 		end
-	elseif event == "HOUSING_LAYOUT_ROOM_REMOVED" then
-		-- TODO: Guessing this should have a remove-specific sound played here?
 	elseif event == "HOUSING_LAYOUT_ROOM_MOVED" then
 		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVED);
 	elseif event == "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED" then

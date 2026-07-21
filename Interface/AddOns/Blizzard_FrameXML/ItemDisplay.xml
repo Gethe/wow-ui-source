@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-  <Script file="ItemDisplay.lua"/>
-
   <Button name="LootItemExtended" mixin="LootItemExtendedMixin" virtual="true">
     <Size x="52" y="52"/>
     <Anchors>
@@ -96,7 +94,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			
+
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="ItemBurst" hidden="false" scale="1.25" alpha="0" alphaMode="ADD" atlas="BonusChest-Burst-Uncommon" useAtlasSize="true">
 					<Anchors>

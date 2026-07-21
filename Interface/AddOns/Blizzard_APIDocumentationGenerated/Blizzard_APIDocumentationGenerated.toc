@@ -24,6 +24,7 @@ AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
+AuraContainerUtilDocumentation.lua
 AutoCompleteDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
@@ -406,6 +407,7 @@ ArrowCalloutConstantsDocumentation.lua
 AsyncAssistActionsConstantsDocumentation.lua
 AuctionHouseConstantsDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
+AuraContainerSharedDocumentation.lua
 AutoCompleteSharedDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua

@@ -40,7 +40,7 @@ local UnitConstants =
 			},
 		},
 		{
-			Name = "UnitAuraAppliedSoundInfo",
+			Name = "UnitAuraSoundInfo",
 			Type = "Structure",
 			Fields =
 			{

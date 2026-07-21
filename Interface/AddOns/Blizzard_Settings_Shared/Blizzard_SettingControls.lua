@@ -450,17 +450,9 @@ SettingsSliderNarrationContextMixin = {};
 
 function SettingsSliderNarrationContextMixin:NarrationGetContext()
 	local sliderContext = NarrationSliderMixin.NarrationGetContext(self.Slider);
+	local sliderValue = NarrationSliderMixin.NarrationGetDescription(self.Slider);
 	local indexString = self:GetParent():GetNarrationIndexString();
-	return NarrationUtil.MakeNarrationString(sliderContext, indexString);
-end
-
-function SettingsSliderNarrationContextMixin:NarrationGetDescription()
-	local slider = self.Slider;
-	if slider.NarrationGetDescription then
-		return slider:NarrationGetDescription();
-	end
-
-	return nil;
+	return NarrationUtil.MakeNarrationString(sliderContext, sliderValue, indexString);
 end
 
 SettingsDropdownNarrationContextMixin = {};
@@ -666,6 +658,7 @@ function SettingsSliderControlMixin:OnLoad()
 
 	Mixin(self.SliderWithSteppers,
 		NarrationForwardNameToParentMixin,
+		NarrationForwardDescriptionToParentMixin,
 		SettingsSliderNarrationContextMixin,
 		NarrationSkipTooltipsMixin
 	);
@@ -725,10 +718,6 @@ end
 
 function SettingsSliderControlMixin:NarrationGetContext()
 	return self.SliderWithSteppers:NarrationGetContext();
-end
-
-function SettingsSliderControlMixin:NarrationGetDescription()
-	return self.SliderWithSteppers:NarrationGetDescription();
 end
 
 SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);

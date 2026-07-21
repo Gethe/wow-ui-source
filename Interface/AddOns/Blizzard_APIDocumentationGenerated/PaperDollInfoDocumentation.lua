@@ -32,6 +32,18 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "CancelTemporaryEnchantment",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Cancels active temporary enchantments on inventory slot items." },
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "LuaInventorySlot", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

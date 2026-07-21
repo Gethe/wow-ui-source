@@ -33,11 +33,11 @@
 		<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" useParentLevel="true" frameLevel="200" virtual="true">
 			<Layers>
 				<Layer level="ARTWORK" textureSubLevel="-6">
-					<Texture parentKey="Background" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
+					<Texture parentKey="Background" parentArray="OverlayColorElements" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="-5">
-					<Texture parentKey="Gradient" setAllPoints="true"/>
-					<Texture parentKey="Border" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
+					<Texture parentKey="Gradient" parentArray="OverlayColorElements" setAllPoints="true"/>
+					<Texture parentKey="Border" parentArray="OverlayColorElements" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="-4">
 					<Texture inherits="CompactDispelDebuffTemplate"/>

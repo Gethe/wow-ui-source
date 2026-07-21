@@ -4,6 +4,10 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 end
 
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
+	-- TODO: As of 12.0.7, Classic Raid Frame options closely match Mainline ones.
+	-- Unfork these at a point where it's convenient, with overrides
+	-- to hide any options that Classic doesn't want.
+
 	-- Raid Frame Preview
 	do
 		local data = { };
@@ -218,6 +222,13 @@ function InterfaceOverrides.CreateHousingSettings(category, layout)
 		selectedDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
 		otherDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
 	end
+end
+
+function InterfaceOverrides.CreateCoordinatesSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION));
+
+	Settings.SetupCVarCheckbox(category, "worldMapShowPlayerCoords", SETTINGS_PLAYER_MAP_COORDS, SETTINGS_PLAYER_MAP_COORDS_TOOLTIP);
+	Settings.SetupCVarCheckbox(category, "worldMapShowCursorCoords", SETTINGS_CURSOR_MAP_COORDS, SETTINGS_CURSOR_MAP_COORDS_TOOLTIP);
 end
 
 -- These popups have a "Don't show this again" checkbox that the player can click to skip them in the future.

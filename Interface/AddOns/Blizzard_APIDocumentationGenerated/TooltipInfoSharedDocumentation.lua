@@ -26,9 +26,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 47,
+			NumValues = 49,
 			MinValue = 0,
-			MaxValue = 46,
+			MaxValue = 48,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -78,6 +78,8 @@ local TooltipInfoShared =
 				{ Name = "ItemSpellTriggerOnUse", Type = "TooltipDataLineType", EnumValue = 44 },
 				{ Name = "ItemSpellTriggerOnEquip", Type = "TooltipDataLineType", EnumValue = 45 },
 				{ Name = "ItemSpellTriggerOnProc", Type = "TooltipDataLineType", EnumValue = 46 },
+				{ Name = "UnitLevel", Type = "TooltipDataLineType", EnumValue = 47 },
+				{ Name = "UnitType", Type = "TooltipDataLineType", EnumValue = 48 },
 			},
 		},
 		{

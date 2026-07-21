@@ -1,11 +1,15 @@
 FriendRequestsListSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrollableElementExtentPreviewerMixin);
 
+local FriendRequestsListSocialViewStaticEvents =
+{
+	"BN_FRIEND_INVITE_ADDED",
+	"BN_FRIEND_INVITE_LIST_INITIALIZED",
+};
+
 local FriendRequestsListSocialViewDynamicEvents =
 {
 	"BN_CONNECTED",
 	"BN_DISCONNECTED",
-	"BN_FRIEND_INVITE_LIST_INITIALIZED",
-	"BN_FRIEND_INVITE_ADDED",
 	"BN_FRIEND_INVITE_REMOVED",
 	"BN_INFO_CHANGED",
 };
@@ -28,6 +32,8 @@ function FriendRequestsListSocialViewMixin:OnLoad()
 	self:InitializeScrollBox();
 	self:InitializeRealIDWarning();
 	self:SetFilterBarShown(false);
+
+	FrameUtil.RegisterFrameForEvents(self, FriendRequestsListSocialViewStaticEvents);
 end
 
 function FriendRequestsListSocialViewMixin:InitializeActionButton()
@@ -141,8 +147,15 @@ function FriendRequestsListSocialViewMixin:OnHide()
 	ClosePendingFriendRequestDialogs();
 end
 
-function FriendRequestsListSocialViewMixin:OnEvent(_event, ...)
-	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+function FriendRequestsListSocialViewMixin:OnEvent(event, ...)
+	local eventIndicatesPendingFriendRequest = (event == "BN_FRIEND_INVITE_ADDED") or (event == "BN_FRIEND_INVITE_LIST_INITIALIZED");
+	if eventIndicatesPendingFriendRequest then
+		self:TriggerSocialUIEvent(SocialUIFrameMixin.Event.TabGlowRequested, SocialUITabType.FriendRequests);
+	end
+
+	if self:IsShown() then
+		self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	end
 end
 
 local function InsertFriendRequestsIntoDataProvider(dataProvider)

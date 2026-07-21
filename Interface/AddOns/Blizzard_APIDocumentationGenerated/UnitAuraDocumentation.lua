@@ -8,19 +8,20 @@ local UnitAura =
 	Functions =
 	{
 		{
-			Name = "AddAuraAppliedSound",
+			Name = "AddAuraSound",
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "sound", Type = "UnitAuraAppliedSoundInfo", Nilable = false },
+				{ Name = "trigger", Type = "UnitAuraSoundTrigger", Nilable = false },
+				{ Name = "sound", Type = "UnitAuraSoundInfo", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "auraAppliedSoundID", Type = "number", Nilable = true },
+				{ Name = "auraSoundID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -486,13 +487,13 @@ local UnitAura =
 			},
 		},
 		{
-			Name = "RemoveAuraAppliedSound",
+			Name = "RemoveAuraSound",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "auraAppliedSoundID", Type = "number", Nilable = false },
+				{ Name = "auraSoundID", Type = "number", Nilable = false },
 			},
 		},
 		{

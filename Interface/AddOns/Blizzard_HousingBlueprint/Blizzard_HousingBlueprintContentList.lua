@@ -108,9 +108,9 @@ end
 
 function HousingBlueprintContentListFrameMixin:ShowBlueprintContents(blueprintContentInfo, targetHouseGUID, isFilterUpdate)
 	local isDataUpdate = not isFilterUpdate and blueprintContentInfo and self:IsShowingBlueprintForTarget(blueprintContentInfo.shareCode, blueprintContentInfo.targetHouseGUID);
-	self:ClearData();
 
 	if not blueprintContentInfo or not blueprintContentInfo.contentGroups then
+		self:ClearData();
 		return;
 	end
 
@@ -237,7 +237,7 @@ function HousingBlueprintContentListFrameMixin:UpdateBlueprintContentsData()
 		return;
 	end
 
-	C_HousingBlueprint.RequestBlueprintContentsForContext(self.blueprintCode, self:GetTargetGUID());
+	C_HousingBlueprint.RequestBlueprintContentsForContext(self.blueprintContentInfo.shareCode, self:GetTargetGUID());
 end
 
 ----------------- Content Group -----------------

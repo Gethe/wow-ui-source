@@ -92,12 +92,22 @@
 			<KeyValue key="maximumWidth" value="344" type="number"/>
 		</KeyValues>
 		<Frames>
-			<Button parentKey="Header" inherits="ListHeaderThreeSliceTemplate" registerForClicks="LeftButtonUp">
+			<Button parentKey="Header" inherits="ListHeaderThreeSliceTemplate, NewDefinitionsCheckerTemplate" mixin="CooldownViewerSettingsCategoryNewOptionMixin" registerForClicks="LeftButtonUp">
 				<Size x="0" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="TOPRIGHT"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="NewOptionsFrame" inherits="NewFeatureLabelTemplate" scale="0.8">
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter method="MarkSeen" inherit="append"/>
+				</Scripts>
 			</Button>
 			<Frame parentKey="Container" mixin="CooldownViewerContainerReorderTargetMixin" inherits="GridLayoutFrame">
 				<KeyValues>
@@ -124,11 +134,21 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerSettingsBarCategoryTemplate" inherits="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsBarCategoryMixin" virtual="true">
-
-	</Frame>
+	<Frame name="CooldownViewerSettingsBarCategoryTemplate" inherits="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsBarCategoryMixin" virtual="true"/>
 
 	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
+
+	<Frame name="CooldownViewerSettingsTabWithNewOptionTemplate" inherits="CooldownViewerSettingsTabTemplate, NewDefinitionsCheckerTemplate" mixin="CooldownViewerSettingsTabWithNewOptionMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NewOptionsFrame" atlas="communities-icon-notification" useAtlasSize="true" scale="0.8" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 
 	<Frame name="CooldownViewerSettings" inherits="ButtonFrameTemplate, CallbackRegistrantTemplate" parent="UIParent" toplevel="true" mixin="CooldownViewerSettingsMixin" hidden="true">
 		<Size x="399" y="609"/>
@@ -146,23 +166,25 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="SpellsTab" inherits="CooldownViewerSettingsTabTemplate">
+			<Frame parentKey="SpellsTab" inherits="CooldownViewerSettingsTabWithNewOptionTemplate">
 				<KeyValues>
 					<KeyValue key="displayMode" value="spells" type="string"/>
 					<KeyValue key="activeAtlas" value="icon_cooldownmanager" type="string"/>
 					<KeyValue key="inactiveAtlas" value="icon_cooldownmanager" type="string"/>
 					<KeyValue key="tooltipText" value="COOLDOWN_VIEWER_SETTINGS_TAB_SPELLS" type="global"/>
+					<KeyValue key="newTagID" value="ADVANCED_COOLDOWN_SETTINGS1" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="AurasTab" inherits="CooldownViewerSettingsTabTemplate">
+			<Frame parentKey="AurasTab" inherits="CooldownViewerSettingsTabWithNewOptionTemplate">
 				<KeyValues>
 					<KeyValue key="displayMode" value="auras" type="string"/>
 					<KeyValue key="activeAtlas" value="icon_trackedbuffs" type="string"/>
 					<KeyValue key="inactiveAtlas" value="icon_trackedbuffs" type="string"/>
 					<KeyValue key="tooltipText" value="COOLDOWN_VIEWER_SETTINGS_TAB_BUFFS" type="global"/>
+					<KeyValue key="newTagID" value="ADVANCED_COOLDOWN_SETTINGS1" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.SpellsTab" relativePoint="BOTTOM" x="0" y="-3"/>

@@ -56,8 +56,13 @@ function AuraButtonPrivateMixin:OnClick_Intrinsic(button, isDown)
 	end
 
 	local unitToken, auraData = self:GetAuraInstance();
-	if unitToken and auraData and auraData.auraInstanceID then
-		C_UnitAuras.CancelAuraByInstanceID(unitToken, auraData.auraInstanceID);
+
+	if auraData then
+		if auraData.auraType == AuraContainerAuraDataType.Aura then
+			C_UnitAuras.CancelAuraByInstanceID(unitToken, auraData.auraInstanceID);
+		elseif auraData.auraType == AuraContainerAuraDataType.ItemEnchantment then
+			C_PaperDollInfo.CancelTemporaryEnchantment(auraData.inventorySlot);
+		end
 	end
 end
 

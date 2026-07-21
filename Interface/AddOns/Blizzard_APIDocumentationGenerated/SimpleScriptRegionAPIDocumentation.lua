@@ -592,7 +592,7 @@ local SimpleScriptRegionAPI =
 			Name = "SetParent",
 			Type = "Function",
 			IsProtectedFunction = true,
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "NotAllowed",
 
 			Arguments =

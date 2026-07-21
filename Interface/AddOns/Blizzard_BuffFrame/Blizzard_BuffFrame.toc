@@ -1,5 +1,9 @@
 ## Title: Blizzard_BuffFrame
-## Dependencies: Blizzard_Minimap, Blizzard_EditMode, Blizzard_FrameXMLUtil, Blizzard_RaidWarning
+## Dep: Blizzard_Minimap
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_RaidWarning
+## Dep: Blizzard_UIErrorsFrame
 BuffFrame.lua
 [Family]/BuffFrame.lua [AllowLoadGameType classic]
 BuffFrameTemplates.xml

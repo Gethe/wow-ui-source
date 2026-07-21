@@ -54,6 +54,7 @@ local DiscordConstants =
 				{ Name = "hasEmbed", Type = "bool", Nilable = false },
 				{ Name = "hasSticker", Type = "bool", Nilable = false },
 				{ Name = "hasEmoji", Type = "bool", Nilable = false },
+				{ Name = "hasError", Type = "bool", Nilable = false },
 				{ Name = "hasForwardedMessage", Type = "bool", Nilable = false },
 				{ Name = "forwardedMessage", Type = "string", Nilable = false },
 				{ Name = "fromDiscord", Type = "bool", Nilable = false },

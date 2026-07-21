@@ -169,6 +169,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		if(self.parent ~= parent) then
 			AutoComplete_SetSelectedIndex(self, 0);
 			self.parentArrows = parent:GetAltArrowKeyMode();
+			self:SetFrameStrata("TOOLTIP");
 		end
 		parent:SetAltArrowKeyMode(false);
 
@@ -218,7 +219,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 					end
 					local entry = text..realm;
 					if (not tContains(possibilities, entry)) then
-						possibilities[index] = {name=entry, priority=LE_AUTOCOMPLETE_PRIORITY_OTHER};
+						possibilities[index] = {name=entry, priority=Enum.AutoCompletePriority.Other};
 					end
 					index = index + 1
 				end;

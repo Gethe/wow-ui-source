@@ -1,11 +1,5 @@
 local _addonName, addonTable = ...;
 
-AuraButtonBorderStyle =
-{
-	Atlas = 0,
-	Color = 1,
-};
-
 AuraContainerAuraDataType =
 {
 	Aura = 0,
@@ -162,6 +156,7 @@ CustomAuraContainerGroupLayoutDefaultOptions =
 	forceNewRow = false;
 	elementWidth = nil;
 	elementHeight = nil;
+	layoutIndex = nil;
 };
 
 -- Default options for aura slot displays. An aura slot renders a single aura
@@ -232,6 +227,7 @@ CustomAuraContainerItemEnchantmentLayoutDefaultOptions =
 	forceNewRow = false;
 	elementWidth = nil;
 	elementHeight = nil;
+	layoutIndex = nil;
 };
 
 CustomAuraContainerItemEnchantmentDefaultOptions =
@@ -252,7 +248,6 @@ CustomAuraContainerItemEnchantmentDefaultOptions =
 
 local _G = GetGlobalEnvironment();
 
-_G.AuraButtonBorderStyle = securecopy(AuraButtonBorderStyle);
 _G.AuraContainerAuraDataType = securecopy(AuraContainerAuraDataType);
 _G.AuraContainerFrameRefreshResult = securecopy(AuraContainerFrameRefreshResult);
 _G.AuraContainerItemEnchantmentSlot = securecopy(AuraContainerItemEnchantmentSlot);

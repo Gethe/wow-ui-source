@@ -7,5 +7,5 @@
 QuickJoinToast.xml
 QuickJoin.xml
 
-QuickJoinFrame.xml
-QuickJoinFrame.lua
+QuickJoinSocialView.xml
+QuickJoinSocialView.lua

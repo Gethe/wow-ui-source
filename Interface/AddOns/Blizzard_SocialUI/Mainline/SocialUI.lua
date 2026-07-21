@@ -237,7 +237,7 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			contentFrameParentKey = "FriendRequestsList",
 			IsSupported = C_BattleNet.IsBattleNetFriendsListSupported,
 			IsAvailable = C_BattleNet.IsBattleNetFriendsListEnabled,
-			--contentFrameSetupCallback = SocialUIContactsFrameInitializeAADC,
+			contentFrameSetupCallback = SocialUIContactsFrameInitializeAADC,
 		},
 		[SocialUITabType.RecruitAFriend] =
 		{
@@ -247,7 +247,8 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			tabName = SOCIAL_UI_RECRUIT_A_FRIEND_TAB_NAME,
 			iconAtlas = "friends-icon-tab-recruitFriends",
 			iconInactiveAtlas = "friends-icon-tab-recruitFriends-inactive",
-			contentFrame = self.RecruitAFriendFrame,
+			contentFrameTemplate = "RecruitAFriendFrameSocialTemplate",
+			contentFrameParentKey = "RecruitAFriendFrame",
 			IsSupported = C_RecruitAFriend.IsSystemSupported,
 			IsAvailable = C_RecruitAFriend.IsSystemEnabled,
 			contentFrameSetupCallback = RecruitAFriendFrameSocialInitializeAADC,
@@ -520,6 +521,11 @@ function SocialUIFrameMixin:GetTabByType(tabType)
 end
 
 function SocialUIFrameMixin:OnTabGlowRequested(tabType)
+	local tabIsCurrentlySelected = tabType == self:GetSelectedTab();
+	if tabIsCurrentlySelected then
+		return;
+	end
+
 	self:SetTabTypeGlowing(tabType);
 
 	local tab = self:GetTabByType(tabType);

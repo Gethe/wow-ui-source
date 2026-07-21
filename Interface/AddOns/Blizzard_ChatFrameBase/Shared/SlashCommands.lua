@@ -168,6 +168,7 @@ SLASH_COMMAND = {
 	EDITMODE = "EDITMODE",
 	COOLDOWN_MANAGER = "COOLDOWNMANAGER",
 	CLICK_CASTING = "CLICKCASTING",
+	MAPPIN = "MAPPIN",
 };
 
 SLASH_COMMAND_CATEGORY = {
@@ -210,6 +211,7 @@ SLASH_COMMAND_CATEGORY = {
 	TRANSMOG = 36,
 	COMMUNITY = 37,
 	EDIT_MODE = 38,
+	MAP = 39,
 };
 
 --[[ Commands table should be formatted as:
@@ -733,7 +735,7 @@ SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.CLICK, SLASH_COMMAND_C
 		down = StringToBoolean(down or "", false);
 
 		local button = GetClickFrame(name);
-		if ( button and button:IsObjectType("Button") and not button:IsForbidden() and not button:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
+		if ( button and button:IsObjectType("Button") and not button:HasAccessConstraints() and not button:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
 			button:Click(mouseButton, down);
 		end
 	end
@@ -1668,6 +1670,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DISMISSBATTLEPET, SLASH_COMM
 	end
 end);
 
+local isRaidInfoNotificationPending = false;
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CATEGORY.RAID, function(msg)
 	if SocialUIControl and SocialUIControl.IsEnabled() then
 		local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
@@ -1675,6 +1678,20 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CAT
 			SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.RaidList, SocialUISideWindowType.RaidInfoFrame);
 		else
 			SocialUIControl.ToggleToTab(SocialUITabType.RaidList);
+		end
+
+		-- If the player is using this slash command to open the raid info frame but doesn't have raid info we want to show a message in chat
+		if not isRaidInfoNotificationPending then
+			isRaidInfoNotificationPending = true;
+
+			EventUtil.RegisterOnceFrameEventAndCallback("UPDATE_INSTANCE_INFO", function()
+				isRaidInfoNotificationPending = false;
+
+				local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
+				if not hasRaidLockoutData then
+					ChatFrameUtil.DisplaySystemMessageInPrimary(NO_RAID_INSTANCES_SAVED);
+				end
+			end);
 		end
 		return;
 	end

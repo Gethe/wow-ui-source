@@ -218,9 +218,8 @@ end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.WorldMapWaypoint, function(link, text, linkData, contextData)
 	local waypoint = C_Map.GetUserWaypointFromHyperlink(link);
-	if waypoint then
-		C_Map.SetUserWaypoint(waypoint);
-		OpenWorldMap(waypoint.uiMapID);
+	if waypoint and C_Map.SetUserWaypoint(waypoint) then
+		OpenMapToUserWaypoint();
 	end
 end);
 

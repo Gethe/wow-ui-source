@@ -305,11 +305,11 @@ function WorldMapMixin:AddOverlayFrames()
 		topRightButtonPoolYOffset = topRightButtonPoolYOffset + topRightButtonPoolYOffsetAmount;
 	end
 
-	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
-	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
+	local bountyBoard = self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
+	local actionButton = self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
-	self:AddOverlayFrame("WorldMapThreatFrameTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
-	self:AddOverlayFrame("WorldMapActivityTrackerTemplate", "BUTTON", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
+	local threatFrame = self:AddOverlayFrame("WorldMapThreatFrameTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
+	local activityTracker = self:AddOverlayFrame("WorldMapActivityTrackerTemplate", "BUTTON", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 0, 0);
 
 	self.NavBar = self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME");
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
@@ -320,6 +320,12 @@ function WorldMapMixin:AddOverlayFrames()
 		self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
 	end
 
+	local coordsPanel = self:AddOverlayFrame("WorldMapCoordsPanelTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 3, 2);
+	local requiresBottomLeft = true;
+	coordsPanel:AttachToNeighbor(threatFrame, -177, 2);
+	coordsPanel:AttachToNeighbor(activityTracker, 8, 2);
+	coordsPanel:AttachToNeighbor(bountyBoard, 8, 2, requiresBottomLeft);
+	coordsPanel:AttachToNeighbor(actionButton, 8, 2, requiresBottomLeft);
 end
 
 function WorldMapMixin:OnMapChanged()
@@ -388,9 +394,16 @@ local function SecureRefreshOverlayFrame(_, frame)
 	frame:Refresh();
 end
 
+local function SecurePostRefreshOverlayFrame(_, frame)
+	if frame.PostRefresh then
+		frame:PostRefresh();
+	end
+end
+
 function WorldMapMixin:RefreshOverlayFrames()
 	if self.overlayFrames then
 		secureexecuterange(self.overlayFrames, SecureRefreshOverlayFrame);
+		secureexecuterange(self.overlayFrames, SecurePostRefreshOverlayFrame);
 	end
 end
 
@@ -592,5 +605,13 @@ function OpenMapToEventPoi(areaPoiID)
 	if mapID then
 		OpenWorldMap(mapID);
 		EventRegistry:TriggerEvent("PingAreaPOIEvent", areaPoiID);
+	end
+end
+
+function OpenMapToUserWaypoint()
+	local waypoint = C_Map.GetUserWaypoint();
+	if waypoint then
+		OpenWorldMap(waypoint.uiMapID);
+		EventRegistry:TriggerEvent("MapCanvas.PingWaypointLocation");
 	end
 end

@@ -62,6 +62,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "ClearText",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.RemoveSecretAspects } },
 			Documentation = { "Sets text to an empty string and removes the Text secret aspect." },
 
 			Arguments =
@@ -473,6 +474,16 @@ local SimpleFontStringAPI =
 			Returns =
 			{
 				{ Name = "isWithinText", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDesaturateEmbeddedTextures",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "desaturate", Type = "bool", Nilable = false },
 			},
 		},
 		{

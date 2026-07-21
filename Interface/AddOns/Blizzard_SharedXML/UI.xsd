@@ -17,7 +17,6 @@
 
 	<xs:simpleType name="FRAMESTRATA">
 		<xs:restriction base="xs:NMTOKEN">
-			<xs:enumeration value="PARENT"/>
 			<xs:enumeration value="BACKGROUND"/>
 			<xs:enumeration value="LOW"/>
 			<xs:enumeration value="MEDIUM"/>
@@ -830,7 +829,7 @@
 		<xs:attribute name="useParentLevel" type="xs:boolean" default="false"/>
 		<xs:attribute name="movable" type="xs:boolean" default="false"/>
 		<xs:attribute name="resizable" type="xs:boolean" default="false"/>
-		<xs:attribute name="frameStrata" type="ui:FRAMESTRATA" default="PARENT"/>
+		<xs:attribute name="frameStrata" type="ui:FRAMESTRATA"/>
 		<xs:attribute name="frameLevel" type="xs:int"/>
 		<xs:attribute name="id" type="xs:int" default="0"/>
 		<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>

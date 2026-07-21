@@ -324,7 +324,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetDisabledTexture",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -347,7 +347,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetFontString",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -390,7 +390,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetHighlightTexture",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -432,7 +432,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetNormalTexture",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -464,7 +464,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetPushedTexture",
 			Type = "Function",
-			CheckAllowInheritForbiddenParentAspects = true,
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

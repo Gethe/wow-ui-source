@@ -70,7 +70,7 @@ function TextureInfoGeneratorMixin:CheckGetRegionsTextureInfo(...)
 end
 
 function TextureInfoGeneratorMixin:CheckFormatTextureInfo(obj)
-	if CanAccessObject(obj) then
+	if obj:CanBeAccessedInContext() then
 		if obj:IsObjectType("Frame") then
 			return self:CheckGetRegionsTextureInfo(obj:GetRegions());
 		else
@@ -119,5 +119,5 @@ function TextureInfoGeneratorMixin:ShouldCheckIsMouseOverRegion()
 end
 
 function TextureInfoGeneratorMixin:ShouldGenerateRegionInfo(region)
-	return CanAccessObject(region) and (not self:ShouldCheckIsMouseOverRegion() or region:IsMouseOver());
+	return region:CanBeAccessedInContext() and (not self:ShouldCheckIsMouseOverRegion() or region:IsMouseOver());
 end

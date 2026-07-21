@@ -260,7 +260,7 @@ function HousingBlueprintCollectionMixin:ShouldShowContextImportOption(blueprint
 		-- If no left-lick override, then don't show import in context menu since left-click will do it
 		return false;
 	else
-		return C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success;
+		return C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success and C_HousingBlueprint.CanImportTypeFromCurrentLocation(blueprintInfo.blueprintType);
 	end
 end
 

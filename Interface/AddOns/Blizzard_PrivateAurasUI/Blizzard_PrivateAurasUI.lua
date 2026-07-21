@@ -253,6 +253,16 @@ function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo, visualAlert)
 	self:ApplyVisualAlert(visualAlert);
 end
 
+function PrivateAuraMixin:GetVisualAlertAnchorScale()
+	local iconWidth = self.Icon:GetWidth();
+	local referenceSize = self:GetReferenceSize();
+	if referenceSize == 0 then
+		return 1;
+	end
+	local ratio = iconWidth / referenceSize;
+	return math.max(0.25, ratio);
+end
+
 function PrivateAuraMixin:ApplyVisualAlert(visualAlert)
 	if visualAlert == self.currentVisualAlert then
 		return;

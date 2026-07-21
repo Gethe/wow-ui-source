@@ -19,6 +19,26 @@ local RolesetSystem =
 				{ Name = "allowedRolesets", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "GetActiveAllowedRolesets",
+			Type = "Function",
+			Documentation = { "Returns the rolesets in the currently active allowlist." },
+
+			Returns =
+			{
+				{ Name = "allowedRolesets", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveBlockedRolesets",
+			Type = "Function",
+			Documentation = { "Returns the rolesets in the currently active blocklist." },
+
+			Returns =
+			{
+				{ Name = "blockedRolesets", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

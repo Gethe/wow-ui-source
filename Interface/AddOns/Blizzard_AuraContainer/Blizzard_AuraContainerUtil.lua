@@ -15,6 +15,14 @@ function AuraContainerUtil.CanApplyIdentityCandidateFilters(unitToken, auraData)
 	-- targets because that would allow for extremely specific displays of
 	-- exact text ("Move now!") if encounter-specific debuffs are applied to
 	-- the player.
+	--
+	-- Spells flagged as never-secret are exempt from this restriction; this
+	-- allows noisy debuffs (Exhaustion/Sated) to be filtered out on friendly
+	-- units.
+
+	if auraData.spellId and C_Secrets.GetSpellAuraSecrecy(auraData.spellId) == Enum.SecrecyLevel.NeverSecret then
+		return true;
+	end
 
 	if auraData.isHarmful and UnitCanAssist("player", unitToken) then
 		return false;
@@ -62,46 +70,46 @@ function AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, can
 		end
 	end
 
-	if candidateFilters.canApplyAura ~= nil and not auraData.canApplyAura then
+	if (candidateFilters.canApplyAura ~= nil) and (auraData.canApplyAura ~= candidateFilters.canApplyAura) then
 		return false;
 	end
 
-	if candidateFilters.isBossAura ~= nil and not auraData.isBossAura then
+	if (candidateFilters.isBossAura ~= nil) and (auraData.isBossAura ~= candidateFilters.isBossAura) then
 		return false;
 	end
 
-	if candidateFilters.isBossOrRoleAura ~= nil and not (auraData.isBossAura or AuraUtil.IsRoleAura(auraData)) then
+	if candidateFilters.isBossOrRoleAura ~= nil and ((auraData.isBossAura or AuraUtil.IsRoleAura(auraData)) ~= candidateFilters.isBossOrRoleAura) then
 		return false;
 	end
 
-	if candidateFilters.isFromPlayerOrPlayerPet ~= nil and not auraData.isFromPlayerOrPlayerPet then
+	if (candidateFilters.isFromPlayerOrPlayerPet ~= nil) and (auraData.isFromPlayerOrPlayerPet ~= candidateFilters.isFromPlayerOrPlayerPet) then
 		return false;
 	end
 
-	if candidateFilters.isRoleAura ~= nil and not AuraUtil.IsRoleAura(auraData) then
+	if (candidateFilters.isRoleAura ~= nil) and (AuraUtil.IsRoleAura(auraData) ~= candidateFilters.isRoleAura) then
 		return false;
 	end
 
-	if candidateFilters.isPriorityAura ~= nil and not AuraUtil.IsPriorityDebuff(auraData.spellId) then
+	if (candidateFilters.isPriorityAura ~= nil) and (AuraUtil.IsPriorityDebuff(auraData.spellId) ~= candidateFilters.isPriorityAura) then
 		return false;
 	end
 
-	if candidateFilters.isStealable ~= nil and not auraData.isStealable then
+	if (candidateFilters.isStealable ~= nil) and (auraData.isStealable ~= candidateFilters.isStealable) then
 		return false;
 	end
 
-	if candidateFilters.maxDuration ~= nil then
+	if (candidateFilters.maxDuration ~= nil) then
 		-- Max duration filters implicitly always filter out permanent auras.
 		if auraData.duration > candidateFilters.maxDuration or auraData.duration == 0 then
 			return false;
 		end
 	end
 
-	if candidateFilters.nameplateShowAll ~= nil and not auraData.nameplateShowAll then
+	if (candidateFilters.nameplateShowAll ~= nil) and (auraData.nameplateShowAll ~= candidateFilters.nameplateShowAll) then
 		return false;
 	end
 
-	if candidateFilters.nameplateShowPersonal ~= nil and not auraData.nameplateShowPersonal then
+	if (candidateFilters.nameplateShowPersonal ~= nil) and (auraData.nameplateShowPersonal ~= candidateFilters.nameplateShowPersonal) then
 		return false;
 	end
 

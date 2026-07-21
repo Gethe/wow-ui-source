@@ -73,6 +73,15 @@ function JourneysFrameMixin:OnHide()
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.MajorFactionRenown);
 end
 
+local function JourneysMajorFactionSort(faction1, faction2)
+	-- Higher priority factions will be sorted to the top of the list.
+	if faction1.uiPriority ~= faction2.uiPriority then
+		return faction1.uiPriority > faction2.uiPriority;
+	end
+
+	return strcmputf8i(faction1.name, faction2.name) < 0;
+end
+
 function JourneysFrameMixin:Refresh()
 	local dataProvider = CreateDataProvider();
 	local renownIDs = C_MajorFactions.GetMajorFactionIDs(self.expansionFilter or LE_EXPANSION_LEVEL_CURRENT);
@@ -90,6 +99,9 @@ function JourneysFrameMixin:Refresh()
 			end
 		end
 	end
+
+	table.sort(self.renownJourneyData, JourneysMajorFactionSort);
+	table.sort(self.encountersJourneyData, JourneysMajorFactionSort);
 
 	if #self.renownJourneyData >= 1 then
 		self:AddCategoryHeader(JOURNEYS_RENOWN_LABEL);
@@ -142,7 +154,7 @@ function JourneysFrameMixin:SetupJourneysList()
 		local currentValue, threshold, rewardQuestID, hasRewardPending, _, paragonStorageLevel = C_Reputation.GetFactionParagonInfo(factionID);
 
 		if rewardQuestID then
-			
+
 			QuestEventListener:AddCallback(rewardQuestID, function()
 				local itemID = select(6, GetQuestLogRewardInfo(1, rewardQuestID));
 				if itemID then
@@ -471,7 +483,7 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 	else
 		progressFrame.JourneyLevelProgress:SetText(JOURNEYS_CURRENT_PROGRESS:format(progress, threshold));
 	end
-	
+
 	if not C_MajorFactions.ShouldUseJourneyRewardTrack(self.majorFactionData.factionID)  then
 		self.DelveRewardProgressBar:Hide();
 	else

@@ -589,7 +589,7 @@ end
 local LOCAL_API_Frame = CreateFrame("Frame", "SecureHandlersUpdateFrame", nil, "SecureFrameTemplate");
 
 function CheckForbidden(frame)
-	return LOCAL_API_Frame.IsForbidden(frame) or LOCAL_API_Frame.HasAnyForbiddenAspects(frame);
+	return LOCAL_API_Frame.HasAccessConstraints(frame) or LOCAL_API_Frame.HasAnyForbiddenAspects(frame);
 end
 
 function MakeForbidden(frame)

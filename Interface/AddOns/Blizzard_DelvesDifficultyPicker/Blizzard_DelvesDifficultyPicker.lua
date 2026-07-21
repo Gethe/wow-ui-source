@@ -488,6 +488,16 @@ local function SetupTierMenu(rootDescription, entranceTypeData)
 end
 
 function DelvesDifficultyPickerFrameMixin:SetupDropdown(entranceType)
+	local longestStringWidth = 0;
+	local entranceTiers = self:GetTierInfos();
+	for _, tierInfo in ipairs(entranceTiers) do
+		local stringWidth = #tierInfo.tierDescription;
+		if stringWidth > longestStringWidth then
+			longestStringWidth = stringWidth;
+		end
+	end
+	self.longestDropdownString = longestStringWidth;
+
 	local entranceTypeData = self:GetTieredEntranceTypeData(entranceType);
 	self.Dropdown:SetupMenu(function(_owner, rootDescription)
 		SetupTierMenu(rootDescription, entranceTypeData);
@@ -610,8 +620,8 @@ function DelvesDifficultyPickerFrameMixin:SetInitialTier()
 end
 
 function DelvesDifficultyPickerFrameMixin:SetupViewRewardButton(entranceType)
-	local enabled = entranceType == Enum.TieredEntranceType.Lairs;
-	self.TieredEntranceViewRewardsButton:SetEnabled(enabled);
+	local shown = entranceType == Enum.TieredEntranceType.Lairs;
+	self.TieredEntranceViewRewardsButton:SetShown(shown);
 end
 
 function DelvesDifficultyPickerFrameMixin:UpdateWidgets()

@@ -1420,11 +1420,8 @@ function RecruitAFriendRecruitmentFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
-local PLAYER_REALM_NAME = GetRealmName and GetRealmName();
-local unusedUFGReturn, PLAYER_FACTION_NAME;
-if UnitFactionGroup then
-	unusedUFGReturn, PLAYER_FACTION_NAME = UnitFactionGroup("player");
-end
+local PLAYER_REALM_NAME = GetRealmName();
+local _, PLAYER_FACTION_NAME = UnitFactionGroup("player");
 
 function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentInfo, recruitsAreMaxed)
 	if recruitmentInfo then
@@ -1445,12 +1442,7 @@ function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentIn
 		self.EditBox:SetCursorPosition(0);
 	else
 		self.Description:SetText(RAF_RECRUITMENT_DESC:format(maxRecruitLinkUses, daysInCycle));
-		if PLAYER_REALM_NAME and PLAYER_FACTION_NAME and RAF_RECRUITS_FACTION_AND_REALM then --won't show in Glues
-			self.FactionAndRealm:Show();
-			self.FactionAndRealm:SetText(RAF_RECRUITS_FACTION_AND_REALM:format(PLAYER_FACTION_NAME, PLAYER_REALM_NAME));
-		else
-			self.FactionAndRealm:Hide();
-		end
+		self.FactionAndRealm:SetText(RAF_RECRUITS_FACTION_AND_REALM:format(PLAYER_FACTION_NAME, PLAYER_REALM_NAME));
 
 		self.EditBox.Instructions:SetText(RAF_NO_ACTIVE_LINK:format(daysInCycle));
 		self.EditBox.Instructions:Show();

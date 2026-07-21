@@ -54,8 +54,9 @@ function VisualAlertMarchingAntsBaseMixin:GetVertexColoredRegions()
 end
 
 function VisualAlertMarchingAntsBaseMixin:GetAnchors()
-	local topLeft = CreateAnchor("TOPLEFT", nil, "TOPLEFT", -8, 8);
-	local bottomRight = CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 9, -9);
+	local scale = self:GetAnchorScale();
+	local topLeft = CreateAnchor("TOPLEFT", nil, "TOPLEFT", -8 * scale, 8 * scale);
+	local bottomRight = CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 9 * scale, -9 * scale);
 	return topLeft, bottomRight;
 end
 
@@ -66,8 +67,9 @@ function VisualAlertFlashBaseMixin:GetVertexColoredRegions()
 end
 
 function VisualAlertFlashBaseMixin:GetAnchors()
-	local topLeft = CreateAnchor("TOPLEFT", nil, "TOPLEFT", -8, 8);
-	local bottomRight = CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 9, -9);
+	local scale = self:GetAnchorScale();
+	local topLeft = CreateAnchor("TOPLEFT", nil, "TOPLEFT", -8 * scale, 8 * scale);
+	local bottomRight = CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 9 * scale, -9 * scale);
 	return topLeft, bottomRight;
 end
 

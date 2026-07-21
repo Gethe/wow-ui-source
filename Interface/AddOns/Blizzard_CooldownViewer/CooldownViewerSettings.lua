@@ -683,9 +683,17 @@ function CooldownViewerSettingsCategoryMixin:SetupGridLayoutParams()
 	container.alwaysUpdateLayout = true;
 end
 
+local categoryToNewTagID = {
+	[Enum.CooldownViewerCategory.EquipSlotEssential] = "ADVANCED_COOLDOWN_SETTINGS1",
+	[Enum.CooldownViewerCategory.SpecAgnosticEssential] = "ADVANCED_COOLDOWN_SETTINGS1",
+	[Enum.CooldownViewerCategory.EquipSlotTracked] = "ADVANCED_COOLDOWN_SETTINGS1",
+	[Enum.CooldownViewerCategory.SpecAgnosticTracked] = "ADVANCED_COOLDOWN_SETTINGS1",
+}
+
 function CooldownViewerSettingsCategoryMixin:Init(categoryObj)
 	self.categoryObj = categoryObj;
 	self.Header:SetHeaderText(categoryObj:GetTitle());
+	self.Header:SetNewTagID(categoryToNewTagID[categoryObj:GetCategory()]);
 end
 
 function CooldownViewerSettingsCategoryMixin:GetCategoryObject()
@@ -1814,5 +1822,24 @@ function CooldownViewerSettingsReorderMarkerMixin:SetIsLegalTarget(isLegal)
 		self.Texture:SetVertexColor(1, 1, 1);
 	else
 		self.Texture:SetVertexColor(ERROR_COLOR:GetRGB());
+	end
+end
+
+CooldownViewerSettingsTabWithNewOptionMixin = CreateFromMixins(NewDefinitionsCheckerMixin);
+
+function CooldownViewerSettingsTabWithNewOptionMixin:SetNewOptionAnchor()
+	local newOptionFrame = self:GetNewOptionDisplay();
+	if newOptionFrame then
+		newOptionFrame:SetPoint("TOPRIGHT");
+	end
+end
+
+CooldownViewerSettingsCategoryNewOptionMixin = CreateFromMixins(NewDefinitionsCheckerButtonMixin);
+
+function CooldownViewerSettingsCategoryNewOptionMixin:SetNewOptionAnchor()
+	local newOptionFrame = self:GetNewOptionDisplay();
+	if newOptionFrame then
+		newOptionFrame:ClearAllPoints();
+		newOptionFrame:SetPoint("LEFT", self:GetTitleRegion(), "LEFT", self:GetTitleRegion():GetStringWidth() + 10, -2);
 	end
 end

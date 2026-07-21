@@ -15,6 +15,14 @@ function VisualAlertTargetMixin:GetAlertTargetFrame()
 	return self;
 end
 
+local VISUAL_ALERT_REFERENCE_SIZE = 32;
+
+function VisualAlertTargetMixin:GetReferenceSize()
+	-- override as necessary, used by targets that implement GetVisualAlertAnchorScale as a
+	-- ratio of their actual size to this reference, so that scale = 1 at the reference size.
+	return VISUAL_ALERT_REFERENCE_SIZE;
+end
+
 function VisualAlertTargetMixin:AddAlert(alert)
 	local container = self:GetOrCreateAlertContainer();
 	table.insert(container, alert);
@@ -56,4 +64,10 @@ end
 function VisualAlertTargetMixin:GetAlertSortFunction()
 	-- override as necessary
 	return SortAlertsDefault;
+end
+
+function VisualAlertTargetMixin:GetVisualAlertAnchorScale()
+	-- override as necessary, returns a multiplier applied to each alert type's natural anchor
+	-- offsets for targets that are significantly larger or smaller than their alerts.
+	return 1;
 end

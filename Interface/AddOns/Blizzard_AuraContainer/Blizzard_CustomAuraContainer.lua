@@ -116,9 +116,8 @@ local function ValidateCandidateFilters(candidateFilters)
 		ValidateProcessedAuraType(candidateFilters.processedAuraType);
 	end
 
-	-- Additional filters for booleans on auras. These can only match when
-	-- these values are true.
-	local PositiveOnlyCandidateFilterFields =
+	-- Additional filters for booleans on auras.
+	local BooleanOnlyCandidateFilterFields =
 	{
 		"isFromPlayerOrPlayerPet",
 		"isRoleAura",
@@ -131,9 +130,9 @@ local function ValidateCandidateFilters(candidateFilters)
 		"isBossOrRoleAura"
 	};
 
-	for _index, fieldName in ipairs(PositiveOnlyCandidateFilterFields) do
+	for _index, fieldName in ipairs(BooleanOnlyCandidateFilterFields) do
 		if candidateFilters[fieldName] ~= nil then
-			assert(candidateFilters[fieldName] == true, fieldName .. " only supports true or nil.");
+			assert(type(candidateFilters[fieldName]) == "boolean", fieldName .. " must be a boolean or nil.");
 		end
 	end
 end
@@ -172,6 +171,10 @@ local function ValidateAuraGroupLayoutOptions(layoutOptions)
 	if layoutOptions.elementHeight ~= nil then
 		assert(IsNonNegativeNumber(layoutOptions.elementHeight), "elementHeight must be a non-negative number.");
 	end
+
+	if layoutOptions.layoutIndex ~= nil then
+		assert(type(layoutOptions.layoutIndex) == "number", "layoutIndex must be a number.");
+	end
 end
 
 local function ValidateAuraDisplayOptions(options)
@@ -208,42 +211,14 @@ local function ValidateItemEnchantmentSortOptions(sortMethod, sortDirection)
 end
 
 local function ValidateItemEnchantmentLayoutOptions(layoutOptions)
+	ValidateAuraGroupLayoutOptions(layoutOptions);
+
 	if layoutOptions == nil then
 		return;
 	end
 
-	assert(type(layoutOptions) == "table", "layout must be a table or nil.");
-
 	if layoutOptions.placement ~= nil then
 		assert(EnumUtil.IsValid(CustomAuraContainerItemEnchantmentPlacement, layoutOptions.placement), "placement must be a valid CustomAuraContainerItemEnchantmentPlacement.");
-	end
-
-	if layoutOptions.elementSpacingX ~= nil then
-		assert(type(layoutOptions.elementSpacingX) == "number", "elementSpacingX must be a number.");
-	end
-
-	if layoutOptions.elementSpacingY ~= nil then
-		assert(type(layoutOptions.elementSpacingY) == "number", "elementSpacingY must be a number.");
-	end
-
-	if layoutOptions.gapX ~= nil then
-		assert(type(layoutOptions.gapX) == "number", "gapX must be a number.");
-	end
-
-	if layoutOptions.gapY ~= nil then
-		assert(type(layoutOptions.gapY) == "number", "gapY must be a number.");
-	end
-
-	if layoutOptions.forceNewRow ~= nil then
-		assert(type(layoutOptions.forceNewRow) == "boolean", "forceNewRow must be a boolean.");
-	end
-
-	if layoutOptions.elementWidth ~= nil then
-		assert(IsNonNegativeNumber(layoutOptions.elementWidth), "elementWidth must be a non-negative number.");
-	end
-
-	if layoutOptions.elementHeight ~= nil then
-		assert(IsNonNegativeNumber(layoutOptions.elementHeight), "elementHeight must be a non-negative number.");
 	end
 end
 
@@ -344,6 +319,41 @@ function CustomAuraContainerSharedMixin:HasAuraGroup(groupKey)
 	return ManagedAuraContainerPrivateMixin.HasAuraGroup(self, groupKey);
 end
 
+function CustomAuraContainerSharedMixin:GetAuraGroupFrame(groupKey, frameIndex)
+	-- Non-existent groups are modeled as empty groups for the purpose of
+	-- frame enumeration and access.
+	local auraGroup = self:GetAuraGroup(groupKey);
+	local auraFrame;
+
+	if auraGroup then
+		auraFrame = auraGroup:GetFrameProvider():GetOwnedFrame(frameIndex);
+	end
+
+	return auraFrame;
+end
+
+function CustomAuraContainerSharedMixin:GetAuraGroupFrameCount(groupKey)
+	local auraGroup = self:GetAuraGroup(groupKey);
+	local auraFrameCount = 0;
+
+	if auraGroup then
+		auraFrameCount = auraGroup:GetFrameProvider():GetOwnedFrameCount();
+	end
+
+	return auraFrameCount;
+end
+
+function CustomAuraContainerSharedMixin:SetAuraGroupFilterString(groupKey, filterString)
+	local auraGroup = GetRequiredAuraGroup(self, groupKey);
+	assert(AuraUtil.IsValidFilterString(filterString));
+
+	if auraGroup:GetFilterString() ~= filterString then
+		auraGroup:SetFilterString(filterString);
+		self:RebuildAuraParseFilters();
+		self:UpdateAllAuras();
+	end
+end
+
 function CustomAuraContainerSharedMixin:SetAuraGroupMaxFrameCount(groupKey, maxFrameCount)
 	local auraGroup = GetRequiredAuraGroup(self, groupKey);
 	ValidateMaxFrameCount(maxFrameCount);
@@ -405,9 +415,11 @@ function CustomAuraContainerSharedMixin:SetAuraSlotFilterString(slotKey, filterS
 	local auraSlot = GetRequiredAuraSlot(self, slotKey);
 	assert(AuraUtil.IsValidFilterString(filterString));
 
-	auraSlot:SetFilterString(filterString);
-	self:RebuildAuraParseFilters();
-	self:UpdateAllAuras();
+	if auraSlot:GetFilterString() ~= filterString then
+		auraSlot:SetFilterString(filterString);
+		self:RebuildAuraParseFilters();
+		self:UpdateAllAuras();
+	end
 end
 
 function CustomAuraContainerSharedMixin:SetAuraSlotCandidateFilters(slotKey, candidateFilters)
@@ -632,39 +644,82 @@ function CustomAuraContainerPrivateMixin:AddItemEnchantmentLayoutGroup(flowLayou
 		});
 end
 
-function CustomAuraContainerPrivateMixin:ShouldPlaceItemEnchantmentsBeforeAuraGroups()
-	return self.itemEnchantmentLayoutOptions.placement == CustomAuraContainerItemEnchantmentPlacement.BeforeAuraGroups;
+function CustomAuraContainerPrivateMixin:GetFlowLayoutGroupDescriptions()
+	local descriptions = {};
+
+	for index, auraGroup in self:EnumerateAuraGroups() do
+		local layoutOptions = self.layoutOptionsByAuraGroup[auraGroup];
+
+		local description = {};
+		-- Closures are intentional because aura processing replaces each
+		-- group's visible frame list during refresh.
+		description.elements = function() return auraGroup:GetFramesByIndex(); end;
+		description.layoutIndex = layoutOptions.layoutIndex;
+		description.layoutOptions = layoutOptions;
+		description.registrationIndex = index;
+
+		table.insert(descriptions, description);
+	end
+
+	if self:HasAnyItemEnchantments() then
+		local layoutOptions = self.itemEnchantmentLayoutOptions;
+
+		local description = {};
+		description.elements = function() return self:GetActiveItemEnchantmentFrames(); end;
+		description.layoutIndex = layoutOptions.layoutIndex;
+		description.layoutOptions = layoutOptions;
+
+		-- Placement support is retained as a convenience over layout indices
+		-- and defines a fallback registration order for sorting.
+		if layoutOptions.placement == CustomAuraContainerItemEnchantmentPlacement.AfterAuraGroups then
+			description.registrationIndex = math.huge;
+		else
+			description.registrationIndex = -math.huge;
+		end
+
+		table.insert(descriptions, description);
+	end
+
+	return descriptions;
+end
+
+local function GetEffectiveFlowLayoutIndex(description)
+	return description.layoutIndex or description.registrationIndex or math.huge;
+end
+
+
+local function SortFlowLayoutDescriptions(a, b)
+	local layoutIndexA = GetEffectiveFlowLayoutIndex(a);
+	local layoutIndexB = GetEffectiveFlowLayoutIndex(b);
+
+	if layoutIndexA ~= layoutIndexB then
+		return layoutIndexA < layoutIndexB;
+	end
+
+	return a.registrationIndex < b.registrationIndex;
 end
 
 function CustomAuraContainerPrivateMixin:RebuildLayoutGroups()
-	local flowLayoutGroups = {};
+	local flowLayoutGroupDescriptions = self:GetFlowLayoutGroupDescriptions();
+	local flowLayoutGroups = table.create(#flowLayoutGroupDescriptions);
 
-	if self:ShouldPlaceItemEnchantmentsBeforeAuraGroups() then
-		self:AddItemEnchantmentLayoutGroup(flowLayoutGroups);
-	end
+	table.sort(flowLayoutGroupDescriptions, SortFlowLayoutDescriptions);
 
-	for _index, auraGroup in self:EnumerateAuraGroups() do
-		local layoutOptions = self.layoutOptionsByAuraGroup[auraGroup];
+	for index, description in ipairs(flowLayoutGroupDescriptions) do
+		local layoutOptions = description.layoutOptions;
 
-		table.insert(flowLayoutGroups,
-			{
-				-- Closures are intentional because aura processing replaces each
-				-- group's visible frame list during refresh.
-				elements = function() return auraGroup:GetFramesByIndex(); end,
-				elementSpacingX = layoutOptions.elementSpacingX,
-				elementSpacingY = layoutOptions.elementSpacingY,
+		flowLayoutGroups[index] = {
+			elements = description.elements,
+			elementSpacingX = layoutOptions.elementSpacingX,
+			elementSpacingY = layoutOptions.elementSpacingY,
 
-				forceNewRow = layoutOptions.forceNewRow,
-				gapX = layoutOptions.gapX,
-				gapY = layoutOptions.gapY,
+			forceNewRow = layoutOptions.forceNewRow,
+			gapX = layoutOptions.gapX,
+			gapY = layoutOptions.gapY,
 
-				elementWidth = layoutOptions.elementWidth,
-				elementHeight = layoutOptions.elementHeight,
-			});
-	end
-
-	if not self:ShouldPlaceItemEnchantmentsBeforeAuraGroups() then
-		self:AddItemEnchantmentLayoutGroup(flowLayoutGroups);
+			elementWidth = layoutOptions.elementWidth,
+			elementHeight = layoutOptions.elementHeight,
+		};
 	end
 
 	self.flowLayoutGroups = flowLayoutGroups;

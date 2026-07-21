@@ -5,7 +5,6 @@
 ## LoadOnDemand: 1
 ## AllowLoad: Both
 Blizzard_DebugTools_Bootstrap.lua [Bootstrap]
-DebugObjectUtil.lua
 Blizzard_TextureInfoGenerator.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml

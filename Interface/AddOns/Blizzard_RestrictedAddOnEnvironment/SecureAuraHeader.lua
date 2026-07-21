@@ -68,12 +68,18 @@ function SecureAuraHeader_OnHide(self)
 end
 
 function SecureAuraHeader_OnUpdate(self)
-	local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo();
+	local hasMainHandEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_MAINHAND) ~= nil);
+	local hasOffHandEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_OFFHAND) ~= nil);
+	local hasRangedEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_RANGED) ~= nil);
+
 	if ( hasMainHandEnchant ~= self:GetAttribute("_mainEnchanted") ) then
 		self:SetAttribute("_mainEnchanted", hasMainHandEnchant);
 	end
 	if ( hasOffHandEnchant ~= self:GetAttribute("_secondaryEnchanted") ) then
 		self:SetAttribute("_secondaryEnchanted", hasOffHandEnchant);
+	end
+	if ( hasRangedEnchant ~= self:GetAttribute("_rangedEnchanted") ) then
+		self:SetAttribute("_rangedEnchanted", hasRangedEnchant);
 	end
 end
 
@@ -215,9 +221,11 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		end
 	end
 	if ( weaponPosition ) then
-		local hasMainHandEnchant, _, _, _, hasOffHandEnchant, _, _, _, hasRangedEnchant = GetWeaponEnchantInfo();
+		local hasMainHandEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_MAINHAND) ~= nil);
+		local hasOffHandEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_OFFHAND) ~= nil);
+		local hasRangedEnchant = (C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_RANGED) ~= nil);
 
-		for weapon=2,1,-1 do
+		for weapon=3,1,-1 do
 			local weaponAttr = "tempEnchant"..weapon
 			local tempEnchant = self:GetAttribute(weaponAttr)
 			if ( (select(weapon, hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant)) ) then

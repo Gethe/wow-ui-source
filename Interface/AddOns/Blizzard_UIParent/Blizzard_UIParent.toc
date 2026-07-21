@@ -1,5 +1,3 @@
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: game
-
+## Title: Blizzard_UIParent
+## Dep: Blizzard_SharedXMLBase
 UIParent.lua

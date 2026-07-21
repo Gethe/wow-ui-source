@@ -95,6 +95,9 @@
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.ShareCodeLabel" x="10" y="10"/>
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
 					</DropdownButton>
 				</Frames>
 				<Scripts>
@@ -114,6 +117,14 @@
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>
 					</Frame>
+					<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="10" y="10"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+					</DropdownButton>
 					<Button parentKey="ImportButton" inherits="UIPanelDynamicResizeButtonTemplate" text="HOUSING_BLUEPRINT_IMPORT_VALIDATION_IMPORT_BUTTON" motionScriptsWhileDisabled="true">
 						<Size x ="152" y="28"/>
 						<KeyValues>

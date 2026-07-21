@@ -7,9 +7,6 @@
 Mainline\SocialUITemplates.lua
 Mainline\SocialUITemplates.xml
 
-Mainline\RecruitAFriendFrame.lua
-Mainline\RecruitAFriendFrame.xml
-
 Mainline\SocialUI.lua
 Mainline\SocialUI.xml
 

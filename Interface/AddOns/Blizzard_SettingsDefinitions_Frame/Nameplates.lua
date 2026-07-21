@@ -820,6 +820,52 @@ local function Register()
 		initializer.OnHide = OnDropdownHidden;
 	end
 
+	-- Nameplate Class Colors
+	if (NameplatesOverrides.ShowClassColorSetting()) then
+		-- Just using local constants here (as opposed to a full enum) since "friendly" and "enemy" are two separate CVars under the hood.
+		local CLASS_COLOR_NONE = 0;
+		local CLASS_COLOR_FRIENDLY = 1;
+		local CLASS_COLOR_ENEMY = 2;
+		local CLASS_COLOR_FRIENDLY_ENEMY = bit.bor(CLASS_COLOR_FRIENDLY, CLASS_COLOR_ENEMY);
+		local defaultValue = bit.bor(GetCVarDefault("nameplateShowFriendlyClassColor"), GetCVarDefault("nameplateShowClassColor"));
+
+		local function GetValue()
+			local friendlyClassColors = GetCVarBool("nameplateShowFriendlyClassColor");
+			local enemyClassColors = GetCVarBool("nameplateShowClassColor");
+
+			if (friendlyClassColors and enemyClassColors) then
+				return CLASS_COLOR_FRIENDLY_ENEMY;
+			elseif (friendlyClassColors) then
+				return CLASS_COLOR_FRIENDLY;
+			elseif (enemyClassColors) then
+				return CLASS_COLOR_ENEMY;
+			else
+				return CLASS_COLOR_NONE;
+			end
+		end
+
+		local function SetValue(mask)
+			local friendlyClassColorsValue = bit.band(mask, CLASS_COLOR_FRIENDLY) ~= 0;
+			local enemyClassColorsValue = bit.band(mask, CLASS_COLOR_ENEMY) ~= 0;
+
+			SetCVar("nameplateShowFriendlyClassColor", friendlyClassColorsValue);
+			SetCVar("nameplateShowClassColor", enemyClassColorsValue);
+		end
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:AddCheckbox(1, UNIT_NAMEPLATES_CLASS_COLOR_FRIENDLY, UNIT_NAMEPLATES_CLASS_COLOR_FRIENDLY_TOOLTIP);
+			container:AddCheckbox(2, UNIT_NAMEPLATES_CLASS_COLOR_ENEMY, UNIT_NAMEPLATES_CLASS_COLOR_ENEMY_TOOLTIP);
+			return container:GetData();
+		end
+
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CLASS_COLOR", Settings.VarType.Number, UNIT_NAMEPLATES_CLASS_COLOR, defaultValue, GetValue, SetValue);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_CLASS_COLOR_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_CLASS_COLOR_NONE);
+		initializer.OnHide = OnDropdownHidden;
+	end
+
 	NameplatesOverrides.AdjustNameplateSettings(category);
 end
 

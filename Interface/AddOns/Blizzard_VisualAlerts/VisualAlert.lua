@@ -53,6 +53,12 @@ function VisualAlertMixin:GetAnchors()
 	return nil;
 end
 
+function VisualAlertMixin:GetAnchorScale()
+	local target = self:GetAlertTarget();
+	local scale = target and target:GetVisualAlertAnchorScale() or 1;
+	return scale;
+end
+
 function VisualAlertMixin:AnchorAlertInternal(...)
 	self:ClearAllPoints();
 

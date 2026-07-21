@@ -199,6 +199,7 @@ end
 function GameDialogMixin:SetupInsertedFrame(insertedFrame)
 	if insertedFrame then
 		insertedFrame:SetParent(self);
+		insertedFrame:Show();
 	end
 end
 

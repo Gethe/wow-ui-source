@@ -49,9 +49,9 @@ local PingConstants =
 		{
 			Name = "PingSubjectType",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Attack", Type = "PingSubjectType", EnumValue = 0 },
@@ -63,6 +63,7 @@ local PingConstants =
 				{ Name = "ActionReady", Type = "PingSubjectType", EnumValue = 6 },
 				{ Name = "ActionOnCooldown", Type = "PingSubjectType", EnumValue = 7 },
 				{ Name = "ActionUnavailable", Type = "PingSubjectType", EnumValue = 8 },
+				{ Name = "ActionNotReady", Type = "PingSubjectType", EnumValue = 9 },
 			},
 		},
 		{

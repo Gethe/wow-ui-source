@@ -7,6 +7,19 @@ local FrameAPITooltip =
 	Functions =
 	{
 		{
+			Name = "AddFontStrings",
+			Type = "Function",
+			CheckAllowChangeParent = true,
+			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "leftFontString", Aspect = Enum.ForbiddenAspect.RemoveSecretAspects }, { Argument = "rightFontString", Aspect = Enum.ForbiddenAspect.RemoveSecretAspects } },
+
+			Arguments =
+			{
+				{ Name = "leftFontString", Type = "SimpleFontString", Nilable = false },
+				{ Name = "rightFontString", Type = "SimpleFontString", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearPadding",
 			Type = "Function",
 			Documentation = { "Set all padding values to 0.0 and remove the Padding SecretAspect." },
