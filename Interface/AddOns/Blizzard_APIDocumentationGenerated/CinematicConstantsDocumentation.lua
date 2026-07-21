@@ -17,6 +17,9 @@ local CinematicConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CinematicConstants);

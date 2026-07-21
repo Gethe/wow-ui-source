@@ -2,6 +2,7 @@ local ZoneScript =
 {
 	Name = "ZoneScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -62,6 +63,9 @@ local ZoneScript =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

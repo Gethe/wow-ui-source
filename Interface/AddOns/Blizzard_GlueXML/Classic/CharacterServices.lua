@@ -75,7 +75,7 @@ local defaultProfessions = {
 };
 
 StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
-	text = BLIZZARD_STORE_INTERNAL_ERROR,
+	text = "",
 	button1 = OKAY,
 	escapeHides = true,
 };
@@ -484,7 +484,7 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 		end
 	end
 
-	if isExpansionTrialCharacter and CanUpgradeExpansion() then
+	if isExpansionTrialCharacter and CanUpgradeToCurrentExpansion() then
 		return false;
 	elseif isTrialBoost then
 		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then

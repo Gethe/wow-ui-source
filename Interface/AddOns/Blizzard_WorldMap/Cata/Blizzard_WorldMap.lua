@@ -3,6 +3,7 @@ WorldMapMixin = {};
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
 		self.MiniBorderFrame:Hide();
+		self:SetFrameStrata("FULLSCREEN");
 
 		self.WorldMapLevelDropDown:ClearAllPoints();
 
@@ -35,15 +36,9 @@ function WorldMapMixin:SynchronizeDisplayState()
 		MaximizeUIPanel(self);
 	else
 		self.MiniBorderFrame:Show();
-		self:SetMovable("true");
-
-		WorldMapFrame:ClearAllPoints();
+		self:SetFrameStrata("MEDIUM");
 		self.WorldMapLevelDropDown:ClearAllPoints();
-		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
-		WorldMapFrame:SetUserPlaced(true);
-
 		WorldMapFrame_SetOpacity(GetCVar("worldMapOpacity"));
-
 		self:SetSize(self.minimizedWidth, self.minimizedHeight);
 		
 		self.BlackoutFrame:Hide();
@@ -115,7 +110,7 @@ function WorldMapMixin:IsMaximized()
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "top", allowOtherPanels = 1 };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = -16, yoffset = 10, whileDead = 1, minYOffset = 0, maximizePoint = "top", allowOtherPanels = 0 };
 
 	MapCanvasMixin.OnLoad(self);
 	self:SetupMinimizeMaximizeButton();
@@ -212,7 +207,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		self:AddDataProvider(CreateFromMixins(QuestBlobDataProviderMixin));
 	end
-	--self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
 	--self:AddDataProvider(CreateFromMixins(VignetteDataProviderMixin));
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
@@ -253,7 +248,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GARRISON_PLOT");
 	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
-	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO_BLOB");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DIG_SITE");
@@ -270,7 +265,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
 	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
 	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
-	--pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
@@ -395,7 +390,6 @@ end
 
 function WorldMapMixin:AttachQuestLog()
 	QuestMapFrame:SetParent(self);
-	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
 	QuestMapFrame:SetPoint("TOPRIGHT", -34, -64);
 	QuestMapFrame:SetPoint("BOTTOMRIGHT", -34, 26);

@@ -169,9 +169,7 @@
 				</Scripts>
 			</Frame>
 			<Button name="$parentClass">
-				<Size>
-					<AbsDimension x="50" y="8"/>
-				</Size>
+				<Size x="50" y="8"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
@@ -198,15 +196,9 @@
 					</OnLeave>
 				</Scripts>
 				<ButtonText parentKey="text">
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
+					<Size x="50" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
@@ -484,15 +476,9 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar" hidden="true">
-							<Size>
-								<AbsDimension x="70" y="16"/>
-							</Size>
+							<Size x="70" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
 						</Texture>
@@ -506,13 +492,31 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								RaidPulloutButton_OnLoad(self);
+							</OnLoad>
+							<OnEnter>
+								if ( self.unit ) then
+									UnitFrame_UpdateTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel()+2);
 					</OnLoad>
-					<OnValueChanged>
-						--UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
 							local pulloutFrame = self:GetParent():GetParent();
@@ -578,9 +582,7 @@
 						<Texture file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
 							<Size x="70" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="-1" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
 						</Texture>
@@ -610,9 +612,6 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnValueChanged>
-						--UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp>
@@ -722,9 +721,7 @@
 				</KeyValues>
 			</Frame>
 		</Frames>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-13" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="0" top="-13" bottom="0"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -761,19 +758,13 @@
 		</Scripts>
 	</Button>
 	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
-		<Size>
-			<AbsDimension x="90" y="21"/>
-		</Size>
+		<Size x="90" y="21"/>
 		<Anchors>
-			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				DoReadyCheck();
+				C_PartyInfo.DoReadyCheck();
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>

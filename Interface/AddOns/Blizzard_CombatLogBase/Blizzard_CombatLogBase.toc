@@ -1,0 +1,10 @@
+## Title: Blizzard_CombatLogBase
+## Dependencies: Blizzard_SharedXMLBase
+## LoadOnDemand: 1
+
+Shared\CombatLogFilters.lua
+[Family]\CombatLogConstants.lua
+Vanilla\CombatLogColors.lua             [AllowLoadGameType vanilla, tbc]
+Wrath\CombatLogColors.lua               [AllowLoadGameType wrath, cata, mists]
+Mainline\CombatLogColors.lua            [AllowLoadGameType mainline]
+CombatLogUtil.lua

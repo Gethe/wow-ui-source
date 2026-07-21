@@ -3,6 +3,7 @@ local Cursor =
 	Name = "Cursor",
 	Type = "System",
 	Namespace = "C_Cursor",
+	Environment = "All",
 
 	Functions =
 	{
@@ -24,11 +25,13 @@ local Cursor =
 			Name = "BattlePetCursorClear",
 			Type = "Event",
 			LiteralName = "BATTLE_PET_CURSOR_CLEAR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CursorChanged",
 			Type = "Event",
 			LiteralName = "CURSOR_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isDefault", Type = "bool", Nilable = false },
@@ -41,10 +44,14 @@ local Cursor =
 			Name = "MountCursorClear",
 			Type = "Event",
 			LiteralName = "MOUNT_CURSOR_CLEAR",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

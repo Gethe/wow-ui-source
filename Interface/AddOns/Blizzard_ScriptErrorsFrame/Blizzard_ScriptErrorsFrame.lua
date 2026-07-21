@@ -37,7 +37,7 @@ function ScriptErrorsFrameMixin:OnLoad()
 	self.index = 0;
 	self.errorData = {};
 	self.seen = {};
-	self.messageCount = 0;
+	self.messageCounter = CreateCounter();
 	self.messageLimit = 1000;
 
 	AddLuaErrorHandler(function(errorMessage, stack, locals)
@@ -88,43 +88,86 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(message, messageType, sta
 	end
 
 	stack = stack or "";
+	locals = locals or "<none>";
 
 	local messageKey = string.format("%s\n%s", message, stack);
-	local index = self.seen[messageKey];
+
+	-- If the message key has been formatted with a secret value then we need
+	-- to disable duplicate key matching. This prevents two issues:
+	--
+	--  1. Tainted code that throws a fully secret error message would trigger
+	--     a Lua error when indexing 'seen' with a secret value.
+	--  2. Untainted code that throws a fully secret error message would brick
+	--     the ability for tainted code to throw _any_ error through here as
+	--     the 'seen' table gets marked as irrevocably forbidden due to secret
+	--     keys.
+
+	local isMessageKeyMatchingAllowed = not issecretvalue(messageKey);
+	local index;
+
+	if isMessageKeyMatchingAllowed then
+		index = self.seen[messageKey];
+	end
+
 	if index then
-		local errorData = self.errorData[index];
+		local errorData = self:GetErrorData(index);
 		errorData.count = errorData.count + 1;
 	else
-		local errorData = 
-		{
-			count = 1,
-			message = message,
-			messageType = messageType,
-			time = date(),
-			stack = stack,
-			locals = locals,
-		};
-		table.insert(self.errorData, errorData);
+		index = self:AddErrorData(messageType, message, stack, locals);
 
-		index = #self.errorData;
-		self.seen[messageKey] = index;
+		if isMessageKeyMatchingAllowed then
+			self.seen[messageKey] = index;
+		end
 
 		PrintToDebugWindow(message);
 	end
 
 	if not self:IsShown() and not ShouldHideErrorFrame("scriptErrors") then
-		self.index = index;
+		self:SetDisplayedIndex(index);
 		self:Show();
 	else
 		self:Update();
 	end
 
 	-- Show a warning if there are too many messages/errors, same handler each time
-	self.messageCount = self.messageCount + 1;
-
-	if self.messageCount >= ExcessiveMessageLimit then
+	if self.messageCounter() >= ExcessiveMessageLimit then
 		OnExcessiveErrors();
 	end
+end
+
+local function PackageAndAddError(errors, messageType, message, stack, locals)
+	-- Message, stack, and local data should be decimal escaped here as we
+	-- need to support cases where Lua values dumped in those strings may
+	-- contain control characters or byte sequences rejected by EditBoxes
+	-- for display (such that the error reporter shows no text at all).
+	local errorData = {
+		count = 1,
+		message = C_StringUtil.EscapeDecimalNonPrintables(message),
+		messageType = messageType,
+		time = date(),
+		stack = C_StringUtil.EscapeDecimalNonPrintables(stack),
+		locals = C_StringUtil.EscapeDecimalNonPrintables(locals),
+	};
+
+	table.insert(errors, errorData);
+	return #errors;
+end
+
+local PackageAndAddErrorDelegate = CreateSecureDelegate(PackageAndAddError);
+
+function ScriptErrorsFrameMixin:AddErrorData(messageType, message, stack, locals)
+	-- The goal here is to package the incoming message and append it to the
+	-- error data table even if we're being invoked from tainted code. This
+	-- requires a local secure delegate as opposed to a secure mixin method
+	-- as secure mixin methods presently drop their ability to "elevate"
+	-- to an untainted state if any input parameter is secret from a tainted
+	-- context.
+
+	return PackageAndAddErrorDelegate(self.errorData, messageType, message, stack, locals);
+end
+
+function ScriptErrorsFrameMixin:GetErrorData(index)
+	return self.errorData[index];
 end
 
 function ScriptErrorsFrameMixin:GetEditBox()
@@ -133,10 +176,11 @@ end
 
 function ScriptErrorsFrameMixin:Update()
 	local editBox = self:GetEditBox();
-	local index = self.index;
-	if not index or not self.errorData[index] then
-		self.index = #self.errorData;
-		index = self.index;
+	local index = self:GetDisplayedIndex();
+	local errorData = self:GetErrorData(index);
+	if not index or not errorData then
+		self:SetDisplayedIndex(self:GetCount());
+		return;  -- Prior call will trigger an update.
 	end
 
 	if index == 0 then
@@ -145,13 +189,12 @@ function ScriptErrorsFrameMixin:Update()
 		return;
 	end
 
-	local errorData = self.errorData[index];
 	local messageType = errorData.messageType;
 	local text;
 	if messageType == WarningMessageType then
 		text = WARNING_FORMAT:format(errorData.message, errorData.time, errorData.count);
 	elseif messageType == ErrorMessageType then
-		text = ERROR_FORMAT:format(errorData.message, errorData.time, errorData.count, errorData.stack, errorData.locals or "<none>");
+		text = ERROR_FORMAT:format(errorData.message, errorData.time, errorData.count, errorData.stack, errorData.locals);
 	end
 
 	local parent = editBox:GetParent();
@@ -176,7 +219,7 @@ local function GetNavigationButtonEnabledStates(count, index)
 end
 
 function ScriptErrorsFrameMixin:UpdateButtons()
-	local index = self.index;
+	local index = self:GetDisplayedIndex();
 	local numErrors = self:GetCount();
 
 	local canNavigateToPrevious, canNavigateToNext = GetNavigationButtonEnabledStates(numErrors, index);
@@ -190,9 +233,22 @@ function ScriptErrorsFrameMixin:GetCount()
 	return #self.errorData;
 end
 
+function ScriptErrorsFrameMixin:GetDisplayedIndex()
+	return self.index;
+end
+
+function ScriptErrorsFrameMixin:SetDisplayedIndex(index)
+	if self.index ~= index then
+		self.index = index;
+
+		if self:IsShown() then
+			self:Update();
+		end
+	end
+end
+
 function ScriptErrorsFrameMixin:ChangeDisplayedIndex(delta)
-	self.index = Wrap(self.index + delta, self:GetCount());
-	self:Update();
+	self:SetDisplayedIndex(Wrap(self:GetDisplayedIndex() + delta, self:GetCount()));
 end
 
 function ScriptErrorsFrameMixin:ShowPrevious()
@@ -201,4 +257,20 @@ end
 
 function ScriptErrorsFrameMixin:ShowNext()
 	self:ChangeDisplayedIndex(1);
+end
+
+-- Some methods on the error frame need to be promoted to secure mixin methods
+-- to act as untainted delegates when dealing with errors from tainted code.
+--
+-- Any method that accepts no parameters or simple scalar values should be 
+-- safe to elevate.
+
+ScriptErrorsFrameSecureMixin = {};
+
+function ScriptErrorsFrameSecureMixin:SetDisplayedIndex(index)
+	ScriptErrorsFrameMixin.SetDisplayedIndex(self, index);
+end
+
+function ScriptErrorsFrameSecureMixin:Update()
+	ScriptErrorsFrameMixin.Update(self);
 end

@@ -1,29 +1,48 @@
 local frameDummy = CreateFrame("Frame");
 local frameFactory = CreateFrameFactory();
 
-local AttributeDelegate = CreateFrame("Frame");
-local CallProtectedFunctionsAttribute = "call-protected-functions";
-
 local function PoolReset(pool, region, new)
-	Pool_HideAndClearAnchors(pool, region);
+	region:SetToDefaults();
+
+	-- The anchors were already cleared in SetToDefaults(), so we only need to hide the frame.
+	region:Hide();
 
 	if not new then
-		-- The region requires a parent to avoid being leaked on client shutdown.
+		-- Set to dummy parent to avoid it remaining on screen when unused.
 		region:SetParent(frameDummy);
+	end
+end
+
+local function TemplatePoolReset(pool, region, new, template)
+	PoolReset(pool, region, new);
+
+	-- SetToDefaults() will set the frame's size to 0,0. We can't avoid calling SetToDefaults(),
+	-- so we need to restore the template to it's design size. There are other characteristics
+	-- of the frame that may have been defined in the XML that are different after calling
+	-- SetToDefaults(). We will need to fix that in the future.
+	local cache = frameFactory:GetTemplateInfoCache();
+	local templateInfo = cache:GetTemplateInfo(template);
+	local width, height = templateInfo.width, templateInfo.height;
+	if width ~= 0 and height ~= 0 then
+		region:SetSize(width, height);
 	end
 end
 
 local texturePool = CreateTexturePool(frameDummy, "ARTWORK", 7, nil, PoolReset);
 local fontStringPool = CreateFontStringPool(frameDummy, "ARTWORK", 7, nil, PoolReset);
 
-local function FrameFactoryCreate(compositor, parent, frameType)
-	local frame, new = frameFactory:Create(parent, frameType, PoolReset);
+local function AcquireFrame(compositor, parent, frameTypeOrTemplate, resetFunc)
+	local frame, new = frameFactory:Create(parent, frameTypeOrTemplate, resetFunc);
 	table.insert(compositor.attachments, frame);
 
+	-- Parent reattachment is necessary as the frame may have been reparented in previous use.
 	frame:SetParent(parent);
+	-- If the parent is already the same, we have to set the frame strata manually, otherwise
+	-- SetParent returns immediately without making this change.
+	frame:SetFrameStrata(parent:GetFrameStrata());
 	frame:Show();
 
-	return frame, new;
+	return frame;
 end
 
 --[[
@@ -31,34 +50,17 @@ Note that these default functions are going to be deleted and replaced with a si
 reset/default function once it's available.
 ]]
 local function SetRegionToDefaults(region)
-	region:SetSize(1,1);
-	region:SetAlpha(1);
+	region:SetToDefaults();
 
-	region:SetScript("OnMouseDown", nil);
-	region:SetScript("OnMouseUp", nil);
-	region:SetScript("OnMouseWheel", nil);
-	region:SetScript("OnEnter", nil);
-	region:SetScript("OnLeave", nil);
+	-- SetToDefaults() changes the size of the region to 0,0. Assign non-zero dimensions
+	-- to the region so it is not treated as having an invalid rect in various measurement processes.
+	region:SetSize(1,1);
 end
 
 local function SetTextureToDefaults(texture)
 	SetRegionToDefaults(texture);
 
-	texture:SetTexture(nil);
-	texture:SetHorizTile(false);
-	texture:SetVertTile(false);
-	texture:SetTexCoord(0,1,0,1);
-	texture:SetVertexColor(1,1,1,1);
-
-	for index = 1, 4 do
-		texture:SetVertexOffset(index,0,0);
-	end
-
-	texture:SetAtlas(nil);
-	texture:SetBlendMode("BLEND");
 	texture:SetDrawLayer("ARTWORK");
-	texture:SetDesaturation(0);
-	texture:ClearTextureSlice();
 end
 
 local function SetFontStringToDefaults(fontString)
@@ -74,52 +76,20 @@ end
 
 local function SetFrameToDefaults(frame)
 	SetRegionToDefaults(frame);
-
-	AttributeDelegate:SetAttribute(CallProtectedFunctionsAttribute, frame);
-
-	frame:SetScript("OnLoad", nil);
-	frame:SetScript("OnShow", nil);
-	frame:SetScript("OnHide", nil);
-	frame:SetScript("OnUpdate", nil);
-	frame:SetScript("OnEvent", nil);
-	frame:SetScript("OnSizeChanged", nil);
-	frame:SetScript("OnDragStart", nil);
-	frame:SetScript("OnDragStop", nil);
-	frame:SetScript("OnReceiveDrag", nil);
 end
 
 local function SetButtonToDefaults(button)
 	SetFrameToDefaults(button);
-
-	button:RegisterForClicks("LeftButtonUp");
-
-	button:SetScript("OnClick", nil);
-	button:SetScript("OnDoubleClick", nil);
-	button:SetScript("OnEnable", nil);
-	button:SetScript("OnDisable", nil);
 end
 
 local function SetCheckButtonToDefaults(checkButton)
 	SetButtonToDefaults(checkButton);
-
-	local force = true;
-	checkButton:SetChecked(false, force);
 end
 
 local function SetStatusBarToDefaults(statusBar)
 	SetFrameToDefaults(statusBar);
 
-	statusBar:SetFillStyle("STANDARD");
-	statusBar:SetOrientation("HORIZONTAL");
-	statusBar:SetReverseFill(false);
-	statusBar:SetRotatesTexture(false);
 	statusBar:SetColorFill(1,1,1,1);
-	statusBar:SetStatusBarColor(1,1,1,1);
-	statusBar:SetStatusBarDesaturation(0);
-	statusBar:SetStatusBarDesaturated(false);
-	statusBar:SetStatusBarTexture("");
-	statusBar:SetMinMaxValues(0,0);
-	statusBar:SetValue(0);
 end
 
 local function SetEditBoxToDefaults(editBox)
@@ -128,11 +98,6 @@ local function SetEditBoxToDefaults(editBox)
 	editBox:SetFontObject("GameFontHighlight");
 	editBox:SetTextColor(1,1,1,1);
 	editBox:SetWidth(150);
-	editBox:SetJustifyH("LEFT");
-	editBox:SetJustifyV("MIDDLE");
-	editBox:SetText("");
-	editBox:SetAutoFocus(false);
-	editBox:ClearFocus();
 end
 
 local originalMetatables = {};
@@ -425,19 +390,26 @@ function CompositorMixin:AttachFontString(parent)
 end
 
 function CompositorMixin:AttachFrame(parent, frameType)
-	local frame = FrameFactoryCreate(self, parent, frameType);
+	local frame = AcquireFrame(self, parent, frameType, PoolReset);
 	Configure(self, frame, parent);
 	return frame;
 end
 
 --[[
-Attaching a template will not be accompanied by any default configuration and metatable
-changes. It's the callsite's responsibility to fully initialize the returned frame with 
-the assumption that is has been changed by it's previous user.
+Attaching does not attempt to Configure() the acquired frame or make any metatable
+changes. It's the callsite's responsibility to fully initialize the frame under the
+assumption that is has been changed by its previous user. This will remain true until
+we've implemented a means of restoring a frame back to the state defined by the XML.
 ]]--
 function CompositorMixin:AttachTemplate(parent, template)
-	local frame = FrameFactoryCreate(self, parent, template);
-	return frame;
+	-- We need to capture the template here so that after the SetToDefaults() call
+	-- we can restore the size defined in the template info. There are other characteristics
+	-- of the frame that may have been defined in the XML that are different after calling
+	-- SetToDefaults(). We will need to fix that in the future.
+	local function Reset(pool, region, new)
+		TemplatePoolReset(pool, region, new, template);
+	end
+	return AcquireFrame(self, parent, template, Reset);
 end
 
 local function ReleaseAttachments(compositor)
@@ -487,21 +459,3 @@ function CreateCompositor(target)
 	tbl:Init(target);
 	return tbl;
 end
-
--- These functions need to only be called from the attribute handler to be successful
--- in insecure contexts where a protection is in effect. These functions should 
--- only ever return the frame to its initial state at creation.
-local function CallProtectedFunctions(frame)
-	frame:SetPropagateKeyboardInput(false);
-	frame:SetPropagateMouseMotion(false);
-	frame:SetPropagateMouseClicks(false);
-end
-
-function AttributeDelegate:OnAttributeChanged(name, value)
-	if name == CallProtectedFunctionsAttribute then
-		CallProtectedFunctions(value);
-	end
-end
-
-AttributeDelegate:SetScript("OnAttributeChanged", AttributeDelegate.OnAttributeChanged);
-AttributeDelegate:SetForbidden();

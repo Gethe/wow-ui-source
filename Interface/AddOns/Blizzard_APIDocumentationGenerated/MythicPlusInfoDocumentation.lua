@@ -3,6 +3,7 @@ local MythicPlusInfo =
 	Name = "MythicPlusInfo",
 	Type = "System",
 	Namespace = "C_MythicPlus",
+	Environment = "All",
 
 	Functions =
 	{
@@ -218,7 +219,7 @@ local MythicPlusInfo =
 			{
 				{ Name = "durationSec", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "completionDate", Type = "CalendarTime", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
 				{ Name = "dungeonScore", Type = "number", Nilable = false },
@@ -265,11 +266,13 @@ local MythicPlusInfo =
 			Name = "MythicPlusCurrentAffixUpdate",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MythicPlusNewWeeklyRecord",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_NEW_WEEKLY_RECORD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
@@ -288,7 +291,7 @@ local MythicPlusInfo =
 			{
 				{ Name = "durationSec", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "completionDate", Type = "CalendarTime", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
 				{ Name = "dungeonScore", Type = "number", Nilable = false },
@@ -337,7 +340,7 @@ local MythicPlusInfo =
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "runScore", Type = "number", Nilable = false },
 				{ Name = "durationSec", Type = "number", Nilable = false },
-				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "completionDate", Type = "CalendarTime", Nilable = false },
 				{ Name = "season", Type = "number", Nilable = false },
 			},
 		},
@@ -351,6 +354,9 @@ local MythicPlusInfo =
 				{ Name = "medal", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

@@ -1,4 +1,6 @@
 
+UIPanelWindows["TaxiFrame"] = { area = "left", pushable = 0, width = 605, height = 580, showFailedFunc = CloseTaxiMap };
+
 TAXI_MAP_WIDTH = 580;
 TAXI_MAP_HEIGHT = 580;
 NUM_TAXI_BUTTONS = 0;
@@ -153,7 +155,7 @@ function TaxiNodeOnButtonEnter(button)
 	end
 	
 	if ( type == "REACHABLE" ) then
-		SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
+		GameTooltip_AddMoneyLine(GameTooltip, TaxiNodeCost(button:GetID()));
 
 		-- Show the path to this node
 		if ( numRoutes > NUM_TAXI_ROUTES ) then

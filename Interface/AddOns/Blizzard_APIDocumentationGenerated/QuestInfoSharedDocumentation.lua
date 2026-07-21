@@ -43,6 +43,9 @@ local QuestInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestInfoShared);

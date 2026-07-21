@@ -3,6 +3,7 @@ local WorldLootObject =
 	Name = "WorldLootObject",
 	Type = "System",
 	Namespace = "C_WorldLootObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -13,6 +14,9 @@ local WorldLootObject =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

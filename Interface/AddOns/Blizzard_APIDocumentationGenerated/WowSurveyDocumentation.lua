@@ -3,6 +3,7 @@ local WowSurvey =
 	Name = "WowSurvey",
 	Type = "System",
 	Namespace = "C_WowSurvey",
+	Environment = "All",
 
 	Functions =
 	{
@@ -28,10 +29,14 @@ local WowSurvey =
 			Name = "SurveyDelivered",
 			Type = "Event",
 			LiteralName = "SURVEY_DELIVERED",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

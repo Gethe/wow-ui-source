@@ -95,8 +95,7 @@ local function MergeFunctions(elementDescription)
 	return elementDescription;
 end
 
-function MenuUtil.ShowTooltip(owner, func, ...)
-	local tooltip = GetAppropriateTooltip();
+function MenuUtil.ShowTooltipEx(owner, tooltip, func, ...)
 	tooltip:SetOwner(owner, "ANCHOR_RIGHT");
 
 	local window = owner:GetWindow();
@@ -106,8 +105,7 @@ function MenuUtil.ShowTooltip(owner, func, ...)
 	tooltip:Show();
 end
 
-function MenuUtil.HideTooltip(owner)
-	local tooltip = GetAppropriateTooltip();
+function MenuUtil.HideTooltipEx(owner, tooltip)
 	if tooltip:GetOwner() == owner then
 		tooltip:Hide();
 	end
@@ -231,6 +229,15 @@ function MenuUtil.CreateRadio(text, isSelected, setSelected, data)
 	return ConfigureTextButton(text, elementDescription);
 end
 
+-- looks good with WowStyle2DropdownTemplate, immitates the Settings menu
+function MenuUtil.CreateHighlightRadio(text, isSelected, setSelected, data, onEnter)
+	--assert(type(text) == "string");
+	--assert(type(isSelected) == "function");
+	--assert(type(setSelected) == "function");
+	local elementDescription = MenuTemplates.CreateHighlightRadio(text, isSelected, setSelected, data, onEnter);
+	return ConfigureTextButton(text, elementDescription);
+end
+
 function MenuUtil.CreateColorSwatch(text, callback, colorInfo)
 	--assert(type(text) == "string");
 	--assert(type(callback) == "function");
@@ -254,6 +261,7 @@ MenuUtilPrivate.Inserters =
 	CreateTitle = MenuUtil.CreateTitle,
 	CreateCheckbox = MenuUtil.CreateCheckbox,
 	CreateRadio = MenuUtil.CreateRadio,
+	CreateHighlightRadio = MenuUtil.CreateHighlightRadio,
 	CreateDivider = MenuUtil.CreateDivider,
 	CreateSpacer = MenuUtil.CreateSpacer,
 	CreateColorSwatch = MenuUtil.CreateColorSwatch,
@@ -270,7 +278,8 @@ end
 
 local function SetTooltip(elementDescription, initializer)
 	elementDescription:SetOnEnter(function(frame)
-		MenuUtil.ShowTooltip(frame, initializer or DefaultTooltipInitializer, elementDescription);
+		local func = initializer or DefaultTooltipInitializer;
+		MenuUtil.ShowTooltipEx(frame, elementDescription:GetTooltipFrame(), func, elementDescription);
 	end);
 end
 
@@ -281,7 +290,7 @@ end
 
 local function SetTitleAndTextTooltip(elementDescription, tooltipTitle, tooltipText)
 	elementDescription:SetOnEnter(function(frame)
-		MenuUtil.ShowTooltip(frame, TitleAndTextTooltipInitializer, tooltipTitle, tooltipText);
+		MenuUtil.ShowTooltipEx(frame, elementDescription:GetTooltipFrame(), TitleAndTextTooltipInitializer, tooltipTitle, tooltipText);
 	end);
 end
 

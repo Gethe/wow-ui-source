@@ -2,6 +2,7 @@ local BagIndexConstants =
 {
 	Name = "BagIndexConstants",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -46,6 +47,9 @@ local BagIndexConstants =
 				{ Name = "AccountBankTab_5", Type = "BagIndex", EnumValue = 17 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

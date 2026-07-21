@@ -20,6 +20,8 @@ GLUE_SECONDARY_SCREENS = {
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 GENERIC_DISCONNECTED_ERROR_CODE = 319;
 
+CHAR_MODEL_GLOW_DEFAULT = 0.3;
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -59,11 +61,17 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
-	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
-	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
+	self:RegisterEvent("KIOSK_ENABLED");
 
 	OnDisplaySizeChanged(self);
+
+	--[[
+	This is only expected to evaluate true when reloading the UI. Avoid removing this,
+	otherwise every reference to Kiosk addon frames and API will require a load check.
+	]]--
+	if Kiosk.IsEnabled() then
+		C_AddOns.LoadAddOn("Blizzard_Kiosk");
+	end
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -88,10 +96,9 @@ function GlueParent_OnEvent(self, event, ...)
 		if not StoreFrame_IsShown() then
 			StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
-	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
-		GlueParent_SetScreen("kioskmodesplash");
-	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
-		StaticPopup_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
+	elseif (event == "KIOSK_ENABLED") then
+		C_AddOns.LoadAddOn("Blizzard_Kiosk");
+		StaticPopup_Show("KIOSK_ENABLED");
 	end
 end
 
@@ -230,6 +237,8 @@ function GlueParent_UpdateDialogs()
 		else
 			StaticPopup_Show("OKAY", localizedString);
 		end
+
+		EventRegistry:TriggerEvent("GlueParent.OnLoginError");
 
 		C_Login.ClearLastError();
 	elseif (  waitingForRealmList ) then
@@ -435,6 +444,7 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 
 	model:SetModel(background, true);
+	model:SetUseGBuffer(true);
 	model:SetCamera(0);
 	model:SetSequence(0);
 end
@@ -443,19 +453,26 @@ local function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
 	model:ClearFog();
-	model:SetGlow(0.3);
+	model:SetGlow(CHAR_MODEL_GLOW_DEFAULT);
 
-    model:ResetLights();
+	model:ResetLights();
 end
 
 local function UpdateLighting(model)
 	-- TODO: Remove this and CHAR_MODEL_FOG_INFO and bake fog into models as desired.
-    local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
-    if fogData then
-    	model:SetFogNear(0);
-    	model:SetFogFar(fogData.far);
-    	model:SetFogColor(fogData.r, fogData.g, fogData.b);
-    end
+	local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
+	if fogData then
+		model:SetFogNear(0);
+		model:SetFogFar(fogData.far);
+		model:SetFogColor(fogData.r, fogData.g, fogData.b);
+	end
+
+	local glowInfo = CHAR_MODEL_GLOW_INFO[GetCurrentGlueTag()];
+	if ( glowInfo ) then
+		model:SetGlow(glowInfo);
+	else
+		model:SetGlow(CHAR_MODEL_GLOW_DEFAULT);
+	end
 end
 
 local glueScreenTags =
@@ -661,7 +678,9 @@ function SetBackgroundModel(model, path)
 	PlayGlueAmbienceFromTag();
 
 	ResetLighting(model);
-	UpdateLighting(model);
+	if (model ~= CharacterCreate or CHAR_CREATE_USES_MODEL_FOG) then
+		UpdateLighting(model);
+	end
 
 	-- In 1.12, the Character Create screen shows fog but the Character Select screen doesn't.
 	-- (CCharacterSelection::SetBackgroundModel() sets the lighing back to GenericLightingCallback)
@@ -703,7 +722,7 @@ function HideUIPanel(self)
 end
 
 function IsKioskGlueEnabled()
-	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
+	return Kiosk.IsEnabled() and not Kiosk.IsCompetitiveModeEnabled();
 end
 
 function UpgradeAccount()

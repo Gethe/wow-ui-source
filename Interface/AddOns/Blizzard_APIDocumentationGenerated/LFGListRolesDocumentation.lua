@@ -3,6 +3,7 @@ local LFGListRoles =
 	Name = "LFGListRoles",
 	Type = "System",
 	Namespace = "C_LFGListRoles",
+	Environment = "All",
 
 	Functions =
 	{
@@ -49,10 +50,14 @@ local LFGListRoles =
 			Name = "LfgListRoleUpdate",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ROLE_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

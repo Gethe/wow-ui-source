@@ -75,7 +75,7 @@ function CommunitiesGuildNews_Update(self)
 	end
 	
 	local dataProvider = CreateDataProvider();
-	local motd = GetGuildRosterMOTD();
+	local motd = C_GuildInfo.GetMOTD();
 	if motd ~= "" then
 		dataProvider:Insert({motd=motd});
 	end
@@ -208,7 +208,7 @@ function CommunitiesGuildNewsButton_OnEnter(self)
 		if ( self.text:IsTruncated() ) then
 			CommunitiesGuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(GUILD_MOTD_LABEL);
-			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, true);
+			GameTooltip:AddLine(C_GuildInfo.GetMOTD(), 1, 1, 1, true);
 			GameTooltip:Show();
 		end
 	end
@@ -231,6 +231,10 @@ end
 
 function CommunitiesGuildNewsButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
+		if not self.newsInfo then
+			return;
+		end
+
 		-- we don't have any options for these combinations
 		local newsType = self.newsInfo.newsType;
 		if (newsType == NEWS_DUNGEON_ENCOUNTER) or (newsType == NEWS_GUILD_LEVEL) or (newsType == NEWS_GUILD_CREATE) and (not CanEditMOTD()) then
@@ -250,7 +254,7 @@ function CommunitiesGuildNewsButton_OnClick(self, button)
 			elseif IsLootNews(newsType) then
 				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
 					-- whatText has the hyperlink text
-					ChatEdit_LinkItem(self.newsInfo.newsDataID, self.newsInfo.whatText);
+					ChatFrameUtil.LinkItem(self.newsInfo.newsDataID, self.newsInfo.whatText);
 				end);
 			end
 

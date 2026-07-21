@@ -360,72 +360,6 @@
 		</Scripts>
 	</Button>
 
-	<Button name="UIPanelButtonUserScaledTemplate" inherits="UIPanelButtonTemplate, UserScaledFrameTemplate" virtual="true">
-		<NormalFont style="UserScaledFontGameNormal"/>
-		<DisabledFont style="UserScaledFontGameDisable"/>
-		<HighlightFont style="UserScaledFontGameHighlight"/>
-	</Button>
-
-	<!--A super simple standard button that will widen on load to fit its text if its
-	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
-	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad function="DynamicResizeButton_Resize" inherit="append"/>
-		</Scripts>
-	</Button>
-
-	<CheckButton name="UIRadioButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="5" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<NormalTexture file="Interface\Buttons\UI-RadioButton">
-			<TexCoords left="0" right="0.25" top="0" bottom="1"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
-			<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
-		</HighlightTexture>
-		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
-			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
-		</CheckedTexture>
-	</CheckButton>
-
-	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-	</CheckButton>
-
-	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
-					</Anchors>
-					<Scripts>
-						<OnLoad function="UICheckButtonFontString_SetParentKeyAlias"/>
-					</Scripts>
-				</FontString>
-			</Layer>
-		</Layers>
-	</CheckButton>
-
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
@@ -527,6 +461,15 @@
 						<Anchor point="TOPLEFT" x="-6" y="8" />
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CHARACTERFRAME\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.portrait" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="portrait"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" inherits="UI-Frame-Portrait">
@@ -1026,177 +969,6 @@
 		</ThumbTexture>
 	</Slider>
 
-	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
-		<Size x="31" y="20"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-5" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
-					<Size x="10" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="IncrementButton">
-				<Size x="23" y="22"/>
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnMouseDown>
-						if self:IsEnabled() then
-							self:GetParent():StartIncrement();
-						end
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():EndIncrement();
-					</OnMouseUp>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-
-			<Button parentKey="DecrementButton">
-				<Size x="23" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnMouseDown>
-						if self:IsEnabled() then
-							self:GetParent():StartDecrement();
-						end
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():EndDecrement();
-					</OnMouseUp>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-
-			<Frame parentKey="MouseWheelCatcher" enableMouse="true" useParentLevel="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DecrementButton" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IncrementButton" />
-				</Anchors>
-				<Scripts>
-					<OnMouseWheel>
-						if self:GetParent():IsEnabled() then
-							local amount = IsShiftKeyDown() and 10 or 1;
-							if delta > 0 then
-								self:GetParent():Increment(amount);
-							else
-								self:GetParent():Decrement(amount);
-							end
-							self:GetParent():ClearFocus();
-						end
-					</OnMouseWheel>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
-			<OnTextChanged method="OnTextChanged" />
-		</Scripts>
-		<FontString inherits="ChatFontNormal"/>
-	</EditBox>
-	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
-		<!--KeyValues>
-			Optional
-			<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
-			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
-		</KeyValues-->
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
-					<Color r="0.35" g="0.35" b="0.35"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnTextChanged function="InputBoxInstructions_OnTextChanged"/>
-			<OnDisable function="InputBoxInstructions_OnDisable"/>
-			<OnEnable function="InputBoxInstructions_OnEnable"/>
-		</Scripts>
-		<FontString inherits="GameFontHighlightSmall"/>
-	</EditBox>
-
-	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
-		<KeyValues>
-			<KeyValue key="instructionText" value="SEARCH" type="global"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
-					<Size x="14" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" x="0" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentClearButton" parentKey="clearButton" mixin="ClearButtonMixin" hidden="true">
-				<Size x="17" y="17"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="-3" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
-							<Size>
-								<AbsDimension x="17" y="17"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter method="OnEnter" />
-					<OnLeave method="OnLeave" />
-					<OnMouseDown method="OnMouseDown" />
-					<OnMouseUp method="OnMouseUp" />
-					<OnClick method="OnClick"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad function="SearchBoxTemplate_OnLoad"/>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
-			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
-			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
-		</Scripts>		
-	</EditBox>
-
 	<Button name="TabButtonTemplate" virtual="true">
 		<Size>
             <AbsDimension x="115" y="32"/>
@@ -1424,119 +1196,6 @@
 *******************************************************************************
 -->
 	<Frame name="NineSlicePanelTemplate" inherits="NineSliceCodeTemplate" frameLevel="500" setAllPoints="true" virtual="true"/>
-
-	<Frame name="DialogBorderNoCenterTemplate" useParentLevel="true" inherits="NineSlicePanelTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutType" value="Dialog" type="string"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="DialogBorderTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<!-- TODO: Convert this to atlas -->
-				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background" horizTile="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-7"/>
-						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="DialogBorderDarkTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<!-- TODO: Convert this to atlas -->
-				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" horizTile="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-7"/>
-						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="DialogBorderTranslucentTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-7"/>
-						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="DialogBorderOpaqueTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-7"/>
-						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-<!--
-*******************************************************************************
-	Dialog Header Template
-
-	Header used for dialogs
-*******************************************************************************
--->
-	<Frame name="DialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
-		<Size x="200" y="39"/>
-		<KeyValues>
-			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
-			<KeyValue key="headerTextPadding" value="64" type="number"/>
-
-			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
-			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
-		</KeyValues>
-		<Anchors>
-			<Anchor point="TOP" y="11" />
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="LeftBG" atlas="UI-Frame-DiamondMetal-Header-CornerLeft" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="32" y="39"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightBG" atlas="UI-Frame-DiamondMetal-Header-CornerRight" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="32" y="39"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="CenterBG" atlas="_UI-Frame-DiamondMetal-Header-Tile" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LeftBG" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBG" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOP" y="-13"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
 
 	<Frame name="FlatPanelBackgroundTemplate" virtual="true">
 		<Layers>
@@ -1951,23 +1610,6 @@
 		</Scripts>
 	</Frame>
 
-	<EditBox name="NumericInputBoxTemplate" mixin="NumericInputBoxMixin" inherits="InputBoxTemplate" numeric="true" virtual="true">
-		<KeyValues>
-			<!--
-			valueChangedCallback: a function that takes two arguments, the numeric value of the edit box, and a boolean for whether
-										it was set by user input (as opposed to set by script). Called whenever the value changes
-			valueFinalizedCallback: a function that takes the numeric value of the edit box when the focus is cleared (i.e. enter pressed).
-			-->
-			<KeyValue key="valueChangedCallback" value="nop" type="global"/>
-			<KeyValue key="valueFinalizedCallback" value="nop" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnTextChanged method="OnTextChanged"/>
-			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost method="OnEditFocusLost"/>
-		</Scripts>
-	</EditBox>
-
 	<Frame name="SliderAndEditControlTemplate" mixin="SliderAndEditControlMixin" inherits="ResizeLayoutFrame" virtual="true">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="12" type="number"/>
@@ -2262,39 +1904,6 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-
-	<EditBox name="LevelRangeEditBoxTemplate" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
-		<Size x="28" y="16"/>
-	</EditBox>
-
-	<Frame name="LevelRangeFrameTemplate" mixin="LevelRangeFrameMixin" virtual="true">
-		<Size x="80" y="22"/>
-		<Frames>
-			<EditBox parentKey="MinLevel" inherits="LevelRangeEditBoxTemplate">
-				<Anchors>
-					<Anchor point="LEFT" x="8" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</EditBox>
-			<EditBox parentKey="MaxLevel" inherits="LevelRangeEditBoxTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</EditBox>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
-	</Frame>
 	
 	<Frame name="BottomPopupScrollBoxTemplate" frameStrata="DIALOG" virtual="true">
 		<Size x="600" y="400"/>

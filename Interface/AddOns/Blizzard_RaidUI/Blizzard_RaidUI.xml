@@ -33,9 +33,6 @@
 			<OnLoad>
 				RaidClassButton_OnLoad(self);
 			</OnLoad>
-			<OnDragStart>
-				--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
-			</OnDragStart>
 			<OnDragStop>
 				--Do not pass self here. We want to stop the currently moving frame and not the class frame (which isn't actually moving)
 				RaidPulloutStopMoving();
@@ -148,10 +145,10 @@
 					<OnEnter>
 						-- Sets the Master Looter Tooltip
 						if ( self:GetParent().loot ) then
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
 						else
-						GameTooltip:Hide();
+							GameTooltip:Hide();
 						end
 					</OnEnter>
 				</Scripts>
@@ -168,9 +165,7 @@
 				</Scripts>
 			</Frame>
 			<Button name="$parentClass">
-				<Size>
-					<AbsDimension x="50" y="8"/>
-				</Size>
+				<Size x="50" y="8"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
@@ -197,15 +192,9 @@
 					</OnLeave>
 				</Scripts>
 				<ButtonText parentKey="text">
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
+					<Size x="50" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
@@ -401,14 +390,6 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<!--
-				<Texture name="$parentThreatIndicator" file="Interface\RaidFrame\UI-RaidFrame-Threat" hidden="false">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-2" y="-5"/>
-					</Anchors>
-				</Texture>
-				-->
 				<Texture name="$parentVehicleIndicator" file="Interface\Vehicles\UI-Vehicles-Raid-Icon" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
@@ -421,7 +402,7 @@
 			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" propagateMouseInput="Clicks">
 				<Size x="51" y="5"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-12"/>
+					<Anchor point="TOP" x="0" y="-12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -435,7 +416,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.859375" top="0" bottom="0.21875"/>
+							<TexCoords left="0" right="0.75" top="0" bottom="0.21875"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -445,7 +426,7 @@
 							UnitFrameHealthBar_OnValueChanged(self, value);
 						end
 					</OnValueChanged>
-					</Scripts>
+				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
@@ -465,7 +446,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.859375" top="0.21875" bottom="0.4375"/>
+							<TexCoords left="0" right="0.75" top="0.21875" bottom="0.4375"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -492,13 +473,31 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								RaidPulloutButton_OnLoad(self);
+							</OnLoad>
+							<OnEnter>
+								if ( self.unit ) then
+									UnitFrame_UpdateTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel()+2);
 					</OnLoad>
-					<OnValueChanged>
-						--UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
 							local pulloutFrame = self:GetParent():GetParent();
@@ -583,9 +582,6 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnValueChanged>
-						--UnitFrameHealthBar_OnValueChanged(self, value);
-					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp>
@@ -700,9 +696,7 @@
 				</KeyValues>
 			</Frame>
 		</Frames>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-13" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="0" top="-13" bottom="0"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -739,19 +733,13 @@
 		</Scripts>
 	</Button>
 	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
-		<Size>
-			<AbsDimension x="90" y="21"/>
-		</Size>
+		<Size x="90" y="21"/>
 		<Anchors>
-			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				DoReadyCheck();
+				C_PartyInfo.DoReadyCheck();
 			</OnClick>
 		</Scripts>
 		<NormalFont style="GameFontNormalSmall"/>

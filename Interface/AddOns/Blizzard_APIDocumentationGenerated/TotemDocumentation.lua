@@ -2,6 +2,7 @@ local Totem =
 {
 	Name = "Totem",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,15 @@ local Totem =
 			Arguments =
 			{
 				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumTotemSlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numSlots", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -26,6 +36,20 @@ local Totem =
 			Returns =
 			{
 				{ Name = "cannotDismiss", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTotemDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -94,6 +118,9 @@ local Totem =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

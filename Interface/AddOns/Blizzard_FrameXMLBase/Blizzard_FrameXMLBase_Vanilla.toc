@@ -4,11 +4,13 @@
 ## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
 ## AllowLoad: Game
 ## AllowLoadGameType: vanilla
-Classic\IconDataProvider.lua
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
 AnimatedStatusBar.xml
 FlowContainer.lua
 Classic\FrameLocks.lua
+GradualAnimatedStatusBar.xml
 PlayerMovementFrameFader.lua
 Classic\Constants.lua
 Shared\Constants.lua

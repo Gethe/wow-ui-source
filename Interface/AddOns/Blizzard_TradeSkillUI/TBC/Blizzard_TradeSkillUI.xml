@@ -40,101 +40,65 @@
 		</Scripts>
 	</Button>
 	<Frame name="TradeSkillFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
+		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="34" top="0" bottom="75"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="TradeSkillFramePortrait">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture name="TradeSkillFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\TradeSkillFrame\UI-TradeSkill-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<FontString name="TradeSkillFrameTitleText" inherits="GameFontNormal" text="Trade Skills">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="TradeSkillFrame" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="TradeSkillFrame" relativePoint="TOP" x="0" y="-17"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="TradeSkillHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-					<Size>
-						<AbsDimension x="256" y="16"/>
-					</Size>
+					<Size x="256" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-221"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="15" y="-221"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-					<Size>
-						<AbsDimension x="75" y="16"/>
-					</Size>
+					<Size x="75" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="TradeSkillHorizontalBarLeft" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="TradeSkillHorizontalBarLeft" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
 				</Texture>
@@ -143,15 +107,9 @@
 		<Frames>
 
 			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" frameLevel="100" inherits="UICheckButtonTemplate" >
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="70" y="-50"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="70" y="-50"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -164,53 +122,82 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HitRectInsets>
 					<AbsInset left="0" right="-75" top="0" bottom="0"/>
 				</HitRectInsets>
 			</CheckButton>
 
+			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+				<Size x="268" y="15"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="73" y="-37"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" x="6" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Size x="128" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentSkillName" relativePoint="RIGHT" x="13" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentBorder">
+						<Size x="281" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" x="-5" y="0"/>
+						</Anchors>
+						<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder" />
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("SKILL_LINES_CHANGED");
+					</OnLoad>
+					<OnEvent>
+						TradeSkillFrame_Update(self:GetParent());
+					</OnEvent>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="0.25" g="0.25" b="0.75" />
+			</StatusBar>
 
 			<EditBox name="TradeSearchInputBox" autoFocus="false">
-				<Size>
-					<AbsDimension x="128" y="20"/>
-				</Size>
+				<Size x="128" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-45" y="-50"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-45" y="-50"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-5" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="0" y="20"/>
-							</Size>
+							<Size x="0" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
@@ -223,138 +210,46 @@
 					<OnShow>
 						self:SetText(SEARCH);
 					</OnShow>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						TradeSkillFilter_OnTextChanged(self);
-					</OnTextChanged>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="TradeSkillFilter_OnTextChanged"/>
 					<OnEditFocusLost>
 						self:HighlightText(0, 0);
 						if ( self:GetText() == "" ) then
-						self:SetText(SEARCH);
+							self:SetText(SEARCH);
 						end
 					</OnEditFocusLost>
 					<OnEditFocusGained>
 						self:HighlightText();
 						if ( self:GetText() == SEARCH ) then
-						self:SetText("");
+							self:SetText("");
 						end
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
 
-
-			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
-				<Size>
-					<AbsDimension x="268" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="73" y="-37"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="6" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="128" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentSkillName" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="13" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BACKGROUND">
-							<Texture name="$parentBackground">
-								<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
-							</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentBorder">
-						<Size>
-							<AbsDimension x="281" y="32"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="-5" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder" />
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:RegisterEvent("SKILL_LINES_CHANGED");
-					</OnLoad>
-					<OnEvent>
-						if ( event == "SKILL_LINES_CHANGED" ) then
-							TradeSkillFrame_Update(self);
-						end
-					</OnEvent>
-				</Scripts>
-				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
-				<BarColor r="0.25" g="0.25" b="0.75" />
-			</StatusBar>
 			<Frame name="TradeSkillExpandButtonFrame">
-				<Size>
-					<AbsDimension x="54" y="32"/>
-				</Size>
+				<Size x="54" y="32"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="15" y="-71"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="15" y="-71"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="TradeSkillExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
-							<Size>
-								<AbsDimension x="8" y="32"/>
-							</Size>
+							<Size x="8" y="32"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
 						<Texture name="TradeSkillExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
-							<Size>
-								<AbsDimension x="38" y="32"/>
-							</Size>
+							<Size x="38" y="32"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="TradeSkillExpandTabLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="TradeSkillExpandTabLeft" relativePoint="RIGHT" x="0" y="6"/>
 							</Anchors>
 						</Texture>
 						<Texture name="TradeSkillExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
-							<Size>
-								<AbsDimension x="8" y="32"/>
-							</Size>
+							<Size x="8" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="TradeSkillExpandTabMiddle" relativePoint="RIGHT"/>
 							</Anchors>
@@ -363,50 +258,32 @@
 				</Layers>
 				<Frames>
 					<Button name="TradeSkillCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
-						<Size>
-							<AbsDimension x="40" y="22"/>
-						</Size>
+						<Size x="40" y="22"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="TradeSkillExpandTabLeft" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="3"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="TradeSkillExpandTabLeft" relativePoint="RIGHT" x="0" y="3"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName()):SetText(ALL);
+								_G[self:GetName()]:SetText(ALL);
 							</OnLoad>
-							<OnClick>
-								TradeSkillCollapseAllButton_OnClick(self);
-							</OnClick>
+							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
 			<DropdownButton parentKey="InvSlotDropdown" name="TradeSkillInvSlotDropdown" inherits="WowStyle1DropdownTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="-66"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-45" y="-66"/>
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="SubClassDropdown" name="TradeSkillSubClassDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropdown" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropdown" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</DropdownButton>
 
 			<Frame name="TradeSkillHighlightFrame" hidden="true">
-				<Size>
-					<AbsDimension x="293" y="16"/>
-				</Size>
+				<Size x="293" y="16"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -418,232 +295,131 @@
 			</Frame>
 			<Button name="TradeSkillSkill1" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillFrame">
-						<Offset>
-							<AbsDimension x="22" y="-96"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillFrame" x="22" y="-96"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill2" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill3" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill4" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill5" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill6" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill5" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill7" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill6" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="TradeSkillSkill8" inherits="TradeSkillSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill7" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillSkill7" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<ScrollFrame name="TradeSkillListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="296" y="130"/>
-				</Size>
+				<Size x="296" y="130"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-67" y="-96"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrame" relativePoint="TOPRIGHT" x="-67" y="-96"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, (function() TradeSkillFrame_Update(self:GetParent()) end));
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
 			<ScrollFrame name="TradeSkillDetailScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="297" y="176"/>
-				</Size>
+				<Size x="297" y="176"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="20" y="-234"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="20" y="-234"/>
 				</Anchors>
 				<ScrollChild>
 					<Frame name="TradeSkillDetailScrollChildFrame">
-						<Size>
-							<AbsDimension x="297" y="150"/>
-						</Size>
+						<Size x="297" y="150"/>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="TradeSkillSkillName" inherits="GameFontNormal" text="Skill Name" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="244" y="0"/>
-									</Size>
+									<Size x="244" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="50" y="-5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="50" y="-5"/>
 									</Anchors>
 								</FontString>
 								<FontString name="TradeSkillRequirementLabel" inherits="GameFontHighlightSmall" text="REQUIRES_LABEL">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillSkillName" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillSkillName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 								<FontString name="TradeSkillRequirementText" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="180" y="0"/>
-									</Size>
+									<Size x="180" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="TOPRIGHT" >
-											<Offset>
-												<AbsDimension x="4" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="TOPRIGHT" x="4" y="0"/>
 									</Anchors>
 								</FontString>
-							<!--
+								<!--
 								<FontString name="TradeSkillSkillLineName" inherits="GameFontHighlightSmall" text="Skill Line">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillSkillName" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillSkillName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 									</Anchors>
 								</FontString>
-							-->
+								-->
 								<FontString name="TradeSkillSkillCooldown" inherits="GameFontRedSmall">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 								<Texture name="TradeSkillDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
-									<Size>
-										<AbsDimension x="256" y="64"/>
-									</Size>
+									<Size x="256" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="3"/>
 									</Anchors>
 								</Texture>
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderRight">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillDetailHeaderLeft" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillDetailHeaderLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<FontString name="TradeSkillDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="290" y="0"/>
-									</Size>
+									<Size x="290" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="5" y="-50"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="5" y="-50"/>
 									</Anchors>
 								</FontString>
 								<FontString name="TradeSkillReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-10"/> <!--Re-anchored in code-->
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+										<!--Re-anchored in code-->
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="TradeSkillSkillIcon">
-								<Size>
-									<AbsDimension x="37" y="37"/>
-								</Size>
+								<Size x="37" y="37"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="8" y="-3"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="8" y="-3"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString name="TradeSkillSkillIconCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
 											<Anchors>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-5" y="2"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -651,100 +427,58 @@
 								<Scripts>
 									<OnLoad>
 										self.hasItem = 1;
-										self.UpdateTooltip = function (self)
-											if ( TradeSkillFrame.selectedSkill ~= 0 ) then
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
-												CursorUpdate(self);
-											end
-										end;
 									</OnLoad>
 									<OnClick>
 										HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 									</OnClick>
-									<OnEnter>
-										if ( TradeSkillFrame.selectedSkill ~= 0 ) then
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
-											CursorUpdate(self);
+									<OnEnter function="TradeSkillItem_OnEnter"/>
+									<OnLeave function="GameTooltip_HideResetCursor"/>
+									<OnUpdate>
+										if ( GameTooltip:IsOwned(self) ) then
+											TradeSkillItem_OnEnter(self);
 										end
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-										ResetCursor();
-									</OnLeave>
+										CursorOnUpdate(self);
+									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="TradeSkillReagent1" inherits="TradeSkillItemTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagentLabel" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-5" y="-3"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagentLabel" relativePoint="BOTTOMLEFT" x="-5" y="-3"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent2" inherits="TradeSkillItemTemplate" id="2">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="TradeSkillReagent1" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="TradeSkillReagent1" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent3" inherits="TradeSkillItemTemplate" id="3">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent1" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent4" inherits="TradeSkillItemTemplate" id="4">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="TradeSkillReagent3" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="TradeSkillReagent3" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent5" inherits="TradeSkillItemTemplate" id="5">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent3" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent6" inherits="TradeSkillItemTemplate" id="6">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="TradeSkillReagent5" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="TradeSkillReagent5" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent7" inherits="TradeSkillItemTemplate" id="7">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent6" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagent6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="TradeSkillReagent8" inherits="TradeSkillItemTemplate" id="8">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="TradeSkillReagent7" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="TradeSkillReagent7" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 							</Button>
 						</Frames>
@@ -752,69 +486,47 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<Button name="TradeSkillCreateButton" inherits="UIPanelButtonTemplate" text="CREATE">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="TradeSkillFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="224" y="-422"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="TradeSkillFrame" relativePoint="TOPLEFT" x="224" y="-422"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillInputBox:GetNumber());
-						TradeSkillInputBox:ClearFocus();
+						if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
+							DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillInputBox:GetNumber());
+							TradeSkillInputBox:ClearFocus();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="TradeSkillCancelButton" inherits="UIPanelButtonTemplate" text="EXIT">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="TradeSkillFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="305" y="-422"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="TradeSkillFrame" relativePoint="TOPLEFT" x="305" y="-422"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(TradeSkillFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="TradeSkillCreateAllButton" inherits="UIPanelButtonTemplate" text="CREATE_ALL">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TradeSkillCreateButton" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-86" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="TradeSkillCreateButton" relativePoint="LEFT" x="-86" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TradeSkillInputBox:SetNumber(TradeSkillFrame.numAvailable);
-						DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillFrame.numAvailable);
-						TradeSkillInputBox:ClearFocus();
+						if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
+							TradeSkillInputBox:SetNumber(TradeSkillFrame.numAvailable);
+							DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillFrame.numAvailable);
+							TradeSkillInputBox:ClearFocus();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="TradeSkillDecrementButton">
-				<Size>
-					<AbsDimension x="23" y="22"/>
-				</Size>
+				<Size x="23" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="TradeSkillCreateAllButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="TradeSkillCreateAllButton" relativePoint="RIGHT" x="3" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -828,48 +540,28 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<EditBox name="TradeSkillInputBox" letters="3" historyLines="0" numeric="true" autoFocus="false">
-				<Size>
-					<AbsDimension x="30" y="20"/>
-				</Size>
+				<Size x="30" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="TradeSkillDecrementButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="TradeSkillDecrementButton" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-5" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="10" y="20"/>
-							</Size>
+							<Size x="10" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
@@ -879,36 +571,22 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnTextChanged>
 						if ( self:GetText() == "0" ) then
 							self:SetText("1");
 						end
 					</OnTextChanged>
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 			<Button name="TradeSkillIncrementButton">
-				<Size>
-					<AbsDimension x="23" y="22"/>
-				</Size>
+				<Size x="23" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TradeSkillCreateButton" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-3" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="TradeSkillCreateButton" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -923,11 +601,7 @@
 			</Button>
 			<Button name="TradeSkillFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-29" y="-8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrame" relativePoint="TOPRIGHT" x="-29" y="-8"/>
 				</Anchors>
 			</Button>
 		</Frames>

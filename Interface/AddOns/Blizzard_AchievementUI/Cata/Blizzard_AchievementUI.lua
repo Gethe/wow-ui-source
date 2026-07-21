@@ -892,10 +892,10 @@ end
 
 function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
-		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 			local achievementLink = GetAchievementLink(self.id);
 			if ( achievementLink ) then
-				ChatEdit_InsertLink(achievementLink);
+				ChatFrameUtil.InsertLink(achievementLink);
 			end
 		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			AchievementButton_ToggleTracking(self.id);

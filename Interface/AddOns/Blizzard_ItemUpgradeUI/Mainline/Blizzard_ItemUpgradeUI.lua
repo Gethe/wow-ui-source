@@ -276,7 +276,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		self.upgradeAnimationsInProgress = false;
 
 		local checkUpgrade = (self.upgradeInfo.currUpgrade > 1) and self.upgradeInfo.currUpgrade or (self.upgradeInfo.currUpgrade + 1);
-		local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(checkUpgrade);
+		local currencyCostTable, itemCostTable, moneyCost = self:GetUpgradeCostTables(checkUpgrade);
 		if currencyCostTable or itemCostTable then
 			self.PlayerCurrencies:Clear();
 
@@ -290,6 +290,12 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 				for itemID, _ in pairs(itemCostTable) do
 					self.PlayerCurrencies:AddItem(itemID);
 				end
+			end
+
+			if moneyCost then
+				self.PlayerCurrencies:AddToLayout(self.PlayerCurrencies.MoneyCostFrame);
+			else
+				self.PlayerCurrencies.MoneyCostFrame:Hide();
 			end
 
 			self.PlayerCurrencies:Show();
@@ -310,7 +316,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 	local insufficientCosts = {};
 
-	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables();
+	local currencyCostTable, itemCostTable, moneyCost = self:GetUpgradeCostTables();
 	for currencyID, currencyCostEntry in pairs(currencyCostTable) do
 		local ownedCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
@@ -357,6 +363,26 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 		local _, playerOwnedIconFrameInstance = self.PlayerCurrencies:AddItem(itemID);
 		playerOwnedIconFrameInstance.costSourceString = seasonSourceString;
+	end
+
+	if moneyCost then
+		MoneyFrame_Update(self.UpgradeCostFrame.MoneyCostFrame, moneyCost.cost);
+
+		local function GetName() return BONUS_ROLL_REWARD_MONEY; end
+
+		local color = nil;
+		if moneyCost.cost > GetMoney() then
+			buttonDisabledState = true;
+			color = "red";
+			table.insert(insufficientCosts, { GetName = GetName });
+		end
+		SetMoneyFrameColor(self.UpgradeCostFrame.MoneyCostFrame, color);
+
+		self.UpgradeCostFrame:AddToLayout(self.UpgradeCostFrame.MoneyCostFrame);
+		self.PlayerCurrencies:AddToLayout(self.PlayerCurrencies.MoneyCostFrame);
+	else
+		self.UpgradeCostFrame.MoneyCostFrame:Hide();
+		self.PlayerCurrencies.MoneyCostFrame:Hide();
 	end
 
 	if #insufficientCosts > 0 then
@@ -479,6 +505,7 @@ end
 function ItemUpgradeMixin:CalculateTotalCostTable()
 	self.upgradeCurrencyCosts = {};
 	self.upgradeItemCosts = {};
+	self.upgradeMoneyCosts = {};
 
 	for _, upgradeLevelInfo in ipairs(self.upgradeInfo.upgradeLevelInfos) do
 		local previousRank = upgradeLevelInfo.upgradeLevel - 1;
@@ -510,13 +537,26 @@ function ItemUpgradeMixin:CalculateTotalCostTable()
 		end
 
 		self.upgradeItemCosts[upgradeLevelInfo.upgradeLevel] = levelItemCostTable;
+
+		if upgradeLevelInfo.moneyCost then
+			local levelMoneyCostTable;
+			if previousRank > self.upgradeInfo.currUpgrade and self.upgradeMoneyCosts[previousRank] then
+				levelMoneyCostTable = CopyTable(self.upgradeMoneyCosts[previousRank], true);
+			else
+				levelMoneyCostTable = {};
+			end
+
+			levelMoneyCostTable = self:GetTotalCostEntry(levelMoneyCostTable, {cost = upgradeLevelInfo.moneyCost});
+
+			self.upgradeMoneyCosts[upgradeLevelInfo.upgradeLevel] = levelMoneyCostTable;
+		end
 	end
 end
 
 function ItemUpgradeMixin:GetUpgradeCostTables(upgradeLevel)
 	upgradeLevel = upgradeLevel or self.targetUpgradeLevel;
 
-	return self.upgradeCurrencyCosts[upgradeLevel], self.upgradeItemCosts[upgradeLevel];
+	return self.upgradeCurrencyCosts[upgradeLevel], self.upgradeItemCosts[upgradeLevel], self.upgradeMoneyCosts[upgradeLevel];
 end
 
 function ItemUpgradeMixin:CheckUpgradeLevel(upgradeLevel)
@@ -524,7 +564,7 @@ function ItemUpgradeMixin:CheckUpgradeLevel(upgradeLevel)
 	local checkQuantity = (upgradeLevel ~= nil);
 	local hasEnoughCurrency = true;
 
-	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(upgradeLevel);
+	local currencyCostTable, itemCostTable, moneyCost = self:GetUpgradeCostTables(upgradeLevel);
 	for currencyID, currencyCostEntry in pairs(currencyCostTable) do
 		local hasEnough = true;
 		if checkQuantity then
@@ -559,6 +599,16 @@ function ItemUpgradeMixin:CheckUpgradeLevel(upgradeLevel)
 		end
 
 		table.insert(costStringTable, FormattingUtil.GetItemCostString(itemID, itemCostEntry.cost, colorCode));
+	end
+
+	if moneyCost then
+		local color = nil;
+		if checkQuantity and moneyCost.cost > GetMoney() then
+			color = RED_FONT_COLOR;
+			hasEnoughCurrency = false;
+		end
+
+		table.insert(costStringTable, GetMoneyString(moneyCost.cost, MoneyStringConstants.DontSeparateThousands, MoneyStringConstants.DontCheckGoldThreshold, MoneyStringConstants.ShowZeroAsLowerDenomination, color));
 	end
 
 	return hasEnoughCurrency, table.concat(costStringTable, " ");

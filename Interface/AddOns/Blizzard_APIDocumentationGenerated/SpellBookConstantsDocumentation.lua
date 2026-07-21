@@ -30,6 +30,9 @@ local SpellBookConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SpellBookConstants);

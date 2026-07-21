@@ -478,9 +478,9 @@ function PTR_IssueReporter.Reminder(enable, ...)
     if (not Blizzard_PTRIssueReporter_Saved.sawHighlight) then
         for k,v in pairs({...}) do
             if (enable) then
-                ActionButton_ShowOverlayGlow(v)
+                ActionButtonSpellAlertManager:ShowAlert(v)
             else
-                ActionButton_HideOverlayGlow(v)
+                ActionButtonSpellAlertManager:HideAlert(v)
             end
         end
         if (not enable) then
@@ -499,7 +499,7 @@ function PTR_IssueReporter.CreateIssueButton(name, icon, tooltip, func)
     PTR_IssueReporter.AddBorder(newbutton)
     newbutton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-        GameTooltip:SetText(name, 1, 1, 1, true);
+        GameTooltip:SetText(name, 1, 1, 1, 1, true);
         GameTooltip:AddLine(tooltip, nil, nil, nil, true);
         GameTooltip:SetMinimumWidth(100);
         GameTooltip:Show()
@@ -531,11 +531,13 @@ function PTR_IssueReporter.SetBugButtonContext(context, buttonTooltip, bugIcon)
             
             PTR_IssueReporter.ReportBug:SetScript("OnEnter", function(self)
                 GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-                GameTooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, true);
+                GameTooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, 1, true);
                 GameTooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
                 GameTooltip:SetMinimumWidth(100);
                 GameTooltip:Show()
-                ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
+				if not(C_Glue.IsOnGlueScreen()) then
+					ActionButtonSpellAlertManager:HideAlert(PTR_IssueReporter.ReportBug)
+				end
             end)
             
             if (context ~= PTR_IssueReporter.Data.DefaultBugButtonContext) then
@@ -647,7 +649,7 @@ end
 function PTR_IssueReporter.AddTooltip(frame, title, text, anchor, minWidth, owner, x, y)
     frame:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(owner or self, anchor or "ANCHOR_RIGHT", x or 0, y or 0);
-        GameTooltip:SetText(title, 1, 1, 1, true);
+        GameTooltip:SetText(title, 1, 1, 1, 1, true);
         GameTooltip:AddLine(text, nil, nil, nil, true);
         GameTooltip:SetMinimumWidth(minWidth or 100);
         GameTooltip:Show()
@@ -740,7 +742,7 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
         -- Check if we already added to this tooltip. Happens on the talent frame
         local found = false
         for i = 1,15 do
-            local frame = _G[tooltip:GetName() .. "TextLeft" .. i]
+            local frame = tooltip:GetLeftLine(i)
             local text
             if frame then text = frame:GetText() end
             if (text) then

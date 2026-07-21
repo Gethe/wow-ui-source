@@ -31,7 +31,7 @@ function MoneyInputFrame_GetCopper(moneyFrame)
 	local copper = _G[moneyFrame:GetName().."Copper"]:GetText();
 	local silver = _G[moneyFrame:GetName().."Silver"]:GetText();
 	local gold = _G[moneyFrame:GetName().."Gold"]:GetText();
-	
+
 	if ( copper ~= "" ) then
 		totalCopper = totalCopper + copper;
 	end
@@ -113,7 +113,7 @@ function MoneyInputFrame_OnTextChanged(self)
 			self.texture:SetAlpha(1);
 			self.label:SetAlpha(1);
 		end
-	end	
+	end
 	if ( moneyFrame.onValueChangedFunc ) then
 		moneyFrame.onValueChangedFunc();
 	end
@@ -127,7 +127,15 @@ function MoneyInputFrame_OnTextChanged(self)
 	end
 end
 
-function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
+function MoneyInputFrame_SetCompact(frame, width, expandOnDigits, smallDenominationWidth)
+	if smallDenominationWidth then
+		frame.silver:SetWidth(smallDenominationWidth);
+		frame.silver.baseWidth = smallDenominationWidth;
+
+		frame.copper:SetWidth(smallDenominationWidth);
+		frame.copper.baseWidth = smallDenominationWidth;
+	end
+
 	local goldFrame = frame.gold;
 	goldFrame.normalWidth = goldFrame:GetWidth();
 	goldFrame.minWidth = width;
@@ -194,7 +202,7 @@ function MoneyInputFrame_OnShow(moneyFrame)
 			moneyFrame.fixedCopper.texture:Show();
 			moneyFrame.fixedSilver.label:Hide();
 			moneyFrame.fixedCopper.label:Hide();
-		end		
+		end
 	end
 	if ( moneyFrame.goldOnly ) then
 		moneyFrame.copper.texture:Hide();

@@ -3,6 +3,7 @@ local LossOfControl =
 	Name = "LossOfControl",
 	Type = "System",
 	Namespace = "C_LossOfControl",
+	Environment = "All",
 
 	Functions =
 	{
@@ -58,6 +59,21 @@ local LossOfControl =
 				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetActiveLossOfControlDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -66,9 +82,10 @@ local LossOfControl =
 			Name = "LossOfControlAdded",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
@@ -76,6 +93,7 @@ local LossOfControl =
 			Name = "LossOfControlCommentatorAdded",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "victim", Type = "WOWGUID", Nilable = false },
@@ -86,6 +104,8 @@ local LossOfControl =
 			Name = "LossOfControlCommentatorUpdate",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "victim", Type = "WOWGUID", Nilable = false },
@@ -95,20 +115,24 @@ local LossOfControl =
 			Name = "LossOfControlUpdate",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerControlGained",
 			Type = "Event",
 			LiteralName = "PLAYER_CONTROL_GAINED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerControlLost",
 			Type = "Event",
 			LiteralName = "PLAYER_CONTROL_LOST",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -132,6 +156,9 @@ local LossOfControl =
 				{ Name = "auraInstanceID", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

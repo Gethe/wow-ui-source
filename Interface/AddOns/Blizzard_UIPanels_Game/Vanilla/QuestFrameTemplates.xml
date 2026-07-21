@@ -161,7 +161,7 @@
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") and self.spellID) then
-					ChatEdit_InsertLink(GetSpellLink(self.spellID));
+					ChatFrameUtil.InsertLink(GetSpellLink(self.spellID));
 				end
 			</OnClick>
 		</Scripts>

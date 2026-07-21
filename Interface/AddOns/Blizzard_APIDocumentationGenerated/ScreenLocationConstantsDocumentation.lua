@@ -25,6 +25,9 @@ local ScreenLocationConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ScreenLocationConstants);

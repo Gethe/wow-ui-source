@@ -36,7 +36,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="QuestFont_39" justifyH="CENTER" justifyV="TOP">
+						<FontString parentKey="Title" inherits="Game36Font_Shadow2" justifyH="CENTER" justifyV="TOP">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
 							</KeyValues>

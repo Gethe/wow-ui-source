@@ -3,4 +3,4 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## EscalateErrorDuringLoad: 1
-Blizzard_ScriptErrors.lua
+Blizzard_ScriptErrors.lua [AllowLoadEnvironment Global]

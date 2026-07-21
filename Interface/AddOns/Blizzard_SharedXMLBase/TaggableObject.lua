@@ -44,6 +44,10 @@ function TaggableObjectMixin:RemoveTag(tag)
 	end
 end
 
+function TaggableObjectMixin:RemoveAllTags()
+	self.tags = nil;
+end
+
 function TaggableObjectMixin:MatchesTag(tag)
 	if self.tags then
 		return TableHasTag(self.tags, tag);

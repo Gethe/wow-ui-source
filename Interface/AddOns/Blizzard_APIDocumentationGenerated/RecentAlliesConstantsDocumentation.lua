@@ -23,6 +23,9 @@ local RecentAlliesConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(RecentAlliesConstants);

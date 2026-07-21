@@ -213,32 +213,32 @@ end
 
 function UnitPopupLootPromoteButtonMixin:IsEnabled(contextData)
 	if not IsInGroup() then
-		return false; 
+		return false;
 	end
 
 	if not UnitIsGroupLeader("player") then
 		return false;
-end 
+	end
 
 	local lootMethod, partyIndex, raidIndex = C_PartyInfo.GetLootMethod();
 	if lootMethod ~= Enum.LootMethod.Masterlooter then
-		return false; 
+		return false;
 	end
 
-		local masterName = 0;
-	if partyMaster and (partyMaster == 0) then
-			masterName = "player";
-	elseif partyMaster then
-			masterName = "party"..partyMaster;
-	elseif raidMaster then
-			masterName = "raid"..raidMaster;
-		end
+	local masterLooterUnit;
+	if partyIndex and (partyIndex == 0) then
+		masterLooterUnit = "player";
+	elseif partyIndex then
+		masterLooterUnit = "party"..partyIndex;
+	elseif raidIndex then
+		masterLooterUnit = "raid"..raidIndex;
+	end
 
-	if contextData.unit and UnitIsUnit(contextData.unit, masterName) then
-			return false; 
-		end
+	if contextData.unit and masterLooterUnit and UnitIsUnit(contextData.unit, masterLooterUnit) then
+		return false;
+	end
 
-	return true; 
+	return true;
 end
 
 function UnitPopupLootPromoteButtonMixin:OnClick(contextData)
@@ -486,10 +486,6 @@ function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 
 	return supportedDifficultyEntries;
 end 
-
-function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
-	return false; 
-end
 
 function UnitPopupConvertToRaidButtonMixin:OnClick(contextData)
 	ConvertToRaid();

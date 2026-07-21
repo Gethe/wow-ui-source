@@ -198,9 +198,9 @@ local ItemConstants =
 		{
 			Name = "ItemClass",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Consumable", Type = "ItemClass", EnumValue = 0 },
@@ -223,6 +223,7 @@ local ItemConstants =
 				{ Name = "Battlepet", Type = "ItemClass", EnumValue = 17 },
 				{ Name = "WoWToken", Type = "ItemClass", EnumValue = 18 },
 				{ Name = "Profession", Type = "ItemClass", EnumValue = 19 },
+				{ Name = "Housing", Type = "ItemClass", EnumValue = 20 },
 			},
 		},
 		{
@@ -287,6 +288,22 @@ local ItemConstants =
 				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
 				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
 				{ Name = "Fiber", Type = "ItemGemColor", EnumValue = 1073741824 },
+			},
+		},
+		{
+			Name = "ItemHousingSubclass",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Decor", Type = "ItemHousingSubclass", EnumValue = 0 },
+				{ Name = "Dye", Type = "ItemHousingSubclass", EnumValue = 1 },
+				{ Name = "Room", Type = "ItemHousingSubclass", EnumValue = 2 },
+				{ Name = "RoomCustomization", Type = "ItemHousingSubclass", EnumValue = 3 },
+				{ Name = "ExteriorCustomization", Type = "ItemHousingSubclass", EnumValue = 4 },
+				{ Name = "ServiceItem", Type = "ItemHousingSubclass", EnumValue = 5 },
 			},
 		},
 		{
@@ -513,6 +530,21 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "SleevesGeoRange",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "SleevesGeoRange", EnumValue = 0 },
+				{ Name = "Default", Type = "SleevesGeoRange", EnumValue = 1 },
+				{ Name = "Flared", Type = "SleevesGeoRange", EnumValue = 2 },
+				{ Name = "Puffy", Type = "SleevesGeoRange", EnumValue = 3 },
+				{ Name = "PandaCollar", Type = "SleevesGeoRange", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "SlotRegion",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -657,9 +689,9 @@ local ItemConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = Bearclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = Catclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = Obsolete3 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = "Bearclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = "Catclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = "Obsolete3" },
 			},
 		},
 		{
@@ -668,8 +700,25 @@ local ItemConstants =
 			Values =
 			{
 				{ Name = "ITEM_WEAPON_SUBCLASS_NONE", Type = "ItemWeaponSubclass", Value = -1 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_IS2HWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_USES2HANDS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTWOHANDEDRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISMAINHANDWEAPON_NONRANGED_MASK", Type = "number", Value = 0 },
 			},
 		},
+		{
+			Name = "ITEM_WEAPON_SUBCLASSConstants_PreMists",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTITANSGRIPWEAPON_MASK", Type = "number", Value = 0 },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

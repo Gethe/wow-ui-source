@@ -2,6 +2,7 @@ local Performance =
 {
 	Name = "PerformanceScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -34,6 +35,16 @@ local Performance =
 			},
 		},
 		{
+			Name = "GetEventCPUUsage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "call_time", Type = "number", Nilable = false },
+				{ Name = "call_count", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFrameCPUUsage",
 			Type = "Function",
 
@@ -47,6 +58,25 @@ local Performance =
 			{
 				{ Name = "call_time", Type = "number", Nilable = false },
 				{ Name = "call_count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFunctionCPUUsage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "call_time", Type = "number", Nilable = false },
+				{ Name = "call_count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetScriptCPUUsage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -68,6 +98,9 @@ local Performance =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

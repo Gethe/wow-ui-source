@@ -2,6 +2,7 @@ local Instance =
 {
 	Name = "Instance",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -37,6 +38,20 @@ local Instance =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBaseDifficultyID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseDifficultyID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -97,6 +112,7 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -255,8 +271,12 @@ local Instance =
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

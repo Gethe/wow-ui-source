@@ -151,6 +151,22 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="FontStringScaleAnimationMode">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="FontSize"/>
+			<xs:enumeration value="Vertex"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="StatusBarFillStyle">
+		<xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="Standard"/>
+            <xs:enumeration value="StandardNoRangeFill"/>
+            <xs:enumeration value="Center"/>
+            <xs:enumeration value="Reverse"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="PROPAGATE_MOUSE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="Motion"/>
@@ -416,6 +432,7 @@
 		<xs:attribute name="fixedSize" type="xs:boolean" default="false"/>
 		<xs:attribute name="filter" type="xs:boolean" default="false"/>
 		<xs:attribute name="canBeUserScaled" type="xs:boolean" default="false"/>
+		<xs:attribute name="slug" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 	<xs:element name="Font" substitutionGroup="UiField">
@@ -466,9 +483,10 @@
 		<xs:attribute name="passThroughButtons" type="xs:string"/>
 		<xs:attribute name="protected" type="xs:boolean" default="false"/>
 		<xs:attribute name="secureReferenceKey" type="xs:string"/>
-    <xs:attribute name="retainClickThroughOverride" type="xs:boolean" default="false"/>
-    <xs:attribute name="propagateMouseInput" type="PROPAGATE_MOUSE"/>
-    <xs:attribute name="propagateMouseInputMask" type="PROPAGATE_MOUSE"/>
+		<xs:attribute name="retainClickThroughOverride" type="xs:boolean" default="false"/>
+		<xs:attribute name="propagateMouseInput" type="PROPAGATE_MOUSE"/>
+		<xs:attribute name="propagateMouseInputMask" type="PROPAGATE_MOUSE"/>
+		<xs:attribute name="preventSecretValues" type="xs:boolean" default="false"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="LayoutFrameType">
@@ -649,6 +667,8 @@
 				<xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
 				<xs:attribute name="ignoreParentScale" type="xs:boolean" default="false"/>
 				<xs:attribute name="degrees" type="xs:float" default="0"/>
+				<xs:attribute name="scaleAnimationMode" type="FontStringScaleAnimationMode" default="FontSize"/>
+				<xs:attribute name="smoothScaling" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -726,6 +746,7 @@
 		<xs:attribute name="frameBuffer" type="xs:boolean" default="false"/>
 		<xs:attribute name="jumpNavigateEnabled" type="xs:boolean" default="false"/>
 		<xs:attribute name="jumpNavigateStart" type="xs:string" default="false"/>
+		<xs:attribute name="ignoreChildrenForBounds" type="xs:boolean" default="false"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="FrameType">
@@ -873,6 +894,7 @@
 				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
 				<xs:attribute name="rotatesTexture" type="xs:boolean" default="false"/>
 				<xs:attribute name="reverseFill" type="xs:boolean" default="false"/>
+				<xs:attribute name="fillStyle" type="ui:StatusBarFillStyle" default="Standard"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1431,6 +1453,8 @@
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="mixin" type="xs:string"/>
+		<xs:attribute name="secureMixin" type="xs:string"/>
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="target" type="xs:string"/>

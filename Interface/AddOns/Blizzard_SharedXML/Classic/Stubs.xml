@@ -2,4 +2,6 @@
 ..\UI.xsd">
 	<!-- Remove if Classic ever has the Ping system in full. -->
 	<Frame name="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingTopLevelPassThroughAttributeTemplate" virtual="true"/>
+	<Frame name="PingableUnitFrameTemplate" virtual="true"/>
 </Ui>

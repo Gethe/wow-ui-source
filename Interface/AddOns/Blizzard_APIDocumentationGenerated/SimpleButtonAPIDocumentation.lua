@@ -2,6 +2,7 @@ local SimpleButtonAPI =
 {
 	Name = "SimpleButtonAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -455,6 +456,9 @@ local SimpleButtonAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

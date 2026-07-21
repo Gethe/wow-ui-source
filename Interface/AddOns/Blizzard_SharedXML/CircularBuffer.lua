@@ -22,34 +22,34 @@ end
 
 -- "public" functions
 function CircularBufferMixin:Clear()
-    self.headIndex = 0;
+    self.headIndex:SetValue(0);
     self.elements = {};
 end
 
 function CircularBufferMixin:SetMaxNumElements(maxElements)
-	if self.maxElements ~= maxElements then
+	if self.maxElements:GetValue() ~= maxElements then
 		local elements = {};
 		local elementsToCopy = math.min(maxElements, #self.elements);
 		for i = 1, elementsToCopy do
 			elements[i] = self:GetEntryAtIndex(elementsToCopy - i + 1);
 		end
 
-		self.maxElements = maxElements;
+		self.maxElements:SetValue(maxElements);
 		self:ReplaceElements(elements);
 	end
 end
 
 function CircularBufferMixin:GetMaxNumElements()
-    return self.maxElements;
+    return self.maxElements:GetValue();
 end
 
 function CircularBufferMixin:PushFront(element)
-    self.headIndex = self.headIndex + 1;
+    self.headIndex:Increment();
 
-	local insertIndex = self.headIndex;
+	local insertIndex = self.headIndex:GetValue();
     self.elements[insertIndex] = element;
 
-    self.headIndex = self.headIndex % self.maxElements;
+    self.headIndex:SetValue(insertIndex % self.maxElements:GetValue());
 
 	return insertIndex;
 end
@@ -57,7 +57,7 @@ end
 function CircularBufferMixin:PushBack(element) -- Won't overwrite front
 	if not self:IsFull() then
 		table.insert(self.elements, 1, element);
-		self.headIndex = (self.headIndex + 1) % self.maxElements;
+		self.headIndex:SetValue((self.headIndex:GetValue() + 1) % self.maxElements:GetValue());
 		return 1;
 	end
 	return nil;
@@ -157,13 +157,14 @@ end
 
 -- "private" functions
 function CircularBufferMixin:OnLoad(maxElements)
-    self.maxElements = maxElements;
+	self.headIndex = SecureTypes.CreateSecureNumber();
+    self.maxElements = SecureTypes.CreateSecureNumber(maxElements);
     self:Clear();
 end
 
 -- index 1 is front
 function CircularBufferMixin:CalculateElementIndex(index)
-	local globalIndex = self.headIndex - index + 1;
+	local globalIndex = self.headIndex:GetValue() - index + 1;
     return self:CalculateElementIndexFromGlobalIndex(globalIndex);
 end
 
@@ -178,9 +179,9 @@ end
 
 function CircularBufferMixin:ReplaceElements(elements)
 	if #elements == 0 then
-		self.headIndex = 0;
+		self.headIndex:SetValue(0);
 	else
-		self.headIndex = (#elements - 1) % self.maxElements + 1;
+		self.headIndex:SetValue((#elements - 1) % self.maxElements:GetValue() + 1);
 	end
 	self.elements = elements;
 end

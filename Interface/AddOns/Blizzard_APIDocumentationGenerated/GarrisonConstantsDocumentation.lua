@@ -3,6 +3,17 @@ local GarrisonConstants =
 	Tables =
 	{
 		{
+			Name = "ContributionAppearanceFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "TooltipUseTimeRemaining", Type = "ContributionAppearanceFlags", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "ContributionState",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -359,6 +370,9 @@ local GarrisonConstants =
 				{ Name = "UnavailableRequiresPrerequisiteTalent", Type = "GarrisonTalentAvailability", EnumValue = 8 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

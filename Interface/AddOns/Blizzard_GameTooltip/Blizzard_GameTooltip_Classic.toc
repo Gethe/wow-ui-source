@@ -4,5 +4,6 @@
 ## Dependencies: Blizzard_UIParent
 ## AllowLoadGameType: classic
 HealthBar.lua
+Shared\GameTooltipConstants.lua
 Classic\GameTooltip.lua
 Classic\GameTooltip.xml

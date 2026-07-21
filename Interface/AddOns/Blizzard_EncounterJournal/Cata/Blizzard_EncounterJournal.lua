@@ -234,7 +234,7 @@ end
 
 function EncounterJournal_OnLoad(self)
 	self:SetTitle(ENCOUNTER_JOURNAL);
-	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	self:SetPortraitToAsset("Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
@@ -1239,9 +1239,9 @@ function EncounterJournal_UpdateButtonState(self)
 end
 
 function EncounterJournal_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -2525,9 +2525,9 @@ function EncounterJournalBossButton_OnHide(self)
 end
 
 function EncounterJournalBossButton_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end

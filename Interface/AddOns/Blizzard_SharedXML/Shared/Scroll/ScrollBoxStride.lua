@@ -13,7 +13,7 @@ function ScrollBoxListStrideMixin:GetIdenticalStrideExtent()
 end
 
 function ScrollBoxListStrideMixin:GetExtentUntil(scrollBox, dataIndexEnd)
-	if dataIndex == 0 then
+	if dataIndexEnd == 0 then
 		return 0;
 	end
 

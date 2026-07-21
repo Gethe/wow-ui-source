@@ -8,11 +8,11 @@ QUESTINFO_FADE_IN = 1;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
-local QUEST_FRAME_MODEL_SCENE_ID = 865;
+QUEST_FRAME_MODEL_SCENE_ID = 865;
 
 local QUEST_FRAME_DIMENSIONS = {
 	[LE_EXPANSION_CLASSIC] = {['width'] = 384, ['height'] = 512},
-	[LE_EXPANSION_BURNING_CRUSADE] = {['width'] = 338, ['height'] = 496},
+	[LE_EXPANSION_BURNING_CRUSADE] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_CATACLYSM] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = {['width'] = 338, ['height'] = 496},
@@ -37,7 +37,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 
 	local dimensions = GetQuestFrameSize();
 	QuestFrame:SetSize(dimensions.width, dimensions.height);
@@ -102,7 +102,7 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestFrameGreetingPanel_OnShow(QuestFrameGreetingPanel);
 		end
 		return;
-	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+	elseif ( event == "LEARNED_SPELL_IN_SKILL_LINE" ) then
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
 			QuestDetailScrollFrameScrollBar:SetValue(0);
@@ -463,6 +463,20 @@ function QuestMoneyFrame_OnLoad(self)
 	MoneyFrame_SetType(self, "STATIC");
 end
 
+function QuestHonorFrame_Update(honorFrame, honor)
+	if (honorFrame and honor) then
+		_G[honorFrame.."HonorPoints"]:SetText(honor);
+		local factionGroup = UnitFactionGroup("player");
+		local icon = _G[honorFrame.."Icon"];
+		if ( factionGroup ) then
+			icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+			icon:Show();
+		else
+			icon:Hide();
+		end
+	end
+end
+
 function QuestFrameItems_Update(questState)
 	local isQuestLog = 0;
 	local questID;
@@ -501,7 +515,7 @@ function QuestFrameItems_Update(questState)
 			playerTitle = GetRewardTitle();
 		end
 	end
-	
+
 	if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
 		honor = honor / 100;
 	end
@@ -511,6 +525,7 @@ function QuestFrameItems_Update(questState)
 	local material = QuestFrame_GetMaterial();
 	local questItemReceiveText = _G[questState.."ItemReceiveText"];
 	local moneyFrame = _G[questState.."MoneyFrame"];
+	local previousMandatoryRewardFrame = nil; -- The previous mandatory reward. Used for anchoring the next one.
 
 	if ( totalRewards == 0 and money == 0 and honor == 0 and not playerTitle ) then
 		_G[questState.."RewardTitleText"]:Hide();
@@ -525,6 +540,7 @@ function QuestFrameItems_Update(questState)
 		moneyFrame:Show();
 		QuestFrame_SetAsLastShown(moneyFrame, spacerFrame);
 		MoneyFrame_Update(questState.."MoneyFrame", money);
+		previousMandatoryRewardFrame = questItemReceiveText;
 	end
 	if tbcAndBeyond then
 		local honorFrame = _G[questState.."HonorFrame"];
@@ -533,24 +549,20 @@ function QuestFrameItems_Update(questState)
 			honorFrame:Hide();
 		else
 			honorFrame:Show();
+			QuestFrame_SetTextColor(_G[questState.."HonorFrameHonorReceiveText"], material);
 			QuestHonorFrame_Update(questState.."HonorFrame", honor);
 			QuestFrame_SetAsLastShown(honorFrame, spacerFrame);
+			previousMandatoryRewardFrame = honorFrame;
 		end
 		if ( not playerTitle ) then
 			playerTitleFrame:Hide();
 		else
-			local anchorFrame;
-			if ( honor ~= 0 ) then
-				anchorFrame = honorFrame;
-			elseif ( money ~= 0 ) then
-				anchorFrame = moneyFrame;
-			else
-				anchorFrame = getglobal(questState.."RewardTitleText");
-			end
+			local anchorFrame = previousMandatoryRewardFrame or _G[questState.."RewardTitleText"];
 			playerTitleFrame:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", 0, -5);
 			getglobal(questState.."PlayerTitleFrameTitle"):SetText(playerTitle);
 			playerTitleFrame:Show();
 			QuestFrame_SetAsLastShown(playerTitleFrame, spacerFrame);
+			previousMandatoryRewardFrame = playerTitleFrame;
 		end											   
 	end
 
@@ -670,7 +682,7 @@ function QuestFrameItems_Update(questState)
 			questItemReceiveText:SetPoint("TOPLEFT", questState.."RewardTitleText", "BOTTOMLEFT", 3, -5);
 		end
 		questItemReceiveText:Show();
-		QuestFrame_SetAsLastShown(questItemReceiveText, spacerFrame);
+		QuestFrame_SetAsLastShown(previousMandatoryRewardFrame, spacerFrame);
 		-- Setup mandatory rewards
 		local index;
 		local baseIndex = rewardsCount;
@@ -707,7 +719,8 @@ function QuestFrameItems_Update(questState)
 					questItem:SetPoint("TOPLEFT", questItemName..(index - 1), "TOPRIGHT", 1, 0);
 				end
 			else
-				questItem:SetPoint("TOPLEFT", questState.."ItemReceiveText", "BOTTOMLEFT", -3, -5);
+				local anchorFrame = previousMandatoryRewardFrame or questItemReceiveText;
+				questItem:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", -3, -5);
 			end
 			rewardsCount = rewardsCount + 1;
 		end

@@ -3,9 +3,55 @@ local SecureTransfer =
 	Name = "SecureTransfer",
 	Type = "System",
 	Namespace = "C_SecureTransfer",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "AcceptTrade",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "Cancel",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "GetMailInfo",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "mailInfo", Type = "MailInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTradePartner",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "SendMail",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "ShouldShowTradeOfferWarning",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -14,20 +60,47 @@ local SecureTransfer =
 			Name = "SecureTransferCancel",
 			Type = "Event",
 			LiteralName = "SECURE_TRANSFER_CANCEL",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "SecureTransferConfirmHousingPurchase",
+			Type = "Event",
+			LiteralName = "SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SecureTransferConfirmSendMail",
 			Type = "Event",
 			LiteralName = "SECURE_TRANSFER_CONFIRM_SEND_MAIL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SecureTransferConfirmTradeAccept",
 			Type = "Event",
 			LiteralName = "SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "SecureTransferHousingCurrencyPurchaseConfirmation",
+			Type = "Event",
+			LiteralName = "SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+		{
+			Name = "MailInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "target", Type = "string", Nilable = false },
+				{ Name = "sendMoney", Type = "number", Nilable = false },
+			},
+		},
+	},
+	Predicates =
 	{
 	},
 };

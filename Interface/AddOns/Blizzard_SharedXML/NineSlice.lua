@@ -103,8 +103,8 @@ local function SetupEdge(container, piece, setupInfo, pieceLayout)
 
 	local userLayout = NineSliceUtil.GetLayout(container.layoutType);
 	if userLayout and (userLayout.threeSliceVertical or userLayout.threeSliceHorizontal) then
-		piece:SetPoint(setupInfo.point, container, setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
-		piece:SetPoint(setupInfo.relativePoint, container, setupInfo.point, pieceLayout.x1, pieceLayout.y1);
+		piece:SetPoint(setupInfo.point, container, setupInfo.point, pieceLayout.x, pieceLayout.y);
+		piece:SetPoint(setupInfo.relativePoint, container, setupInfo.relativePoint, pieceLayout.x1, pieceLayout.y1);
 	else
 		piece:SetPoint(setupInfo.point, GetNineSlicePiece(container, setupInfo.relativePieces[1]), setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
 		piece:SetPoint(setupInfo.relativePoint, GetNineSlicePiece(container, setupInfo.relativePieces[2]), setupInfo.point, pieceLayout.x1, pieceLayout.y1);

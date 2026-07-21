@@ -3,6 +3,7 @@ local StorePublicUI =
 	Name = "StorePublic",
 	Type = "System",
 	Namespace = "C_StorePublic",
+	Environment = "All",
 
 	Functions =
 	{
@@ -40,15 +41,6 @@ local StorePublicUI =
 			},
 		},
 		{
-			Name = "IsDisabledByParentalControls",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "disabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -64,6 +56,9 @@ local StorePublicUI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

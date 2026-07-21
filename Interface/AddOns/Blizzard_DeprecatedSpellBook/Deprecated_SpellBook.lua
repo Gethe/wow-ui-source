@@ -24,4 +24,16 @@ do
 		local includeOverrides = true;
 		return C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides);
 	end
+
+	function FindFlyoutSlotBySpellID(spellID)
+		return C_SpellBook.FindFlyoutSlotBySpellID(spellID);
+	end
+
+	function FindSpellOverrideByID(spellID)
+		return C_SpellBook.FindSpellOverrideByID(spellID);
+	end
+
+	function FindBaseSpellByID(spellID)
+		return C_SpellBook.FindBaseSpellByID(spellID);
+	end
 end

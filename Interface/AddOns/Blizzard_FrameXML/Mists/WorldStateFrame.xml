@@ -8,7 +8,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Size>
-						<AbsDimension x="65" y="24"/>
+						<AbsDimension x="75" y="24"/>
 					</Size>
 				</FontString>
 			</Layer>
@@ -93,6 +93,15 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parentHonorGained" inherits="GameFontNormalSmall" parentKey="honorGained">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMatchmakingRating" inherits="GameFontNormalSmall" parentKey="matchmakingRating">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -706,6 +715,23 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
+			<Button name="WorldStateScoreFrameMatchmakingRating" inherits="WorldStateScoreColumnTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameHonorGained" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameMatchmakingRatingText:SetText(SCORE_TEAM_SKILL);
+						self.tooltip = TEAM_SKILL_TOOLTIP;
+						self.sortType = "preMatchMMR";
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
+						GameTooltip:Show();
+					</OnEnter>
+				</Scripts>
+			</Button>
 			<Button name="WorldStateScoreColumn1" inherits="WorldStateScoreColumnTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="RIGHT"/>
@@ -1202,6 +1228,7 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
+			<OnLoad function="WorldStateProvingGrounds_OnLoad"/>
 			<OnEvent function="WorldStateProvingGrounds_OnEvent"/>
 		</Scripts>
 	</Frame>

@@ -223,6 +223,7 @@
 		</Layers>
 	</Frame>
 	<FontString name="LFGBrowseSearchEntryTooltipActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false"/>
+	<FontString name="LFGBrowseSearchEntryTooltipCompletedEncounterTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false"/>
 	<Frame name="LFGBrowseSearchEntryTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="200" y="1"/>
 		<!-- Resized in script. -->
@@ -264,6 +265,9 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Comment" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 						<!-- Reanchored in script. -->
 					</Anchors>
+				</FontString>
+				<FontString parentKey="CompletedEncounterHeader" inherits="GameFontNormal" justifyH="LEFT" text="LFG_LIST_BOSSES_DEFEATED">
+					<!-- Reanchored in script. -->
 				</FontString>
 			</Layer>
 		</Layers>
@@ -330,27 +334,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentCategoryDropDown" parentKey="CategoryDropDown" inherits="LFGDropDownTemplate" id="1">
+			<DropdownButton name="$parentCategoryDropdown" parentKey="CategoryDropdown" inherits="WowStyle1DropdownTemplate" mixin="LFGBrowseCategoryDropdownMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="-92"/>
+					<Anchor point="TOPLEFT" x="26" y="-94"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_SetWidth(self, 100);
-						UIDropDownMenu_Initialize(self, LFGBrowseCategoryDropDown_Initialize);
-						UIDropDownMenu_JustifyText(self, "LEFT");
-					</OnLoad>
+					<OnLoad method="OnLoad"/>
 				</Scripts>
-			</Button>
-			<Button name="$parentActivityDropDown" parentKey="ActivityDropDown" inherits="LFGDropDownTemplate" id="2">
+			</DropdownButton>
+			<DropdownButton name="$parentActivityDropdown" parentKey="ActivityDropdown" inherits="WowStyle1DropdownTemplate" mixin="LFGBrowseActivityDropdownMixin">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentCategoryDropDown" relativePoint="RIGHT" x="-30" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentCategoryDropdown" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 				<Frames>
 					<Button parentKey="ResetButton" hidden="true">
 						<Size x="13" y="13"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="21" y="-4"/>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-3"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="LFGBrowseActivityDropDownResetButton_OnClick"/>
@@ -361,18 +361,13 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						self.selectedValues = {};
-						UIDropDownMenu_SetWidth(self, 150);
-						UIDropDownMenu_Initialize(self, LFGBrowseActivityDropDown_Initialize);
-						UIDropDownMenu_JustifyText(self, "LEFT");
-					</OnLoad>
+					<OnLoad method="OnLoad"/>
 				</Scripts>
-			</Button>
+			</DropdownButton>
 			<Button name="$parentRefreshButton" parentKey="RefreshButton">
 				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentActivityDropDown" relativePoint="RIGHT" x="-16" y="2"/>
+					<Anchor point="LEFT" relativeTo="$parentActivityDropdown" relativePoint="RIGHT" x="-1" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="5">

@@ -3,6 +3,7 @@ local SpecializationInfo =
 	Name = "SpecializationInfo",
 	Type = "System",
 	Namespace = "C_SpecializationInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -83,6 +84,7 @@ local SpecializationInfo =
 				{ Name = "inspectTarget", Type = "string", Nilable = true },
 				{ Name = "sex", Type = "number", Nilable = true },
 				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "classID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -155,6 +157,7 @@ local SpecializationInfo =
 			Name = "ActiveTalentGroupChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_TALENT_GROUP_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "curr", Type = "number", Nilable = false },
@@ -165,6 +168,7 @@ local SpecializationInfo =
 			Name = "ConfirmPetUnlearn",
 			Type = "Event",
 			LiteralName = "CONFIRM_PET_UNLEARN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
@@ -174,6 +178,7 @@ local SpecializationInfo =
 			Name = "ConfirmTalentWipe",
 			Type = "Event",
 			LiteralName = "CONFIRM_TALENT_WIPE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
@@ -184,26 +189,31 @@ local SpecializationInfo =
 			Name = "PetSpecializationChanged",
 			Type = "Event",
 			LiteralName = "PET_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLearnPvpTalentFailed",
 			Type = "Event",
 			LiteralName = "PLAYER_LEARN_PVP_TALENT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLearnTalentFailed",
 			Type = "Event",
 			LiteralName = "PLAYER_LEARN_TALENT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTalentUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TALENT_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpecInvoluntarilyChanged",
 			Type = "Event",
 			LiteralName = "SPEC_INVOLUNTARILY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPet", Type = "bool", Nilable = false },
@@ -213,6 +223,7 @@ local SpecializationInfo =
 			Name = "TalentsInvoluntarilyReset",
 			Type = "Event",
 			LiteralName = "TALENTS_INVOLUNTARILY_RESET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPetTalents", Type = "bool", Nilable = false },
@@ -278,6 +289,7 @@ local SpecializationInfo =
 				{ Name = "inspectTarget", Type = "string", Nilable = true },
 				{ Name = "sex", Type = "number", Nilable = true },
 				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "classID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -320,6 +332,9 @@ local SpecializationInfo =
 				{ Name = "hasGoldBorder", Type = "bool", Nilable = false, Default = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

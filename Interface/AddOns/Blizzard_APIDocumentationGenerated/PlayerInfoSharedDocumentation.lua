@@ -26,6 +26,9 @@ local PlayerInfoShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerInfoShared);

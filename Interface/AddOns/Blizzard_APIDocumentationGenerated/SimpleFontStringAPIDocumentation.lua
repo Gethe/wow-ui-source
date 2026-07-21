@@ -2,12 +2,14 @@ local SimpleFontStringAPI =
 {
 	Name = "SimpleFontStringAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CalculateScreenAreaFromCharacterSpan",
 			Type = "Function",
+			RequiresFontStringTextAccess = true,
 
 			Arguments =
 			{
@@ -55,9 +57,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "ClearText",
+			Type = "Function",
+			Documentation = { "Sets text to an empty string and removes the Text secret aspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresFontStringTextAccess = true,
 
 			Arguments =
 			{
@@ -108,7 +120,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = true },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = true },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
@@ -232,6 +244,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetScaleAnimationMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
+			},
+		},
+		{
 			Name = "GetShadowColor",
 			Type = "Function",
 
@@ -259,6 +284,19 @@ local SimpleFontStringAPI =
 			{
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSmoothScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -357,6 +395,20 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetUnboundedStringWidthForText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWrappedWidth",
 			Type = "Function",
 
@@ -417,12 +469,19 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "cstring", Nilable = false },
-				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
-				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+				{ Name = "fontFile", Type = "FontAsset", Nilable = false },
+				{ Name = "fontHeight", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -507,6 +566,15 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "SetScaleAnimationMode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
+			},
+		},
+		{
 			Name = "SetShadowColor",
 			Type = "Function",
 
@@ -526,6 +594,15 @@ local SimpleFontStringAPI =
 			{
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSmoothScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false, Documentation = { "If true, text height will not snap to nearest whole numbers for scaled font strings." } },
 			},
 		},
 		{
@@ -601,6 +678,9 @@ local SimpleFontStringAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

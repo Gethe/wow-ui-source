@@ -21,6 +21,9 @@ local ColorOverrideConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(ColorOverrideConstants);

@@ -2,6 +2,7 @@ local FrameAPICinematicModel =
 {
 	Name = "FrameAPICinematicModel",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -182,6 +183,9 @@ local FrameAPICinematicModel =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -1,0 +1,116 @@
+
+local SmallCardWidth = 301;
+
+local function IsElementDataItemInfo(elementData)
+	return (elementData and (elementData.elementType ~= CatalogShopConstants.ScrollViewElementType.Header)) or false;
+end
+
+----------------------------------------------------------------------------------
+-- TopUpProductContainerFrameMixin
+----------------------------------------------------------------------------------
+TopUpProductContainerFrameMixin = {};
+function TopUpProductContainerFrameMixin:OnLoad()
+end
+
+function TopUpProductContainerFrameMixin:Init()
+	self:InitProductContainer();
+end
+
+function TopUpProductContainerFrameMixin:SetSelectedProductInfo(productInfo)
+	self.selectedProductInfo = productInfo;
+end
+
+function TopUpProductContainerFrameMixin:InitProductContainer()
+	local function addProductToDataProvider(dataProvider, productID)
+		local productInfo = CatalogShopUtil.GetProductInfo(productID);
+		if not productInfo then
+			return false;
+		end
+
+		-- If the product is hidden, skip it
+		if productInfo.isHidden then
+			return false;
+		end
+
+		productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
+		--productInfo.categoryID = categoryID;
+		--productInfo.sectionID = sectionID;
+		dataProvider:Insert(productInfo);
+		return true;
+	end
+
+	local function InitializeButton(frame, productInfo)
+		local isSelected = self.selectionBehavior:IsElementDataSelected(productInfo);
+
+		frame:Init();
+		frame:SetProductInfo(productInfo);
+		frame:SetSelected(isSelected);
+		frame.PurchaseButton:SetScript("OnClick", function(button, buttonName)
+			CatalogShopTopUpFrame:PurchaseProduct(productInfo.catalogShopProductID);
+			PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_SELECT_OPTION);
+		end);
+		-- Use the HoverTexture for the glowing effect UX requested
+		if self.suggestedProductID == productInfo.catalogShopProductID then
+			frame.ForegroundContainer.HoverTexture:Show();
+		else
+			frame.ForegroundContainer.HoverTexture:Hide();
+		end
+	end
+
+	local function GetProductContainerElementFactory(factory, elementData)
+		factory("SmallCatalogShopHousingCurrencyCardTemplate", InitializeButton)
+	end
+	self:SetupScrollView(GetProductContainerElementFactory);
+
+	local dataProvider = CreateDataProvider();
+	local vcProductInfos = C_CatalogShop.GetVCProductInfos();
+	for _, vcProductInfo in ipairs(vcProductInfos) do
+		local vcProductID = vcProductInfo.vcProductID;
+		addProductToDataProvider(dataProvider, vcProductID);
+	end
+
+	self.ScrollBox:SetDataProvider(dataProvider);
+end
+
+function TopUpProductContainerFrameMixin:OnProductSelected(productInfo)
+	self:SetSelectedProductInfo(productInfo);
+end
+
+function TopUpProductContainerFrameMixin:SetSuggestedProductID(productID)
+	self.suggestedProductID = productID;
+end
+
+function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)
+	local topPadding = 0;
+	local bottomPadding = 0;
+	local leftPadding = 0;
+	local rightPadding = 0;
+	local elementSpacing = -10;
+
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
+	view:SetVirtualized(false);
+	view:SetHorizontal(true);
+	view:SetElementFactory(elementFactory);
+	view:SetElementExtentCalculator(function()
+		return SmallCardWidth;
+	end);
+	self.ScrollBox:Init(view);
+
+	local function OnSelectionChanged(o, elementData, selected)
+		-- Cannot select, or it's meaningless to select a Header element
+		if not IsElementDataItemInfo(elementData) then
+			return;
+		end
+
+		if selected then
+			self:OnProductSelected(elementData);
+		end
+
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end;
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
+end

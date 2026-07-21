@@ -16,6 +16,9 @@ local SharedScriptObjectModelLight =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SharedScriptObjectModelLight);

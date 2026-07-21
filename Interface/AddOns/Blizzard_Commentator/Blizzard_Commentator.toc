@@ -12,6 +12,7 @@ Blizzard_commentatorSpell.xml
 Blizzard_CommentatorSpellTray.xml
 Blizzard_CommentatorModelScene.xml
 Blizzard_CommentatorUnitFrame.xml
+Blizzard_CommentatorNamePlate.lua
 Blizzard_CommentatorNamePlate.xml
 Blizzard_CommentatorEventAlerts.xml
 Blizzard_Commentator.xml

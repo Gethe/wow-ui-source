@@ -164,9 +164,9 @@ function AuctionHouseItemDisplayMixin:OnClick(button)
 			elseif IsModifiedClick("CHATLINK") then
 				local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
 				if itemKeyInfo and itemKeyInfo.battlePetLink then
-					ChatEdit_InsertLink(itemKeyInfo.battlePetLink);
+					ChatFrameUtil.InsertLink(itemKeyInfo.battlePetLink);
 				else
-					ChatEdit_InsertLink(self:GetItemLink());
+					ChatFrameUtil.InsertLink(self:GetItemLink());
 				end
 			end
 		end

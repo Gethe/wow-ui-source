@@ -5,83 +5,47 @@
 			<Anchor point="TOPLEFT" x="-14" y="14"/>
 			<Anchor point="BOTTOMRIGHT" x="32" y="-78"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="30" top="0" bottom="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="InspectTalentFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="InspectTalentFrameBackgroundTopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="23" y="-77"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="23" y="-77"/>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundTopRight">
-					<Size>
-						<AbsDimension x="64" y="256"/>
-					</Size>
+					<Size x="64" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomLeft">
-					<Size>
-						<AbsDimension x="256" y="128"/>
-					</Size>
+					<Size x="256" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomRight">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
+					<Size x="64" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			</Layers>
+		</Layers>
 		<Frames>
 			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1" mixin="InspectTalentFrameTabMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="70" y="-40"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="70" y="-40"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick" inherit="append"/>
@@ -106,15 +70,9 @@
 			<Frame name="InspectTalentFramePointsBar">
 				<Size x="331" y="26"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="16" y="0"/>
-					</Anchor>
-					<Anchor point="RIGHT">
-						<Offset x="-36" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOM">
-						<Offset x="0" y="81"/>
-					</Anchor>
+					<Anchor point="LEFT" x="16" y="0"/>
+					<Anchor point="RIGHT" x="-36" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="81"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -127,30 +85,18 @@
 						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="4" y="0"/>
-								</Anchor>
-								<Anchor point="TOP">
-									<Offset x="0" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="5"/>
-								</Anchor>
+								<Anchor point="LEFT" x="4" y="0"/>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="BOTTOM" x="0" y="5"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
 						</Texture>
 						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-4" y="0"/>
-								</Anchor>
-								<Anchor point="TOP">
-									<Offset x="0" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="5"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-4" y="0"/>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="BOTTOM" x="0" y="5"/>
 							</Anchors>
 							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
 						</Texture>
@@ -166,17 +112,13 @@
 						<FontString name="InspectTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="0" y="15"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="12" y="1"/>
-								</Anchor>
+								<Anchor point="LEFT" x="12" y="1"/>
 							</Anchors>
 						</FontString>
 						<FontString name="InspectTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 							<Size x="0" y="15"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-12" y="1"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-12" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -187,44 +129,24 @@
 				</Scripts>
 			</Frame>
 			<ScrollFrame name="InspectTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="296" y="332"/>
-				</Size>
+				<Size x="296" y="332"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-65" y="-77"/>
-						</Offset>
-					</Anchor>
-				<Anchor point="BOTTOM" relativeTo="InspectTalentFramePointsBar" relativePoint="TOP">
-						<Offset x="0" y="0"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-65" y="-77"/>
+					<Anchor point="BOTTOM" relativeTo="InspectTalentFramePointsBar" relativePoint="TOP" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
+							<Size x="31" y="256"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 						</Texture>
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
+							<Size x="31" y="106"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 						</Texture>
@@ -232,9 +154,7 @@
 				</Layers>
 				<ScrollChild>
 					<Frame name="InspectTalentFrameScrollChildFrame">
-						<Size>
-							<AbsDimension x="320" y="50"/>
-						</Size>
+						<Size x="320" y="50"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -355,15 +275,9 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<Frame name="InspectTalentFrameScrollButtonOverlay" parent="InspectTalentFrameScrollFrameScrollBarScrollDownButton" hidden="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

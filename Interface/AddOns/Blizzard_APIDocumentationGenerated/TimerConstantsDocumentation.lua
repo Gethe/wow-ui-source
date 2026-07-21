@@ -17,6 +17,9 @@ local TimerConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TimerConstants);

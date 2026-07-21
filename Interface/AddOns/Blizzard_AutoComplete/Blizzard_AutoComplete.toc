@@ -1,0 +1,6 @@
+## Title: Blizzard_AutoComplete
+## Dep: Blizzard_UIParent [AllowLoad game]
+## Dep: Blizzard_GlueParent [AllowLoad glue]
+## AllowLoad: both
+AutoComplete.lua
+AutoComplete.xml

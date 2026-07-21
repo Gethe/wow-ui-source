@@ -5,16 +5,18 @@ local ExpansionLandingPageConstants =
 		{
 			Name = "ExpansionLandingPageType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 2,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 1,
 			Fields =
 			{
 				{ Name = "None", Type = "ExpansionLandingPageType", EnumValue = 0 },
-				{ Name = "Dragonflight", Type = "ExpansionLandingPageType", EnumValue = 1 },
-				{ Name = "WarWithin", Type = "ExpansionLandingPageType", EnumValue = 2 },
+				{ Name = "Midnight", Type = "ExpansionLandingPageType", EnumValue = 1 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

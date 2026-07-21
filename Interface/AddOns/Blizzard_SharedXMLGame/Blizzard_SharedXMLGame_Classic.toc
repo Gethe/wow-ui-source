@@ -1,8 +1,0 @@
-## Title: Blizzard_SharedXMLGame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
-## AllowLoad: Game
-## AllowLoadGameType: tbc, wrath, cata, mists
-Shared\Localization.lua
-Tooltip\TooltipDataHandler.lua

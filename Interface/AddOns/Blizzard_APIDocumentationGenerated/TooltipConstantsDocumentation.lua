@@ -46,6 +46,9 @@ local TooltipConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TooltipConstants);

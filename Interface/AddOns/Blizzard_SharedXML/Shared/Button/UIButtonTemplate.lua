@@ -6,9 +6,7 @@ function UIButtonMixin:InitButton()
 		self:SetButtonArtKit(self.buttonArtKit);
 	end
 
-	if self.disabledTooltip then
-		self:SetMotionScriptsWhileDisabled(true);
-	end
+	self:SetDisabledTooltip(self.disabledTooltip);
 end
 
 function UIButtonMixin:OnClick(...)
@@ -153,5 +151,9 @@ function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor
 	self.disabledTooltipAnchor = disabledTooltipAnchor;
 	self.disabledTooltipOffsetX = disabledTooltipOffsetX;
 	self.disabledTooltipOffsetY = disabledTooltipOffsetY;
-	self:SetMotionScriptsWhileDisabled(disabledTooltip ~= nil);
+
+	-- NOTE: Remains on to preserve previous behavior
+	if self.disabledTooltip then
+		self:SetMotionScriptsWhileDisabled(true);
+	end
 end

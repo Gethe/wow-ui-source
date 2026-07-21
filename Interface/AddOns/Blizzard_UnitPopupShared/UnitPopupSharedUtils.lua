@@ -94,7 +94,7 @@ end
 
 function UnitPopupSharedUtil.IsPlayer(contextData)
 	local unit = contextData.unit;
-	return unit and UnitIsPlayer(unit);
+	return unit and UnitIsHumanPlayer(unit);
 end
 
 function UnitPopupSharedUtil.IsPlayerOffline(contextData)
@@ -162,7 +162,7 @@ function UnitPopupSharedUtil.IsInGroupWithPlayer(contextData)
 
 	local guid = contextData.guid;
 	if guid then
-		return IsGUIDInGroup(guid);
+		return C_PartyInfo.IsGUIDInGroup(guid);
 	end
 
 	return false;
@@ -257,4 +257,4 @@ end
 function UnitPopupSharedUtil.HasLFGRestrictions()
 	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
-end	 
+end

@@ -2,6 +2,7 @@ local FrameAPISimpleCheckout =
 {
 	Name = "FrameAPISimpleCheckout",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -87,6 +88,9 @@ local FrameAPISimpleCheckout =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

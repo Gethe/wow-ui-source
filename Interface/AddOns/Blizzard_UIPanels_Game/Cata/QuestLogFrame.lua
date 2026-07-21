@@ -1,3 +1,6 @@
+
+UIPanelWindows["QuestLogFrame"] = { area = "doublewide", pushable = 0, whileDead = 1 };
+
 QUESTS_DISPLAYED = 27;
 QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
@@ -449,7 +452,7 @@ end
 
 function QuestLogTitleButton_OnClick(self, button)
 	local questName = self:GetText();
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 		-- If header then return
 		if ( self.isHeader ) then
 			return;
@@ -458,7 +461,7 @@ function QuestLogTitleButton_OnClick(self, button)
 		local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 		local questLink = GetQuestLink(GetQuestIDFromLogIndex(questIndex));
 		if ( questLink ) then
-			ChatEdit_InsertLink(questLink);
+			ChatFrameUtil.InsertLink(questLink);
 		end
 	elseif ( IsShiftKeyDown() ) then
 		-- If header then return
@@ -552,7 +555,7 @@ function QuestLogRewardItem_OnClick(self)
 			link = GetSpellLink(self:GetID());
 		end
 
-		if ( ChatEdit_InsertLink(link) ) then
+		if ( ChatFrameUtil.InsertLink(link) ) then
 			return true;
 		elseif ( SocialPostFrame and Social_IsShown() and Social_InsertLink(link) ) then
 			return true;

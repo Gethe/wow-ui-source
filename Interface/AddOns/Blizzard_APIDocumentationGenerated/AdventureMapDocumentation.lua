@@ -3,6 +3,7 @@ local AdventureMap =
 	Name = "AdventureMap",
 	Type = "System",
 	Namespace = "C_AdventureMap",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,11 +15,13 @@ local AdventureMap =
 			Name = "AdventureMapClose",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AdventureMapOpen",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -28,6 +31,7 @@ local AdventureMap =
 			Name = "AdventureMapQuestUpdate",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_QUEST_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -37,15 +41,32 @@ local AdventureMap =
 			Name = "AdventureMapUpdateInsets",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_UPDATE_INSETS",
+			UniqueEvent = true,
 		},
 		{
 			Name = "AdventureMapUpdatePois",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_UPDATE_POIS",
+			UniqueEvent = true,
 		},
 	},
 
 	Tables =
+	{
+		{
+			Name = "AdventureMapQuestPortraitInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "portraitDisplayID", Type = "number", Nilable = false },
+				{ Name = "mountPortraitDisplayID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "modelSceneID", Type = "number", Nilable = true },
+			},
+		},
+	},
+	Predicates =
 	{
 	},
 };

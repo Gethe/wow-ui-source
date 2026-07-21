@@ -99,7 +99,7 @@ function LFGListingMixin:OnEvent(event, ...)
 	elseif ( event == "LFG_LIST_ROLE_UPDATE" ) then
 		self:LoadSoloRoles();
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
-		UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGListingRoleDropDown_Initialize);
+		LFGListingRoleDropdown_SetupDropdown(self.GroupRoleButtons.RoleDropdown);
 		LFGListingRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
 	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
 		self:FetchSavedInstances()
@@ -123,7 +123,7 @@ function LFGListingMixin:OnShow()
 	self:UpdatePostButtonEnableState();
 	self:UpdateBackButtonEnableState();
 
-	UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGListingRoleDropDown_Initialize);
+	LFGListingRoleDropdown_SetupDropdown(self.GroupRoleButtons.RoleDropdown);
 	LFGListingRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
 end
 
@@ -369,13 +369,13 @@ function LFGListingMixin:SetActivity(activityID, selected, allowCreate, userInpu
 	end
 
 	if (selected ~= self.activities[activityID]) then
-		if (selected) then 
+		if (selected) then
 			self.selectedActivities = self.selectedActivities + 1;
 		elseif (self.selectedActivities > 0) then
 			self.selectedActivities = self.selectedActivities - 1;
 		end
 	end
-	
+
 	self.activities[activityID] = selected;
 
 	self:UpdatePostButtonEnableState();
@@ -510,34 +510,22 @@ end
 -------------------------------------------------------
 ----------Group Role UI
 -------------------------------------------------------
-function LFGListingRoleDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	local currentRole = UnitGroupRolesAssigned("player");
+function LFGListingRoleDropdown_SetupDropdown(self)
+	self:SetWidth(120);
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFG_LISTING_ROLE");
 
-	info.func = LFGListingRoleDropDownButton_OnClick;
-	info.classicChecks = true;
-
-	local buttons = {
-		{ text = TANK, value = "TANK", },
-		{ text = HEALER, value = "HEALER", },
-		{ text = DAMAGER, value = "DAMAGER", },
-	};
-
-	for i, button in ipairs(buttons) do
-		info.text = button.text;
-		info.value = button.value;
-		info.checked = currentRole == info.value;
-		info.owner = self;
-		UIDropDownMenu_AddButton(info);
-		if (info.checked) then
-			UIDropDownMenu_SetSelectedValue(self, info.value);
+		local function IsSelected(value)
+			return UnitGroupRolesAssigned("player") == value;
 		end
-	end
-end
+		local function SetSelected(value)
+			UnitSetRole("player", value);
+		end
 
-function LFGListingRoleDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
-	UnitSetRole("player", self.value);
+		rootDescription:CreateRadio(TANK, IsSelected, SetSelected, "TANK");
+		rootDescription:CreateRadio(HEALER, IsSelected, SetSelected, "HEALER");
+		rootDescription:CreateRadio(DAMAGER, IsSelected, SetSelected, "DAMAGER");
+	end);
 end
 
 function LFGListingRoleIcon_UpdateRoleTexture(self)
@@ -927,7 +915,7 @@ function LFGListingActivityView_UpdateActivities(self)
 			for _, activityID in ipairs(activities) do
 				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 				local name = LFGUtil_GetActivityInfoName(activityInfo);
-				 
+
 				groupTree:Insert({
 					buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY,
 					activityID = activityID,

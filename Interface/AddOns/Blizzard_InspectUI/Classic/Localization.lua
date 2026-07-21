@@ -19,7 +19,9 @@ local l10nTable = {
 	ruRU = {
 		localize = function()
 			--Adjust spec font so it doesn't overflow the window
-			SpecializationSpecName:SetFontObject(GameFontNormalHuge);
+			if GetSpecializationSystem() == Enum.SpecializationSystem.ChrSpecialization then
+				InspectTalentFrameSpecName:SetFontObject(GameFontNormalHuge);
+			end
 		end,
 	},
 	zhCN = {

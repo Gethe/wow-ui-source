@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<StatusBar name="CastingBarFrameAnimsTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="HoldFadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+</Ui>

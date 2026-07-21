@@ -1,0 +1,263 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	
+
+
+	<Frame name="WatchFrameScenarioLineTemplate" inherits="WatchFrameLineTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" file="Interface\Scenarios\Objective-Lineglow" alpha="0" alphaMode="ADD">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.text" x="-2" y="0"/>
+						<Anchor point="TOP" x="0" y="-3"/>
+						<Anchor point="BOTTOM" x="0" y="-3"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ScaleAnim">
+							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="2" scaleY="1" duration="0.533" order="1"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="AlphaAnim">
+							<Alpha startDelay="0.067" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+							<Alpha startDelay="0.3" fromAlpha="1" toAlpha="0" duration="0.267" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="-1"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Check" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.067" order="1"/>
+							<Scale scaleX="1.25" scaleY="1.25" duration="0.2" order="2"/>
+							<Alpha fromAlpha="1" toAlpha="0" startDelay="0.167" duration="0.23" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Sheen" file="Interface\Scenarios\Objective-Sheen" alpha="0">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Glow"/>
+						<Anchor point="TOP" x="0" y="2"/>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Translation startDelay="0.067" offsetX="155" offsetY="0" duration="0.467" order="1"/>
+							<Alpha startDelay="0.067" fromAlpha="0" toAlpha="1" duration="0.133" order="1"/>
+							<Alpha startDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.133" order="1" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Glow.ScaleAnim.ScaleGlow:SetOrigin("LEFT", 0, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<ScrollFrame name="WatchFrameScenarioFrame" hidden="true" parent="WatchFrameLines">
+		<Size x="204" y="83"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<ScrollChild>
+			<Frame parentKey="ScrollChild">
+				<Size x="201" y="83"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="TextHeader" inherits="WatchFrameLineTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-4"/>
+							<Anchor point="LEFT" relativeTo="WatchFrameLines"/>
+							<Anchor point="RIGHT" relativeTo="WatchFrameLines"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BlockHeader" name="WatchFrameBoxHeaderFrame" enableMouse="true">
+						<Size x="201" y="83"/>
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="bg">
+									<Size x="201" y="77"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="finalBg">
+									<Size x="193" y="69"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-4"/>
+									</Anchors>
+									<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
+								</Texture>
+								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="bgAnim" alpha="0" alphaMode="ADD">
+									<Size x="201" y="77"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
+									<Animations>
+										<AnimationGroup parentKey="AlphaAnim">
+											<Alpha fromAlpha="0" toAlpha="1" duration="0.266" order="1"/>
+											<Alpha endDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.333" order="2"/>
+										</AnimationGroup>
+									</Animations>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString inherits="QuestTitleFont" parentKey="stageLevel">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-10"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString inherits="QuestTitleFont" parentKey="stageComplete" text="STAGE_COMPLETE" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="15" y="3"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" parentKey="stageName" spacing="2">
+									<Size x="172" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.stageLevel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_NONE");
+								GameTooltip:ClearAllPoints();
+								GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
+								local _, currentStage, numStages, flags = C_Scenario.GetInfo();
+								local name, description = C_Scenario.GetStepInfo();
+								if(bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+								  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
+								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:Show();
+								else
+								  GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
+								  GameTooltip:AddLine(name, 1, 0.831, 0.380, 1);
+								  GameTooltip:AddLine(" ");
+								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnHide>
+				WatchFrameScenario_StopAllAnimations();
+			</OnHide>
+		</Scripts>
+	</ScrollFrame>
+	<Frame name="WatchFrameScenarioBonusHeader" parent="WatchFrameLines" enableMouse="true" hidden="true">
+		<Size x="191" y="34"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="WatchFrameScenarioFrame" relativePoint="BOTTOMLEFT" x="10" y="-4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\Scenarios\ScenariosParts" setAllPoints="true">
+					<TexCoords left="0.00195313" right="0.37500000" top="0.63671875" bottom="0.70312500"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FailureGlow" file="Interface\Scenarios\ScenariosParts" alpha="0">
+					<Size x="177" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="4"/>
+					</Anchors>
+					<TexCoords left="0.64453125" right="0.99023438" top="0.07421875" bottom="0.10546875"/>
+				</Texture>
+				<Texture parentKey="SuccessGlow" file="Interface\Scenarios\ScenariosParts" alpha="0">
+					<Size x="177" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="4"/>
+					</Anchors>
+					<TexCoords left="0.64453125" right="0.99023438" top="0.10937500" bottom="0.14062500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Flag" file="Interface\Scenarios\ScenariosParts">
+					<Size x="37" y="42"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.07421875" top="0.90820313" bottom="0.99023438"/>	
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="40" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlightMedium">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="138" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="AnimSuccess">
+				<Alpha targetKey="$parent.$parent.SuccessGlow" fromAlpha="0" toAlpha="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha targetKey="$parent.$parent.SuccessGlow" fromAlpha="1" toAlpha="0" duration="1" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimFailure">
+				<Alpha targetKey="$parent.$parent.FailureGlow" fromAlpha="0" toAlpha="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha targetKey="$parent.$parent.FailureGlow" fromAlpha="1" toAlpha="0" duration="1" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter function="WatchFrameScenarioBonusHeader_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnShow>
+				self.updateTime = true;
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+</Ui>

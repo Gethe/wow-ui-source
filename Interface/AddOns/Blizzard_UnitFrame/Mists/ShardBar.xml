@@ -227,13 +227,18 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="WarlockPowerFrame" parent="PlayerFrame" toplevel="true" hidden="true" mixin="WarlockPowerFrameMixin">
+	<Frame name="WarlockPowerFrame" parent="PlayerFrame" inherits="PlayerFrameBottomManagedFrameTemplate" toplevel="true" hidden="true" mixin="WarlockPowerFrameMixin">
 		<Size>
 		  <AbsDimension x="110" y="25"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="1" type="number"/>
+			<KeyValue key="leftPadding" value="44" type="number"/>
+			<KeyValue key="topPadding" value="6" type="number"/>
+		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="showAnim">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
@@ -342,7 +347,7 @@
 					<OnEnter>
 						self.lockShow = 1;
 						local power = UnitPower("player", Enum.PowerType.DemonicFury);
-						TextStatusBar_UpdateTextStringWithValues(self, self.powerText, power, 1, self.maxPower);
+						self:UpdateTextStringWithValues(self.powerText, power, 1, self.maxPower);
 						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(DEMONIC_FURY, 1, 1, 1);
 						GameTooltip:AddLine(DEMONIC_FURY_TOOLTIP, nil, nil, nil, true);

@@ -239,6 +239,8 @@ function DeveloperConsoleMixin:Toggle(shownRequested)
 
 		if shownRequested then
 			self:Show();
+
+			self.EditBox:SetFocus();
 		else
 			self.EditBox:ClearFocus();
 			self.MessageFrame.CopyNoticeFrame.Anim:Stop();

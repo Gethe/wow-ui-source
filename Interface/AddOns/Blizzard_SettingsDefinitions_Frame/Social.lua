@@ -85,6 +85,9 @@ local function Register()
 			Settings.VarType.Boolean, BLOCK_GUILD_INVITES, defaultValue, GetAutoDeclineGuildInvites, SetAutoDeclineGuildInvites);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
+
+	-- Block Neighborhood Invites
+	SocialOverrides.CreateBlockNeighborhoodInvitesSetting(category);
 	
 	-- Block Calendar Invites
 	Settings.SetupCVarCheckbox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
@@ -194,6 +197,62 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropdown(category, "showTimestamps", Settings.VarType.String, GetOptions, TIMESTAMPS_LABEL, OPTION_TOOLTIP_TIMESTAMPS);
+	end
+
+
+	-- Connect to Photo Sharing
+	do
+		if C_PhotoSharing.IsEnabled() then
+			local setting = Settings.RegisterCVarSetting(category, "enableConnectToPhotoSharing", Settings.VarType.Boolean, PHOTO_SHARING_SETTINGS_LABEL);
+
+			local function OnConnectButtonClick()
+				if not C_PhotoSharing.IsAuthorized() then
+					C_PhotoSharing.BeginAuthorizationFlow();
+				else
+					C_PhotoSharing.ClearAuthorization();
+				end
+			end
+
+			local function EvaluateButtonName()
+				if C_PhotoSharing.IsAuthorized() then
+					return PHOTO_SHARING_DISCONNECT;
+				else
+					return PHOTO_SHARING_SIGN_IN;
+				end
+			end
+
+			local function OnEvaluateState(self)
+				-- This is true when the checkbox is unchecked
+				if not self:GetSetting():GetValue() then
+					C_PhotoSharing.ClearAuthorization();
+				end
+
+				-- This is governed by server settings, unrelated to client checkbox
+				if C_PhotoSharing.IsEnabled() then
+					C_CVar.SetCVar("enableConnectToPhotoSharing", 1);
+
+					self.data.tooltip = PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP;
+					self:Show();
+				else
+					C_CVar.SetCVar("enableConnectToPhotoSharing", 0);
+
+					if C_PhotoSharing.GetStatus() == Enum.PhotoSharingStatus.ParentalControl then
+						self.data.tooltip = PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP_RESTRICTED;
+					else
+						self:Hide();
+					end
+				end
+			end
+
+			local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, EvaluateButtonName, OnConnectButtonClick, OnEvaluateState, true, PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP);
+			initializer:AddEvaluateStateFrameEvent("PHOTO_SHARING_AUTHORIZATION_UPDATED");
+
+			-- Button is dynamic, so we will manually register both possible values here
+			initializer:AddSearchTags(PHOTO_SHARING_DISCONNECT);
+			initializer:AddSearchTags(PHOTO_SHARING_SIGN_IN);
+
+			layout:AddInitializer(initializer);
+		end
 	end
 
 	-- Reset Chat Positions

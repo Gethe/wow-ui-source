@@ -3,6 +3,7 @@ local GameRules =
 	Name = "GameRules",
 	Type = "System",
 	Namespace = "C_GameRules",
+	Environment = "All",
 
 	Functions =
 	{
@@ -166,6 +167,34 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsClassAllowedForGameMode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGameModeEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGameRuleActive",
 			Type = "Function",
 
@@ -189,7 +218,53 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsMultiActionBarVisibilityForced",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPersonalResourceDisplayEnabled",
+			Type = "Function",
+			Documentation = { "Checks the game rule as well as nameplateShowSelf" },
+
+			Returns =
+			{
+				{ Name = "isPersonalResourceDisplayEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPlunderstorm",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSelfFoundAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsStandard",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsWoWHack",
 			Type = "Function",
 
 			Returns =
@@ -205,6 +280,7 @@ local GameRules =
 			Name = "ActiveGameModeUpdated",
 			Type = "Event",
 			LiteralName = "ACTIVE_GAME_MODE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gameMode", Type = "GameMode", Nilable = false },
@@ -214,11 +290,13 @@ local GameRules =
 			Name = "AvailableGameModesUpdated",
 			Type = "Event",
 			LiteralName = "AVAILABLE_GAME_MODES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EventRealmQueuesUpdated",
 			Type = "Event",
 			LiteralName = "EVENT_REALM_QUEUES_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "eventRealmQueues", Type = "EventRealmQueues", Nilable = false },
@@ -228,6 +306,18 @@ local GameRules =
 			Name = "GameModeDisplayInfoUpdated",
 			Type = "Event",
 			LiteralName = "GAME_MODE_DISPLAY_INFO_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "GameModeDisplayModeToggleDisabled",
+			Type = "Event",
+			LiteralName = "GAME_MODE_DISPLAY_MODE_TOGGLE_DISABLED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -247,6 +337,9 @@ local GameRules =
 				{ Name = "characterCreateOuterBorder", Type = "fileID", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

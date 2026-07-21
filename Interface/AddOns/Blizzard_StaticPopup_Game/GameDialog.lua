@@ -17,7 +17,26 @@ local function ShouldHideButtonFromDialogData(dialog, dialogInfo, index)
 	return true;
 end
 
-GameDialogMixin = {};
+GameDialogBaseMixin = {};
+
+function GameDialogBaseMixin:OnLoad()
+	self.BG.Top:SetAtlas(GameDialogBackgroundTop, TextureKitConstants.UseAtlasSize);
+	self.BG.Bottom:SetAtlas("UI-DialogBox-Background-Dark", TextureKitConstants.UseAtlasSize);
+	self.BG.Bottom:SetPoint("TOPLEFT", 7, -7);
+	self.BG.Bottom:SetPoint("BOTTOMRIGHT", -7, 7);
+end
+
+function GameDialogBaseMixin:SetCloseButtonToMinimize()
+	self.CloseButton:SetNormalTexture(GameDialogCloseButtonStateCondensedNormal);
+	self.CloseButton:SetPushedTexture(GameDialogCloseButtonStateCondensedPressed);
+end
+
+function GameDialogBaseMixin:SetCloseButtonToHide()
+	self.CloseButton:SetNormalTexture(GameDialogCloseButtonStateNormal);
+	self.CloseButton:SetPushedTexture(GameDialogCloseButtonStatePressed);
+end
+
+GameDialogMixin = CreateFromMixins(GameDialogBaseMixin);
 
 do
 	local function SetupButton(dialog, button)
@@ -29,10 +48,7 @@ do
 	end
 
 	function GameDialogMixin:OnLoad()
-		self.BG.Top:SetAtlas(GameDialogBackgroundTop, TextureKitConstants.UseAtlasSize);
-		self.BG.Bottom:SetAtlas("UI-DialogBox-Background-Dark", TextureKitConstants.UseAtlasSize);
-		self.BG.Bottom:SetPoint("TOPLEFT", 7, -7);
-		self.BG.Bottom:SetPoint("BOTTOMRIGHT", -7, 7);
+		GameDialogBaseMixin.OnLoad(self);
 
 		for buttonIndex, button in ipairs(self:GetButtons()) do
 			SetupButton(self, button);
@@ -163,11 +179,9 @@ function GameDialogMixin:SetupCloseButton(dialogInfo)
 
 	if dialogInfo.closeButton then
 		if dialogInfo.closeButtonIsHide then
-			self.CloseButton:SetNormalTexture(GameDialogCloseButtonStateNormal);
-			self.CloseButton:SetPushedTexture(GameDialogCloseButtonStatePressed);
+			self:SetCloseButtonToHide();
 		else
-			self.CloseButton:SetNormalTexture(GameDialogCloseButtonStateCondensedNormal);
-			self.CloseButton:SetPushedTexture(GameDialogCloseButtonStateCondensedPressed);
+			self:SetCloseButtonToMinimize();
 		end
 	end
 end
@@ -301,7 +315,11 @@ function GameDialogMixin:SetupAlertIcon(dialogInfo, data)
 	elseif ( dialogInfo.showAlertGear ) then
 		self.AlertIcon:SetTexture("Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther");
 	elseif ( dialogInfo.customAlertIcon ) then
-		self.AlertIcon:SetTexture(dialogInfo.customAlertIcon);
+		if dialogInfo.alertIconIsAtlas then
+			self.AlertIcon:SetAtlas(dialogInfo.customAlertIcon);
+		else
+			self.AlertIcon:SetTexture(dialogInfo.customAlertIcon);
+		end
 	end
 end
 
@@ -349,6 +367,7 @@ function GameDialogMixin:SetupDecorationFrames(dialogInfo)
 	self.CoverFrame:SetPoint("TOPLEFT", coverFrameParent, "TOPLEFT");
 	self.CoverFrame:SetPoint("BOTTOMRIGHT", coverFrameParent, "BOTTOMRIGHT");
 	self.CoverFrame:SetShown(dialogInfo.fullScreenCover);
+	self.CoverFrame:Init(dialogInfo.hideOnEscape);
 
 	self.Spinner:Hide();
 	self.DarkOverlay:Hide();
@@ -493,6 +512,11 @@ end
 
 function GameDialogMixin:GetEditBox()
 	return self.EditBox;
+end
+
+function GameDialogMixin:GetEditBoxText()
+	local editBox = self:GetEditBox();
+	return editBox and editBox:GetText() or "";
 end
 
 function GameDialogMixin:GetButton1()
@@ -703,6 +727,18 @@ end
 
 function GameDialogMixin:OnHyperlinkLeave(...)
 	StaticPopup_OnHyperlinkLeave(self, ...);
+end
+
+GameDialogCoverFrameMixin = {};
+
+function GameDialogCoverFrameMixin:Init(hideOnEscape)
+	self.hideOnEscape = hideOnEscape;
+end
+
+function GameDialogCoverFrameMixin:OnKeyDown(key)
+	if ( self.hideOnEscape and key == "ESCAPE" ) then
+		self:GetParent():Hide();
+	end
 end
 
 StaticPopupItemFrameMixin = {};

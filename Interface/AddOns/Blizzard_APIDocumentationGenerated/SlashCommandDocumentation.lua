@@ -2,6 +2,7 @@ local SlashCommand =
 {
 	Name = "SlashCommand",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -30,6 +31,9 @@ local SlashCommand =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

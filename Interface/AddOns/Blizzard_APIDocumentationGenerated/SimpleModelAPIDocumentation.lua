@@ -2,6 +2,7 @@ local SimpleModelAPI =
 {
 	Name = "SimpleModelAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -532,6 +533,18 @@ local SimpleModelAPI =
 			},
 		},
 		{
+			Name = "SetGradientMask",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "grad0", Type = "number", Nilable = false },
+				{ Name = "grad1", Type = "number", Nilable = false },
+				{ Name = "grad2", Type = "number", Nilable = false },
+				{ Name = "grad3", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetLight",
 			Type = "Function",
 
@@ -665,6 +678,16 @@ local SimpleModelAPI =
 			},
 		},
 		{
+			Name = "SetUseGBuffer",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "useGBuffer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetViewInsets",
 			Type = "Function",
 
@@ -716,6 +739,9 @@ local SimpleModelAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

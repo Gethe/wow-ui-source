@@ -76,7 +76,7 @@ function MountEquipmentButtonMixin:OnClick()
 			local item = itemID and Item:CreateFromItemID(itemID);
 			if item then
 				item:ContinueOnItemLoad(function()
-					ChatEdit_InsertLink(item:GetItemLink())
+					ChatFrameUtil.InsertLink(item:GetItemLink())
 				end);
 			end
 		end
@@ -251,9 +251,7 @@ function MountJournal_InitFilterButton(self)
 		sourceSubmenu:CreateButton(CHECK_ALL, MountJournal_SetAllSourceFilters, true);
 		sourceSubmenu:CreateButton(UNCHECK_ALL, MountJournal_SetAllSourceFilters, false);
 
-		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TOYS", mountSourceOrderPriorities);
-		for index = 1, C_PetJournal.GetNumPetSources() do
-			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
 			if C_MountJournal.IsValidSourceFilter(filterIndex) then
 				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
 			end
@@ -416,10 +414,12 @@ function MountJournal_OnEvent(self, event, ...)
 	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" or event == "PLAYER_REGEN_ENABLED" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
-			MountJournal_FullUpdate(self);
+			local skipMountDisplay = true;
+			MountJournal_FullUpdate(self, skipMountDisplay);
 		end
 	elseif ( event == "MOUNT_JOURNAL_SEARCH_UPDATED" ) then
-		MountJournal_FullUpdate(self);
+		local skipMountDisplay = true;
+		MountJournal_FullUpdate(self, skipMountDisplay);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
 			local forceSceneChange = true;
@@ -628,15 +628,18 @@ function MountJournal_UpdateEquipment(self)
 	MountJournal_UpdateEquipmentPalette(self);
 end
 
-function MountJournal_FullUpdate(self)
+function MountJournal_FullUpdate(self, skipMountDisplay)
 	if (self:IsVisible()) then
 		MountJournal_UpdateMountList();
 
 		if (not MountJournal.selectedSpellID) then
 			MountJournal_Select(1);
 		end
-		local forceSceneChange = true;
-		MountJournal_UpdateMountDisplay(forceSceneChange);
+
+		if not skipMountDisplay then
+			local forceSceneChange = true;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
+		end
 	end
 end
 
@@ -919,10 +922,10 @@ function MountListDragButton_OnClick(self, button)
 		local id = parent.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = C_Spell.GetSpellName(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	else
 		C_MountJournal.Pickup(parent.index);
@@ -939,10 +942,10 @@ function MountListItem_OnClick(self, button)
 		local id = self.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = C_Spell.GetSpellName(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);
@@ -1073,7 +1076,7 @@ function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnClick()
 
 	GenericTraitUI_LoadUI();
 
-	GenericTraitFrame:SetSystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetConfigIDBySystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
 	GenericTraitFrame:SetTreeID(Constants.MountDynamicFlightConsts.TREE_ID);
 	ToggleFrame(GenericTraitFrame);
 end

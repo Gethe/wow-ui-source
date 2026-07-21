@@ -36,17 +36,22 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
 		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
 		if (region:IsShown() or region.includeAsLayoutChildWhenHidden) and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
-			layoutChildren[#layoutChildren + 1] = region;
+			table.insert(layoutChildren, region);
 		end
 	end
 end
 
 function LayoutIndexComparator(left, right)
-	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
-		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
-		GMError(("Duplicate layoutIndex found: %d for %s and %s"):format(left.layoutIndex, leftName, rightName));
+	if left.layoutIndex == right.layoutIndex and left ~= right then
+		local leftName = not left.GetDebugName and "unnamed" or left:GetDebugName();
+		local rightName = not right.GetDebugName and "unnamed" or right:GetDebugName();
+		local leftVisible = not left.IsVisible and "novis" or left:IsVisible();
+		local rightVisible = not right.IsVisible and "novis" or right:IsVisible();
+		local leftShown = not left.IsShown and "noshown" or left:IsShown();
+		local rightShown = not right.IsShown and "noshown" or right:IsShown();
+		GMError(("Duplicate layoutIndex found: %d for %s (vis = %s, shown = %s) and %s (vis = %s, shown = %s)"):format(left.layoutIndex, tostring(leftName), tostring(leftVisible), tostring(leftShown), tostring(rightName), tostring(rightVisible), tostring(rightShown)));
 	end
+
 	return left.layoutIndex < right.layoutIndex;
 end
 
@@ -601,7 +606,7 @@ function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
     end
 
     for index, child in ipairs(layoutChildren) do
-        if self.oldGridSettings.layoutChildren[index] ~= child then
+        if self.oldGridSettings.layoutChildren[index] ~= child or child:GetNumPoints() == 0 then
             return true;
         end
     end
@@ -631,7 +636,7 @@ function StaticGridLayoutFrameMixin:Layout()
 	local childXPadding = self.childXPadding or 0;
 	local childYPadding = self.childYPadding or 0;
 
-	-- Iterate through frames and determine overall widths and heights to use for each column and row 
+	-- Iterate through frames and determine overall widths and heights to use for each column and row
 	-- based on the widest/tallest frame in each respective column and row
 	for childIndex, childFrame in ipairs(layoutChildren) do
 		if IsLayoutFrame(childFrame) then

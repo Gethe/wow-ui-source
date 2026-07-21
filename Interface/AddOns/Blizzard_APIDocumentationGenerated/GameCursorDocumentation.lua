@@ -2,6 +2,7 @@ local GameCursor =
 {
 	Name = "GameCursor",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -109,6 +110,20 @@ local GameCursor =
 				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetCursorByMode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mode", Type = "Cursormode", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -116,6 +131,9 @@ local GameCursor =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

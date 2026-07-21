@@ -2,6 +2,7 @@ local SimpleTextureBaseAPI =
 {
 	Name = "SimpleTextureBaseAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -98,8 +99,14 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = false, StrideIndex = 1 },
-				{ Name = "y", Type = "number", Nilable = false, StrideIndex = 2 },
+				{ Name = "ulX", Type = "number", Nilable = false },
+				{ Name = "ulY", Type = "number", Nilable = false },
+				{ Name = "llX", Type = "number", Nilable = false },
+				{ Name = "llY", Type = "number", Nilable = false },
+				{ Name = "urX", Type = "number", Nilable = false },
+				{ Name = "urY", Type = "number", Nilable = false },
+				{ Name = "lrX", Type = "number", Nilable = false },
+				{ Name = "lrY", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -229,6 +236,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "IsDesaturated",
 			Type = "Function",
+			RequiresScriptObjectDesaturationAccess = true,
 
 			Arguments =
 			{
@@ -253,6 +261,14 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "ResetTexCoord",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAtlas",
 			Type = "Function",
 
@@ -262,6 +278,8 @@ local SimpleTextureBaseAPI =
 				{ Name = "useAtlasSize", Type = "bool", Nilable = false, Default = false },
 				{ Name = "filterMode", Type = "FilterMode", Nilable = true },
 				{ Name = "resetTexCoords", Type = "bool", Nilable = true },
+				{ Name = "wrapModeHorizontal", Type = "cstring", Nilable = true },
+				{ Name = "wrapModeVertical", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -361,6 +379,19 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "SetSpriteSheetCell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "cell", Type = "luaIndex", Nilable = false },
+				{ Name = "numRows", Type = "number", Nilable = false },
+				{ Name = "numColumns", Type = "number", Nilable = false },
+				{ Name = "cellWidth", Type = "number", Nilable = true },
+				{ Name = "cellHeight", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetTexCoord",
 			Type = "Function",
 
@@ -448,6 +479,9 @@ local SimpleTextureBaseAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

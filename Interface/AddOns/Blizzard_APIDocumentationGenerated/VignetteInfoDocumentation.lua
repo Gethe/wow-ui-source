@@ -3,6 +3,7 @@ local VignetteInfo =
 	Name = "Vignette",
 	Type = "System",
 	Namespace = "C_VignetteInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -34,6 +35,9 @@ local VignetteInfo =
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

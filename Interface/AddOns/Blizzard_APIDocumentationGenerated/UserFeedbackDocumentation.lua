@@ -3,6 +3,7 @@ local UserFeedback =
 	Name = "UserFeedback",
 	Type = "System",
 	Namespace = "C_UserFeedback",
+	Environment = "All",
 
 	Functions =
 	{
@@ -42,6 +43,9 @@ local UserFeedback =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

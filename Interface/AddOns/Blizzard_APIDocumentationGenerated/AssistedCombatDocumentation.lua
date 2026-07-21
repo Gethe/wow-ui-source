@@ -3,6 +3,7 @@ local AssistedCombat =
 	Name = "AssistedCombat",
 	Type = "System",
 	Namespace = "C_AssistedCombat",
+	Environment = "All",
 
 	Functions =
 	{
@@ -56,10 +57,14 @@ local AssistedCombat =
 			Name = "AssistedCombatActionSpellCast",
 			Type = "Event",
 			LiteralName = "ASSISTED_COMBAT_ACTION_SPELL_CAST",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

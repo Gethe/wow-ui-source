@@ -3,6 +3,7 @@ local CommentatorFrame =
 	Name = "CommentatorFrame",
 	Type = "System",
 	Namespace = "C_Commentator",
+	Environment = "All",
 
 	Functions =
 	{
@@ -265,6 +266,15 @@ local CommentatorFrame =
 				{ Name = "xPos", Type = "number", Nilable = false },
 				{ Name = "yPos", Type = "number", Nilable = false },
 				{ Name = "zPos", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatEventInfo",
+			Type = "Function",
+			RequiresActiveCommentator = true,
+
+			Returns =
+			{
 			},
 		},
 		{
@@ -1475,19 +1485,28 @@ local CommentatorFrame =
 	Events =
 	{
 		{
+			Name = "CommentatorCombatEvent",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_COMBAT_EVENT",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "CommentatorEnterWorld",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_ENTER_WORLD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommentatorHistoryFlushed",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_HISTORY_FLUSHED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommentatorImmediateFovUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_IMMEDIATE_FOV_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "fov", Type = "number", Nilable = false },
@@ -1497,11 +1516,13 @@ local CommentatorFrame =
 			Name = "CommentatorMapUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_MAP_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommentatorPlayerNameOverrideUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nameToOverride", Type = "cstring", Nilable = false },
@@ -1512,16 +1533,20 @@ local CommentatorFrame =
 			Name = "CommentatorPlayerUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_PLAYER_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "CommentatorResetSettings",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_RESET_SETTINGS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CommentatorTeamNameUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_TEAM_NAME_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "teamName", Type = "string", Nilable = false },
@@ -1531,6 +1556,7 @@ local CommentatorFrame =
 			Name = "CommentatorTeamsSwapped",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_TEAMS_SWAPPED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "swapped", Type = "bool", Nilable = false },
@@ -1626,6 +1652,9 @@ local CommentatorFrame =
 				{ Name = "overrideName", Type = "string", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

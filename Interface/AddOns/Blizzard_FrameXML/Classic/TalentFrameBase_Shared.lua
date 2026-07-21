@@ -63,7 +63,7 @@ function TalentFrame_Load(TalentFrame)
 	TalentFrame.TALENT_BRANCH_ARRAY={};
 	for i=1, MAX_NUM_TALENT_TIERS do
 		TalentFrame.TALENT_BRANCH_ARRAY[i] = {};
-		for j=1, NUM_TALENT_COLUMNS do
+		for j=1, Constants.TalentConsts.NumTalentColumns do
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j] = {id=nil, up=0, left=0, right=0, down=0, leftArrow=0, rightArrow=0, topArrow=0};
 		end
 	end
@@ -218,7 +218,7 @@ end
 
 function TalentFrame_ResetBranches(TalentFrame)
 	for i=1, MAX_NUM_TALENT_TIERS do
-		for j=1, NUM_TALENT_COLUMNS do
+		for j=1, Constants.TalentConsts.NumTalentColumns do
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].id = nil;
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].up = 0;
 			TalentFrame.TALENT_BRANCH_ARRAY[i][j].down = 0;
