@@ -462,6 +462,12 @@ function AnchorUtil.AdjustPointByName(region, pointName, extraOffsetX, extraOffs
 	region:SetPoint(point, relativeTo, relativePoint, offsetX + extraOffsetX, offsetY + extraOffsetY);
 end
 
+AnchorUtil.FlowLayoutAxis =
+{
+	Horizontal = 0,
+	Vertical = 1,
+};
+
 AnchorUtil.FlowDirection =
 {
 	Left = -1,
@@ -470,153 +476,272 @@ AnchorUtil.FlowDirection =
 	Down = -1,
 };
 
-local FlowLayoutDescriptionBaseMixin = {};
-AnchorUtil.FlowLayoutDescriptionBaseMixin = FlowLayoutDescriptionBaseMixin;
+local FlowLayoutMixin = {};
+AnchorUtil.FlowLayoutMixin = FlowLayoutMixin;
 
-function FlowLayoutDescriptionBaseMixin:GetAnchorPoint(_container)
-	-- Override to define the anchor point name that elements will use when
-	-- being positioned relatively within the container frame.
-	return "TOPLEFT";
+function FlowLayoutMixin:Init()
+	self:ResetOptions();
 end
 
-function FlowLayoutDescriptionBaseMixin:GetHorizontalGrowthDirection(_container)
-	-- Override to describe whether we're laying out elements such that they
-	-- wrap and grow rightwards or left.
-	return AnchorUtil.FlowDirection.Right;
+function FlowLayoutMixin:ResetOptions()
+	self.layoutAxis = AnchorUtil.FlowLayoutAxis.Horizontal;
+	self.anchorPoint = "TOPLEFT";
+	self.horizontalGrowthDirection = AnchorUtil.FlowDirection.Right;
+	self.verticalGrowthDirection = AnchorUtil.FlowDirection.Down;
+	self.paddingLeft = 0;
+	self.paddingRight = 0;
+	self.paddingTop = 0;
+	self.paddingBottom = 0;
+	self.maximumLineSize = math.huge;
 end
 
-function FlowLayoutDescriptionBaseMixin:GetVerticalGrowthDirection(_container)
-	-- Override to describe whether we're laying out elements such that they
-	-- wrap and grow upwards or down,
-	return AnchorUtil.FlowDirection.Down;
+function FlowLayoutMixin:GetLayoutAxis()
+	return self.layoutAxis;
 end
 
-function FlowLayoutDescriptionBaseMixin:GetPadding(_container)
-	-- Override to define static padding within the layout. Note that padding
-	-- acts as an offset within a row, and so consumes available row width.
-	--
-	-- Return order should be left, right, top, bottom.
-	return 0, 0, 0, 0;
+function FlowLayoutMixin:SetLayoutAxis(layoutAxis)
+	if self.layoutAxis == layoutAxis then
+		return false;
+	end
+
+	self.layoutAxis = layoutAxis;
+	return true;
 end
 
-function FlowLayoutDescriptionBaseMixin:GetRowWidth(_container, _rowIndex, _group)
-	-- Override to define the maximum available width available for layout
-	-- on a specific row. Individual rows may have different widths.
-	return math.huge;
+function FlowLayoutMixin:GetAnchorPoint()
+	return self.anchorPoint;
 end
 
-function FlowLayoutDescriptionBaseMixin:GetElementSize(_container, element, _group)
-	-- Override to return the space this element should consume in the
-	-- layout. This default implementation uses the natural size of the
-	-- element.
+function FlowLayoutMixin:SetAnchorPoint(anchorPoint)
+	if self.anchorPoint == anchorPoint then
+		return false;
+	end
+
+	self.anchorPoint = anchorPoint;
+	return true;
+end
+
+function FlowLayoutMixin:GetHorizontalGrowthDirection()
+	return self.horizontalGrowthDirection;
+end
+
+function FlowLayoutMixin:GetVerticalGrowthDirection()
+	return self.verticalGrowthDirection;
+end
+
+function FlowLayoutMixin:GetGrowthDirection()
+	return self.horizontalGrowthDirection, self.verticalGrowthDirection;
+end
+
+function FlowLayoutMixin:SetGrowthDirection(horizontalDirection, verticalDirection)
+	if self.horizontalGrowthDirection == horizontalDirection and self.verticalGrowthDirection == verticalDirection then
+		return false;
+	end
+
+	self.horizontalGrowthDirection = horizontalDirection;
+	self.verticalGrowthDirection = verticalDirection;
+	return true;
+end
+
+function FlowLayoutMixin:GetPadding()
+	return self.paddingLeft, self.paddingRight, self.paddingTop, self.paddingBottom;
+end
+
+function FlowLayoutMixin:SetPadding(left, right, top, bottom)
+	if self.paddingLeft == left and self.paddingRight == right and self.paddingTop == top and self.paddingBottom == bottom then
+		return false;
+	end
+
+	self.paddingLeft = left;
+	self.paddingRight = right;
+	self.paddingTop = top;
+	self.paddingBottom = bottom;
+	return true;
+end
+
+function FlowLayoutMixin:GetMaximumLineSize()
+	return self.maximumLineSize;
+end
+
+function FlowLayoutMixin:SetMaximumLineSize(maximumLineSize)
+	if self.maximumLineSize == maximumLineSize then
+		return false;
+	end
+
+	self.maximumLineSize = maximumLineSize;
+	return true;
+end
+
+function FlowLayoutMixin:GetMaximumLineSizeForLine(_container, _lineIndex, _group)
+	-- Override to determine the maximum space available along the primary
+	-- axis for a specific line. The default uses the configured maximum.
+	return self:GetMaximumLineSize();
+end
+
+function FlowLayoutMixin:GetElementSize(_container, element, _group)
+	-- Override to return the space this element should consume in the layout.
+	-- This default implementation uses the natural size of the element.
 	return element:GetSize();
 end
 
-function FlowLayoutDescriptionBaseMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, _width, _height)
+function FlowLayoutMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, _width, _height)
 	-- Override to apply calculated layout properties to elements. This should
 	-- at minimum apply the anchor point.
 	--
-	-- Width and height are ignored in this default implementation as we
-	-- use the element's natural size for layout.
+	-- Width and height are ignored in this default implementation because the
+	-- element's natural size is used for layout.
 	element:ClearAllPoints();
 	element:SetPoint(anchorPoint, container, anchorPoint, offsetX, offsetY);
 end
 
-function FlowLayoutDescriptionBaseMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, _rowCount)
-	-- Override to apply any final changes after the layout pass has been
-	-- completed.
+function FlowLayoutMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, _lineCount)
+	-- Override to apply any final changes after the layout pass has completed.
 	container:SetSize(width, height);
 end
 
-function AnchorUtil.ApplyFlowLayout(container, groups, layoutDescription)
-	local anchorPoint = layoutDescription:GetAnchorPoint(container);
-	local horizontalDirection = layoutDescription:GetHorizontalGrowthDirection(container);
-	local verticalDirection = layoutDescription:GetVerticalGrowthDirection(container);
-	local paddingLeft, paddingRight, paddingTop, paddingBottom = layoutDescription:GetPadding(container);
+function FlowLayoutMixin:Apply(container, groups)
+	AnchorUtil.ApplyFlowLayout(container, groups, self);
+end
 
-	-- Padding is applied relative to the layout growth direction.
+function AnchorUtil.CreateFlowLayout()
+	local layout = CreateFromMixins(FlowLayoutMixin);
+	layout:Init();
+	return layout;
+end
+
+-- Flow layout groups support the following options:
+--
+-- elements
+--     An array of elements, or a function returning one. Empty groups do not
+--     contribute spacing or force a new line.
+--
+-- elementSpacing
+--     Spacing between elements along the primary axis.
+--
+-- lineSpacing
+--     Spacing along the cross axis when element placement wraps naturally
+--     onto a new line.
+--
+-- groupSpacing
+--     Spacing along the primary axis before a non-empty group that continues
+--     on the current line. This spacing may itself cause the group to wrap.
+--
+-- groupLineSpacing
+--     Spacing along the cross axis when a group starts a new line, either
+--     explicitly or because groupSpacing caused wrapping. Defaults to
+--     lineSpacing.
+--
+-- forceNewLine
+--     Starts a non-empty group on a new line when another element has already
+--     been placed.
+function AnchorUtil.ApplyFlowLayout(container, groups, layout)
+	local anchorPoint = layout:GetAnchorPoint();
+	local layoutAxis = layout:GetLayoutAxis();
+	local horizontalDirection = layout:GetHorizontalGrowthDirection();
+	local verticalDirection = layout:GetVerticalGrowthDirection();
+	local paddingLeft, paddingRight, paddingTop, paddingBottom = layout:GetPadding();
+
+	-- Padding is applied relative to the growth direction on each physical axis.
 	local startPaddingX = horizontalDirection == AnchorUtil.FlowDirection.Right and paddingLeft or paddingRight;
 	local endPaddingX = horizontalDirection == AnchorUtil.FlowDirection.Right and paddingRight or paddingLeft;
 	local startPaddingY = verticalDirection == AnchorUtil.FlowDirection.Down and paddingTop or paddingBottom;
 	local endPaddingY = verticalDirection == AnchorUtil.FlowDirection.Down and paddingBottom or paddingTop;
 
-	-- Cursor offsets refer to our relative placement of elements. Elements are
-	-- anchored relative to the container, rather than chaining anchors between
-	-- one another.
-	local cursorX = startPaddingX * horizontalDirection;
-	local cursorY = startPaddingY * verticalDirection;
+	-- The primary axis determines the direction in which elements flow.
+	-- The cross axis determines the direction in which new lines are added.
+	local isVertical = layoutAxis == AnchorUtil.FlowLayoutAxis.Vertical;
+	local primaryDirection = isVertical and verticalDirection or horizontalDirection;
+	local crossDirection = isVertical and horizontalDirection or verticalDirection;
+	local startPrimaryPadding = isVertical and startPaddingY or startPaddingX;
+	local endPrimaryPadding = isVertical and endPaddingY or endPaddingX;
+	local startCrossPadding = isVertical and startPaddingX or startPaddingY;
+	local endCrossPadding = isVertical and endPaddingX or endPaddingY;
 
-	-- Row width and height are the logically consumed extents for this row.
-	local rowIndex = 1;
-	local rowWidth = 0;
-	local rowHeight = 0;
+	-- Cursor offsets describe element placement along the primary and cross
+	-- axes. Elements are anchored relative to the container rather than
+	-- chaining anchors between one another.
+	local cursorPrimary = startPrimaryPadding * primaryDirection;
+	local cursorCross = startCrossPadding * crossDirection;
 
-	local layoutWidth = startPaddingX + endPaddingX;
-	local layoutHeight = startPaddingY + endPaddingY;
+	-- The primary size tracks the consumed space along the current line,
+	-- including trailing element spacing. The cross size tracks the largest
+	-- element extent perpendicular to the line.
+	local lineIndex = 1;
+	local linePrimarySize = 0;
+	local lineCrossSize = 0;
+	local layoutPrimarySize = startPrimaryPadding + endPrimaryPadding;
+	local layoutCrossSize = startCrossPadding + endCrossPadding;
 	local hasPlacedElement = false;
 
-	local function AdvanceToNextRow(gapY)
-		cursorX = startPaddingX * horizontalDirection;
-		cursorY = cursorY + ((rowHeight + gapY) * verticalDirection);
-
-		rowIndex = rowIndex + 1;
-		rowWidth = 0;
-		rowHeight = 0;
+	local function AdvanceToNextLine(crossGap)
+		cursorPrimary = startPrimaryPadding * primaryDirection;
+		cursorCross = cursorCross + ((lineCrossSize + crossGap) * crossDirection);
+		lineIndex = lineIndex + 1;
+		linePrimarySize = 0;
+		lineCrossSize = 0;
 	end
 
 	for _groupIndex, group in ipairs(groups) do
 		local elements = GetValueOrCallFunction(group, "elements");
-		local elementSpacingX = group.elementSpacingX or 0;
-		local elementSpacingY = group.elementSpacingY or 0;
-		local gapX = group.gapX or 0;
-		local gapY = group.gapY or elementSpacingY;
+		local elementSpacing = group.elementSpacing or 0;
+		local lineSpacing = group.lineSpacing or 0;
+		local groupSpacing = group.groupSpacing or 0;
+		local groupLineSpacing = group.groupLineSpacing or lineSpacing;
 
-		-- Groups may either force a row break or continue on the current row
-		-- after an optional horizontal gap. The gap itself can trigger wrapping.
+		-- Groups may force a new line or continue on the current line after
+		-- optional spacing. That spacing may itself trigger wrapping.
 		if hasPlacedElement and #elements > 0 then
-			if group.forceNewRow then
-				AdvanceToNextRow(gapY);
-			elseif gapX > 0 then
-				local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex, group);
+			if group.forceNewLine then
+				AdvanceToNextLine(groupLineSpacing);
+			elseif groupSpacing > 0 then
+				local maximumLineSize = layout:GetMaximumLineSizeForLine(container, lineIndex, group);
 
-				if rowWidth > 0 and rowWidth + gapX > maxRowWidth then
-					AdvanceToNextRow(gapY);
+				if linePrimarySize > 0 and linePrimarySize + groupSpacing > maximumLineSize then
+					AdvanceToNextLine(groupLineSpacing);
 				else
-					cursorX = cursorX + (gapX * horizontalDirection);
-					rowWidth = rowWidth + gapX;
+					cursorPrimary = cursorPrimary + (groupSpacing * primaryDirection);
+					linePrimarySize = linePrimarySize + groupSpacing;
 				end
 			end
 		end
 
 		for _elementIndex, element in ipairs(elements) do
-			local width, height = layoutDescription:GetElementSize(container, element, group);
-			local maxRowWidth = layoutDescription:GetRowWidth(container, rowIndex, group);
-			local nextRowWidth = rowWidth > 0 and rowWidth + width or width;
+			local width, height = layout:GetElementSize(container, element, group);
+			local elementPrimarySize = isVertical and height or width;
+			local elementCrossSize = isVertical and width or height;
+			local maximumLineSize = layout:GetMaximumLineSizeForLine(container, lineIndex, group);
+			local nextLinePrimarySize = linePrimarySize > 0 and linePrimarySize + elementPrimarySize or elementPrimarySize;
 
-			if rowWidth > 0 and nextRowWidth > maxRowWidth then
-				AdvanceToNextRow(elementSpacingY);
-				nextRowWidth = width;
+			if linePrimarySize > 0 and nextLinePrimarySize > maximumLineSize then
+				AdvanceToNextLine(lineSpacing);
+				nextLinePrimarySize = elementPrimarySize;
 			end
 
-			layoutDescription:ApplyElementLayout(container, element, anchorPoint, cursorX, cursorY, width, height);
+			-- Convert the primary/cross-axis cursors back into physical offsets
+			-- before applying the element layout.
+			local offsetX = isVertical and cursorCross or cursorPrimary;
+			local offsetY = isVertical and cursorPrimary or cursorCross;
+			layout:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, width, height);
 
-			cursorX = cursorX + ((width + elementSpacingX) * horizontalDirection);
-			rowWidth = nextRowWidth + elementSpacingX;
-			rowHeight = math.max(rowHeight, height);
+			cursorPrimary = cursorPrimary + ((elementPrimarySize + elementSpacing) * primaryDirection);
+			linePrimarySize = nextLinePrimarySize + elementSpacing;
+			lineCrossSize = math.max(lineCrossSize, elementCrossSize);
 
 			-- Bounds exclude trailing element spacing because spacing belongs
-			-- between elements, not after the final element in a row.
+			-- between elements, not after the final element in a line.
 			--
-			-- Note that width uses rowWidth, which excludes start padding.
-			layoutWidth = math.max(layoutWidth, startPaddingX + rowWidth - elementSpacingX + endPaddingX);
+			-- The consumed primary size does not include start padding, so add it
+			-- explicitly. The trailing element spacing is excluded from the bound.
+			layoutPrimarySize = math.max(layoutPrimarySize, startPrimaryPadding + linePrimarySize - elementSpacing + endPrimaryPadding);
 
-			-- Height uses cursorY, which already includes start padding.
-			layoutHeight = math.max(layoutHeight, math.abs(cursorY) + height + endPaddingY);
-
+			-- The cross cursor already includes start padding through its initial offset.
+			layoutCrossSize = math.max(layoutCrossSize, math.abs(cursorCross) + elementCrossSize + endCrossPadding);
 			hasPlacedElement = true;
 		end
 	end
 
-	local rowCount = hasPlacedElement and rowIndex or 0;
-	layoutDescription:OnLayoutComplete(container, math.max(layoutWidth, 1), math.max(layoutHeight, 1), hasPlacedElement, rowCount);
+	local lineCount = hasPlacedElement and lineIndex or 0;
+	local layoutWidth = isVertical and layoutCrossSize or layoutPrimarySize;
+	local layoutHeight = isVertical and layoutPrimarySize or layoutCrossSize;
+	layout:OnLayoutComplete(container, math.max(layoutWidth, 1), math.max(layoutHeight, 1), hasPlacedElement, lineCount);
 end

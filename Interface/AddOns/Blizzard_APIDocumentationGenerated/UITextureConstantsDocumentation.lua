@@ -26,6 +26,17 @@ local UITextureConstants =
 				{ Name = "sliceMode", Type = "UITextureSliceMode", Nilable = false },
 			},
 		},
+		{
+			Name = "UITextureSliceMargins",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+			},
+		},
 	},
 	Predicates =
 	{

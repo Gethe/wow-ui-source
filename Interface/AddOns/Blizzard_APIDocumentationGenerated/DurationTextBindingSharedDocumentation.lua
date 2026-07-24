@@ -20,12 +20,30 @@ local DurationTextBindingShared =
 			},
 		},
 		{
+			Name = "DurationTextBindingColorOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "curve", Type = "LuaColorCurveObject", Nilable = false },
+				{ Name = "property", Type = "DurationTextBindingProperty", Nilable = false },
+			},
+		},
+		{
 			Name = "DurationTextBindingFormatComponent",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "property", Type = "DurationTextBindingProperty", Nilable = false, Documentation = { "The duration property sampled for this format component." } },
 				{ Name = "formatter", Type = "NumericFormatter", Nilable = false, Documentation = { "The numeric formatter used to convert the sampled duration property into text." } },
+			},
+		},
+		{
+			Name = "DurationTextBindingFormatOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "formatString", Type = "stringView", Nilable = false },
+				{ Name = "components", Type = "table", InnerType = "DurationTextBindingFormatComponent", Nilable = false },
 			},
 		},
 	},

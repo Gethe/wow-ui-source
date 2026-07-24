@@ -848,6 +848,7 @@ Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainer.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainer.toc
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainer.xml
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainerEnchantments.lua
+Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainerFlowLayout.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainerFrameProviders.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainerGroups.lua
 Interface\AddOns\Blizzard_AuraContainer\Blizzard_AuraContainerInbound.lua
@@ -1423,9 +1424,6 @@ Interface\AddOns\Blizzard_DeprecatedGlue\Blizzard_DeprecatedGlue.toc
 Interface\AddOns\Blizzard_DeprecatedGlue\Deprecated_Glue.lua
 Interface\AddOns\Blizzard_DeprecatedGuildScript\Blizzard_DeprecatedGuildScript.toc
 Interface\AddOns\Blizzard_DeprecatedGuildScript\Deprecated_GuildScript.lua
-Interface\AddOns\Blizzard_DeprecatedHousing\Blizzard_DeprecatedHousing.toc
-Interface\AddOns\Blizzard_DeprecatedHousing\Deprecated_Housing.lua
-Interface\AddOns\Blizzard_DeprecatedHousing\Deprecated_HousingCatalog.lua
 Interface\AddOns\Blizzard_DeprecatedInstanceEncounter\Blizzard_DeprecatedInstanceEncounter.toc
 Interface\AddOns\Blizzard_DeprecatedInstanceEncounter\Deprecated_InstanceEncounter.lua
 Interface\AddOns\Blizzard_DeprecatedItemScript\Blizzard_DeprecatedItemScript.toc
@@ -1468,6 +1466,7 @@ Interface\AddOns\Blizzard_Deprecated\Blizzard_Deprecated.toc
 Interface\AddOns\Blizzard_Deprecated\Classic\Deprecated_1_15_8.lua
 Interface\AddOns\Blizzard_Deprecated\Classic\Deprecated_2_5_5.lua
 Interface\AddOns\Blizzard_Deprecated\Mainline\Deprecated_12_0_1.lua
+Interface\AddOns\Blizzard_Deprecated\Mainline\Deprecated_12_0_5.lua
 Interface\AddOns\Blizzard_Deprecated\Mainline\Deprecated_12_0_7.lua
 Interface\AddOns\Blizzard_Deprecated\Mainline\Deprecated_12_1_0.lua
 Interface\AddOns\Blizzard_Deprecated\Shared\Deprecated_12_1_0.lua
@@ -3203,6 +3202,7 @@ Interface\AddOns\Blizzard_SharedXMLBase\ErrorUtil.lua
 Interface\AddOns\Blizzard_SharedXMLBase\Event.lua
 Interface\AddOns\Blizzard_SharedXMLBase\ExportUtil.lua
 Interface\AddOns\Blizzard_SharedXMLBase\Flags.lua
+Interface\AddOns\Blizzard_SharedXMLBase\ForbiddenAspectTemplates.xml
 Interface\AddOns\Blizzard_SharedXMLBase\FrameFactory.lua
 Interface\AddOns\Blizzard_SharedXMLBase\FrameUtil.lua
 Interface\AddOns\Blizzard_SharedXMLBase\FrameWatcher.lua

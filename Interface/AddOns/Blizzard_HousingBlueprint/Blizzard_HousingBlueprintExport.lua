@@ -146,7 +146,6 @@ function HousingBlueprintExportInputContentMixin:OnLoad()
 end
 
 function HousingBlueprintExportInputContentMixin:OnShow()
-	local isInsideHouse = C_Housing.IsInsideHouse();
 	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
 		local function IsSelected(blueprintType)
 			return self.selectedType and self.selectedType == blueprintType;
@@ -158,17 +157,16 @@ function HousingBlueprintExportInputContentMixin:OnShow()
 		end
 
 		local function AddBlueprintTypeOption(blueprintType)
-			local optionName = HousingBlueprintTypeOptionStrings[blueprintType];
-			rootDescription:CreateHighlightRadio(optionName, IsSelected, SetSelected, blueprintType);
+			if C_HousingBlueprint.CanExportTypeFromCurrentLocation(blueprintType) then
+				local optionName = HousingBlueprintTypeOptionStrings[blueprintType];
+				rootDescription:CreateHighlightRadio(optionName, IsSelected, SetSelected, blueprintType);
+			end
 		end
 
 		AddBlueprintTypeOption(Enum.HousingBlueprintType.House);
 		AddBlueprintTypeOption(Enum.HousingBlueprintType.Interior);
 		AddBlueprintTypeOption(Enum.HousingBlueprintType.Exterior);
-
-		if isInsideHouse then
-			AddBlueprintTypeOption(Enum.HousingBlueprintType.Room);
-		end
+		AddBlueprintTypeOption(Enum.HousingBlueprintType.Room);
 	end);
 	self.TypeDropdown:Show();
 	self:MarkDirty();

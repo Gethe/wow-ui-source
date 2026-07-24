@@ -433,7 +433,6 @@ local RecentAlliesSearchFilterOptions = {
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Dungeons } } },
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,           searchInfo = { interests = { Enum.RecentAlliesFriendTag.Delves } } },
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Questing } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_ROLEPLAYING,     searchInfo = { interests = { Enum.RecentAlliesFriendTag.RolePlaying } } },
 };
 
 RecentAlliesSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrollableElementExtentPreviewerMixin);
@@ -499,7 +498,7 @@ function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
 		interests = {},
 	};
 
-	for filterOption, isChecked in pairs(self.selectedSearchFilterOptions) do
+	for filterOption, isChecked in pairs(self.selectedSearchFilterOptions or {}) do
 		if isChecked then
 			local searchInfo = filterOption.searchInfo;
 			if searchInfo.interests then

@@ -43,8 +43,8 @@
 					<KeyValue key="spacing" value="1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.GroupNumberText" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
+					<Anchor point="TOPLEFT" x="4" y="-28"/>
+					<Anchor point="TOPRIGHT" x="-4" y="-28"/>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
 			</Frame>
@@ -63,7 +63,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="RaidFrameSocialPlayerTemplate" inherits="UIButtonTemplate" mixin="RaidFrameSocialPlayerMixin" virtual="true" movable="true" registerForClicks="LeftButtonUp, RightButtonUp" registerForDrag="LeftButton">
+	<Button name="RaidFrameSocialPlayerTemplate" inherits="SecureUnitButtonTemplate" mixin="RaidFrameSocialPlayerMixin" virtual="true" movable="true" registerForClicks="LeftButtonUp, RightButtonUp" registerForDrag="LeftButton">
 		<Size x="187" y="20"/>
 		<Frames>
 			<Frame parentKey="LeaderIcon" inherits="RaidFrameSocialPlayerRoleIconTemplate">
@@ -131,7 +131,7 @@
 					<Anchors>
 						<Anchor point="TOP" y="-60"/>
 						<Anchor point="LEFT" x="12"/>
-						<Anchor point="RIGHT" x="-5"/>
+						<Anchor point="RIGHT" x="-8"/>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</FontString>

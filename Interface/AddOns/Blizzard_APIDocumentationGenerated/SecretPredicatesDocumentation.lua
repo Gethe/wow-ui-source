@@ -126,6 +126,11 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled or in the party/raid. For compound tokens (eg. 'boss1target'), results are secret if any unit in the chain fails this." },
 		},
 		{
+			Name = "SecretWhenUnitNameIdentityRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values under regular unit identity secrecy rules, except in PvP when the queried unit is a player." },
+		},
+		{
 			Name = "SecretWhenUnitPowerMaxRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled. Individual power types may be flagged as never or always secret, which takes priority." },
@@ -138,7 +143,7 @@ local SecretPredicates =
 		{
 			Name = "SecretWhenUnitStatsRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when access to unit auras would generally produce secret values." },
+			Documentation = { "Guarded APIs and events produce secret values when access to unit stats would generally produce secret values." },
 		},
 		{
 			Name = "SecretWhenUnitThreatStateRestricted",

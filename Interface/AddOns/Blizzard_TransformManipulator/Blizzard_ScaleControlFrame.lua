@@ -107,6 +107,11 @@ function ScaleControlFrameMixin:UpdateFill()
 	end
 
 	local currentValue = self:GetValue();
+	-- Cut currentValue to the hundredths place to get rid of any & all floating point nonsense
+	-- Particularly needed because "unscaled" scales of 1 tend to come down to UI with floating point imprecision (ie 0.99999 or 1.00001)
+	-- The epsilon prevents precision issues where, for example, a value of 4.1 would result in a value of 0 (apparently math.floor((4.1-4)*10) == 0)
+	currentValue = math.floor((currentValue + MathUtil.Epsilon) * 100) / 100;
+
 	local currentDirection = ScaleControlDirection.None;
 	
 	if currentValue > 1 then

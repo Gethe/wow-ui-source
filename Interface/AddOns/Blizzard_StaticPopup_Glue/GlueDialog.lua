@@ -26,9 +26,6 @@ do
 		container.BG.Bottom:SetPoint("TOPLEFT", 8, -9);
 		container.BG.Bottom:SetPoint("BOTTOMRIGHT", -8, 9);
 
-		container.Text.origWidth = self.Container.Text:GetWidth();
-		container.HtmlText.origWidth = self.Container.HtmlText:GetWidth();
-		container.origWidth = self.Container:GetWidth();
 		container.alertWidth = 600;
 
 		SetupButton(self, container.Button1);
@@ -134,7 +131,7 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 		self.Container:SetDesiredWidth(self.Container.alertWidth);
 		alertIcon:Show();
 	else
-		self.Container:SetDesiredWidth(self.Container.origWidth);
+		self.Container:SetDesiredWidth(self.Container.baseWidth);
 		alertIcon:Hide();
 	end
 	alertIcon:ClearAllPoints();
@@ -145,7 +142,6 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	else
 		alertIcon:SetPoint("LEFT", 17, 0);
 	end
-	useText:SetDesiredWidth(useText.origWidth);
 
 	-- Editbox setup
 	if dialogInfo.hasEditBox then
@@ -252,6 +248,7 @@ function GlueDialogMixin:Resize(which)
 	-- Get the width of the text to aid in determining the width of the dialog
 	local textWidth = 0;
 	if dialogInfo.html then
+		self:ApplyHtmlText();
 		textWidth = select(3, htmlText:GetBoundsRect());
 	else
 		textWidth = text:GetWidth();
@@ -327,6 +324,7 @@ function GlueDialogMixin:Resize(which)
 end
 
 function GlueDialogMixin:SetText(text)
+	self.Container.Text:SetDesiredWidth(self.Container.Text.baseWidth);
 	self.Container.Text:SetText(text);
 end
 
@@ -339,8 +337,12 @@ function GlueDialogMixin:ClearHtmlText()
 end
 
 function GlueDialogMixin:SetHtmlText(text)
-	self.Container.HtmlText:SetText(text);
 	self.Container.HtmlText.text = text;
+end
+
+function GlueDialogMixin:ApplyHtmlText()
+	self.Container.HtmlText:SetDesiredWidth(self.Container.HtmlText.baseWidth);
+	self.Container.HtmlText:SetText(self.Container.HtmlText.text);
 end
 
 function GlueDialogMixin:GetText(text)

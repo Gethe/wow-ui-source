@@ -1,15 +1,26 @@
+local secretwrap = secretwrap;
+local ShouldUnitSpellCastingBeSecret = C_Secrets.ShouldUnitSpellCastingBeSecret;
+
+local function WrapValueInSpellCastSecrecy(unitToken, value)
+	if unitToken ~= nil and ShouldUnitSpellCastingBeSecret(unitToken) then
+		return secretwrap(value);
+	end
+
+	return value;
+end
+
 local CASTBAR_STAGE_INVALID = -1;
 local CASTBAR_STAGE_DURATION_INVALID = -1;
 
 -- Casting bar type, determined based on spell data.
 CastingBarType = {
-	ApplyingCrafting = secretwrap("applyingcrafting"),
-	ApplyingTalents = secretwrap("applyingtalents"),
-	Standard = secretwrap("standard"),
-	Empowered = secretwrap("empowered"),
-	Channel = secretwrap("channel"),
-	Uninterruptable = secretwrap("uninterruptable"),
-	Interrupted = secretwrap("interrupted"),
+	ApplyingCrafting = "applyingcrafting",
+	ApplyingTalents = "applyingtalents",
+	Standard = "standard",
+	Empowered = "empowered",
+	Channel = "channel",
+	Uninterruptable = "uninterruptable",
+	Interrupted = "interrupted",
 };
 
 -- Visual config for each CastingBarType.
@@ -324,16 +335,23 @@ function CastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSk
 	if isTradeSkill then
 		return CastingBarType.ApplyingCrafting;
 	end
+
+	-- Priority evaluation of effective types beyond this point inspects
+	-- potentially-secret values (interrupt status). All effective types
+	-- after this point must be secret wrapped on the way out.
+	local effectiveType;
+
 	if notInterruptible then
-		return CastingBarType.Uninterruptable;
+		effectiveType = CastingBarType.Uninterruptable;
+	elseif isChannel then
+		effectiveType = CastingBarType.Channel;
+	elseif isEmpowered then
+		effectiveType = CastingBarType.Empowered;
+	else
+		effectiveType = CastingBarType.Standard;
 	end
-	if isChannel then
-		return CastingBarType.Channel;
-	end
-	if isEmpowered then
-		return CastingBarType.Empowered;
-	end
-	return CastingBarType.Standard;
+
+	return WrapValueInSpellCastSecrecy(self.unit, effectiveType);
 end
 
 --[[
@@ -522,7 +540,7 @@ end
 
 function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, castID, interruptedBy)
 	if ( empoweredInterrupt or (self:IsShown() and (self.casting and castID == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
-		self.barType = CastingBarType.Interrupted; -- failed and interrupted use same bar art
+		self.barType = WrapValueInSpellCastSecrecy(self.unit, CastingBarType.Interrupted); -- failed and interrupted use same bar art
 
 		self:UpdateBarFillTexture(true);
 
@@ -584,7 +602,7 @@ end
 	Interruptable State Functions
 ]]
 function CastingBarMixin:IsInterruptable()
-	return self.barType ~= CastingBarType.Uninterruptable;
+	return WrapValueInSpellCastSecrecy(self.unit, self.barType ~= CastingBarType.Uninterruptable);
 end
 
 function CastingBarMixin:UpdateInterruptibleState(notInterruptible)
@@ -894,10 +912,10 @@ function CastingBarMixin:UpdateIconShown()
 	if self.BorderShield then
 		local shieldShown = self.showShield and not self:IsInterruptable();
 		self.BorderShield:SetShown(shieldShown);
-			if self.BarBorder then
-				self.BarBorder:SetShown(not shieldShown);
-			end
+		if self.BarBorder then
+			self.BarBorder:SetShown(not shieldShown);
 		end
+	end
 end
 
 --[[

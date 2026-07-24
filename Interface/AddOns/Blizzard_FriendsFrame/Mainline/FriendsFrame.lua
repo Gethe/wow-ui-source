@@ -86,6 +86,19 @@ function FriendsFrame_ShowSubFrame(frameName)
 	end
 end
 
+-- Hides every possible subframe, ignoring the currently valid set
+function FriendsFrame_HideAllPotentialSubFrames()
+	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
+		if ( value == "RaidFrame" ) then
+			if ( RaidFrame and RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		elseif _G[value] then
+			_G[value]:Hide();
+		end
+	end
+end
+
 function FriendsFrame_GetBestUIPanelWidth()
 	if FriendsFrame.IgnoreListWindow:IsShown() then
 		local padding = 10;
@@ -1283,6 +1296,10 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "SOCIAL_UI_SYSTEM_STATUS_UPDATED" ) then
 		if C_SocialUI.IsSystemEnabled() then
 			HideUIPanel(FriendsFrame);
+			-- Hiding FriendsFrame only closes out the subframes returned by GetValidSubFrames
+			-- However, the Social UI system just turned on, so GetValidSubFrames has already narrowed down to the allowed set
+			-- This means the subframes that were valid while the system was disabled could be showing. We need to force hide them all to be safe
+			FriendsFrame_HideAllPotentialSubFrames();
 		end
 	elseif ( event == "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED" ) then
 		-- Let's reset the selected friend if the legacy system status changes

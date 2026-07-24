@@ -45,7 +45,7 @@ local RolodexConstants =
 			Type = "Enumeration",
 			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 21,
+			MaxValue = 23,
 			Fields =
 			{
 				{ Name = "None", Type = "RolodexType", EnumValue = 0 },
@@ -69,7 +69,7 @@ local RolodexConstants =
 				{ Name = "Duel", Type = "RolodexType", EnumValue = 18 },
 				{ Name = "PetBattle", Type = "RolodexType", EnumValue = 19 },
 				{ Name = "PvPKill", Type = "RolodexType", EnumValue = 20 },
-				{ Name = "LegacyFriend", Type = "RolodexType", EnumValue = 21 },
+				{ Name = "LegacyFriend", Type = "RolodexType", EnumValue = 23 },
 			},
 		},
 		{

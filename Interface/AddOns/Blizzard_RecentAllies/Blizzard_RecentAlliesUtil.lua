@@ -109,6 +109,7 @@ local InteractionTypeToContextStringGenerator = {
 	[Enum.RolodexType.Duel] = GenerateBasicContextString,
 	[Enum.RolodexType.PetBattle] = GenerateBasicContextString,
 	[Enum.RolodexType.PvPKill] = GenerateBasicContextString,
+	[Enum.RolodexType.LegacyFriend] = GenerateBasicContextString,
 };
 
 local function GetContextStringGeneratorForInteractionType(interactionType)

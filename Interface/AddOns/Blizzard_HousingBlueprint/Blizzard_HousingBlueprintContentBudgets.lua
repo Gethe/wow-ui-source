@@ -12,7 +12,15 @@ function HousingBlueprintBudgetsContainerMixin:SetBackgroundAlpha(backgroundAlph
 end
 
 function HousingBlueprintBudgetsContainerMixin:SetInfo(budgetInfo, blueprintType)
+	-- Don't rebuild everything if it's the exact same info already being shown
+	if self.blueprintType == blueprintType and self.budgetInfo and tCompare(self.budgetInfo, budgetInfo, 3) then
+		return;
+	end
+
 	self:ClearData();
+
+	self.blueprintType = blueprintType;
+	self.budgetInfo = budgetInfo;
 
 	-- Rooms are the only blueprint type that add to the existing spent budgets rather than replace them, so need to display "available" rather than "max"
 	local isRoomBlueprint = blueprintType == Enum.HousingBlueprintType.Room;
@@ -65,6 +73,8 @@ function HousingBlueprintBudgetsContainerMixin:ClearData()
 	-- Reset width so that it properly expands as part of the containing Layout frame, without bloating the resulting parent width
 	self.InteriorBudgets:SetWidth(1);
 	self.ExteriorBudgets:SetWidth(1);
+	self.blueprintType = nil;
+	self.budgetInfo = nil;
 end
 
 function HousingBlueprintBudgetsContainerMixin:IsShowingAnyBudgets()

@@ -1,8 +1,12 @@
 -- These are functions that were deprecated and will be removed in the future.
 -- Please upgrade to the updated APIs as soon as possible.
 
+if not GetCVarBool("loadDeprecationFallbacks") then
+	return;
+end
+
 --[[
-	== Summary of 12.0.5 Changes ==
+	== Summary of Housing Catalog 12.0.5 Changes ==
 	
 	Previously, there was just Housing Catalog Entry, which represented one "stack" of stuff in the Catalog, with a "Subtype" to denote what kind of stack it was.
 	For example, for a "Sturdy Chair" there might be both an "OwnedModifiedStack" entry for a stack of dyed chairs, and a "OwnedUnmodifiedStack" entry for undyed chairs.
@@ -33,10 +37,6 @@
 	Now:
 		[Sturdy Chair HousingCatalogEntryInfo (totalNumStored: 0, totalNumPlaced: 6)]
 ]]--
-
-if not GetCVarBool("loadDeprecationFallbacks") then
-	return;
-end
 
 do
 	-- Old enum: Enum.HousingCatalogEntrySubtype (removed in new API)

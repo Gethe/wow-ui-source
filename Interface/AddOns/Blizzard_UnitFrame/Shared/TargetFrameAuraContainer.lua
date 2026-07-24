@@ -2,11 +2,6 @@ local _addonName, addonTable = ...;
 
 local PLAYER_UNITS = { "player", "vehicle", "pet" };
 
-local function AssertNumber(value, argumentName)
-	assert(type(value) == "number", argumentName .. " must be a number.");
-	return value;
-end
-
 local function AssertPositiveNumber(value, argumentName)
 	assert(type(value) == "number" and value > 0, argumentName .. " must be a positive number.");
 	return value;
@@ -83,15 +78,23 @@ function TargetFrameAuraContainerSharedMixin:SetMaxDebuffs(maxDebuffs)
 	end
 end
 
-function TargetFrameAuraContainerSharedMixin:ShouldMirrorAurasVertically()
-	return self.mirrorVertically;
+function TargetFrameAuraContainerSharedMixin:IsFlowLayoutMirroredVertically()
+	local flowLayout = self:GetFlowLayout();
+	return flowLayout:GetAnchorPoint() == "BOTTOMLEFT" and flowLayout:GetVerticalGrowthDirection() == AnchorUtil.FlowDirection.Up;
 end
 
-function TargetFrameAuraContainerSharedMixin:SetMirrorAurasVertically(mirrorVertically)
+function TargetFrameAuraContainerSharedMixin:SetFlowLayoutMirroredVertically(mirrorVertically)
 	mirrorVertically = mirrorVertically == true;
 
-	if self.mirrorVertically ~= mirrorVertically then
-		self.mirrorVertically = mirrorVertically;
+	local flowLayout = self:GetFlowLayout();
+	local anchorPoint = mirrorVertically and "BOTTOMLEFT" or "TOPLEFT";
+	local verticalDirection = mirrorVertically and AnchorUtil.FlowDirection.Up or AnchorUtil.FlowDirection.Down;
+	local horizontalDirection = flowLayout:GetHorizontalGrowthDirection();
+
+	local changed = flowLayout:SetAnchorPoint(anchorPoint);
+	changed = flowLayout:SetGrowthDirection(horizontalDirection, verticalDirection) or changed;
+
+	if changed then
 		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayout);
 	end
 end
@@ -163,77 +166,43 @@ function TargetFrameAuraContainerSharedMixin:SetLargeAuraSize(size)
 	end
 end
 
-function TargetFrameAuraContainerSharedMixin:GetAuraPadding()
-	return self.auraPaddingLeft, self.auraPaddingRight, self.auraPaddingTop, self.auraPaddingBottom;
+function TargetFrameAuraContainerSharedMixin:GetFlowLayoutSpacing()
+	return self.flowLayoutElementSpacing, self.flowLayoutLineSpacing;
 end
 
-function TargetFrameAuraContainerSharedMixin:SetAuraPadding(left, right, top, bottom)
-	left = AssertNumber(left, "left");
-	right = AssertNumber(right, "right");
-	top = AssertNumber(top, "top");
-	bottom = AssertNumber(bottom, "bottom");
+function TargetFrameAuraContainerSharedMixin:SetFlowLayoutSpacing(elementSpacing, lineSpacing)
+	assert(type(elementSpacing) == "number", "elementSpacing must be a number");
+	assert(type(lineSpacing) == "number", "lineSpacing must be a number");
 
-	if self.auraPaddingLeft ~= left or self.auraPaddingRight ~= right or self.auraPaddingTop ~= top or self.auraPaddingBottom ~= bottom then
-		self.auraPaddingLeft = left;
-		self.auraPaddingRight = right;
-		self.auraPaddingTop = top;
-		self.auraPaddingBottom = bottom;
-
-		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayout);
-	end
-end
-
-function TargetFrameAuraContainerSharedMixin:GetAuraSpacing()
-	return self.auraElementSpacingX, self.auraElementSpacingY;
-end
-
-function TargetFrameAuraContainerSharedMixin:SetAuraSpacing(elementSpacingX, elementSpacingY)
-	elementSpacingX = AssertNumber(elementSpacingX, "elementSpacingX");
-	elementSpacingY = AssertNumber(elementSpacingY, "elementSpacingY");
-
-	if self.auraElementSpacingX ~= elementSpacingX or self.auraElementSpacingY ~= elementSpacingY then
-		self.auraElementSpacingX = elementSpacingX;
-		self.auraElementSpacingY = elementSpacingY;
-
+	if self.flowLayoutElementSpacing ~= elementSpacing or self.flowLayoutLineSpacing ~= lineSpacing then
+		self.flowLayoutElementSpacing = elementSpacing;
+		self.flowLayoutLineSpacing = lineSpacing;
 		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayoutGroups);
 	end
 end
 
-function TargetFrameAuraContainerSharedMixin:GetAuraRowWidth()
-	return self.auraRowWidth;
+function TargetFrameAuraContainerSharedMixin:GetConstrainedFlowLayoutLineSize()
+	return self.constrainedFlowLayoutLineSize;
 end
 
-function TargetFrameAuraContainerSharedMixin:SetAuraRowWidth(rowWidth)
-	rowWidth = AssertPositiveNumber(rowWidth, "rowWidth");
+function TargetFrameAuraContainerSharedMixin:SetConstrainedFlowLayoutLineSize(lineSize)
+	lineSize = AssertPositiveNumber(lineSize, "lineSize");
 
-	if self.auraRowWidth ~= rowWidth then
-		self.auraRowWidth = rowWidth;
+	if self.constrainedFlowLayoutLineSize ~= lineSize then
+		self.constrainedFlowLayoutLineSize = lineSize;
 		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayout);
 	end
 end
 
-function TargetFrameAuraContainerSharedMixin:GetConstrainedAuraRowWidth()
-	return self.constrainedAuraRowWidth;
+function TargetFrameAuraContainerSharedMixin:GetNumConstrainedFlowLayoutLines()
+	return self.numConstrainedFlowLayoutLines;
 end
 
-function TargetFrameAuraContainerSharedMixin:SetConstrainedAuraRowWidth(rowWidth)
-	rowWidth = AssertPositiveNumber(rowWidth, "rowWidth");
+function TargetFrameAuraContainerSharedMixin:SetNumConstrainedFlowLayoutLines(numLines)
+	numLines = AssertNonNegativeInteger(numLines, "numLines");
 
-	if self.constrainedAuraRowWidth ~= rowWidth then
-		self.constrainedAuraRowWidth = rowWidth;
-		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayout);
-	end
-end
-
-function TargetFrameAuraContainerSharedMixin:GetNumConstrainedAuraRows()
-	return self.numConstrainedAuraRows;
-end
-
-function TargetFrameAuraContainerSharedMixin:SetNumConstrainedAuraRows(numRows)
-	numRows = AssertNonNegativeInteger(numRows, "numRows");
-
-	if self.numConstrainedAuraRows ~= numRows then
-		self.numConstrainedAuraRows = numRows;
+	if self.numConstrainedFlowLayoutLines ~= numLines then
+		self.numConstrainedFlowLayoutLines = numLines;
 		self:MarkDirty(AuraContainerDirtyMask.AuraFrameLayout);
 	end
 end
@@ -248,17 +217,19 @@ function TargetFrameAuraContainerSharedMixin:SetAuraContainerAnchorsChangedCallb
 	self.auraContainerAnchorsChangedCallback = callbackFunction;
 end
 
-function TargetFrameAuraContainerSharedMixin:GetNumVisibleAuraRows()
-	return self.numVisibleAuraRows;
+function TargetFrameAuraContainerSharedMixin:GetNumVisibleFlowLayoutLines()
+	return self.numVisibleFlowLayoutLines;
 end
 
-TargetFrameAuraContainerInboundMixin = CreateFromMixins(ManagedAuraContainerInboundMixin, TargetFrameAuraContainerSharedMixin);
-TargetFrameAuraContainerPrivateMixin = CreateFromMixins(ManagedAuraContainerPrivateMixin, TargetFrameAuraContainerSharedMixin);
+TargetFrameAuraContainerInboundMixin = CreateFromMixins(ManagedAuraContainerInboundMixin, AuraContainerFlowLayoutInboundMixin, TargetFrameAuraContainerSharedMixin);
+TargetFrameAuraContainerPrivateMixin = CreateFromMixins(ManagedAuraContainerPrivateMixin, AuraContainerFlowLayoutPrivateMixin, TargetFrameAuraContainerSharedMixin);
 
 function TargetFrameAuraContainerPrivateMixin:OnLoad()
-	self.flowLayoutDescription = TargetFrameAuraFlowLayoutDescription;
+	self.flowLayout = CreateAndInitFromMixin(TargetFrameAuraFlowLayoutMixin);
 	self.flowLayoutGroups = {};
-	self.numVisibleAuraRows = 0;
+	self:ApplyFlowLayoutDefaults(self.flowLayout);
+
+	self.numVisibleFlowLayoutLines = 0;
 	self.playerIsTarget = false;
 	self.targetIsFriendly = false;
 
@@ -317,7 +288,7 @@ end
 end
 
 --[[override]] function TargetFrameAuraContainerPrivateMixin:RebuildLayoutGroups()
-	local elementSpacingX, elementSpacingY = self:GetAuraSpacing();
+	local elementSpacing, lineSpacing = self:GetFlowLayoutSpacing();
 	local firstAuraGroup, secondAuraGroup;
 
 	-- Note that flow layout collapses groups with no elements, and so the
@@ -336,30 +307,34 @@ end
 		-- visible frame list during refresh.
 		{
 			elements = function() return firstAuraGroup:GetFramesByIndex(); end,
-			elementSpacingX = elementSpacingX,
-			elementSpacingY = elementSpacingY,
-			forceNewRow = false,
-			gapX = 0,
-			gapY = 0,
+			elementSpacing = elementSpacing,
+			lineSpacing = lineSpacing,
 		},
 		{
 			elements = function() return secondAuraGroup:GetFramesByIndex(); end,
-			elementSpacingX = elementSpacingX,
-			elementSpacingY = elementSpacingY,
-			forceNewRow = true,
-			gapX = 0,
-			gapY = elementSpacingY,
+			elementSpacing = elementSpacing,
+			lineSpacing = lineSpacing,
+			forceNewLine = true,
+			groupLineSpacing = lineSpacing,
 		},
 	};
 end
 
+--[[override]] function TargetFrameAuraContainerPrivateMixin:ApplyFlowLayoutDefaults(flowLayout)
+	flowLayout:SetLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal);
+	flowLayout:SetAnchorPoint("TOPLEFT");
+	flowLayout:SetGrowthDirection(AnchorUtil.FlowDirection.Right, AnchorUtil.FlowDirection.Down);
+	flowLayout:SetPadding(self.flowLayoutPaddingLeft, self.flowLayoutPaddingRight, self.flowLayoutPaddingTop, self.flowLayoutPaddingBottom);
+	flowLayout:SetMaximumLineSize(self.flowLayoutLineSize);
+end
+
 --[[override]] function TargetFrameAuraContainerPrivateMixin:ApplyLayout()
-	AnchorUtil.ApplyFlowLayout(self, self:GetFlowLayoutGroups(), self.flowLayoutDescription);
+	self:ApplyFlowLayout();
 	self:SignalAuraContainerAnchorsChanged();
 end
 
 --[[override]] function TargetFrameAuraContainerPrivateMixin:OnAuraFramesReset()
-	self:SetNumVisibleAuraRows(0);
+	self:SetNumVisibleFlowLayoutLines(0);
 	self:SetSize(1, 1);
 end
 
@@ -369,12 +344,8 @@ function TargetFrameAuraContainerPrivateMixin:ResetPooledAuraFrame(_pool, frame)
 	frame:Hide();
 end
 
-function TargetFrameAuraContainerPrivateMixin:GetFlowLayoutGroups()
-	return self.flowLayoutGroups;
-end
-
-function TargetFrameAuraContainerPrivateMixin:SetNumVisibleAuraRows(rowCount)
-	self.numVisibleAuraRows = rowCount;
+function TargetFrameAuraContainerPrivateMixin:SetNumVisibleFlowLayoutLines(lineCount)
+	self.numVisibleFlowLayoutLines = lineCount;
 end
 
 function TargetFrameAuraContainerPrivateMixin:SignalAuraContainerAnchorsChanged()
@@ -453,59 +424,36 @@ function TargetFrameAuraContainerPrivateMixin:ShouldShowAuraWithLargeSize(auraDa
 	return false;
 end
 
-TargetFrameAuraFlowLayoutDescription = CreateFromMixins(AnchorUtil.FlowLayoutDescriptionBaseMixin);
+TargetFrameAuraFlowLayoutMixin = CreateFromMixins(AnchorUtil.FlowLayoutMixin);
 
-function TargetFrameAuraFlowLayoutDescription:GetAnchorPoint(container)
-	if container:ShouldMirrorAurasVertically() then
-		return "BOTTOMLEFT";
+function TargetFrameAuraFlowLayoutMixin:GetMaximumLineSizeForLine(container, lineIndex, _group)
+	if lineIndex <= container:GetNumConstrainedFlowLayoutLines() then
+		return container:GetConstrainedFlowLayoutLineSize();
 	end
 
-	return "TOPLEFT";
+	return self:GetMaximumLineSize();
 end
 
-function TargetFrameAuraFlowLayoutDescription:GetHorizontalGrowthDirection(_container)
-	return AnchorUtil.FlowDirection.Right;
-end
-
-function TargetFrameAuraFlowLayoutDescription:GetVerticalGrowthDirection(container)
-	if container:ShouldMirrorAurasVertically() then
-		return AnchorUtil.FlowDirection.Up;
-	end
-
-	return AnchorUtil.FlowDirection.Down;
-end
-
-function TargetFrameAuraFlowLayoutDescription:GetPadding(container)
-	return container:GetAuraPadding();
-end
-
-function TargetFrameAuraFlowLayoutDescription:GetRowWidth(container, rowIndex)
-	if rowIndex <= container:GetNumConstrainedAuraRows() then
-		return container:GetConstrainedAuraRowWidth();
-	end
-
-	return container:GetAuraRowWidth();
-end
-
-function TargetFrameAuraFlowLayoutDescription:GetElementSize(container, element)
+function TargetFrameAuraFlowLayoutMixin:GetElementSize(container, element, _group)
 	local _unitToken, auraData = element:GetAuraInstance();
+	local auraSize = container:GetSmallAuraSize();
 
 	if auraData ~= nil and container:ShouldShowAuraWithLargeSize(auraData) then
-		return container:GetLargeAuraSize(), container:GetLargeAuraSize();
+		auraSize = container:GetLargeAuraSize();
 	end
 
-	return container:GetSmallAuraSize(), container:GetSmallAuraSize();
+	return auraSize, auraSize;
 end
 
-function TargetFrameAuraFlowLayoutDescription:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, width, height)
+function TargetFrameAuraFlowLayoutMixin:ApplyElementLayout(container, element, anchorPoint, offsetX, offsetY, width, height)
 	element:ClearAllPoints();
 	element:SetPoint(anchorPoint, container, anchorPoint, offsetX, offsetY);
 	element:SetSize(width, height);
 end
 
-function TargetFrameAuraFlowLayoutDescription:OnLayoutComplete(container, width, height, _hasPlacedElement, rowCount)
+function TargetFrameAuraFlowLayoutMixin:OnLayoutComplete(container, width, height, _hasPlacedElement, lineCount)
 	-- Apply secrets here as these may infer presence of auras through publicly
 	-- exposed interfaces.
 	container:SetSize(secretwrap(width, height));
-	container:SetNumVisibleAuraRows(secretwrap(rowCount));
+	container:SetNumVisibleFlowLayoutLines(secretwrap(lineCount));
 end

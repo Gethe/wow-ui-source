@@ -5,6 +5,7 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
 	"PARTY_LEADER_CHANGED",
 	"GROUP_LEFT",
+	"GROUP_ROSTER_UPDATE"
 };
 
 -- Max number of rewards shown on the right side of the UI
@@ -64,13 +65,13 @@ local LAIRS_TIERED_ENTRANCE_TYPE_DATA = {
 	menuTag = "MENU_LAIRS_DIFFICULTY",-- not a player facing string
 	lockedTooltipText = TIERED_ENTRANCE_LOCKED_DEFAULT_TOOLTIP_LAIRS,
 	unlockedTooltipText = function(tierInfo)
-			if tierInfo.isLFG then
+			if tierInfo.queueAsLFG then
 				return LAIRS_WORLD_TIER_TOOLTIP;
 			end
 			return LAIRS_DEFAULT_TIER_TOOLTIP;
 		end,
 	tierDescription = function(tierInfo)
-		if tierInfo.isLFG and DelvesDifficultyPickerFrame.entranceType == Enum.TieredEntranceType.Lairs then
+		if tierInfo.queueAsLFG and DelvesDifficultyPickerFrame.entranceType == Enum.TieredEntranceType.Lairs then
 			return format("%s  %s", tierInfo.tierDescription, CreateAtlasMarkup("delves-socialqueuing-icon-eye"));
 		else
 			return tierInfo.tierDescription;
@@ -112,7 +113,12 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 		self:OnPartyEligibilityChanged(playerName, maxEligibleLevel);
 	elseif event == "TRAIT_CONFIG_UPDATED" then
 		self:UpdatePortalButtonState();
-	elseif event == "PARTY_LEADER_CHANGED" or event == "GROUP_LEFT" then
+	elseif event == "PARTY_LEADER_CHANGED" or event == "GROUP_LEFT" or event == "GROUP_ROSTER_UPDATE" then
+		if self.entranceType == Enum.TieredEntranceType.Lairs then
+			self:SetupTiers(); -- lairs tier info changes with party change (raid/cross-faction), refetch
+			self.Dropdown:GenerateMenu();
+			self:UpdateDropdownState(true);
+		end
 		self:UpdatePortalButtonState();
 		if self.displayMode == DelvesDisplayMode.Traits then
 			self.ChallengesContainerFrame:CheckPartyLeader();
@@ -373,7 +379,7 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 			self:UpdateWidgets();
 		elseif self.selectedTierInfo and self.selectedTierInfo.tier then
 			-- If active delve tier is empty, player probably entered and then left. Fall back on the last selected tier,
-			-- which should match the active delv
+			-- which should match the active delve
 			self:UpdateWidgets();
 		end
 		self.DelveRewardsContainerFrame:SetRewards();
@@ -383,7 +389,6 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	else
 		self:UpdateDropdownState(true);
 	end
-
 	self:CheckAndSetDisplayMode();
 
 	-- update the DividingLine here, has to be done after widgets are updated and displayMode is set
@@ -540,6 +545,10 @@ function DelvesDifficultyPickerFrameMixin:CanEnterDelve()
 		if inParty and not isPartyLeader and not C_DelvesUI.HasActiveLair() then
 			return false;
 		end
+		-- cross-faction party cannot queue as LFG
+		if inParty and C_PartyInfo.IsCrossFactionParty() and selectedTierInfo.queueAsLFG then
+			return false;
+		end
 	end
 	return true;
 end
@@ -677,6 +686,13 @@ end
 function CustomGossipFrameBaseMixin:SetupTiers()
 	self.tierInfos = C_DelvesUI.GetDelveEntranceTiers();
 	table.sort(self.tierInfos, EntranceTierSort);
+
+	-- reselect and refresh selected tier info
+	local selectedTierInfo = DelvesDifficultyPickerFrame:GetSelectedTierInfo();
+	if selectedTierInfo then
+		DelvesDifficultyPickerFrame:SetSelectedTierInfo(self.tierInfos[selectedTierInfo.tier]);
+	end
+
 	self:UpdatePortalButtonState();
 end
 
@@ -729,7 +745,7 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 	elseif DelvesDifficultyPickerFrame:SelectedTierInfoChanged() then
 		local inParty = UnitInParty("player");
 		local isPartyLeader = inParty and UnitIsGroupLeader("player");
-		if isPartyLeader and not C_DelvesUI.HasActiveLair() then
+		if isPartyLeader and C_DelvesUI.HasActiveLair() then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 			GameTooltip_AddErrorLine(GameTooltip, LAIRS_DIFFICULTY_CHANGED_WARNING);
 			GameTooltip:Show();
@@ -743,6 +759,14 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 				GameTooltip_AddErrorLine(GameTooltip, LAIRS_CANT_ENTER_BEFORE_LEADER);
 				GameTooltip:Show();
 			end
+
+			-- cross-faction party cannot queue as LFG
+			if inParty and C_PartyInfo.IsCrossFactionParty() and selectedTierInfo.queueAsLFG then
+				GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
+				GameTooltip_AddErrorLine(GameTooltip, CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR);
+				GameTooltip:Show();
+			end
+
 		end
 	else
 		local partyTierEligibility = self:GetParent():GetPartyTierEligibility();

@@ -895,10 +895,16 @@ end
 
 function SettingsButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = self:IsEnabled();
+	local displayEnabled = self:IsEnabled();
+	local buttonEnabled = displayEnabled;
 
-	self:SetButtonState(enabled);
-	self:DisplayEnabled(enabled);
+	local initializer = self:GetElementData();
+	if initializer and not initializer:EvaluateModifyPredicates() then
+		buttonEnabled = false;
+	end
+
+	self:SetButtonState(buttonEnabled);
+	self:DisplayEnabled(displayEnabled);
 end
 
 function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags, newTagID, gameDataFunc, gameDataEvent)

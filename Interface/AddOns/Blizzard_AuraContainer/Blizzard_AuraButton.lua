@@ -29,17 +29,58 @@ function AuraButtonSharedMixin:SetCancelAuraButtons(cancelAuraButtons)
 	end
 end
 
+function AuraButtonSharedMixin:GetTooltipAnchorPoint()
+	return self.tooltipAnchorPoint, self.tooltipOffsetX, self.tooltipOffsetY;
+end
+
+function AuraButtonSharedMixin:SetTooltipAnchorPoint(point, offsetX, offsetY)
+	local validAnchorPointNames =  {
+		ANCHOR_LEFT = true,
+		ANCHOR_RIGHT = true,
+		ANCHOR_BOTTOMLEFT = true,
+		ANCHOR_BOTTOM = true,
+		ANCHOR_BOTTOMRIGHT = true,
+		ANCHOR_TOPLEFT = true,
+		ANCHOR_TOP = true,
+		ANCHOR_TOPRIGHT = true,
+		ANCHOR_CURSOR = true,
+		ANCHOR_NONE = true,
+		ANCHOR_PRESERVE = true,
+		ANCHOR_CURSOR_LEFT = true,
+		ANCHOR_CURSOR_RIGHT = true,
+	};
+
+	assert(validAnchorPointNames[point], "point must be a valid tooltip anchor point name");
+	assert(offsetX == nil or type(offsetX) == "number", "offsetX must be a number or nil");
+	assert(offsetY == nil or type(offsetY) == "number", "offsetY must be a number or nil");
+
+	self.tooltipAnchorPoint = point;
+	self.tooltipOffsetX = offsetX or 0;
+	self.tooltipOffsetY = offsetY or 0;
+end
+
+function AuraButtonSharedMixin:ShouldHideTooltipInCombat()
+	return self.tooltipHideInCombat;
+end
+
+function AuraButtonSharedMixin:SetHideTooltipInCombat(hideInCombat)
+	self.tooltipHideInCombat = (hideInCombat == true);
+end
+
 AuraButtonInboundMixin = CreateFromMixins(AuraButtonSharedMixin);
 AuraButtonPrivateMixin = CreateFromMixins(AuraButtonSharedMixin);
 
 function AuraButtonPrivateMixin:OnLoad_Intrinsic()
 	self.auraData = nil;
+	self.auraDuration = C_DurationUtil.CreateDuration();
 	self.unitToken = nil;
 	self.cancelAuraButtonsArray = nil;
 end
 
 function AuraButtonPrivateMixin:OnEnter_Intrinsic(_isFromMouseMotion)
-	self:ShowTooltip();
+	if self:ShouldShowTooltip() then
+		self:ShowTooltip();
+	end
 end
 
 function AuraButtonPrivateMixin:OnLeave_Intrinsic(_isFromMouseMotion)
@@ -81,6 +122,10 @@ function AuraButtonPrivateMixin:OnAuraInstanceCleared()
 	-- longer display an aura instance.
 end
 
+function AuraButtonPrivateMixin:GetAuraDuration()
+	return self.auraDuration;
+end
+
 function AuraButtonPrivateMixin:GetAuraInstance()
 	return self.unitToken, self.auraData;
 end
@@ -92,11 +137,13 @@ end
 function AuraButtonPrivateMixin:SetAuraInstance(unitToken, auraData)
 	self.unitToken = unitToken;
 	self.auraData = auraData;
+	self:UpdateAuraDuration();
 	self:OnAuraInstanceAssigned(unitToken, auraData);
 end
 
 function AuraButtonPrivateMixin:UpdateAuraInstance(unitToken, auraData)
 	self.auraData = auraData;
+	self:UpdateAuraDuration();
 	self:OnAuraInstanceUpdated(unitToken, auraData);
 end
 
@@ -104,7 +151,26 @@ function AuraButtonPrivateMixin:ClearAuraInstance()
 	if self.auraData ~= nil then
 		self.unitToken = nil;
 		self.auraData = nil;
+		self:UpdateAuraDuration();
 		self:OnAuraInstanceCleared();
+	end
+end
+
+function AuraButtonPrivateMixin:UpdateAuraDuration()
+	-- Manually configuring duration objects here rather than using C_UnitAuras
+	-- APIs because private auras don't support that API, and we need this to
+	-- work with "fake" auras such as temporary item enchantments. We also
+	-- want the identity of the duration object to be stable to prevent
+	-- information leak on aura reassignment.
+
+	local auraData = self.auraData;
+	local auraDuration = self.auraDuration;
+
+	-- Expiration time can be nil in some test cases.
+	if auraData and auraData.expirationTime and auraData.expirationTime > 0 then
+		auraDuration:SetTimeFromEnd(secretwrap(auraData.expirationTime, auraData.duration, auraData.timeMod));
+	else
+		auraDuration:SetTimeSpan(secretwrap(0, 0));
 	end
 end
 
@@ -112,34 +178,52 @@ function AuraButtonPrivateMixin:UpdateAuraDisplay()
 	-- Override in a derived mixin to apply a full update to the aura.
 end
 
+function AuraButtonPrivateMixin:ShouldShowTooltip()
+	if self:ShouldHideTooltipInCombat() and UnitAffectingCombat("player") then
+		return false;
+	end
+
+	return true;
+end
+
 function AuraButtonPrivateMixin:ShowTooltip()
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
 	local unitToken, auraData = self:GetAuraInstance();
 
 	if auraData then
-		AuraButtonTooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout));
-		AuraButtonTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-		RaiseFrameLevelByTwo(AuraButtonTooltip);
-		self:PopulateTooltip(unitToken, auraData);
+		tooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout));
+		tooltip:SetOwner(self, self:GetTooltipAnchorPoint());
+		RaiseFrameLevelByTwo(tooltip);
+
+		self:PopulateTooltip(tooltip, unitToken, auraData);
 		self:SetOnUpdateMode(Enum.OnUpdateMode.RunWhenVisible);
 	end
 end
 
-function AuraButtonPrivateMixin:PopulateTooltip(unitToken, auraData)
+function AuraButtonPrivateMixin:PopulateTooltip(tooltip, unitToken, auraData)
 	if auraData.auraType == AuraContainerAuraDataType.Aura then
-		AuraButtonTooltip:ShowAuraTooltip(unitToken, auraData);
+		tooltip:ShowAuraTooltip(unitToken, auraData);
 	elseif auraData.auraType == AuraContainerAuraDataType.ItemEnchantment then
-		AuraButtonTooltip:SetInventoryItem(unitToken, auraData.inventorySlot);
+		tooltip:SetInventoryItem(unitToken, auraData.inventorySlot);
 	end
 end
 
 function AuraButtonPrivateMixin:HideTooltip()
-	AuraButtonTooltip:Hide();
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
+
+	tooltip:Hide();
 	self:SetOnUpdateMode(Enum.OnUpdateMode.Disabled);
 end
 
 function AuraButtonPrivateMixin:UpdateTooltip()
-	if AuraButtonTooltip:IsOwned(self) then
-		self:PopulateTooltip(self:GetAuraInstance());
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
+
+	if tooltip:IsOwned(self) then
+		if self:ShouldShowTooltip() then
+			self:PopulateTooltip(tooltip, self:GetAuraInstance());
+		else
+			self:HideTooltip();
+		end
 	end
 end
 

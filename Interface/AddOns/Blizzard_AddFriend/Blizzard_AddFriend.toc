@@ -1,5 +1,6 @@
 ## Title: Blizzard_AddFriend
 ## DefaultState: enabled
+## Dependencies: Blizzard_AccessibilityTemplates
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
 

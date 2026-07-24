@@ -20,6 +20,7 @@
 			<KeyValue key="topPadding" value="12" type="number"/>
 			<KeyValue key="leftPadding" value="14" type="number"/>
 			<KeyValue key="rightPadding" value="14" type="number"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">

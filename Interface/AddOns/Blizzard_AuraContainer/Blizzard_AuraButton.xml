@@ -7,12 +7,20 @@
 				<Mixin key="AuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
 				<Mixin key="AuraButtonPrivateMixin" source="secure"/>
 			</Mixins>
+			<KeyValues>
+				<KeyValue key="tooltipAnchorPoint" value="ANCHOR_BOTTOMLEFT"/>
+				<KeyValue key="tooltipOffsetX" value="0" type="number"/>
+				<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+				<KeyValue key="tooltipHideInCombat" value="false" type="boolean"/>
+			</KeyValues>
 			<ForbiddenAspects>
 				<ForbiddenAspect aspect="UntrustedScriptExecution"/>
 				<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
 				<ForbiddenAspect aspect="ScriptedInput"/>
 				<ForbiddenAspect aspect="AlwaysPropagateInput"/>
 				<ForbiddenAspect aspect="QueryFocus"/>
+				<ForbiddenAspect aspect="ChangeParent"/>
+				<ForbiddenAspect aspect="RemoveSecretAspects"/>
 			</ForbiddenAspects>
 			<Scripts>
 				<OnLoad method="OnLoad_Intrinsic"/>

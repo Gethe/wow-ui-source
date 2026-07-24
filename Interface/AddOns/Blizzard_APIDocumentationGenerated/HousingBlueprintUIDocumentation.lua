@@ -8,6 +8,22 @@ local HousingBlueprintUI =
 	Functions =
 	{
 		{
+			Name = "CanExportTypeFromCurrentLocation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the player's current location is a valid place to attempt to export a specific kind of blueprint" },
+
+			Arguments =
+			{
+				{ Name = "type", Type = "HousingBlueprintType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "locationValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanImportTypeFromCurrentLocation",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -1,4 +1,4 @@
-local function OnlyAvailableInGame()
+local function IsInGame()
 	return not C_Glue.IsOnGlueScreen();
 end
 
@@ -116,7 +116,7 @@ local function CreateTabContentFrame(socialUIFrame, template, parentKey)
 
 	local contentFrame = CreateFrame("Frame", nil, socialUIFrame, template);
 	contentFrame:SetPoint("TOPLEFT", socialUIFrame.BattleNetBar, "BOTTOMLEFT", 0, 5);
-	contentFrame:SetPoint("BOTTOMRIGHT", socialUIFrame.Bg);
+	contentFrame:SetPoint("BOTTOMRIGHT", socialUIFrame, "BOTTOMRIGHT", -2, 2);
 	contentFrame:Hide();
 	socialUIFrame[parentKey] = contentFrame;
 	return contentFrame;
@@ -159,6 +159,7 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 	--     helpTipGenerator = custom function					-- (Optional) Returns a helpTipInfo table (or nil) to show on the tab button when the Social UI opens
 	--     IsSupported = SomeNamespace.IsSystemSupported,		-- (Optional static check) Can this feature EVER work in the current game state? (Ex. Glues versus in-game)
 	--     IsAvailable = SomeNamespace.IsSystemEnabled,			-- Dynamic check: If supported in this game state, is the feature actually turned on?
+	--     GetEnabledState = custom function					-- (Optional dynamic check) The feature is turned on, but can you use it right now? This can also return a disabled reason for the tab tooltip
 	-- },
 
 	self.tabDefinitions =
@@ -247,11 +248,11 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			tabName = SOCIAL_UI_RECRUIT_A_FRIEND_TAB_NAME,
 			iconAtlas = "friends-icon-tab-recruitFriends",
 			iconInactiveAtlas = "friends-icon-tab-recruitFriends-inactive",
-			contentFrameTemplate = "RecruitAFriendFrameSocialTemplate",
+			contentFrameTemplate = "RecruitAFriendFrameSocialViewTemplate",
 			contentFrameParentKey = "RecruitAFriendFrame",
 			IsSupported = C_RecruitAFriend.IsSystemSupported,
 			IsAvailable = C_RecruitAFriend.IsSystemEnabled,
-			contentFrameSetupCallback = RecruitAFriendFrameSocialInitializeAADC,
+			contentFrameSetupCallback = RecruitAFriendFrameSocialViewInitializeAADC,
 		},
 		[SocialUITabType.RaidList] =
 		{
@@ -267,8 +268,15 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			},
 			contentFrameTemplate = "RaidFrameSocialTemplate",
 			contentFrameParentKey = "RaidFrame",
-			IsSupported = OnlyAvailableInGame,
-			IsAvailable = OnlyAvailableInGame,
+			IsSupported = IsInGame,
+			IsAvailable = function() return IsInGame() and not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups); end,
+			GetEnabledState = function()
+				if DifficultyUtil.InStoryRaid() then
+					return false, DIFFICULTY_LOCKED_REASON_STORY_RAID;
+				end
+
+				return true, nil;
+			end,
 		},
 	};
 

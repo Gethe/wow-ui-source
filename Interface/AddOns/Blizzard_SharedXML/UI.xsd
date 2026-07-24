@@ -136,7 +136,9 @@
 			<xs:enumeration value="ScriptedInput"/>
 			<xs:enumeration value="AlwaysPropagateInput"/>
 			<xs:enumeration value="QueryFocus"/>
-			<xs:enumeration value="Shown"/>
+			<xs:enumeration value="ChangeAnimationTarget"/>
+			<xs:enumeration value="RemoveSecretAspects"/>
+			<xs:enumeration value="ChangeParent"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -1260,6 +1262,7 @@
 		<xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="fullLockdown" type="xs:boolean" default="false"/>
 		<xs:attribute name="useForbiddenObjectTable" type="xs:boolean" default="false"/>
+		<xs:attribute name="allowUntaintedCreation" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 	<xs:element name="Ui">

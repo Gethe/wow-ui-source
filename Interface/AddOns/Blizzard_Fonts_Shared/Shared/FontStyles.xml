@@ -454,6 +454,7 @@
 	<Font name="UserScaledFontGame15Shadow" inherits="Game15Font_Shadow" canBeUserScaled="true" virtual="true"/>
 
 	<Font name="UserScaledFontGameNormalLarge" inherits="GameFontNormalLarge" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameHighlightLarge" inherits="GameFontHighlightLarge" canBeUserScaled="true" virtual="true"/>
 
 	<Font name="UserScaledChatFontNormal" inherits="ChatFontNormal" canBeUserScaled="true" justifyH="LEFT" virtual="true"/>
 

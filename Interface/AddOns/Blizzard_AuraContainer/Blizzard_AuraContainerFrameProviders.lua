@@ -76,10 +76,10 @@ function AuraContainerCustomFrameProviderMixin:CreateFrame()
 		securecallfunction(self.initializeFrame, auraFrame:GetObjectTable());
 	end
 
-	-- Access restrictions should be applied immediately after (potentially
-	-- tainted) post-creation callbacks.
+	-- Access restrictions should be applied after (potentially tainted)
+	-- post-creation callbacks.
 	if self.accessRestrictions then
-		auraFrame:AddAccessRestrictions(self.accessRestrictions);
+		AuraContainerUtil.ApplyAccessRestrictions(auraFrame, self.accessRestrictions);
 	end
 
 	-- Force an immediate display update to apply initial secrets and suitable

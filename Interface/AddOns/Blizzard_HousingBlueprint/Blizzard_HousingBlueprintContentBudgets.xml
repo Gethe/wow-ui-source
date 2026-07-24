@@ -32,6 +32,7 @@
 		<KeyValues>
 			<KeyValue key="topPadding" value="30" type="number"/>
 			<KeyValue key="spacing" value="16" type="number"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -68,6 +69,7 @@
 			<KeyValue key="leftPadding" value="10" type="number"/>
 			<KeyValue key="rightPadding" value="10" type="number"/>
 			<KeyValue key="bottomPadding" value="5" type="number"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">

@@ -1,5 +1,28 @@
 local _addonName, addonTable = ...;
 
+local function PackDisplayElement(element, options)
+	return { element = element, options = options };
+end
+
+local function UnpackDisplayElement(displayElement)
+	if displayElement then
+		return displayElement.element, displayElement.options;
+	end
+end
+
+local function ExportDisplayElement(displayElement)
+	local element, options = UnpackDisplayElement(displayElement);
+	return element, securecopy(options);
+end
+
+local function GetStatusBarInterpolationForUpdateMode(interpolation, updateMode)
+	if updateMode == Enum.CustomAuraButtonUpdateMode.Update then
+		return interpolation;
+	else
+		return Enum.StatusBarInterpolation.Immediate;
+	end
+end
+
 local function RequireObjectType(requiredType)
 	return function(object)
 		if not object:IsObjectType(requiredType) then
@@ -8,273 +31,297 @@ local function RequireObjectType(requiredType)
 	end
 end
 
-local function GetValidatedForbiddenObjectTable(owner, inboundObject, ...)
-	inboundObject = GetForbiddenObjectTable(inboundObject);
-
-	if inboundObject:HasAccessConstraints() then
-		error(string.format("bad object '%s' in function call (must not be an access-constrained object)", inboundObject:GetDebugName()));
-	end
-
-	local _isProtected, isProtectedExplicitly = inboundObject:IsProtected();
-	if isProtectedExplicitly then
-		error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", inboundObject:GetDebugName()));
-	end
-
-	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Hierarchy)) then
-		-- This can error when attempting to attach a region that isn't parented to an aura button.
-		error(string.format("bad object '%s' in function call (must inherit all forbidden parent aspects from owner)", inboundObject:GetDebugName()));
-	end
-
-	if not FlagsUtil.IsSet(inboundObject:GetForbiddenAspects(), owner:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout)) then
-		-- This can error when attempting to attach a region that isn't anchored to an aura button.
-		error(string.format("bad object '%s' in function call (must inherit all forbidden layout aspects from owner)", inboundObject:GetDebugName()));
-	end
-
-	local function ApplyToForbiddenObject(validationFunc)
-		validationFunc(inboundObject);
-	end
-
-	mapvalues(ApplyToForbiddenObject, ...);
-	return inboundObject;
-end
-
 CustomAuraButtonSharedMixin = {};
 
 function CustomAuraButtonSharedMixin:GetApplicationBar()
-	return self.ApplicationBar;
+	return ExportDisplayElement(self.applicationBar);
 end
 
-
 function CustomAuraButtonSharedMixin:SetApplicationBar(statusBar, options)
-	options = securecopy(options or {});
+	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, RequireObjectType("StatusBar"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonApplicationBarOptions(securecopy(options) or {});
 
-	self.ApplicationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
-	self.ApplicationBar.maxApplications = options.maxApplications;
+	statusBar = AuraContainerUtil.InitializeInboundScriptObject(statusBar);
+	statusBar:AddSecretAspect(Enum.SecretAspect.BarValue);
 
+	self.applicationBar = PackDisplayElement(statusBar, options);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearApplicationBar()
-	self.ApplicationBar = nil;
+	self.applicationBar = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetApplicationCount()
-	return self.ApplicationCount;
-end
-
-local function AssertValidFormatter(formatter)
-	if formatter ~= nil then
-		-- If it's good enough for the C API, it's good enough for me!
-		C_DurationUtil.CreateDuration():FormatElapsedDuration(formatter);
-	end
-
-	return formatter;
+	return ExportDisplayElement(self.applicationCount);
 end
 
 function CustomAuraButtonSharedMixin:SetApplicationCount(fontString, options)
-	options = securecopy(options or {});
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonApplicationCountOptions(securecopy(options));
 
-	self.ApplicationCount = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-	self.ApplicationCount.formatter = AssertValidFormatter(options.formatter);
+	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
+	fontString:AddSecretAspect(Enum.SecretAspect.Text);
+	fontString:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.applicationCount = PackDisplayElement(fontString, options);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearApplicationCount()
-	self.ApplicationCount = nil;
+	self.applicationCount = nil;
 end
 
-function CustomAuraButtonSharedMixin:GetAuraBorder()
-	return self.AuraBorder;
+function CustomAuraButtonSharedMixin:GetDispelTypeTextureCount()
+	return #self.dispelTypeTextures;
 end
 
-function CustomAuraButtonSharedMixin:SetAuraBorder(texture, options)
-	options = C_AuraContainerUtil.ProcessCustomAuraButtonBorderOptions(securecopy(options));
-	texture = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
+function CustomAuraButtonSharedMixin:GetDispelTypeTexture(index)
+	local dispelTypeTextures = self.dispelTypeTextures;
+	return ExportDisplayElement(dispelTypeTextures[index]);
+end
 
+function CustomAuraButtonSharedMixin:AddDispelTypeTexture(texture, options)
+	AuraContainerUtil.ValidateInboundScriptObject(texture, self, RequireObjectType("Texture"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonDispelTypeTextureOptions(securecopy(options));
+
+	texture = AuraContainerUtil.InitializeInboundScriptObject(texture);
 	texture:AddSecretAspect(Enum.SecretAspect.Alpha);
 	texture:AddSecretAspect(Enum.SecretAspect.VertexColor);
+	texture:AddSecretAspect(Enum.SecretAspect.TexCoords);
 	texture:AddSecretAspect(Enum.SecretAspect.Shown);
 
-	self.AuraBorder = texture;
-	self.AuraBorderOptions = options;
+	table.insert(self.dispelTypeTextures, PackDisplayElement(texture, options));
 
+	self:UpdateAuraDisplay();
+
+	local index = #self.dispelTypeTextures;
+	return index;
+end
+
+function CustomAuraButtonSharedMixin:RemoveDispelTypeTexture(index)
+	local dispelTypeTextures = self.dispelTypeTextures;
+
+	if dispelTypeTextures[index] then
+		table.remove(dispelTypeTextures, index);
+		self:UpdateAuraDisplay();
+	end
+end
+
+function CustomAuraButtonSharedMixin:ClearDispelTypeTextures()
+	self.dispelTypeTextures = {};
+end
+
+function CustomAuraButtonSharedMixin:GetDispelTypeText()
+	return ExportDisplayElement(self.dispelTypeText);
+end
+
+function CustomAuraButtonSharedMixin:SetDispelTypeText(fontString, options)
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonDispelTypeTextOptions(securecopy(options));
+
+	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
+	fontString:AddSecretAspect(Enum.SecretAspect.Text);
+	fontString:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.dispelTypeText = PackDisplayElement(fontString, options);
 	self:UpdateAuraDisplay();
 end
 
-function CustomAuraButtonSharedMixin:ClearAuraBorder()
-	self.AuraBorder = nil;
-end
-
-function CustomAuraButtonSharedMixin:GetAuraSymbol()
-	return self.AuraSymbol;
-end
-
-local DefaultAuraSymbolOptions = {
-	showWhenHarmful = true,
-	showWhenHelpful = false,
-};
-
-function CustomAuraButtonSharedMixin:SetAuraSymbol(fontString, options)
-	options = CreateFromMixins(DefaultAuraSymbolOptions, securecopy(options or {}));
-
-	self.AuraSymbol = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
-	self.AuraSymbol.showWhenHarmful = options.showWhenHarmful;
-	self.AuraSymbol.showWhenHelpful = options.showWhenHelpful;
-
-	self:UpdateAuraDisplay();
-end
-
-function CustomAuraButtonSharedMixin:ClearAuraSymbol()
-	self.AuraSymbol = nil;
+function CustomAuraButtonSharedMixin:ClearDispelTypeText()
+	self.dispelTypeText = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetDurationCooldown()
-	return self.DurationCooldown;
+	return ExportDisplayElement(self.durationCooldown);
 end
 
-function CustomAuraButtonSharedMixin:SetDurationCooldown(cooldownFrame)
-	self.DurationCooldown = GetValidatedForbiddenObjectTable(self, cooldownFrame, RequireObjectType("Cooldown"));
+function CustomAuraButtonSharedMixin:SetDurationCooldown(cooldown)
+	AuraContainerUtil.ValidateInboundScriptObject(cooldown, self, RequireObjectType("Cooldown"));
+
+	cooldown = AuraContainerUtil.InitializeInboundScriptObject(cooldown);
+	cooldown:AddSecretAspect(Enum.SecretAspect.Cooldown);
+	cooldown:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.durationCooldown = PackDisplayElement(cooldown);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearDurationCooldown()
-	self.DurationCooldown = nil;
+	self.durationCooldown = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetDurationText()
-	return self.DurationText;
+	return ExportDisplayElement(self.durationText);
 end
 
 function CustomAuraButtonSharedMixin:SetDurationText(fontString, options)
-	options = securecopy(options or {});
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonDurationTextOptions(securecopy(options));
 
-	self.DurationText = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
+	fontString:AddSecretAspect(Enum.SecretAspect.Text);
+	fontString:AddSecretAspect(Enum.SecretAspect.Alpha);
+	fontString:AddSecretAspect(Enum.SecretAspect.VertexColor);
 
-	if not self.DurationTextBinding then
-		self.DurationTextBinding = C_DurationUtil.CreateDurationTextBinding();
+	local binding = self:GetDurationTextBinding();
+
+	if options.binding then
+		binding:Assign(options.binding);
 	else
-		self.DurationTextBinding:SetToDefaults();
+		binding:SetToDefaults();
+		binding:SetFormatter(addonTable.DefaultAuraDurationFormatter);
 	end
 
-	if options.formatter then
-		self.DurationTextBinding:SetFormatter(options.formatter);
-	elseif options.textFormat then
-		self.DurationTextBinding:SetTextFormat(options.textFormat);
-	else
-		self.DurationTextBinding:SetFormatter(addonTable.DefaultAuraDurationFormatter);
+	binding:SetFontString(fontString);
+	binding:SetDuration(self:GetAuraDuration());
+
+	if options.textFormat then
+		binding:SetTextFormat(options.textFormat.formatString, options.textFormat.components);
+	elseif options.textFormatter then
+		binding:SetFormatter(options.textFormatter);
 	end
 
-	if options.textColorCurve then
-		self.DurationTextBinding:SetTextColorCurve(options.textColorCurve);
+	if options.textColor then
+		binding:SetTextColorCurve(options.textColor.curve, options.textColor.property);
 	end
 
-	if options.timeModifier then
-		self.DurationTextBinding:SetTimeModifier(options.timeModifier);
-	end
-
-	if options.updateInterval then
-		self.DurationTextBinding:SetUpdateInterval(options.updateInterval);
-	end
-
-	self.DurationTextBinding:SetExpiredText(options.expiredText);
-	self.DurationTextBinding:SetZeroDurationText(options.zeroDurationText);
-	self.DurationTextBinding:SetFontString(self.DurationText);
-
+	-- Intentionally not preserving options for now; the options here are used
+	-- as a convenience to build a binding. We could export them if this changes.
+	self.durationText = PackDisplayElement(fontString);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearDurationText()
-	self.DurationText = nil;
+	self:GetDurationTextBinding():SetEnabled(false);
+	self.durationText = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetDurationBar()
-	return self.DurationBar;
+	return ExportDisplayElement(self.durationBar);
 end
 
 function CustomAuraButtonSharedMixin:SetDurationBar(statusBar, options)
-	options = securecopy(options or {});
-	assert(options.interpolation == nil or EnumUtil.IsValid(Enum.StatusBarInterpolation, options.interpolation));
-	assert(options.direction == nil or EnumUtil.IsValid(Enum.StatusBarTimerDirection, options.direction));
+	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, RequireObjectType("StatusBar"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonDurationBarOptions(securecopy(options));
 
-	self.DurationBar = GetValidatedForbiddenObjectTable(self, statusBar, RequireObjectType("StatusBar"));
+	statusBar = AuraContainerUtil.InitializeInboundScriptObject(statusBar);
+	statusBar:AddSecretAspect(Enum.SecretAspect.BarValue);
 
-	if options.interpolation then
-		self.DurationBar.interpolation = options.interpolation;
-	end
-
-	if options.direction then
-		self.DurationBar.direction = options.direction;
-	end
-
+	self.durationBar = PackDisplayElement(statusBar, options);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearDurationBar()
-	self.DurationBar = nil;
+	self.durationBar = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetIcon()
-	return self.Icon;
+	return ExportDisplayElement(self.icon);
 end
 
 function CustomAuraButtonSharedMixin:SetIcon(texture)
-	self.Icon = GetValidatedForbiddenObjectTable(self, texture, RequireObjectType("Texture"));
+	AuraContainerUtil.ValidateInboundScriptObject(texture, self, RequireObjectType("Texture"));
+
+	texture = AuraContainerUtil.InitializeInboundScriptObject(texture);
+
+	self.icon = PackDisplayElement(texture);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearIcon()
-	self.Icon = nil;
+	self.icon = nil;
 end
 
 function CustomAuraButtonSharedMixin:GetSpellName()
-	return self.SpellName;
+	return ExportDisplayElement(self.spellName);
 end
 
 function CustomAuraButtonSharedMixin:SetSpellName(fontString)
-	self.SpellName = GetValidatedForbiddenObjectTable(self, fontString, RequireObjectType("FontString"));
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+
+	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
+	fontString:AddSecretAspect(Enum.SecretAspect.Text);
+	fontString:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.spellName = PackDisplayElement(fontString);
 	self:UpdateAuraDisplay();
 end
 
 function CustomAuraButtonSharedMixin:ClearSpellName()
-	self.SpellName = nil;
+	self.spellName = nil;
 end
+
+-- Deprecated aliases to match PTR naming; will be removed after 12.1.
+
+function CustomAuraButtonSharedMixin:GetAuraBorder()
+	return self:GetDispelTypeTexture(1);
+end
+
+function CustomAuraButtonSharedMixin:SetAuraBorder(texture, options)
+	self:ClearDispelTypeTextures();
+	self:AddDispelTypeTexture(texture, options);
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraBorder()
+	self:ClearDispelTypeTextures();
+end
+
+CustomAuraButtonSharedMixin.GetAuraSymbol = CustomAuraButtonSharedMixin.GetDispelTypeText;
+CustomAuraButtonSharedMixin.SetAuraSymbol = CustomAuraButtonSharedMixin.SetDispelTypeText;
+CustomAuraButtonSharedMixin.ClearAuraSymbol = CustomAuraButtonSharedMixin.ClearDispelTypeText;
 
 CustomAuraButtonInboundMixin = CreateFromMixins(CustomAuraButtonSharedMixin);
 CustomAuraButtonPrivateMixin = CreateFromMixins(AuraButtonPrivateMixin, CustomAuraButtonSharedMixin);
 
 function CustomAuraButtonPrivateMixin:OnLoad_Intrinsic()
 	AuraButtonPrivateMixin.OnLoad_Intrinsic(self);
+
+	self.dispelTypeTextures = {};
+
+	-- Retain the duration text binding across reconfiguration; replacing it
+	-- would require explicitly disabling the previous active binding.
+	self.durationTextBinding = C_DurationUtil.CreateDurationTextBinding();
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceAssigned(unitToken, auraData)
-	self:ApplyAuraInstance(unitToken, auraData)
+	self:ApplyAuraInstance(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Assignment);
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceUpdated(unitToken, auraData)
-	self:ApplyAuraInstance(unitToken, auraData);
+	self:ApplyAuraInstance(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Update);
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceCleared()
 	local unitToken, auraData = nil, nil;
-	self:ApplyAuraInstance(unitToken, auraData);
+	self:ApplyAuraInstance(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Assignment);
 end
 
-function CustomAuraButtonPrivateMixin:ApplyApplicationBar(auraData)
-	if self.ApplicationBar then
-		local applications = auraData and auraData.applications or 0;
-		local maxApplications = self.ApplicationBar.maxApplications;
+function CustomAuraButtonPrivateMixin:GetDurationTextBinding()
+	return self.durationTextBinding;
+end
 
-		self.ApplicationBar:SetMinMaxValues(secretwrap(0, math.max(maxApplications, 1)));
-		self.ApplicationBar:SetValue(secretwrap(applications));
+function CustomAuraButtonPrivateMixin:ApplyApplicationBar(_unitToken, auraData, updateMode)
+	local statusBar, options = UnpackDisplayElement(self.applicationBar);
+
+	if statusBar then
+		local applications = auraData and auraData.applications or 0;
+		local maxApplications = options.maxApplications;
+		local interpolation = GetStatusBarInterpolationForUpdateMode(options.interpolation, updateMode);
+
+		statusBar:SetMinMaxValues(0, math.max(maxApplications, 1));
+		statusBar:SetValue(applications, interpolation);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyApplicationCount(auraData)
-	if self.ApplicationCount then
+function CustomAuraButtonPrivateMixin:ApplyApplicationCount(_unitToken, auraData)
+	local fontString, options = UnpackDisplayElement(self.applicationCount);
+
+	if fontString then
 		local text = "";
 
 		if auraData then
-			local formatter = self.ApplicationCount.formatter;
+			local formatter = options.formatter;
 			local applications = auraData.applications;
 
 			if formatter then
@@ -284,7 +331,7 @@ function CustomAuraButtonPrivateMixin:ApplyApplicationCount(auraData)
 			end
 		end
 
-		self.ApplicationCount:SetText(secretwrap(text));
+		fontString:SetText(text);
 	end
 end
 
@@ -302,18 +349,18 @@ local function ShouldShowDispelTypeForAura(options, auraData)
 	return true;
 end
 
-local function GetCustomAuraBorderColor(options, unitToken, auraData)
-	local dispelType = auraData.dispelName or "";
-	local color;
+local function GetDispelTypeMapKey(auraData)
+	return auraData.dispelName or "None";
+end
 
-	if options.customDispelColorMap then
-		color = options.customDispelColorMap[dispelType];
+local function GetCustomDispelTypeTextureAsset(options, auraData)
+	local assetMap = options.customDispelAssetMap;
+	return assetMap and assetMap[GetDispelTypeMapKey(auraData)];
+end
 
-		if color == nil then
-			-- Supporting "" as a fallback for auras with no dispel type.
-			color = options.customDispelColorMap[""];
-		end
-	end
+local function GetCustomDispelTypeTextureColor(options, unitToken, auraData)
+	local colorMap = options.customDispelColorMap;
+	local color = colorMap and colorMap[GetDispelTypeMapKey(auraData)];
 
 	if options.customDispelColorCurve then
 		color = C_UnitAuras.GetAuraDispelTypeColor(unitToken, auraData.auraInstanceID, options.customDispelColorCurve);
@@ -322,118 +369,172 @@ local function GetCustomAuraBorderColor(options, unitToken, auraData)
 	return color;
 end
 
-local function SetAuraBorderColor(auraBorder, options, unitToken, auraData)
-	local color = GetCustomAuraBorderColor(options, unitToken, auraData);
+local function ApplyDispelTypeTextureAsset(texture, customAsset)
+	texture:ResetTexCoord();
+
+	if customAsset ~= nil then
+		if not CheckSetAtlas(texture, customAsset.asset, customAsset.useAtlasSize) then
+			texture:SetTexture(customAsset.asset);
+
+			local texCoords = customAsset.texCoords;
+			if texCoords then
+				texture:SetTexCoord(texCoords.left, texCoords.right, texCoords.top, texCoords.bottom);
+			end
+		end
+	else
+		-- Explicit wrapping here as we didn't add a method to force secret
+		-- values on script objects (only aspects).
+		texture:SetTexture(secretwrap(nil));
+	end
+end
+
+local function ApplyDispelTypeTextureStyle(texture, options, auraData)
+	local style = options.style;
+
+	if style == Enum.CustomAuraButtonDispelTypeTextureStyle.Border then
+		local showIcon = false;
+		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.BorderWithIcon then
+		local showIcon = true;
+		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.Icon then
+		AuraUtil.SetAuraDispelTypeIcon(texture, auraData.dispelName);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset then
+		AuraUtil.SetAuraBorderColor(texture, auraData.dispelName);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.CustomAsset then
+		local customAsset = secretwrap(GetCustomDispelTypeTextureAsset(options, auraData));
+		ApplyDispelTypeTextureAsset(texture, customAsset);
+		texture:SetVertexColor(1, 1, 1, 1);
+	end
+end
+
+local function ApplyCustomDispelTypeTextureColor(texture, options, unitToken, auraData)
+	local color = GetCustomDispelTypeTextureColor(options, unitToken, auraData);
 
 	if color then
-		auraBorder:SetVertexColor(color:GetRGBA());
+		texture:SetVertexColor(color:GetRGBA());
+	end
+end
+
+local function ApplyDispelTypeTexture(dispelTypeTexture, unitToken, auraData)
+	local texture, options = UnpackDisplayElement(dispelTypeTexture);
+
+	if ShouldShowDispelTypeForAura(options, auraData) then
+		ApplyDispelTypeTextureStyle(texture, options, auraData);
+		ApplyCustomDispelTypeTextureColor(texture, options, unitToken, auraData);
+		texture:Show();
 	else
-		AuraUtil.SetAuraBorderColor(auraBorder, auraData.dispelName);
+		texture:Hide();
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyAuraBorder(unitToken, auraData)
-	if self.AuraBorder then
-		if ShouldShowDispelTypeForAura(self.AuraBorderOptions, auraData) then
-			local style = self.AuraBorderOptions.style;
+function CustomAuraButtonPrivateMixin:ApplyDispelTypeTextures(unitToken, auraData)
+	for _index, dispelTypeTexture in ipairs(self.dispelTypeTextures) do
+		ApplyDispelTypeTexture(dispelTypeTexture, unitToken, auraData);
+	end
+end
 
-			if style == Enum.CustomAuraButtonBorderStyle.Atlas then
-				AuraUtil.SetAuraBorderAtlas(self.AuraBorder, auraData.dispelName, self.AuraBorderOptions.showIcon);
-			elseif style == Enum.CustomAuraButtonBorderStyle.Color then
-				SetAuraBorderColor(self.AuraBorder, self.AuraBorderOptions, unitToken, auraData);
+local function GetCustomDispelTypeText(options, auraData)
+	if options.customDispelTextMap then
+		return options.customDispelTextMap[GetDispelTypeMapKey(auraData)];
+	end
+end
+
+function CustomAuraButtonPrivateMixin:ApplyDispelTypeText(_unitToken, auraData)
+	local fontString, options = UnpackDisplayElement(self.dispelTypeText);
+
+	if fontString then
+		if ShouldShowDispelTypeForAura(options, auraData) then
+			local customText = GetCustomDispelTypeText(options, auraData);
+
+			if customText ~= nil then
+				fontString:SetText(customText);
+				fontString:Show();
+			else
+				AuraUtil.SetAuraSymbol(fontString, auraData.dispelName);
 			end
-
-			self.AuraBorder:Show();
 		else
-			self.AuraBorder:Hide();
+			fontString:SetText("");
+			fontString:Hide();
 		end
-	end
-end
-
-function CustomAuraButtonPrivateMixin:ApplyAuraSymbol(auraData)
-	if self.AuraSymbol then
-		local dispelType = ShouldShowDispelTypeForAura(self.AuraSymbol, auraData) and auraData.dispelName or nil;
-
-		-- SetAuraSymbol only conditionally sets secret text; we need this
-		-- to be unconditional as it could be observed externally. Also make
-		-- sure visibility is secret as a precaution.
-
-		self.AuraSymbol:SetShown(secretwrap(false));
-		self.AuraSymbol:SetText(secretwrap(""));
-
-		AuraUtil.SetAuraSymbol(self.AuraSymbol, dispelType);
 	end
 end
 
 function CustomAuraButtonPrivateMixin:HasAnyDurationDisplay()
-	return (self.DurationCooldown or self.DurationText or self.DurationBar) ~= nil;
+	return (self.durationCooldown or self.durationText or self.durationBar) ~= nil;
 end
 
-function CustomAuraButtonPrivateMixin:ApplyDurationCooldown(auraDuration)
-	if self.DurationCooldown then
+function CustomAuraButtonPrivateMixin:ApplyDurationCooldown(_unitToken, _auraData, auraDuration)
+	local cooldown = UnpackDisplayElement(self.durationCooldown);
+
+	if cooldown then
 		local clearIfZero = false;
-		self.DurationCooldown:SetCooldownFromDurationObject(auraDuration, clearIfZero);
+		cooldown:SetCooldownFromDurationObject(auraDuration, clearIfZero);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyDurationText(auraDuration)
-	if self.DurationTextBinding then
-		self.DurationTextBinding:SetDuration(auraDuration);
-		self.DurationTextBinding:SetEnabled(not auraDuration:IsZero());
+function CustomAuraButtonPrivateMixin:ApplyDurationText(_unitToken, _auraData, auraDuration)
+	if self.durationText then
+		local binding = self:GetDurationTextBinding();
+		binding:SetDuration(auraDuration);
+		binding:SetEnabled(not auraDuration:IsZero());
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyDurationBar(auraDuration)
-	if self.DurationBar then
-		self.DurationBar:SetTimerDuration(auraDuration, self.DurationBar.interpolation, self.DurationBar.direction);
+function CustomAuraButtonPrivateMixin:ApplyDurationBar(_unitToken, _auraData, auraDuration, updateMode)
+	local statusBar, options = UnpackDisplayElement(self.durationBar);
+
+	if statusBar then
+		local interpolation = GetStatusBarInterpolationForUpdateMode(options.interpolation, updateMode);
+
+		statusBar:SetTimerDuration(auraDuration, interpolation, options.direction);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyDuration(unitToken, auraData)
+function CustomAuraButtonPrivateMixin:ApplyDuration(unitToken, auraData, updateMode)
 	if self:HasAnyDurationDisplay() then
-		local auraDuration = C_DurationUtil.CreateDuration();
-
-		if auraData and auraData.expirationTime > 0 then
-			-- Avoiding the use of C_UnitAuras.GetAuraDuration as that API
-			-- isn't equipped to handle private auras. Build it manually.
-			auraDuration:SetTimeFromEnd(secretwrap(auraData.expirationTime, auraData.duration, auraData.timeMod));
-		else
-			auraDuration:SetTimeSpan(secretwrap(0, 0));
-		end
-
-		self:ApplyDurationCooldown(auraDuration);
-		self:ApplyDurationText(auraDuration);
-		self:ApplyDurationBar(auraDuration);
+		local auraDuration = self:GetAuraDuration();
+		self:ApplyDurationCooldown(unitToken, auraData, auraDuration);
+		self:ApplyDurationText(unitToken, auraData, auraDuration);
+		self:ApplyDurationBar(unitToken, auraData, auraDuration, updateMode);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyIcon(auraData)
-	if self.Icon then
-		AuraContainerUtil.SetIconTextureForAura(self, self.Icon, auraData);
+function CustomAuraButtonPrivateMixin:ApplyIcon(_unitToken, auraData)
+	local texture = UnpackDisplayElement(self.icon);
+
+	if texture then
+		AuraContainerUtil.SetIconTextureForAura(self, texture, auraData);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplySpellName(auraData)
-	if self.SpellName then
-		AuraContainerUtil.SetSpellNameForAura(self, self.SpellName, auraData);
+function CustomAuraButtonPrivateMixin:ApplySpellName(_unitToken, auraData)
+	local fontString = UnpackDisplayElement(self.spellName);
+
+	if fontString then
+		AuraContainerUtil.SetSpellNameForAura(self, fontString, auraData);
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyVisibility(auraData)
+function CustomAuraButtonPrivateMixin:ApplyVisibility(_unitToken, auraData)
 	self:SetShown(secretwrap(auraData ~= nil));
 end
 
-function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData)
-	self:ApplyApplicationBar(auraData);
-	self:ApplyApplicationCount(auraData);
-	self:ApplyAuraBorder(unitToken, auraData);
-	self:ApplyAuraSymbol(auraData);
-	self:ApplyDuration(unitToken, auraData);
-	self:ApplyIcon(auraData);
-	self:ApplySpellName(auraData);
-	self:ApplyVisibility(auraData);
+function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, updateMode)
+	self:ApplyApplicationBar(unitToken, auraData, updateMode);
+	self:ApplyApplicationCount(unitToken, auraData);
+	self:ApplyDispelTypeTextures(unitToken, auraData);
+	self:ApplyDispelTypeText(unitToken, auraData);
+	self:ApplyDuration(unitToken, auraData, updateMode);
+	self:ApplyIcon(unitToken, auraData);
+	self:ApplySpellName(unitToken, auraData);
+	self:ApplyVisibility(unitToken, auraData);
 end
 
 --[[override]] function CustomAuraButtonPrivateMixin:UpdateAuraDisplay()
-	self:ApplyAuraInstance(self:GetAuraInstance());
+	local unitToken, auraData = self:GetAuraInstance();
+	self:ApplyAuraInstance(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Update);
 end

@@ -224,7 +224,9 @@ function RaidFrameSocialMixin:MakeGroupFactoryFunction()
 		groupFrame.id = index;
 		groupFrame.GroupNumberText:SetText(GROUP_NUMBER:format(index));
 
-		groupFrame.playerPool = CreateFramePool("BUTTON", groupFrame.PlayersFrame, "RaidFrameSocialPlayerTemplate", ResetRaidFramePlayerResetter);
+		if not groupFrame.playerPool then
+			groupFrame.playerPool = CreateSecureFramePool("BUTTON", groupFrame.PlayersFrame, "RaidFrameSocialPlayerTemplate", ResetRaidFramePlayerResetter);
+		end
 
 		groupFrame.numPlayers = 0;
 
@@ -268,7 +270,11 @@ function RaidFrameSocialMixin:UpdateContents()
 		if i <= numRaidMembers then
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, loot, lfgRole = GetRaidRosterInfo(i);
 
-			self.groups[subgroup]:CreatePlayer(self, i, rank, role, name, level, class, fileName, subgroup, online, isDead);
+			local group = self.groups[subgroup];
+			local groupHasRoomForPlayer = group and (group.numPlayers < PLAYERS_PER_GROUP);
+			if groupHasRoomForPlayer then
+				group:CreatePlayer(self, i, rank, role, name, level, class, fileName, subgroup, online, isDead);
+			end
 		end
 	end
 

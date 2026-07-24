@@ -537,7 +537,7 @@ function NamePlateUnitFrameMixin:UpdateWidgetsOnlyMode()
 	self.RaidTargetFrame:SetWidgetsOnlyMode(self.widgetsOnlyMode);
 
 	self.WidgetContainer:ClearAllPoints();
-	if inWidgetsOnlyMode then
+	if self.widgetsOnlyMode then
 		PixelUtil.SetPoint(self.WidgetContainer, "BOTTOM", self, "BOTTOM", 0, 0);
 	else
 		PixelUtil.SetPoint(self.WidgetContainer, "TOP", self.CastBarsContainer, "BOTTOM", 0, 0);

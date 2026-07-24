@@ -330,7 +330,7 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 
 	
 	local isFromDiscord = message.author.discordInfo and message.author.discordInfo.fromDiscord;
-	if isFromDiscord then
+	if isFromDiscord and not message.destroyed then
 		content = ChatFrameUtil.FormatDiscordMessage(message.author.discordInfo, content);
 	end
 

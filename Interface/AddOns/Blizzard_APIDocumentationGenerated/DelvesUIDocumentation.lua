@@ -585,7 +585,7 @@ local DelvesUI =
 				{ Name = "rewards", Type = "table", InnerType = "TieredEntranceRewardInfo", Nilable = false },
 				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
 				{ Name = "lockedReason", Type = "string", Nilable = true },
-				{ Name = "isLFG", Type = "bool", Nilable = false },
+				{ Name = "queueAsLFG", Type = "bool", Nilable = false },
 				{ Name = "difficultyID", Type = "number", Nilable = false },
 			},
 		},

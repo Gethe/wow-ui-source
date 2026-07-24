@@ -126,6 +126,7 @@ local AuraContainerSortComparators =
 	[AuraContainerSortMethod.ExpirationOnly] = AuraUtil.ExpirationOnlyAuraCompare,
 	[AuraContainerSortMethod.Name] = AuraUtil.NameAuraCompare,
 	[AuraContainerSortMethod.NameOnly] = AuraUtil.NameOnlyAuraCompare,
+	[AuraContainerSortMethod.AuraInstanceIDOnly] = AuraUtil.AuraInstanceIDOnlyAuraCompare,
 };
 
 function AuraContainerUtil.GetAuraSortComparator(sortMethod, sortDirection)
@@ -250,3 +251,184 @@ function AuraContainerUtil.SetSpellNameForAura(auraButton, fontString, auraData)
 
 	fontString:SetText(secretwrap(name));
 end
+
+function AuraContainerUtil.ValidateInboundScriptObject(object, owner, ...)
+	if object:IsForbidden() then
+		error(string.format("bad object '%s' in function call (must not be an explicitly forbidden object)", object:GetDebugName()));
+	end
+
+	local _isProtected, isProtectedExplicitly = object:IsProtected();
+	if isProtectedExplicitly then
+		error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", object:GetDebugName()));
+	end
+
+	if not RegionUtil.IsDescendantOf(object, owner) then
+		-- This additionally ensures that the inbound object inherits all
+		-- required forbidden aspects that propagate through parent/child
+		-- hierarchies.
+		error(string.format("bad object '%s' in function call (must be a direct child or indirect descendent of owner)", object:GetDebugName()));
+	end
+
+	local function ApplyToForbiddenObject(validationFunc)
+		validationFunc(object);
+	end
+
+	mapvalues(ApplyToForbiddenObject, ...);
+end
+
+function AuraContainerUtil.InitializeInboundScriptObject(object)
+	object:AddForbiddenAspects(Enum.ForbiddenAspect.RemoveSecretAspects);
+	object:AddForbiddenAspects(Enum.ForbiddenAspect.ChangeParent);
+	return object;
+end
+
+function AuraContainerUtil.ApplyAccessRestrictions(object, restrictions)
+	-- Access restrictions are applied in a deferred manner. If we've begun
+	-- signaling the PLAYER_LOGIN event, apply them immediately - else,
+	-- wait until PLAYER_ENTERING_WORLD to restrict them.
+	--
+	-- This allows user addons to set up aura buttons on login and UI reload
+	-- and give them ample time to apply configuration through execution of
+	-- PLAYER_LOGIN. We use PLAYER_ENTERING_WORLD for deferred restrictions
+	-- to avoid racing our event handlers against theirs.
+	
+	if IsLoggedIn() then
+		object:AddAccessRestrictions(restrictions);
+		return;
+	end
+
+	EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function() object:AddAccessRestrictions(restrictions); end);
+end
+
+function AuraContainerUtil.GetDefaultTooltip()
+	return AuraButtonTooltip;
+end
+
+function AuraContainerUtil.ClearTooltipStyle(tooltip)
+	if tooltip.BackdropContainer then
+		tooltip.BackdropContainer:SetBackdropBorderColor(1, 1, 1, 1);
+		tooltip.BackdropContainer:SetBackdropColor(1, 1, 1, 1);
+		tooltip.BackdropContainer:ClearBackdrop();
+		tooltip.BackdropContainer:ClearAllPoints();
+		tooltip.BackdropContainer:Hide();
+	end
+
+	if tooltip.TextureSliceBackground then
+		tooltip.TextureSliceBackground:SetDrawLayer("BACKGROUND", 0);
+		tooltip.TextureSliceBackground:SetVertexColor(1, 1, 1, 1);
+		tooltip.TextureSliceBackground:SetTexture(nil);
+		tooltip.TextureSliceBackground:ClearTextureSlice();
+		tooltip.TextureSliceBackground:ClearAllPoints();
+		tooltip.TextureSliceBackground:Hide();
+	end
+
+	-- It's possible for tooltip data to attempt to re-assign and replace
+	-- nineslice layouts. We assume this probably won't happen for auras
+	-- right now - but, if it does, we clear the anchors of the nineslice
+	-- to at least ensure texture slice and backdrop-based styling doesn't
+	-- run into issues.
+
+	tooltip.NineSlice:SetBorderColor(1, 1, 1, 1);
+	tooltip.NineSlice:SetCenterColor(1, 1, 1, 1);
+	tooltip.NineSlice:ClearAllPoints();
+	tooltip.NineSlice:Hide();
+end
+
+function AuraContainerUtil.SetTooltipNineSlice(options)
+	options = C_AuraContainerUtil.ProcessAuraTooltipNineSliceOptions(securecopy(options));
+
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
+	AuraContainerUtil.ClearTooltipStyle(tooltip);
+
+	tooltip.NineSlice:ClearAllPoints();
+	tooltip.NineSlice:SetPoint("TOPLEFT", tooltip, options.anchorOffsets.left, options.anchorOffsets.top);
+	tooltip.NineSlice:SetPoint("BOTTOMRIGHT", tooltip, options.anchorOffsets.right, options.anchorOffsets.bottom);
+
+	NineSliceUtil.ApplyLayoutByName(tooltip.NineSlice, options.layoutName);
+
+	if options.borderColor then
+		tooltip.NineSlice:SetBorderColor(options.borderColor:GetRGBA());
+	end
+
+	if options.centerColor then
+		tooltip.NineSlice:SetCenterColor(options.centerColor:GetRGBA());
+	end
+
+	tooltip.NineSlice:Show();
+end
+
+function AuraContainerUtil.SetTooltipTextureSlice(options)
+	options = C_AuraContainerUtil.ProcessAuraTooltipTextureSliceOptions(securecopy(options));
+
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
+	AuraContainerUtil.ClearTooltipStyle(tooltip);
+
+	if not tooltip.TextureSliceBackground then
+		tooltip.TextureSliceBackground = tooltip:CreateTexture(nil, "BACKGROUND");
+	end
+
+	tooltip.TextureSliceBackground:ClearAllPoints();
+	tooltip.TextureSliceBackground:SetPoint("TOPLEFT", tooltip, options.anchorOffsets.left, options.anchorOffsets.top);
+	tooltip.TextureSliceBackground:SetPoint("BOTTOMRIGHT", tooltip, options.anchorOffsets.right, options.anchorOffsets.bottom);
+	tooltip.TextureSliceBackground:ClearTextureSlice();
+
+	if not CheckSetAtlas(tooltip.TextureSliceBackground, options.asset) then
+		tooltip.TextureSliceBackground:SetTexture(options.asset);
+	end
+
+	if options.sliceMargins then
+		tooltip.TextureSliceBackground:SetTextureSliceMargins(options.sliceMargins.left, options.sliceMargins.top, options.sliceMargins.right, options.sliceMargins.bottom);
+	end
+
+	if options.sliceMode then
+		tooltip.TextureSliceBackground:SetTextureSliceMode(options.sliceMode);
+	end
+
+	if options.color then
+		tooltip.TextureSliceBackground:SetVertexColor(options.color:GetRGBA());
+	end
+
+	if options.drawLayer then
+		tooltip.TextureSliceBackground:SetDrawLayer(options.drawLayer, options.drawLayerSublevel);
+	end
+
+	tooltip.TextureSliceBackground:Show();
+end
+
+function AuraContainerUtil.SetTooltipBackdrop(options)
+	options = C_AuraContainerUtil.ProcessAuraTooltipBackdropOptions(securecopy(options));
+
+	if not options.backdropInfo.bgFile and not options.backdropInfo.edgeFile then
+		error("expected a non-nil value for either bgFile or edgeFile");
+		return;
+	end
+
+	local tooltip = AuraContainerUtil.GetDefaultTooltip();
+	AuraContainerUtil.ClearTooltipStyle(tooltip);
+
+	if not tooltip.BackdropContainer then
+		tooltip.BackdropContainer = CreateFrame("Frame", nil, tooltip, "BackdropTemplate");
+		tooltip.BackdropContainer:SetUsingParentLevel(true);
+	end
+
+	tooltip.BackdropContainer:ClearAllPoints();
+	tooltip.BackdropContainer:SetPoint("TOPLEFT", tooltip, options.anchorOffsets.left, options.anchorOffsets.top);
+	tooltip.BackdropContainer:SetPoint("BOTTOMRIGHT", tooltip, options.anchorOffsets.right, options.anchorOffsets.bottom);
+	tooltip.BackdropContainer:SetBackdrop(options.backdropInfo);
+
+	if options.borderColor then
+		tooltip.BackdropContainer:SetBackdropBorderColor(options.borderColor:GetRGBA());
+	end
+
+	if options.centerColor then
+		tooltip.BackdropContainer:SetBackdropColor(options.centerColor:GetRGBA());
+	end
+
+	tooltip.BackdropContainer:Show();
+end
+
+-- Export some utilities for the inbound secure delegate interface.
+local _addonName, addonTable = ...;
+addonTable.InboundSetTooltipNineSlice = CreateSecureDelegate(AuraContainerUtil.SetTooltipNineSlice);
+addonTable.InboundSetTooltipTextureSlice = CreateSecureDelegate(AuraContainerUtil.SetTooltipTextureSlice);
+addonTable.InboundSetTooltipBackdrop = CreateSecureDelegate(AuraContainerUtil.SetTooltipBackdrop);

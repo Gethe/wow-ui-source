@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="SocialUIFrame" inherits="PortraitFrameTemplate, CallbackRegistrantTemplate" mixin="SocialUIFrameMixin" toplevel="true" hidden="true" clampedToScreen="true">
+	<Frame name="SocialUIFrame" inherits="PortraitFrameTemplate, CallbackRegistrantTemplate" mixin="SocialUIFrameMixin" toplevel="true" enableMouse="true" hidden="true" clampedToScreen="true">
 		<Size x="410" y="675"/>
 		<KeyValues>
 			<KeyValue key="portraitIcon" value="Interface\FriendsFrame\Battlenet-Portrait" type="string"/>
@@ -11,7 +11,7 @@
 		<Frames>
 			<Frame parentKey="BattleNetBar" inherits="SocialUIBattleNetBarTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Bg" y="-1"/>
+					<Anchor point="TOP" y="-22"/>
 				</Anchors>
 			</Frame>
 		</Frames>

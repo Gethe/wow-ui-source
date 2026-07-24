@@ -68,10 +68,7 @@ function GuildControlUI_SetupSelected(selected)
 			end
 		end
 		if(C_Discord.IsEnabled()) then
-			local discordName = "";
-			if(GUILDCONTROL_DISCORD_SETTINGS) then -- might be encrypted
-				discordName = string.format(GUILDCONTROL_DISCORD_SETTINGS, CreateAtlasMarkup("UI-ChatIcon-Discord"));
-			end
+			local discordName = string.format(GUILDCONTROL_DISCORD_SETTINGS, CreateAtlasMarkup("UI-ChatIcon-Discord"));
 			rootDescription:CreateRadio(discordName, IsSelected, SetSelected, 4);
 		end
 	end);

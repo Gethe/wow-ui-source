@@ -8,19 +8,17 @@ TargetFrameAuraContainerDefaults =
 	SmallAuraSize = 17,
 	LargeAuraSize = 21,
 
-	AuraElementSpacingX = 3,
-	AuraElementSpacingY = 3,
+	FlowLayoutElementSpacing = 3,
+	FlowLayoutLineSize = 122,
+	FlowLayoutLineSpacing = 3,
+	FlowLayoutPaddingBottom = 0,
+	FlowLayoutPaddingLeft = 0,
+	FlowLayoutPaddingRight = 0,
+	FlowLayoutPaddingTop = 0,
 
-	AuraPaddingLeft = 0,
-	AuraPaddingRight = 0,
-	AuraPaddingTop = 0,
-	AuraPaddingBottom = 0,
+	ConstrainedFlowLayoutLineSize = 101,
+	NumConstrainedFlowLayoutLines = 0,
 
-	AuraRowWidth = 122,
-	ConstrainedAuraRowWidth = 101,
-	NumConstrainedAuraRows = 0,
-
-	MirrorVertically = false,
 	ShowAuraCount = true,
 
 	MaxBuffs = MAX_TARGET_BUFFS,

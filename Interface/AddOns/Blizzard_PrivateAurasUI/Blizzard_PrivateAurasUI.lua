@@ -53,6 +53,7 @@ function PrivateAuraMixin:Reset()
 
 	self:ClearOverrideSize();
 	self:ApplyVisualAlert(nil);
+	self:Hide();
 end
 
 function PrivateAuraMixin:ShowTooltip()

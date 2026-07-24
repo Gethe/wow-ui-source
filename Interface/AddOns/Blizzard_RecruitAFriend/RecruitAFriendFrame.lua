@@ -39,7 +39,8 @@ function RecruitAFriendFrameMixin:OnLoad()
 
 	self:SetNoRecruitsText(RAF_NO_RECRUITS_DESC);
 
-	local view = CreateScrollBoxListLinearView();
+	local topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing = self:GetScrollBoxPadding();
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 	-- SetElementExtentCalculator could be removed if the element initializer is replaced with a factory
 	-- and the concepts of divider and recruit entry split apart from RecruitListButtonTemplate.
 	view:SetElementExtentCalculator(function(dataIndex, elementData)
@@ -49,7 +50,7 @@ function RecruitAFriendFrameMixin:OnLoad()
 		button:Init(elementData);
 	end);
 
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.RecruitList.ScrollBox, self.RecruitList.ScrollBar, view);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self:GetRecruitScrollBox(), self:GetRecruitScrollBar(), view);
 
 	local rafSystemInfo = C_RecruitAFriend.GetRAFSystemInfo();
 	self:UpdateRAFSystemInfo(rafSystemInfo);
@@ -60,6 +61,28 @@ end
 
 function RecruitAFriendFrameMixin:SetNoRecruitsText(text)
 	self.RecruitList.NoRecruitsDesc:SetText(text);
+end
+
+function RecruitAFriendFrameMixin:GetRecruitScrollBox()
+	return self.RecruitList.ScrollBox;
+end
+
+function RecruitAFriendFrameMixin:GetRecruitScrollBar()
+	return self.RecruitList.ScrollBar;
+end
+
+function RecruitAFriendFrameMixin:GetRecruitCountFontString()
+	return self.RecruitList.Header.Count;
+end
+
+function RecruitAFriendFrameMixin:GetRecruitmentButton()
+	return self.RecruitmentButton;
+end
+
+function RecruitAFriendFrameMixin:GetScrollBoxPadding()
+	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
+	local elementSpacing = 0;
+	return topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing;
 end
 
 function RecruitAFriendFrameMixin:ScrollElementExtentCalculator(dataIndex, elementData)
@@ -151,7 +174,7 @@ function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 end
 
 function RecruitAFriendFrameMixin:SetRAFRecruitingEnabled(rafRecruitingEnabled)
-	self.RecruitmentButton:SetShown(rafRecruitingEnabled);
+	self:GetRecruitmentButton():SetShown(rafRecruitingEnabled);
 
 	if not rafRecruitingEnabled then
 		StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
@@ -265,9 +288,9 @@ function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 
 	self:HideShowContents(numRecruits > 0);
 
-	self.RecruitList.Header.Count:SetText(self.fractionString:format(numRecruits, maxRecruits));
+	self:GetRecruitCountFontString():SetText(self.fractionString:format(numRecruits, maxRecruits));
 
-	local needDivider = ProcessAndSortRecruits(recruits);
+	local needDivider = ProcessAndSortRecruits(recruits) and self:ShouldInsertOnlineOfflineDividerForRecruits();
 	local dataProvider = CreateDataProvider();
 	for index = 1, numRecruits do
 		local recruit = recruits[index];
@@ -278,7 +301,11 @@ function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 		dataProvider:Insert(recruit);
 	end
 
-	self.RecruitList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	self:GetRecruitScrollBox():SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+end
+
+function RecruitAFriendFrameMixin:ShouldInsertOnlineOfflineDividerForRecruits()
+	return true;
 end
 
 function RecruitAFriendFrameMixin:UpdateScrollBox()
@@ -518,6 +545,8 @@ function RecruitActivityButtonMixin:UpdateIcon()
 	if self:IsMouseOver() then
 		if self.activityInfo.state == Enum.RafRecruitActivityState.RewardClaimed then
 			self.Icon:SetAtlas(self.Icon_CursorOverChecked, useAtlasSize);
+		elseif self.Icon_CursorOverOpen and state == Enum.RafRecruitActivityState.Complete then
+			self.Icon:SetAtlas(self.Icon_CursorOverOpen, useAtlasSize);
 		else
 			self.Icon:SetAtlas(self.Icon_CursorOver, useAtlasSize);
 		end
@@ -703,11 +732,10 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	if self.dynamicBackground then
 		SetupTextureKitOnRegions(RAFUtil.GetTextureKitForRAFVersion(versionRecruited), self, recruitListButtonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	end
-	if recruitInfo.isOnline then
-		if self.dynamicBackground then
-			self.Background:SetColorTexture(RAFUtil.GetColorForRAFVersion(versionRecruited):GetRGBA());
-		end
 
+	self:UpdateBackground(recruitInfo, versionRecruited);
+
+	if recruitInfo.isOnline then
 		if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Active then
 			self.InfoText:SetText(RAF_ACTIVE_RECRUIT);
 			self.InfoText:SetTextColor(GREEN_FONT_COLOR:GetRGB());
@@ -719,7 +747,6 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 			self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 		end
 	else
-		self.Background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR:GetRGBA());
 		self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
 		if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Inactive then
@@ -737,6 +764,17 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	self:UpdateActivities(recruitInfo);
 
 	self:Show();
+end
+
+function RecruitListButtonMixin:UpdateBackground(recruitInfo, versionRecruited)
+	if recruitInfo.isOnline then
+		if self.dynamicBackground then
+			local color = RAFUtil.GetColorForRAFVersion(versionRecruited) or NORMAL_FONT_COLOR;
+			self.Background:SetColorTexture(color:GetRGBA());
+		end
+	else
+		self.Background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR:GetRGBA());
+	end
 end
 
 RecruitAFriendNextRewardInfoButtonMixin = CreateFromMixins(RecruitAFriendSystemMixin);

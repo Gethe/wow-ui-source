@@ -129,6 +129,10 @@ local function GetTargetPingReceiverInfo_Insecure(posX, posY)
 	return pingInfo;
 end
 
+local function GetTargetPingReceiverInfo(posX, posY)
+	return securecopy(securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY));
+end
+
 -- Used for radial wheel.
 function PingManager:DeterminePingTarget(posX, posY)
 	local result = {
@@ -142,7 +146,7 @@ function PingManager:DeterminePingTarget(posX, posY)
 	-- First, see if the cursor is over any valid pingable UI (either as a blocking frame, or a pingable target).
 	-- Frames marked as topLevel are marked as valid, usually for being ping blockers.  If marked with the ping-top-level-pass-through attribute, they will no longer be considered valid.
 	-- Frames specifically marked with the ping-receiver attribute are also caught here.
-	local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
+	local pingInfo = GetTargetPingReceiverInfo(posX, posY);
 	if pingInfo.frameFound then
 		-- If not pingable, then this is blocking UI for the ping system, do not make further checks.
 		if pingInfo.isPingable then
@@ -170,7 +174,7 @@ end
 
 -- Used for contextual ping.
 function PingManager:DeterminePingTargetAndSend(posX, posY, spotX, spotY)
-	local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, posX, posY);
+	local pingInfo = GetTargetPingReceiverInfo(posX, posY);
 	if pingInfo.frameFound then
 		if pingInfo.isPingable then
 			-- pingType is contextual here, we figure out the type later.
@@ -221,7 +225,7 @@ function PingManager:SendMacroPing(macroInfo)
 		local cursorX, cursorY = GetCursorPosition();
 		spotX, spotY = securecallfunction(GetScaledCursorPosition_Insecure);
 
-		local pingInfo = securecallfunction(GetTargetPingReceiverInfo_Insecure, cursorX, cursorY);
+		local pingInfo = GetTargetPingReceiverInfo(cursorX, cursorY);
 		if pingInfo.frameFound then
 			if pingInfo.isPingable then
 				uiTargetInfo = pingInfo.uiTargetInfo;

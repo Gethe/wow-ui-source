@@ -8,6 +8,17 @@ local DurationTextBindingObjectAPI =
 	Functions =
 	{
 		{
+			Name = "Assign",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Copies another duration text binding and assigns it to this one." },
+
+			Arguments =
+			{
+				{ Name = "other", Type = "DurationTextBinding", Nilable = false },
+			},
+		},
+		{
 			Name = "CanFormatText",
 			Type = "Function",
 			Documentation = { "Returns true if this binding has enough configuration to produce formatted text." },
@@ -42,6 +53,21 @@ local DurationTextBindingObjectAPI =
 
 			Arguments =
 			{
+			},
+		},
+		{
+			Name = "Copy",
+			Type = "Function",
+			ReturnsNeverSecret = true,
+			Documentation = { "Returns a copy of this duration text binding." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "copy", Type = "DurationTextBinding", Nilable = false },
 			},
 		},
 		{
@@ -295,7 +321,7 @@ local DurationTextBindingObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "format", Type = "string", Nilable = false },
+				{ Name = "formatString", Type = "stringView", Nilable = false },
 				{ Name = "components", Type = "table", InnerType = "DurationTextBindingFormatComponent", Nilable = false },
 			},
 		},

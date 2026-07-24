@@ -295,16 +295,18 @@ local function Register()
 		local function IsDiscordSettingsAllowed()
 			return C_Discord.IsEnabled();
 		end
-		
+		local function IsDiscordSettingsModifiable()
+			return not C_Discord.IsUserOAuthed();
+		end
+
 
 		local addSearchTags = true;
 		local newTagID = "SOCIAL_ENABLE_DISCORD_FUNCTIONALITY";
-		local newTagName = "";
-		if(SOCIAL_ENABLE_DISCORD_FUNCTIONALITY) then -- might be encrypted
-			newTagName = string.format(SOCIAL_ENABLE_DISCORD_FUNCTIONALITY, CreateAtlasMarkup("UI-ChatIcon-Discord"));
-		end
+		local newTagName = string.format(SOCIAL_ENABLE_DISCORD_FUNCTIONALITY, CreateAtlasMarkup("UI-ChatIcon-Discord"));
+
 		local discordAuthInitializer = CreateSettingsButtonInitializer(newTagName, GetAuthButtonName, OnAuthButtonClick, tooltipFn, addSearchTags, newTagID, SetButtonName, "DISCORD_LINK_UPDATE");
 		discordAuthInitializer:AddShownPredicate(IsDiscordSettingsAllowed);
+		discordAuthInitializer:AddModifyPredicate(IsDiscordSettingsModifiable)
 		discordAuthInitializer:AddEvaluateStateFrameEvent("DISCORD_LINK_UPDATE");
 		layout:AddInitializer(discordAuthInitializer);
 

@@ -269,6 +269,11 @@ function CooldownViewerItemDataMixin:IsEquippedItem()
 	return self:GetEquipSlot() ~= nil;
 end
 
+function CooldownViewerItemDataMixin:GetEquipSlotTrackedBuffIndex()
+	local cooldownInfo = self:GetCooldownInfo();
+	return cooldownInfo and cooldownInfo.buffSlot or 1;
+end
+
 function CooldownViewerItemDataMixin:IsBagItem()
 	return self:GetSpellCategory() ~= nil;
 end
@@ -422,6 +427,14 @@ local spellCategoryMetadataLookup =
 		tooltipItemIDFallback = 5512, -- If no specific healthstone was used, show the base version.
 		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTHSTONE_TITLE,
 	},
+
+	-- Demonic Healthstone
+	[2566] =
+	{
+		icon = "Interface/ICONS/Warlock_ Bloodstone",
+		tooltipItemIDFallback = 224464, -- If no specific item was used, show the base version.
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_DEMONIC_HEALTHSTONE_TITLE,
+	},
 };
 
 function CooldownViewerItemDataMixin:GetSpellCategory()
@@ -499,7 +512,9 @@ function CooldownViewerItemDataMixin:GetSpellCategoryTooltipItemLocation()
 				cooldownInfo.hasScannedForItemLocation = true; -- This required because the scan may find nothing and we don't want to keep scanning.
 			end
 
-			return cooldownInfo.lastItemLocationForCategory;
+			if cooldownInfo.lastItemLocationForCategory and cooldownInfo.lastItemLocationForCategory:IsValid() then
+				return cooldownInfo.lastItemLocationForCategory;
+			end
 		end
 	end
 
@@ -597,6 +612,11 @@ function CooldownViewerItemDataMixin:GetNameText()
 	local spellID = self:GetSpellID();
 	if spellID then
 		return C_Spell.GetSpellName(spellID);
+	end
+
+	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+	if spellCategoryTitle then
+		return spellCategoryTitle;
 	end
 
 	if self:HasEditModeData() then
@@ -886,26 +906,34 @@ function CooldownViewerItemDataMixin:DisplayEquipSlotTrackedTooltip(tooltip, equ
 				return true;
 			end
 
-			for spellIndex, spell in ipairs(spells) do
-				if spellIndex > 1 then
+			local buffIndex = self:GetEquipSlotTrackedBuffIndex();
+
+			if #spells == 0 then
+				GameTooltip_AddErrorLine(tooltip, COOLDOWN_VIEWER_TRINKET_NO_AURA_TOOLTIP_LABEL:format(buffIndex));
+			else
+				local auraLabel = COOLDOWN_VIEWER_TRINKET_AURA_TOOLTIP_LABEL:format(buffIndex);
+
+				for spellIndex, spell in ipairs(spells) do
+					if spellIndex > 1 then
+						GameTooltip_AddBlankLineToTooltip(tooltip);
+					end
+
+					GameTooltip_AddHighlightLine(tooltip, spell:GetSpellName());
+
+					local textureSettings = {
+						width = 32,
+						height = 32,
+						region = Enum.TooltipTextureRelativeRegion.LeftLine,
+						anchor = Enum.TooltipTextureAnchor.LeftTop,
+						margin = { left = 0, right = 8, top = 0, bottom = -20 },
+					};
+
+					tooltip:AddTexture(spell:GetSpellTexture(), textureSettings);
+
+					GameTooltip_AddHighlightLine(tooltip, auraLabel, false, 40);
 					GameTooltip_AddBlankLineToTooltip(tooltip);
+					GameTooltip_AddInstructionLine(tooltip, spell:GetSpellDescriptionForItemLocation(itemLocation));
 				end
-
-				GameTooltip_AddHighlightLine(tooltip, spell:GetSpellName());
-
-				local textureSettings = {
-					width = 32,
-					height = 32,
-					region = Enum.TooltipTextureRelativeRegion.LeftLine,
-					anchor = Enum.TooltipTextureAnchor.LeftTop,
-					margin = { left = 0, right = 8, top = 0, bottom = -20 },
-				};
-
-				tooltip:AddTexture(spell:GetSpellTexture(), textureSettings);
-
-				GameTooltip_AddHighlightLine(tooltip, COOLDOWN_VIEWER_TRINKET_AURA_TOOLTIP_LABEL, false, 40);
-				GameTooltip_AddBlankLineToTooltip(tooltip);
-				GameTooltip_AddInstructionLine(tooltip, spell:GetSpellDescriptionForItemLocation(itemLocation));
 			end
 
 			return true;

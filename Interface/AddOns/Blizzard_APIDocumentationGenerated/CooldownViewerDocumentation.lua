@@ -134,6 +134,7 @@ local CooldownViewer =
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
 				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = true },
 				{ Name = "equipSlot", Type = "luaIndex", Nilable = true },
+				{ Name = "buffSlot", Type = "luaIndex", Nilable = true },
 				{ Name = "linkedSpellIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "selfAura", Type = "bool", Nilable = false },
 				{ Name = "hasAura", Type = "bool", Nilable = false },

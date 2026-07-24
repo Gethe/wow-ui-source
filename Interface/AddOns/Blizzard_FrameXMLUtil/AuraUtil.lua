@@ -2,11 +2,11 @@ DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 BUFF_DURATION_WARNING_TIME = 90;
 
 local DEBUFF_DISPLAY_INFO = {
-	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon" },
-	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon" },
-	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon" },
-	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon" },
-	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon" },
+	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffMagic" },
+	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffCurse" },
+	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffDisease" },
+	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffPoison" },
+	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffBleed" },
 	["None"] = { color = DEBUFF_TYPE_NONE_COLOR, abbreviation = "", basicAtlas = "ui-debuff-border-default-noicon" },
 };
 
@@ -260,6 +260,10 @@ function AuraUtil.NameOnlyAuraCompare(auraA, auraB)
 		return aName < bName;
 	end
 
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.AuraInstanceIDOnlyAuraCompare(auraA, auraB)
 	return auraA.auraInstanceID < auraB.auraInstanceID;
 end
 
@@ -618,6 +622,19 @@ function AuraUtil.SetAuraSymbol(fontstring, dispelType)
 		fontstring:Show();
 	else
 		fontstring:Hide();
+	end
+end
+
+function AuraUtil.GetAuraDispelTypeIcon(dispelType)
+	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+	return info.dispelIconAtlas;
+end
+
+function AuraUtil.SetAuraDispelTypeIcon(texture, dispelType)
+	local dispelIconAtlas = AuraUtil.GetAuraDispelTypeIcon(dispelType);
+
+	if not CheckSetAtlas(texture, dispelIconAtlas, TextureKitConstants.IgnoreAtlasSize) then
+		texture:SetTexture(nil);
 	end
 end
 

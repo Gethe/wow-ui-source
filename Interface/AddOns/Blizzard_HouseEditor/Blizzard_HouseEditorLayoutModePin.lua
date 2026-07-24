@@ -72,7 +72,7 @@ function HousingLayoutDoorPinMixin:Init()
 	elseif self.connectionType == Enum.HousingRoomComponentType.Floor then
 		self.ArrowIcon:SetRotation(PI);
 		self.ArrowIcon:Show();
-		self:SetPoint("CENTER", pin, "CENTER", 0, -50);
+		self:SetPoint("CENTER", pin, "CENTER", 0, -70);
 		self.enabledTooltip = HOUSING_LAYOUT_DOWN_DOOR_TOOLTIP;
 	else
 		self.ArrowIcon:Hide();

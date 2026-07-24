@@ -45,6 +45,7 @@
 					<KeyValue key="backgroundAlpha" value="0.4" type="number"/>
 					<KeyValue key="leftPadding" value="24" type="number"/>
 					<KeyValue key="rightPadding" value="24" type="number"/>
+					<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 				</KeyValues>	
 			</Frame>
 		</Frames>

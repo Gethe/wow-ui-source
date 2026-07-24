@@ -19,6 +19,7 @@ end
 
 function SocialUIActionButtonMixin:ShowTooltip()
 	-- Optionally override in your mixin
+	TruncatedTooltipScript_OnEnter(self);
 end
 
 function SocialUIActionButtonMixin:OnLeave()

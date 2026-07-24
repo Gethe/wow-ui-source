@@ -1,29 +1,76 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="RewardClaimingSocialTemplate" inherits="UserScaledFrameByHeightTemplate" virtual="true" mixin="RewardClaimingMixin">
+
+	<Button name="RAFClaimRewardButtonSocialViewBaseTemplate" mixin="RecruitAFriendClaimRewardButtonBaseMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="YellowGlow" alpha="0">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Left" atlas="newplayertutorial-yellowGlow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="newplayertutorial-yellowGlow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="newplayertutorial-yellowGlow-redbutton-middle" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="UnclaimedRewardsAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="YellowGlow" duration="1" order="1" fromAlpha="0" toAlpha="0.6" />
+				<Alpha childKey="YellowGlow" duration="1" order="2" fromAlpha="0.6" toAlpha="0" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="RewardClaimingSocialTemplate" inherits="UserScaledFrameTemplate" virtual="true" mixin="RewardClaimingMixin">
 		<KeyValues>
 			<KeyValue key="legacyBackgroundAtlas" value="friends-RAF-headerBG" type="string"/>
 			<KeyValue key="backgroundAtlas" value="friends-RAF-headerBG" type="string"/>
 
-			<KeyValue key="additionalHeight" value="60" type="number"/>
+			<KeyValue key="baseHeight" value="125" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.5" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Background" atlas="friends-RAF-headerBG" useAtlasSize="false" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
+				<Texture parentKey="Watermark" atlas="recruitafriend_v3_iwatermark_big" useAtlasSize="true" alpha="0.2" scale="1.15">
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Background" x="-10" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="-11" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="MonthCount" inherits="TruncatedTooltipScriptTemplate, UserScaledFrameByHeightTemplate">
-				<Size x="285" y="1"/>
+				<Size x="285"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="115" y="-18"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -31,16 +78,16 @@
 							<KeyValues>
 								<KeyValue key="heightContributing" value="true" type="boolean"/>
 							</KeyValues>
-							<Size x="285" y="1"/>
+							<Size x="285"/>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
 
 			<Frame parentKey="EarnInfo" inherits="TruncatedTooltipScriptTemplate, UserScaledFrameByHeightTemplate">
-				<Size x="285" y="1"/>
+				<Size x="285"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MonthCount" relativePoint="BOTTOMLEFT" y="-4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MonthCount" relativePoint="BOTTOMLEFT" y="-6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -48,24 +95,24 @@
 							<KeyValues>
 								<KeyValue key="heightContributing" value="true" type="boolean"/>
 							</KeyValues>
-							<Size x="285" y="1"/>
+							<Size x="285"/>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
 
 			<Frame parentKey="NextRewardName" inherits="TruncatedTooltipScriptTemplate, UserScaledFrameByHeightTemplate">
-				<Size x="285" y="1"/>
+				<Size x="285"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.EarnInfo" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="UserScaledFontGameNormal" maxLines="1" justifyH="LEFT">
+						<FontString parentKey="Text" inherits="UserScaledFontGameNormalLarge" maxLines="1" justifyH="LEFT">
 							<KeyValues>
 								<KeyValue key="heightContributing" value="true" type="boolean"/>
 							</KeyValues>
-							<Size x="285" y="1"/>
+							<Size x="285"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -76,18 +123,18 @@
 					<KeyValue key="Icon_RingClaimed" value="friends-RAF-circFrame" type="string"/>
 					<KeyValue key="Icon_RingUnclaimed" value="friends-RAF-circFrame" type="string"/>
 				</KeyValues>
-				<Size x="49" y="49"/>
+				<Size x="66" y="66"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="46" />
+					<Anchor point="LEFT" relativeKey="$parent.Background" relativePoint="LEFT" x="30" />
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
+						<Texture parentKey="ClaimGlow" atlas="services-ring-large-glow" alpha="0" ignoreParentAlpha="true" useAtlasSize="true" scale="0.54">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.5">
+						<Texture parentKey="ClaimGlowSpin" atlas="services-ring-large-glowspin" alpha="0" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.675">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -103,7 +150,7 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="3">
 						<Texture parentKey="IconBorder" atlas="friends-RAF-circFrame">
-							<Size x="64" y="64"/>
+							<Size x="86" y="86"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -124,7 +171,7 @@
 				</Layers>
 				<Frames>
 					<ModelScene parentKey="ModelScene" inherits="NonInteractableWrappedModelSceneTemplate" frameStrata="HIGH" hidden="true">
-						<Size x="125" y="125"/>
+						<Size x="169" y="169"/>
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
@@ -153,92 +200,93 @@
 					<OnLoad method="OnLoad" />
 				</Scripts>
 			</Button>
-			<Button parentKey="ClaimOrViewRewardButton" inherits="FriendsFrameButtonTemplate, RAFClaimRewardButtonBaseTemplate" text="RAF_VIEW_ALL_REWARDS" motionScriptsWhileDisabled="true" mixin="RecruitAFriendClaimOrViewRewardButtonMixin">
-				<Size x="185" y="26"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="7" y="10"/>
-				</Anchors>
+			<Button parentKey="ClaimOrViewRewardButton" inherits="SocialUIActionButtonTemplate, RAFClaimRewardButtonSocialViewBaseTemplate" motionScriptsWhileDisabled="true" mixin="RecruitAFriendSocialViewClaimOrViewRewardButtonMixin" scale="0.9">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="170" type="number"/>
+					<KeyValue key="maxWidth" value="230" type="number"/>
+
+					<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+					<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+					<KeyValue key="scaleWeight" value="0.4" type="number"/>
+
+					<KeyValue key="bottomAnchorYOffset" value="16" type="number"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad" />
 					<OnClick method="OnClick" />
 				</Scripts>
-				<NormalFont style="UserScaledFontGameNormalSmall"/>
-				<HighlightFont style="UserScaledFontGameNormalSmall"/>
 			</Button>
 		</Frames>
 	</Frame>
 
-	<Button name="RecruitActivityButtonSocialTemplate" inherits="RecruitActivityButtonTemplate" virtual="true" >
+	<Button name="RecruitActivityButtonSocialTemplate" inherits="RecruitActivityButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="Icon_TrialAccount" value="friends-RAF-chest-locked" type="string"/>
 			<KeyValue key="Icon_CursorOverChecked" value="friends-RAF-chest-claimed-hover" type="string"/>
 			<KeyValue key="Icon_CursorOver" value="friends-RAF-chest-default-hover" type="string"/>
+			<KeyValue key="Icon_CursorOverOpen" value="friends-RAF-chest-ready-hover" type="string"/>
 			<KeyValue key="Icon_ActiveChest" value="friends-raf-chest-default" type="string"/>
 			<KeyValue key="Icon_OpenChest" value="friends-raf-chest-ready" type="string"/>
 			<KeyValue key="Icon_ClaimedChest" value="friends-RAF-chest-claimed" type="string"/>
 		</KeyValues>
-		<Size x="35" y="34"/>
 	</Button>
 	
 	<Button name="RecruitListButtonSocialTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonSocialMixin">
 		<KeyValues>
 			<KeyValue key="dynamicBackground" value="false" type="boolean"/>
+
+			<KeyValue key="baseHeight" value="70" type="number"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+
+			<KeyValue key="presenceHolderXOffset" value="3" type="number"/>
+			<KeyValue key="presenceHolderYOffset" value="-4" type="number"/>
+
+			<KeyValue key="textHolderTopLeftXOffset" value="-4" type="number"/>
+			<KeyValue key="textHolderTopLeftYOffset" value="3" type="number"/>
+			<KeyValue key="textHolderRightXOffset" value="-8" type="number"/>
+			<KeyValue key="textHolderBottomYOffset" value="5" type="number"/>
+
+			<!-- Vertical spacing between the card's text lines -->
+			<KeyValue key="lineSpacing" value="4" type="number"/>
 		</KeyValues>
-		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="friends-card-default">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Background" atlas="friends-card-default" setAllPoints="true"/>
 				<Texture parentKey="Icon"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="DividerTexture" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true" hidden="true"/>
-				<FontString parentKey="Name" inherits="UserScaledFontGameNormal" justifyH="LEFT" >
-					<Size x="190" y="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-4"/>
-					</Anchors>
+				<FontString parentKey="Name" inherits="UserScaledFontHeader" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false">
+					<!-- Anchored dynamically in LayoutCardDisplayText -->
 				</FontString>
-				<FontString parentKey="CharacterName" inherits="UserScaledFontGameNormalSmall" text="Testname" justifyH="LEFT">
-					<Size x="190" y="1"/>
-					<Anchors>
-						<Anchor point="LEFT" x="15"/>
-					</Anchors>
+				<FontString parentKey="CharacterName" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false">
+					<!-- Anchored dynamically in LayoutCardDisplayText -->
 				</FontString>
-				<FontString parentKey="InfoText" inherits="UserScaledFontGameNormalSmall" justifyH="LEFT">
-					<Size x="190" y="1"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="15" y="4"/>
-					</Anchors>
+				<FontString parentKey="InfoText" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false">
+					<!-- Anchored dynamically in LayoutCardDisplayText -->
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FriendsStatus" atlas="friends-status-online">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3"/>
-					</Anchors>
-					<Size x="19" y="19"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="PresenceHolder" inherits="SocialCardPresenceHolderTemplate">
+				<!-- Anchored dynamically in LayoutScaledPresenceHolderAnchors -->
+			</Frame>
+			<Frame parentKey="TextHolder">
+				<!-- Anchored dynamically in LayoutScaledTextHolderAnchors -->
+			</Frame>
 			<Button parentArray="Activities" inherits="RecruitActivityButtonSocialTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" x="-100"/>
+					<Anchor point="RIGHT" x="-112"/>
 				</Anchors>
 			</Button>
 			<Button parentArray="Activities" inherits="RecruitActivityButtonSocialTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" x="-55"/>
+					<Anchor point="RIGHT" x="-63"/>
 				</Anchors>
 			</Button>
 			<Button parentArray="Activities" inherits="RecruitActivityButtonSocialTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" x="-10"/>
+					<Anchor point="RIGHT" x="-14"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -250,117 +298,57 @@
 		<HighlightTexture atlas="friends-card-selected" alphaMode="ADD" setAllPoints="true" />
 	</Button>
 	
-	<Frame name="RecruitAFriendFrameSocialTemplate" mixin="RecruitAFriendFrameSocialMixin" virtual="true" inherits="CallbackRegistrantTemplate">
+	<Frame name="RecruitAFriendFrameSocialViewTemplate" mixin="RecruitAFriendFrameSocialViewMixin" virtual="true" inherits="SocialUIContactsFrameTemplate, CallbackRegistrantTemplate">
 		<KeyValues>
 			<KeyValue key="fractionString" value="GENERIC_FRACTION_STRING" type="global"/>
 			<KeyValue key="scrollContentsTemplate" value="RecruitListButtonSocialTemplate" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="RewardClaiming" inherits="RewardClaimingSocialTemplate" useParentLevel="true">
-				<Size x="330" y="120"/>
+				<Size y="120"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-3"/>
-					<Anchor point="TOPRIGHT" x="-7" y="-3"/>
+					<Anchor point="TOPLEFT" x="2" y="5"/>
+					<Anchor point="TOPRIGHT" x="2" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="RecruitList" useParentLevel="true">
+			<Frame parentKey="NoRecruitsScrollBox" inherits="WowScrollBox">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RewardClaiming" relativePoint="BOTTOMLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="36"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" x="23" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" x="-23"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="Header">
-						<Size y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" y="-3"/>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="RecruitedFriends" inherits="UserScaledFontGameNormal" text="RAF_RECRUITED_FRIENDS">
-									<Anchors>
-										<Anchor point="LEFT" x="5"/>
-									</Anchors>
-									<Color color="GRAY_FONT_COLOR"/>
-								</FontString>
-								<FontString parentKey="Count" inherits="UserScaledFontGameNormal" justifyH="RIGHT">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.RecruitedFriends" relativePoint="RIGHT" x="4"/>
-									</Anchors>
-									<Color color="GRAY_FONT_COLOR"/>
-								</FontString>
-								<Texture parentKey="Divider" atlas="GM-bgOpen-divider-horizontal">
-									<Size x="330" y="3"/>
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.RecruitedFriends" relativePoint="BOTTOM" y="-2"/>
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Frame parentKey="NoRecruitsScrollBox" inherits="WowScrollBox">
-						<Size y="188"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="30" y="-9"/>
-							<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
-						</Anchors>
-						<Frames>
-							<SimpleHTML parentKey="NoRecruitsDesc" resizeToFitContents="true">
-								<KeyValues>
-									<KeyValue key="scrollable" value="true" type="boolean"/>
-								</KeyValues>
-								<Size x="320"/>
-								<Scripts>
-									<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
-								</Scripts>
-								<FontString inherits="UserScaledFontGameNormalLarge" justifyH="CENTER" />
-							</SimpleHTML>
-						</Frames>
-					</Frame>
-					<EventFrame parentKey="NoRecruitsScrollBar" inherits="MinimalScrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.NoRecruitsScrollBox" relativePoint="TOPRIGHT" x="5" y="-7"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NoRecruitsScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="2"/>
-						</Anchors>
-					</EventFrame>
-					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-						<Size y="188"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-3"/>
-							<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
-						</Anchors>
-					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-7"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="2"/>
-						</Anchors>
-					</EventFrame>
+					<SimpleHTML parentKey="NoRecruitsDesc" resizeToFitContents="true">
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="334"/>
+						<Scripts>
+							<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+						</Scripts>
+						<FontString inherits="UserScaledFontGameHighlightLarge" justifyH="CENTER" />
+					</SimpleHTML>
 				</Frames>
 			</Frame>
-			<Button parentKey="RecruitmentButton" inherits="SharedButtonTemplate" text="RAF_RECRUITMENT" mixin="RecruitAFriendRecruitmentButtonMixin">
-				<Size x="150" y="30"/>
+			<EventFrame parentKey="NoRecruitsScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="BOTTOM" y="4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-7"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
-				<NormalFont style="UserScaledFontGameNormalSmall"/>
-				<HighlightFont style="UserScaledFontGameNormalSmall"/>
-				<Scripts>
-					<OnClick method="OnClick" />
-					<OnEnter method="OnEnter" />
-					<OnLeave method="OnLeave" />
-				</Scripts>
-			</Button>
+			</EventFrame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="FriendsDisabledText" inherits="UserScaledFontBody" hidden="true" justifyH="CENTER">
+				<FontString parentKey="Header" inherits="UserScaledFontBody" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-25"/>
-						<Anchor point="BOTTOMRIGHT" x="-6" y="36"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardClaiming" relativePoint="BOTTOMLEFT" x="11" y="-16"/>
 					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="Count" inherits="UserScaledFontBody" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>

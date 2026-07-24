@@ -28,7 +28,7 @@ function InspectPaperDollFrame_SetLevel()
 	end
 
 	local unit, level, effectiveLevel, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitEffectiveLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
-	local specID = GetInspectSpecialization(InspectFrame.unit);
+	local specID = C_SpecializationInfo.GetInspectSpecialization(InspectFrame.unit);
 
 	local classDisplayName, class = UnitClass(InspectFrame.unit);
 	local classColorString = RAID_CLASS_COLORS[class].colorStr;

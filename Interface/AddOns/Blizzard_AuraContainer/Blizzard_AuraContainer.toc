@@ -20,6 +20,7 @@ Blizzard_AuraContainerGroups.lua
 Blizzard_AuraContainerFrameProviders.lua
 Blizzard_AuraContainerSlots.lua
 Blizzard_AuraContainerEnchantments.lua
+Blizzard_AuraContainerFlowLayout.lua
 Blizzard_ManagedAuraContainer.lua
 Blizzard_AuraButton.lua
 Blizzard_AuraButton.xml [LoadIntoEnvironment global]

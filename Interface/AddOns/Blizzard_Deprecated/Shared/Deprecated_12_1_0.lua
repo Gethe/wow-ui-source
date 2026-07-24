@@ -66,4 +66,10 @@ function GetWeaponEnchantInfo()
 end
 
 -- Aura container enums and global constants from PTR development.
-AuraButtonBorderStyle = Enum.CustomAuraButtonBorderStyle;
+AuraButtonBorderStyle = 
+{
+	Atlas = Enum.CustomAuraButtonDispelTypeTextureStyle.BorderWithIcon,
+	Color = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+};
+
+GetInspectSpecialization = C_SpecializationInfo.GetInspectSpecialization;

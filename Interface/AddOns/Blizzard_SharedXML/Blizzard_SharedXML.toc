@@ -132,8 +132,8 @@ Shared\Selector\Blizzard_GridSelectorUI.lua
 Shared\Selector\Blizzard_GridSelectorUI.xml
 Shared\Selector\Blizzard_ScrollBoxSelector.lua
 [Family]\Selector\Blizzard_ScrollBoxSelector.xml
-HelpTip.lua [AllowLoadEnvironment Global] [ExcludeLoadGameType vanilla tbc]
-HelpTip.xml [AllowLoadEnvironment Global] [ExcludeLoadGameType vanilla tbc]
+HelpTip.lua [AllowLoadEnvironment Global]
+HelpTip.xml [AllowLoadEnvironment Global]
 ScrollingMessageFrame.lua
 ScrollingMessageFrame.xml
 DropDownToggleButton.lua

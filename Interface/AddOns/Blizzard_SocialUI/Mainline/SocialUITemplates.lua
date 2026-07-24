@@ -10,6 +10,7 @@ function SocialUITabMixin:Initialize(tabData)
 	self.activeAtlas = tabData.iconAtlas;
 	self.inactiveAtlas = tabData.iconInactiveAtlas or tabData.iconAtlas;
 	self:RefreshCounter();
+	self:RefreshEnabledState();
 end
 
 function SocialUITabMixin:Reset()
@@ -21,9 +22,58 @@ function SocialUITabMixin:Reset()
 	self:SetChecked(false);
 	self:SetTabGlowAnimationPlaying(false);
 	self:SetCount(nil);
+	self:SetTabEnabled(true, nil);
+end
+
+function SocialUITabMixin:RefreshEnabledState()
+	local getEnabledState = self.tabData and self.tabData.GetEnabledState;
+	if not getEnabledState then
+		local disabledReason = nil;
+		self:SetTabEnabled(true, disabledReason);
+		return;
+	end
+
+	local isEnabled, disabledReason = getEnabledState();
+	self:SetTabEnabled(isEnabled, disabledReason);
+end
+
+function SocialUITabMixin:SetTabEnabled(isEnabled, disabledReason)
+	self:SetEnabled(isEnabled);
+	self.disabledReason = not isEnabled and disabledReason or nil;
+
+	self:RefreshVisualsForEnabledState();
+end
+
+function SocialUITabMixin:RefreshVisualsForEnabledState()
+	local isEnabled = self:IsEnabled();
+	self.Icon:SetDesaturated(not isEnabled);
+end
+
+function SocialUITabMixin:OnEnter()
+	self:ShowTooltip();
+end
+
+function SocialUITabMixin:ShowTooltip()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
+	tooltip:SetText(self.tooltipText);
+
+	if self.disabledReason then
+		GameTooltip_AddErrorLine(tooltip, self.disabledReason);
+	end
+
+	tooltip:Show();
+end
+
+function SocialUITabMixin:OnLeave()
+	SidePanelTabButtonMixin.OnLeave(self);
 end
 
 function SocialUITabMixin:OnMouseDown(button)
+	if not self:IsEnabled() then
+		return;
+	end
+
 	if button == "LeftButton" then
 		local yOffset = self.iconBaseYOffset or 0;
 		self.Icon:SetPoint("CENTER", -1, yOffset - 1);
@@ -31,6 +81,10 @@ function SocialUITabMixin:OnMouseDown(button)
 end
 
 function SocialUITabMixin:OnMouseUp(button, upInside)
+	if not self:IsEnabled() then
+		return;
+	end
+
 	if button == "LeftButton" then
 		self.Icon:SetPoint("CENTER", -2, self.iconBaseYOffset or 0);
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
