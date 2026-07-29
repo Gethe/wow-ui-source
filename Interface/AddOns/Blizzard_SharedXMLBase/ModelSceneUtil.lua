@@ -39,6 +39,9 @@ function ModelSceneUtil.SetUpCharacterSheetScene(modelScene)
 		local autodress = true;
 		local hideWeapon = false;
 		local useNativeForm = not inAlternateForm;
+		local useUnitSheatheCategories = true;
+
+		actor:UseUnitSheatheCategory(useUnitSheatheCategories);
 		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
 		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end

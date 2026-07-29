@@ -5,8 +5,9 @@
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: classic
+Shared\CastingBarFrameTemplates.lua
+Shared\CastingBarFrameTemplates.xml
 Shared\CastingBarFrame.lua
-Classic\CastingBarFrame.lua
 Classic\CastingBarFrame.xml
 Shared\ExtraAbilityContainer.lua
 Shared\ExtraAbilityContainer.xml

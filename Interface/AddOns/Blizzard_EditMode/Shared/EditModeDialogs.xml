@@ -1,19 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="EditModeDialogTemplate" enableMouse="true" virtual="true" mixin="EditModeDialogMixin">
+	<Frame name="EditModeBaseDialogTemplate" enableMouse="true" virtual="true" mixin="EditModeBaseDialogMixin">
 		<Scripts>
 			<OnLoad method="EditModeDialog_OnLoad"/>
+			<OnShow method="EditModeDialog_OnShow"/>
+			<OnHide method="EditModeDialog_OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<EditBox name="EditModeDialogLayoutNameEditBoxTemplate" inherits="InputBoxTemplate" letters="30" mixin="EditModeDialogNameEditBoxMixin" virtual="true">
+	<EditBox name="EditModeDialogLayoutNameEditBoxTemplate" inherits="InputBoxTemplate" letters="30" virtual="true">
 		<Size x="260" y="32"/>
-		<Scripts>
-			<OnEnterPressed method="OnEnterPressed"/>
-			<OnEscapePressed method="OnEscapePressed"/>
-			<OnTextChanged method="OnTextChanged"/>
-		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
 
@@ -27,14 +24,12 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="EditModeNewLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeNewLayoutDialogMixin" frameLevel="100">
+	<!-- NOTE: Used for NewLayout, RenameLayout, DeleteLayout, and possibly extensible to others -->
+	<Frame name="EditModeLayoutDialogTemplate" inherits="EditModeBaseDialogTemplate" mixin="EditModeLayoutDialogMixin" parent="UIParent" hidden="true" frameStrata="DIALOG" frameLevel="100" virtual="true">
 		<Size x="320" y="150"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
 					<Size x="250"/>
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
@@ -54,45 +49,42 @@
 					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="SAVE">
-				<KeyValues>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_NAME" type="global"/>
-				</KeyValues>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
 				</Anchors>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeImportLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100">
-		<Size x="320" y="370"/>
+	<!-- NOTE: Instance of a generic edit mode dialog that only the EditModeManagerFrame will use -->
+	<Frame name="EditModeLayoutDialog" inherits="EditModeLayoutDialogTemplate">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+	</Frame>
+
+	<Frame name="EditModeImportLayoutDialogTemplate" inherits="EditModeBaseDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100" virtual="true">
+		<Size x="320" y="370"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
 					<Size x="250"/>
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="EditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL">
+				<FontString parentKey="EditBoxLabel" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="22" y="-40"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL">
+				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="22" y="-250"/>
 					</Anchors>
@@ -107,9 +99,9 @@
 					<Anchor point="TOP" y="-60"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="maxLetters" value="2000" type="number"/>
-					<KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/>
+					<KeyValue key="maxLetters" value="3000" type="number"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+					<!-- <KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/> Set in SetModeData -->
 				</KeyValues>
 			</ScrollFrame>
 			<EditBox parentKey="LayoutNameEditBox" inherits="EditModeDialogLayoutNameEditBoxTemplate">
@@ -122,10 +114,7 @@
 					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
-				<KeyValues>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME" type="global"/>
-				</KeyValues>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
 				</Anchors>
@@ -138,11 +127,18 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeImportLayoutLinkDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutLinkDialogMixin" frameLevel="100">
+	<!-- NOTE: Instance of a generic edit mode import layout dialog that only the EditModeManagerFrame will use -->
+	<Frame name="EditModeImportLayoutDialog" inherits="EditModeImportLayoutDialogTemplate">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+
+<!--
+	<Frame name="EditModeImportLayoutLinkDialog" inherits="EditModeBaseDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutLinkDialogMixin" frameLevel="100">
 		<Size x="320" y="160"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -190,11 +186,12 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnHide method="OnHide"/>
+			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Frame>
+-->
 
-	<Frame name="EditModeUnsavedChangesDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeUnsavedChangesDialogMixin" frameLevel="100">
+	<Frame name="EditModeUnsavedChangesDialogTemplate" inherits="EditModeBaseDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeUnsavedChangesDialogMixin" frameLevel="100" virtual="true">
 		<Size x="450" y="130"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -232,11 +229,17 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="EditModeUnsavedChangesDialog" inherits="EditModeUnsavedChangesDialogTemplate">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+
 	<Button name="EditModeSystemSettingsDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="180" y="28"/>
 	</Button>
@@ -245,7 +248,7 @@
 		<Size x="330" y="28"/>
 	</Button>
 
-	<Frame name="EditModeSystemSettingsDialog" inherits="EditModeDialogTemplate, ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
+	<Frame name="EditModeSystemSettingsDialog" inherits="EditModeBaseDialogTemplate, ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
 		<Size x="300" y="350"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>

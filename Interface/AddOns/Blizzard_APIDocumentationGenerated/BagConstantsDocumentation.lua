@@ -61,6 +61,9 @@ local BagConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BagConstants);

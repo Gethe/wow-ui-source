@@ -45,7 +45,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" useParentLevel="true" parentKey="cooldown">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true" parentKey="cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+			</Cooldown>
+			<Cooldown parentKey="lossOfControlCooldown" inherits="CooldownFrameTemplate" drawBling="false" hideCountdownNumbers="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+				<SwipeTexture>
+					<Color r="0.17" g="0" b="0" a="1"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
+			</Cooldown>
+			<Cooldown parentKey="chargeCooldown" inherits="CooldownFrameTemplate" drawSwipe="false" hideCountdownNumbers="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-2"/>
 					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>

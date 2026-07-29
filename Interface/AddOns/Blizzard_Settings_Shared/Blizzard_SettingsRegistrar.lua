@@ -16,7 +16,7 @@ function SettingsRegistrar:OnLoad()
 			end
 			secureexecuterange(self.registrants, CallRegistrant);
 
-			C_EventUtils.NotifySettingsLoaded();
+			C_SettingsUtil.NotifySettingsLoaded();
 		end
 
 		EventUtil.ContinueAfterAllEvents(Callback, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD");

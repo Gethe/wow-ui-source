@@ -3,6 +3,7 @@ local TTSSettings =
 	Name = "TTSSettings",
 	Type = "System",
 	Namespace = "C_TTSSettings",
+	Environment = "All",
 
 	Functions =
 	{
@@ -211,6 +212,9 @@ local TTSSettings =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

@@ -22,11 +22,6 @@ function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
 	self:GetTitleText():SetHeight(height);
 end
 
-function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
-	self:GetTitleText():SetMaxLines(maxLines);
-	self:GetTitleText():SetHeight(height);
-end
-
 function TitledPanelMixin:SetTitleOffsets(leftOffset, rightOffset)
 	self.TitleContainer:SetPoint("TOPLEFT", self, "TOPLEFT", leftOffset or 58, -1);
 	self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", rightOffset or -24, -1);
@@ -40,13 +35,17 @@ function PortraitFrameMixin:GetPortrait()
 	return self.PortraitContainer.portrait;
 end
 
+function PortraitFrameMixin:HasPortraitTexture()
+	return self.PortraitContainer.portrait:GetTexture();
+end
+
 function PortraitFrameMixin:SetBorder(layoutName)
 	local layout = NineSliceUtil.GetLayout(layoutName);
 	NineSliceUtil.ApplyLayout(self.NineSlice, layout);
 end
 
 function PortraitFrameMixin:SetPortraitToAsset(texture)
-	SetPortraitToTexture(self:GetPortrait(), texture);
+	self:GetPortrait():SetTexture(texture);
 end
 
 function PortraitFrameMixin:SetPortraitToUnit(unit)

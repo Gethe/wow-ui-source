@@ -1,0 +1,321 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="PlaceInWorldButtonTemplate" mixin="PlaceInWorldButtonMixin" inherits="HousingMarketShoppingCartServiceButtonTemplate" frameLevel="1500" virtual="true">
+		<Size x="32" y="32"/>
+		<KeyValues>
+			<KeyValue key="serviceName" value="HousingMarketCartDataServiceEvents.PlaceInWorld" type="global"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="house-chest-icon" setAllPoints="true"/>
+				<Texture parentKey="HighlightIcon" atlas="house-chest-icon" setAllPoints="true" alphaMode="ADD" hidden="true"/>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HousingMarketCartPriceTemplate" inherits="ShoppingCartPriceTemplate" mixin="HousingMarketCartPriceMixin" virtual="true"/>
+	
+	<Button name="HousingMarketCartItemTemplate" mixin="HousingMarketCartItemMixin" propagateMouseInput="Both" registerForDrag="LeftButton" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="300" y="80"/>
+		<Frames>
+			<Button parentKey="RemoveFromCartButtonContainer" inherits="ShoppingCartRemoveFromCartButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="PlaceInWorldButton" inherits="PlaceInWorldButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-12"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" atlas="petlist-buttonbackground" alphaMode="BLEND">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="Icon">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BackgroundTexture" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture parentKey="IconVignette" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="0.66" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HighlightTexture" atlas="petlist-buttonhighlight" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTexture"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconBorder" atlas="perks-border-square-gray">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" atlas="perks-border-square-gold-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconVignette"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Size x="160" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="16"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.PriceContainer" relativePoint="LEFT" x="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="PreviewStatusIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HousingMarketCartBundleHeaderTemplate" mixin="HousingMarketCartBundleHeaderMixin" virtual="true">
+		<Size x="242" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge">
+					<Color color="LIGHTGRAY_FONT_COLOR"/>
+					<Size x="0" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="perks-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="-6"/>
+						<Anchor point="RIGHT" x="-16" y="-6"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="BarMask" atlas="TransparentSquareMask" vWrapMode="CLAMPTOBLACK" hWrapMode="CLAMPTOBLACK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" x="-5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Title" x="5" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Divider"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="HousingMarketCartBundleFooterTemplate" mixin="HousingMarketCartBundleFooterMixin" virtual="true">
+		<Size x="242" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Divider" atlas="perks-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="16"/>
+						<Anchor point="RIGHT" x="-16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="HousingMarketCartBraceTemplate" mixin="HousingMarketCartBraceMixin" virtual="true" setAllPoints="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="TopBrace" atlas="perks-ensembleframe-top" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-11" y="-4"/>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="11" y="-4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="HOUSING_MARKET_BUNDLE_TITLE_TEXT">
+					<Size x="0" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TopBrace" relativePoint="TOP" y="-2"/>
+					</Anchors>
+				</FontString>
+				<MaskTexture parentKey="BarMask" atlas="TransparentSquareMask" vWrapMode="CLAMPTOBLACK" hWrapMode="CLAMPTOBLACK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" x="-5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Title" x="5" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="TopBrace"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="BottomBrace" atlas="perks-ensembleframe-bottom" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="-11" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="11" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="HousingMarketCartBundleTemplate" inherits="HousingMarketCartBraceTemplate, CallbackRegistrantTemplate" mixin="HousingMarketCartBundleMixin" virtual="true">
+		<Size x="300" y="60"/>
+		<Frames>
+			<Button parentKey="RemoveFromCartButtonContainer" inherits="ShoppingCartRemoveFromCartButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT" x="-16" y="-8"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BundleName" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Size x="160" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="LEFT" x="16" y="8"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.PriceContainer" relativePoint="LEFT" x="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="HousingMarketCartBundleItemTemplate" inherits="HousingMarketCartBraceTemplate" mixin="HousingMarketCartBundleItemMixin" registerForDrag="LeftButton" motionScriptsWhileDisabled="true" propagateMouseInput="Both" virtual="true">
+		<Size x="300" y="80"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="80"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="VisualContainer">
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BackgroundTexture" atlas="petlist-buttonbackground" alphaMode="BLEND">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="Icon">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.BackgroundTexture" x="16" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="5">
+						<Texture parentKey="IconVignette" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<Color r="0.0" g="0.0" b="0.0" a="0.66" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HighlightTexture" atlas="petlist-buttonhighlight" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTexture"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTexture"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="IconBorder" atlas="perks-border-square-gray">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="IconMask" atlas="perks-border-square-gold-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+								<MaskedTexture childKey="IconVignette"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
+							<Size x="160" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="16"/>
+								<Anchor point="TOPRIGHT" relativePoint="RIGHT" x="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="PreviewStatusIcon" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="PlaceInWorldButton" inherits="PlaceInWorldButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.VisualContainer" relativePoint="TOPLEFT" x="6" y="-12"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Button>
+</Ui>

@@ -1,0 +1,4 @@
+## Title: Blizzard_AsyncRequest
+## AllowLoad: Both
+
+Blizzard_AsyncRequest.lua

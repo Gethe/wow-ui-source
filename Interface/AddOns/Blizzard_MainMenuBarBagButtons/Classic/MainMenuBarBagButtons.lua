@@ -214,20 +214,8 @@ end
 
 local BACKPACK_FREESLOTS_FORMAT = "(%s)";
 
-function CalculateTotalNumberOfFreeBagSlots()
-	local totalFree, freeSlots, bagFamily = 0;
-	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
-		if ( bagFamily == 0 ) then
-			totalFree = totalFree + freeSlots;
-		end
-	end
-	
-	return totalFree;
-end
-
 function MainMenuBarBackpackButton_UpdateFreeSlots()
-	local totalFree = CalculateTotalNumberOfFreeBagSlots();
+	local totalFree = C_Container.CalculateTotalNumberOfFreeBagSlots();
 	if ( totalFree == 3) then
 		TriggerTutorial(59);
 	end

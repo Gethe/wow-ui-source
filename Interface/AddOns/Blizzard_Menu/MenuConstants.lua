@@ -34,3 +34,9 @@ MenuInputContext =
 	MouseButton = 2,
 	MouseWheel = 3,
 };
+
+MenuCloseReason =
+{
+	Unspecified = 1,
+	CloseAll = 2,
+};

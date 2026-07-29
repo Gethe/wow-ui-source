@@ -2,6 +2,7 @@ local ArenaTeam =
 {
 	Name = "ArenaTeam",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,9 @@ local ArenaTeam =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

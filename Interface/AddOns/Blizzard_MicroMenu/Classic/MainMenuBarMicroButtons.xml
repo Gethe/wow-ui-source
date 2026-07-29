@@ -210,7 +210,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" mixin="MainMenuMicroButtonMixin">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="PerformanceIndicator" atlas="ui-mainmenubar-performancebar-screen">
@@ -222,91 +222,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "MainMenu");
-				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
-				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
-
-				PERFORMANCEBAR_LOW_LATENCY = 300;
-				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
-				self.hover = nil;
-				self.updateInterval = 0;
-			</OnLoad>
-			<OnUpdate>
-				if (self.updateInterval > 0) then
-					self.updateInterval = self.updateInterval - elapsed;
-				else
-					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-
-					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						self.PerformanceIndicator:SetVertexColor(1, 0, 0);
-					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-						self.PerformanceIndicator:SetVertexColor(1, 1, 0);
-					else
-						self.PerformanceIndicator:SetVertexColor(0, 1, 0);
-					end
-					if (self.hover) then
-						MainMenuBarPerformanceBarFrame_OnEnter(self);
-					end
-				end
-			</OnUpdate>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
-			</OnEvent>
-			<OnMouseDown>
-				if ( self.down ) then
-					self.down = nil; -- I'm pretty sure none of this should ever get run.
-					if ( not GameMenuFrame:IsShown() ) then
-						CloseMenus();
-						CloseAllWindows()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-						ShowUIPanel(GameMenuFrame);
-					else
-						PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-						HideUIPanel(GameMenuFrame);
-						MainMenuMicroButton_SetNormal();
-					end
-					return;
-				end
-				MainMenuMicroButton_SetPushed();
-				self.down = 1;
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self.down ) then
-					self.down = nil;
-					if ( self:IsMouseOver() ) then
-						if ( not GameMenuFrame:IsShown() ) then
-							CloseMenus();
-							CloseAllWindows()
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-							ShowUIPanel(GameMenuFrame);
-						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-							HideUIPanel(GameMenuFrame);
-							MainMenuMicroButton_SetNormal();
-						end
-					end
-					UpdateMicroButtons();
-					return;
-				end
-				if ( self:GetButtonState() == "NORMAL" ) then
-					MainMenuMicroButton_SetPushed();
-					self.down = 1;
-				else
-					MainMenuMicroButton_SetNormal();
-					self.down = 1;
-				end
-			</OnMouseUp>
-			<OnEnter>
-				self.hover = 1;
-				self.updateInterval = 0;
-			</OnEnter>
-			<OnLeave>
-				self.hover = nil;
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">

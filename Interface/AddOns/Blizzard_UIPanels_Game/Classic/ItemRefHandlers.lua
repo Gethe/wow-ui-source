@@ -119,8 +119,10 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local sourceID = string.split(":", linkData.options);
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		HandleModifiedItemClick(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);
+		end
 	else
 		if ( not CollectionsJournal ) then
 			CollectionsJournal_LoadUI();

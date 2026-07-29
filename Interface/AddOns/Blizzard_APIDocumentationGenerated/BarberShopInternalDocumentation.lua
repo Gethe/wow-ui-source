@@ -3,6 +3,7 @@ local BarberShopInternal =
 	Name = "BarberShop",
 	Type = "System",
 	Namespace = "C_BarberShopInternal",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,9 @@ local BarberShopInternal =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

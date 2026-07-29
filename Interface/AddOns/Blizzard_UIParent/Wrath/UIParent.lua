@@ -255,6 +255,10 @@ function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 
+function Transmog_LoadUI()
+	UIParentLoadAddOn("Blizzard_Transmog");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -501,8 +505,8 @@ function UIParent_OnEvent(self, event, ...)
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
 				GetGMLink(lastTalkedToGM, "["..lastTalkedToGM.."]")), info.r, info.g, info.b, info.id);
-			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
-			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
+			GMChatFrameEditBox:SetTellTarget(lastTalkedToGM);
+			GMChatFrameEditBox:SetChatType("WHISPER");
 		end
 
 		StoreFrame_CheckForFree(event);

@@ -3,6 +3,7 @@ local ExternalEventURL =
 	Name = "ExternalEventURL",
 	Type = "System",
 	Namespace = "C_ExternalEventURL",
+	Environment = "All",
 
 	Functions =
 	{
@@ -33,9 +34,18 @@ local ExternalEventURL =
 
 	Events =
 	{
+		{
+			Name = "ExternalEventLaunchUrlFailed",
+			Type = "Event",
+			LiteralName = "EXTERNAL_EVENT_LAUNCH_URL_FAILED",
+			SynchronousEvent = true,
+		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

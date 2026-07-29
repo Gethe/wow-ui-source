@@ -2,6 +2,7 @@ local SimpleScriptRegionAPI =
 {
 	Name = "SimpleScriptRegionAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -333,6 +334,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsAnchoringSecret",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCollapsed",
 			Type = "Function",
 
@@ -614,6 +628,9 @@ local SimpleScriptRegionAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

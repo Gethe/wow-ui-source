@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="TalentButtonCapstonePipCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonSizeScaleOverride" value="0.6" type="number"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.CapstonePipCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.CapstonePipCircle" type="global"/>
+		</KeyValues>
+		<Size x="24" y="24"/>
+	</Button>
+
+	<Frame name="TalentButtonTrackTemplate" virtual="true">
+		<Size x="68" y="20"/>
+		<!-- Key Values
+			<KeyValue key="trackType" value="Round" type="string"/> 
+		-->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ProgressBar" atlas="talents-node-apex-bar-base" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="TalentButtonCapstoneWithTrackCircleTemplate" inherits="TalentButtonCapstoneCircleTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Track" inherits="TalentButtonTrackTemplate">
+				<KeyValues>
+					<KeyValue key="trackType" value="Round" type="string"/> 
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="12"/> 
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+
+	<Button name="TalentButtonCapstoneWithTrackSquareTemplate" inherits="TalentButtonCapstoneSquareTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Track" inherits="TalentButtonTrackTemplate">
+				<KeyValues>
+					<KeyValue key="trackType" value="Line" type="string"/> 
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="5"/> 
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

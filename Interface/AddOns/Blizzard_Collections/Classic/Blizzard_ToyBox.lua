@@ -93,8 +93,7 @@ function ToyBox_OnShow(self)
 		--HelpTip:Hide(self, TOYBOX_FAVORITE_HELP);
 	end
 
-	--CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\ICONS\\inv_misc_toy_10");
+	CollectionsJournal:SetPortraitToAsset("Interface\\ICONS\\inv_misc_toy_10");
 
 
 	C_ToyBox.ForceToyRefilter();

@@ -3,6 +3,7 @@ local ReportSystem =
 	Name = "ReportSystem",
 	Type = "System",
 	Namespace = "C_ReportSystem",
+	Environment = "All",
 
 	Functions =
 	{
@@ -147,6 +148,7 @@ local ReportSystem =
 			Name = "ReportPlayerResult",
 			Type = "Event",
 			LiteralName = "REPORT_PLAYER_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "SendReportResult", Nilable = false },
@@ -157,10 +159,14 @@ local ReportSystem =
 			Name = "ReportScreenshotReady",
 			Type = "Event",
 			LiteralName = "REPORT_SCREENSHOT_READY",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

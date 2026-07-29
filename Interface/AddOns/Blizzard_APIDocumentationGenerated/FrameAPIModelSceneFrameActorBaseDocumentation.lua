@@ -2,6 +2,7 @@ local FrameAPIModelSceneFrameActorBase =
 {
 	Name = "FrameAPIModelSceneFrameActorBase",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -375,6 +376,17 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetGradientMaskWithDyes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "grad0DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad1DyeColorID", Type = "number", Nilable = true },
+				{ Name = "grad2DyeColorID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetModelByCreatureDisplayID",
 			Type = "Function",
 
@@ -422,6 +434,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetModelByUnit",
 			Type = "Function",
+			RequiresDeclassifiedUnitIdentity = true,
 
 			Arguments =
 			{
@@ -593,6 +606,9 @@ local FrameAPIModelSceneFrameActorBase =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

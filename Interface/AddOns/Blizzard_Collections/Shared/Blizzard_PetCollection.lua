@@ -176,7 +176,19 @@ function PetJournal_InitFilterDropdown(self)
 		rootDescription:CreateCheckbox(NOT_COLLECTED, PetJournalFilterDropdown_GetNotCollectedFilter, function()
 			PetJournalFilterDropdown_SetNotCollectedFilter(not PetJournalFilterDropdown_GetNotCollectedFilter());
 		end);
-		
+
+		rootDescription:CreateDivider();
+
+		rootDescription:CreateTitle(PET_FILTER_TYPES);
+
+		rootDescription:CreateCheckbox(PET_FILTER_BATTLE_PETS, PetJournalFilterDropdown_GetBattlePetsFilter, function()
+			PetJournalFilterDropdown_SetBattlePetsFilter(not PetJournalFilterDropdown_GetBattlePetsFilter());
+		end);
+
+		rootDescription:CreateCheckbox(PET_FILTER_NON_COMBAT_PETS, PetJournalFilterDropdown_GetNonCombatPetsFilter, function()
+			PetJournalFilterDropdown_SetNonCombatPetsFilter(not PetJournalFilterDropdown_GetNonCombatPetsFilter());
+		end);
+
 		local familiesSubmenu = rootDescription:CreateButton(PET_FAMILIES);
 		familiesSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropdown_SetAllPetTypes, true);
 		familiesSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropdown_SetAllPetTypes, false);
@@ -189,9 +201,7 @@ function PetJournal_InitFilterDropdown(self)
 		sourceSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropdown_SetAllPetSources, true);
 		sourceSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropdown_SetAllPetSources, false);
 
-		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("BATTLEPETS", petSourceOrderPriorities);
-		for index = 1, C_PetJournal.GetNumPetSources() do
-			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
 			sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
 		end
 		
@@ -1397,6 +1407,11 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 	self.AbilitiesBG2:SetShown(canBattle);
 	self.AbilitiesBG3:SetShown(canBattle);
 	self.CannotBattleText:SetShown(not canBattle);
+	
+	PetJournalLoadout:SetShown(canBattle);
+	PetJournalLoadoutBorder:SetShown(canBattle);
+	PetJournalRightInset:SetShown(canBattle);
+	PetJournalFindBattle:SetShown(canBattle);
 
 	--Update pet abilites
 	local abilities, levels = C_PetJournal.GetPetAbilityList(speciesID);
@@ -1477,6 +1492,22 @@ end
 
 function PetJournalFilterDropdown_GetNotCollectedFilter()
 	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
+end
+
+function PetJournalFilterDropdown_SetBattlePetsFilter(value)
+	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_TYPE_BATTLE_PETS, value);
+end
+
+function PetJournalFilterDropdown_GetBattlePetsFilter()
+	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_TYPE_BATTLE_PETS);
+end
+
+function PetJournalFilterDropdown_SetNonCombatPetsFilter(value)
+	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_TYPE_NON_COMBAT_PETS, value);
+end
+
+function PetJournalFilterDropdown_GetNonCombatPetsFilter()
+	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_TYPE_NON_COMBAT_PETS);
 end
 
 function PetJournalFilterDropdown_SetAllPetTypes(value)

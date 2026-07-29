@@ -5,7 +5,7 @@ local WowCSConstants =
 		{
 			Name = "FragmentID",
 			Type = "Enumeration",
-			NumValues = 70,
+			NumValues = 75,
 			MinValue = 0,
 			MaxValue = 255,
 			Fields =
@@ -47,7 +47,11 @@ local WowCSConstants =
 				{ Name = "FHousingFixture", Type = "FragmentID", EnumValue = 34 },
 				{ Name = "FHousingHouseFixtureSet", Type = "FragmentID", EnumValue = 35 },
 				{ Name = "Timer", Type = "FragmentID", EnumValue = 36 },
-				{ Name = "FUnitAIGroupLink", Type = "FragmentID", EnumValue = 37 },
+				{ Name = "FPlayerInitiativeInfo", Type = "FragmentID", EnumValue = 37 },
+				{ Name = "FNeighborhoodStateData", Type = "FragmentID", EnumValue = 38 },
+				{ Name = "FUnitAIGroupLink", Type = "FragmentID", EnumValue = 39 },
+				{ Name = "FPathingDynamicLinks", Type = "FragmentID", EnumValue = 40 },
+				{ Name = "FPathingDoor", Type = "FragmentID", EnumValue = 41 },
 				{ Name = "TagItem", Type = "FragmentID", EnumValue = 200 },
 				{ Name = "TagContainer", Type = "FragmentID", EnumValue = 201 },
 				{ Name = "TagAzeriteEmpoweredItem", Type = "FragmentID", EnumValue = 202 },
@@ -74,6 +78,7 @@ local WowCSConstants =
 				{ Name = "TagHousingPoolObject", Type = "FragmentID", EnumValue = 223 },
 				{ Name = "TagHouseExteriorPiece", Type = "FragmentID", EnumValue = 224 },
 				{ Name = "TagHouseExteriorRoot", Type = "FragmentID", EnumValue = 225 },
+				{ Name = "TagHousingDecorProxyGameObject", Type = "FragmentID", EnumValue = 226 },
 				{ Name = "TestFragment_1", Type = "FragmentID", EnumValue = 250 },
 				{ Name = "TestFragment_2", Type = "FragmentID", EnumValue = 251 },
 				{ Name = "TestFragment_3", Type = "FragmentID", EnumValue = 252 },
@@ -82,6 +87,9 @@ local WowCSConstants =
 				{ Name = "ReservedArchetypeSeparator", Type = "FragmentID", EnumValue = 255 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

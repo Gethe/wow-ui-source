@@ -95,8 +95,7 @@ local function MergeFunctions(elementDescription)
 	return elementDescription;
 end
 
-function MenuUtil.ShowTooltip(owner, func, ...)
-	local tooltip = GetAppropriateTooltip();
+function MenuUtil.ShowTooltipEx(owner, tooltip, func, ...)
 	tooltip:SetOwner(owner, "ANCHOR_RIGHT");
 
 	local window = owner:GetWindow();
@@ -106,8 +105,7 @@ function MenuUtil.ShowTooltip(owner, func, ...)
 	tooltip:Show();
 end
 
-function MenuUtil.HideTooltip(owner)
-	local tooltip = GetAppropriateTooltip();
+function MenuUtil.HideTooltipEx(owner, tooltip)
 	if tooltip:GetOwner() == owner then
 		tooltip:Hide();
 	end
@@ -280,7 +278,8 @@ end
 
 local function SetTooltip(elementDescription, initializer)
 	elementDescription:SetOnEnter(function(frame)
-		MenuUtil.ShowTooltip(frame, initializer or DefaultTooltipInitializer, elementDescription);
+		local func = initializer or DefaultTooltipInitializer;
+		MenuUtil.ShowTooltipEx(frame, elementDescription:GetTooltipFrame(), func, elementDescription);
 	end);
 end
 
@@ -291,7 +290,7 @@ end
 
 local function SetTitleAndTextTooltip(elementDescription, tooltipTitle, tooltipText)
 	elementDescription:SetOnEnter(function(frame)
-		MenuUtil.ShowTooltip(frame, TitleAndTextTooltipInitializer, tooltipTitle, tooltipText);
+		MenuUtil.ShowTooltipEx(frame, elementDescription:GetTooltipFrame(), TitleAndTextTooltipInitializer, tooltipTitle, tooltipText);
 	end);
 end
 

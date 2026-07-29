@@ -17,11 +17,11 @@ ActionButtonBindingHighlightCallbackRegistry = CreateFromMixins(CallbackRegistry
 ActionButtonBindingHighlightCallbackRegistry:SetUndefinedEventsAllowed(true);
 ActionButtonBindingHighlightCallbackRegistry:OnLoad();
 
-local ActionButtonCastType = 
+local ActionButtonCastType =
 {
-	Cast = 1, 
-	Channel = 2, 
-	Empowered = 3, 
+	Cast = 1,
+	Channel = 2,
+	Empowered = 3,
 }
 
 function MarkNewActionHighlight(action)
@@ -165,7 +165,7 @@ end
 
 function ActionBar_PageUp()
 	local nextPage;
-	for i=GetActionBarPage() + 1, NUM_ACTIONBAR_PAGES do
+	for i=C_ActionBar.GetActionBarPage() + 1, NUM_ACTIONBAR_PAGES do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			nextPage = i;
 			break;
@@ -175,12 +175,12 @@ function ActionBar_PageUp()
 	if ( not nextPage ) then
 		nextPage = 1;
 	end
-	ChangeActionBarPage(nextPage);
+	C_ActionBar.SetActionBarPage(nextPage);
 end
 
 function ActionBar_PageDown()
 	local prevPage;
-	for i=GetActionBarPage() - 1, 1, -1 do
+	for i=C_ActionBar.GetActionBarPage() - 1, 1, -1 do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			prevPage = i;
 			break;
@@ -195,7 +195,7 @@ function ActionBar_PageDown()
 			end
 		end
 	end
-	ChangeActionBarPage(prevPage);
+	C_ActionBar.SetActionBarPage(prevPage);
 end
 
 ActionBarButtonEventsFrameMixin = {};
@@ -244,9 +244,7 @@ ActionBarActionEventsFrameMixin = {};
 
 function ActionBarActionEventsFrameMixin:OnLoad()
 	self.frames = {};
-	--self:RegisterEvent("ACTIONBAR_UPDATE_STATE");			not updating state from lua anymore, see SetActionUIButton
 	--self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");		replaced with ACTION_USABLE_CHANGED
-	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");		not updating cooldown from lua anymore, see SetActionUIButton
 	self:RegisterEvent("SPELL_UPDATE_CHARGES");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -290,24 +288,24 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 end
 
 
-function ActionBarActionEventsFrameMixin:IsSpellcastEvent(event) 
-	if ( event == "UNIT_SPELLCAST_INTERRUPTED" or 
-	event == "UNIT_SPELLCAST_SUCCEEDED" or 
-	event == "UNIT_SPELLCAST_START" or 
-	event == "UNIT_SPELLCAST_STOP" or 
-	event == "UNIT_SPELLCAST_CHANNEL_START" or 
-	event == "UNIT_SPELLCAST_CHANNEL_STOP" or 
-	event == "UNIT_SPELLCAST_RETICLE_TARGET" or 
-	event == "UNIT_SPELLCAST_RETICLE_CLEAR" or 
+function ActionBarActionEventsFrameMixin:IsSpellcastEvent(event)
+	if ( event == "UNIT_SPELLCAST_INTERRUPTED" or
+	event == "UNIT_SPELLCAST_SUCCEEDED" or
+	event == "UNIT_SPELLCAST_START" or
+	event == "UNIT_SPELLCAST_STOP" or
+	event == "UNIT_SPELLCAST_CHANNEL_START" or
+	event == "UNIT_SPELLCAST_CHANNEL_STOP" or
+	event == "UNIT_SPELLCAST_RETICLE_TARGET" or
+	event == "UNIT_SPELLCAST_RETICLE_CLEAR" or
 	event == "UNIT_SPELLCAST_EMPOWER_START" or
 	event == "UNIT_SPELLCAST_EMPOWER_STOP" or
-	event == "UNIT_SPELLCAST_SENT" or 
-	event == "UNIT_SPELLCAST_FAILED") then 
-		return true; 
-	else 
+	event == "UNIT_SPELLCAST_SENT" or
+	event == "UNIT_SPELLCAST_FAILED") then
+		return true;
+	else
 		return false;
-	end		
-end		
+	end
+end
 
 function ActionBarActionEventsFrameMixin:OnEvent(event, ...)
 	if ( event == "UNIT_INVENTORY_CHANGED" ) then
@@ -315,14 +313,14 @@ function ActionBarActionEventsFrameMixin:OnEvent(event, ...)
 		if ( unit == "player" and self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
 			self.tooltipOwner:SetTooltip();
 		end
-	elseif ( self:IsSpellcastEvent(event) ) then 
+	elseif ( self:IsSpellcastEvent(event) ) then
 		for k, frame in pairs(self.frames) do
-			local spellID; 
+			local spellID;
 			local unit = ...;
 
-			if(event == "UNIT_SPELLCAST_SENT") then 
-				spellID = select(4, ...); 
-			else 
+			if(event == "UNIT_SPELLCAST_SENT") then
+				spellID = select(4, ...);
+			else
 				spellID = select(3, ...);
 			end
 
@@ -465,6 +463,8 @@ function ActionBarActionButtonMixin:OnLoad()
 	self.QuickKeybindHighlightTexture:ClearAllPoints();
 	self.QuickKeybindHighlightTexture:SetPoint("CENTER");
 	self.QuickKeybindHighlightTexture:SetSize(46, 45);
+
+	ActionButton_UpdateCooldownNumberHidden(self);
 end
 
 function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
@@ -479,7 +479,7 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
 			id = self:GetID();
 		end
     end
-	
+
 	self.bindingAction = actionButtonType..id;
 	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		self.bindingAction = "WOWLABS_"..self.bindingAction;
@@ -537,7 +537,7 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 			self:RegisterActionBarButtonCheckFrames(self.action);
 		end
 
-		SetActionUIButton(self, action, self.cooldown);
+		C_ActionBar.RegisterActionUIButton(self, action, self.cooldown);
 
 		self:UpdateAssistedCombatRotationFrame();
 
@@ -555,12 +555,11 @@ end
 function ActionBarActionButtonMixin:Update()
 	local action = self.action;
 	local icon = self.icon;
-	local buttonCooldown = self.cooldown;
-	local texture = GetActionTexture(action);
+	local texture = C_ActionBar.GetActionTexture(action);
 
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ( HasAction(action) ) then
+	if ( C_ActionBar.HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
 			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
@@ -579,9 +578,7 @@ function ActionBarActionButtonMixin:Update()
 			self.eventsRegistered = nil;
 		end
 
-		buttonCooldown:Hide();
-
-		ClearChargeCooldown(self);
+		ClearActionButtonCooldowns(self.cooldown, self.chargeCooldown, self.lossOfControlCooldown);
 
 		self:ClearFlash();
 		self:SetChecked(false);
@@ -598,7 +595,7 @@ function ActionBarActionButtonMixin:Update()
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
-		if ( IsEquippedAction(action) ) then
+		if ( C_ActionBar.IsEquippedAction(action) ) then
 			border:SetVertexColor(0, 1.0, 0, 0.5);
 			border:Show();
 		else
@@ -609,8 +606,8 @@ function ActionBarActionButtonMixin:Update()
 	-- Update Action Text
 	local actionName = self.Name;
 	if actionName then
-		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
-			actionName:SetText(GetActionText(action));
+		if C_ActionBar.UsesActionText(action) then
+			actionName:SetText(C_ActionBar.GetActionText(action));
 		else
 			actionName:SetText("");
 		end
@@ -624,7 +621,7 @@ function ActionBarActionButtonMixin:Update()
 	else
 		self.Count:SetText("");
 		icon:Hide();
-		buttonCooldown:Hide();
+		ClearActionButtonCooldowns(self.cooldown, self.chargeCooldown, self.lossOfControlCooldown);
 		local hotkey = self.HotKey;
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
@@ -670,12 +667,12 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 end
 
 function ActionBarActionButtonMixin:HasAction()
-    return HasAction(self.action);
+	return C_ActionBar.HasAction(self.action);
 end
 
 function ActionBarActionButtonMixin:UpdateState()
 	local action = self.action;
-	local isChecked = (IsCurrentAction(action) or IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
+	local isChecked = (C_ActionBar.IsCurrentAction(action) or C_ActionBar.IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
 	self:SetChecked(isChecked);
 end
 
@@ -684,7 +681,7 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 
 	assertsafe(action == nil or action == self.action);
 	if isUsable == nil or notEnoughMana == nil then
-		isUsable, notEnoughMana = IsUsableAction(self.action);
+		isUsable, notEnoughMana = C_ActionBar.IsUsableAction(self.action);
 	end
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -695,36 +692,35 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 	end
 
 	local isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
-	if not icon:IsDesaturated() then
-		icon:SetDesaturated(isLevelLinkLocked);
+	if isLevelLinkLocked then
+		icon:SetDesaturated(true);
 	end
 
 	if self.LevelLinkLockIcon then
 		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
 	end
-	self:EvaluateState(); 
+	self:EvaluateState();
 end
 
-function ActionBarActionButtonMixin:EvaluateState() 
+function ActionBarActionButtonMixin:EvaluateState()
 return;
-end 
+end
 
 function ActionBarActionButtonMixin:CreateTextureOverlayFrame()
 	return CreateFrame("Frame", nil, self, "ActionButtonTextureOverlayTemplate");
 end
 
 function ActionBarActionButtonMixin:UpdateProfessionQuality()
-	if IsItemAction(self.action) then
-		local quality = C_ActionBar.GetProfessionQuality(self.action);
-		if quality then
+	if C_ActionBar.IsItemAction(self.action) then
+		local qualityInfo = C_ActionBar.GetProfessionQualityInfo and C_ActionBar.GetProfessionQualityInfo(self.action);
+		if qualityInfo then
 			if not self.ProfessionQualityOverlayFrame then
 				self.ProfessionQualityOverlayFrame = self:CreateTextureOverlayFrame();
 				self.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
 			end
 
-			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
 			self.ProfessionQualityOverlayFrame:Show();
-			self.ProfessionQualityOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			self.ProfessionQualityOverlayFrame.Texture:SetAtlas(qualityInfo.iconInventory, TextureKitConstants.UseAtlasSize);
 			return;
 		end
 	end
@@ -810,162 +806,71 @@ function ActionBarActionButtonMixin:ClearTypeOverlay()
 end
 
 function ActionBarActionButtonMixin:UpdateCount()
-	local text = self.Count;
-	local action = self.action;
-	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
-		local count = GetActionCount(action);
-		if ( count > (self.maxDisplayCount or 9999 ) ) then
-			text:SetText("*");
-		else
-			text:SetText(count);
-		end
-	else
-		local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action);
-		if (maxCharges > 1) then
-			text:SetText(charges);
-		else
-			text:SetText("");
-		end
-	end
+	self.Count:SetText(C_ActionBar.GetActionDisplayCount(self.action, self.maxDisplayCount));
 end
 
 -- Determine whether cooldowns display countdown numbers for action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldownNumberHidden(actionButton)
-	local shouldBeHidden = actionButton.cooldown.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL or CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
+	local shouldBeHidden = CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
 	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
 end
 
+local defaultCooldownInfo = { startTime = 0; duration = 0; isEnabled = false; isActive = false; modRate = 0, };
+local defaultChargeInfo = { currentCharges = 0; maxCharges = 0; cooldownStartTime = 0; cooldownDuration = 0; chargeModRate = 0; isActive = false; };
+local defaultLossOfControlInfo = { startTime = 0; duration = 0; modRate = 0; isActive = false; shouldReplaceNormalCooldown = false; };
+
 -- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
-	local locStart, locDuration;
-	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
-	local modRate = 1.0;
-	local chargeModRate = 1.0;
-	local actionType, actionID = nil; 
-	if (self.action) then 
-		actionType, actionID = GetActionInfo(self.action);
-	end 
-	local auraData = nil;
-	local passiveCooldownSpellID = nil;
-	local onEquipPassiveSpellID = nil;
+	local chargeInfo;
+	local cooldownInfo;
+	local lossOfControlInfo = {};
 
-	if(actionID) then 
-		onEquipPassiveSpellID = C_ActionBar.GetItemActionOnEquipSpellID(self.action);
-	end
-
-	if (onEquipPassiveSpellID) then
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(onEquipPassiveSpellID);
-	elseif ((actionType and actionType == "spell") and actionID ) then 
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(actionID);
-	elseif(self.spellID) then 
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(self.spellID);
-	end
-
-	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then 
-		auraData = C_UnitAuras.GetPlayerAuraBySpellID(passiveCooldownSpellID);
-	end
-
-	if(auraData) then
-		local currentTime = GetTime();
-		local timeUntilExpire = auraData.expirationTime - currentTime;
-		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire; 
-
-		locStart =  currentTime - howMuchTimeHasPassed;
-		locDuration = auraData.expirationTime - currentTime;
-		start = currentTime - howMuchTimeHasPassed;
-		duration =  auraData.duration
-		modRate = auraData.timeMod; 
-		charges = auraData.charges; 
-		maxCharges = auraData.maxCharges; 
-		chargeStart = currentTime * 0.001; 
-		chargeDuration = duration * 0.001;
-		chargeModRate = modRate; 
-		enable = 1; 
-	elseif (self.spellID) then
-		locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(self.spellID);
-		
-		local spellCooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
-		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
-
-		local chargeInfo = C_Spell.GetSpellCharges(self.spellID) or {currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0};
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
+	if (self.spellID) then
+		cooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or defaultCooldownInfo;
+		chargeInfo = C_Spell.GetSpellCharges(self.spellID) or defaultChargeInfo;
+		lossOfControlInfo = C_Spell.GetSpellLossOfControlCooldownInfo(self.spellID) or defaultLossOfControlInfo;
 	else
-		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-		start, duration, enable, modRate = GetActionCooldown(self.action);
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
+		cooldownInfo = C_ActionBar.GetActionCooldown(self.action);
+		chargeInfo = C_ActionBar.GetActionCharges(self.action);
+		lossOfControlInfo = C_ActionBar.GetActionLossOfControlCooldownInfo(self.action);
 	end
 
-	if ( self.enableLOCCooldown and (locStart + locDuration) > (start + duration) ) then
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
-			if (self.cooldown.edgeTextureLOC) then
-				self.cooldown:SetEdgeTexture(self.cooldown.edgeTextureLOC);
-			end
-			self.cooldown:SetSwipeColor(0.17, 0, 0);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
-			ActionButton_UpdateCooldownNumberHidden(self);
-		end
+	if not self.enableLOCCooldown then
+		lossOfControlInfo = defaultLossOfControlInfo;
+	end
 
-		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
-		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, false);
-		ClearChargeCooldown(self);
+	ActionButton_ApplyCooldown(self.cooldown, cooldownInfo, self.chargeCooldown, chargeInfo, self.lossOfControlCooldown, lossOfControlInfo);
+end
+
+local function ActionButton_SetOrClearCooldown(cooldown, start, duration, enable, modRate)
+	if enable then
+		cooldown:SetCooldown(start, duration, modRate);
 	else
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
-			if (self.cooldown.edgeTextureNormal) then
-				self.cooldown:SetEdgeTexture(self.cooldown.edgeTextureNormal);
-			end
-			self.cooldown:SetSwipeColor(0, 0, 0);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
-			ActionButton_UpdateCooldownNumberHidden(self);
-		end
-
-		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, locStart > 0);
-
-		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
-			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
-		else
-			ClearChargeCooldown(self);
-		end
-
-		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
+		cooldown:Clear();
 	end
 end
 
-function ActionButtonCooldown_OnCooldownDone(self, requireCooldownUpdate)
-	self:SetScript("OnCooldownDone", nil);
-	if (requireCooldownUpdate) then 
-		ActionButton_UpdateCooldown(self:GetParent());
+function ActionButton_ApplyCooldown(normalCooldown, cooldownInfo, chargeCooldown, chargeInfo, lossOfControlCooldown, lossOfControlInfo)
+	cooldownInfo = cooldownInfo or defaultCooldownInfo;
+	chargeInfo = chargeInfo or defaultChargeInfo;
+	lossOfControlInfo = lossOfControlInfo or defaultLossOfControlInfo;
+
+	local showLossOfControlCooldown = lossOfControlInfo.isActive;
+	local showChargeCooldown = not lossOfControlInfo.shouldReplaceNormalCooldown and chargeInfo.isActive;
+	local showNormalCooldown = not lossOfControlInfo.shouldReplaceNormalCooldown and cooldownInfo.isActive;
+
+	if lossOfControlCooldown then
+		ActionButton_SetOrClearCooldown(lossOfControlCooldown, lossOfControlInfo.startTime, lossOfControlInfo.duration, showLossOfControlCooldown, lossOfControlInfo.modRate);
 	end
+	ActionButton_SetOrClearCooldown(chargeCooldown, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, showChargeCooldown, chargeInfo.chargeModRate);
+	ActionButton_SetOrClearCooldown(normalCooldown, cooldownInfo.startTime, cooldownInfo.duration, showNormalCooldown, cooldownInfo.modRate);
 end
 
--- Charge Cooldown stuff
-
-local numChargeCooldowns = 0;
-local function CreateChargeCooldownFrame(parent)
-	numChargeCooldowns = numChargeCooldowns + 1;
-	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
-	cooldown:SetHideCountdownNumbers(true);
-	cooldown:SetDrawSwipe(false);
-	local icon = parent.Icon or parent.icon;
-	cooldown:SetPoint("TOPLEFT", icon, "TOPLEFT", 2, -2);
-	cooldown:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -2, 2);
-	cooldown:SetFrameLevel(parent:GetFrameLevel());
-	return cooldown;
-end
-
-function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeModRate)
-	if chargeStart == 0 then
-		ClearChargeCooldown(parent);
-		return;
-	end
-
-	parent.chargeCooldown = parent.chargeCooldown or CreateChargeCooldownFrame(parent);
-
-	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true, chargeModRate);
-end
-
-function ClearChargeCooldown(parent)
-	if parent.chargeCooldown then
-		CooldownFrame_Clear(parent.chargeCooldown);
+function ClearActionButtonCooldowns(normalCooldown, chargeCooldown, lossOfControlCooldown)
+	normalCooldown:Clear();
+	chargeCooldown:Clear();
+	if lossOfControlCooldown then
+		lossOfControlCooldown:Clear();
 	end
 end
 
@@ -1034,19 +939,19 @@ end
 ActionButtonInterruptAnimInMixin = {};
 function ActionButtonInterruptAnimInMixin:OnFinished()
 	self:GetParent():GetParent():Hide();
-end 
+end
 
 function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
-	if(not spellID) then 
-		return false; 
-	end 
+	if(not spellID) then
+		return false;
+	end
 
 	local actionType, id, subType = GetActionInfo(self.action);
 	if actionType == "item" then
 		id = C_ActionBar.GetSpell(self.action);
 	end
 	return id == spellID;
-end	
+end
 
 function ActionBarActionButtonMixin:RegisterActionBarButtonCheckFrames(action)
 	ActionBarButtonRangeCheckFrame:RegisterFrame(action, self);
@@ -1074,7 +979,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
-		local texture = GetActionTexture(self.action);
+		local texture = C_ActionBar.GetActionTexture(self.action);
 		if (texture) then
 			self.icon:SetTexture(texture);
 		end
@@ -1103,19 +1008,19 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		self:UpdateState();
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
-		if ( IsAttackAction(self.action) ) then
+		if ( C_ActionBar.IsAttackAction(self.action) ) then
 			self:StartFlash();
 		end
 	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
-		if ( IsAttackAction(self.action) ) then
+		if ( C_ActionBar.IsAttackAction(self.action) ) then
 			self:StopFlash();
 		end
 	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
-		if ( IsAutoRepeatAction(self.action) ) then
+		if ( C_ActionBar.IsAutoRepeatAction(self.action) ) then
 			self:StartFlash();
 		end
 	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
-		if ( self:IsFlashing() and not IsAttackAction(self.action) ) then
+		if ( self:IsFlashing() and not C_ActionBar.IsAttackAction(self.action) ) then
 			self:StopFlash();
 		end
 	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
@@ -1148,7 +1053,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "UPDATE_SUMMONPETS_ACTION" ) then
 		local actionType, id = GetActionInfo(self.action);
 		if (actionType == "summonpet") then
-			local texture = GetActionTexture(self.action);
+			local texture = C_ActionBar.GetActionTexture(self.action);
 			if (texture) then
 				self.icon:SetTexture(texture);
 			end
@@ -1158,31 +1063,31 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ACTION_RANGE_CHECK_UPDATE" ) then
 		local inRange, checksRange = select(2, ...);
 		ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
-	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then 
-		self:PlaySpellInterruptedAnim(); 
-	elseif (event == "UNIT_SPELLCAST_START") then 
-		self:PlaySpellCastAnim(ActionButtonCastType.Cast); 
-	elseif (event == "UNIT_SPELLCAST_STOP") then 
-		self:StopSpellCastAnim(true, ActionButtonCastType.Cast); 
+	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then
+		self:PlaySpellInterruptedAnim();
+	elseif (event == "UNIT_SPELLCAST_START") then
+		self:PlaySpellCastAnim(ActionButtonCastType.Cast);
+	elseif (event == "UNIT_SPELLCAST_STOP") then
+		self:StopSpellCastAnim(true, ActionButtonCastType.Cast);
 		self:StopTargettingReticleAnim();
-	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then 
-		self:StopSpellCastAnim(false, ActionButtonCastType.Cast); 
+	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then
+		self:StopSpellCastAnim(false, ActionButtonCastType.Cast);
 		self:StopTargettingReticleAnim();
-	elseif(event == "UNIT_SPELLCAST_SENT" or event == "UNIT_SPELLCAST_FAILED") then 
+	elseif(event == "UNIT_SPELLCAST_SENT" or event == "UNIT_SPELLCAST_FAILED") then
 		self:StopTargettingReticleAnim();
-	elseif (event == "UNIT_SPELLCAST_EMPOWER_START") then 
-		self:PlaySpellCastAnim(ActionButtonCastType.Empowered); 
-	elseif(event == "UNIT_SPELLCAST_EMPOWER_STOP") then 
-		local _, _, _, castComplete = ...; 
-		local interrupted = not castComplete; 
+	elseif (event == "UNIT_SPELLCAST_EMPOWER_START") then
+		self:PlaySpellCastAnim(ActionButtonCastType.Empowered);
+	elseif(event == "UNIT_SPELLCAST_EMPOWER_STOP") then
+		local _, _, _, castComplete = ...;
+		local interrupted = not castComplete;
 		if(interrupted) then
-			self:PlaySpellInterruptedAnim(); 
-		else 
-			self:StopSpellCastAnim(interrupted, ActionButtonCastType.Empowered); 
-		end 
-	elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then 
-			self:PlaySpellCastAnim(ActionButtonCastType.Channel); 
-	elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then 
+			self:PlaySpellInterruptedAnim();
+		else
+			self:StopSpellCastAnim(interrupted, ActionButtonCastType.Empowered);
+		end
+	elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then
+			self:PlaySpellCastAnim(ActionButtonCastType.Channel);
+	elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then
 			self:StopSpellCastAnim(false, ActionButtonCastType.Channel);
 	elseif (event == "UNIT_SPELLCAST_RETICLE_TARGET") then
 			self:PlayTargettingReticleAnim();
@@ -1283,19 +1188,19 @@ function ActionBarActionButtonMixin:ClearReticle()
 		return;
 	end
 
-	if(self.TargetReticleAnimFrame:IsShown()) then 
-		self.TargetReticleAnimFrame:Hide(); 
-	end 
-end 
+	if(self.TargetReticleAnimFrame:IsShown()) then
+		self.TargetReticleAnimFrame:Hide();
+	end
+end
 
 function ActionBarActionButtonMixin:ClearInterruptDisplay()
 	if (not self:SpellFXEnabled()) then
 		return;
 	end
 
-	if(self.InterruptDisplay:IsShown()) then 
-		self.InterruptDisplay:Hide(); 
-	end	
+	if(self.InterruptDisplay:IsShown()) then
+		self.InterruptDisplay:Hide();
+	end
 end
 
 function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
@@ -1316,8 +1221,8 @@ function ActionBarActionButtonMixin:PlayTargettingReticleAnim()
 		return;
 	end
 
-	if(self.InterruptDisplay:IsShown()) then 
-		self.InterruptDisplay:Hide(); 
+	if(self.InterruptDisplay:IsShown()) then
+		self.InterruptDisplay:Hide();
 	end
 	if not C_ActionBar.IsAssistedCombatAction(self.action) then
 		self.TargetReticleAnimFrame:Setup();
@@ -1329,8 +1234,8 @@ function ActionBarActionButtonMixin:StopTargettingReticleAnim()
 		return;
 	end
 
-	if (self.TargetReticleAnimFrame:IsShown()) then 
-		self.TargetReticleAnimFrame:Hide(); 
+	if (self.TargetReticleAnimFrame:IsShown()) then
+		self.TargetReticleAnimFrame:Hide();
 	end
 end
 
@@ -1341,13 +1246,13 @@ function ActionBarActionButtonMixin:StopSpellCastAnim(forceStop, actionButtonCas
 
 	self:StopTargettingReticleAnim();
 
-	if (self.actionButtonCastType == actionButtonCastType) then 
-		if(forceStop) then 
+	if (self.actionButtonCastType == actionButtonCastType) then
+		if(forceStop) then
 			self.SpellCastAnimFrame:Hide();
-		elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then 
-			self.SpellCastAnimFrame:FinishAnimAndPlayBurst(); 
+		elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then
+			self.SpellCastAnimFrame:FinishAnimAndPlayBurst();
 		end
-		self.actionButtonCastType = nil; 
+		self.actionButtonCastType = nil;
 	end
 end
 
@@ -1356,12 +1261,12 @@ function ActionBarActionButtonMixin:PlaySpellInterruptedAnim()
 		return;
 	end
 
-	self:StopSpellCastAnim(true, self.actionButtonCastType); 
-	--Hide if it's already showing to clear the anim. 
-	if(self.InterruptDisplay:IsShown()) then 
-		self.InterruptDisplay:Hide(); 
-	end		
-	self.InterruptDisplay:Show(); 
+	self:StopSpellCastAnim(true, self.actionButtonCastType);
+	--Hide if it's already showing to clear the anim.
+	if(self.InterruptDisplay:IsShown()) then
+		self.InterruptDisplay:Hide();
+	end
+	self.InterruptDisplay:Show();
 end
 
 -- Shared between the action bar and the pet bar.
@@ -1392,10 +1297,11 @@ end
 
 function ActionBarActionButtonMixin:UpdateFlash()
 	local action = self.action;
-	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
+	local actionType, actionID, actionSubtype = GetActionInfo(action);
+
+	if ( (C_ActionBar.IsAttackAction(action) and C_ActionBar.IsCurrentAction(action)) or C_ActionBar.IsAutoRepeatAction(action) ) then
 		self:StartFlash();
-		
-		local actionType, actionID, actionSubtype = GetActionInfo(action);
+
 		if ( actionSubtype == "pet" ) then
 			self:GetCheckedTexture():SetAlpha(0.5);
 		else
@@ -1404,10 +1310,18 @@ function ActionBarActionButtonMixin:UpdateFlash()
 	else
 		self:StopFlash();
 	end
-	
+
 	if ( self.AutoCastOverlay ) then
-		self.AutoCastOverlay:SetShown(C_ActionBar.IsAutoCastPetAction(action));
-		self.AutoCastOverlay:ShowAutoCastEnabled(C_ActionBar.IsEnabledAutoCastPetAction(action));
+		-- Outfit actions.
+		local isLockedOutfit = actionType == "outfit" and C_TransmogOutfitInfo.IsLockedOutfit(actionID);
+		local isLockedEquippedGear = C_ActionBar.IsEquippedGearOutfitAction(action) and C_TransmogOutfitInfo.IsEquippedGearOutfitLocked();
+
+		-- Pet actions.
+		local isAutoCastPetAction = C_ActionBar.IsAutoCastPetAction(action);
+		local isEnabledAutoCastPetAction = C_ActionBar.IsEnabledAutoCastPetAction(action);
+
+		self.AutoCastOverlay:SetShown(isLockedOutfit or isLockedEquippedGear or isAutoCastPetAction);
+		self.AutoCastOverlay:ShowAutoCastEnabled(isLockedOutfit or isLockedEquippedGear or isEnabledAutoCastPetAction);
 	end
 end
 
@@ -1528,7 +1442,7 @@ end
 -- Can be overridden by ActionButtonOverrides.
 ActionBarButtonEventsDerivedFrameMixin = CreateFromMixins(ActionBarButtonEventsFrameMixin);
 ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
-	
+
 function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLoad()
 	ActionBarActionButtonMixin.OnLoad(self);
 end
@@ -1559,7 +1473,7 @@ function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnR
 end
 
 function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnDragStop()
-		
+
 end
 
 function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnEnter()
@@ -1742,6 +1656,11 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.cooldown:ClearAllPoints();
 	self.cooldown:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 1.7, -1.7);
 	self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -1, 1);
+	self:ApplyOverrides();
+end
+
+function SmallActionButtonMixin:ApplyOverrides()
+	-- overridden
 end
 
 function SmallActionButtonMixin:UpdateButtonArt()
@@ -1754,10 +1673,10 @@ end
 
 ActionButtonInterruptFrameMixin = { };
 
-function ActionButtonInterruptFrameMixin:OnShow() 
+function ActionButtonInterruptFrameMixin:OnShow()
 	self.Base.AnimIn:Play();
 	self.Highlight.AnimIn:Play();
-end 
+end
 
 function ActionButtonInterruptFrameMixin:OnHide()
 	self.Base.AnimIn:Stop();
@@ -1769,7 +1688,7 @@ ActionButtonCastingAnimFrameMixin = { };
 function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 	local startTime, endTime, totalTimeInSeconds;
 
-	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel; 
+	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel;
 	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered;
 	local _;
 	if (isChannelCast or isEmpoweredCast) then
@@ -1793,7 +1712,7 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
 		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
 	else
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true); 
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true);
 		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
 		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
 		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
@@ -1812,7 +1731,7 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 end
 
 function ActionButtonCastingAnimFrameMixin:OnHide()
-	local parent = self:GetParent(); 
+	local parent = self:GetParent();
 	parent:ClearReticle();
 	parent.cooldown:SetSwipeColor(0, 0, 0, 1);
 	ActionButton_UpdateCooldown(parent);
@@ -1820,39 +1739,39 @@ end
 
 function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()
 	self.Fill.CastingAnim:Stop();
-	self.Fill.CastingAnim:OnFinished(); 
-end 
+	self.Fill.CastingAnim:OnFinished();
+end
 
-ActionButtonCastingAnimationFillMixin = { }; 
+ActionButtonCastingAnimationFillMixin = { };
 
 function ActionButtonCastingAnimationFillMixin:OnFinished()
-	local endBurst = self:GetParent():GetParent().EndBurst; 
-	endBurst:Show(); 
-	endBurst.FinishCastAnim:Play(); 
-end 
+	local endBurst = self:GetParent():GetParent().EndBurst;
+	endBurst:Show();
+	endBurst.FinishCastAnim:Play();
+end
 
-ActionButtonCastingFinishAnimMixin = { }; 
+ActionButtonCastingFinishAnimMixin = { };
 function ActionButtonCastingFinishAnimMixin:OnFinished()
-	self:GetParent():GetParent():Hide(); 
+	self:GetParent():GetParent():Hide();
 	local parentButton = self:GetParent():GetParent():GetParent();
-	self:GetParent():GetParent():GetParent():StopSpellCastAnim(false, parentButton.actionButtonCastType); 
+	self:GetParent():GetParent():GetParent():StopSpellCastAnim(false, parentButton.actionButtonCastType);
 end
 
-ActionButtonTargetReticleFrameMixin = { }; 
-function ActionButtonTargetReticleFrameMixin:Setup() 
+ActionButtonTargetReticleFrameMixin = { };
+function ActionButtonTargetReticleFrameMixin:Setup()
 	self.HighlightAnim:Play();
-	self:Show(); 
+	self:Show();
 end
 
-ActionButtonCooldownFlashMixin = { }; 
+ActionButtonCooldownFlashMixin = { };
 function ActionButtonCooldownFlashMixin:Setup()
 	self.FlashAnim:Play();
-	self:Show(); 
+	self:Show();
 end
 
-ActionButtonCooldownFlashAnimMixin = { }; 
+ActionButtonCooldownFlashAnimMixin = { };
 function ActionButtonCooldownFlashAnimMixin:OnFinished()
-	self:GetParent():Hide(); 
+	self:GetParent():Hide();
 end
 
 -- This is done to preserve old hierarchy, while allowing for proper layering of the HotKey text

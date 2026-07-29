@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## AllowLoadGameType: standard
+## Dependencies: Blizzard_HousingTemplates
 
 Blizzard_HousingModelPreview.lua
 Blizzard_HousingModelPreview.xml

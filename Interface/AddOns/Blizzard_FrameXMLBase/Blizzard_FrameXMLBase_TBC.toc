@@ -4,7 +4,8 @@
 ## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
 ## AllowLoad: Game
 ## AllowLoadGameType: tbc
-Classic\IconDataProvider.lua
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
 AnimatedStatusBar.xml
 FlowContainer.lua

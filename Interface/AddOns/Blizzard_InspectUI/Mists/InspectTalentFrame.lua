@@ -123,7 +123,7 @@ function InspectGlyphMixin:UpdateSlot(clear)
 	else
 		self.glyphID = glyphID;
 		if ( iconFilename ) then
-			SetPortraitToTexture(self.glyph, iconFilename);
+			self.glyph:SetTexture(iconFilename);
 		else
 			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
 		end
@@ -165,7 +165,7 @@ function InspectSpecMixin:OnShow()
 		if(role1 ~= nil) then
 			local id, name, description, icon, background = GetSpecializationInfoByID(spec);
 			self.specIcon:Show();
-			SetPortraitToTexture(self.specIcon, icon);
+			self.specIcon:SetTexture(icon);
 			self.specName:SetText(name);
 			self.roleIcon:Show();
 			self.roleName:SetText(_G[role1]);

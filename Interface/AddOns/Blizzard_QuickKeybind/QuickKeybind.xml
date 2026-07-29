@@ -17,7 +17,7 @@
 	</Button>
 	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" toplevel="true" inherits="SharedTooltipTemplate"/>
 
-	<Button name="QuickKeybindFrameTemplate" mixin="QuickKeybindFrameMixin" enableKeyboard="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+	<Button name="QuickKeybindFrameTemplate" mixin="QuickKeybindFrameMixin" enableKeyboard="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" protected="true" virtual="true">
 		<Size x="450" y="250"/>
 		<Anchors>
 			<Anchor point="CENTER" y="150"/>

@@ -1,7 +1,7 @@
 ## Title: Blizzard_GameMenu
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_StaticPopup
 ## AllowLoad: game
 ## AllowLoadGameType: classic
 Shared\GameMenuFrame.lua

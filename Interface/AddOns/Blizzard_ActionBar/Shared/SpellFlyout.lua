@@ -145,16 +145,7 @@ end
 
 function SpellFlyoutPopupButtonMixin:UpdateCount()
 	local text = _G[self:GetName().."Count"];
-	if ( IsConsumableSpell(self.spellID)) then
-		local count = C_Spell.GetSpellCastCount(self.spellID);
-		if ( count > (self.maxDisplayCount or 9999 ) ) then
-			text:SetText("*");
-		else
-			text:SetText(count);
-		end
-	else
-		text:SetText("");
-	end
+	text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount));
 end
 
 SpellFlyoutMixin = {};

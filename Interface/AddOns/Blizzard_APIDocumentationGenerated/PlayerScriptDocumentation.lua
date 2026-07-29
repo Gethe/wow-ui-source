@@ -2,6 +2,7 @@ local PlayerScript =
 {
 	Name = "PlayerScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -332,6 +333,27 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerInfoByGUID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "localizedClass", Type = "cstring", Nilable = false },
+				{ Name = "englishClass", Type = "cstring", Nilable = false },
+				{ Name = "localizedRace", Type = "cstring", Nilable = false },
+				{ Name = "englishRace", Type = "cstring", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "realmName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -780,10 +802,17 @@ local PlayerScript =
 			Name = "PlayerInCombatChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inCombat", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "PlayerTargetDied",
+			Type = "Event",
+			LiteralName = "PLAYER_TARGET_DIED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -801,6 +830,9 @@ local PlayerScript =
 				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

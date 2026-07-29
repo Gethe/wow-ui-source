@@ -667,8 +667,8 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0);
-								GameTooltip:SetText(PET_JOURNAL_READONLY, 1, 1, 1, true);
-								GameTooltip:AddLine(self.tooltip, nil, nil, nil, true);
+								GameTooltip_SetTitle(GameTooltip, PET_JOURNAL_READONLY);
+								GameTooltip_AddNormalLine(GameTooltip, self.tooltip);
 								GameTooltip:SetMinimumWidth(150);
 								GameTooltip:Show();
 							</OnEnter>

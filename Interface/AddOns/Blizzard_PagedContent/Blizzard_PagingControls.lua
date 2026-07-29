@@ -122,6 +122,8 @@ function PagingControlsMixin:UpdateControls()
 			self.PageText:SetFormattedText(self.currentPageOnlyText, self.currentPage);
 		end
 	end
+
+	self:Layout();
 end
 
 function PagingControlsMixin:OnPageButtonEnter(button)

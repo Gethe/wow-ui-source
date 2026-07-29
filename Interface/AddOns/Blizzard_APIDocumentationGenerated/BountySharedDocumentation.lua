@@ -15,6 +15,9 @@ local BountyShared =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(BountyShared);

@@ -12,24 +12,6 @@
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
 
-	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-
-	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
-
-	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="1.0" g="0.1" b="0.1"/>
-	</Font>
-
-	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="1.0" g="0.82" b="0.0"/>
-	</Font>
-
-	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="0.6" g="0.6" b="0.6"/>
-	</Font>
-
 	<Font name="QuestTitleFontBlackShadowSmaller" inherits="QuestFont_Shadow_Larger" virtual="true">
 		<Shadow x="1" y="-1">
 			<Color r="0" g="0" b="0"/>

@@ -150,21 +150,23 @@ end
 
 
 function ButtonFrameTemplate_HidePortrait(self)
-	if(self.portrait) then
-		self.portrait:Hide();
-		self.PortraitFrame:Hide();
-		self.TopLeftCorner:Show();
-		self.TopBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "TOPRIGHT",  0, 0);
-		self.LeftBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "BOTTOMLEFT",  0, 0);
+	self:SetPortraitShown(false);
+	if (self.BorderTexture) then
+		self.BorderTexture.PortraitFrame:Hide();
+		self.BorderTexture.TopLeftCorner:Show();
+		self.BorderTexture.TopBorder:SetPoint("TOPLEFT", self.BorderTexture.TopLeftCorner, "TOPRIGHT",  0, 0);
+		self.BorderTexture.LeftBorder:SetPoint("TOPLEFT", self.BorderTexture.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 	end
 end
 
 function ButtonFrameTemplate_ShowPortrait(self)
-	self.portrait:Show();
-	self.PortraitFrame:Show();
-	self.TopLeftCorner:Hide();
-	self.TopBorder:SetPoint("TOPLEFT", self.PortraitFrame, "TOPRIGHT",  0, -10);
-	self.LeftBorder:SetPoint("TOPLEFT", self.PortraitFrame, "BOTTOMLEFT",  8, 0);
+	self:SetPortraitShown(true);
+	if (self.BorderTexture) then
+		self.BorderTexture.PortraitFrame:Show();
+		self.BorderTexture.TopLeftCorner:Hide();
+		self.BorderTexture.TopBorder:SetPoint("TOPLEFT", self.BorderTexture.PortraitFrame, "TOPRIGHT",  0, -10);
+		self.BorderTexture.LeftBorder:SetPoint("TOPLEFT", self.BorderTexture.PortraitFrame, "BOTTOMLEFT",  8, 0);
+	end
 end
 
 function ButtonFrameTemplateMinimizable_HidePortrait(self)
@@ -671,38 +673,6 @@ function MaximizeMinimizeButtonFrameMixin:SetMaximizedLook()
 	self.MinimizeButton:Hide();
 end
 
-PortraitFrameTemplateMixin = {}
-
-function PortraitFrameTemplateMixin:OnLoad()
-
-	local use2XFrameTextures = GetCVarBool("useHighResolutionUITextures");
-	if (use2XFrameTextures) then
-		self.PortraitFrame:SetAtlas("UI-Frame-Portrait-2x");
-		self.TopRightCorner:SetAtlas("UI-Frame-TopCornerRight-2x");
-
-		self.TopBorder:SetAtlas("_UI-Frame-TittleTile2x");
-
-		self.BotLeftCorner:SetAtlas("UI-Frame-BotCornerLeft-2x");
-		self.BotRightCorner:SetAtlas("UI-Frame-BotCornerRight-2x");
-
-		self.BottomBorder:SetAtlas("_UI-Frame-Bot2x");
-		self.LeftBorder:SetAtlas("!UI-Frame-LeftTile2x");
-		self.RightBorder:SetAtlas("!UI-Frame-RightTile2x");
-	end
-end
-
-function PortraitFrameTemplateMixin:GetTitleText()
-	return self.TitleText;
-end
-
-function PortraitFrameTemplateMixin:SetTitle(title)
-	self:GetTitleText():SetText(title);
-end
-
-function PortraitFrameTemplateMixin:SetTitleFormatted(fmt, ...)
-	self:GetTitleText():SetFormattedText(fmt, ...);
-end
-
 -- Truncated Button code
 
 function TruncatedButton_OnSizeChanged(self, width, height)
@@ -945,6 +915,16 @@ function DropdownWithSteppersMixin:HideSteppers()
 	self.IncrementButton:Hide();
 end
 
+function DropdownWithSteppersMixin:ShowSteppers()
+	self.DecrementButton:Show();
+	self.IncrementButton:Show();
+end
+
+function DropdownWithSteppersMixin:SetSteppersShown(shown)
+	self.DecrementButton:SetShown(shown);
+	self.IncrementButton:SetShown(shown);
+end
+
 function DropdownWithSteppersMixin:SetSteppersEnabled(canDecrement, canIncrement)
 	if self.Dropdown:IsEnabled() then
 		self.DecrementButton:SetEnabled(canDecrement);
@@ -1010,6 +990,12 @@ PanelDragBarMixin = {};
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self:SetTarget(self:GetParent());
+	self.suspendDrag = false;
+end
+
+
+function PanelDragBarMixin:SetDragSuspended(suspendDrag)
+	self.suspendDrag = suspendDrag;
 end
 
 function PanelDragBarMixin:Init(target)
@@ -1021,6 +1007,10 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStart = true;
@@ -1042,6 +1032,10 @@ function PanelDragBarMixin:OnDragStart()
 end
 
 function PanelDragBarMixin:OnDragStop()
+	if self.suspendDrag then
+		return;
+	end
+
 	local target = self.target;
 
 	local continueDragStop = true;
@@ -1218,6 +1212,14 @@ function PanelResizeButtonMixin:SetMinHeight(minHeight)
 	self.minHeight = minHeight;
 end
 
+function PanelResizeButtonMixin:SetMaxWidth(maxWidth)
+	self.maxWidth = maxWidth;
+end
+
+function PanelResizeButtonMixin:SetMaxHeight(maxHeight)
+	self.maxHeight = maxHeight;
+end
+
 function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)
 	local rotationRadians = (rotationDegrees / 180) * math.pi;
 	self:SetRotationRadians(rotationRadians);
@@ -1260,7 +1262,8 @@ local ValidIconSelectorCursorTypes = {
 	"spell",
 	"mount",
 	"battlepet",
-	"macro"
+	"macro",
+	"outfit"
 };
 
 local function IconSelectorPopupFrame_IconFilterToIconTypes(filter)
@@ -1378,6 +1381,11 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 				icon = select(9, C_PetJournal.GetPetInfoByPetID(ID));
 			elseif ( cursorType == "macro" ) then
 				icon = select(2, GetMacroInfo(ID));
+			elseif ( cursorType == "outfit" ) then
+				local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(ID);
+				if ( outfitInfo ) then
+					icon = outfitInfo.icon;
+				end
 			end
 
 			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(icon));
@@ -1983,21 +1991,21 @@ end
 
 ClearButtonMixin = {};
 function ClearButtonMixin:OnEnter()
-	self.texture:SetAlpha(1.0);
+	self.Icon:SetAlpha(1.0);
 end
 
 function ClearButtonMixin:OnLeave()
-	self.texture:SetAlpha(0.5);
+	self.Icon:SetAlpha(0.5);
 end
 
 function ClearButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
-		self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
 	end
 end
 
 function ClearButtonMixin:OnMouseUp()
-	self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 end
 
 function ClearButtonMixin:OnClick()

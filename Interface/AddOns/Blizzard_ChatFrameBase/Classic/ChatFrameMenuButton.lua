@@ -10,7 +10,7 @@ function ChatFrameMenuButtonMixin:OnLoad()
 
 	local function SetChatTypeAttribute(chatType)
 		local editBox = ChatFrameUtil.OpenChat("");
-		editBox:SetAttribute("chatType", chatType);
+		editBox:SetChatType(chatType);
 		editBox:UpdateHeader();
 	end
 
@@ -85,7 +85,7 @@ function ChatFrameMenuButtonMixin:OnLoad()
 
 		local emoteSubmenu = CreateButtonWithShortcut(EMOTE_MESSAGE, SLASH_EMOTE1, "EMOTE");
 		AddEmotes(emoteSubmenu, EmoteList, function(index)
-			DoEmote(EmoteList[index]);
+			C_ChatInfo.PerformEmote(EmoteList[index]);
 		end);
 
 		local replyButton = rootDescription:CreateButton(REPLY_MESSAGE, function()
@@ -106,7 +106,7 @@ function ChatFrameMenuButtonMixin:OnLoad()
 					emote = EMOTE455_TOKEN;
 				end
 			end
-			DoEmote(emote);
+			C_ChatInfo.PerformEmote(emote);
 		end);
 
 		local macroButton = rootDescription:CreateButton(MACRO, function()

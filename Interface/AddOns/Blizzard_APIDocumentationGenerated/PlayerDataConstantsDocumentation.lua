@@ -15,6 +15,9 @@ local PlayerDataConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(PlayerDataConstants);

@@ -9,9 +9,9 @@ end
 
 function ExtraActionBar_Update()
 	local bar = ExtraActionBarFrame;
-	if ( HasExtraActionBar() ) then
+	if ( C_ActionBar.HasExtraActionBar() ) then
 		bar:Show();
-		local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
+		local texture = C_ActionBar.GetOverrideBarSkin() or DefaultExtraActionStyle;
 		bar.button.style:SetTexture(texture);
 		bar.button:UpdateUsable();
 		ExtraAbilityContainer:AddFrame(bar, ExtraActionButtonPriority);
@@ -50,7 +50,7 @@ end
 
 function ExtraActionBar_CancelForceShow()
 	local bar = ExtraActionBarFrame;
-	if not HasExtraActionBar() and bar:IsShown() then
+	if not C_ActionBar.HasExtraActionBar() and bar:IsShown() then
 		bar.button.style:Show();
 		bar.button.icon:SetAlpha(1);
 		bar:Hide();
@@ -61,7 +61,7 @@ function ExtraActionBar_CancelForceShow()
 end
 
 function ExtraActionButtonKey(id, isDown)
-	if not HasExtraActionBar() then
+	if not C_ActionBar.HasExtraActionBar() then
 		return;
 	end
 

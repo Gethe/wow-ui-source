@@ -515,15 +515,15 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame:AddMessageGroup("PET_BATTLE_INFO");
 	end
 
-	chatFrame.editBox:SetAttribute("chatType", chatType);
-	chatFrame.editBox:SetAttribute("stickyType", chatType);
+	chatFrame.editBox:SetChatType(chatType);
+	chatFrame.editBox:SetStickyType(chatType);
 
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-		chatFrame.editBox:SetAttribute("tellTarget", chatTarget);
+		chatFrame.editBox:SetTellTarget(chatTarget);
 		chatFrame:AddPrivateMessageTarget(chatTarget);
 	elseif ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
-		chatFrame.editBox:SetAttribute("chatType", "SAY");
-		chatFrame.editBox:SetAttribute("stickyType", "SAY");
+		chatFrame.editBox:SetChatType("SAY");
+		chatFrame.editBox:SetStickyType("SAY");
 	end
 
 	-- Set up the colors

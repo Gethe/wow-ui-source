@@ -20,18 +20,18 @@ end
 function GetWowStyle1ArrowButtonShadowlessState(button)
 	if button:IsEnabled() then
 		if button:IsDownOver() then
-			return "common-dropdown-a-button-shadowless-pressedhover";
+			return "common-dropdown-a-button-pressedhover-shadowless";
 		elseif button:IsOver() then
-			return "common-dropdown-a-button-shadowless-hover";
+			return "common-dropdown-a-button-hover-shadowless";
 		elseif button:IsDown() then
-			return "common-dropdown-a-button-shadowless-pressed";
+			return "common-dropdown-a-button-pressed-shadowless";
 		elseif button:IsMenuOpen() then
-			return "common-dropdown-a-button-shadowless-open";
+			return "common-dropdown-a-button-open-shadowless";
 		else
 			return "common-dropdown-a-button-shadowless";
 		end
 	end
-	return "common-dropdown-a-button-shadowless-disabled";
+	return "common-dropdown-a-button-disabled-shadowless";
 end
 
 function WowStyle1DropdownMixin:GetArrowAtlas()

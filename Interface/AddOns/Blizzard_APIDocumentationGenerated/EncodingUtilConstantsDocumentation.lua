@@ -12,6 +12,9 @@ local EncodingUtilConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EncodingUtilConstants);

@@ -1488,8 +1488,8 @@
 							<OnEnter>
 								if ( self:GetEffectiveAlpha() > 0 ) then
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetText(SWITCH_PET, 1, 1, 1, true);
-									GameTooltip:AddLine(SWITCH_PET_DESCRIPTION, nil, nil, nil, true);
+									GameTooltip_SetTitle(GameTooltip, SWITCH_PET);
+									GameTooltip_AddNormalLine(GameTooltip, SWITCH_PET_DESCRIPTION);
 									GameTooltip:Show();
 								end
 							</OnEnter>
@@ -1521,8 +1521,8 @@
 							<OnClick function="PetBattleForfeitButton_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(PET_BATTLE_FORFEIT, 1, 1, 1, true);
-								GameTooltip:AddLine(PET_BATTLE_FORFEIT_DESCRIPTION, nil, nil, nil, true);
+								GameTooltip_SetTitle(GameTooltip, PET_BATTLE_FORFEIT);
+								GameTooltip_AddNormalLine(GameTooltip, PET_BATTLE_FORFEIT_DESCRIPTION);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>

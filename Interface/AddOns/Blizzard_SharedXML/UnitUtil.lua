@@ -105,13 +105,12 @@ function PlayerUtil.CanUseClassTalents()
 	return C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec();
 end
 
-function PlayerUtil.HasFriendlyReaction(unit)
-    local reaction = UnitReaction("player", unit);
+function PlayerUtil.IsPlayerEffectivelyTank()
+	local assignedRole = UnitGroupRolesAssigned("player");
+	if assignedRole == "NONE" then
+		local spec = C_SpecializationInfo.GetSpecialization();
+		return spec and GetSpecializationRole(spec) == "TANK";
+	end
 
-	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile.
-    if reaction and reaction <= 4 then
-        return false;
-    end
-
-	return true;
+	return assignedRole == "TANK";
 end

@@ -11,6 +11,9 @@ local EditModeManagerConstants_Classic =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(EditModeManagerConstants_Classic);

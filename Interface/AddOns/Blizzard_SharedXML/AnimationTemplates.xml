@@ -53,4 +53,17 @@ UI.xsd">
 			<OnMouseDown method="PlayAnims"/>
 		</Scripts>
 	</Frame>
+
+	<Animation name="PointsOffsetAnimationTemplate" mixin="PointsOffsetAnimationMixin" virtual="true">
+		<KeyValues>
+			<!-- <KeyValue key="customEasingFunction" value="EasingUtil.InQuadratic" type="global"/> -->
+			<KeyValue key="offsetFromX" value="0" type="number"/>
+			<KeyValue key="offsetFromY" value="0" type="number"/>
+			<KeyValue key="offsetToX" value="0" type="number"/>
+			<KeyValue key="offsetToY" value="0" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Animation>
 </Ui>

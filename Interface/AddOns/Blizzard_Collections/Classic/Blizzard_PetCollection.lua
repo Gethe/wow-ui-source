@@ -108,7 +108,7 @@ function PetJournal_OnShow(self)
 	PetJournal_UpdatePetList();
 	PetJournal_UpdatePetCard(PetJournalPetCard);
 
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\ICONS\\Spell_Magic_PolymorphChicken");
+	CollectionsJournal:SetPortraitToAsset("Interface\\ICONS\\Spell_Magic_PolymorphChicken");
 end
 
 

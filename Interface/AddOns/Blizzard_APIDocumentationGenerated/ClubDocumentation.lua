@@ -3,6 +3,7 @@ local Club =
 	Name = "Club",
 	Type = "System",
 	Namespace = "C_Club",
+	Environment = "All",
 
 	Functions =
 	{
@@ -63,7 +64,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "roleId", Type = "ClubRoleIdentifier", Nilable = false },
 			},
 		},
@@ -185,6 +186,7 @@ local Club =
 		{
 			Name = "DestroyMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 
 			Arguments =
@@ -266,6 +268,7 @@ local Club =
 		{
 			Name = "EditMessage",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 
 			Arguments =
@@ -336,7 +339,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 
 			Returns =
@@ -413,7 +416,7 @@ local Club =
 
 			Returns =
 			{
-				{ Name = "members", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -576,7 +579,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 
 			Returns =
@@ -825,7 +828,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -911,7 +914,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -922,7 +925,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "guildClubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -947,7 +950,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
@@ -978,6 +981,7 @@ local Club =
 		{
 			Name = "SetAvatarTexture",
 			Type = "Function",
+			HasRestrictions = true,
 			RequiresClubsInitialized = true,
 
 			Arguments =
@@ -997,7 +1001,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "note", Type = "string", Nilable = false },
 			},
 		},
@@ -1126,6 +1130,7 @@ local Club =
 			Name = "AvatarListUpdated",
 			Type = "Event",
 			LiteralName = "AVATAR_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubType", Type = "ClubType", Nilable = false },
@@ -1135,6 +1140,7 @@ local Club =
 			Name = "ClubAdded",
 			Type = "Event",
 			LiteralName = "CLUB_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1144,6 +1150,7 @@ local Club =
 			Name = "ClubError",
 			Type = "Event",
 			LiteralName = "CLUB_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "action", Type = "ClubActionType", Nilable = false },
@@ -1155,6 +1162,7 @@ local Club =
 			Name = "ClubInvitationAddedForSelf",
 			Type = "Event",
 			LiteralName = "CLUB_INVITATION_ADDED_FOR_SELF",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "invitation", Type = "ClubSelfInvitationInfo", Nilable = false },
@@ -1164,6 +1172,7 @@ local Club =
 			Name = "ClubInvitationRemovedForSelf",
 			Type = "Event",
 			LiteralName = "CLUB_INVITATION_REMOVED_FOR_SELF",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "invitationId", Type = "ClubInvitationId", Nilable = false },
@@ -1173,6 +1182,7 @@ local Club =
 			Name = "ClubInvitationsReceivedForClub",
 			Type = "Event",
 			LiteralName = "CLUB_INVITATIONS_RECEIVED_FOR_CLUB",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1182,20 +1192,22 @@ local Club =
 			Name = "ClubMemberAdded",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBER_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
 			Name = "ClubMemberPresenceUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBER_PRESENCE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
 			},
 		},
@@ -1203,20 +1215,22 @@ local Club =
 			Name = "ClubMemberRemoved",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBER_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
 			Name = "ClubMemberRoleUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBER_ROLE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "roleId", Type = "number", Nilable = false },
 			},
 		},
@@ -1224,16 +1238,18 @@ local Club =
 			Name = "ClubMemberUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBER_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 			},
 		},
 		{
 			Name = "ClubMembersUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_MEMBERS_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1243,6 +1259,7 @@ local Club =
 			Name = "ClubMessageAdded",
 			Type = "Event",
 			LiteralName = "CLUB_MESSAGE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1254,6 +1271,7 @@ local Club =
 			Name = "ClubMessageHistoryReceived",
 			Type = "Event",
 			LiteralName = "CLUB_MESSAGE_HISTORY_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1266,6 +1284,7 @@ local Club =
 			Name = "ClubMessageUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_MESSAGE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1277,6 +1296,7 @@ local Club =
 			Name = "ClubRemoved",
 			Type = "Event",
 			LiteralName = "CLUB_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1286,6 +1306,7 @@ local Club =
 			Name = "ClubRemovedMessage",
 			Type = "Event",
 			LiteralName = "CLUB_REMOVED_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubName", Type = "string", Nilable = false },
@@ -1296,6 +1317,7 @@ local Club =
 			Name = "ClubSelfMemberRoleUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_SELF_MEMBER_ROLE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1306,6 +1328,8 @@ local Club =
 			Name = "ClubStreamAdded",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_ADDED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1316,6 +1340,8 @@ local Club =
 			Name = "ClubStreamRemoved",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_REMOVED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1326,6 +1352,7 @@ local Club =
 			Name = "ClubStreamSubscribed",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_SUBSCRIBED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1336,6 +1363,7 @@ local Club =
 			Name = "ClubStreamUnsubscribed",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_UNSUBSCRIBED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1346,6 +1374,8 @@ local Club =
 			Name = "ClubStreamUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1356,6 +1386,7 @@ local Club =
 			Name = "ClubStreamsLoaded",
 			Type = "Event",
 			LiteralName = "CLUB_STREAMS_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1365,6 +1396,7 @@ local Club =
 			Name = "ClubTicketCreated",
 			Type = "Event",
 			LiteralName = "CLUB_TICKET_CREATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1375,6 +1407,7 @@ local Club =
 			Name = "ClubTicketReceived",
 			Type = "Event",
 			LiteralName = "CLUB_TICKET_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "ticket", Type = "string", Nilable = false },
@@ -1384,6 +1417,7 @@ local Club =
 			Name = "ClubTicketsReceived",
 			Type = "Event",
 			LiteralName = "CLUB_TICKETS_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1393,6 +1427,7 @@ local Club =
 			Name = "ClubUpdated",
 			Type = "Event",
 			LiteralName = "CLUB_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1402,11 +1437,14 @@ local Club =
 			Name = "InitialClubsLoaded",
 			Type = "Event",
 			LiteralName = "INITIAL_CLUBS_LOADED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StreamViewMarkerUpdated",
 			Type = "Event",
 			LiteralName = "STREAM_VIEW_MARKER_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
@@ -1644,7 +1682,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "priority", Type = "luaIndex", Nilable = false },
 				{ Name = "status", Type = "ClubInvitationCandidateStatus", Nilable = false },
@@ -1674,7 +1712,7 @@ local Club =
 			Fields =
 			{
 				{ Name = "isSelf", Type = "bool", Nilable = false },
-				{ Name = "memberId", Type = "number", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
@@ -1843,6 +1881,14 @@ local Club =
 				{ Name = "defaultStreamId", Type = "ClubStreamId", Nilable = true },
 				{ Name = "creator", Type = "ClubMemberInfo", Nilable = false },
 			},
+		},
+	},
+	Predicates =
+	{
+		{
+			Name = "RequiresClubsInitialized",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
 		},
 	},
 };

@@ -4,7 +4,7 @@ RaidInfoFrameMixin = {}
 RaidInstanceFrameMixin = {}
 
 function RaidParentFrameMixin:OnLoad()
-	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 end

@@ -20,7 +20,7 @@ function ScenarioDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:GetMap():RemoveAllPinsByTemplate("ScenarioPinTemplate");
 	if C_Scenario.IsInScenario() then
-		local scenarioIconInfo = C_Scenario.GetScenarioIconInfo(mapID);
+		local scenarioIconInfo = C_ScenarioInfo.GetScenarioIconInfo(mapID);
 		if scenarioIconInfo then
 			for i, info in ipairs(scenarioIconInfo) do
 				self:GetMap():AcquirePin("ScenarioPinTemplate", info);
@@ -99,7 +99,6 @@ function ScenarioPinMixin:OnLoad()
 end
 
 function ScenarioPinMixin:OnAcquired(info)
-	local x1, x2, y1, y2 = C_Minimap.GetObjectIconTextureCoords(info.index);
-	self.Icon:SetTexCoord(x1, x2, y1, y2);
+	self.Icon:SetAtlas(info.atlas, TextureKitConstants.UseAtlasSize);
 	self:SetPosition(info.x, info.y);
 end

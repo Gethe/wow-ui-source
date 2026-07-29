@@ -115,8 +115,8 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 
 	-- Set chat type to the appropriate remote text to speech type if enabled
 	if ( C_VoiceChat.IsSpeakForMeActive() ) then
-		self.editBox:SetAttribute("chatType", "VOICE_TEXT");
-		self.editBox:SetAttribute("stickyType", "VOICE_TEXT");
+		self.editBox:SetChatType("VOICE_TEXT");
+		self.editBox:SetStickyType("VOICE_TEXT");
 	end
 end
 

@@ -2,6 +2,7 @@ local Locale =
 {
 	Name = "Locale",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -77,6 +78,9 @@ local Locale =
 				{ Name = "localeName", Type = "cstring", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

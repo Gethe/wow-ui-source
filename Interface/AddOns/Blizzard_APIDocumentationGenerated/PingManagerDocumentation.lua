@@ -3,6 +3,7 @@ local PingManager =
 	Name = "PingManager",
 	Type = "System",
 	Namespace = "C_Ping",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,9 @@ local PingManager =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

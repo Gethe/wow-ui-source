@@ -35,6 +35,10 @@ function FlagsUtil.IsAnySet(bitMask, mask)
 	return bit.band(bitMask, mask) ~= 0;
 end
 
+function FlagsUtil.IsAnythingSet(bitMask)
+	return bitMask ~= 0;
+end
+
 function FlagsUtil.Combine(lhsFlagOrMask, rhsFlagOrMask, shouldSet)
 	if shouldSet then
 		return bit.bor(lhsFlagOrMask, rhsFlagOrMask);

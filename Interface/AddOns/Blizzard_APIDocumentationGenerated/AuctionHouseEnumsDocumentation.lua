@@ -134,6 +134,9 @@ local AuctionHouseEnums =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AuctionHouseEnums);

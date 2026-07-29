@@ -2,6 +2,7 @@ local SimpleBrowserAPI =
 {
 	Name = "SimpleBrowserAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -111,6 +112,9 @@ local SimpleBrowserAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

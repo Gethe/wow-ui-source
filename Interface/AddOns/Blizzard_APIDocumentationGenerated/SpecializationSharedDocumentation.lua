@@ -2,6 +2,7 @@ local SpecializationShared =
 {
 	Name = "SpecializationShared",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,15 @@ local SpecializationShared =
 			},
 		},
 		{
+			Name = "GetSpecializationSystem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "system", Type = "SpecializationSystem", Nilable = false },
+			},
+		},
+		{
 			Name = "HasLootSpecializations",
 			Type = "Function",
 
@@ -112,6 +122,9 @@ local SpecializationShared =
 				{ Name = "masterySpell2", Type = "number", Nilable = true },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

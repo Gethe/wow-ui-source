@@ -367,6 +367,7 @@ function GameDialogMixin:SetupDecorationFrames(dialogInfo)
 	self.CoverFrame:SetPoint("TOPLEFT", coverFrameParent, "TOPLEFT");
 	self.CoverFrame:SetPoint("BOTTOMRIGHT", coverFrameParent, "BOTTOMRIGHT");
 	self.CoverFrame:SetShown(dialogInfo.fullScreenCover);
+	self.CoverFrame:Init(dialogInfo.hideOnEscape);
 
 	self.Spinner:Hide();
 	self.DarkOverlay:Hide();
@@ -511,6 +512,11 @@ end
 
 function GameDialogMixin:GetEditBox()
 	return self.EditBox;
+end
+
+function GameDialogMixin:GetEditBoxText()
+	local editBox = self:GetEditBox();
+	return editBox and editBox:GetText() or "";
 end
 
 function GameDialogMixin:GetButton1()
@@ -721,6 +727,18 @@ end
 
 function GameDialogMixin:OnHyperlinkLeave(...)
 	StaticPopup_OnHyperlinkLeave(self, ...);
+end
+
+GameDialogCoverFrameMixin = {};
+
+function GameDialogCoverFrameMixin:Init(hideOnEscape)
+	self.hideOnEscape = hideOnEscape;
+end
+
+function GameDialogCoverFrameMixin:OnKeyDown(key)
+	if ( self.hideOnEscape and key == "ESCAPE" ) then
+		self:GetParent():Hide();
+	end
 end
 
 StaticPopupItemFrameMixin = {};

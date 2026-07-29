@@ -24,7 +24,7 @@ function PetStable_OnLoad(self)
 	PetStableModelScene.ControlFrame:SetModelScene(PetStableModelScene);
 
 	-- Set portrait
-	SetPortraitToTexture(PetStableFramePortrait, "Interface\\ICONS\\ability_physical_taunt");
+	PetStableFramePortrait:SetTexture("Interface\\ICONS\\ability_physical_taunt");
 
 	ButtonFrameTemplate_HideButtonBar(self);
 	self.Inset:ClearAllPoints();

@@ -530,6 +530,21 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "SleevesGeoRange",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "SleevesGeoRange", EnumValue = 0 },
+				{ Name = "Default", Type = "SleevesGeoRange", EnumValue = 1 },
+				{ Name = "Flared", Type = "SleevesGeoRange", EnumValue = 2 },
+				{ Name = "Puffy", Type = "SleevesGeoRange", EnumValue = 3 },
+				{ Name = "PandaCollar", Type = "SleevesGeoRange", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "SlotRegion",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -564,9 +579,9 @@ local ItemConstants =
 		{
 			Name = "SubcontainerType",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 41,
 			MinValue = 0,
-			MaxValue = 39,
+			MaxValue = 40,
 			Fields =
 			{
 				{ Name = "Bag", Type = "SubcontainerType", EnumValue = 0 },
@@ -609,6 +624,7 @@ local ItemConstants =
 				{ Name = "CurrencyTransfer", Type = "SubcontainerType", EnumValue = 37 },
 				{ Name = "CharacterBankTabs", Type = "SubcontainerType", EnumValue = 38 },
 				{ Name = "HousingDecorConversion", Type = "SubcontainerType", EnumValue = 39 },
+				{ Name = "Reserved", Type = "SubcontainerType", EnumValue = 40 },
 			},
 		},
 		{
@@ -674,9 +690,9 @@ local ItemConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = Bearclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = Catclaw },
-				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = Obsolete3 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC1H", Type = "ItemWeaponSubclass", Value = "Bearclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_EXOTIC2H", Type = "ItemWeaponSubclass", Value = "Catclaw" },
+				{ Name = "ITEM_WEAPON_SUBCLASS_SPEAR", Type = "ItemWeaponSubclass", Value = "Obsolete3" },
 			},
 		},
 		{
@@ -685,8 +701,25 @@ local ItemConstants =
 			Values =
 			{
 				{ Name = "ITEM_WEAPON_SUBCLASS_NONE", Type = "ItemWeaponSubclass", Value = -1 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_IS2HWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_USES2HANDS_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTWOHANDEDRANGEDWEAPON_MASK", Type = "number", Value = 0 },
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISMAINHANDWEAPON_NONRANGED_MASK", Type = "number", Value = 0 },
 			},
 		},
+		{
+			Name = "ITEM_WEAPON_SUBCLASSConstants_PreMists",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "ITEM_WEAPON_SUBCLASS_ISTITANSGRIPWEAPON_MASK", Type = "number", Value = 0 },
+			},
+		},
+	},
+	Predicates =
+	{
 	},
 };
 

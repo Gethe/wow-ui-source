@@ -43,6 +43,9 @@ local QuestRewards =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(QuestRewards);

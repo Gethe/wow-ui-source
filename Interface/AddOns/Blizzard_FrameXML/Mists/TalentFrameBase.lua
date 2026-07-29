@@ -1,8 +1,4 @@
 MAX_NUM_TALENT_TIERS = 6;
-NUM_TALENT_COLUMNS = 3;
-
-
-
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 4;
 MAX_NUM_TALENTS = 18;
@@ -18,7 +14,7 @@ function TalentFrame_Clear(TalentFrame)
 	end
 
 	for tier=1, MAX_NUM_TALENT_TIERS do
-		for column=1, NUM_TALENT_COLUMNS do
+		for column=1, Constants.TalentConsts.NumTalentColumns do
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			if(button ~= nil) then
 				SetDesaturation(button.icon, true);
@@ -44,7 +40,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	if(TalentFrame.bg ~= nil) then
 		TalentFrame.bg:SetDesaturated(disable);
 	end
-	
+
 	if (not TalentFrame.talentInfo) then
 		TalentFrame.talentInfo = {};
 	end
@@ -53,18 +49,18 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	for tier=1, MAX_NUM_TALENT_TIERS do
 		local talentRow = TalentFrame["tier"..tier];
 		local rowAvailable = true;
-		
+
 		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
 		-- Skip updating rows that we recently selected a talent for but have not received a server response
 		if (TalentFrame.inspect or not TalentFrame.talentInfo[tier] or
 			(selectedTalent ~= 0 and TalentFrame.talentInfo[tier] == selectedTalent)) then
-			
+
 			if (not TalentFrame.inspect and selectedTalent ~= 0) then
 				TalentFrame.talentInfo[tier] = nil;
 			end
-			
+
 			local restartGlow = false;
-			for column=1, NUM_TALENT_COLUMNS do
+			for column=1, Constants.TalentConsts.NumTalentColumns do
 				-- Set the button info
 				local talentInfoQuery = {};
 				talentInfoQuery.tier = tier;
@@ -95,7 +91,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						end
 					end
 					button.shouldGlow = (talentInfo.available and not talentInfo.selected) and talentUnit == "player";
-					
+
 					if( TalentFrame.inspect ) then
 						SetDesaturation(button.icon, not talentInfo.selected);
 						button.border:SetShown(talentInfo.selected);
@@ -108,13 +104,13 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 							numTalentSelections = numTalentSelections + 1;
 						end
 					end
-					
+
 					button:Show();
 				elseif (button) then
 					button:Hide();
 				end
 			end
-			
+
 			-- do tier level number after every row
 			if(talentRow.level ~= nil) then
 				talentRow.level:SetText(tierUnlockLevel);

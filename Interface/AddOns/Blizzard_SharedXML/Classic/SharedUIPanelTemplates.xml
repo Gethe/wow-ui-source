@@ -114,7 +114,7 @@
 	</Texture>
 	<Texture name="UI-Frame-TopLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
 		<Size x="33" y="33"/>
-		<TexCoords left="0.63281250" right="0.88281250" top="0.28125000" bottom="0.53125000"/>
+		<TexCoords left="0.63281250" right="0.89062500" top="0.28125000" bottom="0.5390625"/>
 	</Texture>
 	<Texture name="UI-Frame-InnerTopLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
 		<Size x="6" y="6"/>
@@ -169,7 +169,7 @@
 		<TexCoords left="0.34375000" right="0.41406250" top="0.63281250" bottom="0.74218750"/>
 	</Texture>
 
-	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
+	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>
@@ -399,15 +399,15 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentPortrait" parentKey="portrait">
-							<Size x="62" y="62"/>
+							<Size x="66" y="66"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="7" />
+								<Anchor point="TOPLEFT" x="-10" y="10" />
 							</Anchors>
 						</Texture>
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="-2"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-5" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="4" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-4" y="4"/>
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="portrait"/>
@@ -437,8 +437,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="PortraitFrameTemplateNoCloseButton" inherits="PortraitFrameBaseTemplate" virtual="true" mixin="PortraitFrameTemplateMixin">
-		<Size x="338" y="424"/>
+	<Frame name="PortraitFrameTexturedBaseTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
 				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
@@ -454,44 +453,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="61" y="61"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="8" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" inherits="UI-Frame-Portrait">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-14" y="11"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" inherits="UI-Frame-TopCornerRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-5"/>
-						<Anchor point="LEFT" x="60"/>
-						<Anchor point="RIGHT" x="-60"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
@@ -499,161 +460,81 @@
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" inherits="UI-Frame-BotCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="_UI-Frame-Bot">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="!UI-Frame-RightTile">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
+		<Frames>
+			<Frame parentKey="BorderTexture" frameLevel="500" setAllPoints="true">
+				<!-- For Classic, these are the border textures that go around the edge of a portrait frame.
+					 Mainline uses a nine-slice in PortraitFrameBaseTemplate instead, so the setups differ here.
+					 For Classic, we don't have a nine-slice though, so we'll use individual textures,
+					 but still keep them at frameLevel="500" so that border, portrait, and content all layer correctly. -->
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" inherits="UI-Frame-Portrait">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-14" y="11"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" inherits="UI-Frame-TopCornerRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
+								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" inherits="UI-Frame-BotCornerLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
+
+	<Frame name="PortraitFrameTemplateNoCloseButton" inherits="PortraitFrameTexturedBaseTemplate" virtual="true"/>
+	
 	<Frame name="PortraitFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" virtual="true">
 		<Frames>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 						<Offset x="4" y="5"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="UIPanelCloseButton_OnClick" />
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
-
-	<Frame name="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
-		<Size x="338" y="424"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-18"/>
-						<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="53" y="-2"/>
-						<Anchor point="TOPRIGHT" x="-22" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="61" y="61"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="8" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" parentKey="PortraitFrame" atlas="UI-Frame-Portrait-HiRes">
-					<Size x="78" y="80"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-9" y="13"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" atlas="UI-Frame-TopCornerRight-HiRes">
-					<Size x="52.666667" y="46"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="2" y="1.6666667"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TittleTile-HiRes">
-					<Size x="0" y="23.333333"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-11.333333"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBg" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeftCorner" parentKey="BotLeftCorner" atlas="UI-Frame-BotCornerLeft-HiRes">
-					<Size x="15" y="16.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-1.666667" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" parentKey="BotRightCorner" atlas="UI-Frame-BotCornerRight-HiRes">
-					<Size x="15.666667" y="16.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" parentKey="BottomBorder" atlas="_UI-Frame-Bot-HiRes">
-					<Size x="0" y="5.333333"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" parentKey="LeftBorder" atlas="!UI-Frame-LeftTile-HiRes" vertTile="true">
-					<Size x="5.333333" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="7.333333" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" parentKey="RightBorder" atlas="!UI-Frame-RightTile-HiRes">
-					<Size x="5.666667" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-	<Frame name="PortraitFrameTemplate-HiRes" inherits="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
-		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
-				<Size x="31" y="31"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="5.2" y="5.8"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -710,39 +591,6 @@
 					</Anchors>
 				</Texture>
 				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-60" />
-					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-
-
-	<Frame name="ButtonFrameTemplate-HighRes" inherits="PortraitFrameTemplate-HiRes" virtual="true">
-		<Layers>
-			<!-- HiRes versions of these (bottom corners and border) don't exist yet, leaving these hidden for now -->
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>

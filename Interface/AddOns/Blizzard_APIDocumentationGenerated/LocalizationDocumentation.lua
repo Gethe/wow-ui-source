@@ -2,9 +2,55 @@ local Localization =
 {
 	Name = "Localization",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "AbbreviateLargeNumbers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+				{ Name = "options", Type = "NumberAbbrevOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AbbreviateNumbers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+				{ Name = "options", Type = "NumberAbbrevOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateAbbreviateConfig",
+			Type = "Function",
+			RequiresRestrictedAbbreviationBreakpoints = true,
+
+			Arguments =
+			{
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = false },
+			},
+		},
 		{
 			Name = "DeclineName",
 			Type = "Function",
@@ -19,6 +65,21 @@ local Localization =
 			Returns =
 			{
 				{ Name = "declinedNames", Type = "string", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "GetDefaultAbbreviationBreakpoints",
+			Type = "Function",
+			Namespace = "C_StringUtil",
+
+			Arguments =
+			{
+				{ Name = "locale", Type = "WowLocale", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "breakpoints", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 		},
 		{
@@ -61,6 +122,19 @@ local Localization =
 	},
 
 	Tables =
+	{
+		{
+			Name = "NumberAbbrevOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = true, Documentation = { "Order these from largest to smallest." } },
+				{ Name = "locale", Type = "cstring", Nilable = true, Documentation = { "Locale controls whether standard asian abbreviation data will be used along with a small change in behavior for large number abbreviation when fractionDivisor is greater than zero." } },
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
+			},
+		},
+	},
+	Predicates =
 	{
 	},
 };

@@ -17,6 +17,9 @@ local AzeriteConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AzeriteConstants);

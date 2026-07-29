@@ -14,7 +14,7 @@ local function RegisterMinimumCharacterNameSize(category)
 
 	local function CanModifySetting()
 		return not C_Glue.IsOnGlueScreen() and C_CVar.GetCVar(cvarName) ~= nil;
-	end	
+	end
 
 	local function GetValue()
 		if CanModifySetting() then
@@ -53,10 +53,10 @@ local function Register()
 	-- Motion Sickness
 	do
 		local function GetValue()
-			return not GetCVarBool("CameraKeepCharacterCentered") 
+			return not GetCVarBool("CameraKeepCharacterCentered")
 				and GetCVarBool("CameraReduceUnexpectedMovement");
 		end
-		
+
 		local function SetValue(value)
 			SetCVar("CameraKeepCharacterCentered", not value);
 			SetCVar("CameraReduceUnexpectedMovement", value);
@@ -74,7 +74,7 @@ local function Register()
 		local INTENSITY_NONE = 0;
 		local INTENSITY_REDUCED = .25;
 		local INTENSITY_FULL = 1;
-	
+
 		local function GetValue()
 			local shakeStrengthCamera = tonumber(GetCVar("ShakeStrengthCamera"))
 			local shakeStrengthUI = tonumber(GetCVar("ShakeStrengthUI"));
@@ -85,7 +85,7 @@ local function Register()
 			end
 			return 3;
 		end
-		
+
 		local function SetValue(value)
 			if value == 1 then
 				SetCVar("ShakeStrengthCamera", INTENSITY_NONE);
@@ -98,7 +98,7 @@ local function Register()
 				SetCVar("ShakeStrengthUI", INTENSITY_REDUCED);
 			end
 		end
-	
+
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(1, SHAKE_INTENSITY_NONE);
@@ -107,7 +107,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		local defaultValue = 3;
+		local defaultValue = 2;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS_SHAKE",
 			Settings.VarType.Number, ADJUST_MOTION_SICKNESS_SHAKE, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADJUST_MOTION_SICKNESS_SHAKE);
@@ -160,12 +160,12 @@ local function Register()
 		local function GetValue()
 			return GetCVarBool("SoftTargetTooltipEnemy") and GetCVarBool("SoftTargetTooltipInteract");
 		end
-		
+
 		local function SetValue(value)
 			SetCVar("SoftTargetTooltipEnemy", value);
 			SetCVar("SoftTargetTooltipInteract", value);
 		end
-		
+
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP",
 			Settings.VarType.Boolean, TARGET_TOOLTIP_OPTION, defaultValue, GetValue, SetValue);
@@ -187,7 +187,7 @@ local function Register()
 				return 1;
 			end
 		end
-		
+
 		local function SetValue(value)
 			if value == 1 then
 				SetCVar("SoftTargetIconEnemy",			"0");
@@ -206,7 +206,7 @@ local function Register()
 				SetCVar("SoftTargetLowPriorityIcons",	"0");
 			end
 		end
-	
+
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(1, INTERACT_ICONS_DEFAULT);
@@ -221,7 +221,7 @@ local function Register()
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);
 	end
 
-	-- Arachnophobia 
+	-- Arachnophobia
 	do
 		AccessibilityOverrides.CreateArachnophobiaSetting(category, layout);
 	end

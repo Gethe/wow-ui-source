@@ -2,7 +2,9 @@ CVarCallbackRegistry:SetCVarCachable("useClassicGuildUI");
 
 DISPLAYED_COMMUNITIES_INVITATIONS = DISPLAYED_COMMUNITIES_INVITATIONS or {};
 
-PERFORMANCEBAR_UPDATE_INTERVAL = 1;
+local PERFORMANCEBAR_UPDATE_INTERVAL = 1;
+local PERFORMANCEBAR_LOW_LATENCY = 300;
+local PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 
 -- Leaving in some of the original alert pane priorities (but commented out) so we don't have to go find them again.
 -- These came from SVN revision 401288.
@@ -991,4 +993,102 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 		self.disabledTooltip = nil;
 		self:Enable();
 	end
+end
+
+MainMenuMicroButtonMixin = {};
+
+function MainMenuMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "MainMenu");
+	self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+	self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
+
+	self.hover = nil;
+	self.updateInterval = 0;
+end
+
+function MainMenuMicroButtonMixin:OnUpdate(elapsed)
+	if (self.updateInterval > 0) then
+		self.updateInterval = self.updateInterval - elapsed;
+	else
+		self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+		local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+		local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+
+		if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+			self.PerformanceIndicator:SetVertexColor(1, 0, 0);
+		elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+			self.PerformanceIndicator:SetVertexColor(1, 1, 0);
+		else
+			self.PerformanceIndicator:SetVertexColor(0, 1, 0);
+		end
+		if (self.hover) then
+			MainMenuBarPerformanceBarFrame_OnEnter(self);
+		end
+	end
+end
+
+function MainMenuMicroButtonMixin:OnMouseDown()
+	if ( self.down ) then
+		self.down = nil; -- I'm pretty sure none of this should ever get run.
+		if ( not GameMenuFrame:IsShown() ) then
+			CloseMenus();
+			CloseAllWindows()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+			ShowUIPanel(GameMenuFrame);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+			HideUIPanel(GameMenuFrame);
+			MainMenuMicroButton_SetNormal();
+		end
+		return;
+	end
+
+	MainMenuMicroButton_SetPushed();
+	self.down = 1;
+end
+
+function MainMenuMicroButtonMixin:OnMouseUp()
+	if ( self.down ) then
+		self.down = nil;
+		if ( self:IsMouseOver() ) then
+			if ( not GameMenuFrame:IsShown() ) then
+				CloseMenus();
+				CloseAllWindows()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+				ShowUIPanel(GameMenuFrame);
+			else
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+				HideUIPanel(GameMenuFrame);
+				MainMenuMicroButton_SetNormal();
+			end
+		end
+		UpdateMicroButtons();
+		return;
+	end
+	if ( self:GetButtonState() == "NORMAL" ) then
+		MainMenuMicroButton_SetPushed();
+		self.down = 1;
+	else
+		MainMenuMicroButton_SetNormal();
+		self.down = 1;
+	end
+end
+
+function MainMenuMicroButtonMixin:OnEnter()
+	self.hover = 1;
+	self.updateInterval = 0;
+end
+
+function MainMenuMicroButtonMixin:OnLeave()
+	self.hover = nil;
+	GameTooltip:Hide();
+end
+
+function MainMenuMicroButtonMixin:OnEvent()
+	self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+end
+
+function MainMenuMicroButtonMixin:UpdateNotificationIcon()
+	-- Classic doesnt have this notification icon
+	return;
 end

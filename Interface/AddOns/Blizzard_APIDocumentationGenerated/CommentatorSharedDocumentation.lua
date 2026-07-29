@@ -18,6 +18,19 @@ local CommentatorShared =
 			},
 		},
 	},
+	Predicates =
+	{
+		{
+			Name = "RequiresActiveCommentator",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresCommentator",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
 };
 
 APIDocumentation:AddDocumentationTable(CommentatorShared);

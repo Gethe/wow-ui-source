@@ -16,6 +16,9 @@ local SharedScriptObjectUnitPositionFrame =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(SharedScriptObjectUnitPositionFrame);

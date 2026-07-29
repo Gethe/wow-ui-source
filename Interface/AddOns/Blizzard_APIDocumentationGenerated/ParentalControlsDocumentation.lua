@@ -2,6 +2,7 @@ local ParentalControls =
 {
 	Name = "ParentalControls",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,9 @@ local ParentalControls =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

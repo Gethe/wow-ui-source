@@ -80,13 +80,19 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="PriestBarFrame" parent="PlayerFrame" toplevel="true" hidden="true" enableMouse="true" mixin="PriestBarMixin">
+	<Frame name="PriestBarFrame" parent="PlayerFrame" inherits="PlayerFrameBottomManagedFrameTemplate" toplevel="true" hidden="true" enableMouse="true" mixin="PriestBarMixin">
 		<Size>
 		  <AbsDimension x="159" y="54"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="53" y="37"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="35" y="33"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="leftPadding" value="50" type="number"/>
+			<KeyValue key="topPadding" value="3" type="number"/>
+			<KeyValue key="bottomPadding" value="-20" type="number"/>
+		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="28" right="33" top="2" bottom="22"/>
 		</HitRectInsets>

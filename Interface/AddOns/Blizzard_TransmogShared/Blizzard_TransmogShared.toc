@@ -1,0 +1,5 @@
+## Title: Blizzard_TransmogShared
+## LoadOnDemand: 1
+## AllowLoad: Game
+## Dependencies: Blizzard_StaticPopup_Game, Blizzard_GameTooltip
+Blizzard_TransmogShared.lua

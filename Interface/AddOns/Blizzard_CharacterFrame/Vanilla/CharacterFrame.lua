@@ -63,8 +63,6 @@ function CharacterFrameTab_OnClick(self, button)
 end
 
 function CharacterFrame_OnLoad (self)
-	PortraitFrameTemplateMixin.OnLoad(self);
-
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");

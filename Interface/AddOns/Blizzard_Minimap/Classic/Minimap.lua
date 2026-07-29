@@ -12,13 +12,14 @@ TOWNSFOLK = 2;
 
 MAX_BATTLEFIELD_QUEUES = 3;
 
+local PlaySound = PlaySound;
 local BATTLEFIELD_FRAME_FADE_TIME = 0.15;
 
 local IS_GUILD_GROUP = false;
 
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
-	self:RegisterEvent("MINIMAP_PING");
+	self:RegisterEventCallback("MINIMAP_PING", function() PlaySound(SOUNDKIT.MAP_PING); end);
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
@@ -94,9 +95,6 @@ end
 function Minimap_OnEvent(self, event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
-	elseif ( event == "MINIMAP_PING" ) then
-		local arg1, arg2, arg3 = ...;
-		Minimap_SetPing(arg2, arg3, 1);
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
 		MinimapZoomIn:Enable();
 		MinimapZoomOut:Enable();
@@ -108,12 +106,6 @@ function Minimap_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		Minimap_Update();
-	end
-end
-
-function Minimap_SetPing(x, y, playSound)
-	if ( playSound ) then
-		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 

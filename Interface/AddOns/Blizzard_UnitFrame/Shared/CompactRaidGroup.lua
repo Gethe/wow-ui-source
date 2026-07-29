@@ -1,9 +1,3 @@
-CompactRaidGroupTypeEnum = {
-	Raid = Enum.EditModeUnitFrameSystemIndices.Raid,
-	Party = Enum.EditModeUnitFrameSystemIndices.Party,
-	Arena = Enum.EditModeUnitFrameSystemIndices.Arena,
-};
-
 function CompactRaidGroup_OnLoad(self)
 	self.title:Disable();
 
@@ -79,7 +73,7 @@ function CompactRaidGroup_UpdateUnits(frame)
 				frameIndex = frameIndex + 1;
 			end
 		end
-		
+
 		local forcedShown = EditModeManagerFrame:AreRaidFramesForcedShown();
 
 		for i=frameIndex, MEMBERS_PER_RAID_GROUP do
@@ -94,8 +88,8 @@ end
 
 local function SetupBorderFrameAnchor(groupFrame, topUnitFrame, bottomUnitFrame)
 	groupFrame.borderFrame:ClearAllPoints();
-	groupFrame.borderFrame:SetPoint("TOPLEFT", topUnitFrame, "TOPLEFT", -3, 5);
-	groupFrame.borderFrame:SetPoint("BOTTOMRIGHT", bottomUnitFrame, "BOTTOMRIGHT", 8, -5);
+	groupFrame.borderFrame:SetPoint("TOPLEFT", topUnitFrame, "TOPLEFT", -2, 2);
+	groupFrame.borderFrame:SetPoint("BOTTOMRIGHT", bottomUnitFrame, "BOTTOMRIGHT", 2, -3);
 end
 
 function CompactRaidGroup_UpdateLayout(frame)
@@ -143,7 +137,9 @@ function CompactRaidGroup_UpdateLayout(frame)
 		for i=2, MEMBERS_PER_RAID_GROUP do
 			local unitFrame = _G[frame:GetName().."Member"..i];
 			unitFrame:ClearAllPoints();
-			unitFrame:SetPoint("TOP", _G[frame:GetName().."Member"..(i-1)], "BOTTOM", 0, 0);
+
+			local yOffset = (frame.groupType == CompactRaidGroupTypeEnum.Arena) and -27 or 0;
+			unitFrame:SetPoint("TOP", _G[frame:GetName().."Member"..(i-1)], "BOTTOM", 0, yOffset);
 
 			if unitFrame:IsShown() or i <= frame.minUnitFrames then
 				totalHeight = totalHeight + unitFrame:GetHeight();

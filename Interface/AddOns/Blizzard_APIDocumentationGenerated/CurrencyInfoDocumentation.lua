@@ -3,6 +3,7 @@ local CurrencyInfo =
 	Name = "CurrencySystem",
 	Type = "System",
 	Namespace = "C_CurrencyInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -149,11 +150,13 @@ local CurrencyInfo =
 			Name = "AccountCharacterCurrencyDataReceived",
 			Type = "Event",
 			LiteralName = "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CurrencyDisplayUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_DISPLAY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currencyType", Type = "number", Nilable = true },
@@ -167,6 +170,7 @@ local CurrencyInfo =
 			Name = "PlayerMoney",
 			Type = "Event",
 			LiteralName = "PLAYER_MONEY",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -227,6 +231,9 @@ local CurrencyInfo =
 				{ Name = "childCategories", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

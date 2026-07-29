@@ -69,6 +69,12 @@ function ObjectPoolBaseMixin:Acquire()
 	return object, new;
 end
 
+function ObjectPoolBaseMixin:CheckAllowReleaseObject(object)
+	-- Override in a derived mixin if there's any conditional circumstances
+	-- to prevent releasing an object (and probably assert, too).
+	return true;
+end
+
 function ObjectPoolBaseMixin:Release(object, canFailToFindObject)
 	local active = self:IsActive(object);
 
@@ -81,6 +87,10 @@ function ObjectPoolBaseMixin:Release(object, canFailToFindObject)
 	]]--
 	if not canFailToFindObject then
 		assertsafe(active, GetObjectIsInvalidMsg, object, self);
+	end
+
+	if not self:CheckAllowReleaseObject(object) then
+		return false;
 	end
 
 	if active then
@@ -250,6 +260,23 @@ end
 
 function SecureObjectPoolMixin:GetNumActive()
 	return self.activeObjectCount:GetValue();
+end
+
+function SecureObjectPoolMixin:CheckAllowReleaseObject(object)
+	-- We don't want to allow secret values to be released into secure pools
+	-- because of internal assertions in the SecureStack container that
+	-- disallow secret values - and because if one secret object enters a
+	-- pool, all future acquisitions end up being secret too.
+	--
+	-- This is not applied to unsecured pool variants as those aren't intended
+	-- to be used for sharing between tainted and untainted code.
+
+	if issecretvalue(object) then
+		assertsafe(false, "attempted to release a secret value into a pool: %s", tostring(object));
+		return false;
+	end
+
+	return true;
 end
 
 local ObjectPoolProxyMixin;
@@ -443,7 +470,7 @@ end
 function SecurePoolCollectionMixin:Release(object)
 	local canFailToFindObject = true;
 	for poolKey, pool in self.pools:Enumerate() do
-		if pool:Release(object, canFailToFindObject) then
+		if securecallmethod(pool, "Release", object, canFailToFindObject) then
 			return;
 		end
 	end
@@ -492,6 +519,11 @@ end
 function Pool_HideAndClearAnchors(pool, region)
 	region:Hide();
 	region:ClearAllPoints();
+end
+
+function Pool_HideAndSetToDefaults(pool, region)
+	region:SetToDefaults();
+	region:Hide();
 end
 
 local function CreateSecureObjectPoolInstance(createFunc, resetFunc, capacity)
@@ -829,3 +861,6 @@ CreateActorPool = CreateSecureActorPool;
 CreateFramePoolCollection = CreateSecureFramePoolCollection;
 CreateFontStringPoolCollection = CreateSecureFontStringPoolCollection;
 CreateMaskTexturePool = CreateSecureMaskTexturePool;
+
+-- Script objects created from this file should have their source location set to the calling function, rather than generic Pools.lua internals
+AddSourceLocationExclude("Pools.lua");

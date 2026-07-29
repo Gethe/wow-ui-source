@@ -11,6 +11,10 @@ function TemplateInfoCacheMixin:SetInfoAddedCallback(callback)
 	self.infoAddedCallback = callback;
 end
 
+function TemplateInfoCacheMixin:FlushTemplateInfos()
+	self.templateInfos = {};
+end
+
 function TemplateInfoCacheMixin:GetTemplateInfo(frameTemplate)
 	local info = self.templateInfos[frameTemplate];
 	if info then

@@ -434,8 +434,13 @@ function UnitPopupWhisperButtonMixin:OnClick(contextData)
 		local playerLocation = contextData.playerLocation;
 		if playerLocation then
 			isBNetAccount = playerLocation and playerLocation:IsBattleNetGUID();
+		end
 	end
-end
+
+	local unit = contextData.unit;
+	if unit and not UnitIsHumanPlayer(unit) then
+		return;
+	end
 
 	if isBNetAccount then
 		ChatFrameUtil.SendBNetTell(contextData.name);
@@ -447,7 +452,7 @@ end
 
 function UnitPopupWhisperButtonMixin:IsEnabled(contextData)
 	local unit = contextData.unit;
-	return not unit or UnitIsConnected(unit);
+	return not unit or (UnitIsConnected(unit) and UnitIsHumanPlayer(unit));
 end
 
 UnitPopupInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -537,7 +542,7 @@ end
 function UnitPopupUninviteButtonMixin:OnClick(contextData)
 	local exactMatch = true;
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	UninviteUnit(fullName, nil, exactMatch);
+	C_PartyInfo.UninviteUnit(fullName, nil, exactMatch);
 end
 
 UnitPopupFriendsButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -794,7 +799,7 @@ function UnitPopupVoteToKickButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	local reason = nil;
 	local exactMatch = true;
-	UninviteUnit(fullName, reason, exactMatch);
+	C_PartyInfo.UninviteUnit(fullName, reason, exactMatch);
 end
 
 UnitPopupPromoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -825,7 +830,7 @@ function UnitPopupPromoteButtonMixin:IsEnabled(contextData)
 end
 
 function UnitPopupPromoteButtonMixin:OnClick(contextData)
-	PromoteToLeader(contextData.unit, 1);
+	C_PartyInfo.PromoteToLeader(contextData.unit, true);
 end
 
 UnitPopupPromoteGuideButtonMixin = CreateFromMixins(UnitPopupPromoteButtonMixin);
@@ -926,8 +931,8 @@ function UnitPopupPartyInstanceLeaveButtonMixin:GetText(contextData)
 	return C_PartyInfo.IsPartyWalkIn() and INSTANCE_WALK_IN_LEAVE or INSTANCE_PARTY_LEAVE;
 end
 
--- Overwritten in UnitPopupButtons.lua
 function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
+	return PartyUtil.CanLeaveInstance();
 end
 
 function UnitPopupPartyInstanceLeaveButtonMixin:IsEnabled(contextData)
@@ -980,11 +985,13 @@ function UnitPopupPartyInstanceAbandonButtonMixin:GetTooltipText()
 	if timeLeft then
 		local cooldownTimeLeftText = PartyInstanceAbandonFormatter:Format(timeLeft);
 		return VOTE_TO_ABANDON_ON_COOLDOWN:format(cooldownTimeLeftText);
-	elseif IsEncounterInProgress() then
-		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
-	else
-		return nil;
 	end
+
+	if C_InstanceEncounter.IsEncounterInProgress() then
+		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
+	end
+
+	return nil;
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1472,7 +1479,7 @@ function UnitPopupDungeonDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:GetDifficultyID()
-	return 1;
+	return DifficultyUtil.ID.DungeonNormal;
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:IsSupported()
@@ -1503,7 +1510,7 @@ function UnitPopupDungeonDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupDungeonDifficulty2ButtonMixin:GetDifficultyID()
-	return 2;
+	return DifficultyUtil.ID.DungeonHeroic;
 end
 
 UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
@@ -1513,7 +1520,7 @@ function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupDungeonDifficulty3ButtonMixin:GetDifficultyID()
-	return 8;
+	return DifficultyUtil.ID.DungeonChallenge;
 end
 
 -- Raid Difficulty Buttons
@@ -1562,7 +1569,7 @@ function UnitPopupRaidDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupRaidDifficulty1ButtonMixin:GetDifficultyID()
-	return 14;
+	return DifficultyUtil.ID.PrimaryRaidNormal;
 end
 
 UnitPopupRaidDifficulty2ButtonMixin = CreateFromMixins(UnitPopupRaidDifficulty1ButtonMixin);
@@ -1572,7 +1579,7 @@ function UnitPopupRaidDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupRaidDifficulty2ButtonMixin:GetDifficultyID()
-	return 15;
+	return DifficultyUtil.ID.PrimaryRaidHeroic;
 end
 
 function UnitPopupRaidDifficulty2ButtonMixin:IsEnabled(contextData)
@@ -1594,7 +1601,7 @@ function UnitPopupRaidDifficulty3ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupRaidDifficulty3ButtonMixin:GetDifficultyID()
-	return 16;
+	return DifficultyUtil.ID.PrimaryRaidMythic;
 end
 
 function UnitPopupRaidDifficulty3ButtonMixin:IsEnabled(contextData)
@@ -1621,7 +1628,7 @@ function UnitPopupLegacyRaidDifficulty1ButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupLegacyRaidDifficulty1ButtonMixin:GetDifficultyID()
-	return 3;
+	return DifficultyUtil.ID.Raid10Normal;
 end
 
 function UnitPopupLegacyRaidDifficulty1ButtonMixin:IsChecked(contextData)
@@ -1695,7 +1702,7 @@ function UnitPopupLegacyRaidDifficulty2ButtonMixin:GetText(contextData)
 end
 
 function UnitPopupLegacyRaidDifficulty2ButtonMixin:GetDifficultyID()
-	return 4;
+	return DifficultyUtil.ID.Raid25Normal;
 end
 
 UnitPopupPvpFlagButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1909,7 +1916,7 @@ end
 
 function UnitPopupSetRaidLeaderButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	PromoteToLeader(fullName, true)
+	C_PartyInfo.PromoteToLeader(fullName, true)
 end
 
 UnitPopupSetRaidAssistButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1936,7 +1943,7 @@ end
 
 function UnitPopupSetRaidAssistButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	PromoteToAssistant(fullName, true);
+	C_PartyInfo.PromoteToAssistant(fullName, true);
 end
 
 UnitPopupSetRaidMainTankButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2033,7 +2040,7 @@ end
 function UnitPopupSetRaidDemoteButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	if UnitIsGroupLeader("player") and UnitIsGroupAssistant(contextData.unit) then
-		DemoteAssistant(fullName, true);
+		C_PartyInfo.DemoteAssistant(fullName, true);
 	end
 
 	if GetPartyAssignment("MAINTANK", fullName, true) then
@@ -2089,7 +2096,7 @@ end
 function UnitPopupSetRaidRemoveButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	local reason = nil;
-	UninviteUnit(fullName, reason, true);
+	C_PartyInfo.UninviteUnit(fullName, reason, true);
 end
 
 UnitPopupPvpReportAfkButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2416,10 +2423,6 @@ function UnitPopupRaidTargetBaseMixin:OnClick(contextData)
 	return MenuResponse.Close;
 end
 
-function UnitPopupRaidTargetBaseMixin:GetTextureCoords()
-	return nil;
-end
-
 function UnitPopupRaidTargetBaseMixin:GetIcon()
 	return nil;
 end
@@ -2437,9 +2440,13 @@ function UnitPopupRaidTargetBaseMixin:CreateMenuDescription(rootDescription, con
 		rightTexture:SetPoint("RIGHT");
 		rightTexture:SetSize(16, 16);
 		
-		local l, r, t, b = self:GetTextureCoords();
-		rightTexture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons");
-		rightTexture:SetTexCoord(l, r, t, b);
+		local raidTargetIconIndex = self:GetRaidTargetIndex();
+		if raidTargetIconIndex > 0 then
+			rightTexture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons");
+			rightTexture:SetSpriteSheetCell(raidTargetIconIndex, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
+		else
+			rightTexture:SetTexture("");
+		end
 
 		local fontString = button.fontString;
 		fontString:SetPoint("RIGHT", rightTexture, "LEFT");
@@ -2476,10 +2483,6 @@ function UnitPopupRaidTarget1ButtonMixin:GetRaidTargetIndex()
 	return 1;
 end
 
-function UnitPopupRaidTarget1ButtonMixin:GetTextureCoords()
-	return 0, .25, 0, .25;
-end
-
 function UnitPopupRaidTarget1ButtonMixin:GetColor()
 	return 1, .92, 0;
 end
@@ -2492,10 +2495,6 @@ end
 
 function UnitPopupRaidTarget2ButtonMixin:GetRaidTargetIndex()
 	return 2;
-end
-
-function UnitPopupRaidTarget2ButtonMixin:GetTextureCoords()
-	return .25, .5, 0, .25;
 end
 
 function UnitPopupRaidTarget2ButtonMixin:GetColor()
@@ -2512,10 +2511,6 @@ function UnitPopupRaidTarget3ButtonMixin:GetRaidTargetIndex()
 	return 3;
 end
 
-function UnitPopupRaidTarget3ButtonMixin:GetTextureCoords()
-	return .5, .75, 0, .25;
-end
-
 function UnitPopupRaidTarget3ButtonMixin:GetColor()
 	return .83, .22, .9;
 end
@@ -2528,10 +2523,6 @@ end
 
 function UnitPopupRaidTarget4ButtonMixin:GetRaidTargetIndex()
 	return 4;
-end
-
-function UnitPopupRaidTarget4ButtonMixin:GetTextureCoords()
-	return .75, 1, 0, .25;
 end
 
 function UnitPopupRaidTarget4ButtonMixin:GetColor()
@@ -2548,10 +2539,6 @@ function UnitPopupRaidTarget5ButtonMixin:GetRaidTargetIndex()
 	return 5;
 end
 
-function UnitPopupRaidTarget5ButtonMixin:GetTextureCoords()
-	return 0, .25, .25, .5;
-end
-
 function UnitPopupRaidTarget5ButtonMixin:GetColor()
 	return .7, .82, .875;
 end
@@ -2564,10 +2551,6 @@ end
 
 function UnitPopupRaidTarget6ButtonMixin:GetRaidTargetIndex()
 	return 6;
-end
-
-function UnitPopupRaidTarget6ButtonMixin:GetTextureCoords()
-	return .25, .5, .25, .5;
 end
 
 function UnitPopupRaidTarget6ButtonMixin:GetColor()
@@ -2584,10 +2567,6 @@ function UnitPopupRaidTarget7ButtonMixin:GetRaidTargetIndex()
 	return 7;
 end
 
-function UnitPopupRaidTarget7ButtonMixin:GetTextureCoords()
-	return .5, .75, .25, .5;
-end
-
 function UnitPopupRaidTarget7ButtonMixin:GetColor()
 	return 1, .24, .168;
 end
@@ -2600,10 +2579,6 @@ end
 
 function UnitPopupRaidTarget8ButtonMixin:GetRaidTargetIndex()
 	return 8;
-end
-
-function UnitPopupRaidTarget8ButtonMixin:GetTextureCoords()
-	return .75, 1, .25, .5;
 end
 
 function UnitPopupRaidTarget8ButtonMixin:GetColor()
@@ -3233,7 +3208,6 @@ end
 
 function UnitPopupItemQuality2DescButtonMixin:OnClick(contextData)
 	SetLootThreshold(self:GetID());
-	return MenuResponse.Close;
 end
 
 function UnitPopupItemQuality2DescButtonMixin:IsChecked(contextData)

@@ -75,6 +75,9 @@ local TransformManipulatorConstants =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(TransformManipulatorConstants);

@@ -3,6 +3,7 @@ local LobbyMatchmakerInfo =
 	Name = "LobbyMatchmakerInfo",
 	Type = "System",
 	Namespace = "C_LobbyMatchmakerInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -23,26 +24,31 @@ local LobbyMatchmakerInfo =
 			Name = "LobbyMatchmakerQueueAbandoned",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueError",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueExpired",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_EXPIRED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueuePopped",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_POPPED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueStatusUpdate",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -73,6 +79,9 @@ local LobbyMatchmakerInfo =
 				{ Name = "queueStartTime", Type = "number", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

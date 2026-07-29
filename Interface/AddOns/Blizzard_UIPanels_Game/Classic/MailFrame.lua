@@ -100,11 +100,11 @@ function MailFrame_Show()
 	SendMailFrame_Update();
 	MailFrameTab_OnClick(nil, 1);
 	CheckInbox();
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 end
 
 function MailFrame_Hide()
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	HideUIPanel(MailFrame);
 	CloseAllBags(self);
 	SendMailFrameLockSendMail:Hide();
@@ -252,7 +252,7 @@ function InboxFrame_Update()
 			-- Set highlight
 			if ( InboxFrame.openMailID == index ) then
 				button:SetChecked(true);
-				SetPortraitToTexture("OpenMailFrameIcon", stationeryIcon);
+				OpenMailFrame:SetPortraitToAsset(stationeryIcon);
 			else
 				button:SetChecked(false);
 			end
@@ -326,19 +326,14 @@ function InboxFrameItem_OnEnter(self)
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(ENCLOSED_MONEY, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, self.money);
-		SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
+		GameTooltip_AddMoneyLine(GameTooltip, self.money);
 	elseif (self.cod) then
 		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(COD_AMOUNT, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, self.cod);
-		if ( self.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
-		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
-		end
+		local useRedLineColor = self.cod > GetMoney();
+		GameTooltip_AddMoneyLine(GameTooltip, self.cod, useRedLineColor)
 	end
 	GameTooltip:Show();
 end
@@ -435,12 +430,12 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 			tinsert(OpenMailFrame.activeAttachmentButtons, attachmentButton);
 			rowAttachmentCount = rowAttachmentCount + 1;
 
-			local name, itemID, itemTexture, count, quality, canUse = GetInboxItem(InboxFrame.openMailID, i);
+			local name, id, itemTexture, count, quality, canUse, isCurrency = GetInboxItem(InboxFrame.openMailID, i);
 			if name then
 				attachmentButton.name = name;
 				SetItemButtonTexture(attachmentButton, itemTexture);
 				SetItemButtonCount(attachmentButton, count);
-				SetItemButtonQuality(attachmentButton, quality, itemID);
+				SetItemButtonQuality(attachmentButton, quality, id);
 			else
 				attachmentButton.name = nil;
 				SetItemButtonTexture(attachmentButton, "Interface/Icons/INV_Misc_QuestionMark");
@@ -824,12 +819,8 @@ function OpenMailAttachment_OnEnter(self, index)
 	end
 
 	if ( OpenMailFrame.cod ) then
-		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
-		if ( OpenMailFrame.cod > GetMoney() ) then
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
-		else
-			SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
-		end
+		local useRedLineColor = OpenMailFrame.cod > GetMoney();
+		GameTooltip_AddMoneyLine(GameTooltip, OpenMailFrame.cod, useRedLineColor);
 	end
 	GameTooltip:Show();
 end
@@ -1141,8 +1132,8 @@ function OpenAllMailMixin:AdvanceToNextItem()
 	local foundAttachment = false;
 	while ( not foundAttachment ) do
 		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
-		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex));
-		local hasBlacklistedItem = self:IsItemBlacklisted(itemID);
+		local _, id, _, _, _, _, isCurrency = GetInboxItem(self.mailIndex, self.attachmentIndex);
+		local hasBlacklistedItem = (not isCurrency) and self:IsItemBlacklisted(id);
 		local hasCOD = CODAmount and CODAmount > 0;
 		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
 		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then
@@ -1169,7 +1160,7 @@ function OpenAllMailMixin:AdvanceToNextItem()
 end
 
 function OpenAllMailMixin:AdvanceAndProcessNextItem()
-	if ( CalculateTotalNumberOfFreeBagSlots() == 0 ) then
+	if ( C_Container.CalculateTotalNumberOfFreeBagSlots() == 0 ) then
 		self:StopOpening();
 		return;
 	end

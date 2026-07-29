@@ -1,5 +1,5 @@
 
---[[All code in this file are deprecated. All variations of HybridScrollFrame and FauxScrollFrame are deprecated. 
+--[[All code in this file are deprecated. All variations of HybridScrollFrame and FauxScrollFrame are deprecated.
 	It is VERY HIGHLY encouraged to instead convert to or choose the ScrollBox API for creating scrollable content in your UI.
 	Any ScrollFrame intrinsic in this file should be replaced with ScrollFrameTemplate if ScrollBox is not suitable.
 	See the ScrollBox and ScrollBar files in the /Scroll directory for API details.]]--
@@ -255,7 +255,11 @@ function UIPanelInputScrollFrame_OnLoad(self)
 	scrollBar:Hide();
 	self.EditBox:SetWidth(self:GetWidth() - 18);
 	self.EditBox:SetMaxLetters(self.maxLetters);
-	self.EditBox.Instructions:SetText(self.instructions);
+	UIPanelInputScrollFrame_SetInstructions(self, self.instructions);
 	self.EditBox.Instructions:SetWidth(self:GetWidth());
 	self.CharCount:SetShown(not self.hideCharCount);
+end
+
+function UIPanelInputScrollFrame_SetInstructions(self, instructions)
+	self.EditBox.Instructions:SetText(instructions);
 end

@@ -18,6 +18,7 @@ DifficultyUtil.ID = {
 	DungeonTimewalker = 24,
 	RaidTimewalker = 33,
 	RaidStory = 220,
+	RaidMythicFlexible = 233,
 };
 
 local DIFFICULTY_NAMES =
@@ -40,6 +41,7 @@ local DIFFICULTY_NAMES =
 	[DifficultyUtil.ID.RaidTimewalker] = PLAYER_DIFFICULTY_TIMEWALKER,
 	[DifficultyUtil.ID.Raid40] = PLAYER_DIFFICULTY1,
 	[DifficultyUtil.ID.RaidStory] = PLAYER_DIFFICULTY_STORY_RAID,
+	[DifficultyUtil.ID.RaidMythicFlexible] = PLAYER_DIFFICULTY_MYTHIC_FLEXIBLE,
 }
 
 local PRIMARY_RAIDS = { DifficultyUtil.ID.PrimaryRaidLFR, DifficultyUtil.ID.PrimaryRaidNormal, DifficultyUtil.ID.PrimaryRaidHeroic, DifficultyUtil.ID.PrimaryRaidMythic };
@@ -67,22 +69,28 @@ function DifficultyUtil.InStoryRaid()
 end
 
 function DifficultyUtil.DoesCurrentRaidDifficultyMatch(compareDifficultyID)
-	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
+	local instanceDifficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
+
+	-- Ensure we are using base difficulties for comparisons
+	instanceDifficultyID = GetBaseDifficultyID(instanceDifficultyID);
+	compareDifficultyID = GetBaseDifficultyID(compareDifficultyID);
+	local raidDifficultyID = GetBaseDifficultyID(GetRaidDifficultyID());
+
 	if isDynamicInstance then
-		if IsLegacyDifficulty(difficultyID) then
-			local validNormalSize = difficultyID == DifficultyUtil.ID.Raid10Normal or difficultyID == DifficultyUtil.ID.Raid25Normal;
+		if IsLegacyDifficulty(instanceDifficultyID) then
+			local validNormalSize = instanceDifficultyID == DifficultyUtil.ID.Raid10Normal or instanceDifficultyID == DifficultyUtil.ID.Raid25Normal;
 			if validNormalSize and compareDifficultyID == DifficultyUtil.ID.PrimaryRaidNormal then
 				return true;
 			end
 			
-			local validHeroicSize = difficultyID == DifficultyUtil.ID.Raid10Heroic or difficultyID == DifficultyUtil.ID.Raid25Heroic;
+			local validHeroicSize = instanceDifficultyID == DifficultyUtil.ID.Raid10Heroic or instanceDifficultyID == DifficultyUtil.ID.Raid25Heroic;
 			if validHeroicSize and compareDifficultyID == DifficultyUtil.ID.PrimaryRaidHeroic then
 				return true;
 			end
-		elseif difficultyID == compareDifficultyID then
+		elseif instanceDifficultyID == compareDifficultyID then
 			return true;
 		end
-	elseif GetRaidDifficultyID() == compareDifficultyID then
+	elseif raidDifficultyID == compareDifficultyID then
 		return true;
 	end
 	return false; 
@@ -138,4 +146,14 @@ function DifficultyUtil.GetMaxPlayers(difficultyID)
 		difficultyToMaxPlayersMap[difficultyID] = maxPlayers;
 	end
 	return maxPlayers;
+end
+
+local WORLD_TIER_DIFFICULTY_NAMES = {
+	[Enum.WorldTierDifficulty.Heroic] = WORLD_TIER_HEROIC,
+	[Enum.WorldTierDifficulty.Mythic] = WORLD_TIER_MYTHIC,
+};
+
+function DifficultyUtil.GetWorldTierDifficultyName()
+	local worldTierDifficulty = C_DelvesUI.GetWorldTierDifficultyForActivePlayer();
+	return WORLD_TIER_DIFFICULTY_NAMES[worldTierDifficulty];
 end

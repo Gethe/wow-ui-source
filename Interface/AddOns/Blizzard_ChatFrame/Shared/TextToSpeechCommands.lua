@@ -4,22 +4,26 @@ TEXTTOSPEECH_RATE_MAX = 10;
 TEXTTOSPEECH_VOLUME_MIN = 0;
 TEXTTOSPEECH_VOLUME_MAX = 100;
 
+local VALIDATE_RANGE_YES = true;
+
 local TextToSpeechCommandsMixin = {};
 
 function TextToSpeechCommandsMixin:Init()
 	self.commands = {};
 end
 
-function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, rangeMin, rangeMax, rangeFn)
+function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, cmdNameNarrated, rangeMin, rangeMax, rangeFn, validateRange)
 	cmdName = string.lower(cmdName);
 	self.commands[cmdName] = {
 		cmdName = cmdName,
+		cmdNameNarrated = cmdNameNarrated or cmdName,
 		callback = callback,
 		option = option,
 		helpText = helpText,
 		rangeMin = rangeMin,
 		rangeMax = rangeMax,
 		rangeFn = rangeFn,
+		validateRange = validateRange,
 		GetCommands = function() return self; end,
 	};
 end
@@ -39,14 +43,29 @@ function TextToSpeechCommandsMixin:GetArguments(msg)
 	end
 end
 
+local function GetCommandArgumentRange(cmd)
+	if cmd.rangeFn then
+		return cmd.rangeFn();
+	end
+
+	return cmd.rangeMin, cmd.rangeMax;
+end
+
 function TextToSpeechCommandsMixin:EvaluateTextToSpeechCommand(msg)
 	local cmdName, arg1 = self:GetArguments(msg);
 	local cmd = self:GetCommand(cmdName);
 	if cmd then
-		return cmd:callback(arg1);
+		if cmd.validateRange then
+			local rangeMin, rangeMax = GetCommandArgumentRange(cmd);
+			local numericArg1 = tonumber(arg1);
+			if not numericArg1 or numericArg1 < rangeMin or numericArg1 > rangeMax then
+				return cmd, false;
+			end
+		end
+		return cmd, cmd:callback(arg1);
 	end
 
-	return false;
+	return nil, false;
 end
 
 function TextToSpeechCommandsMixin:ShowHelp(msg)
@@ -64,23 +83,15 @@ local function GetNumericValueForNarration(value)
 	return TEXTTOSPEECH_NEGATIVE_QUANTITY_FORMAT:format(math.abs(value));
 end
 
-local function GetCommandArgumentRange(cmd)
-	if cmd.rangeFn then
-		return cmd.rangeFn();
-	end
-
-	return cmd.rangeMin, cmd.rangeMax;
-end
-
 function TextToSpeechCommandsMixin:GetCommandHelpText(cmd)
 	if cmd and cmd.helpText then
 		local rangeMin, rangeMax = GetCommandArgumentRange(cmd);
 		if rangeMin and rangeMax then
 			local displayText = cmd.helpText:format(rangeMin, rangeMax);
 			local narratedText = cmd.helpText:format(GetNumericValueForNarration(rangeMin), GetNumericValueForNarration(rangeMax));
-			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdName, displayText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdName, narratedText);
+			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdName, displayText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING_RANGE:format(cmd.cmdNameNarrated, narratedText);
 		else
-			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdName, cmd.helpText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdName, cmd.helpText);
+			return SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdName, cmd.helpText), SLASH_TEXTTOSPEECH_HELP_FORMATSTRING:format(cmd.cmdNameNarrated, cmd.helpText);
 		end
 	end
 end
@@ -107,8 +118,13 @@ function TextToSpeechCommandsMixin:SpeakConfirmationEntries(entries)
 	end
 end
 
+function TextToSpeechCommandsMixin:SetHelpOverviewText(helpOverviewText, helpOverviewNarratedText)
+	self.helpOverviewText = helpOverviewText;
+	self.helpOverviewNarratedText = helpOverviewNarratedText;
+end
+
 function TextToSpeechCommandsMixin:ShowUsage()
-	self:SpeakConfirmation(TEXTTOSPEECH_HELP_OVERVIEW);
+	self:SpeakConfirmation(self.helpOverviewText, self.helpOverviewNarratedText);
 
 	local usageEntries = {};
 	for cmdName, cmd in pairs(self.commands) do
@@ -125,22 +141,34 @@ local function GetOptionConfirmation(option, enabled)
 	return (enabled and SLASH_TEXTTOSPEECH_CONFIRMATION_ENABLED or SLASH_TEXTTOSPEECH_CONFIRMATION_DISABLED):format(option);
 end
 
-function TextToSpeechCommandsMixin:SpeakConfirmation(displayText, narratedText)
+function TextToSpeechCommandsMixin:PlayMessage(narratedText)
+	local id = nil;
+	local ignoreFilters = true;
+	TextToSpeechFrame_PlayMessage(DEFAULT_CHAT_FRAME, narratedText, id, ignoreFilters);
+end
+
+function TextToSpeechCommandsMixin:SpeakConfirmation(displayText, narratedText, skipQueue)
 	narratedText = narratedText or displayText;
 
-	if self.queuedNarration then
-		table.insert(self.queuedNarration, narratedText);
+	if skipQueue then
+		self:PlayMessage(narratedText);
 	else
-		self.queuedNarration = { narratedText };
-		C_Timer.After(0.25, function()
-			local id = nil;
-			local ignoreFilters = true;
-			TextToSpeechFrame_PlayMessage(DEFAULT_CHAT_FRAME, table.concat(self.queuedNarration, ". "), id, ignoreFilters);
-			self.queuedNarration = nil;
-		end);
+		if self.queuedNarration then
+			table.insert(self.queuedNarration, narratedText);
+		else
+			self.queuedNarration = { narratedText };
+			C_Timer.After(0.25, function()
+				self:PlayMessage(table.concat(self.queuedNarration, ". "));
+				self.queuedNarration = nil;
+			end);
+		end
 	end
 
 	TextToSpeechFrame_DisplaySilentSystemMessage(displayText);
+end
+
+function TextToSpeechCommandsMixin:SpeakConfirmationSkipQueue(displayText, narratedText)
+	self:SpeakConfirmation(displayText, narratedText, true);
 end
 
 TextToSpeechCommands = CreateAndInitFromMixin(TextToSpeechCommandsMixin);
@@ -157,6 +185,8 @@ local function TextToSpeech_ToggleTextToSpeechChat(cmd)
 	cmd:GetCommands():SpeakConfirmation(GetOptionConfirmation(cmd.cmdName, TextToSpeechFrame_ToggleChatTypeEnabled(cmd.option)));
 	return true;
 end
+
+TextToSpeechCommands:SetHelpOverviewText(TEXTTOSPEECH_HELP_OVERVIEW);
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYLINE, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks, SLASH_TEXTTOSPEECH_HELP_PLAYLINE);
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYACTIVITY, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.PlayActivitySoundWhenNotFocused, SLASH_TEXTTOSPEECH_HELP_PLAYACTIVITY);
@@ -198,7 +228,7 @@ do
 		function(cmd)
 			local val = GetCVarBool("textToSpeech");
 			local newVal = not val;
-			SetCVar("textToSpeech", newVal, "ENABLE_TEXT_TO_SPEECH");
+			SetCVar("textToSpeech", newVal);
 			cmd:GetCommands():SpeakConfirmation(GetOptionConfirmation(TEXT_TO_SPEECH, newVal));
 			return true;
 		end
@@ -229,39 +259,49 @@ TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_MENU,
 	end
 );
 
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_HELP,
-	function(cmd, optCmdName)
-		local commands = cmd:GetCommands();
-		if optCmdName and optCmdName ~= "" then
-			local optCmd = commands:GetCommand(optCmdName);
-			if optCmd then
-				commands:ShowCommandHelp(optCmd);
-				return true;
-			end
+local function HelpCommandFunc(cmd, optCmdName)
+	local commands = cmd:GetCommands();
+	if optCmdName and optCmdName ~= "" then
+		local optCmd = commands:GetCommand(optCmdName);
+		if optCmd then
+			commands:ShowCommandHelp(optCmd);
+			return true;
 		end
+	end
 
-		commands:ShowUsage();
-		return true;
-	end,
+	commands:ShowUsage();
+	return true;
+end
+
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_HELP,
+	HelpCommandFunc,
 	nil,
 	SLASH_TEXTTOSPEECH_HELP_HELP
 );
 
-local function GetVoiceRange()
-	local voices = C_VoiceChat.GetTtsVoices();
-	local minVoiceID = math.huge;
-	local maxVoiceID = -math.huge;
-	for index, voice in pairs(voices) do
-		if voice.voiceID < minVoiceID then
-			minVoiceID = voice.voiceID;
-		end
-
-		if voice.voiceID > maxVoiceID then
-			maxVoiceID = voice.voiceID;
-		end
+local voices = C_VoiceChat.GetTtsVoices();
+local minVoiceID = math.huge;
+local maxVoiceID = -math.huge;
+for index, voice in pairs(voices) do
+	if voice.voiceID < minVoiceID then
+		minVoiceID = voice.voiceID;
 	end
 
+	if voice.voiceID > maxVoiceID then
+		maxVoiceID = voice.voiceID;
+	end
+end
+
+local function GetVoiceRange()
 	return minVoiceID, maxVoiceID;
+end
+
+local function GetVoiceName(voiceID)
+	for index, voice in pairs(voices) do
+		if voice.voiceID == voiceID then
+			return voice.name;
+		end
+	end
 end
 
 do
@@ -275,7 +315,7 @@ do
 				end
 
 				return false;
-			end, nil, helpText, nil, nil, GetVoiceRange
+			end, nil, helpText, nil, nil, nil, GetVoiceRange
 		);
 	end
 
@@ -345,3 +385,838 @@ do
 		end, nil, SLASH_TEXTTOSPEECH_HELP_SETTINGS
 	);
 end
+
+CAACommands = CreateAndInitFromMixin(TextToSpeechCommandsMixin);
+
+CAACommands:SetHelpOverviewText(CAA_HELP_OVERVIEW, CAA_HELP_OVERVIEW_NARRATED);
+
+CAACommands:AddCommand(SLASH_CAA_HELP,
+	HelpCommandFunc,
+	nil,
+	SLASH_CAA_HELP_HELP
+);
+
+local function GetCAAOptionConfirmation(option, enabled, isMainToggle)
+	if enabled then
+		if isMainToggle then
+			return SLASH_CAA_CONFIRMATION_ENABLED_WITH_HELP:format(option), SLASH_CAA_CONFIRMATION_ENABLED_WITH_HELP_NARRATED:format(option);
+		else
+			return SLASH_CAA_CONFIRMATION_ENABLED:format(option);
+		end
+	else
+		return SLASH_CAA_CONFIRMATION_DISABLED:format(option);
+	end
+end
+
+local function CAA_ToggleBoolSetting(cmd)
+	local val = GetCVarBool(cmd.option);
+	local newVal = not val;
+	SetCVar(cmd.option, newVal);
+	cmd:GetCommands():SpeakConfirmation(GetCAAOptionConfirmation(cmd.confirmationName, newVal, cmd.isMainToggle));
+	return true;
+end
+
+local function CAA_AddBoolCommand(cmdName, cvarName, helpText, cmdNameNarrated, confirmationName, isMainToggle)
+	CAACommands:AddCommand(cmdName, CAA_ToggleBoolSetting, cvarName, helpText, cmdNameNarrated);
+	local cmd = CAACommands:GetCommand(cmdName);
+	cmd.confirmationName = confirmationName;
+	cmd.isMainToggle = isMainToggle;
+end
+
+do
+	local SLASH_CAA_TOGGLE = "";
+	local isMainToggleYes = true;
+	CAA_AddBoolCommand(SLASH_CAA_TOGGLE, "CAAEnabled", nil, nil, COMBAT_AUDIO_ALERTS, isMainToggleYes);
+end
+
+CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_NAME, "CAASayTargetName", SLASH_CAA_HELP_SAY_TARGET_NAME, SLASH_CAA_SAY_TARGET_NAME_NARRATED, CAA_SAY_TARGET_NAME_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_START, "CAASayCombatStart", SLASH_CAA_HELP_SAY_COMBAT_START, SLASH_CAA_SAY_COMBAT_START_NARRATED, CAA_SAY_COMBAT_START_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_END, "CAASayCombatEnd", SLASH_CAA_HELP_SAY_COMBAT_END,SLASH_CAA_SAY_COMBAT_END_NARRATED, CAA_SAY_COMBAT_END_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT, "CAAInterruptCast", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, "CAAInterruptCastSuccess", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_YOUR_DEBUFFS, "CAASayYourDebuffs", SLASH_CAA_HELP_SAY_YOUR_DEBUFFS, SLASH_CAA_SAY_YOUR_DEBUFFS_NARRATED, CAA_SAY_YOUR_DEBUFFS_LABEL);
+
+local function TrySetCAAVoice(cmd, newVoiceID, confirmationText, categoryType)
+	local voiceName = GetVoiceName(newVoiceID);
+	if voiceName then
+		cmd:GetCommands():SpeakConfirmationSkipQueue(confirmationText:format(voiceName));
+		CombatAudioAlertManager:SetCategoryVoice(categoryType, newVoiceID);
+		return true;
+	end
+
+	return false;
+end
+
+local function AddCAAVoiceCommand(cmdName, helpText, cmdNameNarrated, confirmationText, categoryType)
+	CAACommands:AddCommand(cmdName,
+		function(cmd, newVoiceID)
+			newVoiceID = (newVoiceID and newVoiceID ~= "") and tonumber(newVoiceID);
+			if newVoiceID then
+				return TrySetCAAVoice(cmd, newVoiceID, confirmationText, categoryType);
+			else
+				local currentVoiceID = tonumber(GetCVar("CAAVoice"));
+				newVoiceID = currentVoiceID + 1;
+				if newVoiceID > maxVoiceID then
+					newVoiceID = minVoiceID;
+				end
+				return TrySetCAAVoice(cmd, newVoiceID, confirmationText, categoryType);
+			end
+		end, nil, helpText, cmdNameNarrated, nil, nil, GetVoiceRange, VALIDATE_RANGE_YES
+	);
+end
+
+AddCAAVoiceCommand(SLASH_CAA_VOICE, SLASH_CAA_HELP_VOICE, nil, SLASH_CAA_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.General);
+
+do
+	local function CAA_SetSpeedHandler(cmd, newVal)
+		cmd:GetCommands():SpeakConfirmationSkipQueue(SLASH_CAA_CONFIRMATION:format(CAA_SPEAKER_SPEED_LABEL, newVal));
+		CombatAudioAlertManager:SetSpeakerSpeed(newVal);
+		return true;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SPEED, CAA_SetSpeedHandler, nil, SLASH_CAA_HELP_SPEED, nil, Constants.TTSConstants.TTSRateMin, Constants.TTSConstants.TTSRateMax, nil, VALIDATE_RANGE_YES);
+end
+
+local function AddCAAVolumeCommand(cmdName, helpText, cmdNameNarrated, confirmationName, categoryType)
+	CAACommands:AddCommand(cmdName,
+		function(cmd, newVolume)
+			cmd:GetCommands():SpeakConfirmationSkipQueue(SLASH_CAA_CONFIRMATION:format(confirmationName, newVolume));
+			CombatAudioAlertManager:SetCategoryVolume(categoryType, newVolume);
+			return true;
+		end, nil, helpText, cmdNameNarrated, Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, nil, VALIDATE_RANGE_YES
+	);
+end
+
+AddCAAVolumeCommand(SLASH_CAA_VOLUME, SLASH_CAA_HELP_VOLUME, nil, CAA_SPEAKER_VOLUME_LABEL, Enum.CombatAudioAlertCategory.General);
+
+local PERCENT_MIN = Enum.CombatAudioAlertPercentValuesMeta.MinValue;
+local PERCENT_MAX = Enum.CombatAudioAlertPercentValuesMeta.MaxValue;
+local THROTTLE_MIN = Constants.CAAConstants.CAAThrottleMin;
+local THROTTLE_MAX = Constants.CAAConstants.CAAThrottleMax;
+local SAY_CASTS_MIN = Enum.CombatAudioAlertCastStateMeta.MinValue;
+local SAY_CASTS_MAX = Enum.CombatAudioAlertCastStateMeta.MaxValue;
+local CAST_TIME_MIN = Constants.CAAConstants.CAAMinCastTimeMin;
+local CAST_TIME_MAX = Constants.CAAConstants.CAAMinCastTimeMax;
+local RESOURCE_FORMAT_MIN = Enum.CombatAudioAlertPlayerResourceFormatValuesMeta.MinValue;
+local RESOURCE_FORMAT_MAX = Enum.CombatAudioAlertPlayerResourceFormatValuesMeta.MaxValue;
+local EXAMPLE_PERCENT = 20;
+
+local function GetInitialSuboptionFailureStrings()
+	return SLASH_CAA_HELP_SUBOPTION_INVALID, SLASH_CAA_HELP_SUBOPTION_INVALID;
+end
+
+local function AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString)
+	failureText = failureText.."|n"..subOptionString;
+	failureTextNarrated = failureTextNarrated..'|n<silence msec="500"/>'..subOptionString;
+	return failureText, failureTextNarrated;
+end
+
+local percentFailureText;
+local percentFailureTextNarrated;
+
+local function InitPercentFailureText()
+	if not percentFailureText then
+		percentFailureText, percentFailureTextNarrated = GetInitialSuboptionFailureStrings();
+		for index, info in CombatAudioAlertUtil.EnumeratePercentInfo() do
+			local cvarVal = index - 1;
+			local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+			percentFailureText, percentFailureTextNarrated = AddSuboptionFailureString(percentFailureText, percentFailureTextNarrated, subOptionString);
+		end
+	end
+end
+
+local sayCastsFailureText;
+local sayCastsFailureTextNarrated;
+
+local function InitSayCastsFailureText()
+	if not sayCastsFailureText then
+		sayCastsFailureText, sayCastsFailureTextNarrated = GetInitialSuboptionFailureStrings();
+		for index, info in CombatAudioAlertUtil.EnumerateSayCastInfo() do
+			local cvarVal = index - 1;
+			local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+			sayCastsFailureText, sayCastsFailureTextNarrated = AddSuboptionFailureString(sayCastsFailureText, sayCastsFailureTextNarrated, subOptionString);
+		end
+	end
+end
+
+local resourceFailureText;
+local resourceFailureTextNarrated;
+
+local function InitResourceFailureText()
+	if not resourceFailureText then
+		resourceFailureText, resourceFailureTextNarrated = GetInitialSuboptionFailureStrings();
+		for index, info in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
+			local cvarVal = index - 1;
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_RESOURCENAME, EXAMPLE_PERCENT);
+			local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+			resourceFailureText, resourceFailureTextNarrated = AddSuboptionFailureString(resourceFailureText, resourceFailureTextNarrated, subOptionString);
+		end
+	end
+end
+
+-- Say Your Health
+do
+	local function CAA_SayYourHealthHandler(cmd, arg)
+		InitPercentFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= PERCENT_MIN and cvarVal <= PERCENT_MAX then
+			local info = CombatAudioAlertUtil.GetPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PLAYER_HEALTH_LABEL, info.str));
+			SetCVar("CAAPlayerHealthPercent", cvarVal);
+			return true;
+		end
+
+		return false, percentFailureText, percentFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_HEALTH, CAA_SayYourHealthHandler, nil, SLASH_CAA_HELP_SAY_YOUR_HEALTH, SLASH_CAA_SAY_YOUR_HEALTH_NARRATED, PERCENT_MIN, PERCENT_MAX);
+end
+
+-- Say Your Health Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local HEALTH_FORMAT_MIN = Enum.CombatAudioAlertPlayerHealthFormatValuesMeta.MinValue;
+	local HEALTH_FORMAT_MAX = Enum.CombatAudioAlertPlayerHealthFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Health) do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, nil, EXAMPLE_PERCENT)
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayYourHealthFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= HEALTH_FORMAT_MIN and cvarVal <= HEALTH_FORMAT_MAX then
+			C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Health, cvarVal);
+			local info = CombatAudioAlertUtil.GetUnitFormatInfo("player", Enum.CombatAudioAlertType.Health);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, nil, EXAMPLE_PERCENT);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PLAYER_HEALTH_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_HEALTH_FORMAT, CAA_SayYourHealthFormatHandler, nil, SLASH_CAA_HELP_SAY_YOUR_HEALTH_FORMAT, SLASH_CAA_SAY_YOUR_HEALTH_FORMAT_NARRATED, HEALTH_FORMAT_MIN, HEALTH_FORMAT_MAX);
+end
+
+-- Say Your Health Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_YOUR_HEALTH_VOICE, SLASH_CAA_HELP_SAY_YOUR_HEALTH_VOICE, SLASH_CAA_SAY_YOUR_HEALTH_VOICE_NARRATED, SLASH_CAA_SAY_YOUR_HEALTH_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerHealth);
+
+-- Say Your Health Throttle
+do
+	local function CAA_SayYourHealthThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealth, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PLAYER_HEALTH_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_HEALTH_THROTTLE, CAA_SayYourHealthThrottleHandler, nil, SLASH_CAA_HELP_SAY_YOUR_HEALTH_THROTTLE, SLASH_CAA_SAY_YOUR_HEALTH_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Your Health Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_YOUR_HEALTH_VOLUME, SLASH_CAA_HELP_SAY_YOUR_HEALTH_VOLUME, SLASH_CAA_SAY_YOUR_HEALTH_VOLUME_NARRATED, SLASH_CAA_SAY_YOUR_HEALTH_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerHealth);
+
+-- Say Target Health
+do
+	local function CAA_SayTargetHealthHandler(cmd, arg)
+		InitPercentFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= PERCENT_MIN and cvarVal <= PERCENT_MAX then
+			local info = CombatAudioAlertUtil.GetPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_HEALTH_LABEL, info.str));
+			SetCVar("CAATargetHealthPercent", cvarVal);
+			return true;
+		end
+
+		return false, percentFailureText, percentFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_HEALTH, CAA_SayTargetHealthHandler, nil, SLASH_CAA_HELP_SAY_TARGET_HEALTH, SLASH_CAA_SAY_TARGET_HEALTH_NARRATED, PERCENT_MIN, PERCENT_MAX);
+end
+
+-- Say Target Health Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local HEALTH_FORMAT_MIN = Enum.CombatAudioAlertTargetHealthFormatValuesMeta.MinValue;
+	local HEALTH_FORMAT_MAX = Enum.CombatAudioAlertTargetHealthFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Health) do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, nil, EXAMPLE_PERCENT)
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayTargetHealthFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= HEALTH_FORMAT_MIN and cvarVal <= HEALTH_FORMAT_MAX then
+			C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Health, cvarVal);
+			local info = CombatAudioAlertUtil.GetUnitFormatInfo("target", Enum.CombatAudioAlertType.Health);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, nil, EXAMPLE_PERCENT);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_HEALTH_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_HEALTH_FORMAT, CAA_SayTargetHealthFormatHandler, nil, SLASH_CAA_HELP_SAY_TARGET_HEALTH_FORMAT, SLASH_CAA_SAY_TARGET_HEALTH_FORMAT_NARRATED, HEALTH_FORMAT_MIN, HEALTH_FORMAT_MAX);
+end
+
+-- Say Target Health Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_TARGET_HEALTH_VOICE, SLASH_CAA_HELP_SAY_TARGET_HEALTH_VOICE, SLASH_CAA_SAY_TARGET_HEALTH_VOICE_NARRATED, SLASH_CAA_SAY_TARGET_HEALTH_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.TargetHealth);
+
+-- Say Target Health Throttle
+do
+	local function CAA_SayTargetHealthThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.TargetHealth, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_HEALTH_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_HEALTH_THROTTLE, CAA_SayTargetHealthThrottleHandler, nil, SLASH_CAA_HELP_SAY_TARGET_HEALTH_THROTTLE, SLASH_CAA_SAY_TARGET_HEALTH_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Target Health Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_TARGET_HEALTH_VOLUME, SLASH_CAA_HELP_SAY_TARGET_HEALTH_VOLUME, SLASH_CAA_SAY_TARGET_HEALTH_VOLUME_NARRATED, SLASH_CAA_SAY_TARGET_HEALTH_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.TargetHealth);
+
+-- Say If Targeted
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_IF_TARGETED_MIN = Enum.CombatAudioAlertSayIfTargetedTypeMeta.MinValue;
+	local SAY_IF_TARGETED_MAX = Enum.CombatAudioAlertSayIfTargetedTypeMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateSayIfTargetedInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayIfTargetedHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_IF_TARGETED_MIN and cvarVal <= SAY_IF_TARGETED_MAX then
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, cvarVal);
+			local info = CombatAudioAlertUtil.GetSayIfTargetedInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_IF_TARGETED_LABEL, info.str));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_IF_TARGETED, CAA_SayIfTargetedHandler, nil, SLASH_CAA_HELP_SAY_IF_TARGETED, SLASH_CAA_SAY_IF_TARGETED_NARRATED, SAY_IF_TARGETED_MIN, SAY_IF_TARGETED_MAX);
+end
+
+-- Say Your Debuffs Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_YOUR_DEBUFFS_FORMAT_MIN = Enum.CombatAudioAlertPlayerDebuffFormatValuesMeta.MinValue;
+	local SAY_YOUR_DEBUFFS_FORMAT_MAX = Enum.CombatAudioAlertPlayerDebuffFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, formatInfo in CombatAudioAlertUtil.EnumeratePlayerDebuffFormatInfo() do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_DEBUFFNAME);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayYourDebuffsFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_YOUR_DEBUFFS_FORMAT_MIN and cvarVal <= SAY_YOUR_DEBUFFS_FORMAT_MAX then
+			SetCVar("CAASayYourDebuffsFormat", cvarVal);
+			local formatInfo = CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_DEBUFFNAME);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_DEBUFFS_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_FORMAT, CAA_SayYourDebuffsFormatHandler, nil, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_FORMAT, SLASH_CAA_SAY_YOUR_DEBUFFS_FORMAT_NARRATED, SAY_YOUR_DEBUFFS_FORMAT_MIN, SAY_YOUR_DEBUFFS_FORMAT_MAX);
+end
+
+AddCAAVoiceCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_VOICE, SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE_NARRATED, SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+
+-- Say Your Debuffs Minimum Duration
+do
+	local SAY_YOUR_DEBUFFS_MIN_DURATION_MIN = Constants.CAAConstants.CAASayYourDebuffsMinDurationMin;
+	local SAY_YOUR_DEBUFFS_MIN_DURATION_MAX = Constants.CAAConstants.CAASayYourDebuffsMinDurationMax;
+
+	local function CAA_SayYourDebuffsMinDurationHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_YOUR_DEBUFFS_MIN_DURATION_MIN and cvarVal <= SAY_YOUR_DEBUFFS_MIN_DURATION_MAX then
+			SetCVar("CAASayYourDebuffsMinDuration", cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_DEBUFFS_MIN_DURATION, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_MIN_DURATION, CAA_SayYourDebuffsMinDurationHandler, nil, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_MIN_DURATION, SLASH_CAA_SAY_YOUR_DEBUFFS_MIN_DURATION_NARRATED, SAY_YOUR_DEBUFFS_MIN_DURATION_MIN, SAY_YOUR_DEBUFFS_MIN_DURATION_MAX);
+end
+
+AddCAAVolumeCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_VOLUME, SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME_NARRATED, SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+
+-- Debuff Self Alert
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local DEBUFF_SELF_ALERT_MIN = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MinValue;
+	local DEBUFF_SELF_ALERT_MAX = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateDebuffSelfAlertInfo() do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_DISPELTTYPE);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_DebuffSelfAlertHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= DEBUFF_SELF_ALERT_MIN and cvarVal <= DEBUFF_SELF_ALERT_MAX then
+			SetCVar("CAADebuffSelfAlert", cvarVal);
+			local info = CombatAudioAlertUtil.GetDebuffSelfAlertInfo(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_DISPELTTYPE)
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_DEBUFF_SELF_ALERT_LABEL, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_DEBUFF_SELF_ALERT, CAA_DebuffSelfAlertHandler, nil, SLASH_CAA_HELP_DEBUFF_SELF_ALERT, SLASH_CAA_DEBUFF_SELF_ALERT_NARRATED, DEBUFF_SELF_ALERT_MIN, DEBUFF_SELF_ALERT_MAX);
+end
+
+-- Say Party Health
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_PARTY_HEALTH_MIN = Enum.CombatAudioAlertPartyPercentValuesMeta.MinValue;
+	local SAY_PARTY_HEALTH_MAX = Enum.CombatAudioAlertPartyPercentValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumeratePartyHealthPercentInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayPartyHealthHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_PARTY_HEALTH_MIN and cvarVal <= SAY_PARTY_HEALTH_MAX then
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, cvarVal);
+			local info = CombatAudioAlertUtil.GetPartyHealthPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PARTY_HEALTH_LABEL, info.str));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_PARTY_HEALTH, CAA_SayPartyHealthHandler, nil, SLASH_CAA_HELP_SAY_PARTY_HEALTH, SLASH_CAA_SAY_PARTY_HEALTH_NARRATED, SAY_PARTY_HEALTH_MIN, SAY_PARTY_HEALTH_MAX);
+end
+
+-- Say Party Health Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_PARTY_HEALTH_VOICE, SLASH_CAA_HELP_SAY_PARTY_HEALTH_VOICE, SLASH_CAA_SAY_PARTY_HEALTH_VOICE_NARRATED, SLASH_CAA_SAY_PARTY_HEALTH_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PartyHealth);
+
+-- Say Party Health Frequency
+do
+	local function CAA_SetPartyHealthFrequencyHandler(cmd, newVal)
+		cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PARTY_HEALTH_FREQUENCY, newVal));
+		SetCVar("CAAPartyHealthFrequency", newVal);
+		return true;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_PARTY_HEALTH_FREQUENCY, CAA_SetPartyHealthFrequencyHandler, nil, SLASH_CAA_HELP_SAY_PARTY_HEALTH_FREQUENCY, SLASH_CAA_SAY_PARTY_HEALTH_FREQUENCY_NARRATED, Constants.CAAConstants.CAAFrequencyMin, Constants.CAAConstants.CAAFrequencyMax, nil, VALIDATE_RANGE_YES);
+end
+
+-- Say Party Health Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_PARTY_HEALTH_VOLUME, SLASH_CAA_HELP_SAY_PARTY_HEALTH_VOLUME, SLASH_CAA_SAY_PARTY_HEALTH_VOLUME_NARRATED, SLASH_CAA_SAY_PARTY_HEALTH_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PartyHealth);
+
+-- Say Your Casts
+do
+	local function CAA_SayYourCastsHandler(cmd, arg)
+		InitSayCastsFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_CASTS_MIN and cvarVal <= SAY_CASTS_MAX then
+			local info = CombatAudioAlertUtil.GetSayCastInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PLAYER_CASTS_LABEL, info.str));
+			SetCVar("CAAPlayerCastMode", cvarVal);
+			return true;
+		end
+
+		return false, sayCastsFailureText, sayCastsFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_CASTS, CAA_SayYourCastsHandler, nil, SLASH_CAA_HELP_SAY_YOUR_CASTS, SLASH_CAA_SAY_YOUR_CASTS_NARRATED, SAY_CASTS_MIN, SAY_CASTS_MAX);
+end
+
+-- Say Your Casts Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_YOUR_CASTS_MIN = Enum.CombatAudioAlertPlayerCastFormatValuesMeta.MinValue;
+	local SAY_YOUR_CASTS_MAX = Enum.CombatAudioAlertPlayerCastFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Cast) do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_SPELLNAME);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayYourCastsFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_YOUR_CASTS_MIN and cvarVal <= SAY_YOUR_CASTS_MAX then
+			C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Cast, cvarVal);
+			local info = CombatAudioAlertUtil.GetUnitFormatInfo("player", Enum.CombatAudioAlertType.Cast);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_SPELLNAME)
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_CASTS_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_CASTS_FORMAT, CAA_SayYourCastsFormatHandler, nil, SLASH_CAA_HELP_SAY_YOUR_CASTS_FORMAT, SLASH_CAA_SAY_YOUR_CASTS_FORMAT_NARRATED, SAY_YOUR_CASTS_MIN, SAY_YOUR_CASTS_MAX);
+end
+
+-- Say Your Casts Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_YOUR_CASTS_VOICE, SLASH_CAA_HELP_SAY_YOUR_CASTS_VOICE, SLASH_CAA_SAY_YOUR_CASTS_VOICE_NARRATED, SLASH_CAA_SAY_YOUR_CASTS_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerCast);
+
+-- Say Your Casts Min Cast Time
+do
+	local function CAA_SayYourCastsMinCastTimeHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= CAST_TIME_MIN and cvarVal <= CAST_TIME_MAX then
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_CASTS_MIN_CAST_TIME, formattedStr));
+			SetCVar("CAAPlayerCastMinTime", cvarVal);
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_CASTS_MIN_CAST_TIME, CAA_SayYourCastsMinCastTimeHandler, nil, SLASH_CAA_HELP_SAY_YOUR_CASTS_MIN_CAST_TIME, SLASH_CAA_SAY_YOUR_CASTS_MIN_CAST_TIME_NARRATED, CAST_TIME_MIN, CAST_TIME_MAX);
+end
+
+-- Say Your Casts Throttle
+do
+	local function CAA_SayYourCastsThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerCast, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_CASTS_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_CASTS_THROTTLE, CAA_SayYourCastsThrottleHandler, nil, SLASH_CAA_HELP_SAY_YOUR_CASTS_THROTTLE, SLASH_CAA_SAY_YOUR_CASTS_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Your Casts Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_YOUR_CASTS_VOLUME, SLASH_CAA_HELP_SAY_YOUR_CASTS_VOLUME, SLASH_CAA_SAY_YOUR_CASTS_VOLUME_NARRATED, SLASH_CAA_SAY_YOUR_CASTS_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerCast);
+
+-- Say Target Casts
+do
+	local function CAA_SayTargetCastsHandler(cmd, arg)
+		InitSayCastsFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_CASTS_MIN and cvarVal <= SAY_CASTS_MAX then
+			local info = CombatAudioAlertUtil.GetSayCastInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_CASTS_LABEL, info.str));
+			SetCVar("CAATargetCastMode", cvarVal);
+			return true;
+		end
+
+		return false, sayCastsFailureText, sayCastsFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS, CAA_SayTargetCastsHandler, nil, SLASH_CAA_HELP_SAY_TARGET_CASTS, SLASH_CAA_SAY_TARGET_CASTS_NARRATED, SAY_CASTS_MIN, SAY_CASTS_MAX);
+end
+
+-- Say Target Casts Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_TARGET_CASTS_MIN = Enum.CombatAudioAlertTargetCastFormatValuesMeta.MinValue;
+	local SAY_TARGET_CASTS_MAX = Enum.CombatAudioAlertTargetCastFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Cast) do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_SPELLNAME);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayTargetCastsFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_TARGET_CASTS_MIN and cvarVal <= SAY_TARGET_CASTS_MAX then
+			C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Cast, cvarVal);
+			local info = CombatAudioAlertUtil.GetUnitFormatInfo("target", Enum.CombatAudioAlertType.Cast);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_SPELLNAME)
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_CASTS_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_FORMAT, CAA_SayTargetCastsFormatHandler, nil, SLASH_CAA_HELP_SAY_TARGET_CASTS_FORMAT, SLASH_CAA_SAY_TARGET_CASTS_FORMAT_NARRATED, SAY_TARGET_CASTS_MIN, SAY_TARGET_CASTS_MAX);
+end
+
+-- Say Target Casts Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_TARGET_CASTS_VOICE, SLASH_CAA_HELP_SAY_TARGET_CASTS_VOICE, SLASH_CAA_SAY_TARGET_CASTS_VOICE_NARRATED, SLASH_CAA_SAY_TARGET_CASTS_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.TargetCast);
+
+-- Say Target Casts Min Cast Time
+do
+	local function CAA_SayTargetCastsMinCastTimeHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= CAST_TIME_MIN and cvarVal <= CAST_TIME_MAX then
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_CASTS_MIN_CAST_TIME, formattedStr));
+			SetCVar("CAATargetCastMinTime", cvarVal);
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_MIN_CAST_TIME, CAA_SayTargetCastsMinCastTimeHandler, nil, SLASH_CAA_HELP_SAY_TARGET_CASTS_MIN_CAST_TIME, SLASH_CAA_SAY_TARGET_CASTS_MIN_CAST_TIME_NARRATED, CAST_TIME_MIN, CAST_TIME_MAX);
+end
+
+-- Say Target Casts Throttle
+do
+	local function CAA_SayTargetCastsThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.TargetCast, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_TARGET_CASTS_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_THROTTLE, CAA_SayTargetCastsThrottleHandler, nil, SLASH_CAA_HELP_SAY_TARGET_CASTS_THROTTLE, SLASH_CAA_SAY_TARGET_CASTS_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Target Casts Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_TARGET_CASTS_VOLUME, SLASH_CAA_HELP_SAY_TARGET_CASTS_VOLUME, SLASH_CAA_SAY_TARGET_CASTS_VOLUME_NARRATED, SLASH_CAA_SAY_TARGET_CASTS_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.TargetCast);
+
+-- Say Resource 1
+do
+	local function CAA_SayResource1Handler(cmd, arg)
+		InitPercentFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= PERCENT_MIN and cvarVal <= PERCENT_MAX then
+			local info = CombatAudioAlertUtil.GetPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_1, info.str));
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent, cvarVal);
+			return true;
+		end
+
+		return false, percentFailureText, percentFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_1, CAA_SayResource1Handler, nil, SLASH_CAA_HELP_SAY_RESOURCE_1, SLASH_CAA_SAY_RESOURCE_1_NARRATED, PERCENT_MIN, PERCENT_MAX);
+end
+
+-- Say Resource 1 Format
+do
+	local function CAA_SayResource1FormatHandler(cmd, arg)
+		InitResourceFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= RESOURCE_FORMAT_MIN and cvarVal <= RESOURCE_FORMAT_MAX then
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Format, cvarVal);
+			local info = CombatAudioAlertUtil.GetPlayerResourceFormatInfoFromCVarVal(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_RESOURCENAME, EXAMPLE_PERCENT);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_1_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, resourceFailureText, resourceFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_1_FORMAT, CAA_SayResource1FormatHandler, nil, SLASH_CAA_HELP_SAY_RESOURCE_1_FORMAT, SLASH_CAA_SAY_RESOURCE_1_FORMAT_NARRATED, RESOURCE_FORMAT_MIN, RESOURCE_FORMAT_MAX);
+end
+
+-- Say Resource 1 Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_RESOURCE_1_VOICE, SLASH_CAA_HELP_SAY_RESOURCE_1_VOICE, SLASH_CAA_SAY_RESOURCE_1_VOICE_NARRATED, SLASH_CAA_SAY_RESOURCE_1_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerResource1);
+
+-- Say Resource 1 Throttle
+do
+	local function CAA_SayResource1ThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_1_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_1_THROTTLE, CAA_SayResource1ThrottleHandler, nil, SLASH_CAA_HELP_SAY_RESOURCE_1_THROTTLE, SLASH_CAA_SAY_RESOURCE_1_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Resource 1 Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_RESOURCE_1_VOLUME, SLASH_CAA_HELP_SAY_RESOURCE_1_VOLUME, SLASH_CAA_SAY_RESOURCE_1_VOLUME_NARRATED, SLASH_CAA_SAY_RESOURCE_1_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerResource1);
+
+-- Say Resource 2
+do
+	local function CAA_SayResource2Handler(cmd, arg)
+		InitPercentFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= PERCENT_MIN and cvarVal <= PERCENT_MAX then
+			local info = CombatAudioAlertUtil.GetPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_2, info.str));
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent, cvarVal);
+			return true;
+		end
+
+		return false, percentFailureText, percentFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_2, CAA_SayResource2Handler, nil, SLASH_CAA_HELP_SAY_RESOURCE_2, SLASH_CAA_SAY_RESOURCE_2_NARRATED, PERCENT_MIN, PERCENT_MAX);
+end
+
+-- Say Resource 2 Format
+do
+	local function CAA_SayResource2FormatHandler(cmd, arg)
+		InitResourceFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= RESOURCE_FORMAT_MIN and cvarVal <= RESOURCE_FORMAT_MAX then
+			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Format, cvarVal);
+			local info = CombatAudioAlertUtil.GetPlayerResourceFormatInfoFromCVarVal(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_RESOURCENAME, EXAMPLE_PERCENT);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_2_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, resourceFailureText, resourceFailureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_2_FORMAT, CAA_SayResource2FormatHandler, nil, SLASH_CAA_HELP_SAY_RESOURCE_2_FORMAT, SLASH_CAA_SAY_RESOURCE_2_FORMAT_NARRATED, RESOURCE_FORMAT_MIN, RESOURCE_FORMAT_MAX);
+end
+
+-- Say Resource 2 Voice
+AddCAAVoiceCommand(SLASH_CAA_SAY_RESOURCE_2_VOICE, SLASH_CAA_HELP_SAY_RESOURCE_2_VOICE, SLASH_CAA_SAY_RESOURCE_2_VOICE_NARRATED, SLASH_CAA_SAY_RESOURCE_2_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerResource2);
+
+-- Say Resource 2 Throttle
+do
+	local function CAA_SayResource2ThrottleHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= THROTTLE_MIN and cvarVal <= THROTTLE_MAX then
+			C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2, cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_RESOURCE_2_THROTTLE, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_RESOURCE_2_THROTTLE, CAA_SayResource2ThrottleHandler, nil, SLASH_CAA_HELP_SAY_RESOURCE_2_THROTTLE, SLASH_CAA_SAY_RESOURCE_2_THROTTLE_NARRATED, THROTTLE_MIN, THROTTLE_MAX);
+end
+
+-- Say Resource 2 Volume
+AddCAAVolumeCommand(SLASH_CAA_SAY_RESOURCE_2_VOLUME, SLASH_CAA_HELP_SAY_RESOURCE_2_VOLUME, SLASH_CAA_SAY_RESOURCE_2_VOLUME_NARRATED, SLASH_CAA_SAY_RESOURCE_2_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerResource2);

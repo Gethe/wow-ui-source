@@ -55,7 +55,7 @@ function ReputationStatusBarMixin:GetMaxLevel()
 	end
 
 	local factionID = watchedFactionData.factionID;
-	if C_Reputation.IsFactionParagon(factionID) then
+	if C_Reputation.IsFactionParagonForCurrentPlayer(factionID) then
 		return nil;
 	end
 
@@ -96,7 +96,7 @@ function ReputationStatusBarMixin:Update()
 	local maxLevel = self:GetMaxLevel();
 
 	local minBar, maxBar, value = watchedFactionData.currentReactionThreshold, watchedFactionData.nextReactionThreshold, watchedFactionData.currentStanding;
-	if C_Reputation.IsFactionParagon(factionID) then
+	if C_Reputation.IsFactionParagonForCurrentPlayer(factionID) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
 		minBar, maxBar  = 0, threshold;
 		if currentValue and threshold then

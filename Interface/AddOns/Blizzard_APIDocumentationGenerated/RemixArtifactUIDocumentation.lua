@@ -3,6 +3,7 @@ local RemixArtifactUI =
 	Name = "RemixArtifactUI",
 	Type = "System",
 	Namespace = "C_RemixArtifactUI",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local RemixArtifactUI =
 			Name = "RemixArtifactItemSpecsLoaded",
 			Type = "Event",
 			LiteralName = "REMIX_ARTIFACT_ITEM_SPECS_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -23,6 +25,7 @@ local RemixArtifactUI =
 			Name = "RemixArtifactUpdate",
 			Type = "Event",
 			LiteralName = "REMIX_ARTIFACT_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -62,6 +65,9 @@ local RemixArtifactUI =
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

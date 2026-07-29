@@ -9,7 +9,11 @@
 		</KeyValues-->
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
+				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
 					<Color r="0.35" g="0.35" b="0.35"/>
 				</FontString>
 			</Layer>
@@ -44,7 +48,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture atlas="common-search-clearbutton" useAtlasSize="false" alpha="0.5" parentKey="texture">
+						<Texture parentKey="Icon" atlas="common-search-clearbutton" useAtlasSize="false" alpha="0.5">
 							<Size x="10" y="10"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="3" y="-3"/>
@@ -61,6 +65,7 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<TextInsets left="16" right="20" bottom="0" top="0"/>
 		<Scripts>
 			<OnLoad function="SearchBoxTemplate_OnLoad"/>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
@@ -223,4 +228,81 @@
 		</Scripts>
 	</Frame>
 	
+	<!-- Version of SearchBoxTemplate that better supports nine sliced art. -->
+	<EditBox name="InputBoxInstructionsNineSliceTemplate" inherits="InputBoxScriptTemplate" virtual="true">
+		<!--KeyValues>
+			Optional
+			<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+		</KeyValues-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-22" y="0"/>
+					</Anchors>
+					<Color r="0.35" g="0.35" b="0.35"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnTextChanged function="InputBoxInstructions_OnTextChanged"/>
+			<OnDisable function="InputBoxInstructions_OnDisable"/>
+			<OnEnable function="InputBoxInstructions_OnEnable"/>
+		</Scripts>
+		<FontString inherits="GameFontHighlightSmall"/>
+	</EditBox>
+
+	<EditBox name="SearchBoxNineSliceTemplate" inherits="InputBoxInstructionsNineSliceTemplate" autoFocus="false" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="SEARCH" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-searchbar-a" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="searchIcon" atlas="common-searchbar-icon-a" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="clearButton" mixin="ClearButtonMixin" hidden="true">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="common-search-clearbutton" useAtlasSize="false" alpha="0.5">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<TextInsets left="22" right="22" bottom="0" top="0"/>
+		<Scripts>
+			<OnLoad function="SearchBoxTemplate_OnLoad"/>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
+			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
+			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
+		</Scripts>
+	</EditBox>
 </Ui>

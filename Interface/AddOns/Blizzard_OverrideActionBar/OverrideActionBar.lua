@@ -96,7 +96,7 @@ function OverrideActionBarMixin:OnEvent(event, ...)
 	elseif ( event == "UNIT_EXITED_VEHICLE") then
 		self.HasExit = nil;
 		self.HasPitch = nil;
-		if GetOverrideBarSkin() then
+		if C_ActionBar.GetOverrideBarSkin() then
 			self:CalcSize();
 		end
 	end
@@ -144,11 +144,11 @@ end
 
 function OverrideActionBarMixin:UpdateSkin()
 	-- For now, a vehicle has precedence over override bars (hopefully designers make it so these never conflict)
-	if ( HasVehicleActionBar() ) then
-		self:Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());
+	if ( C_ActionBar.HasVehicleActionBar() ) then
+		self:Setup(UnitVehicleSkin("player"), C_ActionBar.GetVehicleBarIndex());
 		self:UpdateMicroButtons();
 	else
-		self:Setup(GetOverrideBarSkin(), GetOverrideBarIndex());
+		self:Setup(C_ActionBar.GetOverrideBarSkin(), C_ActionBar.GetOverrideBarIndex());
 	end
 end
 
@@ -265,7 +265,7 @@ function OverrideActionBarMixin:Setup(skin, barIndex)
 	local shouldShowHealthBar;
 	local shouldShowManaBar;
 	--vehicles always show both bars, override bars check their flags
-	if HasVehicleActionBar() then
+	if C_ActionBar.HasVehicleActionBar() then
 		shouldShowHealthBar = true;
 		shouldShowManaBar = true;
 	else

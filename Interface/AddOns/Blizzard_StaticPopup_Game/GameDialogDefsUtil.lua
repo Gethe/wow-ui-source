@@ -3,7 +3,7 @@ GameDialogDefsUtil = {};
 function GameDialogDefsUtil.GetSelfResurrectDialogOptions()
 	local resOptions = GetSortedSelfResurrectOptions();
 	if ( resOptions ) then
-		if ( IsEncounterLimitingResurrections() ) then
+		if ( C_InstanceEncounter.IsEncounterLimitingResurrections() ) then
 			return resOptions[1], resOptions[2];
 		else
 			return resOptions[1];

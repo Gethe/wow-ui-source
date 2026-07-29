@@ -3,6 +3,7 @@ local ChallengeModeInfo =
 	Name = "ChallengeModeInfo",
 	Type = "System",
 	Namespace = "C_ChallengeMode",
+	Environment = "All",
 
 	Functions =
 	{
@@ -257,11 +258,13 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeCompleted",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_COMPLETED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeCompletedRewards",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_COMPLETED_REWARDS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -275,16 +278,19 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeDeathCountUpdated",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_DEATH_COUNT_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeKeystoneReceptableOpen",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeKeystoneSlotted",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_KEYSTONE_SLOTTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "keystoneID", Type = "number", Nilable = false },
@@ -294,6 +300,7 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeLeaderboardResult",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_LEADERBOARD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -306,31 +313,37 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeLeadersUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_LEADERS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeLeaverTimerEnded",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_ENDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeLeaverTimerStarted",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeMapsUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MAPS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeMemberInfoUpdated",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MEMBER_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChallengeModeNewRecord",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_NEW_RECORD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -342,6 +355,7 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeReset",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_RESET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -351,6 +365,7 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeStart",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -442,6 +457,9 @@ local ChallengeModeInfo =
 				{ Name = "isCurrency", Type = "bool", Nilable = false },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

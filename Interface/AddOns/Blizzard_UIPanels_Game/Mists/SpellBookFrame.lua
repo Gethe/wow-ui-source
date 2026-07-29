@@ -37,7 +37,7 @@ function SpellBookFrameMixin:OnLoad()
 	SpellBookFrame.flashTabs = nil;
 
 	-- Initialize portrait texture
-	SetPortraitToTexture(self.portrait, "Interface\\Spellbook\\Spellbook-Icon");
+	self:SetPortraitToAsset("Interface\\Spellbook\\Spellbook-Icon");
 
 	ButtonFrameTemplate_HideButtonBar(SpellBookFrame);
 	ButtonFrameTemplate_HideAttic(SpellBookFrame);
@@ -235,7 +235,8 @@ function SpellButtonMixin:OnIconClick(button)
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if (slotType == "FLYOUT") then
-			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.offSpecID, true);
+			local isActionBar, showFullTooltip, reason = false, true, nil;
+			SpellFlyout:Toggle(self, id, isActionBar, self.offSpecID, showFullTooltip, reason);
 			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		else
 			if ( SpellBookFrame.bookType ~= BOOKTYPE_SPELLBOOK or self.offSpecID == 0 ) then
@@ -316,8 +317,8 @@ function SpellButtonMixin:UpdateButton()
 		self.TrainFrame:Hide();
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
-		self.FlyoutArrow:Hide();
 		self:Disable();
+		self:ClearPopup();
 		self.TextBackground:SetDesaturated(isOffSpec);
 		self.TextBackground2:SetDesaturated(isOffSpec);
 		self.EmptySlot:SetDesaturated(isOffSpec);
@@ -472,10 +473,9 @@ function SpellButtonMixin:UpdateButton()
 	end
 
 	if (slotType == "FLYOUT") then
-		SetClampedTextureRotation(self.FlyoutArrow, 90);
-		self.FlyoutArrow:Show();
+		self:SetPopup(SpellFlyout);
 	else
-		self.FlyoutArrow:Hide();
+		self:ClearPopup();
 	end
 
 	-- set all the desaturated offspec pages
@@ -483,7 +483,7 @@ function SpellButtonMixin:UpdateButton()
 	self.TextBackground:SetDesaturated(isOffSpec);
 	self.TextBackground2:SetDesaturated(isOffSpec);
 	self.EmptySlot:SetDesaturated(isOffSpec);
-	self.FlyoutArrow:SetDesaturated(isOffSpec);
+	self.Arrow:SetDesaturated(isOffSpec);
 	if (isOffSpec) then
 		iconTexture:SetDesaturated(isOffSpec);
 		self.SpellName:SetTextColor(0.75, 0.75, 0.75);
@@ -635,7 +635,7 @@ function FormatProfession(frame, index)
 		end
 
 		if frame.icon and texture then
-			SetPortraitToTexture(frame.icon, texture);
+			frame.icon:SetTexture(texture);
 		end
 
 		frame.professionName:SetText(name);
@@ -681,7 +681,7 @@ function FormatProfession(frame, index)
 		frame.missingText:Show();
 
 		if frame.icon then
-			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");
+			frame.icon:SetTexture("Interface\\Icons\\INV_Scroll_04");
 			frame.specialization:SetText("");
 		end
 		frame.SpellButton1:Hide();

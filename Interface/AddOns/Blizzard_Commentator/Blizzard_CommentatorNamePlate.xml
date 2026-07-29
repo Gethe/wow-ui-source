@@ -1,58 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_CommentatorNamePlate.lua"/>
-
 	<Cooldown name="CommentatorNPRadialCooldownTemplate" hideCountdownNumbers="true" hidden="true" virtual="true">
 		<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay">
 			<Color r="0" g="0" b="0" a="0.8"/>
 		</SwipeTexture>
 	</Cooldown>
-	
-	<Frame name="CommentatorNamePlateFullBorderTemplate" mixin="CommentatorNamePlateBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-8">
-				<!-- Left -->
-				<Texture parentKey="Left" parentArray="Textures">
-					<Size x="1.0" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Right -->
-				<Texture parentKey="Right" parentArray="Textures">
-					<Size x="1.0" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.0" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Bottom -->
-				<Texture parentKey="Bottom" parentArray="Textures">
-					<Size y="1.0" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-
-				<!-- Top -->
-				<Texture parentKey="Top" parentArray="Textures">
-					<Size y="1.0" />
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
-                        <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
 	
 	<Button name="CommentatorNamePlateTemplate" inherits="NamePlateUnitFrameTemplate" mixin="CommentatorNamePlateMixin" virtual="true">
 		<Size x="190"/>
@@ -65,6 +17,11 @@
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CCIcon" scale=".3" hidden="true">
 					<Size x="128" y="128"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="teamBorder" atlas="UI-HUD-Nameplates-Selected">
+					<!-- Anchoring and size handled dynamically in lua.-->
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -90,7 +47,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
-			<!--<OnSizeChanged method="OnSizeChanged"/>-->
 		</Scripts>
 	</Button>
 </Ui>

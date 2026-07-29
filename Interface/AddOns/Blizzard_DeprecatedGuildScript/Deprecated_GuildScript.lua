@@ -14,4 +14,9 @@ do
 	GuildSetMOTD = C_GuildInfo.SetMOTD;
 	GuildLeave = C_GuildInfo.Leave;
 	GuildDisband = C_GuildInfo.Disband;
+
+	-- Deprecated in 12.0.1 onwards.
+	GetGuildRosterMOTD = C_GuildInfo.GetMOTD;
+	GetGuildInfoText = C_GuildInfo.GetInfoText;
+	SetGuildInfoText = C_GuildInfo.SetInfoText;
 end

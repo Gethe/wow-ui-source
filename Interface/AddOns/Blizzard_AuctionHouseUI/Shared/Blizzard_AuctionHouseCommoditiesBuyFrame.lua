@@ -109,6 +109,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 		-- This means the user is prevented from entering an amount to buy greater than the available supply.
 		totalQuantity, totalPrice = AuctionHouseUtil.AggregateSearchResultsByQuantity(self:GetItemID(), quantity);
 		if totalQuantity == 0 then
+			self.oldQuantitySelected = 0;
 			self.QuantityInput:SetQuantity(0);
 			self:SetPrice(0, 0);
 			return;

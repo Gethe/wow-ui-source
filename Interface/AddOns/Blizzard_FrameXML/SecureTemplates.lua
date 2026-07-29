@@ -253,7 +253,14 @@ local forceinsecure = forceinsecure;
 -- Table of supported action functions
 local SECURE_ACTIONS = {};
 
-SECURE_ACTIONS.togglemenu = function(self, unit, button)
+SECURE_ACTIONS.menu = function(self, unit, button, isKeyPress, down)
+	if not down then
+		self:ExecuteAttribute("menu-function", self, unit, button, isKeyPress);
+	end
+end
+
+-- Unused by Blizzard code but retained because the "type" attribute can be set from addons.
+SECURE_ACTIONS.togglemenu = function(self, unit, button, isKeyPress, down)
 	if not unit then 
 		return;
 	end
@@ -313,13 +320,13 @@ SECURE_ACTIONS.actionbar =
         elseif ( action == "decrement" ) then
             ActionBar_PageDown();
         elseif ( tonumber(action) ) then
-            ChangeActionBarPage(action);
+            C_ActionBar.SetActionBarPage(action);
         else
             local a, b = strmatch(action, "^(%d+),%s*(%d+)$");
-            if ( GetActionBarPage() == tonumber(a) ) then
-                ChangeActionBarPage(b);
+            if ( C_ActionBar.GetActionBarPage() == tonumber(a) ) then
+                C_ActionBar.SetActionBarPage(b);
             else
-                ChangeActionBarPage(a);
+                C_ActionBar.SetActionBarPage(a);
             end
         end
     end;
@@ -569,6 +576,29 @@ SECURE_ACTIONS.attribute =
         end
     end;
 
+SECURE_ACTIONS.raidtarget =
+	function(self, unit, button)
+		local marker = tonumber(SecureButton_GetModifiedAttribute(self, "marker", button));
+		local action = SecureButton_GetModifiedAttribute(self, "action", button) or "toggle";
+		unit = unit or "target";
+		marker = marker or 1;
+		if ( action == "set" and GetRaidTargetIndex(unit) ~= marker ) then
+			SetRaidTarget(unit, marker);
+		elseif ( action == "set-unmarked" and GetRaidTargetIndex(unit) == nil ) then
+			SetRaidTarget(unit, marker);
+		elseif ( action == "clear" ) then
+			SetRaidTarget(unit, 0);
+		elseif ( action == "clear-all" ) then
+			RemoveRaidTargets();
+		elseif ( action == "toggle" ) then
+			if ( GetRaidTargetIndex(unit) == marker ) then
+				SetRaidTarget(unit, 0);
+			else
+				SetRaidTarget(unit, marker);
+			end
+		end
+	end;
+
 SECURE_ACTIONS.worldmarker =
 	function(self, unit, button)
 		local marker = tonumber(SecureButton_GetModifiedAttribute(self, "marker", button));
@@ -587,6 +617,48 @@ SECURE_ACTIONS.worldmarker =
 		end
 	end;
 
+SECURE_ACTIONS.teleporthome =
+    function (self, _unit, button)
+		local neighborhoodGUID = SecureButton_GetModifiedAttribute(self, "house-neighborhood-guid", button);
+		local houseGUID = SecureButton_GetModifiedAttribute(self, "house-guid", button);
+		local plotID = tonumber(SecureButton_GetModifiedAttribute(self, "house-plot-id", button));
+
+		if neighborhoodGUID and houseGUID and plotID then
+			C_Housing.TeleportHome(neighborhoodGUID, houseGUID, plotID);
+		end
+    end;
+
+SECURE_ACTIONS.returnhome =
+    function (self, _unit, _button)
+		C_Housing.ReturnAfterVisitingHouse();
+    end;
+
+SECURE_ACTIONS.visithouse =
+    function (self, _unit, button)
+		local neighborhoodGUID = SecureButton_GetModifiedAttribute(self, "house-neighborhood-guid", button);
+		local houseGUID = SecureButton_GetModifiedAttribute(self, "house-guid", button);
+		local plotID = tonumber(SecureButton_GetModifiedAttribute(self, "house-plot-id", button));
+
+		if neighborhoodGUID and houseGUID and plotID then
+			C_Housing.VisitHouse(neighborhoodGUID, houseGUID, plotID);
+		end
+    end;
+
+SECURE_ACTIONS.outfit =
+	function (self, _unit, button)
+		local action = SecureButton_GetModifiedAttribute(self, "action", button) or "toggle";
+		local playerFacingOutfitIndex = tonumber(SecureButton_GetModifiedAttribute(self, "outfit-index", button));
+
+		if action == "clear" then
+			C_TransmogOutfitInfo.ClearOutfit();
+		elseif action == "change" or action == "toggle" then
+			if playerFacingOutfitIndex ~= nil then
+				local allowRemoveOutfit = (action == "toggle");
+				C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
+			end
+		end
+	end;
+
  SecureActionButtonMixin = {};
 
 function SecureActionButtonMixin:CalculateAction(button)
@@ -596,11 +668,11 @@ function SecureActionButtonMixin:CalculateAction(button)
     if ( self:GetID() > 0 ) then
         local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
         if ( not page ) then
-            page = GetActionBarPage();
+            page = C_ActionBar.GetActionBarPage();
             if ( self.isExtra ) then
-                page = GetExtraBarIndex();
+                page = C_ActionBar.GetExtraBarIndex();
             elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
-                page = GetMultiCastBarIndex();
+                page = C_ActionBar.GetMultiCastBarIndex();
             end
         end
         return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
@@ -661,16 +733,20 @@ local function PerformAction(self, button, unit, actionType, down, isKeyPress)
 			-- GMA call allows generic click handler snippets
 			handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
 		end
+
 		if not handler then
-			atRisk = false;
-			-- functions retrieved from table keys carry their own taint
+			-- There exist a few means for this lookup to return user-provided
+			-- functions that don't carry taint, so consider this to be at-risk.
+			atRisk = true;
 			handler = rawget(self, actionType);
 		end
+
 		if type(handler) == 'function' then
 			if atRisk then
 				forceinsecure();
 			end
-			handler(self, unit, button, isKeyPress);
+
+			handler(self, unit, button, isKeyPress, down);
 		elseif type(handler) == 'string' then
 			SecureHandler_OnClick(self, "_"..actionType, button, down);
 		end
@@ -746,40 +822,62 @@ function SecureActionButton_OnClick(self, inputButton, down, isKeyPress, isSecur
 	return false;
 end
 
-function SecureUnitButton_OnLoad(self, unit, menufunc)
-    self:RegisterForClicks("AnyUp");
+function SecureUnitButton_OnLoad(self, unit, menufunc, clickArgs)
+	if clickArgs then
+		self:RegisterForClicks(unpack(clickArgs));
+	else
+		self:RegisterForClicks("AnyUp");
+	end
+
     self:SetAttribute("*type1", "target");
     self:SetAttribute("*type2", "menu");
     self:SetAttribute("unit", unit);
-    self.menu = menufunc;
+    self:SetAttribute("menu-function", menufunc);
 end
 
 function SecureUnitButton_OnClick(self, button, down)
-	if (C_ClickBindings) then -- NOTE: If Classic has ClickBindings someday, remove this.
-		local modifiers = C_ClickBindings.MakeModifiers();
+	local type;
+
+	if C_ClickBindings then -- NOTE: If Classic has ClickBindings someday, remove this.
+		local modifiers = MakeModifiers();
 		local bindingType = C_ClickBindings.GetBindingType(button, modifiers);
-		if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) or (bindingType == Enum.ClickBindingType.PetAction) ) then
+
+		local allowExecute = bindingType == Enum.ClickBindingType.Spell or
+			bindingType == Enum.ClickBindingType.Macro or
+			bindingType == Enum.ClickBindingType.PetAction;
+		if allowExecute then
 			local unit = SecureButton_GetModifiedUnit(self);
 			C_ClickBindings.ExecuteBinding(unit, button, modifiers);
-		else
-			local effectiveButton = (bindingType == Enum.ClickBindingType.Interaction) and C_ClickBindings.GetEffectiveInteractionButton(button, modifiers) or button;
-			local type = SecureButton_GetModifiedAttribute(self, "type", effectiveButton);
-			if ( type == "menu" or type == "togglemenu" ) then
-				if ( SpellIsTargeting() ) then
-					SpellStopTargeting();
-					return;
-				end
-			end
-			OnActionButtonClick(self, effectiveButton, down, false);
+			return;
+		end
+
+		-- If this is an interaction binding, find the default button so that we can retrieve
+		-- the desired 'type' from the frame attributes. We need the default because the
+		-- attribute data is unaware of the click binding system.
+		if bindingType == Enum.ClickBindingType.Interaction then
+			button = C_ClickBindings.GetEffectiveInteractionButton(button, modifiers);
+		end
+
+		type = SecureButton_GetModifiedAttribute(self, "type", button);
+
+		-- If the 'type' can correlate with any interaction, then it can only proceed if the
+		-- interaction binding existed. If it doesn't exist, it's because another click cast
+		-- binding unbound it in conflict.
+		local expectBinding = type == "target" or type == "menu" or type == "togglemenu";
+		if expectBinding and bindingType == Enum.ClickBindingType.None then
+			return;
 		end
 	else
-	    local type = SecureButton_GetModifiedAttribute(self, "type", button);
-		if ( type == "menu" or type == "togglemenu" ) then
-			if ( SpellIsTargeting() ) then
-				SpellStopTargeting();
-				return;
-			end
-		end
-		OnActionButtonClick(self, button, down, false);
+		 type = SecureButton_GetModifiedAttribute(self, "type", button);
 	end
+
+	if type == "menu" or type == "togglemenu" then
+		if SpellIsTargeting() then
+			SpellStopTargeting();
+			return;
+		end
+	end
+
+	local isKeyPress = false;
+	OnActionButtonClick(self, button, down, isKeyPress);
 end

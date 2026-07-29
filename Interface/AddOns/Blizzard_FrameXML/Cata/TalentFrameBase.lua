@@ -1,7 +1,6 @@
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 3;
 MAX_NUM_TALENT_TIERS = 7;
-NUM_TALENT_COLUMNS = 4;
 MAX_NUM_TALENTS = 28;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
@@ -33,7 +32,7 @@ function TalentFrame_Update(TalentFrame)
 	local initialOffsetY = TalentFrame.initialOffsetY or INITIAL_TALENT_OFFSET_Y_DEFAULT;
 	local buttonSpacingX = TalentFrame.buttonSpacingX or (2*talentButtonSize-1);
 	local buttonSpacingY = TalentFrame.buttonSpacingY or (2*talentButtonSize-1);
-	
+
 	-- get active talent group
 	local isActiveTalentGroup;
 	if ( TalentFrame.inspect ) then
@@ -80,7 +79,7 @@ function TalentFrame_Update(TalentFrame)
 	else
 		tabPointsSpent = pointsSpent + previewPointsSpent;
 	end
-	
+
 	TalentFrame_ResetBranches(TalentFrame);
 	local talentFrameTalentName = talentFrameName.."Talent";
 	local forceDesaturated, tierUnlocked;
@@ -99,7 +98,7 @@ function TalentFrame_Update(TalentFrame)
 			if ( talentInfo and talentInfo.tier <= MAX_NUM_TALENT_TIERS) then
 				-- Temp hack - For now, we are just ignoring the "goldBorder" flag and putting the gold border on any "exceptional" talents.
 				talentInfo.goldBorder = talentInfo.isExceptional;
-			
+
 				local displayRank;
 				if ( preview ) then
 					displayRank = talentInfo.previewRank;
@@ -110,7 +109,7 @@ function TalentFrame_Update(TalentFrame)
 				button.Rank:SetText(displayRank);
 				SetTalentButtonLocation(button, talentInfo.tier, talentInfo.column, talentButtonSize, initialOffsetX, initialOffsetY, buttonSpacingX, buttonSpacingY);
 				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
-			
+
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
 				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
 					forceDesaturated = 1;
@@ -124,9 +123,9 @@ function TalentFrame_Update(TalentFrame)
 				else
 					tierUnlocked = nil;
 				end
-					
-				SetItemButtonTexture(button, talentInfo.icon); 
-				
+
+				SetItemButtonTexture(button, talentInfo.icon);
+
 				if (talentInfo.goldBorder and button.GoldBorder) then
 					button.GoldBorder:Show();
 					button.Slot:Hide();
@@ -138,7 +137,7 @@ function TalentFrame_Update(TalentFrame)
 					button.Slot:Show();
 					button.SlotShadow:Show();
 				end
-				
+
 				-- Talent must meet prereqs or the player must have no points to spend
 				local prereqsSet =
 					TalentFrame_SetPrereqs(TalentFrame, talentInfo.tier, talentInfo.column, forceDesaturated, tierUnlocked, preview,
@@ -150,13 +149,13 @@ function TalentFrame_Update(TalentFrame)
 					button.RankBorder:Show();
 					button.RankBorder:SetVertexColor(1, 1, 1);
 					button.Rank:Show();
-					
+
 					button.GoldBorder:SetDesaturated(nil);
 
 					if ( displayRank < talentInfo.maxRank ) then
 						-- Rank is green if not maxed out
 						button.Rank:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-						
+
 						if (button.RankBorderGreen) then
 							button.RankBorder:Hide();
 							button.RankBorderGreen:Show();
@@ -164,7 +163,7 @@ function TalentFrame_Update(TalentFrame)
 						else
 							button.Slot:SetVertexColor(0.1, 1.0, 0.1);
 						end
-						
+
 						if (button.GlowBorder) then
 							if (unspentPoints > 0 and not talentInfo.goldBorder) then
 								button.GlowBorder:Show();
@@ -172,7 +171,7 @@ function TalentFrame_Update(TalentFrame)
 								button.GlowBorder:Hide();
 							end
 						end
-						
+
 						if (button.GoldBorderGlow) then
 							if (unspentPoints > 0 and talentInfo.goldBorder) then
 								button.GoldBorderGlow:Show();
@@ -216,14 +215,14 @@ function TalentFrame_Update(TalentFrame)
 						button.RankBorderGreen:Hide();
 					end
 				end
-				
+
 				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].goldBorder = talentInfo.goldBorder;
-				
+
 				button:Show();
 			else
 				button:Hide();
 			end
-		else	
+		else
 			if (button) then
 				button:Hide();
 			end
@@ -247,13 +246,13 @@ function TalentFrame_Update(TalentFrame)
 	TalentFrame_ResetBranchTextureCount(TalentFrame);
 	TalentFrame_ResetArrowTextureCount(TalentFrame);
 	for i=1, MAX_NUM_TALENT_TIERS do
-		for j=1, NUM_TALENT_COLUMNS do
+		for j=1, Constants.TalentConsts.NumTalentColumns do
 			node = TalentFrame.TALENT_BRANCH_ARRAY[i][j];
-			
+
 			-- Setup offsets
 			xOffset = ((j - 1) * buttonSpacingX) + initialOffsetX + (TalentFrame.branchOffsetX or 0);
 			yOffset = -((i - 1) * buttonSpacingY) - initialOffsetY + (TalentFrame.branchOffsetY or 0);
-			
+
 			-- Always draw Right and Down branches, never draw Left and Up branches as those will be drawn by the preceeding talent
 			if ( node.down ~= 0 ) then
 				TalentFrame_SetBranchTexture(i, j, TALENT_BRANCH_TEXTURECOORDS["down"][node.down], xOffset, yOffset - talentButtonSize, TalentFrame, talentButtonSize, buttonSpacingY - talentButtonSize);
@@ -261,7 +260,7 @@ function TalentFrame_Update(TalentFrame)
 			if ( node.right ~= 0 ) then
 				TalentFrame_SetBranchTexture(i, j, TALENT_BRANCH_TEXTURECOORDS["right"][node.right], xOffset + talentButtonSize, yOffset, TalentFrame, buttonSpacingX - talentButtonSize, talentButtonSize);
 			end
-			
+
 			if (node.id) then
 				-- There is a talent in this slot; draw arrows
 				local arrowInsetX, arrowInsetY = (TalentFrame.arrowInsetX or 0), (TalentFrame.arrowInsetY or 0);
@@ -269,7 +268,7 @@ function TalentFrame_Update(TalentFrame)
 					arrowInsetX = arrowInsetX - TALENT_GOLD_BORDER_WIDTH;
 					arrowInsetY = arrowInsetY - TALENT_GOLD_BORDER_WIDTH;
 				end
-				
+
 				if ( node.rightArrow ~= 0 ) then
 					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["right"][node.rightArrow], xOffset + talentButtonSize/2 - arrowInsetX, yOffset, TalentFrame);
 				end

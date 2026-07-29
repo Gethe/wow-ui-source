@@ -7,7 +7,9 @@ end
 local l10nTable = {
 	deDE = {
 		localize = function()
-			PriceDropdown:SetWidth(100);
+			if(PriceDropdown) then
+				PriceDropdown:SetWidth(100);
+			end
 		end,
 	},
 	enGB = {

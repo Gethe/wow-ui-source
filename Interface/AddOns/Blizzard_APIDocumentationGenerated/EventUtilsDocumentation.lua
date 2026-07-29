@@ -3,16 +3,31 @@ local EventUtils =
 	Name = "EventUtils",
 	Type = "System",
 	Namespace = "C_EventUtils",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "IsCallbackEvent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCallbackEvent", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "IsEventValid",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "eventName", Type = "stringView", Nilable = false },
 			},
 
 			Returns =
@@ -20,22 +35,16 @@ local EventUtils =
 				{ Name = "valid", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "NotifySettingsLoaded",
-			Type = "Function",
-		},
 	},
 
 	Events =
 	{
-		{
-			Name = "SettingsLoaded",
-			Type = "Event",
-			LiteralName = "SETTINGS_LOADED",
-		},
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

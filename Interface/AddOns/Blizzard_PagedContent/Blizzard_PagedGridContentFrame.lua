@@ -54,6 +54,29 @@ function BasePagedGridContentFrameMixin:ApplyLayout(layoutFrames, viewFrame)
 	GridLayoutUtil.ApplyGridLayout(layoutFrames, AnchorUtil.CreateAnchor("TOPLEFT", viewFrame, "TOPLEFT"), self.viewLayout);
 end
 
+function BasePagedGridContentFrameMixin:TryGetMaxGridCountForTemplateInViewFrame(elementTemplateInfo, viewFrame)
+	if not self.viewLayout then
+		return nil, nil;
+	end
+
+	local heightPerElement = elementTemplateInfo.height + self.viewLayout.secondarySizePadding;
+
+	local isHeader = false;
+	local isFirstInRow = false;
+	local widthPerElement = self:GetElementStride(elementTemplateInfo, isHeader, isFirstInRow);
+
+	if heightPerElement == 0 or widthPerElement == 0 then
+		return nil, nil;
+	end
+
+	local totalViewHeight = self:GetTotalViewSpace(viewFrame);
+	local maxRows = Round(totalViewHeight / heightPerElement);
+
+	local totalViewWidth = self.viewLayout.stride + self.viewLayout.primarySizePadding;
+	local maxColumns = Round(totalViewWidth / widthPerElement);
+
+	return maxColumns, maxRows;
+end
 
 ----------------- Cell Size Grid -----------------
 -- Elements take up a specified cell size out of available cellsPerRow

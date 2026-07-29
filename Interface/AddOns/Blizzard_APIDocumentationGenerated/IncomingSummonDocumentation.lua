@@ -3,6 +3,7 @@ local IncomingSummon =
 	Name = "IncomingSummon",
 	Type = "System",
 	Namespace = "C_IncomingSummon",
+	Environment = "All",
 
 	Functions =
 	{
@@ -56,6 +57,9 @@ local IncomingSummon =
 				{ Name = "Declined", Type = "SummonStatus", EnumValue = 3 },
 			},
 		},
+	},
+	Predicates =
+	{
 	},
 };
 

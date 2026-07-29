@@ -28,6 +28,9 @@ local AppearanceSource =
 			},
 		},
 	},
+	Predicates =
+	{
+	},
 };
 
 APIDocumentation:AddDocumentationTable(AppearanceSource);

@@ -232,5 +232,9 @@ function BindingButtonTemplate_SetupBindingButton(binding, button)
 end
 
 function BindingUtil.UsingMouseoverCasting()
+	if IsMouseoverCastSupported() == false then
+		return false;
+	end
+
 	return Settings.GetValue("enableMouseoverCast") and ((Settings.GetValue("MOUSEOVERCAST") == "NONE") or IsModifiedClick("MOUSEOVERCAST"));
 end

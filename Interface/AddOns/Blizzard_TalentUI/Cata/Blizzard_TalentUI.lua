@@ -344,7 +344,7 @@ function PlayerTalentFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, NUM_TALENT_FRAME_TABS);
 	
 	-- setup portrait texture
-	SetPortraitToTexture(PlayerTalentFramePortrait, "Interface\\Icons\\Ability_Marksmanship");
+	PlayerTalentFramePortrait:SetTexture("Interface\\Icons\\Ability_Marksmanship");
 	
 	-- initialize active spec
 	PlayerTalentFrame_UpdateActiveSpec(C_SpecializationInfo.GetActiveSpecGroup(false, false));
@@ -702,7 +702,7 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 	
 	if (self.Summary and icon) then
 		local summary = self.Summary;
-		SetPortraitToTexture(self.Summary.Icon, icon);
+		self.Summary.Icon:SetTexture(icon);
 		if (PlayerTalentFrame.primaryTree or GetNumTalentPoints() == 0) then
 			self.Summary.TitleText:SetText(name);
 			self.Summary.TitleText:Show();

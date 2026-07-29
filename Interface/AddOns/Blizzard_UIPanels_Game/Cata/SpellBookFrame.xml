@@ -32,7 +32,7 @@
 	</Texture>
 	
 	<Frame name="SpellBookShineTemplate" inherits="AutoCastOverlayTemplate" virtual="true">
-		<Size  x="30" y="30"/>
+		<Size x="30" y="30"/>
 	</Frame>
 	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
 		<Size x="32" y="32"/>
@@ -41,11 +41,7 @@
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -86,7 +82,15 @@
 			</OnDisable>
 		</Scripts>
     </Button>
-	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
+	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate, FlyoutButtonTemplate" mixin="SpellButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="popupDirection" value="RIGHT" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
+			<KeyValue key="openArrowOffset" value="2" type="number"/>
+			<KeyValue key="closedArrowOffset" value="4" type="number"/>
+			<KeyValue key="buttonContext" value="ButtonContext_SpellButton" type="string"/>
+		</KeyValues>
 		<Size x="37" y="37" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -156,15 +160,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
-					<Size x="23" y="11" />
-					<Anchors>
-						<Anchor point="RIGHT" x="2" y="0" />
-					</Anchors>
-					<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500" />
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
 					<Anchors>
@@ -195,9 +190,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
-			<PreClick>
-				self:SetChecked(false);
-			</PreClick>
+			<PreClick> self:SetChecked(false); </PreClick>
 			<OnClick method="OnClick" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
@@ -209,19 +202,15 @@
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 		<Size x="64" y="64"/>
-					<Anchors>
-				<Anchor point="CENTER">
-							<Offset>
-						<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
-	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
+	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate, FlyoutButtonTemplate" mixin="SpellButtonMixin" virtual="true">
 		<Size x="40" y="40" />
 		<Layers>
 			<Layer level="BORDER">
@@ -265,9 +254,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
-			<PreClick>
-				self:SetChecked(false);
-			</PreClick>
+			<PreClick> self:SetChecked(false); </PreClick>
 			<OnClick method="OnClick" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
@@ -557,7 +544,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton2" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>
-      </Button>
+			</Button>
 			<Button name="SpellBookFrameTabButton4" inherits="SpellBookFrameTabButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton3" relativePoint="RIGHT" x="-15" y="0" />
@@ -577,11 +564,7 @@
 						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
 							<Size x="102" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-110" y="38"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="-110" y="38"/>
 							</Anchors>
 							<Color r="0.25" g="0.12" b="0"/>
 						</FontString>
@@ -733,11 +716,7 @@
 					<Frame name="SpellBookTabFlashFrame" hidden="true">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">

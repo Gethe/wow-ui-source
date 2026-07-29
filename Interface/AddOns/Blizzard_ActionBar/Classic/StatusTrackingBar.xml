@@ -143,6 +143,11 @@
 
 	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
 		<Size x="1024" y="23"/>
+		<KeyValues>
+			<!-- Used in StatusTrackingBarContainerMixin:InitializeBars to set container scale-->
+			<KeyValue key="ClassicScale" value="1" type="number"/>
+			<KeyValue key="WrathScale" value="1.015" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-13"/>
 		</Anchors>

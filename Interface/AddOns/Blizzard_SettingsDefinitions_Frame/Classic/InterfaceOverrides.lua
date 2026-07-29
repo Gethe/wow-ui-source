@@ -1,55 +1,38 @@
 InterfaceOverrides = {}
 
-function InterfaceOverrides.CreateLargerNameplateSetting(category)
-	--no setting in Classic
-end
-
-function InterfaceOverrides.AdjustNameplateSettings(category)
-	if GetClassicExpansionLevel() > LE_EXPANSION_CLASSIC then
-		-- Nameplate Distance
-		local minValue, maxValue, step = 20, 41, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
-		Settings.SetupCVarSlider(category, "nameplateMaxDistance", options, UNIT_NAMEPLATES_MAX_DISTANCE, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAX_DISTANCE);
-	end
-
-	-- Nameplate Show Cast Bars
-	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckbox(category, "nameplateShowCastBars", UNIT_NAMEPLATES_SHOW_CAST_BARS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_CAST_BARS);
-	end);
-end
-
 function InterfaceOverrides.AdjustDisplaySettings(category)
-	do
-		-- Show Helm
-		local function GetValue()
-			return ShowingHelm();
+	if (not C_TransmogOutfitInfo.IsTransmogEnabled()) then
+		do
+			-- Show Helm
+			local function GetValue()
+				return ShowingHelm();
+			end
+			
+			local function SetValue(value)
+				ShowHelm(value);
+			end
+			
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_HELM",
+				Settings.VarType.Boolean, SHOW_HELM, defaultValue, GetValue, SetValue);
+			Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_HELM);
 		end
-		
-		local function SetValue(value)
-			ShowHelm(value);
+	
+		do
+			-- Show Cloak
+			local function GetValue()
+				return ShowingCloak();
+			end
+			
+			local function SetValue(value)
+				ShowCloak(value);
+			end
+			
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_CLOAK",
+				Settings.VarType.Boolean, SHOW_CLOAK, defaultValue, GetValue, SetValue);
+			Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_CLOAK);
 		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_HELM",
-			Settings.VarType.Boolean, SHOW_HELM, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_HELM);
-	end
-
-	do
-		-- Show Cloak
-		local function GetValue()
-			return ShowingCloak();
-		end
-		
-		local function SetValue(value)
-			ShowCloak(value);
-		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_CLOAK",
-			Settings.VarType.Boolean, SHOW_CLOAK, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_CLOAK);
 	end
 
 	if (C_GameRules.IsHardcoreActive()) then
@@ -106,9 +89,6 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		-- Consolidate Buffs
 		Settings.SetupCVarCheckbox(category, "consolidateBuffs", CONSOLIDATE_BUFFS_TEXT, OPTION_TOOLTIP_CONSOLIDATE_BUFFS);
 	end
-
-	-- Hide Zone Objective Tracker
-	Settings.SetupCVarCheckbox(category, "hideOutdoorWorldState", HIDE_OUTDOOR_WORLD_STATE_TEXT, OPTION_TOOLTIP_HIDE_OUTDOOR_WORLD_STATE);
 
 	do
 		-- Show Minimap Clock
@@ -197,6 +177,10 @@ local function RevertSetting(name)
 end
 
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
+	-- TODO: As of 12.0.7, Classic Raid Frame options closely match Mainline ones.
+	-- Unfork these at a point where it's convenient, with overrides
+	-- to hide any options that Classic doesn't want.
+
 	-- Raid Frame Preview
 	do
 		local data = { };
@@ -224,7 +208,55 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	end
 
 	-- Class Colors
-	Settings.SetupCVarCheckbox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+	do
+		local displayClassColorsSetting = Settings.RegisterCVarSetting(category, "raidFramesDisplayClassColor", Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+		local function GetCVarHealthBarColor()
+			local healthColorString = CVarCallbackRegistry:GetCVarValue("raidFramesHealthBarColor");
+			local color = CreateColorFromHexString(healthColorString);
+			return color or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+		end
+
+		local function OpenHealthBarColorPicker(swatch, button, isDown)
+			local info = {};
+			info.swatch = swatch;
+
+			local healthColor = GetCVarHealthBarColor();
+			info.r, info.g, info.b = healthColor:GetRGB();
+
+			local currentColor = CreateColor(0, 0, 0, 0); -- Making this here to avoid churn
+			info.swatchFunc = function()
+				local r,g,b = ColorPickerFrame:GetColorRGB();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			info.cancelFunc = function()
+				local r,g,b = ColorPickerFrame:GetPreviousValues();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			ColorPickerFrame:SetupColorPickerAndShow(info);
+		end
+
+		local clickRequiresSet = true;
+		local invertClickRequiresSet = true;
+		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
+			displayClassColorsSetting,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
+			OpenHealthBarColorPicker,
+			clickRequiresSet,
+			invertClickRequiresSet,
+			GetCVarHealthBarColor,
+			COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR
+		);
+
+		layout:AddInitializer(displayClassColorsInitializer);
+
+		Settings.SetupCVarColorSwatch(category, "raidFramesHealthBarColorBG", COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR_BG, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_BG_COLOR);
+	end
 
 	-- Pets
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
@@ -232,21 +264,42 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	-- Main Tank and Assist
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
 
+	-- Debuffs
 	do
-		-- Debuffs
 		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
 
-		-- Only Dispellable Debuffs
 		local function IsModifiable()
 			return debuffSetting:GetValue();
 		end
 
-		local _, initializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+		-- Only Dispellable Debuffs
+		local _, dispellableInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		dispellableInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Dispel Indicator Types (upper right poison, magic, disease, bleed, curse)
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelDisplayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelDisplayType.DispellableByMe, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME);
+			container:Add(Enum.RaidDispelDisplayType.DisplayAll, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL);
+			return container:GetData();
+		end
+
+		local dispelSetting, dispelInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorType", Settings.VarType.Number, GetOptions, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE);
+
+		local function IsModifiable()
+			return tonumber(dispelSetting:GetValue()) ~= Enum.RaidDispelDisplayType.Disabled;
+		end
+
+		-- Dispel Color Overlay
+		local _, dispelOverlayInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlay", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
+		dispelOverlayInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
 	end
 
 	-- Health Text
-	do 
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
@@ -261,6 +314,10 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 end
 
 function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
+	--No setting in Classic
+end
+
+function InterfaceOverrides.CreateHousingSettings(category, layout)
 	--No setting in Classic
 end
 

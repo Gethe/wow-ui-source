@@ -1,0 +1,26 @@
+## Title: Blizzard_EncounterTimeline
+## AllowLoadGameType: standard
+## Dependencies: Blizzard_EditMode
+
+EncounterTimelineConstants.lua
+EncounterTimelineUtil.lua
+EncounterTimelineScriptedAnimationUtil.lua
+EncounterTimelineSettings.lua
+EncounterTimelineEventFrame.lua
+EncounterTimelineEventFrame.xml
+EncounterTimelineFrameManager.lua
+EncounterTimelineDataProvider.lua
+EncounterTimelineTemplates.lua
+EncounterTimelineTemplates.xml
+EncounterTimelineView.lua
+EncounterTimelineTrackLayout.lua
+EncounterTimelineTrackEvent.xml
+EncounterTimelineTrackEvent.lua
+EncounterTimelineTrackView.lua
+EncounterTimelineTrackView.xml
+EncounterTimelineTimerEvent.xml
+EncounterTimelineTimerEvent.lua
+EncounterTimelineTimerView.lua
+EncounterTimelineTimerView.xml
+EncounterTimeline.lua
+EncounterTimeline.xml

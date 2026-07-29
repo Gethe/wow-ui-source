@@ -2073,7 +2073,7 @@ local function SetupUnitPriceTooltip(tooltip, type, auctionItem, insertNewline)
 			else
 				prefix = AUCTION_TOOLTIP_TOTAL_BID_PREFIX;
 			end
-			SetTooltipMoney(tooltip, amount, "AUCTION_TOOLTIP", prefix);
+			GameTooltip_AddHighlightLine(tooltip, string.join(" ", prefix, MoneyFormatterUtil.FormatMoney(amount, MoneyFormatterPresets.ShowLowerWithZero)));
 		end
 
 		if ( hasBuyout ) then
@@ -2084,7 +2084,7 @@ local function SetupUnitPriceTooltip(tooltip, type, auctionItem, insertNewline)
 			else
 				prefix = AUCTION_TOOLTIP_TOTAL_BUYOUT_PREFIX;
 			end
-			SetTooltipMoney(tooltip, amount, "AUCTION_TOOLTIP", prefix);
+			GameTooltip_AddHighlightLine(tooltip, string.join(" ", prefix, MoneyFormatterUtil.FormatMoney(amount, MoneyFormatterPresets.ShowLowerWithZero)));
 		end
 
 		-- This is necessary to update the extents of the tooltip

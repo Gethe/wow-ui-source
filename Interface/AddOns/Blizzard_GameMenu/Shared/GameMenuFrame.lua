@@ -3,6 +3,22 @@ G_GameMenuFrameContextKey = "GameMenuFrame";
 
 GameMenuFrameMixin = {};
 
+StaticPopupDialogs["GAMEMENU_EXTERNALEVENT_FAILURE"] = {
+	text = GAMEMENU_EXTERNALEVENT_FAILURE,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function(dialog, data)
+	end,
+	OnHyperlinkClick = function(dialog, data)
+		LoadURLIndex(67);
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
 local GameMenuFrameEvents = {
 	"STORE_STATUS_CHANGED",
 	"TRIAL_STATUS_UPDATE",
@@ -13,6 +29,8 @@ function GameMenuFrameMixin:OnLoad()
 
 	self:AddStaticEventMethod(EventRegistry, "UIPanel.FrameHidden", GameMenuFrameMixin.OnUIPanelHidden);
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GameMenuFrameMixin.OnStoreFrameClosed);
+	-- This event can occur without the frame being shown.
+	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_FAILED", GameMenuFrameMixin.OnExternalEventLaunchUrlFailed, self);
 end
 
 function GameMenuFrameMixin:OnShow()
@@ -27,6 +45,8 @@ function GameMenuFrameMixin:OnShow()
 	end
 
 	self:InitButtons();
+
+	EventRegistry:TriggerEvent("GameMenuFrame.Shown");
 end
 
 function GameMenuFrameMixin:OnHide()
@@ -57,6 +77,16 @@ function GameMenuFrameMixin:OnUIPanelHidden(contextKey)
 	end
 end
 
+function GameMenuFrameMixin:ExternalEventClickCallback()
+	if C_ExternalEventURL.HasURL() then
+		C_ExternalEventURL.LaunchURL();
+	end
+end
+
+function GameMenuFrameMixin:OnExternalEventLaunchUrlFailed()
+	StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+end
+
 function GameMenuFrameMixin:InitButtons()
 	self:Reset();
 
@@ -72,7 +102,7 @@ function GameMenuFrameMixin:InitButtons()
 	if C_ExternalEventURL.HasURL() then
 		local isNew = C_ExternalEventURL.IsNew();
 		local useGoldRedButton = true;
-		local externalEventButton = self:AddButton(GAMEMENU_EXTERNALEVENT, GenerateMenuCallback(function() C_ExternalEventURL.LaunchURL() end), nil, nil, useGoldRedButton);
+		local externalEventButton = self:AddButton(GAMEMENU_EXTERNALEVENT, GenerateMenuCallback(function() self:ExternalEventClickCallback() end), nil, nil, useGoldRedButton);
 		if isNew then
 			self.NewExternalEventFrame:SetPoint("BOTTOMRIGHT", externalEventButton:GetFontString(), "LEFT", 16, -10);
 			self.NewExternalEventFrame:Show();
@@ -97,9 +127,7 @@ function GameMenuFrameMixin:InitButtons()
 	local storeEnabled = shop1Enabled or shop2Enabled;
 
 	if storeEnabled then
-		local disabledByParentalControls = C_StorePublic.IsDisabledByParentalControls();
-		local storeDisabledTooltip = disabledByParentalControls and BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS or nil;
-		local storeDisabled = isKioskDisabled or disabledByParentalControls;
+		local storeDisabled = isKioskDisabled;
 		self:AddButton(BLIZZARD_STORE, GenerateMenuCallback(GenerateFlatClosure(ToggleStoreUI, G_GameMenuFrameContextKey)), storeDisabled, storeDisabledTooltip);
 	end
 

@@ -482,7 +482,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
-		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
 	else
 		--Update your role icons
 		if ( isDPS ) then
@@ -709,7 +709,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 			local button = description:CreateButton(SURRENDER_ARENA, function()
 				ConfirmSurrenderArena();
 			end);
-			if not CanSurrenderArena() or C_PvP.IsSoloShuffle() then
+			if not C_PvP.CanSurrenderArena() or C_PvP.IsSoloShuffle() then
 				button:SetEnabled(false);
 			end
 			disabled = false;
@@ -884,23 +884,6 @@ function QueueStatus_InActiveBattlefield()
 end
 
 function TogglePVPScoreboardOrResults()
-	if C_AddOns.IsAddOnLoaded("Blizzard_PVPMatch") then
-		local isComplete = C_PvP.IsMatchComplete();
-		if isComplete then
-			if PVPMatchResults:IsShown() then
-				HideUIPanel(PVPMatchResults);
-			else
-				PVPMatchResults:BeginShow();
-			end
-		else
-			if PVPMatchScoreboard:IsShown() then
-				HideUIPanel(PVPMatchScoreboard);
-			else
-				local isActive = C_PvP.IsMatchActive();
-				if isActive and (not C_PvP.IsMatchConsideredArena() or C_PvP.IsSoloShuffle()) then
-					PVPMatchScoreboard:BeginShow();
-				end
-			end
-		end
-	end
+	-- For Classic, we just handle this with the WorldStateScoreFrame.
+	ToggleWorldStateScoreFrame();
 end

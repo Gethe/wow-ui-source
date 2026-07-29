@@ -20,6 +20,8 @@ GLUE_SECONDARY_SCREENS = {
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 GENERIC_DISCONNECTED_ERROR_CODE = 319;
 
+CHAR_MODEL_GLOW_DEFAULT = 0.3;
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -442,6 +444,7 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 
 	model:SetModel(background, true);
+	model:SetUseGBuffer(true);
 	model:SetCamera(0);
 	model:SetSequence(0);
 end
@@ -450,19 +453,26 @@ local function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
 	model:ClearFog();
-	model:SetGlow(0.3);
+	model:SetGlow(CHAR_MODEL_GLOW_DEFAULT);
 
-    model:ResetLights();
+	model:ResetLights();
 end
 
 local function UpdateLighting(model)
 	-- TODO: Remove this and CHAR_MODEL_FOG_INFO and bake fog into models as desired.
-    local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
-    if fogData then
-    	model:SetFogNear(0);
-    	model:SetFogFar(fogData.far);
-    	model:SetFogColor(fogData.r, fogData.g, fogData.b);
-    end
+	local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
+	if fogData then
+		model:SetFogNear(0);
+		model:SetFogFar(fogData.far);
+		model:SetFogColor(fogData.r, fogData.g, fogData.b);
+	end
+
+	local glowInfo = CHAR_MODEL_GLOW_INFO[GetCurrentGlueTag()];
+	if ( glowInfo ) then
+		model:SetGlow(glowInfo);
+	else
+		model:SetGlow(CHAR_MODEL_GLOW_DEFAULT);
+	end
 end
 
 local glueScreenTags =
@@ -668,7 +678,9 @@ function SetBackgroundModel(model, path)
 	PlayGlueAmbienceFromTag();
 
 	ResetLighting(model);
-	UpdateLighting(model);
+	if (model ~= CharacterCreate or CHAR_CREATE_USES_MODEL_FOG) then
+		UpdateLighting(model);
+	end
 
 	-- In 1.12, the Character Create screen shows fog but the Character Select screen doesn't.
 	-- (CCharacterSelection::SetBackgroundModel() sets the lighing back to GenericLightingCallback)

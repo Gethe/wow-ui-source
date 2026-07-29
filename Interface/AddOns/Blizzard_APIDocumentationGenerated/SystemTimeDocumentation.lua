@@ -2,6 +2,7 @@ local SystemTime =
 {
 	Name = "SystemTime",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -12,6 +13,9 @@ local SystemTime =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

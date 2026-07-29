@@ -3,25 +3,52 @@ local HousingDecorUI =
 	Name = "HousingDecorUI",
 	Type = "System",
 	Namespace = "C_HousingDecor",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unsaved changes and deselect the active target" },
 		},
 		{
 			Name = "CommitDecorMovement",
+			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the currently selected decor instance" },
+		},
+		{
+			Name = "EnterPreviewState",
+			Type = "Function",
+		},
+		{
+			Name = "ExitPreviewState",
 			Type = "Function",
 		},
 		{
 			Name = "GetAllPlacedDecor",
 			Type = "Function",
 			HasRestrictions = true,
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Returns =
 			{
 				{ Name = "placedDecor", Type = "table", InnerType = "HousingDecorInstanceListEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDecorHyperlink",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperLink", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -42,6 +69,7 @@ local HousingDecorUI =
 		{
 			Name = "GetDecorInstanceInfoForGUID",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance associated with the passed Decor GUID, if there is one" },
 
 			Arguments =
 			{
@@ -71,6 +99,7 @@ local HousingDecorUI =
 		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -78,17 +107,9 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "GetMaxDecorPlaced",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "numPlaced", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMaxPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns the max decor placement budget for the current house interior or plot; Can be increased via house level" },
 
 			Returns =
 			{
@@ -98,6 +119,7 @@ local HousingDecorUI =
 		{
 			Name = "GetNumDecorPlaced",
 			Type = "Function",
+			Documentation = { "Returns the number of individual decor objects placed in the current house or plot; This is NOT the value used in placement budget calculations, see GetSpentPlacementBudget for that" },
 
 			Returns =
 			{
@@ -105,8 +127,18 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "GetNumPreviewDecor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numDecor", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSelectedDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance that's currently selected, if there is one" },
 
 			Returns =
 			{
@@ -116,6 +148,7 @@ local HousingDecorUI =
 		{
 			Name = "GetSpentPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns how much of the current house interior or plot's decor placement budget has been spent; Different kinds of decor take up different budget amounts, so this value isn't an individual decor count, see GetNumDecorPlaced for that" },
 
 			Returns =
 			{
@@ -125,6 +158,7 @@ local HousingDecorUI =
 		{
 			Name = "HasMaxPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns whether there's a max decor placement budget available and active for the current player, in the current house interior or plot" },
 
 			Returns =
 			{
@@ -134,6 +168,7 @@ local HousingDecorUI =
 		{
 			Name = "IsDecorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently selected" },
 
 			Returns =
 			{
@@ -152,6 +187,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHouseExteriorDoorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the entry door of the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -161,6 +197,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHouseExteriorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -170,6 +207,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently being hovered" },
 
 			Returns =
 			{
@@ -177,9 +215,33 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "IsModeDisabledForPreviewState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mode", Type = "HouseEditorMode", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isModeDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPreviewState",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPreviewState", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RemovePlacedDecorEntry",
 			Type = "Function",
 			HasRestrictions = true,
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -189,6 +251,7 @@ local HousingDecorUI =
 		{
 			Name = "RemoveSelectedDecor",
 			Type = "Function",
+			Documentation = { "Attempt to return the currently selected decor instance back to the house chest" },
 		},
 		{
 			Name = "SetGridVisible",
@@ -203,6 +266,7 @@ local HousingDecorUI =
 			Name = "SetPlacedDecorEntryHovered",
 			Type = "Function",
 			HasRestrictions = true,
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -214,6 +278,7 @@ local HousingDecorUI =
 			Name = "SetPlacedDecorEntrySelected",
 			Type = "Function",
 			HasRestrictions = true,
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -229,6 +294,7 @@ local HousingDecorUI =
 			Name = "HouseDecorAddedToChest",
 			Type = "Event",
 			LiteralName = "HOUSE_DECOR_ADDED_TO_CHEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -239,6 +305,7 @@ local HousingDecorUI =
 			Name = "HouseExteriorPositionFailure",
 			Type = "Event",
 			LiteralName = "HOUSE_EXTERIOR_POSITION_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
@@ -248,20 +315,13 @@ local HousingDecorUI =
 			Name = "HouseExteriorPositionSuccess",
 			Type = "Event",
 			LiteralName = "HOUSE_EXTERIOR_POSITION_SUCCESS",
-		},
-		{
-			Name = "HouseLevelChanged",
-			Type = "Event",
-			LiteralName = "HOUSE_LEVEL_CHANGED",
-			Payload =
-			{
-				{ Name = "newHouseLevelInfo", Type = "HousingLevelInfo", Nilable = true },
-			},
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingDecorGridVisibilityStatusChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_GRID_VISIBILITY_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isGridVisible", Type = "bool", Nilable = false },
@@ -271,6 +331,7 @@ local HousingDecorUI =
 			Name = "HousingDecorPlaceFailure",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PLACE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
@@ -280,17 +341,30 @@ local HousingDecorUI =
 			Name = "HousingDecorPlaceSuccess",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PLACE_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false, Documentation = { "Will be true if the decor is newly placed from storage, false if it was already placed and just moved" } },
+				{ Name = "isPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorPreviewStateChanged",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_STATE_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isPreviewState", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "HousingDecorRemoved",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -300,6 +374,7 @@ local HousingDecorUI =
 			Name = "HousingDecorSelectResponse",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_SELECT_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -309,31 +384,23 @@ local HousingDecorUI =
 			Name = "HousingNumDecorPlacedChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_NUM_DECOR_PLACED_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 
 	Tables =
 	{
 		{
-			Name = "HousingDecorActionFlags",
+			Name = "LightRadiusIndicatorType",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1024,
+			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "None", Type = "HousingDecorActionFlags", EnumValue = 0 },
-				{ Name = "Add", Type = "HousingDecorActionFlags", EnumValue = 1 },
-				{ Name = "Remove", Type = "HousingDecorActionFlags", EnumValue = 2 },
-				{ Name = "DragMove", Type = "HousingDecorActionFlags", EnumValue = 4 },
-				{ Name = "PrecisionMove", Type = "HousingDecorActionFlags", EnumValue = 8 },
-				{ Name = "ClickTarget", Type = "HousingDecorActionFlags", EnumValue = 16 },
-				{ Name = "HoverTarget", Type = "HousingDecorActionFlags", EnumValue = 32 },
-				{ Name = "TargetRoomComponents", Type = "HousingDecorActionFlags", EnumValue = 64 },
-				{ Name = "TargetHouseExterior", Type = "HousingDecorActionFlags", EnumValue = 128 },
-				{ Name = "MaintainLastTarget", Type = "HousingDecorActionFlags", EnumValue = 256 },
-				{ Name = "IncludeTargetChildren", Type = "HousingDecorActionFlags", EnumValue = 512 },
-				{ Name = "UsePlacedDecorList", Type = "HousingDecorActionFlags", EnumValue = 1024 },
+				{ Name = "Always", Type = "LightRadiusIndicatorType", EnumValue = 0 },
+				{ Name = "Overlap", Type = "LightRadiusIndicatorType", EnumValue = 1 },
+				{ Name = "Never", Type = "LightRadiusIndicatorType", EnumValue = 2 },
 			},
 		},
 		{
@@ -346,18 +413,9 @@ local HousingDecorUI =
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
-		{
-			Name = "HousingLevelInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "interiorDecorPlacementBudget", Type = "number", Nilable = false },
-				{ Name = "exteriorDecorPlacementBudget", Type = "number", Nilable = false },
-				{ Name = "roomPlacementBudget", Type = "number", Nilable = false },
-				{ Name = "exteriorFixtureBudget", Type = "number", Nilable = false },
-			},
-		},
+	},
+	Predicates =
+	{
 	},
 };
 

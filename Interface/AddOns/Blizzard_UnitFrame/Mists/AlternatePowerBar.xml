@@ -90,7 +90,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="114" y="23"/>
+					<AbsDimension x="96" y="19"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

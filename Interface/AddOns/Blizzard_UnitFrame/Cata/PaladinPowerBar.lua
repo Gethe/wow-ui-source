@@ -10,7 +10,7 @@ function PaladinPowerBar_ToggleHolyRune(self, visible)
 end
 
 function PaladinPowerBar_Update(self)
-	local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, Enum.PowerType.HolyPower );
+	local numHolyPower = UnitPower( PlayerFrame.unit, Enum.PowerType.HolyPower );
 
 	for i=1,MAX_HOLY_POWER do
 		local holyRune = self["rune"..i];
@@ -57,7 +57,7 @@ function PaladinPowerBar_OnLoad (self)
 end
 
 function PaladinPowerBar_OnEvent (self, event, arg1, arg2)
-	if ( ( (event == "UNIT_POWER_UPDATE") or (event == "UNIT_POWER_FREQUENT") ) and (arg1 == self:GetParent().unit) ) then
+	if ( ( (event == "UNIT_POWER_UPDATE") or (event == "UNIT_POWER_FREQUENT") ) and (arg1 == PlayerFrame.unit) ) then
 		if ( arg2 == "HOLY_POWER" ) then
 			PaladinPowerBar_Update(self);
 		end

@@ -2,6 +2,7 @@ local SimpleHTMLAPI =
 {
 	Name = "SimpleHTMLAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -182,6 +183,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
 
 			Arguments =
 			{
@@ -304,6 +307,9 @@ local SimpleHTMLAPI =
 	},
 
 	Tables =
+	{
+	},
+	Predicates =
 	{
 	},
 };

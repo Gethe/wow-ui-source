@@ -560,9 +560,17 @@ function StaticPopup_OnShow(dialog)
 		dialogInfo.OnShow(dialog, dialog.data);
 	end
 
+	-- The "cover" parameter means use the GlueFrame BlockingFrame (not the Cover frame defined in the dialog itself).
 	if dialogInfo.cover then
 		assert(atGlues); -- No modal frame implementation it glue
 		GlueParent_AddModalFrame(dialog);
+	end
+
+	-- The "fullScreenCover" parameter means use the Cover frame defined in the dialog itself (not the GlueFrame BlockingFrame).
+	-- This is useful for frames such as the CatalogShop, where the CatalogShop is on the FULLSCREEN_DIALOG strata, and the
+	-- GlueFrame BlockingFrame's strata is too low.
+	if (dialog.Cover) then
+		dialog.Cover:SetShown(not not dialogInfo.fullScreenCover);
 	end
 
 	if atGlues or dialogInfo.enterClicksFirstButton then

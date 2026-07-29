@@ -22,6 +22,7 @@ function CatalogShopHeaderFrameMixin:SetCategories(...)
 	end
 
 	self.CatalogShopNavBar:Init(categoryButtonInfos);
+	self.CatalogShopNavBar:UpdateNotifications();
 end
 
 function CatalogShopHeaderFrameMixin:Init(...)

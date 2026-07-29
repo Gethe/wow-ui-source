@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<StatusBar name="DemonHunterSoulFragmentsBarTemplate" mixin="DemonHunterSoulFragmentsBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerName" value="SOUL_FRAGMENTS" type="string" />
+		</KeyValues>
+	</StatusBar>
+
+	<StatusBar name="DemonHunterSoulFragmentsBar" inherits="PlayerFrameAlternatePowerBarBaseTemplate, DemonHunterSoulFragmentsBarTemplate">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CollapsingStarBackground" atlas="UF-DDH-CollapsingStar-Bar-Bg" useAtlasSize="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" atlas="UF-DDH-VoidMeta-Bar-Glow" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ready" atlas="UF-DDH-VoidMeta-Bar-Ready" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Deplete" atlas="UF-DDH-VoidMeta-Bar-Deplete" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CollapsingStarDepleteFin" atlas="UF-DDH-CollapsingStar-Bar-Deplete-Fin" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.17" order="1" startDelay="0.1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.2" order="1" startDelay="0.27" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ReadyAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="Ready" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ready" duration="0.17" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="Ready" duration="0.33" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="VoidMetaDepleteAnim" setToFinalAlpha="true">
+				<Alpha childKey="Deplete" duration="0.13" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="Deplete" duration="0.14" order="1" startDelay="0.13" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CollapsingStarDepleteAnim" setToFinalAlpha="true">
+				<Alpha childKey="Deplete" duration="0.13" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="Deplete" duration="0.14" order="1" startDelay="0.13" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CollapsingStarDepleteFinAnim" setToFinalAlpha="true">
+				<Alpha childKey="CollapsingStarDepleteFin" duration="0.37" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CollapsingStarBackground" duration="0.13" order="1" startDelay="0.1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+</Ui>

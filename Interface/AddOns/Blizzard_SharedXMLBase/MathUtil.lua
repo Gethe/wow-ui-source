@@ -8,10 +8,11 @@ MathUtil.ApproxZero = MathUtil.Epsilon;
 MathUtil.ApproxOne = 1.0 - MathUtil.Epsilon;
 
 local securecallfunction = securecallfunction;
-function CreateCounter(initialCount)
+function CreateCounter(initialCount, step)
 	local count = initialCount or 0;
+	step = step or 1;
 	local counter = function()
-		count = count + 1;
+		count = count + step;
 		return count;
 	end;
     return function()
@@ -126,4 +127,32 @@ end
 
 function CalculateAngleBetween(x1, y1, x2, y2)
 	return math.atan2(y2 - y1, x2 - x1);
+end
+
+AccumulatorMixin = {};
+
+function AccumulatorMixin:Init(initialCount)
+	self.count = initialCount or 0;
+end
+
+function AccumulatorMixin:Add(count)
+	self.count = self.count + count;
+	return self.count;
+end
+
+function AccumulatorMixin:Subtract(count)
+	self.count = self.count - count;
+	return self.count;
+end
+
+function AccumulatorMixin:Count()
+	return self.count;
+end
+
+function AccumulatorMixin:Reset(resetCount)
+	self.count = resetCount or 0;
+end
+
+function CreateAccumulator(initialCount)
+	return CreateAndInitFromMixin(AccumulatorMixin, initialCount);
 end

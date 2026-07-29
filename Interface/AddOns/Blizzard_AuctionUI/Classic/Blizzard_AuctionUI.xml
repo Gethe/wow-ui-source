@@ -601,7 +601,7 @@
 										ButtonFrameTemplate_HidePortrait(self);
 										ButtonFrameTemplate_HideAttic(self);
 										ButtonFrameTemplate_HideButtonBar(self);
-										self.TitleText:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+										self:SetTitle(TUTORIAL_TOKEN_ABOUT_TOKENS);
 									</OnLoad>
 									<OnShow>
 										local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());

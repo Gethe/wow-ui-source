@@ -8,30 +8,26 @@ function EventRegistry:OnLoad()
 	self.frameEventFrame:SetScript("OnEvent", function(frameEventFrame, event, ...)
 		self:TriggerEvent(event, ...);
 	end);
-
-	self.frameEventFrame:SetScript("OnAttributeChanged", self.OnAttributeChanged);
-	self.frameEventFrame.registry = self;
-end
-
-function EventRegistry:OnAttributeChanged(frameEvent, value)
-	self = self.registry;
-
-	if value == 0 then
-		self.frameEventFrame:UnregisterEvent(frameEvent);
-	elseif value == 1 then
-		self.frameEventFrame:RegisterEvent(frameEvent);
-	end
 end
 
 function EventRegistry:RegisterFrameEvent(frameEvent)
-	self.frameEventFrame:SetAttribute(frameEvent, (self.frameEventFrame:GetAttribute(frameEvent) or 0) + 1);
+	local eventCount = self.frameEventFrame:GetAttribute(frameEvent) or 0;
+
+	if eventCount == 0 then
+		self.frameEventFrame:RegisterEvent(frameEvent);
+	end
+
+	self.frameEventFrame:SetAttribute(frameEvent, eventCount + 1);
 end
 
 function EventRegistry:UnregisterFrameEvent(frameEvent)
 	local eventCount = self.frameEventFrame:GetAttribute(frameEvent) or 0;
-	if eventCount > 0 then
-		self.frameEventFrame:SetAttribute(frameEvent, eventCount - 1);
+
+	if eventCount == 1 then
+		self.frameEventFrame:UnregisterEvent(frameEvent);
 	end
+
+	self.frameEventFrame:SetAttribute(frameEvent, math.max(eventCount - 1, 0));
 end
 
 function EventRegistry:RegisterFrameEventAndCallback(frameEvent, ...)
