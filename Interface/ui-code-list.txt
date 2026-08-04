@@ -1450,6 +1450,9 @@ Interface\AddOns\Blizzard_FrameXML\Wrath\EquipmentManager.lua
 Interface\AddOns\Blizzard_FrameXML\Wrath\GameTime.xml
 Interface\AddOns\Blizzard_FrameXML\Wrath\SparkleFrame.lua
 Interface\AddOns\Blizzard_FrameXML\Wrath\SparkleFrame.xml
+Interface\AddOns\Blizzard_FullscreenBrowser\Blizzard_FullscreenBrowser.toc
+Interface\AddOns\Blizzard_FullscreenBrowser\Blizzard_FullscreenBrowserSpinner.lua
+Interface\AddOns\Blizzard_FullscreenBrowser\Blizzard_FullscreenBrowserSpinner.xml
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.lua
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.toc
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.xml

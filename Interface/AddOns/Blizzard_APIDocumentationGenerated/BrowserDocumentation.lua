@@ -12,6 +12,18 @@ local Browser =
 	Events =
 	{
 		{
+			Name = "FullscreenBrowserSpinnerHide",
+			Type = "Event",
+			LiteralName = "FULLSCREEN_BROWSER_SPINNER_HIDE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "FullscreenBrowserSpinnerShow",
+			Type = "Event",
+			LiteralName = "FULLSCREEN_BROWSER_SPINNER_SHOW",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "SimpleBrowserPopup",
 			Type = "Event",
 			LiteralName = "SIMPLE_BROWSER_POPUP",

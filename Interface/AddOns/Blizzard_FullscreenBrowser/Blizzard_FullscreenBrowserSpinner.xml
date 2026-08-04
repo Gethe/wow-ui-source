@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="FullscreenBrowserSpinnerFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="TOOLTIP" enableMouse="true" mixin="FullscreenBrowserSpinnerMixin">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true" mixin="FullscreenBrowserSpinnerFadeOutAnimMixin">
+				<Alpha fromAlpha="1.0" toAlpha="0.0" duration="2.0" order="1"/>
+				<Scripts>
+					<OnFinished method="OnFadeOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+				<Size x="120" y="120"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" alpha="0.7">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="LoadingText" inherits="SystemFont_Shadow_Outline_Large" text="CATALOG_SHOP_LOADING">
+					<Size x="220" y="30"/>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Spinner" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

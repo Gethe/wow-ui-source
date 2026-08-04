@@ -107,7 +107,7 @@ end
 
 function PlayerUtil.IsPlayerEffectivelyTank()
 	local assignedRole = UnitGroupRolesAssigned("player");
-	if assignedRole == "NONE" then
+	if GetSpecializationSystem() == Enum.SpecializationSystem.ChrSpecialization and assignedRole == "NONE" then
 		local spec = C_SpecializationInfo.GetSpecialization();
 		return spec and GetSpecializationRole(spec) == "TANK";
 	end
