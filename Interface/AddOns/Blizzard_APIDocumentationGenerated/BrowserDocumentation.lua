@@ -7,6 +7,10 @@ local Browser =
 
 	Functions =
 	{
+		{
+			Name = "CloseFullscreenBrowser",
+			Type = "Function",
+		},
 	},
 
 	Events =

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="FullscreenBrowserSpinnerFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="TOOLTIP" enableMouse="true" mixin="FullscreenBrowserSpinnerMixin">
+	<Frame name="FullscreenBrowserSpinnerFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="TOOLTIP" enableMouse="true" enableKeyboard="true" mixin="FullscreenBrowserSpinnerMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="0" y="0"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
@@ -40,6 +40,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

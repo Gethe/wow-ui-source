@@ -6,6 +6,9 @@ function FullscreenBrowserSpinnerMixin:OnLoad()
 end
 
 function FullscreenBrowserSpinnerMixin:SetSpinnerShown(shown)
+	self.Spinner:SetShown(shown);
+	self.LoadingText:SetShown(shown);
+
 	if shown then
 		if self.FadeOutAnim:IsPlaying() then
 			self.FadeOutAnim:Stop();
@@ -13,10 +16,11 @@ function FullscreenBrowserSpinnerMixin:SetSpinnerShown(shown)
 
 		self:SetAlpha(1.0);
 		self:SetShown(true);
-		self.Spinner:SetShown(true);
 	else
 		if self:IsShown() then
-			self.FadeOutAnim:Play();
+			if not self.FadeOutAnim:IsPlaying() then
+				self.FadeOutAnim:Play();
+			end
 		end
 	end
 end
@@ -24,9 +28,18 @@ end
 
 function FullscreenBrowserSpinnerMixin:OnEvent(event, ...)
 	if event == "FULLSCREEN_BROWSER_SPINNER_SHOW" then
+		StopAutoRun();
 		self:SetSpinnerShown(true);
 	elseif event == "FULLSCREEN_BROWSER_SPINNER_HIDE" then
 		self:SetSpinnerShown(false);
+	end
+end
+
+function FullscreenBrowserSpinnerMixin:OnKeyDown(key)
+	if (key == "ESCAPE") then
+		C_Browser.CloseFullscreenBrowser();
+		self.FadeOutAnim:Stop();
+		self:Hide();
 	end
 end
 
