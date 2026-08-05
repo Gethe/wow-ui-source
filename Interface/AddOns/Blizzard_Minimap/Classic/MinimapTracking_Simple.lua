@@ -3,17 +3,12 @@ MinimapTrackingSimpleMixin = { };
 
 function MinimapTrackingSimpleMixin:OnLoad()
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+	self:UpdateState();
 end
 
 function MinimapTrackingSimpleMixin:OnEvent(event, ...)
 	if ( event == "MINIMAP_UPDATE_TRACKING" ) then
-		local icon = GetTrackingTexture();
-		if ( icon ) then
-			MiniMapTrackingIcon:SetTexture(icon);
-			MiniMapTracking:Show();
-		else
-			MiniMapTracking:Hide();
-		end
+		self:UpdateState();
 	end
 end
 
@@ -30,4 +25,14 @@ end
 
 function MinimapTrackingSimpleMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+function MinimapTrackingSimpleMixin:UpdateState()
+	local icon = GetTrackingTexture();
+	if ( icon ) then
+		MiniMapTrackingIcon:SetTexture(icon);
+		MiniMapTracking:Show();
+	else
+		MiniMapTracking:Hide();
+	end
 end

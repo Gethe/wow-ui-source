@@ -13,6 +13,7 @@ LAST_ITEM_BUYOUT = 0;
 local BROWSE_PARAM_INDEX_PAGE = 7;
 local PRICE_TYPE_UNIT = 1;
 local PRICE_TYPE_STACK = 2;
+local AUCTION_PROGRESS_ALPHA_STEP = 0.05; -- Formerly CASTING_BAR_ALPHA_STEP
 
 local activeTooltipPriceTooltipFrame = nil;
 local activeTooltipAuctionFrameItem = nil;
@@ -2379,7 +2380,7 @@ end
 
 function AuctionProgressFrame_OnUpdate(self)
 	if ( self.fadeOut ) then
-		local alpha = self:GetAlpha() - CASTING_BAR_ALPHA_STEP;
+		local alpha = self:GetAlpha() - AUCTION_PROGRESS_ALPHA_STEP;
 		if ( alpha > 0 ) then
 			self:SetAlpha(alpha);
 		else			
