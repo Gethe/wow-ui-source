@@ -8,9 +8,14 @@ function BattleNetInviteFrameMixin:OnLoad()
 
 	self:RegisterEvent("CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW");
 
+	EventRegistry:RegisterCallback("BattleNetInviteFrame.TitleFriendInviteByNameRequested", self.OnTitleFriendInviteByNameRequested, self);
+
 	self.SendButton:SetScript("OnClick", function()
+		if self.sendInviteCallback then
+			self.sendInviteCallback();
+		end
+
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		C_BattleNet.SendVerifiedBattleNetFriendInvite();	-- unit should have been set with "BNCheck" functions (Ex. BNCheckBattleTagInviteToUnit)
 		StaticPopupSpecial_Hide(self);
 	end);
 
@@ -23,12 +28,33 @@ end
 function BattleNetInviteFrameMixin:OnEvent(event, ...)
 	if event == "CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW" then
 		local name, friendLevel = ...;
-		self.InviteeName:SetText(name);
-		self:SetTextForFriendLevel(friendLevel);
-		if not self:IsShown() then
-			StaticPopupSpecial_Show(self);
-		end
+		-- BNCheckBattleTagInviteToUnit should have already set the target so SendVerifiedBattleNetFriendInvite takes no arguments
+		self:ShowInviteConfirmation(name, friendLevel, C_BattleNet.SendVerifiedBattleNetFriendInvite);
 	end
+end
+
+function BattleNetInviteFrameMixin:OnHide()
+	self:Reset();
+end
+
+function BattleNetInviteFrameMixin:Reset()
+	self.sendInviteCallback = nil;
+end
+
+function BattleNetInviteFrameMixin:OnTitleFriendInviteByNameRequested(targetCharacterName)
+	local sendInviteCallback = GenerateClosure(C_BattleNet.SendTitleFriendInviteByName, targetCharacterName);
+	self:ShowInviteConfirmation(targetCharacterName, Enum.BattleNetFriendLevel.Title, sendInviteCallback);
+end
+
+function BattleNetInviteFrameMixin:ShowInviteConfirmation(name, friendLevel, sendInviteCallback)
+	self.InviteeName:SetText(name);
+	self:SetTextForFriendLevel(friendLevel);
+
+	if not self:IsShown() then
+		StaticPopupSpecial_Show(self);
+	end
+
+	self.sendInviteCallback = sendInviteCallback;
 end
 
 function BattleNetInviteFrameMixin:SetTextForFriendLevel(friendLevel)

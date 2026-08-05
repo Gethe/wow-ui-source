@@ -140,6 +140,20 @@ local function CalculateItemEnchantmentRefreshResult(oldActiveItemEnchantments, 
 	return refreshResult;
 end
 
+function AuraContainerItemEnchantmentManagerMixin:ClearActiveItemEnchantments()
+	local oldActiveItemEnchantments = self:GetActiveItemEnchantments();
+
+	for _index, itemEnchantment in self:EnumerateActiveItemEnchantments() do
+		self:ClearItemEnchantmentFrame(itemEnchantment);
+		itemEnchantment:ClearEnchantmentInfo();
+	end
+
+	self.activeItemEnchantments = {};
+	self.activeItemEnchantmentFrames = {};
+
+	return CalculateItemEnchantmentRefreshResult(oldActiveItemEnchantments, self.activeItemEnchantments, oldActiveItemEnchantments[1] ~= nil);
+end
+
 function AuraContainerItemEnchantmentManagerMixin:RebuildActiveItemEnchantments()
 	local activeItemEnchantments = {};
 

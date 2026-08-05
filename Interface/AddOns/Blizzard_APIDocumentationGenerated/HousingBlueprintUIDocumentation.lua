@@ -8,6 +8,22 @@ local HousingBlueprintUI =
 	Functions =
 	{
 		{
+			Name = "CanExportRoom",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the specific room is allowed to be exported" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canExport", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanExportTypeFromCurrentLocation",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -58,6 +58,7 @@ function HousingControlsMixin:OnShow()
 
 	EventRegistry:RegisterCallback("HousingInspectMode.Toggled", self.UpdateButtons, self);
 	EventRegistry:RegisterCallback("HouseInfoFrame.Toggled", self.UpdateButtons, self);
+	EventRegistry:RegisterCallback("HousingTutorials.DecorQuestComplete", self.UpdateButtons, self);
 end
 
 function HousingControlsMixin:OnHide()
@@ -65,6 +66,7 @@ function HousingControlsMixin:OnHide()
 
 	EventRegistry:UnregisterCallback("HousingInspectMode.Toggled", self);
 	EventRegistry:UnregisterCallback("HouseInfoFrame.Toggled", self);
+	EventRegistry:UnregisterCallback("HousingTutorials.DecorQuestComplete",self);
 end
 
 function HousingControlsMixin:GetActiveFrame()

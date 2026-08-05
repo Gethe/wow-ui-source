@@ -69,8 +69,11 @@ function AuraContainerCustomFrameProviderMixin:IsFrameActive(frame)
 	return self.activeFrames[frame] == true;
 end
 
+-- Defined later in this script.
+local CreateFrameOutbound;
+
 function AuraContainerCustomFrameProviderMixin:CreateFrame()
-	local auraFrame = CreateFrame("AuraButton", nil, self:GetParent(), self:GetTemplateString());
+	local auraFrame = CreateFrameOutbound("AuraButton", nil, self:GetParent(), self:GetTemplateString());
 
 	if self.initializeFrame ~= nil then
 		securecallfunction(self.initializeFrame, auraFrame:GetObjectTable());
@@ -170,4 +173,13 @@ function AuraContainerUtil.CreateSingleFrameProvider(auraFrame)
 	local provider = CreateFromMixins(AuraContainerSingleFrameProviderMixin);
 	provider:Init(auraFrame);
 	return provider;
+end
+
+SwapToGlobalEnvironment();
+
+function CreateFrameOutbound(frameType, name, parent, inherits)
+	-- Frame creation occurs in the global environment as this API can use the
+	-- caller's environment for resolution of mixins. Untrusted frames should
+	-- always use global mixins.
+	return CreateFrame(frameType, name, parent, inherits);
 end

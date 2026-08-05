@@ -338,6 +338,22 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "RoomHasStairs",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true of the provided roomGUID is a stairwell. Returns false if roomGUID is invalid" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasStairs", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -2,11 +2,14 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<ScopedModifier useForbiddenObjectTable="true">
-		<AuraButton name="CustomAuraButtonTemplate" virtual="true">
+		<AuraButton name="CustomAuraButtonTemplate" virtual="true" onUpdateMode="disabled">
 			<Mixins>
 				<Mixin key="CustomAuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
 				<Mixin key="CustomAuraButtonPrivateMixin" source="secure"/>
 			</Mixins>
+			<Scripts>
+				<OnUpdate method="OnUpdate"/>
+			</Scripts>
 		</AuraButton>
 	 </ScopedModifier>
 </Ui>

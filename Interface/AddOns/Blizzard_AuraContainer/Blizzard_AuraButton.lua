@@ -87,10 +87,6 @@ function AuraButtonPrivateMixin:OnLeave_Intrinsic(_isFromMouseMotion)
 	self:HideTooltip();
 end
 
-function AuraButtonPrivateMixin:OnUpdate_Intrinsic(_elapsedTime)
-	self:UpdateTooltip();
-end
-
 function AuraButtonPrivateMixin:OnClick_Intrinsic(button, isDown)
 	if not self:CanCancelAuraOnClick(button, isDown) then
 		return;
@@ -193,10 +189,13 @@ function AuraButtonPrivateMixin:ShowTooltip()
 	if auraData then
 		tooltip:AddForbiddenAspects(self:GetInheritableForbiddenAspects(Enum.ScriptObjectPropagationPath.Layout));
 		tooltip:SetOwner(self, self:GetTooltipAnchorPoint());
+		-- This is presently required because GetOwner returns nil for the
+		-- case of aura buttons that are marked as hideFromGlobalEnv="true",
+		-- such as target frame auras.
+		tooltip.UpdateTooltip = GenerateFlatClosure(self.UpdateTooltip, self);
 		RaiseFrameLevelByTwo(tooltip);
 
 		self:PopulateTooltip(tooltip, unitToken, auraData);
-		self:SetOnUpdateMode(Enum.OnUpdateMode.RunWhenVisible);
 	end
 end
 
@@ -210,9 +209,8 @@ end
 
 function AuraButtonPrivateMixin:HideTooltip()
 	local tooltip = AuraContainerUtil.GetDefaultTooltip();
-
+	tooltip.UpdateTooltip = nil;
 	tooltip:Hide();
-	self:SetOnUpdateMode(Enum.OnUpdateMode.Disabled);
 end
 
 function AuraButtonPrivateMixin:UpdateTooltip()
@@ -240,4 +238,23 @@ function AuraButtonPrivateMixin:CanCancelAuraOnClick(button, isDown)
 	end
 
 	return false;
+end
+
+AuraButtonTooltipMixin = CreateFromMixins(PrivateAurasTooltipMixin);
+
+function AuraButtonTooltipMixin:OnUpdate(elapsedTime)
+	if not GameTooltip_IsUpdateNeeded(self, elapsedTime) then
+		return;
+	end
+
+	local owner = self:GetOwner();
+	owner = owner and GetForbiddenObjectTable(owner) or nil;
+
+	if owner and owner.UpdateTooltip then
+		owner:UpdateTooltip();
+	elseif self.UpdateTooltip then
+		self:UpdateTooltip();
+	elseif self.shouldRefreshData then
+		self:RefreshData();
+	end
 end

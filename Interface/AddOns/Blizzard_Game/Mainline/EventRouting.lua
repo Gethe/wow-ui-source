@@ -45,7 +45,6 @@ local eventHandlers = {
 	["GARRISON_SHIPYARD_NPC_CLOSED"] = function(...) GameEvent.HandleGarrisonShipyardNpcClosed(...) end,
 	["GARRISON_SHIPYARD_NPC_OPENED"] = function(...) GameEvent.HandleGarrisonShipyardNpcOpened(...) end,
 	["GARRISON_TALENT_NPC_OPENED"] = function(...) GameEvent.HandleGarrisonTalentNpcOpened(...) end,
-	["GET_ITEM_INFO_RECEIVED"] = function(...) GameEvent.HandleGetItemInfoReceived(...) end,
 	["GLOBAL_MOUSE_DOWN"] = function(...) GameEvent.HandleGlobalMouseEvent(...) end,
 	["GLOBAL_MOUSE_UP"] = function(...) GameEvent.HandleGlobalMouseEvent(...) end,
 	["GROUP_INVITE_CONFIRMATION"] = function(...) GameEvent.HandleGroupInviteConfirmation(...) end,

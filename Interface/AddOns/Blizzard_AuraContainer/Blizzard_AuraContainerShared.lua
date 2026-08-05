@@ -75,18 +75,24 @@ do
 	local DefaultAuraDurationFormatter = C_StringUtil.CreateSecondsFormatter();
 	addonTable.DefaultAuraDurationFormatter = DefaultAuraDurationFormatter;
 
-	-- This curve is set up to format durations with an inflated bound on
-	-- interval brackets, such that values <= 90 seconds render as seconds
-	-- values (eg. '90 s'). The '+1' on the curve points is to because
-	-- curves promote to the next interval on exact matches, and we want 90
-	-- to render as '90 s' and not '1 m'.
+	-- This curve allows durations to remain in each interval for up to 1.5
+	-- times its normal range, such that values <= 90 seconds render as seconds
+	-- values (eg. '90 s'). Curve points promote on exact matches, so each point
+	-- is offset by one to keep the upper whole-second value in its current band.
+	--
+	-- Use a step curve because its values select discrete formatter intervals.
+
 	local maxIntervalSecondsMultiplier = 1.5;
 	local maxIntervalCurve = C_CurveUtil.CreateCurve();
+	maxIntervalCurve:SetType(Enum.LuaCurveType.Step);
+	maxIntervalCurve:AddPoint(0, Enum.SecondsFormatterInterval.Seconds);
 	maxIntervalCurve:AddPoint(1 + (maxIntervalSecondsMultiplier * SECONDS_PER_MIN), Enum.SecondsFormatterInterval.Minutes);
 	maxIntervalCurve:AddPoint(1 + (maxIntervalSecondsMultiplier * SECONDS_PER_HOUR), Enum.SecondsFormatterInterval.Hours);
 	maxIntervalCurve:AddPoint(1 + (maxIntervalSecondsMultiplier * SECONDS_PER_DAY), Enum.SecondsFormatterInterval.Days);
 
 	DefaultAuraDurationFormatter:SetDefaultAbbreviation(Enum.SecondsFormatterAbbreviation.OneLetter);
+	DefaultAuraDurationFormatter:SetRounding(Enum.SecondsFormatterRounding.Truncate);
+	DefaultAuraDurationFormatter:SetCanRoundUpLastUnit(true);
 	DefaultAuraDurationFormatter:SetMinInterval(Enum.SecondsFormatterInterval.Seconds);
 	DefaultAuraDurationFormatter:SetMaxIntervalCurve(maxIntervalCurve);
 	DefaultAuraDurationFormatter:SetDesiredUnitCount(1);

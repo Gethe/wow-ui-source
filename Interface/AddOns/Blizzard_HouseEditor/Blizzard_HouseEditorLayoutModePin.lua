@@ -263,13 +263,23 @@ function HousingLayoutRoomPinMixin:OnLoad()
 
 	-- Export
 	self.OptionsContainer.ExportButton.extraDisabledCheck = (function()
-		local exportAvailability = C_HousingBlueprint.GetExportAvailability();
-		if exportAvailability == Enum.HousingResult.Success then
-			return false;
+		if not self:HasActivePin() then
+			self.OptionsContainer.ExportButton.disabledTooltip = nil;
+			return true;
 		end
 
-		self.OptionsContainer.ExportButton.disabledTooltip = HousingResultToErrorText[exportAvailability];
-		return true;
+		local exportAvailability = C_HousingBlueprint.GetExportAvailability();
+		if exportAvailability ~= Enum.HousingResult.Success then
+			self.OptionsContainer.ExportButton.disabledTooltip = HousingResultToErrorText[exportAvailability];
+			return true;
+		end
+
+		if not C_HousingBlueprint.CanExportRoom(self:GetPin():GetRoomGUID()) then
+			self.OptionsContainer.ExportButton.disabledTooltip = ERR_HOUSING_LAYOUT_RESTRICTION_BASE_ROOM;
+			return true;
+		end
+
+		return false;
 	end);
 	self.OptionsContainer.ExportButton:SetScript("OnClick", function()
 		if self:HasActivePin() then

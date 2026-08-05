@@ -268,7 +268,7 @@
 				</Layers>
 			</Button>
 
-			<Frame parentKey="PerfectAnimFrame" mixin="LootHistoryElementAnimationMixin" inherits="LootHistoryElementTemplate" virtual="true" hidden="true">
+			<Frame parentKey="PerfectAnimFrame" mixin="LootHistoryElementAnimationMixin" inherits="LootHistoryElementTemplate" hidden="true">
 				<Size x="218" y="58"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>

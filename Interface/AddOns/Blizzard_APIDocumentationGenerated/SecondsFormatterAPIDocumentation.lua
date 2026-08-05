@@ -279,6 +279,20 @@ local SecondsFormatterAPI =
 			},
 		},
 		{
+			Name = "GetRounding",
+			Type = "Function",
+			Documentation = { "Returns how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The configured rounding mode." } },
+			},
+		},
+		{
 			Name = "GetStripIntervalWhitespace",
 			Type = "Function",
 			Documentation = { "Returns the whitespace stripping mode of the formatter." },
@@ -431,6 +445,17 @@ local SecondsFormatterAPI =
 			Arguments =
 			{
 				{ Name = "curve", Type = "LuaCurveObject", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRounding",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The rounding mode to use." } },
 			},
 		},
 		{

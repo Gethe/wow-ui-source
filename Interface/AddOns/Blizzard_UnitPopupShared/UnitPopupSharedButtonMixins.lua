@@ -3758,7 +3758,7 @@ function UnitPopupAddRecentAllyTitleFriendButtonMixin:OnClick(contextData)
 		StaticPopupSpecial_Show(CreateBattleTagFrame);
 	else
 		local characterName = contextData.recentAllyData.characterData.fullName;
-		C_BattleNet.SendTitleFriendInviteByName(characterName);
+		EventRegistry:TriggerEvent("BattleNetInviteFrame.TitleFriendInviteByNameRequested", characterName);
 	end
 
 	return MenuResponse.Close;

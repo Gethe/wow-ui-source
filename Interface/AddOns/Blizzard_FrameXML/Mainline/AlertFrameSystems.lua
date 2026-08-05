@@ -1477,7 +1477,7 @@ function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
 		frame.Icon:SetTexture(rewardData.icon);
 	--rooms, customizations, and fixtures have no unique icon, just a generic one for every item
 	elseif rewardData.itemType == Enum.HousingItemToastType.Room then
-		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericRoom");
+		frame.Icon:SetTexture("Interface\\Icons\\INV_12PH_ArtisanalRooms");
 	elseif rewardData.itemType == Enum.HousingItemToastType.Fixture then
 		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericFixture");
 	elseif rewardData.itemType == Enum.HousingItemToastType.Customization then

@@ -97,6 +97,8 @@ function HousingBlueprintContentEntryMixin:OnEnter()
 		GameTooltip:Hide();
 	end
 
+	EventRegistry:TriggerEvent("HousingBlueprintContentEntry.MouseOver", self, hasTooltip and GameTooltip or nil);
+
 	self:SetScript("OnUpdate", function() self:UpdateCursor(); end);
 	self:UpdateCursor();
 end

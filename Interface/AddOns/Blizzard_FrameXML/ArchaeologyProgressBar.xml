@@ -40,7 +40,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="BACKGROUND">
-			<Texture parentKey="Shadow" file="Interface\Archeology\ArcheologyToast" virtual="true">
+			<Texture parentKey="Shadow" file="Interface\Archeology\ArcheologyToast">
 				<Size x="212" y="52"/>
 				<Color r="0" g="0" b="0"/>
 				<TexCoords left="0.00390625" right="0.83203125" top="0.16406250" bottom="0.36718750"/>
@@ -50,7 +50,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="BACKGROUND" textureSubLevel="1">
-			<Texture parentKey="BarBackground" file="Interface\Archeology\ArcheologyToast" virtual="true">
+			<Texture parentKey="BarBackground" file="Interface\Archeology\ArcheologyToast">
 				<Size x="188" y="9"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.BarBorderAndOverlay"/>
@@ -59,7 +59,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="OVERLAY">
-			<Texture parentKey="Flash" file="Interface\Archeology\ArcheologyToast" alphaMode="ADD" hidden="true" virtual="true">
+			<Texture parentKey="Flash" file="Interface\Archeology\ArcheologyToast" alphaMode="ADD" hidden="true">
 				<Size x="210" y="23"/>
 				<TexCoords left="0.00390625" right="0.83203125" top="0.16406250" bottom="0.36718750"/>
 				<Anchors>

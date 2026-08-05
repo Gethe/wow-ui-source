@@ -12,7 +12,6 @@ local eventHandlers = {
 	["ENABLE_TAXI_BENCHMARK"] = function(...) GameEvent.HandleEnableTaxiBenchmark(...) end,
 	["EQUIP_BIND_CONFIRM"] = function(...) GameEvent.HandleEquipBindConfirm(...) end,
 	["EQUIP_BIND_TRADEABLE_CONFIRM"] = function(...) GameEvent.HandleEquipBindTradeableConfirm(...) end,
-	["GET_ITEM_INFO_RECEIVED"] = function(...) GameEvent.HandleGetItemInfoReceived(...) end,
 	["GROUP_INVITE_CONFIRMATION"] = function(...) GameEvent.HandleGroupInviteConfirmation(...) end,
 	["LFG_ENABLED_STATE_CHANGED"] = function(...) GameEvent.HandleLFGEnabledStateChanged(...) end,
 	["LOGOUT_CANCEL"] = function(...) GameEvent.HandleLogoutCancel(...) end,

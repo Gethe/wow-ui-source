@@ -233,6 +233,33 @@ function CustomAuraButtonSharedMixin:ClearIcon()
 	self.icon = nil;
 end
 
+function CustomAuraButtonSharedMixin:AddPandemicRegion(region)
+	AuraContainerUtil.ValidateInboundScriptObject(region, self, RequireObjectType("Region"));
+
+	region = AuraContainerUtil.InitializeInboundScriptObject(region);
+	region:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	table.insert(self.pandemicRegions, PackDisplayElement(region));
+
+	self:UpdateAuraDisplay();
+
+	local index = #self.pandemicRegions;
+	return index;
+end
+
+function CustomAuraButtonSharedMixin:RemovePandemicRegion(index)
+	local pandemicRegions = self.pandemicRegions;
+
+	if pandemicRegions[index] then
+		table.remove(pandemicRegions, index);
+		self:UpdateAuraDisplay();
+	end
+end
+
+function CustomAuraButtonSharedMixin:ClearPandemicRegions()
+	self.pandemicRegions = {};
+end
+
 function CustomAuraButtonSharedMixin:GetSpellName()
 	return ExportDisplayElement(self.spellName);
 end
@@ -278,10 +305,17 @@ function CustomAuraButtonPrivateMixin:OnLoad_Intrinsic()
 	AuraButtonPrivateMixin.OnLoad_Intrinsic(self);
 
 	self.dispelTypeTextures = {};
+	self.pandemicRegions = {};
+	self.pandemicStartTime = nil;
+	self.pandemicEndTime = nil;
 
 	-- Retain the duration text binding across reconfiguration; replacing it
 	-- would require explicitly disabling the previous active binding.
 	self.durationTextBinding = C_DurationUtil.CreateDurationTextBinding();
+end
+
+function CustomAuraButtonPrivateMixin:OnUpdate(_elapsedTime)
+	self:ApplyPandemicRegions();
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceAssigned(unitToken, auraData)
@@ -338,12 +372,23 @@ end
 local function ShouldShowDispelTypeForAura(options, auraData)
 	if not auraData then
 		return false;
+	elseif options.showAlways then
+		return true;
 	elseif auraData.isHarmful and not options.showWhenHarmful then
 		return false;
 	elseif auraData.isHelpful and not options.showWhenHelpful then
 		return false;
 	elseif auraData.dispelName == nil and not options.showWithoutDispelType then
 		return false;
+	end
+
+	if options.stealableFilter ~= nil then
+		local requiredStealableState = (options.stealableFilter == Enum.CustomAuraButtonDispelTypeStealableFilter.Stealable);
+		local isStealable = (auraData.isStealable == true);
+
+		if isStealable ~= requiredStealableState then
+			return false;
+		end
 	end
 
 	return true;
@@ -519,11 +564,22 @@ function CustomAuraButtonPrivateMixin:ApplySpellName(_unitToken, auraData)
 	end
 end
 
+function CustomAuraButtonPrivateMixin:ApplyPandemicRegions()
+	local isInPandemicTime = self:IsInPandemicWindow();
+
+	for _index, pandemicRegion in ipairs(self.pandemicRegions) do
+		local region, _options = UnpackDisplayElement(pandemicRegion);
+		region:SetShown(isInPandemicTime);
+	end
+end
+
 function CustomAuraButtonPrivateMixin:ApplyVisibility(_unitToken, auraData)
 	self:SetShown(secretwrap(auraData ~= nil));
 end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, updateMode)
+	self:UpdatePandemicWindow(unitToken, auraData);
+
 	self:ApplyApplicationBar(unitToken, auraData, updateMode);
 	self:ApplyApplicationCount(unitToken, auraData);
 	self:ApplyDispelTypeTextures(unitToken, auraData);
@@ -531,10 +587,61 @@ function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, upd
 	self:ApplyDuration(unitToken, auraData, updateMode);
 	self:ApplyIcon(unitToken, auraData);
 	self:ApplySpellName(unitToken, auraData);
+	self:ApplyPandemicRegions();
 	self:ApplyVisibility(unitToken, auraData);
 end
 
 --[[override]] function CustomAuraButtonPrivateMixin:UpdateAuraDisplay()
 	local unitToken, auraData = self:GetAuraInstance();
 	self:ApplyAuraInstance(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Update);
+end
+
+function CustomAuraButtonPrivateMixin:HasAnyPandemicDisplay()
+	return self.pandemicRegions[1] ~= nil;
+end
+
+function CustomAuraButtonPrivateMixin:IsInPandemicWindow()
+	if self.pandemicStartTime then
+		local timeNow = GetTime();
+		return timeNow >= self.pandemicStartTime and timeNow <= self.pandemicEndTime;
+	end
+
+	return false;
+end
+
+function CustomAuraButtonPrivateMixin:UpdatePandemicWindow(unitToken, auraData)
+	self.pandemicStartTime = nil;
+	self.pandemicEndTime = nil;
+
+	if auraData and auraData.auraType == AuraContainerAuraDataType.Aura and self:HasAnyPandemicDisplay() then
+		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(unitToken, auraData.auraInstanceID);
+
+		if extendedDuration then
+			local baseDuration = C_UnitAuras.GetAuraBaseDuration(unitToken, auraData.auraInstanceID);
+			local carriedOverToNewCast = baseDuration and (extendedDuration - baseDuration) or 0;
+			local hasPandemicWindow = (carriedOverToNewCast > 0);
+
+			if hasPandemicWindow then
+				self.pandemicStartTime = auraData.expirationTime - carriedOverToNewCast;
+				self.pandemicEndTime = auraData.expirationTime;
+			end
+		end
+	end
+
+	self:UpdateOnUpdateMode();
+end
+
+function CustomAuraButtonPrivateMixin:ShouldEnableOnUpdate()
+	if self:HasAnyPandemicDisplay() then
+		-- Secret wrapping here because if pandemic regions are configured then
+		-- the enablement of our OnUpdate script is inferred (partly) through
+		-- presence of an aura.
+		return secretwrap(self.pandemicStartTime ~= nil);
+	end
+
+	return false;
+end
+
+function CustomAuraButtonPrivateMixin:UpdateOnUpdateMode()
+	self:SetOnUpdateMode(self:ShouldEnableOnUpdate() and Enum.OnUpdateMode.RunWhenVisible or Enum.OnUpdateMode.Disabled);
 end

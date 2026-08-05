@@ -265,9 +265,11 @@ local AuraContainerUtil =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "showAlways", Type = "bool", Nilable = false, Default = false, Documentation = { "Shows the dispel type texture always, ignoring all other criteria." } },
 				{ Name = "showWhenHarmful", Type = "bool", Nilable = false, Default = true, Documentation = { "Shows the dispel type texture for harmful auras." } },
 				{ Name = "showWhenHelpful", Type = "bool", Nilable = false, Default = false, Documentation = { "Shows the dispel type texture for helpful auras." } },
 				{ Name = "showWithoutDispelType", Type = "bool", Nilable = false, Default = false, Documentation = { "Shows the dispel type texture for auras that do not have a dispel type." } },
+				{ Name = "stealableFilter", Type = "CustomAuraButtonDispelTypeStealableFilter", Nilable = true, Documentation = { "Restricts display of the dispel type texture to either stealable or non-stealable auras. If omitted, the dispel type texture may be shown for both." } },
 				{ Name = "style", Type = "CustomAuraButtonDispelTypeTextureStyle", Nilable = false, Default = "BorderWithIcon", Documentation = { "The texture style to use." } },
 				{ Name = "customDispelAssetMap", Type = "table", InnerType = "CustomAuraButtonDispelTypeTextureAsset", KeyType = "string", Nilable = true, Documentation = { "Optional map of dispel type names to custom texture assets. The \"None\" key represents auras without a dispel type. Only applies when using the CustomAsset style." } },
 				{ Name = "customDispelColorMap", Type = "table", InnerType = "colorRGB", KeyType = "string", Nilable = true, Documentation = { "Optional map of dispel type names to custom vertex colors. The \"None\" key represents auras without a dispel type." } },

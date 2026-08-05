@@ -195,7 +195,6 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -328,7 +327,7 @@
 					<OnLeave method="OnLeave" />
 				</Scripts>
 			</Button>
-			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" virtual="true">
+			<EditBox parentKey="EditBox" inherits="InputBoxTemplate">
 				<Size x="370" y="32"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.GenerateOrCopyLinkButton" relativePoint="LEFT" x="-10" y="1"/>

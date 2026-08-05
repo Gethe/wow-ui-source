@@ -33,7 +33,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="InspectGuildFrameBanner" file="Interface\GuildFrame\GuildInspect-Parts" virtual="true" >
+				<Texture name="InspectGuildFrameBanner" file="Interface\GuildFrame\GuildInspect-Parts">
 					<Size x="118" y="144"/>	
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="104" y="-4"/>
@@ -42,7 +42,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture name="InspectGuildFrameBannerBorder" file="Interface\GuildFrame\GuildInspect-Parts" virtual="true" >
+				<Texture name="InspectGuildFrameBannerBorder" file="Interface\GuildFrame\GuildInspect-Parts">
 					<Size x="118" y="144"/>	
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectGuildFrameBanner"/>

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<ScopedModifier forbidden="true" hideFromGlobalEnv="true">
-		<GameTooltip name="AuraButtonTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" mixin="PrivateAurasTooltipMixin" inherits="GameTooltipTemplate">
+		<GameTooltip name="AuraButtonTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" mixin="AuraButtonTooltipMixin" inherits="GameTooltipTemplate">
 			<KeyValues>
 				<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
 			</KeyValues>
@@ -11,6 +11,7 @@
 				<OnHide function="SharedTooltip_OnHide"/>
 				<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
 				<!-- <OnEvent method="OnEvent"/> -->
+				<OnUpdate method="OnUpdate"/>
 			</Scripts>
 		</GameTooltip>
 	</ScopedModifier>

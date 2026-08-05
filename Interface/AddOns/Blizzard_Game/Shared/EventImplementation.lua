@@ -23,20 +23,11 @@ local function GetChatMessageFromSendReportResult(result)
 end
 
 function GameEvent.HandleTokenAuctionSold(dispatcher, _event)
-	local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
-	if itemName then
+	local item = Item:CreateFromItemID(WOW_TOKEN_ITEM_ID);
+	item:ContinueOnItemLoad(function()
+		local itemName = item:GetItemName();
 		ChatFrameUtil.AddSystemMessage(ERR_AUCTION_SOLD_S:format(itemName));
-	else
-		dispatcher:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-	end
-end
-
-function GameEvent.HandleGetItemInfoReceived(dispatcher, _event, itemID)
-	if itemID == WOW_TOKEN_ITEM_ID then
-		local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
-		ChatFrameUtil.AddSystemMessage(ERR_AUCTION_SOLD_S:format(itemName));
-		dispatcher:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
-	end
+	end);
 end
 
 function GameEvent.HandleGroupInviteConfirmation(_dispatcher, _event)

@@ -110,7 +110,7 @@ end
 HouseEditorModeButtonMixin = CreateFromMixins(BaseHouseEditorModeButtonMixin);
 
 function HouseEditorModeButtonMixin:CheckEnabled()
-	if not HousingTutorialUtil.IsModeValidForTutorial(self.editorMode) and not HousingTutorialUtil.HousingQuestTutorialComplete() then
+	if not HousingTutorialUtil.IsModeValidForTutorial(self.editorMode) and not HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
 		return false, HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, ERR_HOUSING_RESULT_NOT_IN_TUTORIAL);
 	end
 

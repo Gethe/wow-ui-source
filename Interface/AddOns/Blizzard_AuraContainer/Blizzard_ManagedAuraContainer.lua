@@ -44,6 +44,16 @@ ManagedAuraContainerSharedMixin = CreateFromMixins(AuraContainerSharedMixin);
 
 function ManagedAuraContainerSharedMixin:UpdateAllAuras()
 	self:MarkDirty(AuraContainerDirtyMask.FullAuraRebuild);
+
+	if self:IsEnabled() then
+		self:RefreshItemEnchantments();
+	else
+		local refreshResult = self.itemEnchantmentManager:ClearActiveItemEnchantments();
+		local dirtyFlags = self:ProcessItemEnchantmentRefreshResult(refreshResult);
+		if dirtyFlags ~= AuraContainerDirtyFlag.None then
+			self:MarkDirty(dirtyFlags);
+		end
+	end
 end
 
 ManagedAuraContainerInboundMixin = CreateFromMixins(AuraContainerInboundMixin, ManagedAuraContainerSharedMixin);
@@ -493,6 +503,10 @@ function ManagedAuraContainerPrivateMixin:ParseAllAuras()
 	self:ClearCachedAuraData();
 	self.auraGroupManager:ClearAllAuras();
 	self.auraSlotManager:ClearAuraSlotCandidates();
+	
+	if not self:IsEnabled() then
+		return;
+	end
 
 	local unitToken = self:GetUnit();
 

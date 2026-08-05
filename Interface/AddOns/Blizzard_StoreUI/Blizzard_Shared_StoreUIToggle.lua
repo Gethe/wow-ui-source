@@ -1,17 +1,23 @@
 SwapToGlobalEnvironment();
 
+local function CloseAllUIPanels()
+	 if not C_Glue.IsOnGlueScreen() then
+		securecall("CloseAllWindows");
+	 end
+end
+
 local function ToggleActiveStoreUI(contextKey)
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
 		if (not wasShown) then
-			securecall("CloseAllWindows");
+			CloseAllUIPanels();
 		end
 		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
 	else
 		local wasShown = StoreFrame_IsShown();
 		if (not wasShown) then
-			securecall("CloseAllWindows");
+			CloseAllUIPanels();
 		end
 		StoreFrame_SetShown(not wasShown, contextKey);
 	end
@@ -20,7 +26,7 @@ end
 local function SetLegacyStoreUIShown(shown)
 	local wasShown = StoreFrame_IsShown();
 	if (not wasShown and shown) then
-		securecall("CloseAllWindows");
+		CloseAllUIPanels();
 	end
 	StoreFrame_SetShown(shown);
 end

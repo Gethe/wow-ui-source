@@ -16,6 +16,8 @@ function HouseDecorQuestWatcherMixin:StartWatching()
 
 	self.isWatching = true;
 	EventRegistry:RegisterCallback("HouseEditor.StateUpdated", self.OnHouseEditorStateUpdated, self);
+	-- Must listen for QUEST_LOG_UPDATE as it may be the only event we get if the tutorial gets skipped
+	Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
 
 	-- Reintialize quests upon starting watching
 	HousingTutorialsQuestManager:ReinitializeExistingQuests();
@@ -54,6 +56,8 @@ function HouseDecorQuestWatcherMixin:StopWatching()
 
 	self.isWatching = false;
 	EventRegistry:UnregisterCallback("HouseEditor.StateUpdated", self);
+	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	EventRegistry:TriggerEvent("HousingTutorials.DecorQuestComplete");
 end
 
 function HouseDecorQuestWatcherMixin:InitHouseDecorTutorial(questID, questTutorialData)
@@ -128,6 +132,17 @@ function HouseDecorQuestWatcherMixin:Quest_TurnedIn(questData)
 		self.houseDecorTutorial = nil;
 
 		UpdateHousingTutorials();
+	else
+		local questTutorialData = HousingTutorialData.HouseDecorTutorial.QuestTutorials[questID];
+		if questTutorialData then
+			UpdateHousingTutorials();
+		end
+	end
+end
+
+function HouseDecorQuestWatcherMixin:QUEST_LOG_UPDATE()
+	if HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
+		UpdateHousingTutorials();
 	end
 end
 
@@ -136,6 +151,8 @@ function HouseDecorQuestWatcherMixin:Quest_Abandoned(questData)
 		self.houseDecorTutorial:Deactivate();
 		HelpTip:HideAllSystem(self.houseDecorTutorial:GetSystem());
 		self.houseDecorTutorial = nil;
+
+		UpdateHousingTutorials();
 	end
 end
 

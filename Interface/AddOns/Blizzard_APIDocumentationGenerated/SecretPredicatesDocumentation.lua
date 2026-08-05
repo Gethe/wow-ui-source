@@ -131,6 +131,11 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs and events produce secret values under regular unit identity secrecy rules, except in PvP when the queried unit is a player." },
 		},
 		{
+			Name = "SecretWhenUnitPossessionRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values based on aura secrecy, except for unit tokens under the player's direct control." },
+		},
+		{
 			Name = "SecretWhenUnitPowerMaxRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled. Individual power types may be flagged as never or always secret, which takes priority." },

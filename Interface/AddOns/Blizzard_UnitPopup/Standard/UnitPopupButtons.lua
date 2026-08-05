@@ -420,6 +420,12 @@ function UnitPopupWhisperButtonMixin:CanShow(contextData)
 		if not UnitPopupSharedUtil.IsBNetFriend(contextData) then
 			return false;
 		end
+
+		local isTitleFriend = contextData.accountInfo and (contextData.accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title);
+		if isTitleFriend and UnitPopupSharedUtil.IsPlayerOffline(contextData) then
+			-- A title friendship only exists in WoW, so if they're offline we can't whisper them
+			return false;
+		end
 	elseif UnitPopupSharedUtil.IsPlayerOffline(contextData) then
 		return false;
 	end

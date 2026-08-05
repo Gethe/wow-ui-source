@@ -3,6 +3,18 @@ local AuraContainerShared =
 	Tables =
 	{
 		{
+			Name = "CustomAuraButtonDispelTypeStealableFilter",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Stealable", Type = "CustomAuraButtonDispelTypeStealableFilter", EnumValue = 0, Documentation = { "Shows the dispel type only for stealable auras." } },
+				{ Name = "NotStealable", Type = "CustomAuraButtonDispelTypeStealableFilter", EnumValue = 1, Documentation = { "Shows the dispel type only for non-stealable auras." } },
+			},
+		},
+		{
 			Name = "CustomAuraButtonDispelTypeTextureStyle",
 			Type = "Enumeration",
 			NumValues = 5,

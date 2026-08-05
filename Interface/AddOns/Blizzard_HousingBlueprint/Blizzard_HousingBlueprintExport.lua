@@ -45,6 +45,7 @@ function HousingBlueprintExportFrameMixin:StartRoomExportFlow(roomGUID)
 	local started = self:StartExportFlow();
 	if started then
 		self.roomGUID = roomGUID;
+		self.InputContent:UpdateStairwellWarning(Enum.HousingBlueprintType.Room, roomGUID);
 		self.InputContent:ShowRoomInput();
 	end
 end
@@ -153,6 +154,7 @@ function HousingBlueprintExportInputContentMixin:OnShow()
 
 		local function SetSelected(blueprintType)
 			self.selectedType = blueprintType;
+			self:UpdateStairwellWarning(blueprintType, C_HousingLayout.GetRoomPlayerIsIn());
 			self:UpdateSaveButton();
 		end
 
@@ -219,6 +221,17 @@ function HousingBlueprintExportInputContentMixin:IsNameInputValid()
 	local nameText = self.NameInputBox:GetText();
 	local numChars = strlenutf8(nameText);
 	return numChars >= Constants.HousingConsts.BlueprintNameMinCharacters and numChars <= Constants.HousingConsts.BlueprintNameMaxCharacters;
+end
+
+function HousingBlueprintExportInputContentMixin:UpdateStairwellWarning(blueprintType, roomGUID)
+	if blueprintType == Enum.HousingBlueprintType.Room then
+		if C_HousingLayout.RoomHasStairs(roomGUID) then
+			self:SetError(HOUSING_BLUEPRINT_EXPORT_STAIRWELL_WARNING);
+			return;
+		end
+	end
+
+	self:SetError("");
 end
 
 function HousingBlueprintExportInputContentMixin:UpdateSaveButton()

@@ -872,7 +872,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="Icon" name="store-error-icon" file="Interface\Store\Store-Main" virtual="true">
+				<Texture parentKey="Icon" name="store-error-icon" file="Interface\Store\Store-Main">
 					<Size x="188" y="185"/>
 					<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>
 					<Anchors>
@@ -881,7 +881,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Line" name="store-error-line" file="Interface\Store\Store-Main" virtual="true">
+				<Texture parentKey="Line" name="store-error-line" file="Interface\Store\Store-Main">
 					<Size x="298" y="2"/>
 					<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
 					<Anchors>

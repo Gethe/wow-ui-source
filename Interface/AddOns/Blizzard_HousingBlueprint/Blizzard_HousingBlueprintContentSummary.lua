@@ -134,6 +134,10 @@ function HousingBlueprintContentSummaryMixin:IsContentImportable()
 		return false;
 	end
 
+	if not HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
+		return false, ERR_NOT_IN_NPE;
+	end
+
 	if not C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintType) then
 		return false, ERR_HOUSING_RESULT_BLUEPRINT_TYPE_LOCATION_INVALID;
 	end

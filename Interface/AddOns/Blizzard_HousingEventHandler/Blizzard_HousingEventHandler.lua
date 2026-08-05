@@ -61,7 +61,7 @@ function HousingFramesUtil.IsHouseEditorModeAvailable(mode)
 		return false;
 	end
 
-	if not HousingTutorialUtil.HousingQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode) then
+	if not HousingTutorialUtil.HousingDecorQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode) then
 		return false;
 	end
 

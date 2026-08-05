@@ -3,8 +3,19 @@ local DIVIDER_HEIGHT = 16;
 
 RecruitAFriendSystemMixin = {};
 
-function RecruitAFriendSystemMixin:GetRecruitAFriendFrame()
+-- We temporarily have two RecruitAFriendFrames, one for the new Social UI and one for the legacy friend list
+-- Only one of the two will be active at any given time
+local function GetActiveRecruitAFriendFrame()
+	local socialUIRecruitAFriendFrame = SocialUIFrame and SocialUIFrame.RecruitAFriendFrame;
+	if socialUIRecruitAFriendFrame and C_SocialUI.IsSystemEnabled() then
+		return socialUIRecruitAFriendFrame;
+	end
+
 	return RecruitAFriendFrame;
+end
+
+function RecruitAFriendSystemMixin:GetRecruitAFriendFrame()
+	return GetActiveRecruitAFriendFrame();
 end
 
 function RecruitAFriendSystemMixin:GetRecruitAFriendRewardsFrame()
@@ -16,7 +27,6 @@ RecruitAFriendFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 RecruitAFriendFrameMixin:GenerateCallbackEvents(
 {
 	"NewRewardTabSelected",
-	"SelectedRAFVersionChanged",
 	"RewardsListOpened",
 	"RewardsListClosed",
 });
@@ -36,6 +46,8 @@ function RecruitAFriendFrameMixin:OnLoad()
 	self:AddDynamicEventMethod(self, RecruitAFriendFrameMixin.Event.RewardsListOpened, self.OnRewardsListOpened);
 	self:AddDynamicEventMethod(self, RecruitAFriendFrameMixin.Event.RewardsListClosed, self.OnRewardsListClosed);
 	EventRegistry:RegisterCallback("QuickJoinToastButtonShown", self.UpdateRAFTutorialTips, self);
+
+	self:InitializeRewardClaimingElements();
 
 	self:SetNoRecruitsText(RAF_NO_RECRUITS_DESC);
 
@@ -59,6 +71,11 @@ function RecruitAFriendFrameMixin:OnLoad()
 	self:UpdateRAFInfo(rafInfo);
 end
 
+function RecruitAFriendFrameMixin:InitializeRewardClaimingElements()
+	self.RewardClaiming.ClaimOrViewRewardButton.owningRecruitAFriendFrame = self;
+	self.RewardClaiming.NextRewardButton.owningRecruitAFriendFrame = self;
+end
+
 function RecruitAFriendFrameMixin:SetNoRecruitsText(text)
 	self.RecruitList.NoRecruitsDesc:SetText(text);
 end
@@ -77,6 +94,10 @@ end
 
 function RecruitAFriendFrameMixin:GetRecruitmentButton()
 	return self.RecruitmentButton;
+end
+
+function RecruitAFriendFrameMixin:IsActiveRecruitAFriendFrame()
+	return GetActiveRecruitAFriendFrame() == self;
 end
 
 function RecruitAFriendFrameMixin:GetScrollBoxPadding()
@@ -335,9 +356,6 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 		self.rafInfo = rafInfo;
 
 		local latestRAFVersionInfo = self:GetLatestRAFVersionInfo();
-		if not self:GetSelectedRAFVersionInfo() then
-			self:SetSelectedRAFVersion(latestRAFVersionInfo.rafVersion);
-		end
 
 		self:UpdateRecruitList(rafInfo.recruits);
 
@@ -348,8 +366,14 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 			self:UpdateNextReward(latestRAFVersionInfo.nextReward);
 		end
 
-		RecruitAFriendRewardsFrame:SetUpTabs(rafInfo);
-		RecruitAFriendRewardsFrame:Refresh();
+		if self:IsActiveRecruitAFriendFrame() then
+			if not self:GetSelectedRAFVersionInfo() then
+				self:SetSelectedRAFVersion(latestRAFVersionInfo.rafVersion);
+			end
+
+			RecruitAFriendRewardsFrame:SetUpTabs(rafInfo);
+			RecruitAFriendRewardsFrame:Refresh();
+		end
 
 		local recruitsAreMaxed = (#rafInfo.recruits >= maxRecruits);
 		RecruitAFriendRecruitmentFrame:UpdateRecruitmentInfo(rafInfo.recruitmentInfo, recruitsAreMaxed);
@@ -381,9 +405,8 @@ function RecruitAFriendFrameMixin:SetSelectedRAFVersion(rafVersion)
 	end
 
 	self.selectedRAFVersion = rafVersion;
-	self:TriggerEvent(RecruitAFriendFrameMixin.Event.SelectedRAFVersionChanged);
 	RecruitAFriendRewardsFrame.ClaimLegacyRewardsButton:SetAutoClaimRewardsEnabled(false);
-	RecruitAFriendRewardsFrame:Refresh();
+	RecruitAFriendRewardsFrame:FullRefresh();
 end
 
 function RecruitAFriendFrameMixin:GetSelectedRAFVersion()
@@ -929,9 +952,14 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnLoad()
 	self:SetEnabled(false);
 end
 
+function RecruitAFriendClaimOrViewRewardButtonMixin:GetOwningRecruitAFriendFrame()
+	return self.owningRecruitAFriendFrame;
+end
+
 function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 	if self.haveUnclaimedReward then
-		if RecruitAFriendFrame.RewardClaiming.NextRewardButton:IsUnwrapAnimating() then
+		local nextRewardButton = self:GetOwningRecruitAFriendFrame().RewardClaiming.NextRewardButton;
+		if nextRewardButton:IsUnwrapAnimating() then
 			return;
 		end
 
@@ -939,7 +967,7 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			WowTokenRedemptionFrame_ShowDialog("RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB", self.nextReward.rafVersion);
 		elseif C_RecruitAFriend.ClaimNextReward() then
-			RecruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
+			nextRewardButton:PlayClaimRewardFanfare();
 		end
 	else
 		if RecruitAFriendRewardsFrame:IsShown() then
@@ -979,7 +1007,7 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:UpdateUnclaimedRewardsAnim()
 		return;
 	end
 
-	local recruitAFriendFrame = self:GetRecruitAFriendFrame();
+	local recruitAFriendFrame = self:GetOwningRecruitAFriendFrame();
 	local claimInProgress = recruitAFriendFrame.claimInProgress;
 	local rewardsListOpen = self:GetRecruitAFriendRewardsFrame():IsShown();
 	if claimInProgress or rewardsListOpen then
@@ -997,8 +1025,21 @@ function RecruitAFriendRewardsFrameMixin:OnLoad()
 	self.rewardTabPool = CreateFramePool("CHECKBUTTON", self, "RecruitAFriendRewardTabTemplate");
 end
 
+function RecruitAFriendRewardsFrameMixin:RefreshTabs()
+	for tab in self.rewardTabPool:EnumerateActive() do
+		tab:RefreshVisuals();
+	end
+end
+
+function RecruitAFriendRewardsFrameMixin:FullRefresh()
+	self:Refresh();
+	self:RefreshTabs();
+end
+
 function RecruitAFriendRewardsFrameMixin:OnShow()
 	self:GetRecruitAFriendFrame():TriggerEvent(RecruitAFriendFrameMixin.Event.RewardsListOpened);
+
+	self:FullRefresh();
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	HideUIPanel(DressUpFrame);
@@ -1341,11 +1382,12 @@ end
 
 -- Global function for call from token claim dialog
 function RecruitAFriend_TryPlayClaimRewardFanfare(rewardRAFVersion)
-	if rewardRAFVersion ~= RecruitAFriendFrame:GetLatestRAFVersion() then
+	local recruitAFriendFrame = GetActiveRecruitAFriendFrame();
+	if rewardRAFVersion ~= recruitAFriendFrame:GetLatestRAFVersion() then
 		return;
 	end
 
-	RecruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
+	recruitAFriendFrame.RewardClaiming.NextRewardButton:PlayClaimRewardFanfare();
 end
 
 function RecruitAFriendRewardButtonWithFanfareMixin:PlayClaimRewardFanfare()
@@ -1354,7 +1396,7 @@ function RecruitAFriendRewardButtonWithFanfareMixin:PlayClaimRewardFanfare()
 		self.ClaimFlashAnim:Stop();
 		self.ClaimFlashAnim:Play();
 		self.waitingForFlash = false;
-		RecruitAFriendFrame:OnUnwrapFlashBegun();
+		self.owningRecruitAFriendFrame:OnUnwrapFlashBegun();
 	end)
 
 	local function OnFinishedCallback()
@@ -1365,14 +1407,6 @@ function RecruitAFriendRewardButtonWithFanfareMixin:PlayClaimRewardFanfare()
 end
 
 RecruitAFriendRewardTabMixin = CreateFromMixins(RecruitAFriendSystemMixin);
-
-function RecruitAFriendRewardTabMixin:OnLoad()
-	self:AddDynamicEventMethod(self:GetRecruitAFriendFrame(), RecruitAFriendFrameMixin.Event.SelectedRAFVersionChanged, self.OnSelectedRAFVersionChanged)
-end
-
-function RecruitAFriendRewardTabMixin:OnSelectedRAFVersionChanged()
-	self:RefreshVisuals();
-end
 
 function RecruitAFriendRewardTabMixin:Setup(rafVersion)
 	self.rafVersion = rafVersion;

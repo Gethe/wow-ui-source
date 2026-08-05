@@ -482,6 +482,23 @@ end
 
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
+local DecorEntryWhileShownEvents = {
+	"HOUSING_NUM_DECOR_PLACED_CHANGED",
+};
+
+function HousingCatalogDecorEntryMixin:TypeSpecificOnLoad()
+	self.whileShownEvents = DecorEntryWhileShownEvents;
+end
+
+function HousingCatalogDecorEntryMixin:OnEvent(event, ...)
+	if event == "HOUSING_NUM_DECOR_PLACED_CHANGED" then
+		-- For now, pet beds are the only decor that may become dynamically valid/invalid based on currently-placed decor
+		if self.entryVariantID and C_HousingDecor.GetDecorCanAttachPet(self.entryVariantID.recordID) then
+			self:UpdateVisuals();
+		end
+	end
+end
+
 function HousingCatalogDecorEntryMixin:GetEntryData()
 	-- Overrides HousingCatalogEntryMixin.
 

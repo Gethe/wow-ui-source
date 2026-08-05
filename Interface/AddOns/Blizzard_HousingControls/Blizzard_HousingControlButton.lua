@@ -179,6 +179,10 @@ function HousingBlueprintActionButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
+	if not HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
+		return false, ERR_NOT_IN_NPE;
+	end
+
 	local blueprintsAvailability = C_HousingBlueprint.GetFeatureAvailability();
 	if blueprintsAvailability ~= Enum.HousingResult.Success then
 		local errorText = HousingResultToErrorText[availabilityResult] or ERR_SYSTEM_DISABLED;

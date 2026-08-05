@@ -16,6 +16,14 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "ClearSVG",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "ClearTextureSlice",
 			Type = "Function",
 			Documentation = { "Disable shader based nineslice texture rendering. Since SetAtlas will automatically load slice data for the atlas from the DB, can be useful if you want to disable nineslice after setting an atlas." },
@@ -522,6 +530,21 @@ local SimpleTextureBaseAPI =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
 				{ Name = "normalizedRotationPoint", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "SetSVG",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "svgAsset", Type = "FileAsset", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
