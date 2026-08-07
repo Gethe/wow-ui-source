@@ -933,6 +933,21 @@ function MapCanvasMixin:IsCanvasMouseFocus()
 	return self.ScrollContainer:IsMouseMotionFocus();
 end
 
+function MapCanvasMixin:IsCanvasMouseFocusOrPinFocus()
+	if self.ScrollContainer:IsMouseMotionFocus() then
+		return true;
+	end
+
+	local mouseFoci = GetMouseFoci();
+	for _, focus in ipairs(mouseFoci) do
+		if focus.owningMap == self then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function MapCanvasMixin:AddLockReason(reason)
 	self.lockReasons[reason] = true;
 	self:EvaluateLockReasons();

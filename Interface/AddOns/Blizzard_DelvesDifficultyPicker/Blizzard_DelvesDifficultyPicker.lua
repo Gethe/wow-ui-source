@@ -364,7 +364,8 @@ function DelvesDifficultyPickerFrameMixin:UpdateDropdownState(enabled)
 	if self.entranceType == Enum.TieredEntranceType.Lairs then
 		local inParty = UnitInParty("player");
 		local isPartyLeader = inParty and UnitIsGroupLeader("player");
-		self.Dropdown:SetEnabled(isPartyLeader or not inParty);
+		local inLFGLair = C_DelvesUI.HasActiveLFGLair();
+		self.Dropdown:SetEnabled((isPartyLeader or not inParty) and not inLFGLair);
 	else
 		self.Dropdown:SetEnabled(enabled);
 	end

@@ -158,6 +158,7 @@ Interface\AddOns\Blizzard_FrameXML\Blizzard_FrameXML.toc
 Interface\AddOns\Blizzard_FramerateFrame\Blizzard_FramerateFrame_Classic.toc
 Interface\AddOns\Blizzard_FramerateFrame\Blizzard_FramerateFrame_Mainline.toc
 Interface\AddOns\Blizzard_FriendsFrame\Blizzard_FriendsFrame.toc
+Interface\AddOns\Blizzard_FullscreenBrowser\Blizzard_FullscreenBrowser.toc
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.toc
 Interface\AddOns\Blizzard_GameMenuEsc\Blizzard_GameMenuEsc.toc
 Interface\AddOns\Blizzard_GameMenu\Blizzard_GameMenu_Mainline.toc

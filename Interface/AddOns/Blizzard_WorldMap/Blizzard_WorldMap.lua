@@ -320,12 +320,13 @@ function WorldMapMixin:AddOverlayFrames()
 		self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
 	end
 
-	local coordsPanel = self:AddOverlayFrame("WorldMapCoordsPanelTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 3, 2);
+	local coordsPanel = self:AddOverlayFrame("WorldMapCoordsPanelTemplate", "FRAME", "BOTTOMLEFT", self:GetCanvasContainer(), "BOTTOMLEFT", 68, 2);
 	local requiresBottomLeft = true;
-	coordsPanel:AttachToNeighbor(threatFrame, -177, 2);
-	coordsPanel:AttachToNeighbor(activityTracker, 8, 2);
+	--ordered from largest to smallest, so that the smaller ones don't overlap the larger ones
 	coordsPanel:AttachToNeighbor(bountyBoard, 8, 2, requiresBottomLeft);
 	coordsPanel:AttachToNeighbor(actionButton, 8, 2, requiresBottomLeft);
+	coordsPanel:AttachToNeighbor(activityTracker, 8, 2);
+	coordsPanel:AttachToNeighbor(threatFrame, -177, 2);
 end
 
 function WorldMapMixin:OnMapChanged()

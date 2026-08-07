@@ -379,6 +379,15 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "HasActiveLFGLair",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasActiveLair",
 			Type = "Function",
 
@@ -412,6 +421,15 @@ local DelvesUI =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInLair",
+			Type = "Function",
 
 			Returns =
 			{

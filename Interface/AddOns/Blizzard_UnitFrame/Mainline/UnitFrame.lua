@@ -1008,7 +1008,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			status = UnitThreatSituation(indicator.feedbackUnit);
 		end
 
-		if ( IsThreatWarningEnabled() ) then
+		if ( IsThreatWarningEnabled() and not UnitIsDead(indicator.unit) ) then
 			if (status and status > 0) then
 				indicator:SetVertexColor(GetThreatStatusColor(status));
 				indicator:Show();

@@ -47,7 +47,7 @@ end
 
 function InstanceDifficultyMixin:IsInDelve()
 	local isInDelve = C_DelvesUI.HasActiveDelve();
-	local isInLair = C_DelvesUI.HasActiveLair();
+	local isInLair = C_DelvesUI.IsInLair();
 	-- every lair is a delve, but not every delve is a lair.
 	return isInDelve and not isInLair;
 end

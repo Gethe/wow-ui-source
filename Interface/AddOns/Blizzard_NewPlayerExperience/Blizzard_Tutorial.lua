@@ -7,6 +7,11 @@ end
 function NewPlayerExperience:Begin()
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", self.OnTutorialsEnabled, self);
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsDisabled", self.OnTutorialsDisabled, self);
+
+	-- TutorialManager may have already broadcast TutorialsEnabled before this addon finished loading, so sync state now.
+	if TutorialManager:GetIsActive() then
+		self:OnTutorialsEnabled();
+	end
 end
 
 function NewPlayerExperience:OnTutorialsEnabled()
@@ -26,7 +31,7 @@ function NewPlayerExperience:OnTutorialsEnabled()
 			return;
 		end
 	end
-	
+
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);
 	HelpTip:ForceHideAll();

@@ -584,7 +584,7 @@ function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
 		self:Layout();
 	end
 
-	local showCursorCoords = self.showCursorCoords and self:GetParent():IsCanvasMouseFocus();
+	local showCursorCoords = self.showCursorCoords and self:GetParent():IsCanvasMouseFocusOrPinFocus();
 	if showCursorCoords then
 		local cursorX, cursorY = self:GetParent():GetNormalizedCursorPosition();
 		self.CursorCoords.Label:SetFormattedText(WORLD_MAP_CURSOR_COORDS, cursorX * 100, cursorY * 100);
@@ -623,7 +623,7 @@ function WorldMapCoordsPanelMixin:PostRefresh()
 		end
 		if not attachedToNeighbor then
 			self:ClearAllPoints();
-			self:SetPoint("BOTTOMLEFT", self:GetParent(), "BOTTOMLEFT", 3, 2);
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "BOTTOMLEFT", 68, 2);
 		end
 	end
 end

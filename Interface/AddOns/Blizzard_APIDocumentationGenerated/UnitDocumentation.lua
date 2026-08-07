@@ -1481,6 +1481,7 @@ local Unit =
 		{
 			Name = "UnitHonorLevel",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
