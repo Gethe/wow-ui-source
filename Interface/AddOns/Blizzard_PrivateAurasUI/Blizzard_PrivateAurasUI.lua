@@ -619,9 +619,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelDebuff(dispellDebuffFrame, aur
 	dispellDebuffFrame.aura = aura;
 
 	-- The behavior is that the last one set will "win"
-	if self.containerSettings.showDispelIndicatorOverlay then
-		self:SetDispelOverlayAura(aura);
-	end
+	self:SetDispelOverlayAura(aura);
 end
 
 function PrivateAuraAnchorContainerMixin:CheckUpdateDispelIndicatorFrames(frame)
@@ -983,7 +981,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelOverlayAura(aura)
 		local shown = aura and aura.dispelName;
 		if shown ~= self.DispelOverlay:IsShown() then
 			if shown then
-				self.DispelOverlay:SetDispelType(aura.dispelName);
+				self.DispelOverlay:SetDispelType(aura.dispelName, self.containerSettings);
 				self.DispelOverlay:Show();
 				self.dispelOverlayAuraOffset = 2;
 			else
@@ -1331,9 +1329,13 @@ end
 
 CompactUnitFrameDispelOverlayMixin = {};
 
-function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType)
+function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType, containerSettings)
 	AuraUtil.SetAuraBorderColor(self.Gradient, dispelType);
 	AuraUtil.SetAuraBorderColor(self.Border, dispelType);
+
+	for i, element in ipairs(self.OverlayColorElements) do
+		element:SetShown(containerSettings.showDispelIndicatorOverlay); -- We only show the "overlay color" elements if this CVar is set.
+	end
 end
 
 local dispelOverlayAtlasLookup =

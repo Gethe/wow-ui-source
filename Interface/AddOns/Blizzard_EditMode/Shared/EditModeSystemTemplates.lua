@@ -546,6 +546,10 @@ function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
 	return true;
 end
 
+function EditModeSystemMixin:HasValidSelectionRect()
+	return (self.Selection:GetRect() ~= nil);
+end
+
 function EditModeSystemMixin:IsToTheLeftOfFrame(systemFrame)
 	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
 	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
@@ -789,12 +793,17 @@ end
 
 function EditModeSystemMixin:GetFrameMagneticEligibility(systemFrame)
 	-- Can't magnetize to myself
-	if systemFrame ==  self then
+	if systemFrame == self then
 		return nil;
 	end
 
 	-- Can't magnetize to anything already anchored to me
 	if self:IsFrameAnchoredToMe(systemFrame) then
+		return nil;
+	end
+
+	-- Can't magnetize to anything with an invalid rect
+	if not systemFrame:HasValidSelectionRect() then
 		return nil;
 	end
 

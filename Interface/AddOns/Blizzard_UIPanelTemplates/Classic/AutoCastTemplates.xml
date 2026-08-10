@@ -128,9 +128,9 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Corners" file="Interface\Buttons\UI-AutoCastableOverlay">
-					<Size x="58" y="58"/>
+					<Size x="66" y="66"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER" x="0.5" y="-0.5"/>
 					</Anchors>
 				</Texture>
 			</Layer>

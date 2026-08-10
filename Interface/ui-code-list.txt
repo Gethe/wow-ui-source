@@ -249,6 +249,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\LogDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LogicConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LootConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LootDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\LossOfControlConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LossOfControlDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LuaColorCurveObjectAPIDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\LuaCurveObjectAPIDocumentation.lua
@@ -568,6 +569,7 @@ Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Classic.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar_Mainline.toc
+Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonTemplate.xml
 Interface\AddOns\Blizzard_ActionBar\Classic\ActionButtonUtilOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Classic\ExpBar.xml
@@ -2967,8 +2969,5 @@ Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInbound.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.xml
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIOutbound.lua
-Interface\WorldMap\Azeroth.zmp
-Interface\WorldMap\Expansion01.zmp
-Interface\WorldMap\Kalimdor.zmp
 Interface\ui-gen-addon-list.txt
 Interface\ui-toc-list.txt

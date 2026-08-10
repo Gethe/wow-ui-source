@@ -333,7 +333,7 @@ function InboxFrameItem_OnEnter(self)
 		end
 		GameTooltip:AddLine(COD_AMOUNT, nil, nil, nil, true);
 		local useRedLineColor = self.cod > GetMoney();
-		GameTooltip_AddMoneyLine(GameTooltip, OpenMailFrame.cod, useRedLineColor)
+		GameTooltip_AddMoneyLine(GameTooltip, self.cod, useRedLineColor)
 	end
 	GameTooltip:Show();
 end
