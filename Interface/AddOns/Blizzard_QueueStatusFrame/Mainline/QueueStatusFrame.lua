@@ -870,6 +870,13 @@ local function GetDisplayNameFromCategory(category)
 		end
 	end
 
+	if (category == LE_LFG_CATEGORY_LAIR) then
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
+		end
+	end
+
 	local overrideName = GameRulesUtil.GetOverrideLFGCategoryName(category);
 	if overrideName then
 		return overrideName;

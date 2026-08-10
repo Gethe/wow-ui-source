@@ -22,6 +22,8 @@ function HousingBlueprintContentSummaryMixin:OnLoad()
 	if self.backgroundAlpha then
 		self.BudgetsContainer:SetBackgroundAlpha(self.backgroundAlpha);
 	end
+
+	self.defaultMinimumHeight = self.minimumHeight;
 end
 
 function HousingBlueprintContentSummaryMixin:OnEvent(event, ...)
@@ -72,8 +74,8 @@ end
 function HousingBlueprintContentSummaryMixin:SetShareCode(shareCode, targetHouseGUID)
 	self:ClearData();
 	self.blueprintCode = shareCode;
+	
 	self.blueprintType = C_HousingBlueprint.GetBlueprintTypeForCode(self.blueprintCode);
-
 	self.targetHouseGUID = targetHouseGUID;
 
 	if self:IsShown() then
@@ -89,6 +91,9 @@ function HousingBlueprintContentSummaryMixin:ClearData()
 	self.isWaitingForContent = nil;
 	self.showLoadingState = nil;
 	self.blueprintContentInfo = nil;
+	self.lastErrorText = nil;
+	self.fixedHeight = nil;
+	self.minimumHeight = self.defaultMinimumHeight;
 
 	self.CountText:SetText("");
 end
@@ -103,6 +108,10 @@ end
 
 function HousingBlueprintContentSummaryMixin:HasTargetHouse()
 	return self:GetTargetGUID() ~= nil;
+end
+
+function HousingBlueprintContentSummaryMixin:HasBlueprintContent()
+	return self.blueprintContentInfo ~= nil;
 end
 
 function HousingBlueprintContentSummaryMixin:IsShowingBlueprint(shareCode)
@@ -127,7 +136,7 @@ end
 
 function HousingBlueprintContentSummaryMixin:IsContentImportable()
 	if not self.blueprintContentInfo then
-		return false;
+		return false, self.lastErrorText;
 	end
 
 	if not self:HasTargetHouse() then
@@ -192,18 +201,28 @@ function HousingBlueprintContentSummaryMixin:UpdateBlueprintContentsData()
 end
 
 function HousingBlueprintContentSummaryMixin:OnContentRequestFailure(result)
+	-- For generic "DB error" results, we want to show "blueprint not found" as a more user-friendly player-facing message
+	-- And as the most likely actual underlying issue leading to it
+	if result == Enum.HousingResult.DbError then
+		result = Enum.HousingResult.BlueprintNotFound;
+	end
+
+	local errorText = HousingResultToErrorText[result] or ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_CONTENT_ERROR;
+	self.lastErrorText = HOUSING_BLUEPRINT_CONTENT_ERROR_FMT:format(errorText);
 	self:UpdateWaitingState(--[[isWaitingForContent]] false, --[[showLoadingState]] false);
+
+	self:MarkDirty();
+
 	if self.contentUpdatedCallback then
 		self.contentUpdatedCallback();
 	end
-	local errorText = HousingResultToErrorText[result] or ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_CONTENT_ERROR;
-	UIErrorsFrame:AddExternalErrorMessage(HOUSING_BLUEPRINT_CONTENT_ERROR_FMT:format(errorText));
 end
 
 function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(contentInfo)
 	local wasShowingLoadingState = self.showLoadingState;
 	self:UpdateWaitingState(--[[isWaitingForContent]] false, --[[showLoadingState]] false);
 	self.blueprintContentInfo = contentInfo;
+	self.lastErrorText = nil;
 
 	if wasShowingLoadingState and self.playLoadCompleteSound then
 		PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_IMPORT_OPEN);
@@ -212,7 +231,7 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	-- Update target houseGUID as what we got the data back with, because if we didn't specify a context at all, it'll be based on where the player is currently standing
 	self.targetHouseGUID = self.blueprintContentInfo.targetHouseGUID;
 
-	self.BudgetsContainer:SetInfo(self.blueprintContentInfo.budgetInfo);
+	self.BudgetsContainer:SetInfo(self.blueprintContentInfo.budgetInfo, self.blueprintType);
 
 	local numItems = 0;
 	local numMissing = 0;
@@ -232,6 +251,8 @@ function HousingBlueprintContentSummaryMixin:OnBlueprintContentsReceived(content
 	else
 		self.CountText:SetText(HOUSING_BLUEPRINT_IMPORT_VALIDATION_CONTENTS_COUNT_FMT:format(numItems));
 	end
+
+	self:UpdateContentVisibility();
 
 	self:MarkDirty();
 
@@ -277,9 +298,7 @@ function HousingBlueprintContentSummaryMixin:UpdateWaitingState(isWaitingForCont
 	self.isWaitingForContent = isWaitingForContent;
 	self.showLoadingState = showLoadingState;
 
-	self.BudgetsContainer:SetShown((not self.showLoadingState) and self.BudgetsContainer:IsShowingAnyBudgets());
-	self.ContentsListButton:SetShown(not self.showLoadingState);
-	self.CountText:SetShown(not self.showLoadingState);
+	self:UpdateContentVisibility();
 
 	self.LoadingSpinner:SetShown(self.showLoadingState);
 	if showLoadingState and (not self.loopSoundHandle) then
@@ -288,5 +307,24 @@ function HousingBlueprintContentSummaryMixin:UpdateWaitingState(isWaitingForCont
 	elseif (not showLoadingState) and self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
 		self.loopSoundHandle = nil;
+	end
+end
+
+function HousingBlueprintContentSummaryMixin:UpdateContentVisibility()
+	local canShowContent = self:HasBlueprintContent() and not self.showLoadingState;
+
+	self.BudgetsContainer:SetShown(canShowContent and self.BudgetsContainer:IsShowingAnyBudgets());
+	self.ContentsListButton:SetShown(canShowContent);
+	self.CountText:SetShown(canShowContent);
+
+	if self.showLoadingState or canShowContent then
+		-- If we're showing anything at all, maintain correct normal layout heights
+		self.fixedHeight = nil;
+		self.minimumHeight = self.defaultMinimumHeight;
+	else
+		-- If not showing anything at all, try not to take up empty space, without also invalidating our rect entirely
+		-- Doing this as opposed to hiding this frame outright because we want to remain shown and plugged into any further data or state changes
+		self.minimumHeight = nil;
+		self.fixedHeight = 1;
 	end
 end

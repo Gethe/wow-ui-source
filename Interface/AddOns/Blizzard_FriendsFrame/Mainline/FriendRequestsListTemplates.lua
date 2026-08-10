@@ -31,7 +31,7 @@ function FriendRequestsListSocialViewMixin:OnLoad()
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
 	self:InitializeRealIDWarning();
-	self:SetFilterBarShown(false);
+	self:InitializeFilterBar();
 
 	FrameUtil.RegisterFrameForEvents(self, FriendRequestsListSocialViewStaticEvents);
 end
@@ -124,6 +124,10 @@ function FriendRequestsListSocialViewMixin:InitializeRealIDWarning()
 		SetCVar("pendingInviteInfoShown", 1);
 		self:RefreshRealIDWarningVisibility();
 	end);
+end
+
+function FriendRequestsListSocialViewMixin:InitializeFilterBar()
+	self:SetFilterBarShown(false);
 end
 
 function FriendRequestsListSocialViewMixin:OnShow()

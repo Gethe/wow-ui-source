@@ -72,30 +72,27 @@ end
 
 SocialUISearchBoxMixin = {};
 
-local function GetOwningSocialViewForSearchBox(searchBox)
-	local filterBar = searchBox:GetParent();
-	return filterBar and filterBar:GetParent() or nil;
-end
-
-local function GetFilterInfoForSearchBox(searchBox)
-	local filterBar = searchBox:GetParent();
-	local filterDropdown = filterBar and filterBar.SearchFilterDropdown;
-	return filterDropdown and filterDropdown:GetSelectionData() or nil;
-end
-
 function SocialUISearchBoxMixin:OnLoad()
 	SearchBoxTemplate_OnLoad(self);
 	self:InitializeUserScaledFontSystem();
 end
 
-function SocialUISearchBoxMixin:OnEnterPressed()
-	local socialView = GetOwningSocialViewForSearchBox(self);
-	if socialView and socialView.OnSearchEnterPressed then
-		socialView:OnSearchEnterPressed(self:GetText());
-		return;
-	end
+function SocialUISearchBoxMixin:OnTextChanged()
+	SearchBoxTemplate_OnTextChanged(self);
 
-	EditBox_ClearFocus(self);
+	self:OnSearchTextChanged();
+end
+
+function SocialUISearchBoxMixin:OnSearchTextChanged()
+	-- Optionally override in your mixin
+end
+
+function SocialUISearchBoxMixin:OnHide()
+	self:ClearSearchText();
+end
+
+function SocialUISearchBoxMixin:ClearSearchText()
+	SearchBoxTemplate_ClearText(self);
 end
 
 function SocialUISearchBoxMixin:InitializeUserScaledFontSystem()
@@ -108,37 +105,23 @@ function SocialUISearchBoxMixin:InitializeUserScaledFontSystem()
 	self.Instructions:SetMaxLines(1);
 end
 
-SocialUIOnlineSearchFilterDropdownMixin = {};
+SocialUISearchFilterDropdownMixin = {};
 
-function SocialUIOnlineSearchFilterDropdownMixin:OnLoad()
+function SocialUISearchFilterDropdownMixin:OnLoad()
 	WowStyle1FilterDropdownMixin.OnLoad(self);
+
 	self:InitializeUserScaledFontSystem();
 
-	self:SetupMenu(function(dropdown, rootDescription)
-		local socialView = self:GetSocialView();
-		if socialView then
-			if socialView.SetupStatusFilterDropdown then
-				local statusDescription = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_STATUS);
-				socialView:SetupStatusFilterDropdown(dropdown, statusDescription);
-			end
-
-			if socialView.SetupTagsFilterDropdown then
-				local tagsDescription = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
-				socialView:SetupTagsFilterDropdown(dropdown, tagsDescription);
-			end
-		end
+	self:SetupMenu(function(_dropdown, rootDescription)
+		self:GenerateFilterMenu(rootDescription);
 	end);
 end
 
-function SocialUIOnlineSearchFilterDropdownMixin:SetSocialView(view)
-	self.socialView = view;
+function SocialUISearchFilterDropdownMixin:GenerateFilterMenu(_rootDescription)
+	-- Optionally override in your mixin
 end
 
-function SocialUIOnlineSearchFilterDropdownMixin:GetSocialView()
-	return self.socialView;
-end
-
-function SocialUIOnlineSearchFilterDropdownMixin:InitializeUserScaledFontSystem()
+function SocialUISearchFilterDropdownMixin:InitializeUserScaledFontSystem()
 	UserScaledElementMixin.OnLoad_UserScaledElement(self);
 
 	self.Text:ClearAllPoints();

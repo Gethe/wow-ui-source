@@ -449,12 +449,17 @@ function RecentAlliesSocialViewMixin:OnLoad()
 	SocialUIScrollableElementExtentPreviewerMixin.OnLoad(self);
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
-	self.FilterBar.SearchFilterDropdown:SetSocialView(self);
+	self:InitializeFilterBar();
 end
 
 function RecentAlliesSocialViewMixin:InitializeActionButton()
 	Mixin(self.ActionButton, SocialUIAddFriendButtonMixin);
 	self.ActionButton:SetText(SOCIAL_UI_RECENT_ALLIES_ADD_FRIEND_BUTTON_LABEL);
+end
+
+function RecentAlliesSocialViewMixin:InitializeFilterBar()
+	self.FilterBar.SearchBar.OnSearchTextChanged = function() self:RefreshSearchResults(); end
+	self.FilterBar.SearchFilterDropdown.GenerateFilterMenu = function(_dropdown, rootDescription) self:GenerateSearchFilterMenu(rootDescription); end
 end
 
 local function AddSearchFilterOptionsToDescription(socialView, description, predicate)
@@ -466,7 +471,7 @@ local function AddSearchFilterOptionsToDescription(socialView, description, pred
 
 	local function SetSelected(filterOption)
 		socialView.selectedSearchFilterOptions[filterOption] = not socialView.selectedSearchFilterOptions[filterOption];
-		socialView:OnSearchEnterPressed(socialView.FilterBar.SearchBar:GetText());
+		socialView:RefreshSearchResults();
 	end
 
 	for _, filterOption in ipairs(RecentAlliesSearchFilterOptions) do
@@ -477,20 +482,23 @@ local function AddSearchFilterOptionsToDescription(socialView, description, pred
 	end
 end
 
-function RecentAlliesSocialViewMixin:SetupStatusFilterDropdown(_dropdown, statusDescription)
-	AddSearchFilterOptionsToDescription(self, statusDescription, function(filterOption)
+function RecentAlliesSocialViewMixin:GenerateSearchFilterMenu(rootDescription)
+	local statusSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_STATUS);
+	statusSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+	AddSearchFilterOptionsToDescription(self, statusSubmenu, function(filterOption)
 		return not filterOption.searchInfo.interests;
 	end);
-end
 
-function RecentAlliesSocialViewMixin:SetupTagsFilterDropdown(_dropdown, tagsDescription)
-	AddSearchFilterOptionsToDescription(self, tagsDescription, function(filterOption)
+	local interestsSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
+	interestsSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+	AddSearchFilterOptionsToDescription(self, interestsSubmenu, function(filterOption)
 		return filterOption.searchInfo.interests ~= nil;
 	end);
 end
 
 function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
 	local compositeSearchInfo = {
+		searchText = self.FilterBar.SearchBar:GetText() or "",
 		isOnline = false,
 		isAFK = false,
 		isDND = false,
@@ -516,11 +524,8 @@ function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
 	return compositeSearchInfo;
 end
 
-function RecentAlliesSocialViewMixin:OnSearchEnterPressed(text)
-	local activeSearchInfo = self:BuildActiveSearchInfo();
-	activeSearchInfo.searchText = text;
-	local searchedAllies = C_RecentAllies.SearchRecentAllies(activeSearchInfo);
-	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(searchedAllies), ScrollBoxConstants.DiscardScrollPosition);
+function RecentAlliesSocialViewMixin:RefreshSearchResults()
+	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), ScrollBoxConstants.RetainScrollPosition);
 end
 
 function RecentAlliesSocialViewMixin:InitializeScrollBox()
@@ -646,21 +651,6 @@ function RecentAlliesSocialViewMixin:Refresh(retainScrollPosition)
 	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), retainScrollPosition);
 end
 
-local function PartitionRecentAlliesByPinState(allies)
-	local pinnedAllies = {};
-	local unpinnedAllies = {};
-	for _index, ally in ipairs(allies) do
-		local isPinned = ally.stateData.pinExpirationDate ~= nil;
-		if isPinned then
-			table.insert(pinnedAllies, ally);
-		else
-			table.insert(unpinnedAllies, ally);
-		end
-	end
-
-	return pinnedAllies, unpinnedAllies;
-end
-
 local function TryInsertRecentAlliesSubTree(dataProvider, headerFormatString, allies)
 	local treeHasEntries = allies and #allies > 0;
 	if not treeHasEntries then
@@ -703,10 +693,10 @@ local function PartitionRecentAlliesByPinAndLegacyState(allies)
 	return convertedLegacyFriends, pinnedAllies, unpinnedAllies;
 end
 
-function RecentAlliesSocialViewMixin:GenerateDataProvider(allies)
+function RecentAlliesSocialViewMixin:GenerateDataProvider()
 	local dataProvider = CreateTreeDataProvider();
 
-	local alliesToDisplay = allies or C_RecentAllies.GetRecentAllies();
+	local alliesToDisplay = C_RecentAllies.SearchRecentAllies(self:BuildActiveSearchInfo());
 	local convertedLegacyFriends, pinnedAllies, unpinnedAllies = PartitionRecentAlliesByPinAndLegacyState(alliesToDisplay);
 	TryInsertRecentAlliesSubTree(dataProvider, SOCIAL_UI_RECENT_ALLIES_VIEW_HEADER_LEGACY_FRIENDS, convertedLegacyFriends);
 

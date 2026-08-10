@@ -230,6 +230,22 @@ local HousingBlueprintUI =
 				{ Name = "shareCode", Type = "cstring", Nilable = false },
 			},
 		},
+		{
+			Name = "UpdateBlueprintStringFromInput",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inputShareCode", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "updatedShareCode", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

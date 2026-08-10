@@ -63,7 +63,6 @@ function HousingBlueprintBudgetsContainerMixin:SetInfo(budgetInfo, blueprintType
 	self.ExteriorBudgets:SetShown(numExterior > 0);
 
 	self.isShowingAnyBudgets = numInterior > 0 or numExterior > 0;
-	self:SetShown(self.isShowingAnyBudgets);
 end
 
 function HousingBlueprintBudgetsContainerMixin:ClearData()

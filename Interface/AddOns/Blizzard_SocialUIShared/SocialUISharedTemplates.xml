@@ -12,11 +12,12 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEnterPressed method="OnEnterPressed"/>
+			<OnHide method="OnHide"/>
+			<OnTextChanged method="OnTextChanged"/>
 		</Scripts>
 	</EditBox>
 
-	<DropdownButton name="SocialUISearchFilterDropdownTemplate" mixin="SocialUIOnlineSearchFilterDropdownMixin" inherits="WowStyle1FilterDropdownTemplate, UserScaledFrameTemplate" virtual="true">
+	<DropdownButton name="SocialUISearchFilterDropdownTemplate" mixin="SocialUISearchFilterDropdownMixin" inherits="WowStyle1FilterDropdownTemplate, UserScaledFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="resizeToText" type="boolean" value="false"/>
 			<KeyValue key="baseFontObject" type="string" value="UserScaledFontGameNormal"/>
@@ -72,8 +73,8 @@
 	<Button name="SocialUIScrollableHeaderTemplate" inherits="ListHeaderVisualTemplate, ListHeaderCodeTemplate, UserScaledFrameTemplate" mixin="SocialUIScrollableHeaderMixin" virtual="true">
 		<ButtonText parentKey="ButtonText" maxLines="1" wordwrap="false" justifyH="LEFT" justifyV="MIDDLE">
 			<Anchors>
-				<Anchor point="LEFT" x="8" y="1"/>
-				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" relativePoint="LEFT" x="-4" y="1"/>
+				<Anchor point="LEFT" x="8"/>
+				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" relativePoint="LEFT" x="-4"/>
 			</Anchors>
 		</ButtonText>
 		<KeyValues>

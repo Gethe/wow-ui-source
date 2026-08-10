@@ -2332,11 +2332,15 @@ end
 UIPanelIconDropdownButtonMixin = { };
 
 function UIPanelIconDropdownButtonMixin:OnMouseDown()
-	self.Icon:AdjustPointsOffset(1, -1);
+	if self:IsEnabled() then
+		self.Icon:AdjustPointsOffset(1, -1);
+	end
 end
 
 function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
-	self.Icon:AdjustPointsOffset(-1, 1);
+	if self:IsEnabled() then
+		self.Icon:AdjustPointsOffset(-1, 1);
+	end
 end
 
 BarDividerMixin = {};

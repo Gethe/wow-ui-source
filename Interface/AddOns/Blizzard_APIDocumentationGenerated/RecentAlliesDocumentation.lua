@@ -234,7 +234,7 @@ local RecentAllies =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "searchText", Type = "cstring", Nilable = false },
+				{ Name = "searchText", Type = "string", Nilable = false },
 				{ Name = "isOnline", Type = "bool", Nilable = false },
 				{ Name = "isDND", Type = "bool", Nilable = false },
 				{ Name = "isAFK", Type = "bool", Nilable = false },

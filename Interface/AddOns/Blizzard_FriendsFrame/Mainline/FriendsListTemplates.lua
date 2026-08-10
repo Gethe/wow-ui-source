@@ -32,7 +32,7 @@ local function AddFriendsSearchFilterOptionsToDescription(socialView, descriptio
 
 	local function SetSelected(filterOption)
 		socialView.selectedSearchFilterOptions[filterOption] = not socialView.selectedSearchFilterOptions[filterOption];
-		socialView:OnSearchEnterPressed(socialView.FilterBar.SearchBar:GetText());
+		socialView:RefreshSearchResults();
 	end
 
 	for _, filterOption in ipairs(filterOptions) do
@@ -46,6 +46,7 @@ FriendsListSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrol
 local FriendsListSocialViewDynamicEvents =
 {
 	"BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED",
+	"BN_DISCONNECTED",
 	"BN_FRIEND_LIST_SIZE_CHANGED",
 	"BN_FRIEND_INFO_CHANGED",
 };
@@ -56,9 +57,11 @@ function FriendsListSocialViewMixin:OnLoad()
 
 	SocialUIScrollableElementExtentPreviewerMixin.OnLoad(self);
 
+	self.collapsedHeaders = {};
+
 	self:InitializeActionButton();
 	self:InitializeScrollBox();
-	self.FilterBar.SearchFilterDropdown:SetSocialView(self);
+	self:InitializeFilterBar();
 end
 
 function FriendsListSocialViewMixin:InitializeActionButton()
@@ -66,33 +69,36 @@ function FriendsListSocialViewMixin:InitializeActionButton()
 	self.ActionButton:SetText(SOCIAL_UI_FRIENDS_LIST_ADD_FRIEND_BUTTON_LABEL);
 end
 
-function FriendsListSocialViewMixin:SetupStatusFilterDropdown(_dropdown, statusDescription)
-	AddFriendsSearchFilterOptionsToDescription(self, statusDescription, FriendsListStatusFilterOptions);
+function FriendsListSocialViewMixin:InitializeFilterBar()
+	self.FilterBar.SearchBar.OnSearchTextChanged = function() self:RefreshSearchResults(); end
+	self.FilterBar.SearchFilterDropdown.GenerateFilterMenu = function(_dropdown, rootDescription) self:GenerateSearchFilterMenu(rootDescription); end
 end
 
-function FriendsListSocialViewMixin:SetupTagsFilterDropdown(_dropdown, tagsDescription)
-	local interestsTitle = tagsDescription:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_INTERESTS);
+function FriendsListSocialViewMixin:GenerateSearchFilterMenu(rootDescription)
+	local statusSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_STATUS);
+	statusSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+	AddFriendsSearchFilterOptionsToDescription(self, statusSubmenu, FriendsListStatusFilterOptions);
+
+	local tagsSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
+	tagsSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+	local interestsTitle = tagsSubmenu:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_INTERESTS);
 	interestsTitle:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownTitle);
-	AddFriendsSearchFilterOptionsToDescription(self, tagsDescription, FriendsListTagInterestFilterOptions);
+	AddFriendsSearchFilterOptionsToDescription(self, tagsSubmenu, FriendsListTagInterestFilterOptions);
 
-	tagsDescription:CreateDivider();
+	tagsSubmenu:CreateDivider();
 
-	local rolesTitle = tagsDescription:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_ROLES_LABEL);
+	local rolesTitle = tagsSubmenu:CreateTitle(SOCIAL_UI_BATTLE_NET_FRIEND_TAG_ROLES_LABEL);
 	rolesTitle:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownTitle);
-	AddFriendsSearchFilterOptionsToDescription(self, tagsDescription, FriendsListTagRoleFilterOptions);
+	AddFriendsSearchFilterOptionsToDescription(self, tagsSubmenu, FriendsListTagRoleFilterOptions);
 end
 
-function FriendsListSocialViewMixin:OnSearchEnterPressed(text)
-	local activeSearchInfo = self:BuildActiveSearchInfo();
-	activeSearchInfo.searchText = text or "";
-
-	local friendsData = C_BattleNet.SearchFriends(activeSearchInfo);
-	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(friendsData), ScrollBoxConstants.DiscardScrollPosition);
+function FriendsListSocialViewMixin:RefreshSearchResults()
+	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), ScrollBoxConstants.RetainScrollPosition);
 end
 
 function FriendsListSocialViewMixin:BuildActiveSearchInfo()
 	local compositeSearchInfo = {
-		searchText = "",
+		searchText = self.FilterBar.SearchBar:GetText() or "",
 		isOnline = false,
 		isOffline = false,
 		isDND = false,
@@ -135,16 +141,17 @@ function FriendsListSocialViewMixin:InitializeScrollBox()
 		button:Initialize(node);
 		button:SetScript("OnClick", function(clickedButton, _buttonName)
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			node:ToggleCollapsed();
-			clickedButton:UpdateCollapsedState(node:IsCollapsed());
+			local isCollapsed = node:ToggleCollapsed();
+			self:SaveHeaderCollapsedState(node:GetData().headerType, isCollapsed);
+			clickedButton:UpdateCollapsedState(isCollapsed);
 		end);
 	end
 
 	local function InitializeCardButton(button, node)
 		button:Initialize(node);
 		button:SetScript("OnClick", function(clickedButton, mouseButtonName)
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			if mouseButtonName == "LeftButton" then
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self.selectionBehavior:ToggleSelect(clickedButton);
 				self:TrySwitchFriendsFriendsTarget(node);
 			elseif mouseButtonName == "RightButton" then
@@ -201,6 +208,15 @@ function FriendsListSocialViewMixin:InitializeScrollBox()
 			button:SetSelected(selected);
 		end
 	end, self);
+end
+
+-- Every refresh rebuilds the list from scratch, so we need to remember what you collapsed to restore it
+function FriendsListSocialViewMixin:SaveHeaderCollapsedState(headerType, isCollapsed)
+	self.collapsedHeaders[headerType] = isCollapsed;
+end
+
+function FriendsListSocialViewMixin:IsHeaderCollapsed(headerType)
+	return self.collapsedHeaders[headerType] == true;
 end
 
 local function HasAcknowledgedCrossFactionInviteTutorial()
@@ -301,6 +317,8 @@ function FriendsListSocialViewMixin:OnEvent(event, ...)
 		if bnetIDAccount then
 			self:NotifyFriendsFriendsOfFriendListChange(bnetIDAccount);
 		end
+	elseif event == "BN_DISCONNECTED" then
+		self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 	elseif event == "BN_FRIEND_INFO_CHANGED" or event == "BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED" then
 		self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 	end
@@ -340,58 +358,70 @@ function FriendsListSocialViewMixin:Refresh(retainScrollPosition)
 	self.ScrollBox:SetDataProvider(self:GenerateDataProvider(), retainScrollPosition);
 end
 
-local function TryInsertFriendsSubTree(dataProvider, headerString, numEntriesOnline, numEntriesTotal)
+local FriendsListHeaderType = EnumUtil.MakeEnum("Favorites", "Friends");
+
+local FriendsListHeaderStrings =
+{
+	[FriendsListHeaderType.Favorites] = SOCIAL_UI_FAVORITE_FRIENDS_LIST_HEADER,
+	[FriendsListHeaderType.Friends] = SOCIAL_UI_FRIENDS_LIST_HEADER,
+};
+
+local function TryInsertFriendsSubTree(dataProvider, headerType, isCollapsed, numEntriesOnline, numEntriesTotal)
 	if numEntriesTotal <= 0 then
 		return nil;
 	end
 
-	local newSubTree = dataProvider:Insert({ headerText = headerString:format(numEntriesOnline, numEntriesTotal) });
+	local headerString = FriendsListHeaderStrings[headerType];
+	local newSubTree = dataProvider:Insert({ headerType = headerType, headerText = headerString:format(numEntriesOnline, numEntriesTotal) });
+	newSubTree:SetCollapsed(isCollapsed, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 	newSubTree:Insert({ isSpacer = true });
 	return newSubTree;
 end
 
-local function InsertFriendsIntoDataProvider(dataProvider, friendsData)
-	local totalFriends, numFriendsOnline, numFavorites, numFavoritesOnline = BNGetNumFriends();
+function FriendsListSocialViewMixin:InsertFriendsIntoDataProvider(dataProvider, friendsData)
+	-- We ignore the online/favorites/favoritesOnline values here because we only care about friends that meet our search criteria
+	local totalFriends, _numFriendsOnline, _numFavorites, _numFavoritesOnline = BNGetNumFriends();
 	if totalFriends == 0 then
 		return;
 	end
 
-	local allowedFriendIndices;
-	local numNonFavorites = totalFriends - numFavorites;
-	local numNonFavoritesOnline = numFriendsOnline - numFavoritesOnline;
+	local accountInfoByFriendIndex = {};
+	local numDisplayedFavorites, numDisplayedFavoritesOnline = 0, 0;
+	local numDisplayedNonFavorites, numDisplayedNonFavoritesOnline = 0, 0;
+	for _, friendIndex in ipairs(friendsData) do
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+		if accountInfo then
+			accountInfoByFriendIndex[friendIndex] = accountInfo;
 
-	if friendsData then
-		allowedFriendIndices = {};
-		numFavorites, numFavoritesOnline = 0, 0;
-		numNonFavorites, numNonFavoritesOnline = 0, 0;
-		for _, friendIndex in ipairs(friendsData) do
-			allowedFriendIndices[friendIndex] = true;
-			local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
-			if accountInfo then
-				local isOnline = accountInfo.gameAccountInfo.isOnline;
-				if accountInfo.isFavorite then
-					numFavorites = numFavorites + 1;
-					if isOnline then numFavoritesOnline = numFavoritesOnline + 1; end
-				else
-					numNonFavorites = numNonFavorites + 1;
-					if isOnline then numNonFavoritesOnline = numNonFavoritesOnline + 1; end
+			local isOnline = accountInfo.gameAccountInfo.isOnline;
+			if accountInfo.isFavorite then
+				numDisplayedFavorites = numDisplayedFavorites + 1;
+				if isOnline then
+					numDisplayedFavoritesOnline = numDisplayedFavoritesOnline + 1;
+				end
+			else
+				numDisplayedNonFavorites = numDisplayedNonFavorites + 1;
+				if isOnline then
+					numDisplayedNonFavoritesOnline = numDisplayedNonFavoritesOnline + 1;
 				end
 			end
 		end
 	end
 
-	local favoritesSubTree = TryInsertFriendsSubTree(dataProvider, SOCIAL_UI_FAVORITE_FRIENDS_LIST_HEADER, numFavoritesOnline, numFavorites);
+	local favoritesCollapsed = self:IsHeaderCollapsed(FriendsListHeaderType.Favorites);
+	local favoritesSubTree = TryInsertFriendsSubTree(dataProvider, FriendsListHeaderType.Favorites, favoritesCollapsed, numDisplayedFavoritesOnline, numDisplayedFavorites);
 
-	local listWillShowBothTrees = favoritesSubTree and (numNonFavorites > 0);
+	local listWillShowBothTrees = favoritesSubTree and (numDisplayedNonFavorites > 0);
 	if listWillShowBothTrees then
 		dataProvider:Insert({ isSpacer = true });
 	end
 
-	local nonFavoriteSubTree = TryInsertFriendsSubTree(dataProvider, SOCIAL_UI_FRIENDS_LIST_HEADER, numNonFavoritesOnline, numNonFavorites);
+	local nonFavoritesCollapsed = self:IsHeaderCollapsed(FriendsListHeaderType.Friends);
+	local nonFavoriteSubTree = TryInsertFriendsSubTree(dataProvider, FriendsListHeaderType.Friends, nonFavoritesCollapsed, numDisplayedNonFavoritesOnline, numDisplayedNonFavorites);
 
 	for index = 1, totalFriends do
-		local accountInfo = C_BattleNet.GetFriendAccountInfo(index);
-		if accountInfo and (not allowedFriendIndices or allowedFriendIndices[index]) then
+		local accountInfo = accountInfoByFriendIndex[index];
+		if accountInfo then
 			local bestSubTree = accountInfo.isFavorite and favoritesSubTree or nonFavoriteSubTree;
 			if bestSubTree then
 				bestSubTree:Insert({ friendIndex = index, accountInfo = accountInfo });
@@ -400,9 +430,12 @@ local function InsertFriendsIntoDataProvider(dataProvider, friendsData)
 	end
 end
 
-function FriendsListSocialViewMixin:GenerateDataProvider(friendsData)
+function FriendsListSocialViewMixin:GenerateDataProvider()
 	local dataProvider = CreateTreeDataProvider();
-	InsertFriendsIntoDataProvider(dataProvider, friendsData);
+	local activeSearchInfo = self:BuildActiveSearchInfo();
+	local friendsData = C_BattleNet.SearchFriends(activeSearchInfo);
+	self:InsertFriendsIntoDataProvider(dataProvider, friendsData);
+
 	return dataProvider;
 end
 
@@ -1216,6 +1249,7 @@ function FriendsListSocialCardRAFSummonButtonMixin:OnClick()
 		return;
 	end
 
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	BNSummonFriendByIndex(self.friendIndex);
 end
 
@@ -1556,6 +1590,7 @@ function FriendsListSocialCardPartyButtonMixin:TryInviteFriend()
 
 	local directInviteGameAccountInfo = FriendsListUtil.GetBattleNetFriendGameAccountInfoIfExactlyOneDirectInviteTargetExists(friendIndex);
 	if directInviteGameAccountInfo then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		FriendsListUtil.InviteOrRequestToJoin(directInviteGameAccountInfo.playerGuid, directInviteGameAccountInfo.gameAccountID);
 		return;
 	end

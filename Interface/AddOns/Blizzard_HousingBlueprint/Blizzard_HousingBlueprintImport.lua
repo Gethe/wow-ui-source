@@ -43,8 +43,9 @@ function HousingBlueprintImportFrameMixin:StartImportFlow(prepopulatedShareCode)
 	if prepopulatedShareCode then
 		self.InputContent:SetShareCode(prepopulatedShareCode);
 		if self.InputContent:IsInputValid() then
+			local shareCode = C_HousingBlueprint.UpdateBlueprintStringFromInput(prepopulatedShareCode);
 			startingContent = self.ValidationContent;
-			 self.ValidationContent:SetShareCode(prepopulatedShareCode);
+			 self.ValidationContent:SetShareCode(shareCode);
 		end
 	end
 
@@ -80,7 +81,9 @@ function HousingBlueprintImportFrameMixin:OnInputNextClicked()
 
 	PlaySound(SOUNDKIT.HOUSING_BLUEPRINTS_BUTTONS);
 
-	local blueprintCode, blueprintType = self.InputContent:GetInputValues();
+	local inputBlueprintCode, blueprintType = self.InputContent:GetInputValues();
+
+	local blueprintCode = C_HousingBlueprint.UpdateBlueprintStringFromInput(inputBlueprintCode);
 
 	self.ValidationContent:SetShareCode(blueprintCode);
 	self:ShowContent(self.ValidationContent);
@@ -186,6 +189,7 @@ function HousingBlueprintImportInputContentMixin:ClearData()
 	self.NoticeText:SetText("");
 	self.ShareCodeBox.EditBox:SetText("");
 	self.NextButton:Disable();
+	self.GearDropdown:Disable();
 end
 
 -- Returns isValid, isNonEmpty
@@ -194,7 +198,7 @@ function HousingBlueprintImportInputContentMixin:IsInputValid()
 	local isNonEmpty = UserEditBoxNonEmpty(self.ShareCodeBox.EditBox);
 
 	if isNonEmpty then
-		local codeText = self.ShareCodeBox.EditBox:GetText();
+		local codeText = self:GetInputText();
 		isValid = C_HousingBlueprint.IsShareCodeValid(codeText);
 	end
 
@@ -202,8 +206,16 @@ function HousingBlueprintImportInputContentMixin:IsInputValid()
 end
 
 function HousingBlueprintImportInputContentMixin:GetInputValues()
-	local codeText = self.ShareCodeBox.EditBox:GetText();
+	local codeText = self:GetInputText();
 	return codeText, C_HousingBlueprint.GetBlueprintTypeForCode(codeText);
+end
+
+function HousingBlueprintImportInputContentMixin:GetInputText()
+	local inputText = self.ShareCodeBox.EditBox:GetText();
+	if inputText and inputText ~= "" then
+		inputText = strtrim(inputText);
+	end
+	return inputText;
 end
 
 function HousingBlueprintImportInputContentMixin:OnInputUpdated()
@@ -218,6 +230,7 @@ function HousingBlueprintImportInputContentMixin:OnInputUpdated()
 	local isError = hasAnyInput and not isInputValid;
 	self:SetNoticeText(newNoticeText, isError);
 	self.NextButton:SetEnabled(isInputValid);
+	self.GearDropdown:SetEnabled(isInputValid);
 end
 
 function HousingBlueprintImportInputContentMixin:SetNoticeText(text, isError)
@@ -292,10 +305,13 @@ function HousingBlueprintImportValidationContentMixin:OnContentUpdated()
 end
 
 function HousingBlueprintImportValidationContentMixin:UpdateImportButton()
+	self.GearDropdown:SetEnabled(self.ContentSummary:HasBlueprintContent());
+	
 	local canImport, disabledText = self:CanImport();
 	self.ImportButton:SetEnabled(canImport);
 
-	if not canImport and not self.ContentSummary:HasTargetHouse() then
+
+	if (not canImport) and (self.ContentSummary:HasBlueprintContent()) and (not self.ContentSummary:HasTargetHouse()) then
 		-- Only show location error text as a disabled tooltip, all other messaging is shown through Notice Text
 		self.ImportButton:SetDisabledTooltip(ERR_HOUSING_BLUEPRINT_REQUIREMENT_LOCATION, "ANCHOR_BOTTOM");
 	else
