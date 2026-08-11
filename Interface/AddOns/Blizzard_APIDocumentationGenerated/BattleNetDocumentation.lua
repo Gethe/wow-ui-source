@@ -238,6 +238,7 @@ local BattleNet =
 		{
 			Name = "SearchFriends",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
