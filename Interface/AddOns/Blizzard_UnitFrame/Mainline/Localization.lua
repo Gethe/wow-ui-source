@@ -31,6 +31,10 @@ local l10nTable = {
 		localizeFrames = LocalizePlayerHitIndicator,
 	},
 	zhCN = {
+		localize = function()
+			LocalizePlayerFrame_zhCN();
+		end,
+
 		localizeFrames = function ()
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "CENTER", 0, 1);
@@ -73,6 +77,7 @@ local l10nTable = {
 	},
 	zhTW = {
         localize = function()
+			LocalizePlayerFrame_zhTW();
         end,
 
         localizeFrames = function()

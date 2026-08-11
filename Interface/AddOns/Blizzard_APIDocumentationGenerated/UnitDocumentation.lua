@@ -898,6 +898,7 @@ local Unit =
 			Name = "UnitClass",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -916,6 +917,7 @@ local Unit =
 			Name = "UnitClassBase",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1285,6 +1287,7 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssigned",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1300,6 +1303,7 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1477,6 +1481,7 @@ local Unit =
 		{
 			Name = "UnitHonorLevel",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1601,6 +1606,7 @@ local Unit =
 		{
 			Name = "UnitInRaid",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1756,6 +1762,7 @@ local Unit =
 		{
 			Name = "UnitIsCharmed",
 			Type = "Function",
+			SecretWhenUnitPossessionRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1939,6 +1946,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupAssistant",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1954,6 +1962,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupLeader",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2107,6 +2116,7 @@ local Unit =
 		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2123,6 +2133,7 @@ local Unit =
 		{
 			Name = "UnitIsPVP",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2184,6 +2195,7 @@ local Unit =
 		{
 			Name = "UnitIsPossessed",
 			Type = "Function",
+			SecretWhenUnitPossessionRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2214,6 +2226,7 @@ local Unit =
 		{
 			Name = "UnitIsRaidOfficer",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2337,6 +2350,7 @@ local Unit =
 		{
 			Name = "UnitLeadsAnyGroup",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2367,7 +2381,7 @@ local Unit =
 		{
 			Name = "UnitName",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
+			SecretWhenUnitNameIdentityRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -2529,6 +2543,7 @@ local Unit =
 		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2803,11 +2818,12 @@ local Unit =
 			Name = "UnitRace",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -2925,6 +2941,7 @@ local Unit =
 		{
 			Name = "UnitSex",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2940,6 +2957,7 @@ local Unit =
 		{
 			Name = "UnitSexBase",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

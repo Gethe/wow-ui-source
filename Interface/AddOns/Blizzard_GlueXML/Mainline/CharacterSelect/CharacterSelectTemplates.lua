@@ -22,6 +22,18 @@ function CharacterSelectListExpandMixin:OnLoad()
 	expandButton.disabledCollapsedAtlas = "128-RedButton-ArrowUpGlow-Disabled";
 end
 
+function CharacterSelectListExpandMixin:NarrationGetName()
+	return NARRATION_WARBAND_CHARACTER_LIST;
+end
+
+function CharacterSelectListExpandMixin:NarrationGetContext()
+	if self:IsExpanded() then
+		return NARRATION_EXPAND_BUTTON_EXPANDED;
+	else
+		return NARRATION_EXPAND_BUTTON_COLLAPSED;
+	end
+end
+
 
 CharacterSelectToolTrayMixin = {};
 

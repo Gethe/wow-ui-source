@@ -16,6 +16,12 @@ function OrderHallTalentFrame_ToggleFrame()
 	end
 end
 
+local function OrderHallTalentFrame_EscapePressed()
+	return OrderHallTalentFrame:EscapePressed();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, OrderHallTalentFrame_EscapePressed);
+
 local CHOICE_BACKGROUND_OFFSET_Y = 10;
 local BACKGROUND_WITH_INSET_OFFSET_Y = 0;
 local BACKGROUND_NO_INSET_OFFSET_Y = 44;

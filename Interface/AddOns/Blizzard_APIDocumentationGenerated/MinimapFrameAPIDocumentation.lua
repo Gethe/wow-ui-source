@@ -128,6 +128,16 @@ local MinimapFrameAPI =
 			},
 		},
 		{
+			Name = "SetIconScale",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "scale", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMaskTexture",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

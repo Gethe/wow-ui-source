@@ -1704,6 +1704,14 @@ function PetJournalFindBattle_OnEnter(self)
 end
 
 function PetJournalAchievementStatus_OnClick()
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if not ((HasCompletedAnyAchievement() or IsInGuild()) and CanShowAchievementUI()) then
+		return;
+	end
+
 	ToggleAchievementFrame();
 	AchievementFrame_UpdateAndSelectCategory(PET_ACHIEVEMENT_CATEGORY);
 end

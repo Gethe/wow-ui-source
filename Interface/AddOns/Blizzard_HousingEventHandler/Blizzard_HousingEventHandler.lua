@@ -1,6 +1,12 @@
 -- Helpers for non-Housing code needing to make housing-related API calls while relevant Housing addons may not be loaded (ex: Keybindings)
 HousingFramesUtil = {};
 
+HousingFramesUtil.HouseChestTabs = {
+	Storage = 1,
+	Market = 2,
+	Blueprints = 3,
+};
+
 function HousingFramesUtil.IsHousingMarketShopAvailable()
 	return C_Housing.IsHousingMarketShopEnabled() and C_StorePublic.IsEnabled() and C_HousingCatalog.HasFeaturedEntries();
 end
@@ -55,7 +61,7 @@ function HousingFramesUtil.IsHouseEditorModeAvailable(mode)
 		return false;
 	end
 
-	if not HousingTutorialUtil.HousingQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode) then
+	if not HousingTutorialUtil.HousingDecorQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode) then
 		return false;
 	end
 
@@ -273,11 +279,77 @@ function HousingFramesUtil.ShowFixtureDecorActionConfirmation(callback)
 	StaticPopup_Show("HOUSING_FIXTURE_DECOR_ACTION_CONFIRM", nil, nil, { callback = callback });
 end
 
+function HousingFramesUtil.IsBlueprintOperationInProgress()
+	if not HousingBlueprintImportFrame then
+		return false;
+	end
+
+	return HousingBlueprintImportFrame:IsOperationInProgress() 
+		or HousingBlueprintExportFrame:IsOperationInProgress() 
+		or HousingBlueprintRenameFrame:IsOperationInProgress();
+end
+
+function HousingFramesUtil.ShowBlueprintExport()
+	if not HousingBlueprintExportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintExportFrame:StartExportFlow();
+end
+
+function HousingFramesUtil.ShowBlueprintRoomExport(roomGUID)
+	if not HousingBlueprintExportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintExportFrame:StartRoomExportFlow(roomGUID);
+end
+
+function HousingFramesUtil.ShowBlueprintImport(optionalShareCode)
+	if not HousingBlueprintImportFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingBlueprint");
+	end
+
+	HousingBlueprintImportFrame:StartImportFlow(optionalShareCode);
+end
+
+function HousingFramesUtil.IsBlueprintCollectionAvailable()
+	if not C_Housing.IsInsideHouse() and C_HouseEditor.IsHouseEditorActive() then
+		-- Can't open blueprint collections while editing your exterior
+		return false;
+	end
+	return true;
+end
+
+function HousingFramesUtil.TryOpenBlueprintCollection()
+	if not HousingFramesUtil.IsBlueprintCollectionAvailable() then
+		HousingFramesUtil.openBlueprintsOnEditorOpen = false;
+		return false;
+	end
+
+	if C_Housing.IsInsideHouse() and HousingFramesUtil.IsHouseEditorModeAvailable(Enum.HouseEditorMode.Layout) then
+		if C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.Layout) and HouseEditorFrame then
+			HousingFramesUtil.openBlueprintsOnEditorOpen = false;
+			HouseEditorFrame:TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+		else
+			HousingFramesUtil.openBlueprintsOnEditorOpen = true;
+			C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.Layout);
+		end
+	else
+		if not HousingDashboardFrame then
+			C_AddOns.LoadAddOn("Blizzard_HousingDashboard");
+		end
+		EventRegistry:TriggerEvent("HousingDashboard.OpenToCollectionFrame");
+	end
+
+	
+	return true;
+end
+
 -- Handler for events that may fire while relevant Housing addons may not be loaded
 HousingEventHandlerMixin = {}
 
 function HousingEventHandlerMixin:Init()
-
 end
 
 function HousingEventHandlerMixin:OnPlotEntered()
@@ -290,6 +362,10 @@ function HousingEventHandlerMixin:OnEditorModeChanged(...)
 	if not HouseEditorFrame then
 		C_AddOns.LoadAddOn("Blizzard_HouseEditor");
 		HouseEditorFrame:OnEvent("HOUSE_EDITOR_MODE_CHANGED", ...);
+	end
+
+	if HousingFramesUtil.openBlueprintsOnEditorOpen then
+		HousingFramesUtil.TryOpenBlueprintCollection();
 	end
 end
 
@@ -428,6 +504,16 @@ function HousingEventHandlerMixin:ShowHousingItemAcquiredAlert(itemType, itemNam
 	HousingItemEarnedAlertFrameSystem:AddAlert(rewardData);
 end
 
+function HousingEventHandlerMixin:OnResetHouseFailed(result)
+	local errorMessage = ERR_HOUSE_RESET_FAILED;
+
+	local resultText = HousingResultToErrorText[result];
+	if resultText and resultText ~= "" then
+		errorMessage = ERR_HOUSE_RESET_FAILED_FMT:format(resultText);
+	end
+	UIErrorsFrame:AddExternalErrorMessage(errorMessage);
+end
+
 local HousingEventHandler = CreateAndInitFromMixin(HousingEventHandlerMixin);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_PLOT_ENTERED", HousingEventHandler.OnPlotEntered, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGED", HousingEventHandler.OnEditorModeChanged, HousingEventHandler);
@@ -442,3 +528,4 @@ EventRegistry:RegisterFrameEventAndCallback("SHOW_PLAYER_EVICTED_DIALOG", Housin
 EventRegistry:RegisterFrameEventAndCallback("SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG", HousingEventHandler.ShowOwnershipTransferRequestConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_STAIR_DIRECTION_CONFIRMATION", HousingEventHandler.ShowStairDirectionConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("NEW_HOUSING_ITEM_ACQUIRED", HousingEventHandler.ShowHousingItemAcquiredAlert, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("HOUSE_RESET_FAILED", HousingEventHandler.OnResetHouseFailed, HousingEventHandler);

@@ -54,6 +54,19 @@ LinkUtil.RegisterLinkHandler(LinkTypes.GMChat, function(link, text, linkData, co
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.PvPUI, function(link, text, linkData, contextData)
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if PlayerIsTimerunning() then
+		return;
+	end
+
+	local canUse = C_LFGInfo.CanPlayerUseGroupFinder();
+	if not canUse then
+		return;
+	end
+
 	TogglePVPUI();
 end);
 
@@ -155,7 +168,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.ClubTicket, function(link, text, linkData
 		end
 	end
 	local ticketId = string.split(":", linkData.options);
-	if ( CommunitiesFrame_IsEnabled() ) then
+	if ( C_Club.IsEnabled() ) then
 		CommunitiesHyperlink.OnClickLink(ticketId);
 	end
 end);

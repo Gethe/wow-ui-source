@@ -1,8 +1,5 @@
 local function CanShowHouseDecorQuestTutorial()
-	local housingCleanupTutorialComplete = GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorCleanup) or C_QuestLog.IsQuestFlaggedCompleted(HousingTutorialQuestIDs.CleanupQuest);
-	local housingDecorateTutorialComplete = GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorPlace) or C_QuestLog.IsQuestFlaggedCompleted(HousingTutorialQuestIDs.DecorateQuest);
-
-	return not housingCleanupTutorialComplete or not housingDecorateTutorialComplete;
+	return not HousingTutorialUtil.HousingDecorQuestTutorialComplete();
 end
 
 local function CanShowHouseDecorTutorials()

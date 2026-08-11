@@ -100,6 +100,30 @@ function HelpFrameMixin:OnError(msg)
 	end
 
 end
+
+function ToggleHelpFrame(contextKey)
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	if (HelpFrame:IsShown()) then
+		HideUIPanel(HelpFrame);
+	else
+		HelpFrame:ShowFrame(nil, contextKey);
+	end
+end
+
+function HelpFrame_EscapePressed()
+	if HelpFrame:IsShown() then
+		ToggleHelpFrame();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.FrameworkPre, HelpFrame_EscapePressed);
+
 function HelpFrameMixin:ShowFrame(key, contextKey)
 	if key == HELPFRAME_SUBMIT_TICKET then
 		navigateHomeOnShow = false;
@@ -246,11 +270,17 @@ end
 
 
 function TicketStatusFrame_OnShow(self)
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 end
 
 function TicketStatusFrame_OnHide(self)
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
+end
+
+function AddTicketStatusFrameToStatusFrames(statusFrames)
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
 end
 
 

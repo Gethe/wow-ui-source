@@ -11,7 +11,7 @@
 
 			<Button name="CustomBuyButtonTemplate" inherits="StoreButtonTemplate" mixin="StoreBuyButtonMixin" virtual="true">
 				<Frames>
-					<Frame parentKey="Discount" inherits="ResizeLayoutFrame" virtual="true">
+					<Frame parentKey="Discount" inherits="ResizeLayoutFrame">
 						<Anchors>
 							<Anchor point="CENTER" />
 						</Anchors>

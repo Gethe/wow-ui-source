@@ -143,6 +143,8 @@ SLASH_COMMAND = {
 	DISMISSBATTLEPET = "DISMISSBATTLEPET",
 	USE_TOY = "USE_TOY",
 	PING = "PING",
+	PING_SPELL = "PING_SPELL",
+	PING_ITEM = "PING_ITEM",
 	ABANDON = "ABANDON",
 	INVITE = "INVITE",
 	REQUEST_INVITE = "REQUEST_INVITE",
@@ -166,6 +168,7 @@ SLASH_COMMAND = {
 	EDITMODE = "EDITMODE",
 	COOLDOWN_MANAGER = "COOLDOWNMANAGER",
 	CLICK_CASTING = "CLICKCASTING",
+	MAPPIN = "MAPPIN",
 };
 
 SLASH_COMMAND_CATEGORY = {
@@ -208,6 +211,7 @@ SLASH_COMMAND_CATEGORY = {
 	TRANSMOG = 36,
 	COMMUNITY = 37,
 	EDIT_MODE = 38,
+	MAP = 39,
 };
 
 --[[ Commands table should be formatted as:
@@ -731,7 +735,7 @@ SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.CLICK, SLASH_COMMAND_C
 		down = StringToBoolean(down or "", false);
 
 		local button = GetClickFrame(name);
-		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
+		if ( button and button:IsObjectType("Button") and not button:HasAccessConstraints() and not button:HasAnyForbiddenAspects(Enum.ForbiddenAspect.ScriptedInput) ) then
 			button:Click(mouseButton, down);
 		end
 	end
@@ -1129,14 +1133,16 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRIENDS, SLASH_COMMAND_CATEG
 		ToggleFriendsPanel();
 	else
 		local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if player then
+		if player and C_FriendList.IsLegacyFriendSystemEnabled() then
 			C_FriendList.AddOrRemoveFriend(player, note);
 		end
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	C_FriendList.RemoveFriend(msg);
+	if C_FriendList.IsLegacyFriendSystemEnabled() then
+		C_FriendList.RemoveFriend(msg);
+	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
@@ -1200,7 +1206,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RANDOM, SLASH_COMMAND_CATEGO
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.MACRO, SLASH_COMMAND_CATEGORY.MACRO, function(msg)
-	if Kiosk.IsEnabled() then
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
 		return;
 	end
 
@@ -1243,7 +1253,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.STOPWATCH, SLASH_COMMAND_CATEGORY.CHAT_COMMAND, function(msg)
 	if ( not C_AddOns.IsAddOnLoaded("Blizzard_TimeManager") ) then
-		UIParentLoadAddOn("Blizzard_TimeManager");
+		TimeManager_LoadUI();
 	end
 	if ( StopwatchFrame ) then
 		local text = strmatch(msg, "%s*([^%s]+)%s*");
@@ -1297,6 +1307,15 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.ACHIEVEMENTUI, SLASH_COMMAND
 	if Kiosk.IsEnabled() then
 		return;
 	end
+
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if not ((HasCompletedAnyAchievement() or IsInGuild()) and CanShowAchievementUI()) then
+		return;
+	end
+
 	ToggleAchievementFrame();
 end);
 
@@ -1312,7 +1331,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UI_ERRORS_ON, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.EVENTTRACE, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
-	UIParentLoadAddOn("Blizzard_EventTrace");
+	EventTrace_LoadUI();
 	EventTrace:ProcessChatCommand(msg);
 end);
 
@@ -1321,7 +1340,7 @@ if IsGMClient() then
 	SLASH_TEXELVIS1 = "/texelvis";
 	SLASH_TEXELVIS2 = "/tvis";
 	SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXELVIS, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
-		UIParentLoadAddOn("Blizzard_DebugTools");
+		DebugTools_LoadUI();
 		TexelSnappingVisualizer:Show();
 	end);
 end
@@ -1336,7 +1355,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TABLEINSPECT, SLASH_COMMAND_
 		return;
 	end
 	forceinsecure();
-	UIParentLoadAddOn("Blizzard_DebugTools");
+	DebugTools_LoadUI();
 
 	local focusedTable = nil;
 	if msg ~= "" and msg ~= " " then
@@ -1363,7 +1382,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DUMP, SLASH_COMMAND_CATEGORY
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
 		end
-		UIParentLoadAddOn("Blizzard_DebugTools");
+		DebugTools_LoadUI();
 		DevTools_DumpCommand(msg);
 	end
 end);
@@ -1575,7 +1594,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COM
 		end
 	else
 		if not failureText then
-			failureText, failureTextNarrated = CAACommands:GetCommandHelpText(cmd);
+			local failureTextInfo = CAACommands:GetCommandHelpText(cmd);
+			if not TableIsEmpty(failureTextInfo) then
+				failureText = failureTextInfo[1].displayText;
+				failureTextNarrated = failureTextInfo[1].narratedText;
+			end
 		end
 
 		if failureText then
@@ -1647,7 +1670,32 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DISMISSBATTLEPET, SLASH_COMM
 	end
 end);
 
+local isRaidInfoNotificationPending = false;
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CATEGORY.RAID, function(msg)
+	if SocialUIControl and SocialUIControl.IsEnabled() then
+		local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
+		if hasRaidLockoutData then
+			SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.RaidList, SocialUISideWindowType.RaidInfoFrame);
+		else
+			SocialUIControl.ToggleToTab(SocialUITabType.RaidList);
+		end
+
+		-- If the player is using this slash command to open the raid info frame but doesn't have raid info we want to show a message in chat
+		if not isRaidInfoNotificationPending then
+			isRaidInfoNotificationPending = true;
+
+			EventUtil.RegisterOnceFrameEventAndCallback("UPDATE_INSTANCE_INFO", function()
+				isRaidInfoNotificationPending = false;
+
+				local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
+				if not hasRaidLockoutData then
+					ChatFrameUtil.DisplaySystemMessageInPrimary(NO_RAID_INSTANCES_SAVED);
+				end
+			end);
+		end
+		return;
+	end
+
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
 		ToggleRaidFrame();

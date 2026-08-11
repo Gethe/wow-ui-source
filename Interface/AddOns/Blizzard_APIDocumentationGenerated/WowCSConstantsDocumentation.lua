@@ -5,7 +5,7 @@ local WowCSConstants =
 		{
 			Name = "FragmentID",
 			Type = "Enumeration",
-			NumValues = 75,
+			NumValues = 77,
 			MinValue = 0,
 			MaxValue = 255,
 			Fields =
@@ -52,6 +52,8 @@ local WowCSConstants =
 				{ Name = "FUnitAIGroupLink", Type = "FragmentID", EnumValue = 39 },
 				{ Name = "FPathingDynamicLinks", Type = "FragmentID", EnumValue = 40 },
 				{ Name = "FPathingDoor", Type = "FragmentID", EnumValue = 41 },
+				{ Name = "FWorldStateListenerData", Type = "FragmentID", EnumValue = 42 },
+				{ Name = "FMapObject", Type = "FragmentID", EnumValue = 43 },
 				{ Name = "TagItem", Type = "FragmentID", EnumValue = 200 },
 				{ Name = "TagContainer", Type = "FragmentID", EnumValue = 201 },
 				{ Name = "TagAzeriteEmpoweredItem", Type = "FragmentID", EnumValue = 202 },

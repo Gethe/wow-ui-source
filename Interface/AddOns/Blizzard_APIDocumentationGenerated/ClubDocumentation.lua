@@ -1038,6 +1038,19 @@ local Club =
 			},
 		},
 		{
+			Name = "SendTitleFriendRequest",
+			Type = "Function",
+			HasRestrictions = true,
+			RequiresClubsInitialized = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "guildClubId", Type = "ClubId", Nilable = false },
+				{ Name = "memberId", Type = "ClubMemberOpaqueId", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAutoAdvanceStreamViewMarker",
 			Type = "Function",
 			RequiresClubsInitialized = true,
@@ -1717,15 +1730,16 @@ local Club =
 		{
 			Name = "ClubStreamType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "General", Type = "ClubStreamType", EnumValue = 0 },
 				{ Name = "Guild", Type = "ClubStreamType", EnumValue = 1 },
 				{ Name = "Officer", Type = "ClubStreamType", EnumValue = 2 },
-				{ Name = "Other", Type = "ClubStreamType", EnumValue = 3 },
+				{ Name = "Discord", Type = "ClubStreamType", EnumValue = 3 },
+				{ Name = "Other", Type = "ClubStreamType", EnumValue = 4 },
 			},
 		},
 		{
@@ -1826,6 +1840,7 @@ local Club =
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "faction", Type = "PvPFaction", Nilable = true, NeverSecret = true },
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = true },
 			},
 		},
 		{

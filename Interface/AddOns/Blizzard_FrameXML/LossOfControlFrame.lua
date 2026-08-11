@@ -3,19 +3,15 @@ Howdy!
 Classic MoP also uses this so please be mindful when editting :)
 ]]
 
--- can't scale text with animations, use raid warning scaling
-local abilityNameTimings = {
-	["RAID_NOTICE_MIN_HEIGHT"] = 22.0,
-	["RAID_NOTICE_MAX_HEIGHT"] = 32.0,
-	["RAID_NOTICE_SCALE_UP_TIME"] = 0.1,
-	["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.2,
-}
-local timeLeftTimings = {
-	["RAID_NOTICE_MIN_HEIGHT"] = 20.0,
-	["RAID_NOTICE_MAX_HEIGHT"] = 28.0,
-	["RAID_NOTICE_SCALE_UP_TIME"] = 0.1,
-	["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.2,
-}
+local ABILITY_NAME_MIN_HEIGHT = 22.0;
+local ABILITY_NAME_MAX_HEIGHT = 32.0;
+local ABILITY_NAME_SCALE_UP_TIME = 0.1;
+local ABILITY_NAME_SCALE_DOWN_TIME = 0.2;
+
+local TIME_LEFT_MIN_HEIGHT = 20.0;
+local TIME_LEFT_MAX_HEIGHT = 28.0;
+local TIME_LEFT_SCALE_UP_TIME = 0.1;
+local TIME_LEFT_SCALE_DOWN_TIME = 0.2;
 
 local TEXT_OVERRIDE = {
 	[33786] = LOSS_OF_CONTROL_DISPLAY_CYCLONE,
@@ -33,16 +29,21 @@ local DISPLAY_TYPE_FULL = 2;
 local DISPLAY_TYPE_ALERT = 1;
 local DISPLAY_TYPE_NONE = 0;
 
-LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
+local LOSS_OF_CONTROL_STUNNED_ICON = 135860;
 
 LossOfControlMixin = {};
 
 function LossOfControlMixin:OnLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
 	self.TimeLeft.baseNumberWidth = self.TimeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	self.TimeLeft.secondsWidth = self.TimeLeft.SecondsText:GetStringWidth();
+
+	FadingFrame_SetTextScaling(self.AbilityName, ABILITY_NAME_MIN_HEIGHT, ABILITY_NAME_MAX_HEIGHT, ABILITY_NAME_SCALE_UP_TIME, ABILITY_NAME_SCALE_DOWN_TIME);
+	FadingFrame_SetTextScaling(self.TimeLeft.NumberText, TIME_LEFT_MIN_HEIGHT, TIME_LEFT_MAX_HEIGHT, TIME_LEFT_SCALE_UP_TIME, TIME_LEFT_SCALE_DOWN_TIME);
+	FadingFrame_SetTextScaling(self.TimeLeft.SecondsText, TIME_LEFT_MIN_HEIGHT, TIME_LEFT_MAX_HEIGHT, TIME_LEFT_SCALE_UP_TIME, TIME_LEFT_SCALE_DOWN_TIME);
 
 	self.Anim:SetScript("OnFinished", function()
 		if (self.Cooldown:GetCooldownDuration() > 0) then
@@ -66,7 +67,7 @@ function LossOfControlMixin:OnEvent(event, ...)
 			end
 			return;
 		end
-		if ( eventIndex == LOSS_OF_CONTROL_ACTIVE_INDEX ) then
+		if ( eventIndex == Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX ) then
 			self.fadeDelayTime = nil;
 			self.fadeTime = nil;
 			self:SetUpDisplay(true);
@@ -92,9 +93,13 @@ function LossOfControlMixin:OnEvent(event, ...)
 end
 
 function LossOfControlMixin:OnUpdate(elapsed)
-	RaidNotice_UpdateSlot(self.AbilityName, abilityNameTimings, elapsed);
-	RaidNotice_UpdateSlot(self.TimeLeft.NumberText, timeLeftTimings, elapsed);
-	RaidNotice_UpdateSlot(self.TimeLeft.SecondsText, timeLeftTimings, elapsed);
+	if self.isInEditMode then
+		return;
+	end
+
+	FadingFrame_UpdateTextScaling(self.AbilityName, elapsed);
+	FadingFrame_UpdateTextScaling(self.TimeLeft.NumberText, elapsed);
+	FadingFrame_UpdateTextScaling(self.TimeLeft.SecondsText, elapsed);
 
 	-- handle alert fade timing
 	if(self.fadeDelayTime) then
@@ -125,11 +130,20 @@ function LossOfControlMixin:OnHide()
 	self.priority = nil;
 end
 
+function LossOfControlMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function LossOfControlMixin:UpdateShownState()
+	self:UpdateDisplay();
+end
+
 function LossOfControlMixin:SetUpDisplay(animate, data)
 	if ( not data ) then
-		data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
+		data = C_LossOfControl.GetActiveLossOfControlData(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	end
-	
+
 	local locType = data.locType;
 	local spellID = data.spellID;
 	local text = data.displayText;
@@ -180,9 +194,9 @@ function LossOfControlMixin:SetUpDisplay(animate, data)
 				self.fadeTime = ALERT_FADE_TIME;
 			end
 			self.Anim:Stop();
-			self.AbilityName.scrollTime = 0;
-			self.TimeLeft.NumberText.scrollTime = 0;
-			self.TimeLeft.SecondsText.scrollTime = 0;
+			FadingFrame_StartTextScaling(self.AbilityName);
+			FadingFrame_StartTextScaling(self.TimeLeft.NumberText);
+			FadingFrame_StartTextScaling(self.TimeLeft.SecondsText);
 			self.Cooldown:Hide();
 			self.Anim:Play();
 			PlaySound(SOUNDKIT.UI_LOSS_OF_CONTROL_START);
@@ -195,12 +209,24 @@ function LossOfControlMixin:SetUpDisplay(animate, data)
 end
 
 function LossOfControlMixin:UpdateDisplay()
+	if self.isInEditMode then
+		-- Fake data for edit mode.
+		local editModeData = {
+			displayText = LOSS_OF_CONTROL_DISPLAY_STUN,
+			iconTexture = LOSS_OF_CONTROL_STUNNED_ICON,
+			timeRemaining = 67,
+		};
+
+		self:SetUpDisplay(false, editModeData);
+		return;
+	end
+
 	-- if displaying an alert, wait for it to go away on its own
 	if ( self.fadeTime ) then
 		return;
 	end
 
-	local data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
+	local data = C_LossOfControl.GetActiveLossOfControlData(Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if ( data and data.displayText and data.displayType == DISPLAY_TYPE_FULL ) then
 		if ( data.spellID ~= self.spellID or data.startTime ~= self.startTime ) then
 			self:SetUpDisplay(false, data);

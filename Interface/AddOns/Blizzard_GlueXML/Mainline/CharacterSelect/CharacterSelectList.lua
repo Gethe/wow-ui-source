@@ -5,49 +5,9 @@ local LIST_SCROLL_BOX_DEFAULT_Y_OFFSET = 83;
 CharacterSelectListMixin = {};
 
 function CharacterSelectListMixin:OnLoad()
-	self.AddGroupButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
+	self.ScrollBox:SetEdgeFadeLength(50);
 
-		CharacterListEditGroupFrame:ShowNewGroupFrame();
-	end);
 	self.AddGroupButton:SetDisabledTooltip(ADD_CHARACTER_GROUP_TOOLTIP_DISABLED:format(GetMaxWarbandGroupCount()));
-
-	self.CreateCharacterButton:SetScript("OnEnter", function()
-		if self.CreateCharacterButton:IsEnabled() then
-			GlueTooltip:SetOwner(self.CreateCharacterButton, "ANCHOR_TOP");
-			GameTooltip_SetTitle(GlueTooltip, CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
-			GlueTooltip:Show();
-		end
-	end);
-
-	self.CreateCharacterButton:SetScript("OnLeave", function()
-		GlueTooltip:Hide();
-	end);
-
-	self.CreateCharacterButton:SetScript("OnClick", function()
-		local createCharacterCallback = function()
-			if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
-				CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
-			end
-		end;
-
-		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
-			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
-			local text2 = nil;
-			StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
-		else
-			createCharacterCallback();
-		end
-	end);
-
-	self.DeleteCharacterButton:SetScript("OnClick", GenerateFlatClosure(CharacterSelect_Delete));
-
-	self.UndeleteButton:SetOnClickHandler(CharacterSelect_StartCharacterUndelete);
-
-	self.BackToActiveButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		CharacterSelect_EndCharacterUndelete();
-	end);
 
 	self:RegisterEvent("UPDATE_REALM_NAME_FOR_GUID");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
@@ -489,6 +449,102 @@ function CharacterSelectListMixin:InitDragBehavior()
 	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions.
 	-- When the actual character data arrives, this data provider will be discarded.
 	self.ScrollBox:SetDataProvider(CreateDataProvider());
+end
+
+CharacterSelectAddGroupButtonMixin = {};
+
+function CharacterSelectAddGroupButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
+	CharacterListEditGroupFrame:ShowNewGroupFrame();
+end
+
+function CharacterSelectAddGroupButtonMixin:NarrationGetName()
+	return NARRATION_ADD_NEW_CAMP_BUTTON;
+end
+
+function CharacterSelectAddGroupButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
+end
+
+function CharacterSelectAddGroupButtonMixin:NarrationShouldIgnoreFocusReplay()
+	return true;
+end
+
+CharacterSelectCreateCharacterButtonMixin = {};
+
+function CharacterSelectCreateCharacterButtonMixin:OnClick()
+	local createCharacterCallback = function()
+		if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		end
+	end;
+
+	if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
+		local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
+		local text2 = nil;
+		StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
+	else
+		createCharacterCallback();
+	end
+end
+
+function CharacterSelectCreateCharacterButtonMixin:OnEnter()
+	if self:IsEnabled() then
+		GlueTooltip:SetOwner(self, "ANCHOR_TOP");
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
+		GlueTooltip:Show();
+	end
+end
+
+function CharacterSelectCreateCharacterButtonMixin:OnLeave()
+	GlueTooltip:Hide();
+end
+
+CharacterSelectDeleteCharacterButtonMixin = {};
+
+function CharacterSelectDeleteCharacterButtonMixin:OnClick()
+	CharacterSelect_Delete();
+end
+
+function CharacterSelectDeleteCharacterButtonMixin:NarrationGetName()
+	return NARRATION_DELETE_CHARACTER_BUTTON;
+end
+
+function CharacterSelectDeleteCharacterButtonMixin:NarrationGetDescription()
+	return CharSelectCharacterName:GetText();
+end
+
+function CharacterSelectDeleteCharacterButtonMixin:NarrationShouldIgnoreFocusReplay()
+	return true;
+end
+
+function CharacterSelectDeleteCharacterButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
+end
+
+CharacterSelectUndeleteButtonMixin = {};
+
+function CharacterSelectUndeleteButtonMixin:OnClick()
+	CharacterSelect_StartCharacterUndelete();
+end
+
+function CharacterSelectUndeleteButtonMixin:NarrationGetName()
+	return NARRATION_RESTORE_CHARACTER_BUTTON;
+end
+
+function CharacterSelectUndeleteButtonMixin:NarrationGetDescription()
+	return CharacterSelectUtil.GetFormattedCurrentRealmName();
+end
+
+function CharacterSelectUndeleteButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
+end
+
+CharacterSelectBackToActiveButtonMixin = {};
+
+function CharacterSelectBackToActiveButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CharacterSelect_EndCharacterUndelete();
 end
 
 function CharacterSelectListMixin:UpdateConfigElements()

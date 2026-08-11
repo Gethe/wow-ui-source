@@ -38,6 +38,7 @@ local UnitRole =
 			Name = "UnitGetAvailableRoles",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

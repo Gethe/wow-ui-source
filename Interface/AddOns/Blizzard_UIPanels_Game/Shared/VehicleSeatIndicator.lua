@@ -111,7 +111,7 @@ function VehicleSeatIndicatorMixin:SetupVehicle(vehicleIndicatorID)
 	DurabilityFrame:SetAlerts();
 	self:Update();
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function VehicleSeatIndicatorMixin:UnloadTextures()
@@ -121,7 +121,7 @@ function VehicleSeatIndicatorMixin:UnloadTextures()
 	self:UpdateShownState();
 	DurabilityFrame:SetAlerts();
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function VehicleSeatIndicatorMixin:SetIsInEditMode(isInEditMode)

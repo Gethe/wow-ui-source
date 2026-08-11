@@ -5,9 +5,9 @@ local SecretAspectConstants =
 		{
 			Name = "SecretAspect",
 			Type = "Enumeration",
-			NumValues = 29,
+			NumValues = 30,
 			MinValue = 1,
-			MaxValue = 4194304,
+			MaxValue = 8388608,
 			Fields =
 			{
 				{ Name = "ObjectDebug", Type = "SecretAspect", EnumValue = 1 },
@@ -39,6 +39,7 @@ local SecretAspectConstants =
 				{ Name = "TooltipTexture", Type = "SecretAspect", EnumValue = 1048576 },
 				{ Name = "ButtonState", Type = "SecretAspect", EnumValue = 2097152 },
 				{ Name = "ScrollOffset", Type = "SecretAspect", EnumValue = 4194304 },
+				{ Name = "RadialProgress", Type = "SecretAspect", EnumValue = 8388608 },
 			},
 		},
 	},

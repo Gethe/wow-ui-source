@@ -8,6 +8,23 @@ local UnitAura =
 	Functions =
 	{
 		{
+			Name = "AddAuraSound",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "trigger", Type = "UnitAuraSoundTrigger", Nilable = false },
+				{ Name = "sound", Type = "UnitAuraSoundInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "auraSoundID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "AddBlockedAura",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -31,22 +48,6 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "anchorID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "AddPrivateAuraAppliedSound",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "sound", Type = "UnitPrivateAuraAppliedSoundInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "privateAuraSoundID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -80,6 +81,19 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "CancelAuraByInstanceID",
+			Type = "Function",
+			RequiresUnitAuraAccess = true,
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearBlockedAuras",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -92,6 +106,7 @@ local UnitAura =
 		{
 			Name = "DoesAuraHaveExpirationTime",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
@@ -111,6 +126,7 @@ local UnitAura =
 		{
 			Name = "GetAuraApplicationDisplayCount",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
@@ -132,6 +148,7 @@ local UnitAura =
 		{
 			Name = "GetAuraBaseDuration",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
@@ -152,6 +169,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -169,6 +187,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByIndex",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -187,6 +206,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -223,6 +243,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDispelTypeColor",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretWhenCurveSecret = true,
@@ -244,6 +265,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDuration",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -261,6 +283,7 @@ local UnitAura =
 		{
 			Name = "GetAuraSlots",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -280,6 +303,7 @@ local UnitAura =
 		{
 			Name = "GetBuffDataByIndex",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -313,6 +337,7 @@ local UnitAura =
 		{
 			Name = "GetDebuffDataByIndex",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -326,6 +351,24 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGroupBuffVisualAlerts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHiddenGroupBuffs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -348,6 +391,7 @@ local UnitAura =
 		{
 			Name = "GetRefreshExtendedDuration",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			RequiresValidUnitAuraInstance = true,
 			SecretWhenUnitAuraRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
@@ -387,6 +431,7 @@ local UnitAura =
 		{
 			Name = "GetUnitAuraInstanceIDs",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -406,6 +451,7 @@ local UnitAura =
 		{
 			Name = "GetUnitAuras",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -425,6 +471,7 @@ local UnitAura =
 		{
 			Name = "IsAuraFilteredOutByInstanceID",
 			Type = "Function",
+			RequiresUnitAuraAccess = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -440,6 +487,16 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "RemoveAuraSound",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "auraSoundID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RemovePrivateAuraAnchor",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -450,18 +507,30 @@ local UnitAura =
 			},
 		},
 		{
-			Name = "RemovePrivateAuraAppliedSound",
+			Name = "ResetAuraDataProvider",
 			Type = "Function",
+		},
+		{
+			Name = "SetGroupBuffVisualAlerts",
+			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "privateAuraSoundID", Type = "number", Nilable = false },
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false, NeverSecretContents = true },
 			},
 		},
 		{
-			Name = "ResetAuraDataProvider",
+			Name = "SetHiddenGroupBuffs",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false, NeverSecretContents = true },
+			},
 		},
 		{
 			Name = "SetPrivateWarningTextAnchor",
@@ -477,16 +546,6 @@ local UnitAura =
 		{
 			Name = "SwitchAuraDataProvider",
 			Type = "Function",
-		},
-		{
-			Name = "TriggerPrivateAuraShowDispelType",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "show", Type = "bool", Nilable = false },
-			},
 		},
 		{
 			Name = "WantsAlteredForm",
@@ -518,9 +577,30 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GroupBuffVisualAlertsChanged",
+			Type = "Event",
+			LiteralName = "GROUP_BUFF_VISUAL_ALERTS_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "HiddenGroupBuffsChanged",
+			Type = "Event",
+			LiteralName = "HIDDEN_GROUP_BUFFS_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitAura",
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
+			SecretWhenAurasRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -546,7 +626,7 @@ local UnitAura =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
-				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false, SecretValue = true },
 			},
 		},
 	},
@@ -556,10 +636,6 @@ local UnitAura =
 	},
 	Predicates =
 	{
-		{
-			Name = "RequiresNonSecretAura",
-			Type = "Precondition",
-		},
 	},
 };
 

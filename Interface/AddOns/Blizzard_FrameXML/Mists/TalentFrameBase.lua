@@ -17,7 +17,7 @@ function TalentFrame_Clear(TalentFrame)
 		for column=1, Constants.TalentConsts.NumTalentColumns do
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			if(button ~= nil) then
-				SetDesaturation(button.icon, true);
+				button.icon:SetDesaturated(true);
 				button.border:Hide();
 			end
 		end
@@ -93,11 +93,11 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					button.shouldGlow = (talentInfo.available and not talentInfo.selected) and talentUnit == "player";
 
 					if( TalentFrame.inspect ) then
-						SetDesaturation(button.icon, not talentInfo.selected);
+						button.icon:SetDesaturated(not talentInfo.selected);
 						button.border:SetShown(talentInfo.selected);
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)));
+						button.icon:SetDesaturated((button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)));
 						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
 						button.learnSelection:SetShown((talentInfo.available and not disable) and (talentRow.selectionId == talentInfo.talentID));
 						if (button.learnSelection:IsShown()) then

@@ -1,5 +1,6 @@
 local REALM_BUTTON_HEIGHT = 16;
 local MAX_REALMS_DISPLAYED = 20;
+local NUM_REALM_LIST_SORT_COLUMNS = 4;
 
 function RealmList_OnLoad(self)
 	self:RegisterEvent("REALM_LIST_UPDATED");
@@ -169,6 +170,7 @@ function RealmList_Update(retainScrollPosition)
 	end
 
 	RealmList_UpdateOKButton();
+	RealmList_UpdateSortIndicators();
 end
 
 function RealmList_UpdateOKButton()
@@ -263,7 +265,141 @@ function RealmList_OnCancel()
 	EventRegistry:TriggerEvent("RealmList.Cancel");
 end
 
-function RealmList_ClickButton(self, doubleClick)
+RealmListTabButtonMixin = {};
+
+function RealmListTabButtonMixin:OnClick()
+	if ( self.disabled ) then
+		local name, isTournament = C_RealmList.GetCategoryInfo(C_RealmList.GetAvailableCategories()[self:GetID()]);
+		if ( isTournament ) then
+			--Display popup explaining tournament realms
+			StaticPopup_Show("REALM_TOURNAMENT_WARNING");
+		end
+		return;
+	end
+
+	local id = self:GetID();
+	RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[id];
+	RealmList.selectedRealm = nil;
+	GlueTemplates_SetTab(RealmList, id);
+
+	RealmList_Update();
+end
+
+function RealmListTabButtonMixin:NarrationGetContext()
+	local isSelected = not self:IsEnabled();
+	if isSelected then
+		return NARRATION_STATUS_SELECTED_FORMAT:format(NARRATION_OBJECT_TAB);
+	end
+
+	return NARRATION_OBJECT_TAB;
+end
+
+function RealmListTabButtonMixin:NarrationGetIndexInfo()
+	local index = self:GetID();
+	local total = RealmList.numTabs or 0;
+	return NarrationUtil.MakeIndexInfo(index, total);
+end
+
+RealmListSortButtonMixin = {};
+
+-- The "compatible" sort key is an invisible tiebreaker with no UI column.
+-- Find the first sort ordering entry that has a corresponding sort button.
+local HIDDEN_SORT_KEYS = { compatible = true };
+
+local function GetPrimaryVisibleSortOrdering()
+	for i = 1, #REALM_LIST_SORT_ORDERING do
+		local entry = REALM_LIST_SORT_ORDERING[i];
+		if not HIDDEN_SORT_KEYS[entry.sortBy] then
+			return entry;
+		end
+	end
+
+	return nil;
+end
+
+function RealmList_UpdateSortIndicators()
+	local sortButtons = { RealmNameSort, RealmTypeSort, RealmCharactersSort, RealmLoadSort };
+	for _i, button in ipairs(sortButtons) do
+		button:UpdateSortIndicator();
+	end
+end
+
+function RealmListSortButtonMixin:UpdateSortIndicator()
+	local arrow = self:GetNormalTexture();
+	if not arrow then
+		return;
+	end
+
+	local primarySort = GetPrimaryVisibleSortOrdering();
+	local isSorted = primarySort and (primarySort.sortBy == self.sortKey);
+	arrow:SetShown(isSorted);
+
+	if isSorted and primarySort and primarySort.reverse then
+		arrow:SetTexCoord(0, 0.5625, 1.0, 0);
+	else
+		arrow:SetTexCoord(0, 0.5625, 0, 1.0);
+	end
+end
+
+function RealmListSortButtonMixin:OnClick()
+	RealmList_PushSortOrdering(self.sortKey);
+end
+
+function RealmListSortButtonMixin:OnEnter()
+	if self.narrationTooltipAnchorOffsetX then
+		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", self.narrationTooltipAnchorOffsetX, 0);
+		GlueTooltip:SetText(self.tooltipText);
+	end
+end
+
+function RealmListSortButtonMixin:OnLeave()
+	GlueTooltip:Hide();
+end
+
+function RealmListSortButtonMixin:NarrationGetContext()
+	local primarySort = GetPrimaryVisibleSortOrdering();
+	if primarySort and primarySort.sortBy == self.sortKey then
+		if primarySort.reverse then
+			return NARRATION_SORTED_DESCENDING:format(NARRATION_OBJECT_COLUMN_HEADER);
+		else
+			return NARRATION_SORTED_ASCENDING:format(NARRATION_OBJECT_COLUMN_HEADER);
+		end
+	end
+
+	return NARRATION_NOT_SORTED:format(NARRATION_OBJECT_COLUMN_HEADER);
+end
+
+function RealmListSortButtonMixin:NarrationGetIndexInfo()
+	return NarrationUtil.MakeIndexInfo(self.columnIndex, NUM_REALM_LIST_SORT_COLUMNS);
+end
+
+RealmListRealmButtonMixin = {};
+
+function RealmListRealmButtonMixin:OnEnter()
+	local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
+	if realmInfo.version and realmInfo.version.major then
+		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
+		GlueTooltip:SetText(realmInfo.version.major .. "." .. realmInfo.version.minor .. "." .. realmInfo.version.revision .. "  " .. realmInfo.version.build .. " CfgID: " .. realmInfo.version.cfgConfigsID);
+	end
+end
+
+function RealmListRealmButtonMixin:OnLeave()
+	if GlueTooltip:GetOwner() == self then
+		GlueTooltip:Hide();
+	end
+end
+
+function RealmListRealmButtonMixin:OnClick()
+	local isDoubleClick = false;
+	self:ClickAction(isDoubleClick);
+end
+
+function RealmListRealmButtonMixin:OnDoubleClick()
+	local isDoubleClick = true;
+	self:ClickAction(isDoubleClick);
+end
+
+function RealmListRealmButtonMixin:ClickAction(isDoubleClick)
 	local name, isTournament, isInvalidLocale = C_RealmList.GetCategoryInfo(RealmList.selectedCategory);
 	if ( isInvalidLocale ) then
 		--Display popup explaining locale specific realms
@@ -288,19 +424,47 @@ function RealmList_ClickButton(self, doubleClick)
 	UpdateButtonSelected(oldSelectedRealm, false);
 	UpdateButtonSelected(RealmList.selectedRealm, true);
 
-	if ( doubleClick ) then
+	if ( isDoubleClick ) then
 		RealmList_OnOk();
 	else
 		RealmList_UpdateOKButton();
 	end
 end
 
-function RealmSelectButton_OnClick(self)
-	RealmList_ClickButton(self, false);
+function RealmListRealmButtonMixin:NarrationGetName()
+	local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
+	if realmInfo then
+		return realmInfo.name;
+	end
+
+	return nil;
 end
 
-function RealmSelectButton_OnDoubleClick(self)
-	RealmList_ClickButton(self, true);
+function RealmListRealmButtonMixin:NarrationGetContext()
+	local isSelected = self.realmAddr == RealmList.selectedRealm;
+	if isSelected then
+		return NARRATION_STATUS_SELECTED;
+	elseif not self:IsEnabled() then
+		return NARRATION_STATUS_DISABLED;
+	end
+
+	return nil;
+end
+
+function RealmListRealmButtonMixin:NarrationGetDescription()
+	local realmType = self.RealmType:GetText();
+	local population = self.Load:GetText();
+
+	if self.numCharacters and (self.numCharacters > 0) then
+		local characterCount = NARRATION_REALM_LIST_CHARACTERS_FORMAT:format(self.numCharacters);
+		return NarrationUtil.MakeNarrationString(realmType, characterCount, population);
+	end
+
+	return NarrationUtil.MakeNarrationString(realmType, population);
+end
+
+function RealmListRealmButtonMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
 end
 
 function RealmList_OnShow(self)
@@ -336,22 +500,6 @@ function RealmList_GetInfoFromName(name)
 	end
 
 	return nil, nil;
-end
-
-function RealmListTab_OnClick(tab)
-	if ( tab.disabled ) then
-		local name, isTournament = C_RealmList.GetCategoryInfo(C_RealmList.GetAvailableCategories()[tab:GetID()]);
-		if ( isTournament ) then
-			--Display popup explaining tournament realms
-			StaticPopup_Show("REALM_TOURNAMENT_WARNING");
-		end
-		return;
-	end
-	RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[tab:GetID()];
-	RealmList.selectedRealm = nil;
-	GlueTemplates_SetTab(RealmList, tab:GetID());
-
-	RealmList_Update();
 end
 
 function RealmHelpText_OnShow(self)

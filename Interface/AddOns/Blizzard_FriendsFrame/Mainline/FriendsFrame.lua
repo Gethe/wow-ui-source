@@ -26,9 +26,6 @@ FRIENDS_TEXTURE_OFFLINE = "Interface\\FriendsFrame\\StatusIcon-Offline";
 FRIENDS_TEXTURE_BROADCAST = "Interface\\FriendsFrame\\BroadcastIcon";
 SQUELCH_TYPE_IGNORE = 1;
 SQUELCH_TYPE_BLOCK_INVITE = 2;
-FRIENDS_FRIENDS_POTENTIAL = 1;
-FRIENDS_FRIENDS_MUTUAL = 2;
-FRIENDS_FRIENDS_ALL = 3;
 FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
@@ -62,8 +59,20 @@ local whoSortValue = 1;
 
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "RecentAlliesFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
 FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame" };
+FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES = { "WhoFrame" };
+
+local function GetValidSubFrames()
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES
+	elseif C_SocialUI.IsSystemEnabled() then
+		return FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES;
+	else
+		return FRIENDSFRAME_SUBFRAMES;
+	end
+end
+
 function FriendsFrame_ShowSubFrame(frameName)
-	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+	local subFrames = GetValidSubFrames();
 	for index, value in pairs(subFrames) do
 		if ( value == frameName ) then
 			_G[value]:Show()
@@ -72,6 +81,19 @@ function FriendsFrame_ShowSubFrame(frameName)
 				RaidFrame:Hide();
 			end
 		else
+			_G[value]:Hide();
+		end
+	end
+end
+
+-- Hides every possible subframe, ignoring the currently valid set
+function FriendsFrame_HideAllPotentialSubFrames()
+	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
+		if ( value == "RaidFrame" ) then
+			if ( RaidFrame and RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		elseif _G[value] then
 			_G[value]:Hide();
 		end
 	end
@@ -182,8 +204,8 @@ end
 
 function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	if connected or friendsList then
-		local contextData = 
-		{	
+		local contextData =
+		{
 			name = name,
 			friendsList = friendsList,
 			lineID = lineID,
@@ -206,8 +228,8 @@ end
 
 function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, battleTag)
 	if connected or friendsList then
-		local contextData = 
-		{	
+		local contextData =
+		{
 			name = name,
 			friendsList = friendsList,
 			lineID = lineID,
@@ -226,6 +248,41 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
 		UnitPopup_OpenMenu(which, contextData);
 	end
+end
+
+local function FriendsFrame_UpdateTabHiddenStates(self)
+	local showFriends = true;
+	local showWho = true;
+	local showRaid = true;
+	local showQuickJoin = true;
+
+	local hideAllTabs = C_Glue.IsOnGlueScreen() or C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if hideAllTabs then
+		showFriends = false;
+		showWho = false;
+		showRaid = false;
+		showQuickJoin = false;
+		PanelTemplates_ShowTab(self, FRIEND_TAB_FRIENDS);
+		PanelTemplates_HideTab(self, FRIEND_TAB_WHO);
+		PanelTemplates_HideTab(self, FRIEND_TAB_RAID);
+		PanelTemplates_HideTab(self, FRIEND_TAB_QUICK_JOIN);
+	end
+	if C_SocialUI.IsSystemEnabled() then
+		showFriends = false;
+		showRaid = false;
+		showQuickJoin = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
+		showRaid = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
+		showQuickJoin = false;
+	end
+
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_FRIENDS, showFriends);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_WHO, showWho);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_RAID, showRaid);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_QUICK_JOIN, showQuickJoin);
 end
 
 function FriendsFrame_OnLoad(self)
@@ -251,8 +308,9 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("SOCIAL_UI_SYSTEM_STATUS_UPDATED");
+	self:RegisterEvent("LEGACY_FRIEND_SYSTEM_STATUS_UPDATED");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
@@ -270,19 +328,9 @@ function FriendsFrame_OnLoad(self)
 		-- disable non glue friend Tabs
 		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recentAlliesTabID, false);
 		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recruitAFriendTabID, false);
-		FriendsFrameTab1:Hide();
-		FriendsFrameTab2:Hide();
-		FriendsFrameTab3:Hide();
-		FriendsFrameTab4:Hide();
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
-		FriendsFrameTab3:Hide();
-	end
-
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
-		FriendsFrameTab4:Hide();
-	end
+	FriendsFrame_UpdateTabHiddenStates(self);
 
 	if C_Glue.IsOnGlueScreen() then
 		self:RegisterEvent("FRAMES_LOADED");
@@ -350,18 +398,11 @@ function FriendsFrame_OnLoad(self)
 	FriendsFrame_UpdateQuickJoinTab(0);
 end
 
-local function IsIntroRAFHelpTipShowing()
-	return HelpTip:IsShowing(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
-end
-
-local function IsRAFHelpTipShowing()
-	return HelpTip:IsShowing(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT) or HelpTip:IsShowing(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
-end
-
 function FriendsFrame_OnShow(self)
 	EventRegistry:RegisterCallback("FriendsFrame.IgnoreListVisibilityChanged", FriendsFrame_UpdateUIPanelWidth);
 
 	FriendsFrame_UpdateUIPanelWidth();
+	FriendsFrame_UpdateTabHiddenStates(self);
 
 	local onGlues =  C_Glue.IsOnGlueScreen();
 	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
@@ -378,23 +419,8 @@ function FriendsFrame_OnShow(self)
 	FriendsList_Update(true);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
-	if IsRAFHelpTipShowing() then
-		local rafTabID = FriendsTabHeader.recruitAFriendTabID;
-		FriendsTabHeader:SelectTab(rafTabID);
-		if IsIntroRAFHelpTipShowing() then
-			RecruitAFriendFrame:ShowSplashScreen();
-			local rafTabButton = FriendsTabHeader:GetTabButton(rafTabID);
-			if rafTabButton then
-				rafTabButton.New:Show();
-			end
-			HelpTip:Acknowledge(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
-		else
-			HelpTip:Acknowledge(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
-		end
-	end
-
 	FriendsFrameBattlenetFrame.UnavailableInfoFrame:ClearAllPoints();
-	FriendsFrameBattlenetFrame.UnavailableInfoFrame:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);	
+	FriendsFrameBattlenetFrame.UnavailableInfoFrame:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);
 	FriendsFrame_Update();
 	FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
 
@@ -402,10 +428,11 @@ function FriendsFrame_OnShow(self)
 		self:Hide();
 	end, self);
 
+	local enableRaidTab = false;
 	if not onGlues then
 		-- Raid tab is unavailable while in raid story content.
 		local inStoryRaid = DifficultyUtil.InStoryRaid();
-		local enableRaidTab = not inStoryRaid;
+		enableRaidTab = not inStoryRaid;
 		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
 	end
 
@@ -415,7 +442,7 @@ function FriendsFrame_OnShow(self)
 		FriendsFrameTab3:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(FriendsFrameTab3, "ANCHOR_RIGHT", 0, 0);
 			GameTooltip:SetText(RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID));
-			GameTooltip:Show();	
+			GameTooltip:Show();
 		end);
 	end
 end
@@ -442,7 +469,9 @@ function FriendsFrame_Update()
 		end
 
 		if selectedHeaderTab == FriendsTabHeader.friendsTabID then
-			C_FriendList.ShowFriends();
+			if C_FriendList.IsLegacyFriendSystemEnabled() then
+				C_FriendList.ShowFriends();
+			end
 			FriendsFrame:SetTitle(CONTACTS_LIST_TITLE);
 			FriendsFrame_ShowSubFrame("FriendsListFrame");
 		elseif selectedHeaderTab == FriendsTabHeader.recentAlliesTabID then
@@ -492,11 +521,10 @@ function FriendsFrame_OnHide(self)
 	if not C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm) then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
-		RecruitAFriendFrame:UpdateRAFTutorialTips();
 	end;
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-	
-	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+
+	local subFrames = GetValidSubFrames();
 	for index, value in pairs(subFrames) do
 		if ( value == "RaidFrame" ) then
 			if ( RaidFrame:GetParent() == FriendsFrame ) then
@@ -567,7 +595,7 @@ function FriendsTabHeaderMixin:OnLoad()
 		rootDescription:SetTag("MENU_FRIENDS_STATUS");
 
 		local optionText = "\124T%s.tga:16:16:0:0\124t %s";
-		
+
 		local onlineText = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
 		CreateRadio(rootDescription, onlineText, FRIENDS_TEXTURE_ONLINE);
 
@@ -595,7 +623,7 @@ function FriendsTabHeaderMixin:OnLoad()
 
 			GameTooltip:SetOwner(self.StatusDropdown, "ANCHOR_RIGHT", -18, 0);
 			GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
-			GameTooltip:Show();	
+			GameTooltip:Show();
 		end);
 		self.StatusDropdown:SetScript("OnLeave", GameTooltip_Hide);
 	end
@@ -623,7 +651,7 @@ function FriendsTabHeaderMixin:RefreshTabVisibility()
 
 	self.TabSystem:SetTabShown(self.recentAlliesTabID, C_RecentAllies.IsSystemEnabled());
 
-	local rafEnabled = C_RecruitAFriend.IsEnabled();
+	local rafEnabled = C_RecruitAFriend.IsSystemEnabled();
 	if rafEnabled then
 		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
 		rafEnabled = not C_Glue.IsOnGlueScreen() and (not inGameFriendsListDisabled);
@@ -681,6 +709,20 @@ function FriendsFrameTabMixin:OnClick()
 end
 
 function FriendsListFrame_OnShow(self)
+	if C_SocialRestrictions.IsFriendsDisabled() then
+		self.ScrollBox:Hide();
+		self.ScrollBar:Hide();
+		self.FriendsDisabledText:SetText(SOCIAL_TAB_UNAVAILABLE:format(SOCIAL_UI_FRIENDS_TAB_NAME));
+		self.FriendsDisabledText:Show();
+		FriendsFrameAddFriendButton:Disable();
+		FriendsFrameAddFriendButton.disableTooltip = ADDING_FRIENDS_DISABLED;
+	else
+		self.ScrollBox:Show();
+		self.ScrollBar:Show();
+		self.FriendsDisabledText:Hide();
+		FriendsFrameAddFriendButton:Enable();
+		FriendsFrameAddFriendButton.disableTooltip = nil;
+	end
 end
 
 function FriendsListFrame_OnHide(self)
@@ -715,7 +757,9 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 		end);
 
 		rootDescription:CreateButton(REPORT_PLAYER, function()
-			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
+			local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
+			local bnetIDAccount = inviteInfo and inviteInfo.inviteID or nil;
+			local name = inviteInfo and inviteInfo.accountName or nil;
 			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
 			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
@@ -723,7 +767,9 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 
 		if StaticPopup_Show then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
-				local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
+				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
+				local inviteID = inviteInfo and inviteInfo.inviteID or nil;
+				local accountName = inviteInfo and inviteInfo.accountName or nil;
 				StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName, nil, inviteID);
 			end);
 		end
@@ -763,12 +809,14 @@ function FriendsList_Update(forceUpdate)
 	local numWoWOffline = 0;
 
 	if not C_Glue.IsOnGlueScreen() and not InWoWLabs() then
-		numWoWTotal = C_FriendList.GetNumFriends();
-		numWoWOnline = C_FriendList.GetNumOnlineFriends();
-		numWoWOffline = numWoWTotal - numWoWOnline;
+		if C_FriendList.IsLegacyFriendSystemEnabled() then
+			numWoWTotal = C_FriendList.GetNumFriends();
+			numWoWOnline = C_FriendList.GetNumOnlineFriends();
+			numWoWOffline = numWoWTotal - numWoWOnline;
+		end
 		QuickJoinToastButton:UpdateDisplayedFriendCount();
 	end
-	
+
 	if ( not FriendsListFrame:IsShown() and not forceUpdate) then
 		return;
 	end
@@ -835,7 +883,7 @@ function FriendsList_Update(forceUpdate)
 		bnetFriendIndex = bnetFriendIndex + 1;
 		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
 	end
-	
+
 	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		-- offline WoW friends
 		for i = 1, numWoWOffline do
@@ -868,8 +916,9 @@ function FriendsList_CheckRIDWarning()
 		local isRIDEnabled = select(7, BNGetInfo());
 		if isRIDEnabled then
 			for i = 1, numInvites do
-				local isBattleTag = select(3, BNGetFriendInviteInfo(i));
-				if not isBattleTag then
+				local inviteInfo = C_BattleNet.GetFriendInviteInfo(i);
+				local isRealID = inviteInfo and (inviteInfo.friendLevel == Enum.BattleNetFriendLevel.RealID) or nil;
+				if isRealID then
 					showRIDWarning = true;
 					break;
 				end
@@ -1025,13 +1074,9 @@ function WhoList_SetSelectedButton(button)
 	UpdateButtonSelection(oldSelectedWho,  false);
 	UpdateButtonSelection(WhoFrame.selectedWho, true);
 
-	if WhoFrame.selectedWho then
-		WhoFrameGroupInviteButton:Enable();
-		WhoFrameAddFriendButton:Enable();
-	else
-		WhoFrameGroupInviteButton:Disable();
-		WhoFrameAddFriendButton:Disable();
-	end
+	local hasSelectedWho = WhoFrame.selectedWho ~= nil;
+	WhoFrameGroupInviteButton:SetEnabled(hasSelectedWho);
+	WhoFrameAddFriendButton:SetEnabled(hasSelectedWho and C_FriendList.IsLegacyFriendSystemEnabled());
 end
 
 function WhoList_Update()
@@ -1051,8 +1096,10 @@ function WhoList_Update()
 	end
 	WhoFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
-	PanelTemplates_SetTab(FriendsFrame, 2);
-	ShowUIPanel(FriendsFrame);
+	if not C_SocialUI.IsSystemEnabled() then
+		PanelTemplates_SetTab(FriendsFrame, 2);
+		ShowUIPanel(FriendsFrame);
+	end
 end
 
 function WhoFrameColumn_SetWidth(frame, width)
@@ -1071,7 +1118,7 @@ function WhoFrameDropdown_OnLoad(self)
 		local function SetSelected(sortData)
 			whoSortValue = sortData.value;
 			C_FriendList.SortWho(sortData.sortType);
-				
+
 			WhoList_Update();
 		end
 
@@ -1103,7 +1150,7 @@ function WhoFrameDropdown_OnLoad(self)
 	end
 end
 
--- This dropdown is slightly larger than normal to match the other "Who" headers that use resizable text 
+-- This dropdown is slightly larger than normal to match the other "Who" headers that use resizable text
 function WhoFrameDropdown_Initialize(self)
 	self.Text:SetFontObject(self.fontObject);
 	self.Text:ClearAllPoints();
@@ -1232,8 +1279,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if (event == "BN_DISCONNECTED") then
 			FriendsList_Update(true);
 		end
-	elseif ( event == "BATTLETAG_INVITE_SHOW" ) then
-		BattleTagInviteFrame_Show(...);
 	elseif ( event == "SOCIAL_QUEUE_UPDATE" or event == "GROUP_LEFT" or event == "GROUP_JOINED" ) then
 		if ( self:IsVisible() ) then
 			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
@@ -1248,6 +1293,24 @@ function FriendsFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_GUILD_UPDATE") then
 		C_GuildInfo.GuildRoster();
+	elseif ( event == "SOCIAL_UI_SYSTEM_STATUS_UPDATED" ) then
+		if C_SocialUI.IsSystemEnabled() then
+			HideUIPanel(FriendsFrame);
+			-- Hiding FriendsFrame only closes out the subframes returned by GetValidSubFrames
+			-- However, the Social UI system just turned on, so GetValidSubFrames has already narrowed down to the allowed set
+			-- This means the subframes that were valid while the system was disabled could be showing. We need to force hide them all to be safe
+			FriendsFrame_HideAllPotentialSubFrames();
+		end
+	elseif ( event == "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED" ) then
+		-- Let's reset the selected friend if the legacy system status changes
+		-- We may be disabling it (in which case the selected friend is no longer valid)
+		local isLegacyFriendSelected = FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW;
+		if isLegacyFriendSelected then
+			FriendsFrame.selectedFriendType = nil;
+			FriendsFrame.selectedFriend = nil;
+		end
+
+		FriendsList_Update();
 	elseif ( event == "FRAMES_LOADED" ) then
 		FriendsFrame_CheckBattlenetStatus();
 	end
@@ -1276,7 +1339,7 @@ function FriendsFrame_SelectFriend(friendType, id)
 
 	UpdateButtonSelection(oldFriendType, oldFriendId, false);
 	UpdateButtonSelection(friendType, id, true);
-	if FriendsFrameSendMessageButton ~= nil then 
+	if FriendsFrameSendMessageButton ~= nil then
 		FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
 	end
 end
@@ -1302,40 +1365,6 @@ function FriendsFrame_SelectSquelched(squelchType, index)
 
 	UpdateButtonSelection(oldSquelchType, oldSquelchIndex, false);
 	UpdateButtonSelection(squelchType, index, true);
-end
-
-function FriendsFrameAddFriendButton_OnClick(self)
-	local name = nil;
-	if not C_Glue.IsOnGlueScreen() then 
-		name = GetUnitName("target", true);
-	end
-
-	if ( name and UnitIsHumanPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
-		C_FriendList.AddFriend(name);
-		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-	else
-		local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
-		if ( ( battleTag or isRIDEnabled ) and BNFeaturesEnabledAndConnected() ) then
-			AddFriendEntryFrame_Init(true);
-			AddFriendFrame.editFocus = AddFriendNameEditBox;
-			if InGlue() then
-				StaticPopup_Show("ADD_FRIEND");
-			else
-				StaticPopupSpecial_Show(AddFriendFrame);
-				if ( GetCVarBool("addFriendInfoShown") ) then
-					AddFriendFrame:ShowEntry();
-				else
-					AddFriendFrame:ShowInfo();
-				end
-			end
-		else
-			if InGlue() then
-				StaticPopup_Show("ADD_FRIEND");
-			else
-				StaticPopup_Show("ADD_FRIEND");
-			end
-		end
-	end
 end
 
 function FriendsFrameSendMessageButton_OnClick(self)
@@ -1402,18 +1431,37 @@ function FriendsFrame_RemoveFriend()
 end
 
 function FriendsFrame_SendMessage()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
 	ChatFrameUtil.SendTell(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function FriendsFrame_GroupInvite()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
 	C_PartyInfo.InviteUnit(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-function ToggleFriendsFrame(tab)
+local FRIEND_TAB_TO_SOCIAL_TAB =
+{
+	[FRIEND_TAB_FRIENDS] = SocialUITabType and SocialUITabType.Friends,
+	[FRIEND_TAB_RAID] = SocialUITabType and SocialUITabType.RaidList,
+	[FRIEND_TAB_QUICK_JOIN] = SocialUITabType and SocialUITabType.QuickJoin,
+};
+
+local function IsSocialUIReplacingFriendsFrame()
+	return SocialUIControl and SocialUIControl.IsEnabled();
+end
+
+function ToggleFriendsFrame(requestedTab)
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
@@ -1423,24 +1471,54 @@ function ToggleFriendsFrame(tab)
 		return;
 	end
 
-	if ( not tab ) then
+	if IsSocialUIReplacingFriendsFrame() then
+		local specificTabRequestedByUser = requestedTab ~= nil;
+		local preferRAFTabOverDefault = not specificTabRequestedByUser and C_RecruitAFriend.IsSystemEnabled() and HelpTip:IsShowing(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
+		if preferRAFTabOverDefault then
+			SocialUIControl.ToggleToTab(SocialUITabType.RecruitAFriend);
+			return;
+		end
+
+		local socialTab = requestedTab and FRIEND_TAB_TO_SOCIAL_TAB[requestedTab];
+		if socialTab then
+			SocialUIControl.ToggleToTab(socialTab);
+		elseif not requestedTab then
+			SocialUIControl.Toggle();
+		end
+		if requestedTab == FRIEND_TAB_WHO then
+			-- Special case we want to drop down to the old Frame handling
+		else
+			return;
+		end
+	end
+
+	if ( not requestedTab ) then
 		if ( FriendsFrame:IsShown() ) then
 			HideUIPanel(FriendsFrame);
 		else
 			ShowUIPanel(FriendsFrame);
 		end
 	else
-		if ( tab == PanelTemplates_GetSelectedTab(FriendsFrame) and FriendsFrame:IsShown() ) then
+		if ( requestedTab == PanelTemplates_GetSelectedTab(FriendsFrame) and FriendsFrame:IsShown() ) then
 			HideUIPanel(FriendsFrame);
 			return;
 		end
-		PanelTemplates_SetTab(FriendsFrame, tab);
+		PanelTemplates_SetTab(FriendsFrame, requestedTab);
 		if ( FriendsFrame:IsShown() ) then
 			FriendsFrame_OnShow(FriendsFrame);
 		else
 			ShowUIPanel(FriendsFrame);
 		end
 	end
+end
+
+function ToggleRaidFrame()
+	local factionGroup = UnitFactionGroup("player");
+	if (factionGroup == "Neutral") then
+		return;
+	end
+
+	ToggleFriendsFrame(FRIEND_TAB_RAID);
 end
 
 function FriendsFrame_CheckQuickJoinHelpTip()
@@ -1455,20 +1533,19 @@ function FriendsFrame_CheckQuickJoinHelpTip()
 			bitfieldFlag = LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			offsetX = -13,
+			system = "quickJoinIntroduction",
 		};
 		HelpTip:Show(FriendsFrame, helpTipInfo, FriendsFrameTab4);
 	end
 end
 
-function FriendsFrame_CloseQuickJoinHelpTip()
-	-- Don't mark it as closed until you've actually seen it.
-	if ( HelpTip:IsShowing(FriendsFrame, SOCIAL_QUICK_JOIN_TAB_HELP_TIP) or #C_SocialQueue.GetAllGroups(false) > 1 ) then
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN, true);
-	end
-	HelpTip:Hide(FriendsFrame, SOCIAL_QUICK_JOIN_TAB_HELP_TIP);
-end
-
 function OpenFriendsFrame(tab)
+	if IsSocialUIReplacingFriendsFrame() then
+		local requestedTab = tab and FRIEND_TAB_TO_SOCIAL_TAB[tab] or nil;
+		SocialUIControl.OpenToTab(requestedTab or SocialUITabType.Friends);
+		return;
+	end
+
 	if ( not tab ) then
 		ShowUIPanel(FriendsFrame);
 	else
@@ -1566,22 +1643,47 @@ function ToggleFriendsSubPanel(panelIndex)
 end
 
 function ToggleFriendsPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.Friends);
+		return;
+	end
+
 	ToggleFriendsSubPanel(FriendsTabHeader.friendsTabID);
 end
 
 function ToggleRecentAlliesPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.RecentAllies);
+		return;
+	end
+
 	ToggleFriendsSubPanel(FriendsTabHeader.recentAlliesTabID);
 end
 
-function ToggleRafPanel()
+function ToggleRAFPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.RecruitAFriend);
+		return;
+	end
+
 	ToggleFriendsSubPanel(FriendsTabHeader.recruitAFriendTabID);
 end
 
 function ToggleQuickJoinPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.QuickJoin);
+		return;
+	end
+
 	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
 end
 
 function ToggleIgnorePanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.Friends, SocialUISideWindowType.IgnoreListFrame);
+		return;
+	end
+
 	-- The ignore window is a child frame of the FriendsFrame so we either want to show them both or hide them both
 	local alreadyShowingFriendsFrame = FriendsFrame:IsShown();
 	if alreadyShowingFriendsFrame and not FriendsFrame.IgnoreListWindow:IsShown() then
@@ -1632,7 +1734,7 @@ end
 function FriendsFrame_CheckBattlenetStatus()
 	local frame = FriendsFrameBattlenetFrame;
 	frame.ContactsMenuButton:Refresh();
-	
+
 	if ( BNFeaturesEnabled() ) then
 		if ( BNConnected() ) then
 			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
@@ -1787,7 +1889,7 @@ end
 function FriendsFrame_UpdateFriendInviteHeaderButton(button, elementData)
 	button:SetFormattedText(FRIEND_REQUESTS, BNGetNumFriendInvites());
 	local collapsed = GetCVarBool("friendInvitesCollapsed");
-	
+
 	button.DownArrow:SetShown(not collapsed);
 	button.RightArrow:SetShown(collapsed);
 end
@@ -1822,7 +1924,9 @@ function FriendsFrame_UpdateFriendInviteButton(button, elementData)
 	button.buttonType = elementData.buttonType;
 	button.id = id;
 
-	local inviteID, accountName = BNGetFriendInviteInfo(id);
+	local inviteInfo = C_BattleNet.GetFriendInviteInfo(id);
+	local inviteID = inviteInfo and inviteInfo.inviteID or nil;
+	local accountName = inviteInfo and inviteInfo.accountName or nil;
 	button.Name:SetText(accountName);
 	button.inviteID = inviteID;
 	button.inviteIndex = button.id;
@@ -2055,141 +2159,6 @@ function FriendsFrameTooltip_SetLine(line, anchor, text, yOffset)
 	return line;
 end
 
-AddFriendFrameMixin = {};
-
-function AddFriendFrameMixin:OnLoad()
-	self.exclusive = true;
-	self.hideOnEscape = true;
-end
-
-function AddFriendFrameMixin:OnShow()
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup and factionGroup ~= "Neutral" ) then
-		local textureFile = "Interface\\FriendsFrame\\PlusManz-"..factionGroup;
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
-		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
-		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
-	else
-		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Hide();
-	end
-end
-
-function AddFriendFrameMixin:OnHide()
-	self.editFocus = nil;
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function AddFriendFrameMixin:Resize()
-	self:Layout();
-end
-
-function AddFriendFrameMixin:ShowInfo()
-	AddFriendInfoFrame:Show();
-	AddFriendEntryFrame:Hide();
-	self:Resize();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-end
-
-function AddFriendFrameMixin:ShowEntry()
-	AddFriendInfoFrame:Hide();
-	if ( BNFeaturesEnabledAndConnected() ) then
-		self.BNconnected = true;
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetAlpha(1);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetTextColor(1, 1, 1);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.SecondaryIcon:SetVertexColor(1, 1, 1);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.FriendIcon:SetVertexColor(1, 1, 1);
-		local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
-		if ( battleTag and isRIDEnabled ) then
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(REAL_ID);
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_BATTLETAG_FRIEND_LABEL);
-			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG_OR_EMAIL);
-		elseif ( isRIDEnabled ) then
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(REAL_ID);
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_FRIEND_LABEL);
-			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_EMAIL);
-		elseif ( battleTag ) then
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(BATTLETAG);
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(BATTLETAG_FRIEND_LABEL);
-			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG);
-		end
-	else
-		self.BNconnected = nil;
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetAlpha(0.35);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(BATTLENET_UNAVAILABLE);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetTextColor(1, 0, 0);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.SecondaryIcon:SetVertexColor(.4, .4, .4);
-		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.FriendIcon:SetVertexColor(.4, .4, .4);
-	end
-	if ( self.editFocus ) then
-		self.editFocus:SetFocus();
-	end
-	AddFriendEntryFrame:Show();
-	self:Resize();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-end
-
-function AddFriendNameEditBox_OnTextChanged(self, userInput)
-	if ( not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
-		local text = self:GetText();
-		if ( text ~= "" ) then
-			AddFriendNameEditBoxFill:Hide();
-			if ( AddFriendFrame.BNconnected ) then
-				AddFriendEntryFrame_Init();
-			end
-			AddFriendEntryFrameAcceptButton:Enable();
-		else
-			AddFriendEntryFrame_Init();
-			AddFriendNameEditBoxFill:Show();
-			AddFriendEntryFrameAcceptButton:Disable();
-		end
-	end
-end
-
-function AddFriendEntryFrame_Init(clearText)
-	AddFriendEntryFrameAcceptButton:SetText(ADD_FRIEND);
-	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Title:SetAlpha(1);
-	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Description:SetAlpha(1);
-	AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:SetVertexColor(1, 1, 1);
-	AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.FriendIcon:SetVertexColor(1, 1, 1);
-	if ( AddFriendFrame.BNconnected ) then
-		AddFriendEntryFrame.OptionsContainer.OrLabel:SetVertexColor(1, 1, 1);
-	else
-		AddFriendEntryFrame.OptionsContainer.OrLabel:SetVertexColor(0.3, 0.3, 0.3);
-	end
-	if ( clearText ) then
-		AddFriendNameEditBox:SetText("");
-	end
-end
-
-function AddFriendFrame_Accept()
-	local name = AddFriendNameEditBox:GetText();
-	if ( AddFriendFrame_IsValidBattlenetName(name) and AddFriendFrame.BNconnected ) then
-		BNSendFriendInvite(name, "");
-	else
-		C_FriendList.AddFriend(name);
-	end
-	StaticPopupSpecial_Hide(AddFriendFrame);
-end
-
-function AddFriendFrame_IsValidBattlenetName(text)
-	local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
-	if ( isRIDEnabled and string.find(text, "@") ) then
-		return true;
-	end
-	if ( battleTag and string.find(text, "#") ) then
-		return true;
-	end
-	return false;
-end
-
-FriendsFriendsButtonMixin = {};
-
-function FriendsFriendsButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	FriendsFriends_SetSelection(self.friendID);
-end
-
 IgnoreListButtonMixin = {};
 
 function IgnoreListButtonMixin:OnClick()
@@ -2203,7 +2172,7 @@ function WhoListButtonMixin:OnClick(button)
 	if button == "LeftButton" then
 		WhoList_SetSelectedButton(self);
 	else
-		local name = self.OriginalName or self.Name:GetText();		
+		local name = self.OriginalName or self.Name:GetText();
 		FriendsFrame_ShowDropdown(name, 1);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -2444,208 +2413,6 @@ function FriendsListButtonMixin:OnClick(button)
 			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil, info.guid);
 		end
 	end
-end
-
-FriendsFriendsFrameMixin = {};
-
-function FriendsFriendsFrameMixin:OnLoad()
-	self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
-	self:RegisterEvent("BN_DISCONNECTED");
-	self.requested = {};
-	self.hideOnEscape = true;
-	self.exclusive = true;
-
-	self.FriendsDropdown:SetWidth(140);
-
-	do
-		local view = CreateScrollBoxListLinearView();
-		view:SetElementInitializer("FriendsFriendsButtonTemplate", function(button, elementData)
-			FriendsFriends_InitButton(button, elementData);
-		end);
-
-		ScrollUtil.InitScrollBoxListWithScrollBar(FriendsFriendsFrame.ScrollBox, FriendsFriendsFrame.ScrollBar, view);
-	end
-
-	FriendsFriendsFrame.ScrollBox:SetFrameLevel(self.ScrollFrameBorder:GetFrameLevel() + 1);
-end
-
-function FriendsFriendsFrameMixin:OnEvent(event)
-	if event == "BN_REQUEST_FOF_SUCCEEDED" then
-		if self:IsShown() then
-			FriendsFriendsFrame.view = FRIENDS_FRIENDS_ALL;
-			FriendsFriendsFrameDropdown:Enable();
-			FriendsFriendsFrameDropdown:GenerateMenu();
-
-			local waitFrame = FriendsFriendsWaitFrame;
-			-- need to stop the flashing because it's flashing with showWhenDone set to true
-			if UIFrameIsFlashing(waitFrame) then
-				UIFrameFlashStop(waitFrame);
-			end
-			waitFrame:Hide();
-			self:Update();
-		end
-	elseif event == "BN_DISCONNECTED" then
-		FriendsFriendsFrame_Close();
-	end
-end
-
-function FriendsFriendsFrameMixin:OnShow()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-
-	local function IsSelected(value)
-		return value == FriendsFriendsFrame.view;
-	end
-	
-	local function SetSelected(value)
-		FriendsFriendsFrame.view = value;
-		FriendsFriends_SetSelection(nil);
-		FriendsFriendsFrame:Update();
-	end;
-
-	self.FriendsDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_FRIENDS_FRIENDS");
-
-		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_EVERYONE, IsSelected, SetSelected, FRIENDS_FRIENDS_ALL);
-		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_POTENTIAL, IsSelected, SetSelected, FRIENDS_FRIENDS_POTENTIAL);
-		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_MUTUAL, IsSelected, SetSelected, FRIENDS_FRIENDS_MUTUAL);
-	end);
-end
-
-
-function FriendsFriendsFrameMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function FriendsFriendsFrameMixin:SendRequest()
-	if self.selection then
-		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-		self.requested[self.selection] = true;
-		BNSendFriendInviteByID(self.selection);
-		self:Reset();
-		self:Update();
-	end
-end
-
-function FriendsFriendsFrameMixin:Reset()
-	self.SendRequestButton:Disable();
-	self.selection = nil;
-end
-
-function FriendsFriends_InitButton(button, elementData)
-	local index = elementData.index;
-	local friendID = elementData.friendID;
-	local accountName = elementData.accountName;
-	local isMutual = elementData.isMutual;
-
-	if isMutual then
-		button:Disable();
-		if view ~= FRIENDS_FRIENDS_MUTUAL then
-			button.name:SetText(accountName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_MUTUAL_TEXT..FONT_COLOR_CODE_CLOSE);
-		else
-			button.name:SetText(accountName);
-		end
-		button.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	elseif FriendsFriendsFrame.requested[friendID] then
-		button.name:SetText(accountName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_REQUESTED_TEXT..FONT_COLOR_CODE_CLOSE);
-		button:Disable();
-		button.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	else
-		button.name:SetText(accountName);
-		button:Enable();
-		button.name:SetTextColor(BATTLENET_FONT_COLOR.r, BATTLENET_FONT_COLOR.g, BATTLENET_FONT_COLOR.b);
-	end
-	button.friendID = friendID;
-
-	local selected = FriendsFriendsFrame.selection == friendID;
-	FriendsFriendsButton_SetSelected(button, selected);
-end
-
-function FriendsFriends_SetSelection(friendID)
-	local oldSelection = FriendsFriendsFrame.selection;
-	FriendsFriendsFrame.selection = friendID;
-
-	local function UpdateButtonSelection(friendID, selected)
-		if friendID then
-			local button = FriendsFriendsFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
-				return elementData.friendID == friendID;
-			end);
-			if button then
-				FriendsFriendsButton_SetSelected(button, selected);
-			end
-		end
-	end;
-
-	UpdateButtonSelection(oldSelection, false);
-	UpdateButtonSelection(friendID, true);
-
-	if friendID then
-		FriendsFriendsFrame.SendRequestButton:Enable();
-	else
-		FriendsFriendsFrame.SendRequestButton:Disable();
-	end
-end
-
-function FriendsFriendsButton_SetSelected(button, selected)
-	if selected then
-		button:LockHighlight();
-	else
-		button:UnlockHighlight();
-	end
-end
-
-function FriendsFriendsFrameMixin:Update()
-	if FriendsFriendsWaitFrame:IsShown() then
-		return;
-	end
-
-	local showMutual, showPotential;
-	local view = self.view;
-	local bnetIDAccount = self.bnetIDAccount;
-	local numFriendsFriends = 0;
-	local numMutual, numPotential = BNGetNumFOF(bnetIDAccount);
-	if view == FRIENDS_FRIENDS_POTENTIAL or view == FRIENDS_FRIENDS_ALL then
-		showPotential = true;
-		numFriendsFriends = numFriendsFriends + numPotential;
-	end
-	if view == FRIENDS_FRIENDS_MUTUAL or view == FRIENDS_FRIENDS_ALL then
-		showMutual = true;
-		numFriendsFriends = numFriendsFriends + numMutual;
-	end
-
-	local usedHeight = 0;
-
-	local dataProvider = CreateDataProvider();
-	for index = 1, numFriendsFriends do
-		local friendID, accountName, isMutual = BNGetFOFInfo(showMutual, showPotential, index);
-		dataProvider:Insert({
-			index=index,
-			friendID=friendID,
-			accountName=accountName,
-			isMutual=isMutual
-		});
-	end
-
-	FriendsFriendsFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-end
-
-function FriendsFriendsFrame_Close()
-	if not C_Glue.IsOnGlueScreen() then
-		StaticPopupSpecial_Hide(FriendsFriendsFrame);
-	end
-end
-
-function FriendsFriendsFrame_Show(bnetIDAccount)
-	local accountInfo = C_BattleNet.GetAccountInfoByID(bnetIDAccount);
-	if not accountInfo then
-		return;
-	end
-	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..accountInfo.accountName..FONT_COLOR_CODE_CLOSE);
-	FriendsFriendsFrame.bnetIDAccount = accountInfo.bnetAccountID;
-	FriendsFriendsFrameDropdown:Disable();
-	FriendsFriendsFrame:Reset();
-	FriendsFriendsWaitFrame:Show();
-	StaticPopupSpecial_Show(FriendsFriendsFrame);
-	BNRequestFOFInfo(accountInfo.bnetAccountID);
 end
 
 function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
@@ -2911,7 +2678,7 @@ local inviteTypeIsCrossFaction =
 };
 
 function TravelPassButton_OnEnter(self)
-	if C_Glue.IsOnGlueScreen() then 
+	if C_Glue.IsOnGlueScreen() then
 		return;
 	end
 
@@ -2950,80 +2717,6 @@ function TravelPassButton_OnEnter(self)
 		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();
-end
-
-function BattleTagInviteFrame_Show(name)
-	BattleTagInviteFrame.BattleTag:SetText(name);
-	if ( not BattleTagInviteFrame:IsShown() ) then
-		StaticPopupSpecial_Show(BattleTagInviteFrame);
-	end
-end
-
-function GlueAddFriendAccept(name)
-	if ( IsValidBattlenetName(name) ) then
-		BNSendFriendInvite(name, "");
-	else
-		C_FriendList.AddFriend(name);
-	end
-end
-
-function IsValidBattlenetName(text)
-	local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
-	if ( isRIDEnabled and string.find(text, "@") ) then
-		return true;
-	end
-	if ( battleTag and string.find(text, "#") ) then
-		return true;
-	end
-	return false;
-end
-
-AddFriendIconHolderMixin = {};
-
-function AddFriendIconHolderMixin:OnLoad()
-	self.SecondaryIcon:SetPoint("BOTTOMLEFT", self.FriendIcon, "BOTTOM", self.secondaryIconXOffset or 0, 7);
-	if self.secondaryIcon then
-		self:SetSecondaryIcon(self.secondaryIcon);
-	end
-end
-
-function AddFriendIconHolderMixin:SetSecondaryIcon(icon)
-	self.SecondaryIcon:SetTexture(icon);
-end
-
-AddFriendEntryFrameInfoButtonMixin = {};
-
-function AddFriendEntryFrameInfoButtonMixin:OnLoad()
-	UserScaledElementMixin.OnLoad_UserScaledElement(self);
-
-	-- Unlike other buttons that use this button template, this one scales with font size
-	-- Let's reanchor the assets so they scale properly
-	self:InitResizableTextures();
-end
-
-function AddFriendEntryFrameInfoButtonMixin:InitResizableTextures()
-	self.texture:ClearAllPoints();
-	self.texture:SetPoint("TOPLEFT", self);
-	self.texture:SetPoint("BOTTOMRIGHT", self);
-
-	self.HighlightTexture:ClearAllPoints();
-	self.HighlightTexture:SetPoint("TOPLEFT", self);
-	self.HighlightTexture:SetPoint("BOTTOMRIGHT", self);
-end
-
-function AddFriendEntryFrameInfoButtonMixin:OnClick()
-	if AddFriendNameEditBox:HasFocus() then
-		AddFriendFrame.editFocus = AddFriendNameEditBox;
-	else
-		AddFriendFrame.editFocus = nil;
-	end
-	AddFriendFrame:ShowInfo();
-end
-
-AddFriendCloseButtonMixin = {};
-
-function AddFriendCloseButtonMixin:OnClick()
-	StaticPopupSpecial_Hide(AddFriendFrame);
 end
 
 WhoFrameColumnHeaderMixin = {};
@@ -3095,7 +2788,7 @@ function ContactsMenuMixin:Refresh()
 		local canUseBroadCastFrame = BNFeaturesEnabled() and BNConnected();
 		if canUseBroadCastFrame then
 			rootDescription:CreateButton(CONTACTS_MENU_BROADCAST_BUTTON_NAME, function()
-				self:GetParent().BroadcastFrame:ToggleFrame();		
+				self:GetParent().BroadcastFrame:ToggleFrame();
 			end);
 		end
 
@@ -3112,5 +2805,23 @@ function ContactsMenuMixin:OnEnter()
 end
 
 function ContactsMenuMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+FriendsFrameAddFriendButtonMixin = {};
+
+function FriendsFrameAddFriendButtonMixin:OnClick()
+	AddFriendFrame_Show();
+end
+
+function FriendsFrameAddFriendButtonMixin:OnEnter()
+	if self.disableTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 6, 0);
+		GameTooltip_AddErrorLine(GameTooltip, self.disableTooltip);
+		GameTooltip:Show();
+	end
+end
+
+function FriendsFrameAddFriendButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end

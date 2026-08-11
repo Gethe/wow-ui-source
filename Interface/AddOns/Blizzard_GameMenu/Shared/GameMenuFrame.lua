@@ -3,6 +3,43 @@ G_GameMenuFrameContextKey = "GameMenuFrame";
 
 GameMenuFrameMixin = {};
 
+StaticPopupDialogs["GAMEMENU_EXTERNALEVENT_FAILURE"] = {
+	text = GAMEMENU_EXTERNALEVENT_FAILURE,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function(dialog, data)
+	end,
+	OnHyperlinkClick = function(dialog, data)
+		LoadURLIndex(67);
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
+function GameMenuFrame_IsShown()
+	return GameMenuFrame and GameMenuFrame:IsShown();
+end
+
+function GameMenuFrame_EscapePressed()
+	if not GameMenuFrame_IsShown() then
+		return false;
+	end
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+	HideUIPanel(GameMenuFrame);
+	return true;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, GameMenuFrame_EscapePressed);
+
+function GameMenuFrame_Show()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	ShowUIPanel(GameMenuFrame);
+end
+
 local GameMenuFrameEvents = {
 	"STORE_STATUS_CHANGED",
 	"TRIAL_STATUS_UPDATE",
@@ -13,6 +50,8 @@ function GameMenuFrameMixin:OnLoad()
 
 	self:AddStaticEventMethod(EventRegistry, "UIPanel.FrameHidden", GameMenuFrameMixin.OnUIPanelHidden);
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GameMenuFrameMixin.OnStoreFrameClosed);
+	-- This event can occur without the frame being shown.
+	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_FAILED", GameMenuFrameMixin.OnExternalEventLaunchUrlFailed, self);
 end
 
 function GameMenuFrameMixin:OnShow()
@@ -27,6 +66,8 @@ function GameMenuFrameMixin:OnShow()
 	end
 
 	self:InitButtons();
+
+	NarrationUtil.NarrateCurrentScreen(NARRATION_CONTEXT_GAME_MENU);
 
 	EventRegistry:TriggerEvent("GameMenuFrame.Shown");
 end
@@ -59,6 +100,16 @@ function GameMenuFrameMixin:OnUIPanelHidden(contextKey)
 	end
 end
 
+function GameMenuFrameMixin:ExternalEventClickCallback()
+	if C_ExternalEventURL.HasURL() then
+		C_ExternalEventURL.LaunchURL();
+	end
+end
+
+function GameMenuFrameMixin:OnExternalEventLaunchUrlFailed()
+	StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+end
+
 function GameMenuFrameMixin:InitButtons()
 	self:Reset();
 
@@ -74,7 +125,7 @@ function GameMenuFrameMixin:InitButtons()
 	if C_ExternalEventURL.HasURL() then
 		local isNew = C_ExternalEventURL.IsNew();
 		local useGoldRedButton = true;
-		local externalEventButton = self:AddButton(GAMEMENU_EXTERNALEVENT, GenerateMenuCallback(function() C_ExternalEventURL.LaunchURL() end), nil, nil, useGoldRedButton);
+		local externalEventButton = self:AddButton(GAMEMENU_EXTERNALEVENT, GenerateMenuCallback(function() self:ExternalEventClickCallback() end), nil, nil, useGoldRedButton);
 		if isNew then
 			self.NewExternalEventFrame:SetPoint("BOTTOMRIGHT", externalEventButton:GetFontString(), "LEFT", 16, -10);
 			self.NewExternalEventFrame:Show();
@@ -149,7 +200,13 @@ function GameMenuFrameMixin:InitButtons()
 	self:AddButton(GAMEMENU_SUPPORT, GenerateMenuCallback(GenerateFlatClosure(ToggleHelpFrame, contextKey)), isKioskDisabled);
 
 	if not C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
-		self:AddButton(MACROS, GenerateMenuCallback(ShowMacroFrame), isKioskDisabled);
+		self:AddButton(MACROS, GenerateMenuCallback(function()
+			if DISALLOW_FRAME_TOGGLING or Kiosk.IsEnabled() then
+				return;
+			end
+
+			ShowMacroFrame();
+		end), isKioskDisabled);
 	end
 
 	self:AddSection();

@@ -1,5 +1,9 @@
 GhostFrameMixin = {}
 
+function SetGhostFrameShown(shown)
+	GhostFrame:SetShown(shown);
+end
+
 function GhostFrameMixin:OnLoad()
 	self:RegisterEvent("ADDON_LOADED");
 end

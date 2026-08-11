@@ -32,7 +32,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
+	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin" roleset="statusBars">
 		<Size x="571" y="34"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>

@@ -189,6 +189,15 @@ end
 function HouseEditorExpertDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+
+	if decorInstanceInfo.canAttachPet then
+		local petName = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(DECOR_INSTANCE_TOOLTIP_PET_BED_UNASSIGNED);
+		local assignedPetName = C_HousingDecor.GetDecorAssignedPetName(decorInstanceInfo.decorGUID);
+		if assignedPetName then
+			petName = assignedPetName;
+		end
+		GameTooltip_AddNormalLine(GameTooltip, string.format(DECOR_INSTANCE_TOOLTIP_PET_BED, petName));
+	end
 	
 	if decorInstanceInfo.isLocked then
 		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);

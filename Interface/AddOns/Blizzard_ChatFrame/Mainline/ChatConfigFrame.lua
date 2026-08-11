@@ -47,65 +47,72 @@ CHAT_CONFIG_CHAT_LEFT = {
 		disabled = ShouldDisplayDisabled;
 	},
 	[6] = {
+		text = GUILD_DISCORD_CHAT,
+		type = "GUILD_DISCORD",
+		checked = function () return IsListeningForMessageType("GUILD_DISCORD"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_DISCORD"); end;
+		disabled = ShouldDisplayDisabled;
+	},
+	[7] = {
 		type = "GUILD_ACHIEVEMENT",
 		checked = function () return IsListeningForMessageType("GUILD_ACHIEVEMENT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_ACHIEVEMENT"); end;
 	},
-	[7] = {
+	[8] = {
 		type = "ACHIEVEMENT",
 		checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
 	},
-	[8] = {
+	[9] = {
 		type = "WHISPER",
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[9] = {
+	[10] = {
 		type = "BN_WHISPER",
 		noClassColor = 1,
 		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[10] = {
+	[11] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[11] = {
+	[12] = {
 		type = "PARTY_LEADER",
 		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[12] = {
+	[13] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[13] = {
+	[14] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[14] = {
+	[15] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[15] = {
+	[16] = {
 		type = "INSTANCE_CHAT",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT"); end;
 		disabled = ShouldDisplayDisabled;
 	},
-	[16] = {
+	[17] = {
 		type = "INSTANCE_CHAT_LEADER",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
@@ -301,6 +308,14 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PING"); end;
 		disabled = ShouldDisplayDisabled;
 	},
+}
+
+-- Colors for chat that are not for a specific channel
+CHAT_CONFIG_ADDITIONAL_COLORS = {
+	[1] = {
+		text = DISCORD_PLAYER_NAME,
+		type = "DISCORD_PLAYER_NAME",
+	}
 }
 
 CHAT_CONFIG_CHANNEL_LIST = {};
@@ -758,6 +773,7 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckboxWithSwatchTemplate", PVP);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckboxWithSwatchTemplate", OTHER);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCreature, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckboxWithSwatchTemplate", CREATURE_MESSAGES);
+		ChatConfig_CreateColorSwatches(ChatConfigOtherSettingsAdditionalColors, CHAT_CONFIG_ADDITIONAL_COLORS, "ChatConfigAdditionalColorSwatchTemplate", CHAT_SETTINGS_ADDITIONAL_COLORS);
 
 		-- CombatLog Settings
 		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckboxTemplate", DONE_BY);
@@ -1088,7 +1104,11 @@ function ChatConfig_UpdateSwatches(frame)
 		baseName = nameString..index;
 		colorSwatch = _G[baseName.."ColorSwatch"];
 		if ( colorSwatch ) then
+			if(IsTypeAdditionalChatColor(value.type)) then
+				_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetChatAdditionalColor(value.type));
+			else
 			_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetChatUnitColor(value.type));
+			end
 			colorSwatch.type = value.type;
 		end
 	end
@@ -1495,6 +1515,16 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName()].Color:SetVertexColor(ColorPickerFrame:GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
+	additionalColorSwatch = function()
+			ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
+			CombatConfig_Colorize_Update();
+		end;
+	additionalColorCancel = function()
+			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetPreviousValues());
+			CombatConfig_Colorize_Update();
+		end;
 }
 
 function ChatUnitColor_OpenColorPicker(self)
@@ -1503,6 +1533,15 @@ function ChatUnitColor_OpenColorPicker(self)
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorCancel;
+	ColorPickerFrame:SetupColorPickerAndShow(info);
+end
+
+function ChatAdditionalColor_OpenColorPicker(self)
+	local info = {};
+	info.r, info.g, info.b = GetChatAdditionalColor(self.type);
+	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
+	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.additionalColorSwatch;
+	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.additionalColorCancel;
 	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
@@ -1548,7 +1587,20 @@ function GetMessageTypeColor(messageType)
 	end
 	local info = ChatTypeInfo[FCF_StripChatMsg(type)];
 
+	if( not info and IsTypeAdditionalChatColor(type) ) then
+		info = ChatAdditionalColors[FCF_StripChatMsg(type)];
+	end
+
 	return info.r, info.g, info.b, group;
+end
+
+function IsTypeAdditionalChatColor(type)
+	return ChatAdditionalColors[FCF_StripChatMsg(type)] ~= nil;
+end
+
+function GetChatAdditionalColor(type)
+	local info = ChatAdditionalColors[FCF_StripChatMsg(type)];
+	return info.r, info.g, info.b;
 end
 
 function GetChatUnitColor(type)
@@ -1870,6 +1922,7 @@ function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
+	ChatConfig_UpdateSwatches(ChatConfigOtherSettingsAdditionalColors);
 
 	ChatConfigFrame.ChatTabManager:UpdateTabDisplay();
 end
@@ -2232,6 +2285,7 @@ function ChatConfigOtherSettings_UpdateCheckboxes()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
+	ChatConfig_UpdateSwatches(ChatConfigOtherSettingsAdditionalColors);
 end
 
 function ChatConfigOtherSettings_OnShow()
@@ -2430,7 +2484,7 @@ function ChatConfigWideCheckboxManagerMixin:OnUpdate(dt)
 		return;
 	end
 
-	local cursorY = select(2, GetScaledCursorPosition());
+	local cursorY = select(2, InputUtil.GetCursorPosition(UIParent));
 	local top = self:GetTop();
 	local bottom = self:GetBottom();
 	local centerY = select(2, movingEntry:GetCenter()) * movingEntry:GetScale();

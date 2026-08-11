@@ -745,8 +745,8 @@ function PersonalResourceDisplayMixin:SetupClassBar()
 				self.classFrame.UpdatePower = function() classFrameInfo.updatePowerFunc(self.classFrame) end;
 			end
 
-			-- Some class templates inherit PlayerFrameBottomManagedFrameTemplate which at load time calls
-			-- ClearAllPoints and re-parents the frame to PlayerFrameBottomManagedFramesContainer
+			-- Some class templates inherit PlayerBottomManagedFrameTemplate which at load time calls
+			-- ClearAllPoints and re-parents the frame to the player frame managed container.
 			-- before CreateFrame even returns.
 			self.classFrame:SetParent(self.ClassFrameContainer);
 			self.classFrame:SetPoint("CENTER", self.ClassFrameContainer, "CENTER");

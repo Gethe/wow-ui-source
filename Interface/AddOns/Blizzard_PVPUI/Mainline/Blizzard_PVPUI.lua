@@ -209,7 +209,7 @@ function PVPUIFrame_EvaluateHelpTips(self)
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};
-		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
+		HelpTip:Show(self, helpTipInfo, PVPQueueFrame.CategoryButton3);
 	end
 end
 
@@ -473,8 +473,8 @@ function PVPQueueFrame_SetCategoryButtonState(button, enabled)
 		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
 		button.Name:SetFontObject("GameFontDisableLarge");
 	end
-	SetDesaturation(button.Icon, not enabled);
-	SetDesaturation(button.Ring, not enabled);
+	button.Icon:SetDesaturated(not enabled);
+	button.Ring:SetDesaturated(not enabled);
 	button:SetEnabled(enabled);
 end
 
@@ -1092,7 +1092,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 		end
 		HelpTip:Hide(button, BRAWL_TUTORIAL);
-		if ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())) then
+		if ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, GameRulesUtil.IsPlayerAtEffectiveMaxLevel()) then
 			local helpTipInfo = {
 				text = BRAWL_TUTORIAL,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -2143,7 +2143,7 @@ function PVPConquestBarMixin:Update()
 	local shouldShowConquestBar = currencyInfo and currencyInfo.maxQuantity > 0;
 	self:SetShown(shouldShowConquestBar);
 
-	self.locked = not IsPlayerAtEffectiveMaxLevel();
+	self.locked = not GameRulesUtil.IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
 
 	local maxProgress = currencyInfo.maxQuantity;
@@ -2710,7 +2710,9 @@ function TrainingGroundsFrameMixin:InitializeQueueButton()
 		local queueOption = self:GetSelectedQueueOption();
 		if queueOption then
 			if queueOption == "RandomTrainingGround" then
-				C_PvP.JoinRandomTrainingGround();
+				C_PvP.JoinRandomTrainingGroundBattleground();
+			elseif queueOption == "RandomTrainingGroundArena" then
+				C_PvP.JoinRandomTrainingGroundArena();
 			else
 				C_PvP.JoinTrainingGround(queueOption);
 			end
@@ -2915,6 +2917,7 @@ TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixi
 
 local queueOptionToRewardGetter = {
 	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
+	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundRewards;
 };
 
 function TrainingGroundActivityButtonMixin:OnLoad()

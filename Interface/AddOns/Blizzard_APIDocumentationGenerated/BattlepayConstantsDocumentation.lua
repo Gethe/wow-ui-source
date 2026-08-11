@@ -64,6 +64,17 @@ local BattlepayConstants =
 			},
 		},
 		{
+			Name = "LoginTicketLicenses",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 11486,
+			MaxValue = 11486,
+			Fields =
+			{
+				{ Name = "GmLicense", Type = "LoginTicketLicenses", EnumValue = 11486 },
+			},
+		},
+		{
 			Name = "PurchaseResult",
 			Type = "Enumeration",
 			NumValues = 72,

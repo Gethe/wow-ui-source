@@ -2,6 +2,7 @@ local SecondsFormatterAPI =
 {
 	Name = "SecondsFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -9,6 +10,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "CanApproximate",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the given number of seconds is within an appropriate range for approximated formatting." },
 
@@ -53,6 +55,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateDesiredUnitCount",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the unit count that a given number of seconds will use for formatting." },
 
@@ -69,6 +72,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMaxInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the maximum interval band that a given number of seconds will use for formatting." },
 
@@ -85,6 +89,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMinInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the minimum interval band that a given number of seconds will use for formatting." },
 
@@ -101,6 +106,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "Format",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a number of seconds and returns the resulting string." },
 
@@ -118,6 +124,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "FormatZero",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns formatted string representing a zero second duration." },
 
@@ -269,6 +276,20 @@ local SecondsFormatterAPI =
 			Returns =
 			{
 				{ Name = "curve", Type = "LuaCurveObject", Nilable = true, Documentation = { "Nil if configured to static interval band." } },
+			},
+		},
+		{
+			Name = "GetRounding",
+			Type = "Function",
+			Documentation = { "Returns how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The configured rounding mode." } },
 			},
 		},
 		{
@@ -424,6 +445,17 @@ local SecondsFormatterAPI =
 			Arguments =
 			{
 				{ Name = "curve", Type = "LuaCurveObject", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRounding",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The rounding mode to use." } },
 			},
 		},
 		{

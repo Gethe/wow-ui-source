@@ -194,6 +194,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetThumbTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

@@ -112,5 +112,5 @@
 		</Scripts>
 	</Frame>
 
-	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate"/>
+	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, NarratableTooltipTemplate, TopLevelParentScaleFrameTemplate"/>
 </Ui>

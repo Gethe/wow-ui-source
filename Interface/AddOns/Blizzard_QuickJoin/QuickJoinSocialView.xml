@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="QuickJoinSocialViewButtonTemplate" hyperlinksEnabled="true" mixin="QuickJoinButtonMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="friends-card-quickJoin" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="MemberName" parentArray="Members" inherits="UserScaledFontGameNormalLarge" justifyH="LEFT" maxLines="1">
+					<Size x="135"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="7"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon" atlas="friends-icon-eye" useAtlasSize="false">
+					<Size x="16" y="17"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MemberName" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="QueueName" parentArray="Queues" inherits="UserScaledFontGameNormalLarge" justifyH="LEFT" maxLines="1"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" atlas="friends-card-quickJoin-selected" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+				<Texture parentKey="Selected" atlas="friends-card-quickJoin-selected" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+
+			<!-- Forward to regular enter/leave handlers -->
+			<OnHyperlinkEnter method="OnEnter"/>
+			<OnHyperlinkLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="QuickJoinSocialViewTemplate" inherits="SocialUIContactsFrameTemplate" mixin="QuickJoinSocialViewMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

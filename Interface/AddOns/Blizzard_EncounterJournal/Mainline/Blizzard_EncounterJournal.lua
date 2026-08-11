@@ -53,6 +53,12 @@ local EJ_LINK_INSTANCE 		= 0;
 local EJ_LINK_ENCOUNTER		= 1;
 local EJ_LINK_SECTION 		= 3;
 
+-- Add difficulties to this if you intend for them to display on the difficulty dropdown.
+-- If they map to a base but will display that base's name, don't add them here.
+-- Ex.
+--	"Mythic Flex" -> PrimaryRaidMythic -- *isn't* in this list because behaves as AND displays the base; "Mythic".
+--	"World" -> PrimaryRaidLFR -- *is* in this list because it behaves as LFR, BUT displays "World".
+---------------------------------------------------------------------------------------------------
 local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.DungeonNormal,
 	DifficultyUtil.ID.DungeonHeroic,
@@ -64,6 +70,7 @@ local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.Raid10Heroic,
 	DifficultyUtil.ID.Raid25Normal,
 	DifficultyUtil.ID.Raid25Heroic,
+	DifficultyUtil.ID.RaidWorld,
 	DifficultyUtil.ID.PrimaryRaidLFR,
 	DifficultyUtil.ID.PrimaryRaidNormal,
 	DifficultyUtil.ID.PrimaryRaidHeroic,
@@ -77,7 +84,8 @@ local function IsEJDifficulty(difficultyID)
 end
 
 local function GetEJDifficultySize(difficultyID)
-	if difficultyID ~= DifficultyUtil.ID.RaidTimewalker and not DifficultyUtil.IsPrimaryRaid(difficultyID) then
+	local baseDifficultyID = C_EncounterJournal.GetBaseDifficultyID(difficultyID);
+	if (baseDifficultyID ~= DifficultyUtil.ID.RaidTimewalker and not DifficultyUtil.IsPrimaryRaid(baseDifficultyID)) then
 		return DifficultyUtil.GetMaxPlayers(difficultyID);
 	end
 	return nil;
@@ -565,11 +573,35 @@ function EncounterJournal_SetupDifficultyDropdown(self)
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_EJ_DIFFICULTY");
 
+		-- Check for any new difficulties that will override their base difficulties by text display only.
+		-- These new difficulties map to a base difficulty that they behave identically to.
+		local difficultiesOverridden = {};
 		for index, difficultyID in ipairs(EJ_DIFFICULTIES) do
 			if EJ_IsValidInstanceDifficulty(difficultyID) then
+				local baseDifficultyID = C_EncounterJournal.GetBaseDifficultyID(difficultyID);
+				if (baseDifficultyID ~= difficultyID) and EJ_IsValidInstanceDifficulty(baseDifficultyID) then
+					-- This difficulty has a base so we will skip it in the loop below regardless.
+					difficultiesOverridden[difficultyID] = true;
+
+					-- Only do the text override functionality if the instance has the difficulty.
+					-- EJ_IsValidInstanceDifficulty alone doesn't suffice because new difficulties have IDs above the mask limit (64) that it checks.
+					if C_EncounterJournal.InstanceHasDifficultyID(difficultyID) then
+						local text = GetEJDifficultyString(difficultyID);
+						rootDescription:CreateRadio(text, IsSelected, SetSelected, baseDifficultyID);
+
+						-- We can now skip this in the loop below.
+						difficultiesOverridden[baseDifficultyID] = true;
+					end
+				end
+			end
+		end
+
+		-- Add all regular difficulties that didn't have a base or were not the base of one already overridden.
+		for index, difficultyID in ipairs(EJ_DIFFICULTIES) do
+			if EJ_IsValidInstanceDifficulty(difficultyID) and not difficultiesOverridden[difficultyID] then
 				local text = GetEJDifficultyString(difficultyID);
 				rootDescription:CreateRadio(text, IsSelected, SetSelected, difficultyID);
-			end
+			end 
 		end
 	end);
 end
@@ -1264,8 +1296,10 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
-	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
+	--disable loot tab if there's no loot
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
+	
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
 		EJ_Tabs[3].frame = "detailsScroll"; -- flip them back
@@ -1307,6 +1341,8 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		}
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
+
+	EncounterJournal_SetupDifficultyDropdown(self);
 end
 
 function EncounterJournal_DisplayEncounter(encounterID, noButton)
@@ -1328,6 +1364,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
+
+	--disable loot tab if there's no loot
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
@@ -2687,6 +2725,16 @@ function EncounterJournal_OpenToJourney(factionID)
 	end
 end
 
+function EncounterJournal_OpenToTieredEntrance(instanceID, difficultyID)
+	assertsafe(instanceID, "A valid instanceID is required to open to a tiered entrance.");
+	ShowUIPanel(EncounterJournal);
+	EJ_ContentTab_Select(EncounterJournal.raidsTab:GetID());
+	EncounterJournal_DisplayInstance(instanceID);
+	if difficultyID then
+		EJ_SetDifficulty(difficultyID);
+	end		
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	EJ_HideNonInstancePanels();
 	ShowUIPanel(EncounterJournal);
@@ -3024,7 +3072,9 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 			CollectionsJournal_LoadUI();
 		end
 		WardrobeCollectionFrame:ShowItemTrackingHelptipOnShow();
-		ToggleCollectionsJournal();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal();
+		end
 	end
 end
 

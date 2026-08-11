@@ -119,6 +119,61 @@ StaticPopupDialogs["LFG_LIST_INVITING_CONVERT_TO_RAID"] = {
 	hideOnEscape = 1,
 }
 
+local function OnCensorDialogEditButton(dialog)
+	local toggle = false;
+	LFGListUtil_OpenBestWindow(toggle);
+
+	LFGListApplicationViewer_OpenEditMode();
+end
+
+local function OnCensorDialogCancelButton(dialog)
+	C_LFGList.ConfirmCensoredActiveEntry();
+end
+
+StaticPopupDialogs["LFG_LIST_CREATE_CENSOR_WARNING"] = {
+	text = CENSORED_LFG_CREATE_GROUP,
+	button1 = CENSORED_LFG_CREATE_GROUP_EDIT,
+	button2 = CENSORED_LFG_CREATE_GROUP_DECLINE_EDIT,
+	OnAccept = OnCensorDialogEditButton,
+	OnCancel = OnCensorDialogCancelButton,
+	wideText = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["LFG_LIST_CENSOR_WARNING"] = {
+	text = CENSORED_LFG_EDIT_GROUP,
+	button1 = CENSORED_LFG_CREATE_GROUP_EDIT,
+	button2 = CENSORED_LFG_CREATE_GROUP_DECLINE_EDIT,
+	OnAccept = OnCensorDialogEditButton,
+	OnCancel = OnCensorDialogCancelButton,
+	wideText = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+local function ShowCensorDialog(which)
+	-- Depending on the timing of messages received on the client, a dialog
+	-- may have already been shown. The text is similar enough to leave the
+	-- existing dialog on-screen and not shuffle anything around.
+	if StaticPopup_Visible("LFG_LIST_CREATE_CENSOR_WARNING") then
+		return;
+	end
+
+	if StaticPopup_Visible("LFG_LIST_CENSOR_WARNING") then
+		return;
+	end
+
+	if which == "LFG_LIST_CREATE_CENSOR_WARNING" or which == "LFG_LIST_CENSOR_WARNING" then
+		StaticPopup_Show(which);
+	end
+end
+
+local function HideCensorDialogs()
+	StaticPopup_Hide("LFG_LIST_CREATE_CENSOR_WARNING");
+	StaticPopup_Hide("LFG_LIST_CENSOR_WARNING");
+end
+
 local function ResolveCategoryFilters(categoryID, filters)
 	-- Dungeons ONLY display recommended groups.
 	if categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
@@ -155,6 +210,7 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_ENTRY_CREATION_FAILED");
+	self:RegisterEvent("LFG_LIST_CENSORED_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 	self:RegisterEvent("LFG_LIST_UPDATE_SEARCH_RESULTS");
@@ -176,10 +232,35 @@ function LFGListFrame_OnLoad(self)
 	self.EventsInBackground = {
 		LFG_LIST_SEARCH_FAILED = { self.SearchPanel };
 	};
+
+	-- Client may have reconnected from login or reloaded the UI.
+	if C_LFGList.IsCensoredActiveEntryUnresolved() then
+		ShowCensorDialog("LFG_LIST_CENSOR_WARNING");
+	end
 end
 
 local function IsDeclined(appStatus)
 	return appStatus == "declined" or appStatus == "declined_delisted" or appStatus =="declined_full";
+end
+
+local function LFGListFrame_UpdateFrame(self, createdNew)
+	if createdNew == nil then
+		-- The listing was removed
+		HideCensorDialogs();
+	end
+
+	LFGListFrame_FixPanelValid(self);	--If our current panel isn't valid, change it.
+
+	if ( C_LFGList.HasActiveEntryInfo() ) then
+		self.EntryCreation.WorkingCover:Hide();
+	else
+		LFGListFrame_CheckPendingQuestIDSearch(self);
+		LFGListFrame_CheckPendingScenarioIDSearch(self);
+	end
+
+	if ( createdNew ) then
+		PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
+	end
 end
 
 function LFGListFrame_OnEvent(self, event, ...)
@@ -187,18 +268,14 @@ function LFGListFrame_OnEvent(self, event, ...)
 		LFGListFrame_FixPanelValid(self);
 	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
 		local createdNew = ...;
-		LFGListFrame_FixPanelValid(self);	--If our current panel isn't valid, change it.
-
-		if ( C_LFGList.HasActiveEntryInfo() ) then
-			self.EntryCreation.WorkingCover:Hide();
-		else
-			LFGListFrame_CheckPendingQuestIDSearch(self);
-			LFGListFrame_CheckPendingScenarioIDSearch(self);
+		LFGListFrame_UpdateFrame(self, createdNew);
+	elseif ( event == "LFG_LIST_CENSORED_ACTIVE_ENTRY_UPDATE" ) then
+		local censored = ...;
+		if censored then
+			ShowCensorDialog("LFG_LIST_CREATE_CENSOR_WARNING");
 		end
-
-		if ( createdNew ) then
-			PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
-		end
+		local createdNew = false;
+		LFGListFrame_UpdateFrame(self, createdNew);
 	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
 		self.EntryCreation.WorkingCover:Hide();
 	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
@@ -738,6 +815,14 @@ function LFGListEntryCreation_OnLoad(self)
 	self.Name.Instructions:SetText(LFG_LIST_ENTER_NAME);
 	self.Description.EditBox:SetScript("OnEnterPressed", nop);
 
+	self.Description.EditBox:SetScript("OnTextChanged", function(editBox, isUserChange)
+		InputScrollFrame_OnTextChanged(editBox, isUserChange);
+
+		if C_LFGList.IsCensoredActiveEntryUnresolved() then
+			LFGListEntryCreation_UpdateValidState(self);
+		end
+	end);
+
 	self.GroupDropdown:SetWidth(141);
 
 	-- Group dropdown has a "More" option that requires us to set the text
@@ -1240,8 +1325,30 @@ function LFGListEntryCreation_CheckAutoCreate(self)
 end
 
 function LFGListEntryCreation_UpdateValidState(self)
-	local errorText;
+	if not self.selectedActivity then
+		return;
+	end
+
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity)
+	if not activityInfo then
+		return;
+	end
+
+	local function IsCensoredTextUnchanged()
+		-- The name and description isn't exposed in the active entry data if the censor
+		-- is active and has not been cleared, so we need to send this through the API to
+		-- determine if either text matches.
+		if C_LFGList.IsCensoredActiveEntryUnresolved() then
+			local descriptionText = self.Description.EditBox:GetText();
+			local nameText = self.Name:GetText();
+			if C_LFGList.DoesCensoredTextMatch(nameText, descriptionText) then
+				return true;
+			end
+		end
+		return false;
+	end
+
+	local errorText;
 	local maxNumPlayers = activityInfo and  activityInfo.maxNumPlayers or 0;
 	local mythicPlusDisableActivity = not C_LFGList.IsPlayerAuthenticatedForLFG(activityInfo.categoryID) and (activityInfo.isMythicPlusActivity and not C_LFGList.GetKeystoneForActivity(self.selectedActivity));
 	if ( maxNumPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxNumPlayers ) then
@@ -1260,6 +1367,8 @@ function LFGListEntryCreation_UpdateValidState(self)
 		errorText = self.MythicPlusRating.warningText;
 	elseif (self.PVPRating.warningText) then
 		errorText = self.PVPRating.warningText;
+	elseif ( IsCensoredTextUnchanged() ) then
+		errorText = CENSORED_LFG_EDIT_UNCHANGED;
 	else
 		errorText = LFGListUtil_GetActiveQueueMessage(false);
 	end
@@ -1383,6 +1492,10 @@ function LFGListEntryCreationCancelButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( LFGListEntryCreation_IsEditMode(panel) ) then
 		LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().ApplicationViewer);
+
+		if C_LFGList.IsCensoredActiveEntryUnresolved() then
+			ShowCensorDialog("LFG_LIST_CENSOR_WARNING");
+		end
 	else
 		LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().CategorySelection);
 	end
@@ -1490,6 +1603,18 @@ function LFGListApplicationViewer_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
+	self.EntryName:SetScript("OnMouseDown", function()
+		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+		if not activeEntryInfo then
+			return;
+		end
+
+		-- Reveal only permits seeing the name and description. For the listing owner,
+		-- this does not constitute a choice to edit or continue as-is.
+		C_LFGList.RevealCensoredActiveEntry();
+
+		LFGListApplicationViewer_UpdateInfo(self);
+	end);
 end
 
 function LFGListApplicationViewer_OnEvent(self, event, ...)
@@ -1553,29 +1678,47 @@ end
 
 function LFGListApplicationViewer_UpdateInfo(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	assert(activeEntryInfo);
-	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[1]);
-	if(not activityInfo) then
+	if not activeEntryInfo then
 		return;
 	end
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
 
-	if (not categoryInfo) then
+	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[1]);
+	if not activityInfo then
+		return;
+	end
+
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
+	if not categoryInfo then
 		return;
 	end
 
 	self.RatingColumnHeader:SetShown(activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity);
+
 	self.EntryName:SetWidth(0);
-	self.EntryName:SetText(activeEntryInfo.name);
-	self.DescriptionFrame.activityName = activityInfo.fullName;
-	if ( activeEntryInfo.comment == "" and activeEntryInfo.questID ) then
-		activeEntryInfo.comment = LFGListUtil_GetQuestDescription(activeEntryInfo.questID);
-	end
-	self.DescriptionFrame.comment = activeEntryInfo.comment;
-	if ( activeEntryInfo.comment == "" ) then
-		self.DescriptionFrame.Text:SetText(self.DescriptionFrame.activityName);
+
+	if activeEntryInfo.censored then
+		local censoredText = RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+		local clickText = NORMAL_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_SHOW);
+		local nameText = string.format("%s %s", censoredText, clickText);
+		self.EntryName:SetText(nameText);
 	else
-		self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, self.DescriptionFrame.comment);
+		self.EntryName:SetText(activeEntryInfo.name);
+	end
+
+	self.DescriptionFrame.activityName = activityInfo.fullName;
+
+	if activeEntryInfo.censored then
+		self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, CENSORED_LFG_GROUP_HEADER_WARNNG);
+	else
+		local commentText = activeEntryInfo.comment;
+		if ( commentText == "" and activeEntryInfo.questID ) then
+			commentText = LFGListUtil_GetQuestDescription(activeEntryInfo.questID);
+		end
+		if ( commentText == "" ) then
+			self.DescriptionFrame.Text:SetText(self.DescriptionFrame.activityName);
+		else
+			self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, commentText);
+		end
 	end
 
 	local hasRestrictions = false;
@@ -1970,13 +2113,26 @@ function LFGListApplicationViewerUtil_GetButtonHeight(numApplicants)
 	return 20 * numApplicants + 6;
 end
 
+
+function LFGListApplicationViewer_OpenEditMode()
+	local entryCreation = LFGListFrame.EntryCreation;
+	LFGListEntryCreation_SetEditMode(entryCreation, true);
+	LFGListFrame_SetActivePanel(LFGListFrame, entryCreation);
+end
+
+function LFGListApplicationViewerRemoveEntryButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	C_LFGList.RemoveListing();
+
+	HideCensorDialogs();
+end
+
 function LFGListApplicationViewerEditButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	local panel = self:GetParent();
-	local entryCreation = panel:GetParent().EntryCreation;
-	LFGListEntryCreation_SetEditMode(entryCreation, true);
-	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
+	LFGListApplicationViewer_OpenEditMode();
+
+	HideCensorDialogs();
 end
 
 LFGApplicationBrowseGroupsButtonMixin = { };
@@ -2362,7 +2518,7 @@ local function LFGListAdvancedFiltersCheckAllDungeons(enabled)
 end
 
 local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
-	if IsPlayerAtEffectiveMaxLevel() then
+	if GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 		local enabled = C_LFGList.GetAdvancedFilter();
 
 		--use a set in Lua and convert to a list for communicating with the server.
@@ -2568,7 +2724,7 @@ end
 function LFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_UpdateResultList(self);
 
-	if ( LFGListCanChangeLanguages() or IsPlayerAtEffectiveMaxLevel() ) then
+	if ( LFGListCanChangeLanguages() or GameRulesUtil.IsPlayerAtEffectiveMaxLevel() ) then
 		self.SearchBox:SetWidth(228);
 		self.FilterButton:Show();
 	else
@@ -2861,6 +3017,12 @@ function LFGListSearchPanel_SignUp(self)
 	LFGListApplicationDialog_Show(LFGListApplicationDialog, self.selectedResult);
 end
 
+EventRegistry:RegisterCallback("UI.QueryStickyFocusFrames", function(_, request)
+	if LFGListFrame and LFGListFrame.SearchPanel and LFGListFrame.SearchPanel.AutoCompleteFrame then
+		request:AddFrame(LFGListFrame.SearchPanel.AutoCompleteFrame);
+	end
+end);
+
 function LFGListSearchPanelSearchBox_OnEnterPressed(self)
 	local parent = self:GetParent();
 	if ( parent.AutoCompleteFrame:IsShown() and parent.AutoCompleteFrame.selected ) then
@@ -3031,6 +3193,19 @@ end
 
 function LFGListSearchEntry_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+	self.Name:SetScript("OnMouseDown", function()
+		if not self.resultID then
+			return;
+		end
+	
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(self.resultID);
+		if searchResultInfo.censored then
+			C_LFGList.RevealCensoredSearchResult(self.resultID);
+		end
+	
+		LFGListSearchEntry_Update(self);
+	end);
 end
 
 local function EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo)
@@ -3217,8 +3392,18 @@ function LFGListSearchEntry_Update(self)
 		nameColor = BATTLENET_FONT_COLOR;
 	end
 	self.Name:SetWidth(0);
-	self.Name:SetText(searchResultInfo.name);
-	self.Name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
+
+	if searchResultInfo.censored then
+		local censoredText = RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+		local clickText = NORMAL_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_SHOW);
+		local nameText = string.format("%s %s", censoredText, clickText);
+		self.Name:SetText(nameText);
+		self.Name:SetTextColor(1, 1, 1);
+	else
+		self.Name:SetText(searchResultInfo.name);
+		self.Name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
+	end
+
 	self.ActivityName:SetText(activityName);
 	self.ActivityName:SetTextColor(activityColor.r, activityColor.g, activityColor.b);
 	self.VoiceChat:SetShown(searchResultInfo.voiceChat ~= "");
@@ -3276,7 +3461,14 @@ function LFGListSearchEntry_CreateContextMenu(self)
 
 		local searchResultInfo = C_LFGList.GetSearchResultInfo(self.resultID);
 		local _, appStatus = C_LFGList.GetApplicationInfo(self.resultID);
-		rootDescription:CreateTitle(searchResultInfo.name);
+
+		local nameText;
+		if searchResultInfo.censored then
+			nameText = RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+		else
+			nameText = searchResultInfo.name;
+		end
+		rootDescription:CreateTitle(nameText);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
 			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
@@ -4196,8 +4388,14 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
 	local allowsCrossFaction = (categoryInfo and categoryInfo.allowCrossFaction) and (activityInfo and activityInfo.allowCrossFaction);
 
-	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
-	tooltip:SetText(searchResultInfo.name, 1, 1, 1, 1, true);
+	local nameText;
+	if searchResultInfo.censored then
+		nameText = RED_FONT_COLOR:WrapTextInColorCode(CENSORED_LFG_GROUP_NAME);
+	else
+		nameText = searchResultInfo.name;
+	end
+	local wrapText = true;
+	GameTooltip_AddHighlightLine(tooltip, nameText, wrapText);
 	tooltip:AddLine(activityInfo.fullName);
 
 	local playstyleString = C_LFGList.GetPlaystyleString(Enum.LFGEntryPlaystyle.None, searchResultInfo.generalPlaystyle, activityInfo);
@@ -4210,12 +4408,20 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end
-	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
-		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
+	
+	if searchResultInfo.censored then
+		tooltip:AddLine(CENSORED_LFG_COMMENT, LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+	else
+		local commentText = searchResultInfo.comment;
+		if ( commentText and commentText == "" and searchResultInfo.questID ) then
+			commentText = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
+		end
+		
+		if ( commentText ~= "" ) then
+			tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, commentText), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+		end
 	end
-	if ( searchResultInfo.comment ~= "" ) then
-		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
-	end
+	
 	tooltip:AddLine(" ");
 	if ( searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0 ) then
 		tooltip:AddLine(GROUP_FINDER_MYTHIC_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredDungeonScore));
@@ -4314,6 +4520,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, specName)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
 		end
 	else
+		local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
 

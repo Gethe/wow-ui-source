@@ -37,7 +37,7 @@
 		</Layers>
 	</StatusBar>
 	
-	<Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin">
+	<Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin" roleset="unitFrames">
 		<Size x="200" y="75"/>
 		<Frames>
 			<!-- Health -->

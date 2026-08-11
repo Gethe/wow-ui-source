@@ -264,6 +264,16 @@ local FriendList =
 			},
 		},
 		{
+			Name = "IsLegacyFriendSystemEnabled",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "isLegacyFriendSystemEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnIgnoredList",
 			Type = "Function",
 			RequiresFriendList = true,
@@ -402,14 +412,16 @@ local FriendList =
 	Events =
 	{
 		{
-			Name = "BattletagInviteShow",
+			Name = "BattleNetFriendTagEnabledStatusUpdated",
 			Type = "Event",
-			LiteralName = "BATTLETAG_INVITE_SHOW",
+			LiteralName = "BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED",
 			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-			},
+		},
+		{
+			Name = "BattleNetTitleFriendCustomNameEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "BATTLE_NET_TITLE_FRIEND_CUSTOM_NAME_ENABLED_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnBlockFailedTooMany",
@@ -555,6 +567,17 @@ local FriendList =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "ConfirmBattleNetFriendInviteShow",
+			Type = "Event",
+			LiteralName = "CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "FriendlistUpdate",
 			Type = "Event",
 			LiteralName = "FRIENDLIST_UPDATE",
@@ -564,6 +587,12 @@ local FriendList =
 			Name = "IgnorelistUpdate",
 			Type = "Event",
 			LiteralName = "IGNORELIST_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "LegacyFriendSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED",
 			SynchronousEvent = true,
 		},
 		{
@@ -587,6 +616,12 @@ local FriendList =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 			},
+		},
+		{
+			Name = "SocialUIFriendsListSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "SOCIAL_UI_FRIENDS_LIST_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WhoListUpdate",

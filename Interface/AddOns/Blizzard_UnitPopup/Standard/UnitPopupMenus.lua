@@ -89,7 +89,9 @@ function UnitPopupMenuBnFriend:GetEntries()
 	return { 
 		UnitPopupPopoutChatButtonMixin,
 		UnitPopupBnetTargetButtonMixin,
+		UnitPopupSetCustomTitleFriendNameButtonMixin,
 		UnitPopupSetBNetNoteButtonMixin, 
+		UnitPopupBnetFriendTagsButtonMixin,
 		UnitPopupViewBnetFriendsButtonMixin,
 		UnitPopupInteractSubsectionTitle,
 		UnitPopupRafSummonButtonMixin,
@@ -110,7 +112,9 @@ end
 
 function UnitPopupMenuBnFriendOffline:GetEntries()
 	return { 
+		UnitPopupSetCustomTitleFriendNameButtonMixin,
 		UnitPopupSetBNetNoteButtonMixin, 
+		UnitPopupBnetFriendTagsButtonMixin,
 		UnitPopupViewBnetFriendsButtonMixin,
 		UnitPopupInteractSubsectionTitle,
 		UnitPopupWhisperButtonMixin,

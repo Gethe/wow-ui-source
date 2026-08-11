@@ -11,3 +11,12 @@ for index, value in pairs(ChatTypeInfo) do
 	value.b = 1.0;
 	value.id = GetChatTypeIndex(index);
 end
+
+ChatAdditionalColors = {};
+ChatAdditionalColors["DISCORD_PLAYER_NAME"] = {};
+for index, value in pairs(ChatAdditionalColors) do
+	value.r = 1.0;
+	value.g = 1.0;
+	value.b = 1.0;
+	value.id = GetChatTypeIndex(index);
+end

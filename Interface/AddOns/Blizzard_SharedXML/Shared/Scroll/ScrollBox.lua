@@ -620,7 +620,7 @@ end
 -- for Enumerate to do anything other than iterate the entire range, and additionally
 -- confusing that this newly added EntireRange function does exactly that.
 function ScrollBoxListMixin:EnumerateDataProviderEntireRange()
-	return self:GetView():EnumerateDataProvider();
+	return self:GetView():EnumerateDataProviderEntireRange();
 end
 
 function ScrollBoxListMixin:EnumerateDataProvider(indexBegin, indexEnd)

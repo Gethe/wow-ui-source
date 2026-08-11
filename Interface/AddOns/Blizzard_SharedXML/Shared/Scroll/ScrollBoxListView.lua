@@ -108,6 +108,13 @@ function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
 		index = orderIndex;
 	end;
 
+	frame.hadNarrationGetIndexInfo = frame.NarrationGetIndexInfo ~= nil;
+	if not frame.hadNarrationGetIndexInfo then
+		frame.NarrationGetIndexInfo = function(self)
+			local total = view:GetDataProviderSize();
+			return NarrationUtil.MakeIndexInfo(index, total);
+		end;
+	end
 end
 
 function ScrollBoxListViewMixin:UnassignAccessors(frame)
@@ -117,6 +124,13 @@ function ScrollBoxListViewMixin:UnassignAccessors(frame)
 	frame.ElementDataMatches = nil;
 	frame.GetOrderIndex = nil;
 	frame.SetOrderIndex = nil;
+
+	-- Allow the frame to keep its custom NarrationGetIndexInfo if it had one.
+	if not frame.hadNarrationGetIndexInfo then
+		frame.NarrationGetIndexInfo = nil;
+	end
+
+	frame.hadNarrationGetIndexInfo = nil;
 end
 
 function ScrollBoxListViewMixin:Flush()

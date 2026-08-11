@@ -23,7 +23,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="QuestTimerFrame" inherits="BackdropTemplate, UIParentRightManagedFrameTemplate" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent" mixin="QuestTimerMixin">
+	<Frame name="QuestTimerFrame" inherits="BackdropTemplate, RightManagedFrameTemplate" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent" mixin="QuestTimerMixin">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 			<KeyValue key="layoutIndex" value="2" type="number"/>

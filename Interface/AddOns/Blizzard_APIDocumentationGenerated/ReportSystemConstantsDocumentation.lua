@@ -18,9 +18,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportMajorCategory",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "InappropriateCommunication", Type = "ReportMajorCategory", EnumValue = 0 },
@@ -28,14 +28,15 @@ local ReportSystemConstants =
 				{ Name = "Cheating", Type = "ReportMajorCategory", EnumValue = 2 },
 				{ Name = "InappropriateName", Type = "ReportMajorCategory", EnumValue = 3 },
 				{ Name = "InappropriateDecor", Type = "ReportMajorCategory", EnumValue = 4 },
+				{ Name = "InappropriateBlueprint", Type = "ReportMajorCategory", EnumValue = 5 },
 			},
 		},
 		{
 			Name = "ReportMinorCategory",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 1,
-			MaxValue = 524288,
+			MaxValue = 1048576,
 			Fields =
 			{
 				{ Name = "TextChat", Type = "ReportMinorCategory", EnumValue = 1 },
@@ -58,6 +59,7 @@ local ReportSystemConstants =
 				{ Name = "TerroristAndViolentExtremistContent", Type = "ReportMinorCategory", EnumValue = 131072 },
 				{ Name = "ChildSexualExploitationAndAbuse", Type = "ReportMinorCategory", EnumValue = 262144 },
 				{ Name = "NeighborhoodName", Type = "ReportMinorCategory", EnumValue = 524288 },
+				{ Name = "HousingBlueprint", Type = "ReportMinorCategory", EnumValue = 1048576 },
 			},
 		},
 		{
@@ -88,9 +90,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 21,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -114,6 +116,7 @@ local ReportSystemConstants =
 				{ Name = "HousingDecor", Type = "ReportType", EnumValue = 18 },
 				{ Name = "Neighborhood", Type = "ReportType", EnumValue = 19 },
 				{ Name = "NeighborhoodRoster", Type = "ReportType", EnumValue = 20 },
+				{ Name = "HousingBlueprint", Type = "ReportType", EnumValue = 21 },
 			},
 		},
 		{

@@ -392,7 +392,10 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 	local labelIndent = (initializer.data.search and 37) or 37;
 	self.Label:SetPoint("LEFT", labelIndent, 0);
 	self.Label:SetText(bindingName);
-	
+
+	local newTagShown = IsNewSettingInCurrentVersion(action);
+	self.NewFeature:SetShown(newTagShown);
+
 	self.CustomButton = GetOrCreateCustomKeybindingButton(C_KeyBindings.GetCustomBindingType(bindingIndex));
 	if self.CustomButton then
 		CustomBindingManager:SetHandlerRegistered(self.CustomButton, true);

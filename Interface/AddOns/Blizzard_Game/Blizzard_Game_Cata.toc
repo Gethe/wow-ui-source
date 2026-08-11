@@ -1,0 +1,28 @@
+## Title: Blizzard_Game
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameMenuEsc, Blizzard_UIParentUtil
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: cata
+
+Shared\GameEvent.lua
+Shared\EventImplementation.lua
+Shared\EventRouting.lua
+Shared\Game.lua
+Classic\EventImplementation.lua
+Classic\EventRouting.lua
+Classic\Game.lua
+Vanilla\EventImplementation.lua
+Vanilla\EventRouting.lua
+Vanilla\Game.lua
+TBC\EventImplementation.lua
+TBC\EventRouting.lua
+TBC\Game.lua
+Wrath\EventImplementation.lua
+Wrath\EventRouting.lua
+Wrath\Game.lua
+Cata\EventImplementation.lua
+Cata\EventRouting.lua
+Cata\Game.lua
+Startup.lua

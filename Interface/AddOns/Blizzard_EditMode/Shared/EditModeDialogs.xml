@@ -244,8 +244,11 @@
 		<Size x="180" y="28"/>
 	</Button>
 
-	<Button name="EditModeSystemSettingsDialogExtraButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+	<Button name="EditModeSystemSettingsDialogExtraButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate, NewDefinitionsCheckerTemplate" mixin="NewDefinitionsCheckerButtonMixin" virtual="true">
 		<Size x="330" y="28"/>
+		<Frames>
+			<Frame parentKey="NewOptionsFrame" inherits="NewFeatureLabelTemplate" scale="0.8"/>
+		</Frames>
 	</Button>
 
 	<Frame name="EditModeSystemSettingsDialog" inherits="EditModeBaseDialogTemplate, ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">

@@ -46,6 +46,31 @@ local partyHealthPercentInfo = {
 	{percentVal = 10, str = GetUnderPercentOptionString(10)},
 };
 
+local sayCombatStartInfo = {
+	{str = LOC_OPTION_OFF},
+	{str = CAA_SAY_COMBAT_START_TEXT},
+};
+
+local sayCombatEndInfo = {
+	{str = LOC_OPTION_OFF},
+	{str = CAA_SAY_COMBAT_END_TEXT},
+};
+
+local interruptCastInfo = {
+	{str = LOC_OPTION_OFF},
+	{str = CAA_SAY_TARGET_CASTS_INTERRUPT_TEXT},
+};
+
+local whenTargetDiesInfo = {
+	{str = CAA_WHEN_TARGET_DIES_USE_FORMAT},
+	{str = CAA_WHEN_TARGET_DIES_VOICE_TARGET_DEAD},
+};
+
+local interruptCastSuccessInfo = {
+	{str = LOC_OPTION_OFF},
+	{str = CAA_SAY_TARGET_CAST_INTERRUPT_SUCCESS_TEXT},
+};
+
 local sayIfTargetedInfo = {
 	{str = LOC_OPTION_OFF},
 	{str = CAA_SAY_IF_TARGETED_FORMAT_AGGRO},
@@ -172,6 +197,46 @@ end
 
 function CombatAudioAlertUtil.EnumeratePartyHealthPercentInfo()
 	return ipairs(partyHealthPercentInfo);
+end
+
+function CombatAudioAlertUtil.GetSayCombatStartInfo(cvarVal)
+	return sayCombatStartInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateSayCombatStartInfo()
+	return ipairs(sayCombatStartInfo);
+end
+
+function CombatAudioAlertUtil.GetSayCombatEndInfo(cvarVal)
+	return sayCombatEndInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateSayCombatEndInfo()
+	return ipairs(sayCombatEndInfo);
+end
+
+function CombatAudioAlertUtil.GetInterruptCastInfo(cvarVal)
+	return interruptCastInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateInterruptCastInfo()
+	return ipairs(interruptCastInfo);
+end
+
+function CombatAudioAlertUtil.GetWhenTargetDiesInfo(cvarVal)
+	return whenTargetDiesInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumeratetWhenTargetDiesInfo()
+	return ipairs(whenTargetDiesInfo);
+end
+
+function CombatAudioAlertUtil.GetInterruptCastSuccessInfo(cvarVal)
+	return interruptCastSuccessInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateInterruptCastSuccessInfo()
+	return ipairs(interruptCastSuccessInfo);
 end
 
 function CombatAudioAlertUtil.GetSayIfTargetedInfo(cvarVal)

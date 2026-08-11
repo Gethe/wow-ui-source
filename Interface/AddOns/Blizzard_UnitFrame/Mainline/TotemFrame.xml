@@ -54,7 +54,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" inherits="HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" mixin="TotemFrameMixin" hidden="true">
+	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" inherits="HorizontalLayoutFrame, PlayerBottomManagedFrameTemplate" mixin="TotemFrameMixin" hidden="true">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="50" type="number"/>
 			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>

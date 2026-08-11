@@ -1,4 +1,12 @@
+local function RegisterWithPlayerInteractionManager()
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.WorldMap,
+		{
+			frame = "WorldMapFrame",
+			showFunc = nop,
+		});
+end
 
+RegisterWithPlayerInteractionManager();
 
 function WorldMap_IsWorldQuestEffectivelyTracked(questID)
 	-- A world quest is effectively tracked if it's being manually watched or if it's automatically watched and it matches our super-tracked quest.

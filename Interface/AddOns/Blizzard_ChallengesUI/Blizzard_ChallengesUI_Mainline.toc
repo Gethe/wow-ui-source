@@ -1,4 +1,6 @@
 ## Title: Blizzard Challenges UI
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_GameMenuEsc
+Blizzard_ChallengesUI_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_ChallengesUI.xml
 Mainline\Localization.lua

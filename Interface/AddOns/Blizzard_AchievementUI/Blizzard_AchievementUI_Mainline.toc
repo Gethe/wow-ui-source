@@ -3,7 +3,10 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
+## OptionalDeps: Blizzard_Plunderstorm
+## Dependencies: Blizzard_FrameXMLUtil
 ## AllowLoadGameType: mainline
+Blizzard_AchievementUI_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_AchievementUI.lua
 Mainline\Blizzard_AchievementUI.xml
 Mainline\Localization.lua

@@ -108,6 +108,10 @@ function ChatFrameMenuButtonMixin:OnLoad()
 		if not isOnGlueScreen then
 			if not C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
 				local macroButton = rootDescription:CreateButton(MACRO, function()
+					if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+						return;
+					end
+
 					ShowMacroFrame();
 				end);
 				AddSlashInitializer(macroButton, SLASH_MACRO1);

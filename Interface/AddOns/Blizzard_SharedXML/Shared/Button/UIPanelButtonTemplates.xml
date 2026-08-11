@@ -8,8 +8,15 @@
 	</Button>
 
 	<!--A super simple standard button that will widen on load to fit its text if its
-	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
+	localized version is bigger than its current size + padding.  It will never reshrink.-->
 	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="padding" value="40" type="number"/>
+			<!-- 
+			Optional, supplies a max width the button isn't allowed to resize beyond
+			<KeyValue key="maxWidth" value="" type="number"/>
+			-->
+		</KeyValues>
 		<Scripts>
 			<OnLoad function="DynamicResizeButton_Resize" inherit="append"/>
 		</Scripts>

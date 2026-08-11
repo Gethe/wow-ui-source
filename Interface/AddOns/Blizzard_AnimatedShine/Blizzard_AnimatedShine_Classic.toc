@@ -1,0 +1,8 @@
+## Title: Blizzard_AnimatedShine
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## AllowLoad: game
+## AllowLoadGameType: classic
+Shared\AnimatedShine.lua
+Shared\AnimatedShine.xml

@@ -203,4 +203,167 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="RecentAlliesSocialViewTemplate" inherits="SocialUIContactsFrameTemplate" mixin="RecentAlliesSocialViewMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RecentAlliesSocialCardFriendRequestSentDisplayTemplate" mixin="RecentAlliesSocialCardFriendRequestSentDisplayMixin" inherits="UserScaledFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="18" type="number"/>
+			<KeyValue key="baseHeight" value="18" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="icon-clock">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RecentAlliesSocialCardPinDisplayTemplate" mixin="RecentAlliesSocialCardPinDisplayMixin" inherits="UserScaledFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="18" type="number"/>
+			<KeyValue key="baseHeight" value="18" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="friends-icon-pinned" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RecentAlliesCardStateDisplayTemplate" mixin="RecentAlliesCardStateDisplayMixin" inherits="UserScaledFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="38" type="number"/>
+			<KeyValue key="baseHeight" value="18" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.5" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="PinDisplay" inherits="RecentAlliesSocialCardPinDisplayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="FriendRequestSentDisplay" inherits="RecentAlliesSocialCardFriendRequestSentDisplayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="RecentAlliesSocialCardPartyButtonTemplate" inherits="SocialCardActionButtonTemplate" mixin="RecentAlliesSocialCardPartyButtonMixin" virtual="true"/>
+
+	<Button name="RecentAlliesSocialCardTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="RecentAlliesSocialCardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="70" type="number"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.6" type="number"/>
+			
+			<KeyValue key="presenceHolderXOffset" value="3" type="number"/>
+			<KeyValue key="presenceHolderYOffset" value="-4" type="number"/>
+
+			<KeyValue key="textHolderTopLeftXOffset" value="-4" type="number"/>
+			<KeyValue key="textHolderTopLeftYOffset" value="3" type="number"/>
+			<KeyValue key="textHolderRightXOffset" value="-5" type="number"/>
+			<KeyValue key="textHolderBottomYOffset" value="5" type="number"/>
+
+			<!-- For the Name/Level/Class row, which is 3 separate strings on the same line -->
+			<KeyValue key="interStringTextSpacing" value="6" type="number"/>
+
+			<!-- For the secondary text lines which live under the Name/Level/Class row -->
+			<KeyValue key="lineSpacing" value="4" type="number"/>
+			<KeyValue key="secondaryTextIndent" value="1" type="number"/>
+
+			<KeyValue key="stateDisplayXOffset" value="2" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="PresenceHolder" inherits="SocialCardPresenceHolderTemplate">
+				<!-- Anchored dynamically in LayoutScaledContent -->
+			</Frame>
+
+			<Button parentKey="PartyButton" inherits="RecentAlliesSocialCardPartyButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-4"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="TextHolder">
+				<!-- Anchored dynamically in LayoutScaledContent -->
+			</Frame>
+
+			<Frame parentKey="StateDisplay" inherits="RecentAlliesCardStateDisplayTemplate" hidden="true">
+				<!-- Anchored dynamically in LayoutCompactCharacterInfoStrings/LayoutExpandedCharacterInfoStrings -->
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="friends-card-default" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="UserScaledFontHeader" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextHolder"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="UserScaledFontHeader" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="6"/>
+						<Anchor point="TOP" relativeKey="$parent.Name"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Class" inherits="UserScaledFontHeader" justifyH="LEFT" justifyV="MIDDLE" text="" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="6"/>
+						<Anchor point="TOP" relativeKey="$parent.Name"/>
+						<Anchor point="RIGHT" relativeKey="$parent.TextHolder"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MostRecentInteraction" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="1" y="-4"/>
+					</Anchors>
+					<Color color="FRIENDS_GRAY_COLOR"/>
+				</FontString>
+				<FontString parentKey="Location" inherits="UserScaledFontBody" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MostRecentInteraction" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color color="FRIENDS_GRAY_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="friends-card-selected" alphaMode="ADD"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
 </Ui>

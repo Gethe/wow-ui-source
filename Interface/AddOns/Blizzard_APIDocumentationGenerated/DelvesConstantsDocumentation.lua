@@ -5,14 +5,15 @@ local DelvesConstants =
 		{
 			Name = "CompanionConfigSlotTypes",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Role", Type = "CompanionConfigSlotTypes", EnumValue = 0 },
 				{ Name = "Utility", Type = "CompanionConfigSlotTypes", EnumValue = 1 },
 				{ Name = "Combat", Type = "CompanionConfigSlotTypes", EnumValue = 2 },
+				{ Name = "Flavor", Type = "CompanionConfigSlotTypes", EnumValue = 3 },
 			},
 		},
 		{
@@ -41,17 +42,29 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "TieredEntranceTierFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IsLFG", Type = "TieredEntranceTierFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TieredEntranceType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
 				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
 				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "Lairs", Type = "TieredEntranceType", EnumValue = 4 },
 			},
 		},
 		{

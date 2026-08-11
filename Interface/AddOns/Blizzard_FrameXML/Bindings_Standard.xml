@@ -1152,7 +1152,7 @@
 		if ( not showEnemies or not showFriends ) then
 			Settings.SetValue("nameplateShowEnemies", true);
 			Settings.SetValue("nameplateShowFriendlyPlayers", true);
-		if ( Settings.GetValue("nameplateShowAll") ) then
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -1249,10 +1249,14 @@
 	</Binding>
 
 	<Binding name="TOGGLEACHIEVEMENT" ignoreInKioskMode="true" header="BLANK10" category="BINDING_HEADER_INTERFACE">
-		ToggleAchievementFrame();
+		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+			ToggleAchievementFrame();
+		end
 	</Binding>
 	<Binding name="TOGGLESTATISTICS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleAchievementFrame(1);
+		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+			ToggleAchievementFrame(1);
+		end
 	</Binding>
 
 	<Binding name="TOGGLEQUESTLOG" ignoreInKioskMode="true" header="BLANK11" category="BINDING_HEADER_INTERFACE">
@@ -1271,7 +1275,9 @@
 		ToggleMinimap();
 	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleBattlefieldMap();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleBattlefieldMap();
+		end
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		TogglePVPScoreboardOrResults();
@@ -1309,30 +1315,49 @@
 		PVEFrame_ToggleFrame("GroupFinderFrame", nil);
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		TogglePVPUI();
+		if not DISALLOW_FRAME_TOGGLING and not PlayerIsTimerunning() then
+			local canUse = C_LFGInfo.CanPlayerUseGroupFinder();
+			if canUse then
+				TogglePVPUI();
+			end
+		end
 	</Binding>
 
 	<Binding name="TOGGLECOLLECTIONS" ignoreInKioskMode="true" header="BLANK14" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal();
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSTOYBOX" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSWARDROBE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
 	</Binding>
 
 	<Binding name="TOGGLEENCOUNTERJOURNAL" ignoreInKioskMode="true" header="BLANK15" category="BINDING_HEADER_INTERFACE">
-		ToggleEncounterJournal();
+		if not DISALLOW_FRAME_TOGGLING and CanShowEncounterJournal() then
+			ToggleEncounterJournal();
+		end
 	</Binding>
 	<Binding name="TOGGLEGARRISONLANDINGPAGE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		if ( ExpansionLandingPageMinimapButton:IsShown() ) then
@@ -1602,27 +1627,6 @@
 	<Binding name="VEHICLEAIMDECREMENT" category="BINDING_HEADER_VEHICLE">
 		VehicleAimDecrement(0.1);
 	</Binding>
-
-<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
-<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.TogglePingListener(keystate == "down");
-</Binding>
-
-<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Attack);
-</Binding>
-
-<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Warning);
-</Binding>
-
-<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.OnMyWay);
-</Binding>
-
-<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Assist);
-</Binding>
 
 <!-- Housing System keybindings -->
 <Binding name="HOUSING_TOGGLEEDITOR" category="BINDING_HEADER_HOUSING_SYSTEM" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">

@@ -243,6 +243,16 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "HouseFinderIgnoreNeighborhood",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "HouseFinderRequestNeighborhoods",
 			Type = "Function",
 		},
@@ -312,12 +322,30 @@ local HousingUI =
 			},
 		},
 		{
-			Name = "IsInsideOwnHouse",
+			Name = "IsInsideOwnedHouse",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "isInsideOwnHouse", Type = "bool", Nilable = false },
+				{ Name = "isInsideOwnedHouse", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInsideOwnedHouseOrPlot",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInsideOwnedHouseOrPlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInsideOwnedPlot",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInside", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -410,6 +438,18 @@ local HousingUI =
 		{
 			Name = "RequestPlayerCharacterList",
 			Type = "Function",
+		},
+		{
+			Name = "ResetHouse",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Resets all contents of the house, based on the provided scope; API restricted to ensure this can't be triggered without the player getting ample notice and confirmation" },
+
+			Arguments =
+			{
+				{ Name = "resetScope", Type = "HousingHouseScope", Nilable = false },
+			},
 		},
 		{
 			Name = "ReturnAfterVisitingHouse",
@@ -670,6 +710,22 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "HouseResetCompleted",
+			Type = "Event",
+			LiteralName = "HOUSE_RESET_COMPLETED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "HouseResetFailed",
+			Type = "Event",
+			LiteralName = "HOUSE_RESET_FAILED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingMarketAvailabilityUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_MARKET_AVAILABILITY_UPDATED",
@@ -680,6 +736,17 @@ local HousingUI =
 			Type = "Event",
 			LiteralName = "HOUSING_SERVICES_AVAILABILITY_UPDATED",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "IgnoreNeighborhoodResponse",
+			Type = "Event",
+			LiteralName = "IGNORE_NEIGHBORHOOD_RESPONSE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
+			},
 		},
 		{
 			Name = "MoveOutReservationUpdated",

@@ -41,6 +41,15 @@ local SocialRestrictions =
 			},
 		},
 		{
+			Name = "IsFriendsDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMuted",
 			Type = "Function",
 

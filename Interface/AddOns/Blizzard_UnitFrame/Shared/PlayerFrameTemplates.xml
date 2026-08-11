@@ -1,15 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="PlayerFrameBottomManagedFrameTemplate" inherits="UIParentManagedFrameTemplate" virtual="true">
+	<Frame name="PlayerBottomManagedFrameTemplate" inherits="ManagedFrameTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="layoutParent" value="PlayerFrameBottomManagedFramesContainer" type="global"/>
+			<KeyValue key="layoutParent" value="PlayerBottomManagedFrameContainer" type="global"/>
 			<KeyValue key="align" value="center" type="string"/>
 			<KeyValue key="isPlayerFrameBottomManagedFrame" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
-	<Frame name="PlayerFrameManagedContainerTemplate" parent="PlayerFrame" inherits="VerticalLayoutFrame" mixin="UIParentManagedFrameContainerMixin" virtual="true">
+	<Frame name="PlayerManagedContainerTemplate" parent="PlayerFrame" inherits="VerticalLayoutFrame" mixin="ManagedFrameContainerMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="spacing" value="2" type="number"/>
 			<KeyValue key="respectChildScale" value="true" type="boolean"/>

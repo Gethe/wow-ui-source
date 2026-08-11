@@ -679,6 +679,14 @@ do
 		return self.isRadio;
 	end
 
+	function MenuElementDescriptionProxyMixin:SetCheckbox(isCheckbox)
+		self.isCheckbox = isCheckbox;
+	end
+
+	function MenuElementDescriptionProxyMixin:IsCheckbox()
+		return self.isCheckbox;
+	end
+
 	function MenuElementDescriptionProxyMixin:SetIsSelected(isSelected)
 		self.isSelected = isSelected;
 	end
@@ -851,6 +859,10 @@ do
 		self.responder = callback;
 	end
 
+	function MenuElementDescriptionProxyMixin:HasResponder()
+		return self.responder ~= nil;
+	end
+
 	function MenuElementDescriptionProxyMixin:HookResponder(callback)
 		if self.responder then
 			hooksecurefunc(self, "responder", callback);
@@ -905,7 +917,7 @@ do
 		never cause the menu to close.
 		]]--
 		local response = nil;
-		local willRespond = self.responder ~= nil;
+		local willRespond = self:HasResponder();
 		if willRespond then
 			-- Use the default response if it exists. This is supplied by checkbox and radio descriptions.
 			local descriptionResponse = securecallfunction(SecureGetDefaultResponse, self, menuInputContext, menuInputButtonName);
@@ -1791,6 +1803,18 @@ function MenuProxyMixin:SetMenuDescription(descriptionProxy)
 	menu:SetMenuDescription(description);
 end
 
+function MenuProxyMixin:EnumerateElementDescriptions(callback)
+	local menu = Proxies:ToPrivate(self);
+	if not menu.menuDescription then
+		return;
+	end
+
+	for index, elementDescription in menu.menuDescription:EnumerateElementDescriptions() do
+		local descriptionProxy = elementDescription:ToProxy();
+		callback(index, descriptionProxy);
+	end
+end
+
 function MenuProxyMixin:SendResponse(descriptionProxy, response)
 	local menu = Proxies:ToPrivate(self);
 	local description = Proxies:ToPrivate(descriptionProxy);
@@ -2076,7 +2100,7 @@ function MenuManagerMixin:AcquireMenu(params)
 	local menuDescription = params.menuDescription;
 
 	--[[
-	Menus are parented to WorldFrame because UIParent is hidden in certain fullscreen UIs.
+	Menus are parented to WorldFrame because the top-level parent is hidden in certain fullscreen UIs.
 	We apply the scale of the appropriate parent to the menu to get the desired base scale.
 	]]--
 	local proxy = securecallfunction(AcquireMenuFrame, self);

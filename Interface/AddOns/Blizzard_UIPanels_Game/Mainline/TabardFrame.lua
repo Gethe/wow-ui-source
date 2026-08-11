@@ -46,6 +46,19 @@ function TabardFrame_Open()
 	end
 end
 
+local function RegisterWithPlayerInteractionManager()
+	local frameInfo =
+	{
+		frame = "TabardFrame",
+		showFunc = TabardFrame_Open,
+	};
+
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.GuildTabardVendor, frameInfo);
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.PersonalTabardVendor, frameInfo);
+end
+
+RegisterWithPlayerInteractionManager();
+
 function TabardFrame_OnEvent(self, event, ...)
 	if ( event == "TABARD_CANSAVE_CHANGED" or event == "TABARD_SAVE_PENDING" ) then
 		TabardFrame_UpdateButtons();

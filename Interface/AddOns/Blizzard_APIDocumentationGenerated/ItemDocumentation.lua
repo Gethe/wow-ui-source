@@ -151,6 +151,21 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchSpellItemCondition",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matches", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesItemMatchTargetEnchantingSpell",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

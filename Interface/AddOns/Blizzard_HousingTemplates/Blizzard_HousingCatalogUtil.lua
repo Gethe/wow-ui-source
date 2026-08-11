@@ -87,3 +87,33 @@ function Blizzard_HousingCatalogUtil.AddDecorEntryTooltipTitle(tooltip, entryInf
 	local wrap = false;
 	GameTooltip_AddColoredDoubleLine(tooltip, name, placementCost, itemQualityColor, HIGHLIGHT_FONT_COLOR, wrap);
 end
+
+local ContentTrackingAtlasMarkup = CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0);
+function Blizzard_HousingCatalogUtil.AddDecorEntryTooltipTrackingText(tooltip, decorID)
+	if not ContentTrackingUtil.IsContentTrackingEnabled() then
+		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+	elseif C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Decor, decorID) then
+		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, decorID) then
+			GameTooltip_AddColoredLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		else
+			GameTooltip_AddInstructionLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		end
+	else
+		GameTooltip_AddDisabledLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+	end
+end
+
+function Blizzard_HousingCatalogUtil.TrackHousingDecorID(decorID)
+	if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, decorID) then
+		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, decorID, Enum.ContentTrackingStopType.Manual);
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_STOP_TRACKING);
+	else
+		local error = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, decorID);
+		if error then
+			ContentTrackingUtil.DisplayTrackingError(error);
+		else 
+			PlaySound(SOUNDKIT.CONTENT_TRACKING_START_TRACKING);
+			PlaySound(SOUNDKIT.CONTENT_TRACKING_OBJECTIVE_TRACKING_START);
+		end
+	end
+end

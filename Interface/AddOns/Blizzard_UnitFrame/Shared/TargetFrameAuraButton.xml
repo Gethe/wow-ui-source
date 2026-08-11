@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<ScopedModifier useForbiddenObjectTable="true">
+		<AuraButton name="TargetFrameAuraButtonTemplate" virtual="true">
+			<Mixins>
+				<Mixin key="TargetFrameAuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="TargetFrameAuraButtonPrivateMixin" source="secure"/>
+			</Mixins>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Icon" setAllPoints="true"/>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="1"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" useParentLevel="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</Cooldown>
+			</Frames>
+			<Scripts>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</AuraButton>
+
+		<AuraButton name="TargetFrameBuffButtonTemplate" inherits="TargetFrameAuraButtonTemplate" virtual="true">
+			<Mixins>
+				<Mixin key="TargetFrameBuffButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="TargetFrameBuffButtonPrivateMixin" source="secure"/>
+			</Mixins>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="StealableBorder" file="Interface\TargetingFrame\UI-TargetingFrame-Stealable" hidden="true" alphaMode="ADD">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		</AuraButton>
+
+		<AuraButton name="TargetFrameDebuffButtonTemplate" inherits="TargetFrameAuraButtonTemplate" virtual="true">
+			<Mixins>
+				<Mixin key="TargetFrameDebuffButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="TargetFrameDebuffButtonPrivateMixin" source="secure"/>
+			</Mixins>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="DispelBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-1" y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+						</Anchors>
+						<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+					</Texture>
+				</Layer>
+			</Layers>
+		</AuraButton>
+	</ScopedModifier>
+
+	<ScopedModifier hideFromGlobalEnv="true" forbidden="true">
+		<AuraButton name="ForbiddenTargetFrameAuraButtonTemplate" inherits="TargetFrameAuraButtonTemplate" virtual="true"/>
+		<AuraButton name="ForbiddenTargetFrameBuffButtonTemplate" inherits="TargetFrameBuffButtonTemplate" virtual="true"/>
+		<AuraButton name="ForbiddenTargetFrameDebuffButtonTemplate" inherits="TargetFrameDebuffButtonTemplate" virtual="true"/>
+	</ScopedModifier>
+</Ui>

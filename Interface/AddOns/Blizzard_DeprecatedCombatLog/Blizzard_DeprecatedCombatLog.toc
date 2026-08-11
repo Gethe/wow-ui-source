@@ -3,5 +3,6 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 0
+## Dependencies: Blizzard_CombatLogBase
 
 Deprecated_CombatLog.lua

@@ -6,7 +6,7 @@
 			<KeyValue key="layoutType" value="GMChatRequest" type="string"/>
 		</KeyValues>
 		<Size x="290" y="72"/>
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+		<!-- This frame gets positioned in StatusTrayManager.UpdateTrayAndBuffFrameLayout() -->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleText" inherits="Game11Font" justifyH="LEFT">

@@ -10,7 +10,7 @@ local errorStrings =
 HousingCreateNeighborhoodMixin = {}
 
 function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnLoad()
-	self.NeighborhoodNameEditBox:SetMaxLetters(50);
+	self.NeighborhoodNameEditBox:SetMaxLetters(Constants.HousingConsts.NeighborhoodNameMaxCharacters);
 end
 
 function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnEvent(event, ...)

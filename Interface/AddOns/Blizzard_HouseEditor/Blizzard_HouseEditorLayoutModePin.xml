@@ -35,7 +35,7 @@
 					</Texture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<Texture parentKey="HoverIcon" setAllPoints="true" alphaMode="ADD" alpha="0.4" hidden="true">
+					<Texture parentKey="HoverIcon" alphaMode="ADD" alpha="0.4" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
@@ -291,11 +291,18 @@
 								<KeyValue key="layoutIndex" value="3" type="number"/>
 							</KeyValues>
 						</Button>
+						<Button parentKey="ExportButton" inherits="HousingLayoutRoomOptionTemplate">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="common-icons-blueprints" type="string"/>
+								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_EXPORT_ROOM_TOOLTIP" type="global"/>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+						</Button>
 						<Button parentKey="RemoveButton" inherits="HousingLayoutRoomOptionTemplate">
 							<KeyValues>
 								<KeyValue key="iconAtlas" value="common-icon-delete" type="string"/>
 								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_REMOVE_ROOM_TOOLTIP" type="global"/>
-								<KeyValue key="layoutIndex" value="4" type="number"/>
+								<KeyValue key="layoutIndex" value="5" type="number"/>
 							</KeyValues>
 						</Button>
 					</Frames>

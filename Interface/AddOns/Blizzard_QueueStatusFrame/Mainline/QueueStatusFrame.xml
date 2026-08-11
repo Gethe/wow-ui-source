@@ -15,12 +15,15 @@
 	</Frame>
 	<Frame name="QueueStatusEntryTemplate" virtual="true">
 		<Size x="275" y="150"/> <!--Height changed dynamically-->
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
-					<Size x="260" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">

@@ -2056,7 +2056,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="EncounterIcon" virtual="true">
+			<Frame parentKey="EncounterIcon">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-8"/>

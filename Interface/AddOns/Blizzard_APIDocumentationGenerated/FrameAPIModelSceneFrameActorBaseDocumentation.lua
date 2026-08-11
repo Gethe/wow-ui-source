@@ -31,6 +31,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "GetAlpha",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -328,6 +329,7 @@ local FrameAPIModelSceneFrameActorBase =
 		{
 			Name = "SetAlpha",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

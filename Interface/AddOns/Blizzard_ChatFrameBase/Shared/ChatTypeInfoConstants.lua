@@ -6,6 +6,7 @@ ChatTypeInfo["PARTY"]									= { sticky = 1, flashTab = false, flashTabOnGenera
 ChatTypeInfo["RAID"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["GUILD_DISCORD"]							= { sticky = 1, flashTab = true,  flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["YELL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["WHISPER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = true, ignoreChatTypeProcessing = false };
 ChatTypeInfo["SMART_WHISPER"]							= CopyTable(ChatTypeInfo["WHISPER"]);
@@ -148,6 +149,10 @@ ChatTypeGroup["GUILD"] = {
 
 ChatTypeGroup["OFFICER"] = {
 	"CHAT_MSG_OFFICER",
+};
+
+ChatTypeGroup["GUILD_DISCORD"] = { 
+	"CHAT_MSG_GUILD_DISCORD",
 };
 
 ChatTypeGroup["MONSTER_SAY"] = {

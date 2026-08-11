@@ -1,0 +1,66 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingBlueprintBaseFrameTemplate" mixin="HousingBlueprintBaseFrameMixin" enableMouse="true" virtual="true">
+		<KeyValues>
+			<!-- Expected values -->
+			<!-- <KeyValue key="headerText" value="" type="global"/> -->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="housing-basic-container" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Header" atlas="housing-basic-container-woodheader" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="FullscreenInputBlocker" frameLevel="1" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.25"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+				</KeyValues>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="BaseOnLoad"/>
+			<OnShow method="BaseOnShow"/>
+			<OnHide method="BaseOnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -283,8 +283,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -303,11 +304,13 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 8,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 26,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -342,8 +345,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -373,6 +377,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
 			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
 			[Enum.EditModeMinimapSetting.Size] = 5,
+			[Enum.EditModeMinimapSetting.IconScale] = 5,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -874,6 +879,31 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.RaidWarning] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -182,
+		},
+	},
+
+	[Enum.EditModeSystem.LossOfControl] = {
+		settings = {
+			[Enum.EditModeLossOfControlSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
 };
 
 EDIT_MODE_CLASSIC_SYSTEM_MAP =
@@ -1155,8 +1185,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1178,8 +1209,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1214,8 +1246,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.DebuffIconSize] = 5,
 				[Enum.EditModeUnitFrameSetting.BigDefensiveIconSize] = 5,
+				[Enum.EditModeUnitFrameSetting.BuffIconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -1245,6 +1278,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
 			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
 			[Enum.EditModeMinimapSetting.Size] = 5,
+			[Enum.EditModeMinimapSetting.IconScale] = 5,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -1530,4 +1564,8 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.EncounterEvents] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.EncounterEvents];
 
 	[Enum.EditModeSystem.DamageMeter] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.DamageMeter];
+
+	[Enum.EditModeSystem.RaidWarning] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.RaidWarning];
+
+	[Enum.EditModeSystem.LossOfControl] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.LossOfControl];
 };

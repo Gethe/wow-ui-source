@@ -8,6 +8,22 @@ local HousingDecorUI =
 	Functions =
 	{
 		{
+			Name = "AnyDecorPlacedInRoom",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if any decor objects are placed in a given room" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
 			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unsaved changes and deselect the active target" },
@@ -26,6 +42,17 @@ local HousingDecorUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetAllMaxPlacementBudgets",
+			Type = "Function",
+			Documentation = { "Returns the interior and exterior max decor placement budgets for the current owned house interior or plot; Can be increased via house level" },
+
+			Returns =
+			{
+				{ Name = "interiorMaxBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to max budget amount; Will be nil if not in an owned House or Plot" } },
+				{ Name = "exteriorMaxBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to max budget amount; Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
 			Name = "GetAllPlacedDecor",
 			Type = "Function",
 			HasRestrictions = true,
@@ -34,6 +61,48 @@ local HousingDecorUI =
 			Returns =
 			{
 				{ Name = "placedDecor", Type = "table", InnerType = "HousingDecorInstanceListEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllSpentPlacementBudgets",
+			Type = "Function",
+			Documentation = { "Returns how much of the interior and exterior placement budgets for the current owned house interior or plot's decor budget have been spent" },
+
+			Returns =
+			{
+				{ Name = "interiorSpentBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to spent budget amount; Will be nil if not in an owned House or Plot" } },
+				{ Name = "exteriorSpentBudgets", Type = "table", InnerType = "number", KeyType = "HousingBudgetType", Nilable = true, Documentation = { "Map of budget type to spent budget amount; Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
+			Name = "GetDecorAssignedPetName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns pet name for the placed decor instance associated with the passed Decor GUID, if there is one" },
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDecorCanAttachPet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canAttachPet", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -111,13 +180,23 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "GetMaxPlacementBudget",
+			Name = "GetMaxPetPlacementBudget",
 			Type = "Function",
-			Documentation = { "Returns the max decor placement budget for the current house interior or plot; Can be increased via house level" },
+			Documentation = { "Returns the max pet decor placement budget for the current owned house interior or plot" },
 
 			Returns =
 			{
-				{ Name = "maxBudget", Type = "number", Nilable = false },
+				{ Name = "maxBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
+			Name = "GetMaxPlacementBudget",
+			Type = "Function",
+			Documentation = { "Returns the max decor placement budget for the current owned house interior or plot; Can be increased via house level" },
+
+			Returns =
+			{
+				{ Name = "maxBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
 			},
 		},
 		{
@@ -150,13 +229,23 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "GetSpentPlacementBudget",
+			Name = "GetSpentPetPlacementBudget",
 			Type = "Function",
-			Documentation = { "Returns how much of the current house interior or plot's decor placement budget has been spent; Different kinds of decor take up different budget amounts, so this value isn't an individual decor count, see GetNumDecorPlaced for that" },
+			Documentation = { "Returns how much of the current owned house interior or plot's pet decor placement budget has been spent" },
 
 			Returns =
 			{
-				{ Name = "totalCost", Type = "number", Nilable = false },
+				{ Name = "totalCost", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
+			},
+		},
+		{
+			Name = "GetSpentPlacementBudget",
+			Type = "Function",
+			Documentation = { "Returns how much of the current owned house interior or plot's decor placement budget has been spent; Different kinds of decor take up different budget amounts, so this value isn't an individual decor count, see GetNumDecorPlaced for that" },
+
+			Returns =
+			{
+				{ Name = "totalCost", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
 			},
 		},
 		{
@@ -387,6 +476,16 @@ local HousingDecorUI =
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingNewDecorPlaceComplete",
+			Type = "Event",
+			LiteralName = "HOUSING_NEW_DECOR_PLACE_COMPLETE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

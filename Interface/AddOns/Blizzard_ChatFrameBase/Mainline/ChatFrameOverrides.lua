@@ -155,6 +155,14 @@ function ChatFrameMixin:ConfigEventHandler(event, ...)
 					self:UpdateColorByID(info.id, info.r, info.g, info.b);
 				end
 			end
+		else
+			info = ChatAdditionalColors[strupper(arg1)];
+			if (info) then
+				info.r = arg2;
+				info.g = arg3;
+				info.b = arg4;
+				self:UpdateColorByID(info.id, info.r, info.g, info.b);
+			end
 		end
 		return true;
 	elseif ( event == "UPDATE_CHAT_COLOR_NAME_BY_CLASS" ) then
@@ -274,7 +282,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 		local hyperlinkLineID, confirmNumber = ...;
 		ChatFrameUtil.HandleCautionaryChatMessage(hyperlinkLineID, confirmNumber);
 	elseif ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
 		if (arg16) then
 			-- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
 			return true;
@@ -282,6 +290,9 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
+
+		local discordInfo = arg18;
+		local isFromDiscord = discordInfo.userID and discordInfo.userID ~= 0;
 
 		--If it was a GM whisper, dispatch it to the GMChat addon.
 		if arg6 == "GM" and type == "WHISPER" then
@@ -296,7 +307,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 			return true;
 		end
 
-		local coloredName = ChatFrameUtil.GetDecoratedSenderName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+		local coloredName = ChatFrameUtil.GetDecoratedSenderName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, discordInfo);
 
 		local channelLength = strlen(arg4);
 		local infoType = type;
@@ -396,13 +407,16 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif (type == "PING") then
+			-- arg2 is formatted natively for pings, containing potientially role text
+			local outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type), arg2);
+			
 			--Add Timestamps
 			local chatTimestampFmt = ChatFrameUtil.GetTimestampFormat();
-			local outMsg = arg1;
 			if ( chatTimestampFmt ) then
-				outMsg = BetterDate(chatTimestampFmt, time())..outMsg;
+				outMsg = TimeUtil.BetterDate(chatTimestampFmt, time())..outMsg;
 			end
 
+			outMsg = outMsg..arg1;
 			self:AddMessage(outMsg, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
@@ -577,6 +591,8 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 				else
 					if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
 						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
+					elseif ( (type == "GUILD_DISCORD" or type == "GUILD") and isFromDiscord ) then
+						playerLink = GetDiscordUserLink(playerLinkDisplayText, bnetIDAccount, discordInfo.userID, lineID, chatGroup, chatTarget);
 					else
 						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
 						local senderGUID = arg12;
@@ -590,6 +606,10 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 				-- isMobile
 				if arg14 then
 					message = ChatFrameUtil.GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
+				end
+
+				if isFromDiscord then
+					message = ChatFrameUtil.FormatDiscordMessage(discordInfo, message);
 				end
 
 				local outMsg;
@@ -614,6 +634,8 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
 						elseif (type == "GUILD_ITEM_LOOTED") then
 							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+						elseif (type == "GUILD_DISCORD" and isFromDiscord) then
+							outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..message, pflag.." "..playerLink);
 						else
 							outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..message, pflag..playerLink);
 						end
@@ -628,7 +650,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 				--Add Timestamps
 				local chatTimestampFmt = ChatFrameUtil.GetTimestampFormat();
 				if ( chatTimestampFmt ) then
-					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
+					outMsg = TimeUtil.BetterDate(chatTimestampFmt, msgTime)..outMsg;
 				end
 
 				return outMsg;

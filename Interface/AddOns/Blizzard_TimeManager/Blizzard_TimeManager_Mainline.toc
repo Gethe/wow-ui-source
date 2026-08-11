@@ -1,9 +1,12 @@
 ## Title: Blizzard Time Manager
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_FrameXMLUtil, Blizzard_RaidWarning, Blizzard_GameMenuEsc
+## OptionalDeps: Blizzard_Plunderstorm
 ## SavedVariablesPerCharacter: BlizzardStopwatchOptions
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Blizzard_TimeManager_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_TimeManager.lua
 Mainline\Blizzard_TimeManager.xml
 Mainline\Localization.lua

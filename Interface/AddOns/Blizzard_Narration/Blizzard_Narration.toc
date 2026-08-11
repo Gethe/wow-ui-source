@@ -1,0 +1,15 @@
+## Title: Blizzard_Narration
+## AllowLoad: both
+## Dependencies: Blizzard_SharedXMLBase
+
+Blizzard_NarrationUtil.lua
+Blizzard_NarrationEditBox.lua
+Blizzard_NarrationSlider.lua
+Blizzard_NarrationHTML.lua
+
+## We only want a single copy of the mouse narration source.
+## Nothing in Blizzard_NarrationSourceMouse.lua should be referenced outside
+## of it so we skip loading it in the secure environment.
+Blizzard_NarrationSourceMouse.lua [AllowLoadEnvironment global]
+
+Blizzard_NarrationManager.lua

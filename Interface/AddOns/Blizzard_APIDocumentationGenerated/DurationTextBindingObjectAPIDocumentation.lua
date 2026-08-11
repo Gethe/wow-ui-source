@@ -2,10 +2,22 @@ local DurationTextBindingObjectAPI =
 {
 	Name = "DurationTextBindingObjectAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "Assign",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Copies another duration text binding and assigns it to this one." },
+
+			Arguments =
+			{
+				{ Name = "other", Type = "DurationTextBinding", Nilable = false },
+			},
+		},
 		{
 			Name = "CanFormatText",
 			Type = "Function",
@@ -32,6 +44,30 @@ local DurationTextBindingObjectAPI =
 			Returns =
 			{
 				{ Name = "canUpdateText", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearTextColorCurve",
+			Type = "Function",
+			Documentation = { "Clears the text color curve used by this binding." },
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "Copy",
+			Type = "Function",
+			ReturnsNeverSecret = true,
+			Documentation = { "Returns a copy of this duration text binding." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "copy", Type = "DurationTextBinding", Nilable = false },
 			},
 		},
 		{
@@ -106,6 +142,37 @@ local DurationTextBindingObjectAPI =
 			Returns =
 			{
 				{ Name = "text", Type = "string", Nilable = false, ConditionalSecret = true },
+			},
+		},
+		{
+			Name = "GetFormattedTextColor",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the text color that would currently be assigned to the configured font string." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false, ConditionalSecret = true },
+			},
+		},
+		{
+			Name = "GetTextColorCurve",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the text color curve used by this binding." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "curve", Type = "LuaColorCurveObject", Nilable = false },
+				{ Name = "property", Type = "DurationTextBindingProperty", Nilable = false },
 			},
 		},
 		{
@@ -235,6 +302,18 @@ local DurationTextBindingObjectAPI =
 			},
 		},
 		{
+			Name = "SetTextColorCurve",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Configures this duration text binding to adjust fontstring text color by evaluating a duration property through a curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaColorCurveObject", Nilable = false },
+				{ Name = "property", Type = "DurationTextBindingProperty", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTextFormat",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -242,7 +321,7 @@ local DurationTextBindingObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "format", Type = "string", Nilable = false },
+				{ Name = "formatString", Type = "stringView", Nilable = false },
 				{ Name = "components", Type = "table", InnerType = "DurationTextBindingFormatComponent", Nilable = false },
 			},
 		},

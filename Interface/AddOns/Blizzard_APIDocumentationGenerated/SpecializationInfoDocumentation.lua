@@ -94,6 +94,22 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetInspectSpecialization",
+			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumSpecializationsForClassID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

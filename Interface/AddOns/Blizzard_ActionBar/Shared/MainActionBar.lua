@@ -1,4 +1,4 @@
-MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by UIParent_ManageFramePositions. It's not the art's full size, don't care about the gryphon's tail.
+MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by ManageFramePositions. It's not the art's full size, don't care about the gryphon's tail.
 
 MainActionBarMixin = {};
 

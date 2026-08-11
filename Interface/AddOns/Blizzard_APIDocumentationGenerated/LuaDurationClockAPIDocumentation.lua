@@ -2,6 +2,7 @@ local LuaDurationClockAPI =
 {
 	Name = "LuaDurationClockObjectAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

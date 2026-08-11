@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier useForbiddenObjectTable="true">
+		<AuraContainer name="TargetFrameAuraContainerTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="maxBuffs" value="TargetFrameAuraContainerDefaults.MaxBuffs" type="global"/>
+				<KeyValue key="maxDebuffs" value="TargetFrameAuraContainerDefaults.MaxDebuffs" type="global"/>
+
+				<KeyValue key="buffFilterString" value="TargetFrameAuraContainerDefaults.BuffFilterString" type="global"/>
+				<KeyValue key="debuffFilterString" value="TargetFrameAuraContainerDefaults.DebuffFilterString" type="global"/>
+
+				<KeyValue key="smallAuraSize" value="TargetFrameAuraContainerDefaults.SmallAuraSize" type="global"/>
+				<KeyValue key="largeAuraSize" value="TargetFrameAuraContainerDefaults.LargeAuraSize" type="global"/>
+
+				<KeyValue key="flowLayoutElementSpacing" value="TargetFrameAuraContainerDefaults.FlowLayoutElementSpacing" type="global"/>
+				<KeyValue key="flowLayoutLineSize" value="TargetFrameAuraContainerDefaults.FlowLayoutLineSize" type="global"/>
+				<KeyValue key="flowLayoutLineSpacing" value="TargetFrameAuraContainerDefaults.FlowLayoutLineSpacing" type="global"/>
+				<KeyValue key="flowLayoutPaddingBottom" value="TargetFrameAuraContainerDefaults.FlowLayoutPaddingBottom" type="global"/>
+				<KeyValue key="flowLayoutPaddingLeft" value="TargetFrameAuraContainerDefaults.FlowLayoutPaddingLeft" type="global"/>
+				<KeyValue key="flowLayoutPaddingRight" value="TargetFrameAuraContainerDefaults.FlowLayoutPaddingRight" type="global"/>
+				<KeyValue key="flowLayoutPaddingTop" value="TargetFrameAuraContainerDefaults.FlowLayoutPaddingTop" type="global"/>
+
+				<KeyValue key="constrainedFlowLayoutLineSize" value="TargetFrameAuraContainerDefaults.ConstrainedFlowLayoutLineSize" type="global"/>
+				<KeyValue key="numConstrainedFlowLayoutLines" value="TargetFrameAuraContainerDefaults.NumConstrainedFlowLayoutLines" type="global"/>
+
+				<KeyValue key="showAuraCount" value="TargetFrameAuraContainerDefaults.ShowAuraCount" type="global"/>
+			</KeyValues>
+			<Mixins>
+				<Mixin key="TargetFrameAuraContainerInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="TargetFrameAuraContainerPrivateMixin" source="secure"/>
+			</Mixins>
+			<ForbiddenAspects>
+				<!-- This container resizes itself based on present auras. -->
+				<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
+			</ForbiddenAspects>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnUpdate method="OnUpdate"/>
+			</Scripts>
+		</AuraContainer>
+	</ScopedModifier>
+</Ui>

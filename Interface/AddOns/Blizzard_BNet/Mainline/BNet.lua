@@ -99,15 +99,19 @@ function BNToastMixin:OnClick()
 	self:Hide(); -- will trigger next toast
 
 	if toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_PENDING_INVITES then
-		if not FriendsFrame:IsShown() then
-			ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
-		end
+		if SocialUIControl and SocialUIControl.IsEnabled() then
+			SocialUIControl.OpenToTab(SocialUITabType.FriendRequests);
+		else
+			if not FriendsFrame:IsShown() then
+				ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
+			end
 
-		if GetCVarBool("friendInvitesCollapsed") then
-			FriendsListFrame_ToggleInvites();
-		end
+			if GetCVarBool("friendInvitesCollapsed") then
+				FriendsListFrame_ToggleInvites();
+			end
 
-		FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
+			FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
+		end
 	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
 		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
 		if accountInfo then --This player may have been removed from our friends list, so we may not have a name.

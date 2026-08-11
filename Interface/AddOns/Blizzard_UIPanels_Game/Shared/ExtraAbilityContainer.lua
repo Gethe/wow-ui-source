@@ -12,11 +12,11 @@ end
 
 function ExtraAbilityContainerMixin:OnShow()
 	LayoutMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self);
+	ManagedFrameMixin.OnShow(self);
 end
 
 function ExtraAbilityContainerMixin:OnHide()
-	UIParentManagedFrameMixin.OnHide(self);
+	ManagedFrameMixin.OnHide(self);
 end
 
 local function SortFramePairs(lhsFramePair, rhsFramePair)

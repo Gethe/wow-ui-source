@@ -143,7 +143,7 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 	elseif (button == "LeftButton" and IsControlKeyDown()) then
 		local achievementID = GetGuildRewardInfo(self.index);
 		if(achievementID and achievementID > 0) then
-			OpenAchievementFrameToAchievement(achievementID);
+			ShowAchievementFrameForAchievement(achievementID);
 		end
 	elseif ( button == "RightButton" ) then
 		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
@@ -158,7 +158,7 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 
 			if achievementID and achievementID > 0 then
 				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
-					OpenAchievementFrameToAchievement(achievementID);
+					ShowAchievementFrameForAchievement(achievementID);
 				end);
 			end
 		end);

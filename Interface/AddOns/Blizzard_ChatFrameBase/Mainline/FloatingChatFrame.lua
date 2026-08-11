@@ -83,6 +83,10 @@ end
 
 FloatingChatFrameMixin = CreateFromMixins(ChatFrameMixin);
 
+EventRegistry:RegisterForOnUpdate(FloatingChatFrameMixin, function(_, elapsed)
+	FCF_OnUpdate(elapsed);
+end);
+
 function FloatingChatFrameMixin:OnLoad()
 	--IMPORTANT NOTE: This function isn't run by ChatFrame1.
 	ChatFrameMixin.OnLoad(self);
@@ -98,13 +102,12 @@ function FloatingChatFrameMixin:OnLoad()
 	chatTab.mouseOverAlpha = CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA;
 	chatTab.noMouseAlpha = CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA;
 
-	if FRAMELOCK_STATES then
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName()] = "hidden";
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName().."Editbox"] = "hidden";
-		FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[chatTab:GetName()] = "hidden";
-		UpdateFrameLock(self);
-		UpdateFrameLock(chatTab);
+	self:SetRolesets("chat");
+	local editbox = _G[self:GetName().."Editbox"];
+	if editbox then
+		editbox:SetRolesets("chat");
 	end
+	chatTab:SetRolesets("chat");
 
 	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
 	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollToBottomButton, "TOPLEFT", 0, 2);
@@ -1049,11 +1052,12 @@ end
 
 function FCF_FadeInChatFrame(chatFrame)
 	local frameName = chatFrame:GetName();
+	local oldAlpha = chatFrame.oldAlpha or DEFAULT_CHATFRAME_ALPHA;
 	chatFrame.hasBeenFaded = true;
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
 		local object = _G[frameName..value];
 		if ( object:IsShown() ) then
-			UIFrameFadeIn(object, CHAT_FRAME_FADE_TIME, object:GetAlpha(), max(chatFrame.oldAlpha, DEFAULT_CHATFRAME_ALPHA));
+			UIFrameFadeIn(object, CHAT_FRAME_FADE_TIME, object:GetAlpha(), max(oldAlpha, DEFAULT_CHATFRAME_ALPHA));
 		end
 	end
 	if ( chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ) then
@@ -1080,12 +1084,13 @@ end
 
 function FCF_FadeOutChatFrame(chatFrame)
 	local frameName = chatFrame:GetName();
+	local oldAlpha = chatFrame.oldAlpha or DEFAULT_CHATFRAME_ALPHA;
 	chatFrame.hasBeenFaded = nil;
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
 		-- Fade out chat frame
 		local object = _G[frameName..value];
 		if ( object:IsShown() ) then
-			UIFrameFadeOut(object, CHAT_FRAME_FADE_OUT_TIME, max(object:GetAlpha(), chatFrame.oldAlpha), chatFrame.oldAlpha);
+			UIFrameFadeOut(object, CHAT_FRAME_FADE_OUT_TIME, max(object:GetAlpha(), oldAlpha), oldAlpha);
 		end
 	end
 	if ( chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ) then
@@ -1131,7 +1136,7 @@ function FCF_OnUpdate(elapsed)
 				end
 			--Things that will cause the frame to fade in if the mouse is stationary.
 			elseif (chatFrame:IsMouseOver(topOffset, -2, -2, 2) or	--This should be slightly larger than the hit rect insets to give us some wiggle room.
-				(chatFrame.isDocked and QuickJoinToastButton:IsMouseOver()) or
+				(chatFrame.isDocked and (QuickJoinToastButton and QuickJoinToastButton:IsMouseOver())) or
 				(chatFrame.ScrollBar and (chatFrame.ScrollBar:IsThumbMouseDown() or chatFrame.ScrollBar:IsMouseOver())) or
 				(chatFrame.ScrollToBottomButton and chatFrame.ScrollToBottomButton:IsMouseOver()) or
 				(chatFrame.buttonFrame:IsMouseOver())) then
@@ -2280,16 +2285,6 @@ function FCFDockScrollFrame_JumpToTab(scrollFrame, leftTab)
 end
 
 --Dock list related functions
-function FCFDockOverflow_CloseLists()
-	local list = GENERAL_CHAT_DOCK.overflowButton.list;
-	if ( list:IsShown() ) then
-		list:Hide();
-		return true;
-	else
-		return false;
-	end
-end
-
 function FCFDockOverflowButton_UpdatePulseState(self)
 	local dock = self:GetParent();
 	local shouldPulse = false;

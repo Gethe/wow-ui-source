@@ -269,27 +269,29 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		end
 		
 		-- Add "Add Friend" option
-		local alreadyIsFriend = C_FriendList.IsFriend(self.order.crafterGuid);
-		local canAddFriend = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend;
-		if canAddFriend then
-			rootDescription:CreateButton(ADD_CHARACTER_FRIEND, function()
-				local professionName = C_TradeSkillUI.GetProfessionNameForSkillLineAbility(self.order.skillLineAbilityID);
-				local friendNote = CRAFTER_ORDER_FRIEND_NOTE_FMT:format(professionName, self.transaction:GetRecipeSchematic().name);
-				C_FriendList.AddFriend(self.order.crafterName, friendNote);
-			end);
-		else
-			local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
-			button:SetEnabled(false);
-			button:SetTooltip(function(tooltip, elementDescription)
-				if alreadyIsFriend then
-					GameTooltip_AddNormalLine(tooltip, ALREADY_FRIEND_FMT:format(self.order.crafterName));
-				elseif whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_OFFLINE);
-				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
-					-- CanWhisperGuild means we can whisper the player despite them being cross-faction because they are in our guild
-					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION);
-				end
-			end);
+		if C_FriendList.IsLegacyFriendSystemEnabled() then
+			local alreadyIsFriend = C_FriendList.IsFriend(self.order.crafterGuid);
+			local canAddFriend = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend;
+			if canAddFriend then
+				rootDescription:CreateButton(ADD_CHARACTER_FRIEND, function()
+					local professionName = C_TradeSkillUI.GetProfessionNameForSkillLineAbility(self.order.skillLineAbilityID);
+					local friendNote = CRAFTER_ORDER_FRIEND_NOTE_FMT:format(professionName, self.transaction:GetRecipeSchematic().name);
+					C_FriendList.AddFriend(self.order.crafterName, friendNote);
+				end);
+			else
+				local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
+				button:SetEnabled(false);
+				button:SetTooltip(function(tooltip, elementDescription)
+					if alreadyIsFriend then
+						GameTooltip_AddNormalLine(tooltip, ALREADY_FRIEND_FMT:format(self.order.crafterName));
+					elseif whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
+						GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_OFFLINE);
+					elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
+						-- CanWhisperGuild means we can whisper the player despite them being cross-faction because they are in our guild
+						GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION);
+					end
+				end);
+			end
 		end
 		
 		-- Add ignore option

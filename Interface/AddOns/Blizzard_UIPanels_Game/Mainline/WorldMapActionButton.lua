@@ -100,7 +100,8 @@ function WorldMapActionButtonMixin:Refresh()
 
 	self:UpdateCooldown();
 
-	self:GetParent():SetOverlayFrameLocation(self, self:GetDisplayLocation());
+	self.displayLocation = self:GetDisplayLocation();
+	self:GetParent():SetOverlayFrameLocation(self, self.displayLocation);
 
 	self:Show();
 end

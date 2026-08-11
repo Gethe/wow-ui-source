@@ -1,6 +1,17 @@
 
 BlizzardStopwatchOptions = BlizzardStopwatchOptions or nil;
 
+local function TimeManagerFrame_EscapePressed()
+	if TimeManagerFrame:IsShown() then
+		TimeManagerFrameCloseButton:Click();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, TimeManagerFrame_EscapePressed);
+
 -- speed optimizations (mostly so update functions are faster)
 local _G = getfenv(0);
 local date = _G.date;
@@ -424,6 +435,12 @@ function TimeManager_CheckAlarm(elapsed)
 	end
 end
 
+EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
+	if TimeManagerClockButton and not TimeManagerClockButton:IsVisible() and TimeManager_ShouldCheckAlarm() then
+		TimeManager_CheckAlarm(elapsed);
+	end
+end);
+
 function TimeManager_FireAlarmWarning()
 	TimeManagerClockButton.checkAlarmWarning = false;
 
@@ -438,7 +455,7 @@ function TimeManager_FireAlarm()
 	if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage, info.r, info.g, info.b, info.id);
-		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
+		RaidWarningUtil.AddMessage(Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
 	end
 	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_2);
 	UIFrameFlash(TimeManagerAlarmFiredTexture, 0.5, 0.5, -1);
@@ -659,6 +676,12 @@ function StopwatchTicker_Update()
 	StopwatchTickerMinute:SetFormattedText(STOPWATCH_TIME_UNIT, minute);
 	StopwatchTickerSecond:SetFormattedText(STOPWATCH_TIME_UNIT, second);
 end
+
+EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
+	if not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() then
+		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
+	end
+end);
 
 function StopwatchResetButton_OnClick()
 	Stopwatch_Clear();

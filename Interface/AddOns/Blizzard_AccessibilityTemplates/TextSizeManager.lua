@@ -4,15 +4,15 @@ function TextSizeManagerBase:Init()
 	self.registeredObjects = {};
 	self.defaultScaleWeight = 0.5;
 
-	self:SetCVarName("userFontScale");
+	self:SetCVarNames("userFontScale", "userFontScaleGlue");
 	self:SetMinimumScale(0.8);
 	self:BuildFonts();
-	
+
 	local function CVarChangedCB(cvar, value)
 		self:UpdateFonts(value);
 	end
 
-	CVarCallbackRegistry:RegisterCallback(self:GetCVarName(), CVarChangedCB);
+	CVarCallbackRegistry:RegisterCallback(self:GetReadCVarName(), CVarChangedCB);
 	EventUtil.ContinueAfterAllEvents(function() self:UpdateFonts() end, self:GetInitialUpdateEvents());
 end
 
@@ -20,7 +20,7 @@ function TextSizeManagerBase:BuildFonts()
 	self.fonts = {};
 
 	local fontObjectNames = GetFonts();
-	
+
 	for index, fontObjectName in ipairs(fontObjectNames) do
 		local info = GetFontInfo(fontObjectName);
 		if info and info.canBeUserScaled then
@@ -82,20 +82,30 @@ function TextSizeManagerBase:SetMinimumScale(scale)
 	self.minScale = math.max(scale or 0, 0.5);
 end
 
-function TextSizeManagerBase:SetCVarName(name)
-	self.cvarName = name;
+function TextSizeManagerBase:SetCVarNames(...)
+	self.cvarNames = { ... };
 end
 
-function TextSizeManagerBase:GetCVarName()
-	return self.cvarName;
+function TextSizeManagerBase:GetCVarNames()
+	return self.cvarNames;
+end
+
+function TextSizeManagerBase:GetReadCVarName()
+	return self:GetCVarNames()[1];
 end
 
 function TextSizeManagerBase:GetSettingValue()
-	return GetCVarNumberOrDefault(self:GetCVarName());
+	return GetCVarNumberOrDefault(self:GetReadCVarName());
+end
+
+function TextSizeManagerBase:GetSettingDefaultValue()
+	return tonumber(GetCVarDefault(self:GetReadCVarName()));
 end
 
 function TextSizeManagerBase:SetSettingValue(value)
-	SetCVar(self:GetCVarName(), value);
+	for _index, cvarName in pairs(self:GetCVarNames()) do
+		SetCVar(cvarName, value);
+	end
 end
 
 local function GetScaleWeight(manager, registrationInfo)
@@ -132,6 +142,7 @@ end
 
 function TextSizeManagerBase:RegisterObject(object, registrationInfo)
 	self.registeredObjects[object] = registrationInfo or object;
+	self:UpdateObject(object);
 end
 
 function TextSizeManagerBase:UpdateObject(object)

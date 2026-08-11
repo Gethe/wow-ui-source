@@ -1,10 +1,25 @@
 ## Title: Blizzard_FriendsFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_TimerunningUtil
-## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar, Blizzard_RecentAllies
+## Dependencies: Blizzard_TimerunningUtil, Blizzard_AddFriend
+## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar, Blizzard_SocialUIShared, Blizzard_RecentAllies, Blizzard_UnitPopupShared, Blizzard_UnitPopup
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
+
+Mainline\FriendsListConstants.lua
+
+Mainline\FriendsListUtil.lua
+
+Mainline\FriendsFriendsFrame.lua
+Mainline\FriendsFriendsFrame.xml
+
 Mainline\FriendsFrame.lua
 Mainline\FriendsFrame.xml
+
+Mainline\FriendRequestsListTemplates.lua
+Mainline\FriendRequestsListTemplates.xml
+
+Mainline\FriendsListTemplates.lua
+Mainline\FriendsListTemplates.xml
+
 Mainline\Localization.lua

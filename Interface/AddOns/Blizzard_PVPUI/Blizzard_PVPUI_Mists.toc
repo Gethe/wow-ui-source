@@ -5,6 +5,7 @@
 ## AllowLoad: game
 ## Dependencies: Blizzard_HelpPlate, Blizzard_GroupFinder
 ## AllowLoadGameType: mists
+Mists\Blizzard_PVPUI_Bootstrap.lua [Bootstrap]
 Mists\Blizzard_PVPUI.lua
 Mists\Blizzard_PVPUI.xml
 Localization.lua

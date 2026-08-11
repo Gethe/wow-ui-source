@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: Both
-DebugObjectUtil.lua
+Blizzard_DebugTools_Bootstrap.lua [Bootstrap]
 Blizzard_TextureInfoGenerator.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml

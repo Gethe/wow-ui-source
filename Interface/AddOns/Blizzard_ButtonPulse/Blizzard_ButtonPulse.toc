@@ -1,0 +1,5 @@
+## Title: Blizzard Button Pulse
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase
+## AllowLoad: game
+Blizzard_ButtonPulse.lua

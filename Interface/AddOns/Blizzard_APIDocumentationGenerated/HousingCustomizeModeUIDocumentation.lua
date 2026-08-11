@@ -20,6 +20,18 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "ApplyPetToSelectedDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If a decor is selected that supports pets, applies a specific petID to be shown on that decor" },
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = true },
+				{ Name = "petBehavior", Type = "HousingPetBehaviorType", Nilable = false },
+			},
+		},
+		{
 			Name = "ApplyThemeToRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -176,6 +188,17 @@ local HousingCustomizeModeUI =
 			Returns =
 			{
 				{ Name = "info", Type = "HousingDecorInstanceInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSelectedDecorPetInfo",
+			Type = "Function",
+			Documentation = { "If a decor is selected that supports pets, gets petID and behavior type from decor" },
+
+			Returns =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = true },
+				{ Name = "petBehavior", Type = "HousingPetBehaviorType", Nilable = false },
 			},
 		},
 		{

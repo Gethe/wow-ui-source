@@ -3,6 +3,7 @@
 ## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 1
 
+Blizzard_AdventureMap_Bootstrap.lua [Bootstrap]
 Blizzard_AdventureMapUtils.lua
 
 AM_ZoneSummaryDataProvider.xml

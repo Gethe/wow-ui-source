@@ -10,8 +10,9 @@ function CooldownViewerItemDataMixin:SetCooldownID(cooldownID, forceSet)
 end
 
 function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras(unit)
-	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
-		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and cooldownInfo.linkedSpellIDs then
+		for _, spellID in ipairs(cooldownInfo.linkedSpellIDs) do
 			local auraData = C_UnitAuras.GetUnitAuraBySpellID(unit, spellID);
 			if auraData and auraData.sourceUnit == "player" then
 				return spellID, auraData;
@@ -35,12 +36,24 @@ function CooldownViewerItemDataMixin:RefreshLinkedSpell()
 		linkedSpellChanged = self:SetLinkedSpell(linkedSpellID) or linkedSpellChanged;
 
 		if auraData then
-			self:SetAuraInstanceInfo(auraData);
+			self:SetAuraInstanceInfo(auraData, unit);
 			return linkedSpellChanged;
 		end
 	end
 
 	return linkedSpellChanged;
+end
+
+function CooldownViewerItemDataMixin:RefreshSpellCategoryData()
+	-- Try to update the spellID from the spell category if possible.
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and cooldownInfo.spellCategoryID then
+		local spellID, itemID = C_Spell.GetLastCategoryCooldownSource(cooldownInfo.spellCategoryID);
+		if spellID and itemID then
+			local baseSpellID = nil;
+			self:UpdateFromSpellCategory(spellID, baseSpellID, cooldownInfo.spellCategoryID, itemID);
+		end
+	end
 end
 
 function CooldownViewerItemDataMixin:OnCooldownIDSet()
@@ -49,25 +62,30 @@ function CooldownViewerItemDataMixin:OnCooldownIDSet()
 
 	self:ClearEditModeData();
 	self:RefreshLinkedSpell();
+	self:RefreshSpellCategoryData();
 	self:RefreshData();
 	self:UpdateShownState();
 end
 
 function CooldownViewerItemDataMixin:ClearCooldownID()
 	if self.cooldownID ~= nil then
-		self.cooldownID = nil;
 		self:OnCooldownIDCleared();
 	end
 end
 
 function CooldownViewerItemDataMixin:OnCooldownIDCleared()
+	self:ResetCooldownData();
+	self:RefreshData();
+	self:UpdateShownState();
+end
+
+-- Clears all data state without refreshing visuals.
+function CooldownViewerItemDataMixin:ResetCooldownData()
+	self.cooldownID = nil;
 	self.cooldownInfo = nil;
 	self.validAlertTypes = nil;
 	self:ClearAuraInstanceInfo();
 	self:ClearTotemData();
-
-	self:RefreshData();
-	self:UpdateShownState();
 end
 
 function CooldownViewerItemDataMixin:ClearTotemData()
@@ -129,10 +147,6 @@ function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
 		return false;
 	end
 
-	if not cooldownInfo.linkedSpellIDs then
-		return false;
-	end
-
 	-- If the provided spellId matches the base spell then remove the linked spell's precedence.
 	if cooldownInfo.linkedSpellID and spellID == self:GetBaseSpellID() then
 		return self:SetLinkedSpell(nil);
@@ -146,12 +160,40 @@ function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
 	return false;
 end
 
+function CooldownViewerItemDataMixin:UpdateFromSpellCategory(spellID, baseSpellID, spellCategory, itemID)
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and spellCategory and cooldownInfo.spellCategoryID == spellCategory then
+		if itemID then
+			spellID = baseSpellID or spellID;
+			local overrideSpellID = baseSpellID and spellID;
+
+			cooldownInfo.spellID = spellID;
+			cooldownInfo.overrideSpellID = overrideSpellID;
+			cooldownInfo.lastItemIDForCategory = itemID;
+			cooldownInfo.lastItemIDForCategoryIcon = C_Item.GetItemIconByID(itemID);
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function CooldownViewerItemDataMixin:GetCooldownID()
 	return self.cooldownID;
 end
 
 function CooldownViewerItemDataMixin:GetCooldownInfo()
 	return self.cooldownInfo;
+end
+
+function CooldownViewerItemDataMixin:GetDefaultCooldownCategory()
+	local cooldownID = self:GetCooldownID();
+	if cooldownID then
+		local cooldownDefaults = CooldownViewerSettings:GetDataProvider():GetCooldownDefaults(cooldownID);
+		return cooldownDefaults and cooldownDefaults.category;
+	end
+
+	return nil;
 end
 
 -- Prefer calling GetSpellID in most cases. This function is provided for unique cases where the base spell is needed.
@@ -172,14 +214,17 @@ end
 	In those cases, the aura/tooltip override is checked manually.
 --]]
 function CooldownViewerItemDataMixin:GetSpellID()
-	local auraSpellID = self:GetAuraSpellID();
-	if auraSpellID then
-		return auraSpellID;
+	if self:PreferAuraDataOverSpellData() then
+		local auraSpellID = self:GetAuraSpellID();
+		if auraSpellID then
+			return auraSpellID;
+		end
 	end
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo then
-		if cooldownInfo.linkedSpellID then
+		local usesDynamicAppearance = self:UsesDynamicAppearance();
+		if usesDynamicAppearance and cooldownInfo.linkedSpellID then
 			return cooldownInfo.linkedSpellID;
 		end
 
@@ -197,39 +242,97 @@ function CooldownViewerItemDataMixin:GetSpellID()
 	return nil;
 end
 
-function CooldownViewerItemDataMixin:SpellIDMatchesAnyAssociatedSpellIDs(spellID)
-	if spellID == self:GetAuraSpellID() then
-		return true;
+function CooldownViewerItemDataMixin:GetEquipSlot()
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		if cooldownInfo.equipSlot then
+			return cooldownInfo.equipSlot;
+		end
 	end
+
+	return nil;
+end
+
+local categoriesAbleToDisplayEquipSlotTooltips = {
+	[Enum.CooldownViewerCategory.EquipSlotEssential] = true,
+	[Enum.CooldownViewerCategory.EquipSlotTracked] = true,
+};
+
+function CooldownViewerItemDataMixin:GetEquipSlotTooltipTypes()
+	local equipSlot = self:GetEquipSlot();
+	local category = self:GetDefaultCooldownCategory();
+	local canDisplay = equipSlot and category and categoriesAbleToDisplayEquipSlotTooltips[category];
+	return canDisplay, equipSlot, category;
+end
+
+function CooldownViewerItemDataMixin:IsEquippedItem()
+	return self:GetEquipSlot() ~= nil;
+end
+
+function CooldownViewerItemDataMixin:GetEquipSlotTrackedBuffIndex()
+	local cooldownInfo = self:GetCooldownInfo();
+	return cooldownInfo and cooldownInfo.buffSlot or 1;
+end
+
+function CooldownViewerItemDataMixin:IsBagItem()
+	return self:GetSpellCategory() ~= nil;
+end
+
+function CooldownViewerItemDataMixin:IsItem()
+	return self:IsEquippedItem() or self:IsBagItem();
+end
+
+function CooldownViewerItemDataMixin:GetItemLocation()
+	local equipSlot = self:GetEquipSlot();
+	if equipSlot then
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(equipSlot);
+		if itemLocation:IsValid() then
+			return itemLocation;
+		end
+	end
+
+	return self:GetSpellCategoryTooltipItemLocation();
+end
+
+function CooldownViewerItemDataMixin:ClearCachedItemLocation()
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		cooldownInfo.lastItemLocationForCategory = nil;
+		cooldownInfo.hasScannedForItemLocation = nil;
+	end
+end
+
+function CooldownViewerItemDataMixin:GetAssociatedAuraSpellPriority(spellID)
+	-- NOTE: Prefer dynamically updated spellIDs before the base spellID and never check the current aura data here because it could find lower priority spells.
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo then
 		if cooldownInfo.linkedSpellID == spellID then
-			return true;
-		end
-
-		if cooldownInfo.overrideTooltipSpellID == spellID then
-			return true;
-		end
-
-		if cooldownInfo.overrideSpellID == spellID then
-			return true;
-		end
-
-		if cooldownInfo.spellID == spellID then
-			return true;
+			return 1;
 		end
 
 		if cooldownInfo.linkedSpellIDs then
 			for _, linkedSpellID in ipairs(cooldownInfo.linkedSpellIDs) do
 				if linkedSpellID == spellID then
-					return true;
+					return 1;
 				end
 			end
 		end
+
+		if cooldownInfo.overrideTooltipSpellID == spellID then
+			return 2;
+		end
+
+		if cooldownInfo.overrideSpellID == spellID then
+			return 3;
+		end
+
+		if cooldownInfo.spellID == spellID then
+			return 4;
+		end
 	end
 
-	return false;
+	return nil;
 end
 
 function CooldownViewerItemDataMixin:GetAuraSpellID()
@@ -240,13 +343,15 @@ function CooldownViewerItemDataMixin:GetAuraSpellInstanceID()
 	return self.auraInstanceID;
 end
 
-function CooldownViewerItemDataMixin:SetAuraInstanceInfo(auraInfo)
+function CooldownViewerItemDataMixin:SetAuraInstanceInfo(auraInfo, unit)
 	local auraSpellID, auraInstanceID = auraInfo.spellId, auraInfo.auraInstanceID;
 	if self.auraInstanceID ~= auraInstanceID or self.auraSpellID ~= auraSpellID then
 		self:ClearAuraInstanceInfo();
 
 		self.auraInstanceID = auraInstanceID;
 		self.auraSpellID = auraSpellID;
+		self.auraDataCached = auraInfo;
+		self.auraDataUnit = unit;
 
 		self:OnAuraInstanceInfoSet(auraSpellID, auraInstanceID);
 	end
@@ -257,6 +362,8 @@ function CooldownViewerItemDataMixin:ClearAuraInstanceInfo()
 	if auraSpellID or auraInstanceID then
 		self.auraInstanceID = nil;
 		self.auraSpellID = nil;
+		self.auraDataCached = nil;
+		self.auraDataUnit = nil;
 
 		self:OnAuraInstanceInfoCleared(auraSpellID, auraInstanceID);
 	end
@@ -272,11 +379,7 @@ end
 
 function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
 	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
-	end
-
-	return C_Spell.GetSpellCooldown(spellID);
+	return spellID and C_Spell.GetSpellCooldown(spellID);
 end
 
 function CooldownViewerItemDataMixin:GetSpellChargeInfo()
@@ -299,42 +402,211 @@ function CooldownViewerItemDataMixin:GetFallbackSpellTexture()
 	return nil;
 end
 
+local spellCategoryMetadataLookup =
+{
+	-- Combat pot
+	[4] =
+	{
+		icon = "Interface/ICONS/INV_POTION_114",
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_COMBAT_TITLE,
+		tooltipDescription = COOLDOWN_VIEWER_TOOLTIP_POTION_COMBAT_DESCRIPTION,
+	},
+
+	-- Health pot
+	[30] =
+	{
+		icon = "Interface/ICONS/INV_POTION_54",
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTH_TITLE,
+		tooltipDescription = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTH_DESCRIPTION,
+	},
+
+	-- Healthstone
+	[1711] =
+	{
+		icon = "Interface/ICONS/Warlock_ Healthstone",
+		tooltipItemIDFallback = 5512, -- If no specific healthstone was used, show the base version.
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_HEALTHSTONE_TITLE,
+	},
+
+	-- Demonic Healthstone
+	[2566] =
+	{
+		icon = "Interface/ICONS/Warlock_ Bloodstone",
+		tooltipItemIDFallback = 224464, -- If no specific item was used, show the base version.
+		tooltipTitle = COOLDOWN_VIEWER_TOOLTIP_POTION_DEMONIC_HEALTHSTONE_TITLE,
+	},
+};
+
+function CooldownViewerItemDataMixin:GetSpellCategory()
+	local cooldownInfo = self:GetCooldownInfo();
+	return cooldownInfo and cooldownInfo.spellCategoryID;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryDataEntry()
+	local spellCategory = self:GetSpellCategory();
+	return spellCategory and spellCategoryMetadataLookup[spellCategory];
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipTitle()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	return spellCategoryEntry and spellCategoryEntry.tooltipTitle;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipDescription()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	return spellCategoryEntry and spellCategoryEntry.tooltipDescription;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipItemID()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	if spellCategoryEntry then
+		-- These item-based cooldowns have some specific behaviors for the health and combat potions
+		-- Basically there are multiple views and conditions for which tooltips need to be shown
+		-- Views: cooldown layout manager (static), cooldown viewer (dynamic, cares about combat and real time updates)
+		-- Conditions: On the viewers Health/Combat pots can display BOTH types of tooltips depending on whether or not the cooldown is active
+		-- (note: Healthstones always display some kind of real item tooltip)
+		-- So, because of that conditional set up this first needs to check if we care about allowing an item id, and if so check that the
+		-- cooldown is actually active before allowing it, unless it's there's a fallback id, in which case we always return some itemID from here.
+		local shouldTryToUseItemID = (self:UsesDynamicAppearance() and self:IsOnCooldown()) or spellCategoryEntry.tooltipItemIDFallback;
+		if shouldTryToUseItemID then
+			-- Allow the actual item that the player last used in this category to override the item ID
+			-- while falling back to any hardcoded item id default.
+			local cooldownInfo = self:GetCooldownInfo();
+			return cooldownInfo and cooldownInfo.lastItemIDForCategory or spellCategoryEntry.tooltipItemIDFallback;
+		end
+	end
+
+	return nil;
+end
+
+local function ScanInventoryForMatchingItem(itemID)
+	local foundItemLocation;
+	if itemID then
+		local item;
+		ItemUtil.IteratePlayerInventory(function(itemLocation)
+			if not item then
+				item = Item:CreateFromItemLocation(itemLocation);
+			else
+				item:SetItemLocation(itemLocation);
+			end
+
+			if item:GetItemID() == itemID then
+				foundItemLocation = itemLocation;
+				return true; -- stop iteration
+			end
+
+			return false; -- continue iteration
+		end);
+	end
+
+	return foundItemLocation;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryTooltipItemLocation()
+	local itemID = self:GetSpellCategoryTooltipItemID();
+	if itemID then
+		local cooldownInfo = self:GetCooldownInfo();
+		if cooldownInfo then
+			if not cooldownInfo.hasScannedForItemLocation then
+				cooldownInfo.lastItemLocationForCategory = ScanInventoryForMatchingItem(itemID);
+				cooldownInfo.hasScannedForItemLocation = true; -- This required because the scan may find nothing and we don't want to keep scanning.
+			end
+
+			if cooldownInfo.lastItemLocationForCategory and cooldownInfo.lastItemLocationForCategory:IsValid() then
+				return cooldownInfo.lastItemLocationForCategory;
+			end
+		end
+	end
+
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetSpellCategoryIcon()
+	local spellCategoryEntry = self:GetSpellCategoryDataEntry();
+	if spellCategoryEntry then
+		-- SpellCategories are used for generic item cooldowns (healthstones & potions), arbitrarily checked around the same time as equipment
+		-- If there's a spell category other information could be leveraged to look up which item triggered the cooldown so that item's icon can be used
+		-- but if there wasn't one then this will use the mapping of spellCategory to a default texture.
+		-- cooldownInfo.lastItemIDForCategoryIcon is the field to check if that behavior is desired.
+
+		-- NOTE: Current approach is to only return the hardcoded texture for the category type.
+		return spellCategoryEntry.icon;
+	end
+
+	return nil;
+end
+
+local function GetSpellTextureForSpellID(spellID, usesDynamicAppearance)
+	local iconID, originalIconID, conditionalIconID = C_Spell.GetSpellTexture(spellID);
+	if usesDynamicAppearance then
+		return conditionalIconID or iconID;
+	end
+
+	return originalIconID;
+end
+
 function CooldownViewerItemDataMixin:GetSpellTexture()
+	local spellCategoryIcon = self:GetSpellCategoryIcon();
+	if spellCategoryIcon then
+		return spellCategoryIcon;
+	end
+
+	local usesDynamicAppearance = self:UsesDynamicAppearance();
+
 	-- Checking auraSpellID here is done instead of calling self:GetSpellID() because of the override texture logic.
-	local auraSpellID = self:GetAuraSpellID();
-	if auraSpellID then
-		return C_Spell.GetSpellTexture(auraSpellID);
+	-- This means that on items like trinkets will return the aura texture if it is currently active.
+	if self:PreferAuraDataOverSpellData() then
+		local auraData = self:GetAuraDataCached();
+		if auraData then
+			return auraData.icon or QUESTION_MARK_ICON;
+		end
 	end
 
-	local linkedSpellID = self:GetLinkedSpell();
-	if linkedSpellID then
-		return C_Spell.GetSpellTexture(linkedSpellID);
+	-- EquipSlot cooldowns like trinkets will prefer to use the item icon unless one of their auras is active.
+	local equipSlotTexture = ItemUtil.GetEquipSlotTexture(self:GetEquipSlot());
+	if equipSlotTexture then
+		return equipSlotTexture;
 	end
 
-	-- Overriding the tooltip also serves to override the texture
+	if usesDynamicAppearance then
+		local linkedSpellID = self:GetLinkedSpell();
+		if linkedSpellID then
+			return GetSpellTextureForSpellID(linkedSpellID, usesDynamicAppearance);
+		end
+	end
+
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
-		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
+		-- Overriding the tooltip also serves to override the texture
+		return GetSpellTextureForSpellID(cooldownInfo.overrideTooltipSpellID, usesDynamicAppearance);
 	end
 
 	-- Intentionally always use the base spell when calling C_Spell.GetSpellTexture. Its internal logic will handle the override if needed.
 	local spellID = self:GetBaseSpellID();
 	if spellID then
-		return C_Spell.GetSpellTexture(spellID);
+		return GetSpellTextureForSpellID(spellID, usesDynamicAppearance);
 	end
 
 	return self:GetFallbackSpellTexture();
 end
 
 function CooldownViewerItemDataMixin:GetNameText()
-	local totemData = self:GetTotemData();
-	if totemData then
-		return totemData.name;
+	local usesDynamicAppearance = self:UsesDynamicAppearance();
+	if usesDynamicAppearance then
+		local totemData = self:GetTotemData();
+		if totemData then
+			return totemData.name;
+		end
+
+		local auraData = self:GetAuraDataCached();
+		if auraData then
+			return auraData.name;
+		end
 	end
 
-	local auraData = self:GetAuraDataCached();
-	if auraData then
-		return auraData.name;
+	local itemLocation = self:GetItemLocation();
+	if itemLocation then
+		return C_Item.GetItemName(itemLocation);
 	end
 
 	local spellID = self:GetSpellID();
@@ -342,11 +614,48 @@ function CooldownViewerItemDataMixin:GetNameText()
 		return C_Spell.GetSpellName(spellID);
 	end
 
+	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+	if spellCategoryTitle then
+		return spellCategoryTitle;
+	end
+
 	if self:HasEditModeData() then
 		return HUD_EDIT_MODE_COOLDOWN_VIEWER_EXAMPLE_BUFF_NAME;
 	end
 
 	return "";
+end
+
+function CooldownViewerItemDataMixin:BuildFilterString()
+	local tags = {};
+	local itemLocation = self:GetItemLocation();
+	if itemLocation then
+		local itemName = C_Item.GetItemName(itemLocation);
+		if itemName then
+			table.insert(tags, itemName);
+		end
+	end
+
+	local equipSlot = self:GetEquipSlot();
+	if equipSlot then
+		local slotName = ItemUtil.GetEmptyEquipSlotTooltip(equipSlot);
+		if slotName then
+			table.insert(tags, slotName);
+		end
+	end
+
+	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+	if  spellCategoryTitle then
+		table.insert(tags, spellCategoryTitle);
+	end
+
+	local spellID = self:GetBaseSpellID();
+	if spellID then
+		local spellName = C_Spell.GetSpellName(spellID);
+		table.insert(tags, spellName);
+	end
+
+	return table.concat(tags, " ");
 end
 
 local function GetTargetAurasFilterString(unit)
@@ -378,18 +687,28 @@ local function GetUnitAurasCached(unit, timeNow)
 	return targetAuraCache[unit];
 end
 
+function CooldownViewer_MarkAuraCacheDirty()
+	targetAuraCacheTime = {};
+end
+
 local function IsAuraActive(aura, timeNow)
 	return aura.expirationTime == nil or aura.expirationTime == 0 or aura.expirationTime > timeNow;
 end
 
 function CooldownViewerItemDataMixin:GetUnitRelatedAuraInfo(unit, timeNow)
+	local bestAura;
+	local bestPriority = math.huge;
 	for _, aura in ipairs(GetUnitAurasCached(unit, timeNow)) do
-		if IsAuraActive(aura, timeNow) and self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
-			return aura;
+		if IsAuraActive(aura, timeNow) then
+			local priority = self:GetAssociatedAuraSpellPriority(aura.spellId);
+			if priority and priority < bestPriority then
+				bestAura = aura;
+				bestPriority = priority;
+			end
 		end
 	end
 
-	return nil;
+	return bestAura;
 end
 
 function CooldownViewerItemDataMixin:GetAuraData()
@@ -416,7 +735,16 @@ function CooldownViewerItemDataMixin:GetAuraDataUnit()
 	return self.auraDataUnit;
 end
 
-function CooldownViewerItemDataMixin:CanUseAuraForCooldown()
+function CooldownViewerItemDataMixin:RefreshAuraInstance()
+	local auraData = self:GetAuraData();
+	if auraData then
+		self:SetAuraInstanceInfo(auraData, self:GetAuraDataUnit());
+	else
+		self:ClearAuraInstanceInfo();
+	end
+end
+
+function CooldownViewerItemDataMixin:CanUseAuraForDisplay()
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo and cooldownInfo.flags then
 		return not FlagsUtil.IsSet(cooldownInfo.flags, Enum.CooldownSetSpellFlags.HideAura);
@@ -505,25 +833,199 @@ function CooldownViewerItemDataMixin:OnEnter()
 	local tooltip = GetAppropriateTooltip();
 	self:SetTooltipAnchor(tooltip);
 	self:RefreshTooltip();
-	tooltip:Show();
 end
 
 function CooldownViewerItemDataMixin:OnLeave()
+	self:CancelSpellDataLoad();
 	GetAppropriateTooltip():Hide();
 end
 
-function CooldownViewerItemDataMixin:RefreshTooltip()
-	local tooltip = GetAppropriateTooltip();
-	local auraInstanceID = self:GetAuraSpellInstanceID();
-	local auraUnit = self:GetAuraDataUnit();
-	if auraInstanceID and auraUnit then
-		tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID, "INCLUDE_NAME_PLATE_ONLY");
-	else
-		local spellID = self:GetSpellID();
-		if spellID then
-			local isPet = false;
-			tooltip:SetSpellByID(spellID, isPet);
+function CooldownViewerItemDataMixin:CancelSpellDataLoad()
+	if self.continuableSpellContainer then
+		self.continuableSpellContainer:Cancel();
+		self.continuableSpellContainer = nil;
+	end
+end
+
+function CooldownViewerItemDataMixin:RequestSpellDataLoad(spells)
+	self:CancelSpellDataLoad();
+
+	if #spells > 0 then
+		self.continuableSpellContainer = ContinuableContainer:Create();
+
+		for index, spell in ipairs(spells) do
+			self.continuableSpellContainer:AddContinuable(spell);
 		end
+
+		self.continuableSpellContainer:ContinueOnLoad(function()
+			self.continuableSpellContainer = nil;
+			self:RefreshTooltip();
+		end);
+	end
+end
+
+function CooldownViewerItemDataMixin:BuildEquipSlotSpellContainer()
+	local equipSlotSpells = {};
+	local allSpellsLoaded = true;
+
+	-- Only doing linked spells for now because that's what items like trinkets will always use.
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and #cooldownInfo.linkedSpellIDs > 0 then
+		for index, spellID in ipairs(cooldownInfo.linkedSpellIDs) do
+			local spell = Spell:CreateFromSpellID(spellID);
+			table.insert(equipSlotSpells, spell);
+
+			if not spell:IsSpellDataCached() then
+				allSpellsLoaded = false;
+			end
+		end
+	end
+
+	return equipSlotSpells, allSpellsLoaded;
+end
+
+function CooldownViewerItemDataMixin:DisplayEquipSlotEssentialTooltip(tooltip, equipSlot)
+	local suppressComparison = true;
+	ItemUtil.DisplayEquipSlotTooltip(self, tooltip, equipSlot, suppressComparison);
+	return true;
+end
+
+function CooldownViewerItemDataMixin:DisplayEquipSlotTrackedTooltip(tooltip, equipSlot)
+	local itemLocation = ItemUtil.GetValidatedItemLocation(equipSlot);
+	if itemLocation then
+		local itemName = C_Item.GetItemName(itemLocation);
+
+		if itemName then
+			local itemQuality = C_Item.GetItemQuality(itemLocation);
+			local colorData = ColorManager.GetColorDataForItemQuality(itemQuality or Enum.ItemQuality.Common);
+			GameTooltip_SetTitle(tooltip, itemName, colorData.color);
+
+			local spells, allSpellsLoaded = self:BuildEquipSlotSpellContainer();
+			if spells and not allSpellsLoaded then
+				self:RequestSpellDataLoad(spells);
+				return true;
+			end
+
+			local buffIndex = self:GetEquipSlotTrackedBuffIndex();
+
+			if #spells == 0 then
+				GameTooltip_AddErrorLine(tooltip, COOLDOWN_VIEWER_TRINKET_NO_AURA_TOOLTIP_LABEL:format(buffIndex));
+			else
+				local auraLabel = COOLDOWN_VIEWER_TRINKET_AURA_TOOLTIP_LABEL:format(buffIndex);
+
+				for spellIndex, spell in ipairs(spells) do
+					if spellIndex > 1 then
+						GameTooltip_AddBlankLineToTooltip(tooltip);
+					end
+
+					GameTooltip_AddHighlightLine(tooltip, spell:GetSpellName());
+
+					local textureSettings = {
+						width = 32,
+						height = 32,
+						region = Enum.TooltipTextureRelativeRegion.LeftLine,
+						anchor = Enum.TooltipTextureAnchor.LeftTop,
+						margin = { left = 0, right = 8, top = 0, bottom = -20 },
+					};
+
+					tooltip:AddTexture(spell:GetSpellTexture(), textureSettings);
+
+					GameTooltip_AddHighlightLine(tooltip, auraLabel, false, 40);
+					GameTooltip_AddBlankLineToTooltip(tooltip);
+					GameTooltip_AddInstructionLine(tooltip, spell:GetSpellDescriptionForItemLocation(itemLocation));
+				end
+			end
+
+			return true;
+		end
+
+		-- The case where there's an item there but the name couldn't be obtained should be a fallback to another tooltip type (possibly the linked or base spell)
+		return false;
+	end
+
+	-- Empty slots display just the slot name (this can be removed if empty/invalid slots are hidden rather than showing as "unlearned")
+	local suppressComparison = true;
+	ItemUtil.DisplayEquipSlotTooltip(self, tooltip, equipSlot, suppressComparison);
+	return true;
+end
+
+function CooldownViewerItemDataMixin:CheckDisplayEquipSlotTooltip(tooltip)
+	local canDisplay, equipSlot, category = self:GetEquipSlotTooltipTypes();
+
+	if canDisplay then
+		if category == Enum.CooldownViewerCategory.EquipSlotEssential then
+			return self:DisplayEquipSlotEssentialTooltip(tooltip, equipSlot);
+		elseif category == Enum.CooldownViewerCategory.EquipSlotTracked then
+			return self:DisplayEquipSlotTrackedTooltip(tooltip, equipSlot);
+		end
+	end
+
+	return false;
+end
+
+function CooldownViewerItemDataMixin:CheckDisplaySpellCategoryTooltip(tooltip)
+	-- Prefer actual inventory item instance tooltip
+	local spellCategoryItemLocation = self:GetSpellCategoryTooltipItemLocation();
+	if spellCategoryItemLocation then
+		local item = Item:CreateFromItemLocation(spellCategoryItemLocation);
+		local guid = item:GetItemGUID();
+		if guid then
+			tooltip:SetItemByGUID(guid);
+			return true;
+		end
+	end
+
+	-- Fallback to generic tooltip for item, things like usage counts will be wrong
+	local spellCategoryItemID = self:GetSpellCategoryTooltipItemID();
+	if spellCategoryItemID then
+		tooltip:SetItemByID(spellCategoryItemID);
+		return tooltip;
+	end
+
+	-- Failing all else, just try to use a static description of the category data.
+	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
+	local spellCategoryDescription = self:GetSpellCategoryTooltipDescription();
+	if spellCategoryTitle and spellCategoryDescription then
+		GameTooltip_SetTitle(tooltip, spellCategoryTitle);
+		GameTooltip_AddNormalLine(tooltip, spellCategoryDescription);
+		return true;
+	end
+
+	return false;
+end
+
+function CooldownViewerItemDataMixin:RefreshTooltip()
+	local tooltip = self:RefreshTooltipInternal();
+	if tooltip then
+		tooltip:Show();
+	end
+end
+
+function CooldownViewerItemDataMixin:RefreshTooltipInternal()
+	local tooltip = GetAppropriateTooltip();
+
+	if self:CheckDisplaySpellCategoryTooltip(tooltip) then
+		return tooltip;
+	end
+
+	if self:UsesDynamicAppearance() then
+		local auraInstanceID = self:GetAuraSpellInstanceID();
+		local auraUnit = self:GetAuraDataUnit();
+		if auraInstanceID and auraUnit then
+			tooltip:SetUnitAuraByAuraInstanceID(auraUnit, auraInstanceID, "INCLUDE_NAME_PLATE_ONLY");
+			return tooltip;
+		end
+	end
+
+	if self:CheckDisplayEquipSlotTooltip(tooltip) then
+		return tooltip;
+	end
+
+	local spellID = self:GetSpellID();
+	if spellID then
+		local isPet = false;
+		tooltip:SetSpellByID(spellID, isPet);
+		return tooltip;
 	end
 end
 
@@ -561,3 +1063,40 @@ end
 function CooldownViewerItemDataMixin:CanTriggerAnyAlertType()
 	return self:GetFirstValidAlertType() ~= nil;
 end
+
+function CooldownViewerItemDataMixin:IsKnown()
+	local info = self:GetCooldownInfo();
+	return info and info.isKnown;
+end
+
+function CooldownViewerItemDataMixin:UsesDynamicAppearance()
+	-- Indicates whether or not this cooldown item will leverage runtime/combat data like auras, totems, or linkedSpell updates.
+	-- By default this is true, override as needed (for example, the layout manager will display only static data setup, it won't use aura instance data, etc...)
+	return true;
+end
+
+function CooldownViewerItemDataMixin:IsOnCooldown()
+	-- This is similar to the UsesDynamicAppearance API, and should generally return false for the base elements.
+	-- Cooldown viewer item logic for items that are displayed on the viewers will override this.
+	return false;
+end
+
+function CooldownViewerItemDataMixin:PreferAuraDataOverSpellData()
+	-- Indicates whether or not this cooldown item will get spellID/icon (among other related things) from the aura or the spells.
+	-- Usually auras do override everything, however the typical case with actively cast items is that the active spellID is the source of
+	-- most of the data (unless the item happens to be tracking an aura application of a cast on a target) while tracked/passively cast items
+	-- should be displaying info directly for the aura they're tracking.
+	-- Most of this logic can be implemented here by just checking the overridden APIs like UsesDynamicAppearance and IsActivelyCast.
+
+	if self:UsesDynamicAppearance() and self:CanUseAuraForDisplay() then
+		if self:IsActivelyCast() then
+			-- Prefer the aura if this is on a target, otherwise use the spell data.
+			return self:GetAuraDataUnit() == "target";
+		end
+
+		return true; -- It's passive, this should be looking at auras/totems.
+	end
+
+	return false; -- Use the spell data by default; this is typically for the layout manager.
+end
+

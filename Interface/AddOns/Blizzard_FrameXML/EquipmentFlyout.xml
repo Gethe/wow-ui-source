@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-    <Script file="EquipmentFlyout.lua"/>
-
 	<Texture name="EquipmentFlyoutTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" virtual="true"/>
 	<ItemButton name="EquipmentFlyoutButtonTemplate" virtual="true">
 		<Frames>
@@ -36,7 +34,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
-	</Button>	
+	</Button>
 	<Frame name="EquipmentFlyoutFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
 		<Size x="43" y="43"/>
 		<Layers>

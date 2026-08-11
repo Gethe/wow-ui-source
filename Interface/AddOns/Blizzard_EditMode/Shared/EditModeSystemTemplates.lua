@@ -42,7 +42,7 @@ function EditModeSystemMixin:OnSystemHide()
 	end
 
 	if self.isManagedFrame then
-		UIParentManagedFrameMixin.OnHide(self);
+		ManagedFrameMixin.OnHide(self);
 	end
 end
 
@@ -136,7 +136,7 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 	end
 
 	if self.isManagedFrame and self:IsInDefaultPosition() then
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 
 		if self.isRightManagedFrame and ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsInDefaultPosition() then
 			ObjectiveTrackerFrame:Update();
@@ -324,11 +324,11 @@ function EditModeSystemMixin:GetManagedFrameContainer()
 	end
 
 	if self.isBottomManagedFrame then
-		return UIParentBottomManagedFrameContainer;
+		return GetBottomManagedFrameContainer();
 	elseif self.isRightManagedFrame then
-		return UIParentRightManagedFrameContainer;
+		return GetRightManagedFrameContainer();
 	else
-		return PlayerFrameBottomManagedFramesContainer;
+		return GetPlayerBottomManagedFrameContainer();
 	end
 end
 
@@ -544,6 +544,10 @@ function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
 	self.resetToDefaultPositionButton:SetEnabled(not self:IsInDefaultPosition());
 	self.resetToDefaultPositionButton:Show();
 	return true;
+end
+
+function EditModeSystemMixin:HasValidSelectionRect()
+	return (self.Selection:GetRect() ~= nil);
 end
 
 function EditModeSystemMixin:IsToTheLeftOfFrame(systemFrame)
@@ -789,12 +793,17 @@ end
 
 function EditModeSystemMixin:GetFrameMagneticEligibility(systemFrame)
 	-- Can't magnetize to myself
-	if systemFrame ==  self then
+	if systemFrame == self then
 		return nil;
 	end
 
 	-- Can't magnetize to anything already anchored to me
 	if self:IsFrameAnchoredToMe(systemFrame) then
+		return nil;
+	end
+
+	-- Can't magnetize to anything with an invalid rect
+	if not systemFrame:HasValidSelectionRect() then
 		return nil;
 	end
 
@@ -1231,6 +1240,11 @@ local function OpenRaidFrameSettings()
 	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 end
 
+local function OpenGroupBuffSettings()
+	CooldownViewerSettings:ShowUIPanel(true);
+	CooldownViewerSettings:SetDisplayMode("groupBuffs");
+end
+
 function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
 	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
 
@@ -1241,6 +1255,15 @@ function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
 		raidFrameSettingsButton:SetText(HUD_EDIT_MODE_RAID_FRAME_SETTINGS);
 		raidFrameSettingsButton:SetOnClickHandler(OpenRaidFrameSettings);
 		raidFrameSettingsButton:Show();
+	end
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid
+		or (self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames)) then
+		local groupBuffSettingsButton = extraButtonPool:Acquire();
+		groupBuffSettingsButton.layoutIndex = 5;
+		groupBuffSettingsButton:SetText(HUD_EDIT_MODE_GROUP_AURA_SETTINGS);
+		groupBuffSettingsButton:SetOnClickHandler(OpenGroupBuffSettings);
+		groupBuffSettingsButton:Show();
 	end
 
 	return true;
@@ -1287,7 +1310,7 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
-	elseif setting == Enum.EditModeUnitFrameSetting.IconSize or setting == Enum.EditModeUnitFrameSetting.BigDefensiveIconSize then
+	elseif setting == Enum.EditModeUnitFrameSetting.DebuffIconSize or setting == Enum.EditModeUnitFrameSetting.BigDefensiveIconSize or setting == Enum.EditModeUnitFrameSetting.BuffIconSize then
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
@@ -1318,7 +1341,6 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize then
 		local shouldHideSetting = self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) and not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
-		shouldHideSetting = shouldHideSetting or (self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames));
 		return not shouldHideSetting;
 	end
 
@@ -1467,11 +1489,15 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingAuraOrganizationType()
 	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingIconSize()
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingDebuffIconSize()
 	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingBigDefensiveIconSize()
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffIconSize()
 	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAllFromEditMode);
 end
 
@@ -1525,11 +1551,6 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameSize()
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 			self:SetScale(1);
 		end
-		return;
-	end
-
-	if self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
-		self:SetScale(1);
 		return;
 	end
 
@@ -1587,10 +1608,12 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 			self:UpdateSystemSettingAuraOrganizationType();
 		elseif setting == Enum.EditModeUnitFrameSetting.Opacity then
 			self:UpdateSystemSettingOpacity();
-		elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
-			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.DebuffIconSize then
+			self:UpdateSystemSettingDebuffIconSize();
 		elseif setting == Enum.EditModeUnitFrameSetting.BigDefensiveIconSize then
 			self:UpdateSystemSettingBigDefensiveIconSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.BuffIconSize then
+			self:UpdateSystemSettingBuffIconSize();
 		end
 	end
 
@@ -1625,7 +1648,7 @@ function EditModeBossUnitFrameSystemMixin:UpdateShownState()
 		bossFrame:UpdateShownState();
 	end
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 EditModeArenaUnitFrameSystemMixin = {};
@@ -1696,11 +1719,16 @@ function EditModeMinimapSystemMixin:UpdateSystemSettingRotateMinimap()
 end
 
 function EditModeMinimapSystemMixin:UpdateSystemSettingSize()
-	local scale = self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100;
+	local scale = self:GetSettingValue(Enum.EditModeMinimapSetting.Size) / 100;
 	self:SetEditModeScale(scale);
 
 	-- Updating the header will adjust the map's offsets to account for the scale change
 	self:UpdateSystemSettingHeaderUnderneath();
+end
+
+function EditModeMinimapSystemMixin:UpdateSystemSettingIconScale()
+	local iconScale = self:GetSettingValue(Enum.EditModeMinimapSetting.IconScale) / 100;
+	self:SetIconScale(iconScale);
 end
 
 function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1717,6 +1745,8 @@ function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 		self:UpdateSystemSettingRotateMinimap();
 	elseif setting == Enum.EditModeMinimapSetting.Size and self:HasSetting(Enum.EditModeMinimapSetting.Size) then
 		self:UpdateSystemSettingSize();
+	elseif setting == Enum.EditModeMinimapSetting.IconScale and self:HasSetting(Enum.EditModeMinimapSetting.IconScale) then
+		self:UpdateSystemSettingIconScale();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1799,7 +1829,7 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 	elseif not self:IsInDefaultPosition() and self.attachedToPlayerFrame then
 		-- If we aren't locked to the player frame and we aren't in our default position then
 		-- try to detach from the player frame and break any connections.
-		-- Only do this when not in our default position since our default position is in the UIParent bottom layout frame
+		-- Only do this when not in our default position since our default position is in the top-level parent bottom layout frame
 		-- which we would not want to unparent from
 		self:SetParent(UIParent);
 		self:UpdateSystemSettingBarSize();
@@ -2033,7 +2063,7 @@ end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingShowDispelType()
 	self.AuraContainer.showDispelType = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowDispelType);
-	C_UnitAuras.TriggerPrivateAuraShowDispelType(self.AuraContainer.showDispelType);
+	self:UpdatePrivateAuraAnchors();
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -2580,12 +2610,13 @@ local function UpdatePetFrameScale()
 	-- If the pet frame is anchored to the player frame's managed container then we need to counteract the player frame scale's effect on the pet frame
 	local petFrameScale = PetFrame:GetSettingValue(Enum.EditModeUnitFrameSetting.FrameSize) / 100;
 	petFrameScale = petFrameScale > 0 and petFrameScale or 1;
-	if PetFrame:GetParent() == PlayerFrameBottomManagedFramesContainer then
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
+	if PetFrame:GetParent() == playerBottomManagedFrameContainer then
 		petFrameScale = petFrameScale / PlayerFrame:GetScale();
 	end
 
 	PetFrame:SetScale(petFrameScale);
-	PlayerFrameBottomManagedFramesContainer:Layout();
+	playerBottomManagedFrameContainer:Layout();
 end
 
 EditModePlayerFrameSystemMixin = {};
@@ -2899,6 +2930,7 @@ function EditModeCooldownViewerSystemMixin:AddExtraButtons(extraButtonPool)
 		settingsButton:SetText(HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS);
 		local fromEditMode = true;
 		settingsButton:SetOnClickHandler(function() CooldownViewerSettings:ShowUIPanel(fromEditMode); end);
+		settingsButton:SetNewTagID("ADVANCED_COOLDOWN_SETTINGS1"); -- These are shared so they must be set each time they're used.
 		settingsButton:Show();
 	end
 
@@ -3557,4 +3589,42 @@ function EditModeDamageMeterSystemMixin:OnUpdateSystem(anySettingsDirty)
 	if anySettingsDirty then
 		self:RefreshLayout();
 	end
+end
+
+EditModeRaidWarningSystemMixin = {};
+
+function EditModeRaidWarningSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+EditModeLossOfControlSystemMixin = {};
+
+function EditModeLossOfControlSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeLossOfControlSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeLossOfControlSetting.Size) / 100);
+end
+
+function EditModeLossOfControlSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeLossOfControlSetting.Size then
+			self:UpdateSystemSettingSize();
+		end
+	end
+
+	self:ClearDirtySetting(setting);
 end

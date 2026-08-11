@@ -719,6 +719,7 @@ local NAME_CHANGE_DIALOG_SHOWING_EVENTS = {
 
 function NeighborhoodChangeNameDialogMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, NAME_CHANGE_DIALOG_SHOWING_EVENTS);
+	self.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
 	PlaySound(SOUNDKIT.HOUSING_SETTINGS_OPEN_MENU);
 end
 

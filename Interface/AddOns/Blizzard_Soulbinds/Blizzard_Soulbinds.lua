@@ -9,3 +9,13 @@ do
 	};
 	RegisterUIPanel(SoulbindViewer, attributes);
 end
+
+local function SoulbindViewer_EscapePressed()
+	if SoulbindViewer:IsShown() then
+		return SoulbindViewer:HandleEscape();
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, SoulbindViewer_EscapePressed);

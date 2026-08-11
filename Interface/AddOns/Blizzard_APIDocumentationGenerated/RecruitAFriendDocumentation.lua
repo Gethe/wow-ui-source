@@ -10,6 +10,7 @@ local RecruitAFriend =
 		{
 			Name = "CanSummonFriend",
 			Type = "Function",
+			MayReturnNothing = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -19,7 +20,8 @@ local RecruitAFriend =
 
 			Returns =
 			{
-				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "canSummon", Type = "bool", Nilable = false },
+				{ Name = "reason", Type = "RecruitAFriendFailure", Nilable = false },
 			},
 		},
 		{
@@ -121,15 +123,6 @@ local RecruitAFriend =
 			},
 		},
 		{
-			Name = "IsEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsRecruitAFriendLinked",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -151,6 +144,24 @@ local RecruitAFriend =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSystemEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSystemSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSystemSupported", Type = "bool", Nilable = false },
 			},
 		},
 		{

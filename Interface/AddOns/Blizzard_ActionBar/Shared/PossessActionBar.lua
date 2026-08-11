@@ -109,7 +109,20 @@ function PossessButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+-- Override for BaseActionButtonInfoMixin.
 function PossessButtonMixin:HasAction()
 	local texture, spellID, enabled = GetPossessInfo(self.index);
 	return enabled;
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function PossessButtonMixin:GetActionButtonInfo()
+	local texture, spellID, enabled = GetPossessInfo(self.index);
+	local info = {
+		id = spellID,
+		texture = texture,
+		enabled = enabled
+	};
+
+	return info;
 end

@@ -44,7 +44,7 @@ function TableInspectorAttributeDataProviderMixin:SortAttributes()
 end
 
 local function ShouldShowObject(object)
-	return not C_Widget.IsWidget(object) or CanAccessObject(object);
+	return not C_Widget.IsWidget(object) or object:CanBeAccessedInContext();
 end
 
 function TableInspectorAttributeDataProviderMixin:RefreshData(focusedTable)

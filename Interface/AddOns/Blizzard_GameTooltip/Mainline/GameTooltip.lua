@@ -190,7 +190,7 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
+function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style, context)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
@@ -206,7 +206,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
-		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style);
+		local hasAnySingleLineRewards, showRetrievingData = QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style, context);
 
 		if hasAnySingleLineRewards and tooltip.ItemTooltip and tooltip.ItemTooltip:IsShown() then
 			GameTooltip_AddBlankLinesToTooltip(tooltip, 1);
@@ -378,6 +378,8 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 };
 
 function GameTooltip_OnShow(self)
+	NarratableTooltipMixin.OnShow(self);
+
 	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
 	if (EditModeManagerFrame and GameTooltipDefaultContainer and EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
 		local relativeTo = select(2, self:GetPoint());
@@ -391,6 +393,8 @@ function GameTooltip_OnShow(self)
 end
 
 function GameTooltip_OnHide(self)
+	NarratableTooltipMixin.OnHide(self);
+
 	for i, info in ipairs(self.infoList or {}) do
 		local inventoryType = info.tooltipData.worldLootObjectInventoryType;
 		if inventoryType then

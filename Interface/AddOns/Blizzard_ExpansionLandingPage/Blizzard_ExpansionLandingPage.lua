@@ -10,6 +10,10 @@ ExpansionLandingPageEvents = {
 	"QUEST_LOG_UPDATE",
 };
 
+function ToggleExpansionLandingPage()
+	ToggleFrame(ExpansionLandingPage);
+end
+
 function ExpansionLandingPageMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, ExpansionLandingPageEvents);
 end

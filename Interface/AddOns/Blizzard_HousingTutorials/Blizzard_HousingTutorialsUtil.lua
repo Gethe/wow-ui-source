@@ -38,10 +38,15 @@ function HousingTutorialUtil.ResetAllDecorTutorials(includeQuestTutorials)
 	SetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorLayout, false);
 end
 
-function HousingTutorialUtil.HousingQuestTutorialComplete()
-	return (not C_CVar.GetCVarBool("housingTutorialsEnabled")) or
-		(C_QuestLog.IsQuestFlaggedCompletedOnAccount(HousingTutorialQuestIDs.CleanupQuest) and
-		C_QuestLog.IsQuestFlaggedCompletedOnAccount(HousingTutorialQuestIDs.DecorateQuest));
+local function IsCleanupTutorialComplete()
+	return GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorCleanup) or C_QuestLog.IsQuestFlaggedCompleted(HousingTutorialQuestIDs.CleanupQuest);
+end
+local function IsDecorateTutorialComplete()
+	return GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorPlace) or C_QuestLog.IsQuestFlaggedCompleted(HousingTutorialQuestIDs.DecorateQuest);
+end
+
+function HousingTutorialUtil.HousingDecorQuestTutorialComplete()
+	return (not C_CVar.GetCVarBool("housingTutorialsEnabled")) or (IsCleanupTutorialComplete() and IsDecorateTutorialComplete());
 end
 
 function HousingTutorialUtil.BoughtHouseQuestComplete()

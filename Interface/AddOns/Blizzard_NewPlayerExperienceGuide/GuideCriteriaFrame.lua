@@ -104,7 +104,7 @@ function CriteriaBulletMixin:OnHyperlinkClick(link, text, button, ...)
 		text = text:gsub("ff20ff20", "ffffff00");
 
 		if not IsModifiedClick("CHATLINK") and (complete or not AchievementUtil.IsFeatOfStrength(achievementID)) then
-			OpenAchievementFrameToAchievement(achievementID);
+			ShowAchievementFrameForAchievement(achievementID);
 			return;
 		end
 	end

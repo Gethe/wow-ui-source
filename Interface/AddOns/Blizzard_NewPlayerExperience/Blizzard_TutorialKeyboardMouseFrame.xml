@@ -28,7 +28,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelButtonTemplate" text="OKAY" virtual="true">
+			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelButtonTemplate" text="OKAY">
 				<Size x="150" y="24"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Keyboard" relativePoint="BOTTOM" y="-40"/>

@@ -26,7 +26,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="MainActionBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainActionBarMixin">
+	<Frame name="MainActionBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainActionBarMixin" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>

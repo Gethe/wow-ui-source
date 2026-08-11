@@ -84,11 +84,18 @@ UI.xsd">
 			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
 		</Anchors>
 	</GameTooltip>
+
+	<Frame name="NarratableTooltipTemplate" mixin="NarratableTooltipMixin" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
 	
 	<GameTooltip name="SharedTooltipTemplate" inherits="SharedTooltipArtTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad function="SharedTooltip_OnLoad"/>
-			<OnHide function="SharedTooltip_OnHide"/>
+			<OnHide inherit="append" function="SharedTooltip_OnHide"/>
 			<OnTooltipSetDefaultAnchor function="SharedTooltip_SetDefaultAnchor"/>
 			<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
 		</Scripts>

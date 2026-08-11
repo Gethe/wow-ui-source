@@ -91,11 +91,19 @@ function PlunderstormLobbyMixin:SetPlayerReady(ready)
 	self.GameModeSettingsFrame:SetPlayerReady(ready);
 end
 
+local function IsSocialUIReplacingFriendsFrame()
+	return SocialUIControl and SocialUIControl.IsEnabled();
+end
+
 function PlunderstormLobbyMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents (self,PlunderstormLobbyEvents);
 
-	FriendsFrame:Hide();
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.Hide();
+	else
+		FriendsFrame:Hide();
+	end
 
 	if AccountStoreFrame and AccountStoreFrame:IsShown() then
 		AccountStoreUtil.SetAccountStoreShown(false);
@@ -238,7 +246,11 @@ function PlunderstormLobbyFriendButtonMixin:OnLoad()
 end
 
 function PlunderstormLobbyFriendButtonMixin:OnClick()
-	FriendsFrame:SetShown(not FriendsFrame:IsShown())
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.Toggle();
+	else
+		FriendsFrame:SetShown(not FriendsFrame:IsShown())
+	end
 	self.Flash.Anim:SetPlaying(false);
 end
 

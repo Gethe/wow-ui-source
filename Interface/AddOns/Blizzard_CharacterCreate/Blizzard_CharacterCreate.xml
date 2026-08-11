@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<GameTooltip name="CharCreateTooltip" inherits="SharedTooltipTemplate" parent="GlueParent">
+	<GameTooltip name="CharCreateTooltip" inherits="SharedTooltipTemplate, NarratableTooltipTemplate" parent="GlueParent">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
 			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>

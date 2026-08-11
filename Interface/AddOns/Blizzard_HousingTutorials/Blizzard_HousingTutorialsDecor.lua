@@ -16,6 +16,8 @@ function HouseDecorQuestWatcherMixin:StartWatching()
 
 	self.isWatching = true;
 	EventRegistry:RegisterCallback("HouseEditor.StateUpdated", self.OnHouseEditorStateUpdated, self);
+	-- Must listen for QUEST_LOG_UPDATE as it may be the only event we get if the tutorial gets skipped
+	Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
 
 	-- Reintialize quests upon starting watching
 	HousingTutorialsQuestManager:ReinitializeExistingQuests();
@@ -54,6 +56,8 @@ function HouseDecorQuestWatcherMixin:StopWatching()
 
 	self.isWatching = false;
 	EventRegistry:UnregisterCallback("HouseEditor.StateUpdated", self);
+	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	EventRegistry:TriggerEvent("HousingTutorials.DecorQuestComplete");
 end
 
 function HouseDecorQuestWatcherMixin:InitHouseDecorTutorial(questID, questTutorialData)
@@ -128,6 +132,17 @@ function HouseDecorQuestWatcherMixin:Quest_TurnedIn(questData)
 		self.houseDecorTutorial = nil;
 
 		UpdateHousingTutorials();
+	else
+		local questTutorialData = HousingTutorialData.HouseDecorTutorial.QuestTutorials[questID];
+		if questTutorialData then
+			UpdateHousingTutorials();
+		end
+	end
+end
+
+function HouseDecorQuestWatcherMixin:QUEST_LOG_UPDATE()
+	if HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
+		UpdateHousingTutorials();
 	end
 end
 
@@ -136,6 +151,8 @@ function HouseDecorQuestWatcherMixin:Quest_Abandoned(questData)
 		self.houseDecorTutorial:Deactivate();
 		HelpTip:HideAllSystem(self.houseDecorTutorial:GetSystem());
 		self.houseDecorTutorial = nil;
+
+		UpdateHousingTutorials();
 	end
 end
 
@@ -194,6 +211,7 @@ HouseDecorWatcherMixin = {};
 
 local HOUSE_DECOR_PLACEMENT_WATCHER_EVENTS = {
 	"HOUSE_EDITOR_MODE_CHANGED",
+	"HOUSING_NEW_DECOR_PLACE_COMPLETE",
 };
 
 function HouseDecorWatcherMixin:StartWatching()
@@ -302,6 +320,17 @@ function HouseDecorWatcherMixin:HOUSE_EDITOR_MODE_CHANGED(activeHouseMode)
 	elseif self.layoutTutorial then
 		self.layoutTutorial:Deactivate();
 		HelpTip:HideAllSystem(self.layoutTutorial:GetSystem());
+	end
+end
+
+function HouseDecorWatcherMixin:HOUSING_NEW_DECOR_PLACE_COMPLETE(decorGUID)
+	local instanceInfo = C_HousingDecor.GetDecorInstanceInfoForGUID(decorGUID);
+	if instanceInfo.canAttachPet then
+		if not self.petBedTutorial then
+			self.petBedTutorial = CreateFromMixins(HousePetBedTutorialMixin);
+		end
+
+		self.petBedTutorial:UpdateHelpTip();
 	end
 end
 
@@ -537,4 +566,32 @@ function HouseLayoutTutorialMixin:Init()
 		HOUSING_TUTORIAL_CVAR_BITFIELD,
 		Enum.FrameTutorialAccount.HousingDecorLayout
 	);
+end
+
+HousePetBedTutorialMixin = {};
+
+function HousePetBedTutorialMixin:CanBegin()
+	return not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingPetBeds);
+end
+
+function HousePetBedTutorialMixin:UpdateHelpTip()
+	if self:CanBegin() then
+		local customizeButton = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.DecorCustomizationButton);
+		self.helpTipParent = customizeButton;
+
+		local helpTipInfo = {
+			text = HOUSING_PET_BEDS_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Top,
+			offsetX = 0,
+			offsetY = 0,
+			--system = HousingTutorialHelpTipSystems.PetBeds,
+			autoHideWhenTargetHides = true,
+			cvarBitfield = HOUSING_TUTORIAL_CVAR_BITFIELD,
+			bitfieldFlag = Enum.FrameTutorialAccount.HousingPetBeds,
+		};
+
+		HelpTip:Show(self.helpTipParent, helpTipInfo);
+	end
 end

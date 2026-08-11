@@ -38,7 +38,7 @@ function CompactDispelDebuffMixin:UpdateTooltip()
 end
 
 -- This is largely a modified copy of AuraButtonMixin
-PrivateAuraMixin = {};
+PrivateAuraMixin = CreateFromMixins(VisualAlertTargetMixin);
 
 function PrivateAuraMixin:OnLoad()
 	self.Symbol:Hide();
@@ -52,6 +52,8 @@ function PrivateAuraMixin:Reset()
 	self.DebuffBorder:SetSize(40, 40);
 
 	self:ClearOverrideSize();
+	self:ApplyVisualAlert(nil);
+	self:Hide();
 end
 
 function PrivateAuraMixin:ShowTooltip()
@@ -144,14 +146,6 @@ function PrivateAuraMixin:UpdateOnUpdate()
 	end
 end
 
-local s_showDispelType = false;
-do
-	local callback = C_FunctionContainers.CreateCallback(function(show)
-		s_showDispelType = show;
-	end);
-	C_UnitAurasPrivate.SetShowDispelTypeCallback(callback);
-end
-
 function PrivateAuraMixin:GetCountText()
 	if self.auraInfo.applications >= 100 then
 		return BUFF_STACKS_OVERFLOW;
@@ -162,7 +156,6 @@ function PrivateAuraMixin:GetCountText()
 	return nil;
 end
 
-
 function PrivateAuraMixin:SetOverrideSize(width, height)
 	self.overrideWidth = width;
 	self.overrideHeight = height;
@@ -172,42 +165,40 @@ function PrivateAuraMixin:ClearOverrideSize()
 	self:SetOverrideSize();
 end
 
-function PrivateAuraMixin:GetBaseAuraSize(anchorInfo)
-	local width = self.overrideWidth or anchorInfo.iconWidth;
-	local height = self.overrideHeight or anchorInfo.iconHeight;
-	return width, height;
+function PrivateAuraMixin:GetBaseAuraSize(anchorInfo, isBuff)
+	local width = self.overrideWidth or (isBuff and anchorInfo.buffIconWidth) or anchorInfo.debuffIconWidth or anchorInfo.iconWidth;
+	local height = self.overrideHeight or (isBuff and anchorInfo.buffIconHeight) or anchorInfo.debuffIconHeight or anchorInfo.iconHeight;
+	local scale = (isBuff and anchorInfo.buffBorderScale) or anchorInfo.debuffBorderScale or anchorInfo.borderScale;
+	return width, height, scale;
 end
 
-function PrivateAuraMixin:GetAuraSize(aura, anchorInfo)
-	local width, height = self:GetBaseAuraSize(anchorInfo);
+function PrivateAuraMixin:GetAuraSize(anchorInfo, isBuff, isLarge)
+	local width, height, scale = self:GetBaseAuraSize(anchorInfo, isBuff);
 
 	-- NOTE: aura being optional was added late to account for frame reservations and grid layouts. The issue is that if we need to display a layout with a stride, like a grid layout
 	-- then the frames cannot be anchored to each other (chain layout would be ideal, but doesn't support stride)
-	if aura and anchorInfo.containerSettings and anchorInfo.containerSettings.displayLargerRoleSpecificDebuffs and (aura.isBossAura or AuraUtil.IsRoleAura(aura)) then
-		return width * BOSS_DEBUFF_SCALE_INCREASE, height * BOSS_DEBUFF_SCALE_INCREASE;
+	if anchorInfo.containerSettings and anchorInfo.containerSettings.displayLargerRoleSpecificDebuffs and isLarge then
+		return width * BOSS_DEBUFF_SCALE_INCREASE, height * BOSS_DEBUFF_SCALE_INCREASE, scale;
 	end
 
-	return width, height;
+	return width, height, scale;
 end
 
-function PrivateAuraMixin:UpdateSizeFromAnchor(aura, anchorInfo)
-	if anchorInfo.iconWidth and anchorInfo.iconHeight then
-		local width, height = self:GetAuraSize(aura, anchorInfo);
-		self.Icon:SetSize(width, height);
+function PrivateAuraMixin:UpdateSizeFromAnchor(anchorInfo, isBuff, isLarge)
+	local width, height, scale = self:GetAuraSize(anchorInfo, isBuff, isLarge);
+	self.Icon:SetSize(width, height);
 
-		if self.useIconSizeForAuraSize then
-			self:SetSize(width, height);
-		else
-			-- Use template size for the aura, defined in .../Blizzard_BuffFrame/BuffFrameTemplates.xml
-			self:SetSize(30, 40);
-		end
+	if self.useIconSizeForAuraSize then
+		self:SetSize(width, height);
+	else
+		-- Use template size for the aura, defined in .../Blizzard_BuffFrame/BuffFrameTemplates.xml
+		self:SetSize(30, 40);
+	end
 
-		local scale = anchorInfo.borderScale;
-		if scale then
-			-- Since this is just for the border around the icon and that's square, using width is ok.
-			local debuffBorderSize = width + (5 * scale);
-			self.DebuffBorder:SetSize(debuffBorderSize, debuffBorderSize);
-		end
+	if scale then
+		-- Since this is just for the border around the icon and that's square, using width is ok.
+		local debuffBorderSize = width + (5 * scale);
+		self.DebuffBorder:SetSize(debuffBorderSize, debuffBorderSize);
 	end
 end
 
@@ -215,7 +206,7 @@ function PrivateAuraMixin:GetAuraInstanceID()
 	return self.auraInfo and self.auraInfo.auraInstanceID;
 end
 
-function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
+function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo, visualAlert)
 	self:Show();
 
 	self.auraInfo = auraInfo;
@@ -227,7 +218,7 @@ function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 		self.Symbol:Show();
 
 		AuraUtil.SetAuraSymbol(self.Symbol, auraInfo.dispelName);
-		AuraUtil.SetAuraBorderAtlas(self.DebuffBorder, auraInfo.dispelName, anchorInfo:ShouldShowDispelType());
+		AuraUtil.SetAuraBorderAtlas(self.DebuffBorder, auraInfo.dispelName, anchorInfo.showDispelIcon);
 	else
 		self.DebuffBorder:Hide();
 		self.Symbol:Hide();
@@ -244,9 +235,9 @@ function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 		self.Count:Hide();
 	end
 
-	if anchorInfo.showCountdownFrame and auraInfo.expirationTime and auraInfo.expirationTime ~= 0 then
+	if anchorInfo.showCooldownFrame and auraInfo.expirationTime and auraInfo.expirationTime ~= 0 then
 		local startTime = auraInfo.expirationTime - auraInfo.duration;
-		CooldownFrame_Set(self.Cooldown, startTime, auraInfo.duration, true);
+		CooldownFrame_Set(self.Cooldown, startTime, auraInfo.duration, true, anchorInfo.showCooldownEdge);
 		self.Cooldown:SetHideCountdownNumbers(not anchorInfo.showCountdownNumbers);
 	else
 		CooldownFrame_Clear(self.Cooldown);
@@ -256,16 +247,43 @@ function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 		self:ShowTooltip();
 	end
 
-	self:UpdateSizeFromAnchor(auraInfo, anchorInfo);
+	local isBuff = not auraInfo.isHarmful;
+	local isLarge = not isBuff and (auraInfo.isBossAura or AuraUtil.IsRoleAura(auraInfo));
+	self:UpdateSizeFromAnchor(anchorInfo, isBuff, isLarge);
+
+	self:ApplyVisualAlert(visualAlert);
 end
 
-function PrivateAuraMixin:GetDebuffSize(aura)
-	-- NOTE: These are always square, using the iconWidth as the size.
-	if self.containerSettings.displayLargerRoleSpecificDebuffs and (aura.isBossAura or AuraUtil.IsRoleAura(aura)) then
-		return self.iconWidth * BOSS_DEBUFF_SCALE_INCREASE;
-	else
-		return self.iconWidth;
+function PrivateAuraMixin:GetVisualAlertAnchorScale()
+	local iconWidth = self.Icon:GetWidth();
+	local referenceSize = self:GetReferenceSize();
+	if referenceSize == 0 then
+		return 1;
 	end
+	local ratio = iconWidth / referenceSize;
+	return math.max(0.25, ratio);
+end
+
+function PrivateAuraMixin:ApplyVisualAlert(visualAlert)
+	if visualAlert == self.currentVisualAlert then
+		return;
+	end
+
+	if self.activeVisualAlert then
+		PrivateVisualAlertsManager:ReleaseAlert(self.activeVisualAlert);
+		self.activeVisualAlert = nil;
+	end
+
+	self.currentVisualAlert = visualAlert;
+
+	if visualAlert then
+		self.activeVisualAlert = PrivateVisualAlertsManager:AcquireAlert(visualAlert, self);
+		self.activeVisualAlert:SetManualRelease(true);
+	end
+end
+
+function PrivateAuraMixin:OnHide()
+	self:ApplyVisualAlert(nil);
 end
 
 --
@@ -315,7 +333,8 @@ function PrivateAuraAnchorContainerMixin:ReadContainerSettings()
 		alwaysHideDuration = containerFrame:GetAttribute("always-hide-duration"),
 		setAuraSizeToIconSize = containerFrame:GetAttribute("set-aura-size-to-icon-size"),
 		displayLargerRoleSpecificDebuffs = containerFrame:GetAttribute("display-larger-role-specific-debuffs"),
-		showDispelIndicatorOverlay = containerFrame:GetAttribute("show-dispel-indicator-overlay"),
+		dispelIndicatorOverlayType = containerFrame:GetAttribute("dispel-indicator-overlay-type"),
+		dispelIndicatorOverlayAnimation = containerFrame:GetAttribute("dispel-indicator-overlay-animation"),
 		showBigDefensive = containerFrame:GetAttribute("show-big-defensive"),
 		bigDefensiveSize = containerFrame:GetAttribute("big-defensive-size"),
 		powerBarUsedHeight = containerFrame:GetAttribute("power-bar-used-height"),
@@ -325,12 +344,18 @@ function PrivateAuraAnchorContainerMixin:ReadContainerSettings()
 		ignoreDebuffs = containerFrame:GetAttribute("ignore-debuffs"),
 		ignoreDispelDebuffs = containerFrame:GetAttribute("ignore-dispel-debuffs"),
 		dispelIndicatorOption = containerFrame:GetAttribute("dispel-indicator-option"),
-		suppressDispelBorderIcons = containerFrame:GetAttribute("suppress-dispel-border-icons"),
-		iconSize = containerFrame:GetAttribute("icon-size"),
+		debuffSize = containerFrame:GetAttribute("debuff-size"),
+		buffSize = containerFrame:GetAttribute("buff-size"),
+		debuffBorderScale = containerFrame:GetAttribute("debuff-border-scale"),
+		buffBorderScale = containerFrame:GetAttribute("buff-border-scale"),
 	};
 
-	self.iconWidth = self.containerSettings.iconSize;
-	self.iconHeight = self.containerSettings.iconSize;
+	self.debuffIconWidth = self.containerSettings.debuffSize;
+	self.debuffIconHeight = self.containerSettings.debuffSize;
+	self.buffIconWidth = self.containerSettings.buffSize;
+	self.buffIconHeight = self.containerSettings.buffSize;
+	self.debuffBorderScale = self.containerSettings.debuffBorderScale;
+	self.buffBorderScale = self.containerSettings.buffBorderScale;
 	self.isPartyFrameCached = self:IsPartyFrame();
 end
 
@@ -425,7 +450,7 @@ function PrivateAuraAnchorContainerMixin:ProcessAura(aura)
 	if (auraType == AuraUtil.AuraUpdateChangedType.Debuff) or (auraType == AuraUtil.AuraUpdateChangedType.Dispel) then
 		self.debuffs[aura.auraInstanceID] = aura;
 		self.debuffsChanged = true;
-	elseif auraType == AuraUtil.AuraUpdateChangedType.Buff then
+	elseif auraType == AuraUtil.AuraUpdateChangedType.Buff and not PrivateGroupBuffsManager:IsGroupBuffHidden(aura.spellId) then
 		self.buffs[aura.auraInstanceID] = aura;
 		self.buffsChanged = true;
 	end
@@ -470,13 +495,13 @@ function PrivateAuraAnchorContainerMixin:GetUpdatedAuraByInstance(privateSource,
 	end
 end
 
-function PrivateAuraAnchorContainerMixin:CheckExistingDispelHasCorrectType(aura, auraInstanceID)
+function PrivateAuraAnchorContainerMixin:CheckExistingDispelHasCorrectType(privateSource, aura, auraInstanceID)
 	-- This is the "we're updating" case...double check that if we have an existing entry that the types match
 	-- Aura could be nil, auraInstanceID must be valid.
 	for dispelName, dispelTable in pairs(self.dispels) do
 		local existingDispel = dispelTable[auraInstanceID];
 		if existingDispel then
-			assertsafe(not aura or aura.dispelName == dispelName, "Dispel name mismatch for type %s with spell %s.", dispelName, tostring(aura and aura.spellId or 0));
+			assertsafe(not aura or aura.dispelName == dispelName, "Dispel name mismatch for type %s with spell %s (privateSource %s, existing spell %s isPrivate %s, instanceID %s).", dispelName, tostring(aura and aura.spellId or 0), tostring(privateSource), tostring(existingDispel.spellId), tostring(existingDispel.isPrivate), tostring(auraInstanceID));
 			break;
 		end
 	end
@@ -521,7 +546,7 @@ function PrivateAuraAnchorContainerMixin:HandleUpdateInfo(privateSource, unitAur
 		if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
 			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
 				local updatedAura = self:GetUpdatedAuraByInstance(privateSource, auraInstanceID);
-				self:CheckExistingDispelHasCorrectType(updatedAura, auraInstanceID);
+				self:CheckExistingDispelHasCorrectType(privateSource, updatedAura, auraInstanceID);
 
 				if updatedAura then
 					updatedAura.isPrivate = privateSource;
@@ -555,7 +580,8 @@ end
 
 function PrivateAuraAnchorContainerMixin:UpdateSingleAuraFrame(auraContainer, containerIndex, aura)
 	if not self:IsAuraInstanceIDBlocked(aura.auraInstanceID) then
-		auraContainer[containerIndex]:Update(aura, self.watcher:GetUnit(), self);
+		local visualAlert = PrivateGroupBuffsManager:GetGroupBuffVisualAlert(aura.spellId);
+		auraContainer[containerIndex]:Update(aura, self.watcher:GetUnit(), self, visualAlert);
 		return containerIndex + 1;
 	end
 
@@ -567,15 +593,16 @@ function PrivateAuraAnchorContainerMixin:CheckUpdateBuffFrames()
 		self.buffsChanged = false;
 
 		-- Process center "big defensives" first because if one of those shows, then that aura should be skipped in the buffs section.
-		if self.CenterDefensiveBuff then
-			self:ClearBlockedAura(self.CenterDefensiveBuff:GetAuraInstanceID());
+		if self.BigDefensiveBuff then
+			self:ClearBlockedAura(self.BigDefensiveBuff:GetAuraInstanceID());
 			if self.containerSettings.showBigDefensive and self.bigDefensives:Size() ~= 0 then
 				local bigDefensiveAura = self.bigDefensives:GetTop();
 				self:AddBlockedAura(bigDefensiveAura.auraInstanceID);
 
-				self.CenterDefensiveBuff:Update(bigDefensiveAura, self.watcher:GetUnit(), self);
+				local visualAlert = PrivateGroupBuffsManager:GetGroupBuffVisualAlert(bigDefensiveAura.spellId);
+				self.BigDefensiveBuff:Update(bigDefensiveAura, self.watcher:GetUnit(), self, visualAlert);
 			else
-				self.CenterDefensiveBuff:Hide();
+				self.BigDefensiveBuff:Hide();
 			end
 		end
 
@@ -619,9 +646,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelDebuff(dispellDebuffFrame, aur
 	dispellDebuffFrame.aura = aura;
 
 	-- The behavior is that the last one set will "win"
-	if self.containerSettings.showDispelIndicatorOverlay then
-		self:SetDispelOverlayAura(aura);
-	end
+	self:SetDispelOverlayAura(aura);
 end
 
 function PrivateAuraAnchorContainerMixin:CheckUpdateDispelIndicatorFrames(frame)
@@ -766,14 +791,15 @@ function PrivateAuraAnchorContainerMixin:ReserveSingleAuraFrame(frameLevel)
 	return auraFrame;
 end
 
-function PrivateAuraAnchorContainerMixin:ReserveContainedAuraFrames(tableKey, count, frameLevel)
+function PrivateAuraAnchorContainerMixin:ReserveContainedAuraFrames(tableKey, count, frameLevel, isBuff)
 	assertsafe(self[tableKey] == nil, "Attempting to reserve aura frames for %s when they have not been released.", tableKey);
 	local auraTable = {};
 	self[tableKey] = auraTable;
 
 	for i = 1, count do
 		local auraFrame = self:ReserveSingleAuraFrame(frameLevel);
-		auraFrame:UpdateSizeFromAnchor(nil, self); -- HACK: Ensure that the base size on buffs are set before using GridLayout.
+		local isLarge = false;
+		auraFrame:UpdateSizeFromAnchor(self, isBuff, isLarge); -- HACK: Ensure that the base size on buffs are set before using GridLayout.
 
 		table.insert(auraTable, auraFrame);
 	end
@@ -793,15 +819,16 @@ function PrivateAuraAnchorContainerMixin:ReserveAuraFramesForContainer()
 	local bigDefensiveFrameLevel  = 150;
 	local buffsFrameLevel = 125;
 
-	self:ReserveContainedAuraFrames("debuffFrames", self.containerSettings.maxDebuffs, debuffFrameLevel);
-	self:ReserveContainedAuraFrames("buffFrames", self.containerSettings.maxBuffs, buffsFrameLevel);
+	local isBuff = true;
+	self:ReserveContainedAuraFrames("debuffFrames", self.containerSettings.maxDebuffs, debuffFrameLevel, not isBuff);
+	self:ReserveContainedAuraFrames("buffFrames", self.containerSettings.maxBuffs, buffsFrameLevel, isBuff);
 
-	if not self.CenterDefensiveBuff and self.containerSettings.showBigDefensive then
-		self.CenterDefensiveBuff = self:ReserveSingleAuraFrame(bigDefensiveFrameLevel);
-		self.CenterDefensiveBuff:SetParentKey("CenterDefensiveBuff"); -- TODO: Is this really necessary? I swear it didn't appear before I did this, look into it.
-		self.CenterDefensiveBuff:ClearAllPoints();
-		self.CenterDefensiveBuff:SetPoint("CENTER", self:GetContainer(), "CENTER", 0, 0);
-		self.CenterDefensiveBuff:SetOverrideSize(self.containerSettings.bigDefensiveSize, self.containerSettings.bigDefensiveSize);
+	if not self.BigDefensiveBuff and self.containerSettings.showBigDefensive then
+		self.BigDefensiveBuff = self:ReserveSingleAuraFrame(bigDefensiveFrameLevel);
+		self.BigDefensiveBuff:SetParentKey("BigDefensiveBuff"); -- TODO: Is this really necessary? I swear it didn't appear before I did this, look into it.
+		self.BigDefensiveBuff:ClearAllPoints();
+		self.BigDefensiveBuff:SetPoint("CENTER", self:GetContainer(), "CENTER", 0, 0);
+		self.BigDefensiveBuff:SetOverrideSize(self.containerSettings.bigDefensiveSize, self.containerSettings.bigDefensiveSize);
 	end
 
 	if not self.DispelOverlay then
@@ -814,8 +841,15 @@ function PrivateAuraAnchorContainerMixin:ReserveAuraFramesForContainer()
 end
 
 function PrivateAuraAnchorContainerMixin:ResizeReservedAuraFramesForContainer()
-	if self.CenterDefensiveBuff then
-		self.CenterDefensiveBuff:SetOverrideSize(self.containerSettings.bigDefensiveSize, self.containerSettings.bigDefensiveSize);
+	if self.BigDefensiveBuff then
+		self.BigDefensiveBuff:SetOverrideSize(self.containerSettings.bigDefensiveSize, self.containerSettings.bigDefensiveSize);
+	end
+
+	local buffSize = self.containerSettings.buffSize;
+	if self.buffFrames and buffSize then
+		for _, buffFrame in ipairs(self.buffFrames) do
+			buffFrame:SetOverrideSize(buffSize, buffSize);
+		end
 	end
 end
 
@@ -828,9 +862,9 @@ function PrivateAuraAnchorContainerMixin:ResetReservedAuraFramesForContainer()
 		self.DispelOverlay = nil;
 	end
 
-	if self.CenterDefensiveBuff then
-		PrivateAuraFramePool:Release(self.CenterDefensiveBuff);
-		self.CenterDefensiveBuff = nil;
+	if self.BigDefensiveBuff then
+		PrivateAuraFramePool:Release(self.BigDefensiveBuff);
+		self.BigDefensiveBuff = nil;
 	end
 end
 
@@ -983,7 +1017,7 @@ function PrivateAuraAnchorContainerMixin:SetDispelOverlayAura(aura)
 		local shown = aura and aura.dispelName;
 		if shown ~= self.DispelOverlay:IsShown() then
 			if shown then
-				self.DispelOverlay:SetDispelType(aura.dispelName);
+				self.DispelOverlay:SetDispelType(aura.dispelName, self.containerSettings);
 				self.DispelOverlay:Show();
 				self.dispelOverlayAuraOffset = 2;
 			else
@@ -1002,10 +1036,6 @@ function PrivateAuraAnchorContainerMixin:UpdateAuraFrameLayout()
 	self:LayoutContainerFrames(self.debuffFrames, auraOrganizationType, "Debuffs");
 	self:LayoutContainerFrames(self.DispelOverlay.dispelDebuffFrames, auraOrganizationType, "Dispel");
 	self:LayoutContainerFrameElement(nil, auraOrganizationType, "DispelOverlay");
-end
-
-function PrivateAuraAnchorContainerMixin:ShouldShowDispelType()
-	return not self.containerSettings.suppressDispelBorderIcons;
 end
 
 function PrivateAuraAnchorContainerMixin:IsAuraInstanceIDBlocked(auraInstanceID)
@@ -1073,10 +1103,6 @@ end
 
 function PrivateAuraAnchorSingleMixin:HandleUpdateInfo(_privateSource, _updateInfo)
 	-- nop, only containers need to worry about this one
-end
-
-function PrivateAuraAnchorSingleMixin:ShouldShowDispelType()
-	return s_showDispelType;
 end
 
 --
@@ -1189,13 +1215,6 @@ function PrivateAuraUnitWatcher:HandleUpdateInfo(privateAuraSource, updateInfo)
 		if self:ProcessAuras(privateAuraSource, updateInfo.addedAuras) then
 			aurasChanged = true;
 		end
-
-		for _, aura in ipairs(updateInfo.addedAuras) do
-			local appliedSounds = C_UnitAurasPrivate.GetAuraAppliedSoundsForSpell(self.unit, aura.spellId);
-			for _, sound in pairs(appliedSounds) do
-				PlaySoundFile(sound.soundFileName or sound.soundFileID, sound.outputChannel);
-			end
-		end
 	end
 
 	if updateInfo.updatedAuraInstanceIDs then
@@ -1295,23 +1314,23 @@ function PrivateAuraUnitWatcher:RemoveAnchor(anchorID)
 	return removedAnchor;
 end
 
-function RaidBossEmoteFrame_OnLoad(self) -- Private version override
-	RaidNotice_FadeInit(self.slot1);
-	RaidNotice_FadeInit(self.slot2);
-	self.timings = { };
-	self.timings["RAID_NOTICE_MIN_HEIGHT"] = 20.0;
-	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 30.0;
-	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
-	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
+PrivateRaidBossEmoteFrameMixin = CreateFromMixins(RaidWarningFrameMixin);
 
+function PrivateRaidBossEmoteFrameMixin:RegisterMessageEvents()
+	-- Overrides RaidWarningFrameMixin.
+	-- Other events and messages are received via C_UnitAurasPrivate callbacks, not WoW events.
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
+end
+
+function PrivateRaidBossEmoteFrameMixin:OnLoad()
+	RaidWarningFrameMixin.OnLoad(self);
 
 	C_UnitAurasPrivate.SetPrivateWarningTextFrame(self);
 
 	self.privateRaidBossMessageCallback = C_FunctionContainers.CreateCallback(function(chatType, text, playerName, displayTime, playSound)
 		local body = format(text, playerName, playerName);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local color = C_ChatInfo.GetColorForChatType(chatType);
-		RaidNotice_AddMessage(self, body, color, displayTime);
+		self:AddMessage(body, color, displayTime, RaidWarningUtil.MessageType.BossEmote);
 		if playSound then
 			if chatType == "RAID_BOSS_WHISPER" then
 				PlaySound(SOUNDKIT.UI_RAID_BOSS_WHISPER_WARNING);
@@ -1323,17 +1342,36 @@ function RaidBossEmoteFrame_OnLoad(self) -- Private version override
 	C_UnitAurasPrivate.SetPrivateRaidBossMessageCallback(self.privateRaidBossMessageCallback);
 end
 
-function RaidBossEmoteFrame_OnEvent(self, event, ...)  -- Private version override
-	if event == "CLEAR_BOSS_EMOTES" then
-		RaidNotice_Clear(self);
-	end
-end
-
 CompactUnitFrameDispelOverlayMixin = {};
 
-function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType)
-	AuraUtil.SetAuraBorderColor(self.Gradient, dispelType);
-	AuraUtil.SetAuraBorderColor(self.Border, dispelType);
+local function GetDispelOverlayColor(dispelType, option)
+	if option == Enum.RaidDispelOverlayType.UseDebuffColor then
+		return AuraUtil.GetAuraBorderColor(dispelType);
+	elseif option == Enum.RaidDispelOverlayType.UseBlack then
+		return BLACK_FONT_COLOR;
+	end
+
+	return nil;
+end
+
+function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType, containerSettings)
+	local overlayColor = GetDispelOverlayColor(dispelType, containerSettings.dispelIndicatorOverlayType);
+	if overlayColor then
+		self.Gradient:SetVertexColor(overlayColor:GetRGBA());
+		self.Border:SetVertexColor(overlayColor:GetRGBA());
+		self.Background:SetAlpha(0.2); -- Default from layout if this is shown.
+
+		if containerSettings.dispelIndicatorOverlayAnimation then
+			self.PulseAnim:Play();
+		else
+			self.PulseAnim:Stop();
+		end
+	else
+		self.Gradient:SetAlpha(0);
+		self.Border:SetAlpha(0);
+		self.Background:SetAlpha(0);
+		self.PulseAnim:Stop();
+	end
 end
 
 local dispelOverlayAtlasLookup =

@@ -28,3 +28,19 @@ function assertsafe(cond, msgStringOrFunction, ...)
 	-- Parity with regular 'assert' which returns the input.
 	return cond;
 end
+
+function assertf(cond, msgStringOrFunction, ...)
+	if not cond then
+		local error = msgStringOrFunction or "non-fatal assertion failed";
+		if type(msgStringOrFunction) == 'string' and select('#', ...) > 0 then
+			error = msgStringOrFunction:format(...);
+		elseif type(msgStringOrFunction) == 'function' then
+			error = msgStringOrFunction(...);
+		end
+
+		assert(cond, error);
+	end
+
+	-- Parity with regular 'assert' which returns the input.
+	return cond;
+end

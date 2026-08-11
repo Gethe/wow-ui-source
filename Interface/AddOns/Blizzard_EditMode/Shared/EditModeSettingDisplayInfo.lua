@@ -151,6 +151,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 		},
+
+		-- Icon Scale
+		{
+			setting = Enum.EditModeMinimapSetting.IconScale,
+			name = HUD_EDIT_MODE_SETTING_MINIMAP_ICON_SCALE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 
 	-- Cast Bar Settings
@@ -379,10 +391,23 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			hideSystemSelectionOnInteract = true,
 		},
 
-		-- IconSize (controls the scale of the aura icons)
+		-- BigDefensiveIconSize (controls the scale of the larger centered defensive aura icon)
 		{
-			setting = Enum.EditModeUnitFrameSetting.IconSize,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ICON_SIZE,
+			setting = Enum.EditModeUnitFrameSetting.BigDefensiveIconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BIGDEFENSIVE_AURA_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- BuffIconSize (controls the scale of the buff icons)
+		{
+			setting = Enum.EditModeUnitFrameSetting.BuffIconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BUFF_AURA_ICON_SIZE,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 50,
 			maxValue = 200,
@@ -392,14 +417,14 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			hideSystemSelectionOnInteract = true,
 		},
 
-		-- BigDefensiveIconSize (controls the scale of the larger centered defensive aura icon)
+		-- DebuffIconSize (controls the scale of the aura icons)
 		{
-			setting = Enum.EditModeUnitFrameSetting.BigDefensiveIconSize,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BIGDEFENSIVE_AURA_ICON_SIZE,
+			setting = Enum.EditModeUnitFrameSetting.DebuffIconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ICON_SIZE,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 50,
-			maxValue = 100,
-			stepSize = 5,
+			maxValue = 200,
+			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 			hideSystemSelectionOnInteract = true,
@@ -1368,9 +1393,29 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 	},
 
+	[Enum.EditModeSystem.RaidWarning] =
+	{
+		-- Raid warning has no settings for now.
+	},
+
 	[Enum.EditModeSystem.TotemActionBar] =
 	{
 
+	},
+
+	[Enum.EditModeSystem.LossOfControl] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeLossOfControlSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_LOSS_OF_CONTROL_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 };
 

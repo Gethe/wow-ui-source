@@ -169,78 +169,16 @@
 				</Frames>
 			</Frame>
 
-			<StatusBar parentKey="castBar" mixin="NamePlateCastingBarMixin" inherits="CastingBarFrameAnimsTemplate" frameLevel="100" hidden="true">
-				<KeyValues>
-					<KeyValue key="HideIconWhenNotInterruptible" value="true" type="boolean"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="ui-castingbar-background">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
-							<!-- Anchoring and size handled dynamically in lua.-->
-						</Texture>
-						<Texture parentKey="CastTargetIndicator" atlas="ui-hud-nameplates-targetedbyenemy">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-4" y="4"/>
-								<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="Icon" hidden="true">
-							<!-- Anchoring and size handled dynamically in lua.-->
-						</Texture>
-						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" smoothScaling="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" smoothScaling="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="0"/>
-								<Anchor point="RIGHT" x="-4" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true">
-							<!-- Anchoring and size handled dynamically in lua.-->
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Spark" atlas="ui-castingbar-pip">
-							<Size x="4" y="12"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" />
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnEvent method="OnEvent" />
-					<OnUpdate method="OnUpdate" />
-					<OnShow method="OnShow" />
-				</Scripts>
-				<Animations>
-					<AnimationGroup parentKey="ImportantCastFlashAnim" looping="REPEAT">
-						<Alpha childKey="ImportantCastIndicator" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="ImportantCastIndicator" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
-					</AnimationGroup>
-				</Animations>
-			</StatusBar>
+			<Frame parentKey="CastBarsContainer" useParentLevel="true">
+				<!-- Anchoring handled dynamically in lua.-->
+				<Frames>
+					<StatusBar parentKey="castBar" inherits="NamePlateCastingBarTemplate" frameLevel="100" hidden="true"/>
+				</Frames>
+			</Frame>
 
 			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.castBar" relativePoint="BOTTOM"/>
+					<Anchor point="TOP" relativeKey="$parent.CastBarsContainer.castBar" relativePoint="BOTTOM"/>
 				</Anchors>
 			</Frame>
 
@@ -302,13 +240,13 @@
 							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer.healthBar" relativePoint="RIGHT" x="5"/>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer" relativePoint="RIGHT" x="5"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="LossOfControlFrame">
 						<Size x="30" y="30"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer.healthBar" relativePoint="RIGHT" x="5"/>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer" relativePoint="RIGHT" x="5"/>
 						</Anchors>
 						<Frames>
 							<Frame parentKey="AuraItemFrame" inherits="NameplateAuraItemTemplate" setAllPoints="true"/>
@@ -356,13 +294,24 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
+			<Frame parentKey="LevelFrame" hidden="true">
+				<Size x="15" y="15" />
+				<!-- Anchoring handled dynamically in lua.-->
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="LevelText" inherits="SystemFont_NamePlateLevel" wordwrap="false" justifyH="CENTER" smoothScaling="true" text="60"/>
+						<Texture parentKey="HighLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="behindCameraIcon" atlas="common-icon-offscreen" rotation="45" snapToPixelGrid="false">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.castBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.CastBarsContainer.castBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -372,26 +321,30 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<!-- Nameplates don't display a highlight when selected, but expect this texture to exist.-->
-				<Texture parentKey="selectionHighlight"/>
+				<Texture parentKey="selectionHighlight" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha=".25" ignoreParentAlpha="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer.healthBar.barTexture" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer.healthBar.barTexture" />
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="aggroHighlight">
 					<!-- Nameplates don't use this for display, but expect this texture to exist so CompactUnitFrame can drive the logic.-->
 				</Texture>
-				<Texture parentKey="aggroHighlightBase" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true">
+				<Texture parentKey="aggroHighlightBase" parentArray="aggroHighlightTextures" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="aggroHighlightAdditive" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true" alpha="0.4" alphaMode="ADD">
+				<Texture parentKey="aggroHighlightAdditive" parentArray="aggroHighlightTextures" atlas="UI-HUD-Nameplates-Aggro-Flare" hWrapMode="REPEAT" useAtlasSize="true" alpha="0.4" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="aggroHighlightMask" atlas="UI-HUD-Nameplates-Aggro-Mask" useAtlasSize="true">
+				<MaskTexture parentKey="aggroHighlightMask" parentArray="aggroHighlightTextures" atlas="UI-HUD-Nameplates-Aggro-Mask" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="TOPRIGHT" x="0" y="0"/>
@@ -405,8 +358,8 @@
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="aggroFlash" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha="0" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer" />
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer.healthBar" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer.healthBar" />
 					</Anchors>
 					<Color r="1" g="1" b="0"/>
 				</Texture>

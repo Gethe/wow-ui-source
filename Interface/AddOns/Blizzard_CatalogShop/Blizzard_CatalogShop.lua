@@ -72,7 +72,8 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	end
 
 	-- solve this later
-	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", nil, "CENTER", 0, 20); -- Intentionally not anchored to the top-level parent.
 
 	self.categoryIDs = C_CatalogShop.GetAvailableCategoryIDs();
 

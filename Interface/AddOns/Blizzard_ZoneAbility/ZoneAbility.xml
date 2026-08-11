@@ -28,7 +28,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="ZoneAbilityFrameSpellButtonTemplate" mixin="ZoneAbilityFrameSpellButtonMixin" virtual="true">
+	<Button name="ZoneAbilityFrameSpellButtonTemplate" inherits="PingableActionButtonTemplate" mixin="ZoneAbilityFrameSpellButtonMixin" virtual="true">
 		<Size x="52" y="52"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -65,5 +65,5 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</Button>
 
-	<Frame name="ZoneAbilityFrame" inherits="ZoneAbilityFrameTemplate" hidden="true"/>
+	<Frame name="ZoneAbilityFrame" inherits="ZoneAbilityFrameTemplate" hidden="true" roleset="extraAbilities"/>
 </Ui>

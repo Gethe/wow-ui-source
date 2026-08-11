@@ -1,6 +1,6 @@
 local indentSize = 15;
 
-DefaultTooltipMixin = {};
+DefaultTooltipMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function DefaultTooltipMixin:InitDefaultTooltipScriptHandlers()
 	self:SetScript("OnEnter", self.OnEnter);
@@ -82,9 +82,21 @@ function SettingsListSectionHeaderMixin:OnLoad()
 	DefaultTooltipMixin.OnLoad(self);
 end
 
+function SettingsListSectionHeaderMixin:NarrationGetName()
+	return self.Title:GetText();
+end
+
+function SettingsListSectionHeaderMixin:NarrationGetIndexInfo()
+	-- ScrollBox assigns a NarrationGetIndexInfo closure in AssignAccessors if there isn't
+	-- a custom override already. We opt out here since we don't want these to report index info.
+	return nil;
+end
+
 function SettingsListSectionHeaderMixin:Init(initializer)
 	local name = initializer:GetName();
 	self.Title:SetTextToFit(name);
+
+	NarrationUtil.SetStaticDescription(self, initializer:GetTooltip());
 
 	self:SetCustomTooltipAnchoring(self.Title, "ANCHOR_RIGHT");
 
@@ -269,7 +281,7 @@ function SettingsListElementInitializer:SetParentInitializer(parentInitializer, 
 	SettingsElementHierarchyMixin.SetParentInitializer(self, parentInitializer, modifyPredicate);
 end
 
-SettingsListElementMixin = {};
+SettingsListElementMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function SettingsListElementMixin:OnLoad()
 	self.cbrHandles = Settings.CreateCallbackHandleContainer();
@@ -375,6 +387,96 @@ function SettingsListElementMixin:EvaluateState()
 	self:SetShown(initializer:ShouldShow());
 end
 
+function SettingsListElementMixin:NarrationGetName()
+	local initializer = self:GetElementData();
+	if initializer and initializer.GetName then
+		return initializer:GetName();
+	end
+
+	return nil;
+end
+
+function SettingsListElementMixin:NarrationGetDescription()
+	local initializer = self:GetElementData();
+	if initializer and initializer.GetTooltip then
+		return initializer:GetTooltip();
+	end
+
+	return nil;
+end
+
+function SettingsListElementMixin:NarrationGetIndexInfo()
+	-- ScrollBox assigns a NarrationGetIndexInfo closure in AssignAccessors if there isn't
+	-- a custom override already. Settings controls use custom index logic embedded in context
+	-- to get the ordering the way we want so no index info should be returned here.
+	return nil;
+end
+
+function SettingsListElementMixin:GetNarrationIndexString()
+	local settingsList = SettingsPanel:GetSettingsList();
+	local dataProvider = settingsList.ScrollBox:GetDataProvider();
+	if not dataProvider then
+		return nil;
+	end
+
+	local currentElementData = self:GetElementData();
+	local settingsIndex = 0;
+	local settingsTotal = 0;
+	for _, elementData in dataProvider:Enumerate() do
+		if elementData.isSettingElement then
+			settingsTotal = settingsTotal + 1;
+			if elementData == currentElementData then
+				settingsIndex = settingsTotal;
+			end
+		end
+	end
+
+	if settingsIndex == 0 then
+		return nil;
+	end
+
+	return NarrationUtil.MakeNarrationStringFromIndexInfo(NarrationUtil.MakeIndexInfo(settingsIndex, settingsTotal));
+end
+
+SettingsCheckboxNarrationContextMixin = {};
+
+function SettingsCheckboxNarrationContextMixin:NarrationGetContext()
+	local checkboxContext = NarrationUtil.GetCheckboxContext(self.Checkbox);
+	local indexString = self:GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(checkboxContext, indexString);
+end
+
+SettingsSliderNarrationContextMixin = {};
+
+function SettingsSliderNarrationContextMixin:NarrationGetContext()
+	local sliderContext = NarrationSliderMixin.NarrationGetContext(self.Slider);
+	local sliderValue = NarrationSliderMixin.NarrationGetDescription(self.Slider);
+	local indexString = self:GetParent():GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(sliderContext, sliderValue, indexString);
+end
+
+SettingsDropdownNarrationContextMixin = {};
+
+function SettingsDropdownNarrationContextMixin:NarrationGetContext()
+	local dropdownContext = nil;
+	if not self.Dropdown:IsEnabled() then
+		dropdownContext = NARRATION_STATUS_DISABLED_FORMAT:format(NARRATION_OBJECT_DROPDOWN);
+	else
+		dropdownContext = NARRATION_OBJECT_DROPDOWN;
+	end
+
+	local valueText = self.Dropdown:GetText();
+	local indexString = self:GetParent():GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(dropdownContext, valueText, indexString);
+end
+
+SettingsButtonNarrationContextMixin = {};
+
+function SettingsButtonNarrationContextMixin:NarrationGetContext()
+	local indexString = self:GetParent():GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(NARRATION_OBJECT_BUTTON, indexString);
+end
+
 SettingsControlMixin = CreateFromMixins(SettingsListElementMixin);
 
 function SettingsControlMixin:OnLoad()
@@ -465,13 +567,16 @@ function SettingsCheckboxMixin:SetValue(value)
 	self:SetChecked(value);
 end
 
-SettingsCheckboxControlMixin = CreateFromMixins(SettingsControlMixin);
+SettingsCheckboxControlMixin = CreateFromMixins(SettingsControlMixin, SettingsCheckboxNarrationContextMixin);
 
 function SettingsCheckboxControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 
 	self.Checkbox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
 	self.Checkbox:SetPoint("LEFT", self, "CENTER", -80, 0);
+
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
 		if self.Checkbox:IsEnabled() then
@@ -551,7 +656,19 @@ function SettingsSliderControlMixin:OnLoad()
 	self.SliderWithSteppers:SetWidth(250);
 	self.SliderWithSteppers:SetPoint("LEFT", self, "CENTER", -80, 3);
 
-	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
+	Mixin(self.SliderWithSteppers,
+		NarrationForwardNameToParentMixin,
+		NarrationForwardDescriptionToParentMixin,
+		SettingsSliderNarrationContextMixin,
+		NarrationSkipTooltipsMixin
+	);
+
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
+
+	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
+
+	Mixin(self.SliderWithSteppers.Slider, NarrationForwardToParentMixin, DefaultTooltipMixin);
+
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
 	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
 end
@@ -599,6 +716,10 @@ function SettingsSliderControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
+function SettingsSliderControlMixin:NarrationGetContext()
+	return self.SliderWithSteppers:NarrationGetContext();
+end
+
 SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);
 
 function SettingsDropdownControlMixin:OnLoad()
@@ -607,6 +728,16 @@ function SettingsDropdownControlMixin:OnLoad()
 	local dropdownType = self.dropdownType or "SettingsDropdownWithButtonsTemplate";
 	self.Control = CreateFrame("Frame", nil, self, dropdownType);
 	self.Control:SetPoint("LEFT", self, "CENTER", -48, 3);
+
+	Mixin(self.Control,
+		NarrationForwardNameToParentMixin,
+		NarrationForwardDescriptionToParentMixin,
+		SettingsDropdownNarrationContextMixin,
+		NarrationSkipTooltipsMixin
+	);
+
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
+
 	self.Control.Dropdown:SetWidth(220);
 
 	local function OnMenuOpen(dropdown)
@@ -626,7 +757,10 @@ function SettingsDropdownControlMixin:OnLoad()
 	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, OnMenuOpen);
 	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, OnMenuClose);
 
-	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
+	Mixin(self.Control.Dropdown, NarrationForwardToParentMixin, DefaultTooltipMixin);
+
+	NarrationUtil.SetStaticName(self.Control.DecrementButton, NARRATION_DROPDOWN_PREVIOUS_OPTION);
+	NarrationUtil.SetStaticName(self.Control.IncrementButton, NARRATION_DROPDOWN_NEXT_OPTION);
 end
 
 function SettingsDropdownControlMixin:Init(initializer)
@@ -640,8 +774,8 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local setting = self:GetSetting();
 	local initializer = self:GetElementData();
 	local options = initializer:GetOptions();
-	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
-	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
+	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options, initializer);
+	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip, initializer);
 
 	if self.forceSteppersHidden then
 		self.Control:HideSteppers();
@@ -656,13 +790,17 @@ function SettingsDropdownControlMixin:InitDropdown()
 	end
 end
 
-function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
-	local inserter = Settings.CreateDropdownOptionInserter(setting, options);
+function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip, initializer)
+	local inserter = Settings.CreateDropdownOptionInserter(setting, options, initializer);
 	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip);
 end
 
 function SettingsDropdownControlMixin:Release()
 	SettingsControlMixin.Release(self);
+end
+
+function SettingsDropdownControlMixin:NarrationGetContext()
+	return self.Control:NarrationGetContext();
 end
 
 function SettingsDropdownControlMixin:OnSettingValueChanged(setting, value)
@@ -695,7 +833,7 @@ function SettingsButtonControlMixin:OnLoad()
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
 
-	Mixin(self.Button, DefaultTooltipMixin);
+	Mixin(self.Button, DefaultTooltipMixin, SettingsButtonNarrationContextMixin, NarrationForwardDescriptionToParentMixin);
 	DefaultTooltipMixin.OnLoad(self.Button);
 
 	self.Button.New = CreateFrame("Frame", nil, self, "NewFeatureLabelTemplate");
@@ -757,14 +895,20 @@ end
 
 function SettingsButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
-	local enabled = self:IsEnabled();
+	local displayEnabled = self:IsEnabled();
+	local buttonEnabled = displayEnabled;
 
-	self:SetButtonState(enabled);
-	self:DisplayEnabled(enabled);
+	local initializer = self:GetElementData();
+	if initializer and not initializer:EvaluateModifyPredicates() then
+		buttonEnabled = false;
+	end
+
+	self:SetButtonState(buttonEnabled);
+	self:DisplayEnabled(displayEnabled);
 end
 
-function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags, newTagID, gameDataFunc)
-	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip, newTagID = newTagID, gameDataFunc = gameDataFunc};
+function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags, newTagID, gameDataFunc, gameDataEvent)
+	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip, newTagID = newTagID, gameDataFunc = gameDataFunc, gameDataEvent = gameDataEvent};
 	local initializer = Settings.CreateElementInitializer("SettingButtonControlTemplate", data);
 
 	-- Some settings buttons, like ones that open to a setting category, should not show up in search.
@@ -907,7 +1051,7 @@ function SettingsColorSwatchControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
-SettingsCheckboxWithButtonControlMixin = CreateFromMixins(SettingsControlMixin);
+SettingsCheckboxWithButtonControlMixin = CreateFromMixins(SettingsControlMixin, SettingsCheckboxNarrationContextMixin);
 
 function SettingsCheckboxWithButtonControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
@@ -918,6 +1062,9 @@ function SettingsCheckboxWithButtonControlMixin:OnLoad()
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
 	self.Button:SetPoint("LEFT", self.Checkbox, "RIGHT", 5, 0);
+
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+	Mixin(self.Button, SettingsButtonNarrationContextMixin, NarrationSkipTooltipsMixin);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
 		if self.Checkbox:IsEnabled() then
@@ -1028,7 +1175,26 @@ function SettingsCheckboxSliderControlMixin:OnLoad()
 	self.SliderWithSteppers:SetWidth(214);
 	self.SliderWithSteppers:SetPoint("LEFT", self.Checkbox, "RIGHT", 5, 0);
 
-	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
+	Mixin(self.SliderWithSteppers,
+		NarrationForwardNameToParentMixin,
+		SettingsSliderNarrationContextMixin,
+		NarrationSkipTooltipsMixin
+	);
+
+	self.SliderWithSteppers.Slider:SetNarrationLabelRegion(self.Text);
+
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+	Mixin(self.Tooltip, NarrationForwardToParentMixin);
+	Mixin(self.SliderWithSteppers.Slider, NarrationForwardToParentMixin, DefaultTooltipMixin);
+
+	self.SliderWithSteppers.NarrationGetDescription = function()
+		local initializer = self:GetElementData();
+		if initializer and initializer.data then
+			return initializer.data.sliderTooltip;
+		end
+
+		return nil;
+	end;
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
 	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
 
@@ -1111,6 +1277,25 @@ function SettingsCheckboxSliderControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
+function SettingsCheckboxSliderControlMixin:NarrationGetContext()
+	local checkboxContext = NarrationUtil.GetCheckboxContext(self.Checkbox);
+	local sliderContext = nil;
+	local sliderValue = nil;
+	if self.Checkbox:GetChecked() then
+		sliderContext = NarrationSliderMixin.NarrationGetContext(self.SliderWithSteppers.Slider);
+		sliderValue = NarrationSliderMixin.NarrationGetDescription(self.SliderWithSteppers.Slider);
+	end
+	local indexString = self:GetNarrationIndexString();
+	return NarrationUtil.MakeNarrationString(checkboxContext, sliderContext, sliderValue, indexString);
+end
+
+function SettingsCheckboxSliderControlMixin:NarrationGetDescription()
+	if self.Checkbox:GetChecked() then
+		return self.SliderWithSteppers:NarrationGetDescription();
+	end
+	return SettingsListElementMixin.NarrationGetDescription(self);
+end
+
 function SettingsCheckboxSliderControlMixin:Release()
 	self.Checkbox:Release();
 	self.SliderWithSteppers:Release();
@@ -1136,7 +1321,7 @@ function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, 
 	return initializer;
 end
 
-SettingsCheckboxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin);
+SettingsCheckboxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin, SettingsCheckboxNarrationContextMixin);
 
 function SettingsCheckboxDropdownControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
@@ -1148,7 +1333,21 @@ function SettingsCheckboxDropdownControlMixin:OnLoad()
 	self.Control:SetPoint("LEFT", self.Checkbox, "RIGHT", 32, 0);
 	self.Control.Dropdown:SetWidth(220);
 
-	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
+	Mixin(self.Control.Dropdown, NarrationForwardToParentMixin, DefaultTooltipMixin);
+	Mixin(self.Control, NarrationForwardNameToParentMixin, SettingsDropdownNarrationContextMixin, NarrationSkipTooltipsMixin);
+
+	self.Control.NarrationGetDescription = function()
+		local initializer = self:GetElementData();
+		if initializer and initializer.data then
+			return initializer.data.dropDownTooltip;
+		end
+
+		return nil;
+	end;
+
+	NarrationUtil.SetStaticName(self.Control.DecrementButton, NARRATION_DROPDOWN_PREVIOUS_OPTION);
+	NarrationUtil.SetStaticName(self.Control.IncrementButton, NARRATION_DROPDOWN_NEXT_OPTION);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
 		if self.Checkbox:IsEnabled() then
@@ -1174,7 +1373,7 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	self.Checkbox:Init(cbSetting:GetValue(), initCheckboxTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
-	local inserter = Settings.CreateDropdownOptionInserter(dropdownSetting, dropdownOptions);
+	local inserter = Settings.CreateDropdownOptionInserter(dropdownSetting, dropdownOptions, initializer);
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 
@@ -1194,6 +1393,9 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);
 		self.Control.Dropdown:UpdateToMenuSelections(self.Control.Dropdown:GetMenuDescription());
 	end
+
+	local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
+	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
 
 	self:EvaluateState();
 end
@@ -1259,7 +1461,7 @@ function CreateSettingsCheckboxDropdownInitializer(cbSetting, cbLabel, cbTooltip
 	return Settings.CreateSettingInitializer("SettingsCheckboxDropdownControlTemplate", data);
 end
 
-SettingsCheckboxWithColorSwatchControlMixin = CreateFromMixins(SettingsControlMixin);
+SettingsCheckboxWithColorSwatchControlMixin = CreateFromMixins(SettingsControlMixin, SettingsCheckboxNarrationContextMixin);
 
 function SettingsCheckboxWithColorSwatchControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
@@ -1269,6 +1471,8 @@ function SettingsCheckboxWithColorSwatchControlMixin:OnLoad()
 
 	self.ColorSwatch = CreateFrame("Button", nil, self, "ColorSwatchTemplate");
 	self.ColorSwatch:SetPoint("LEFT", self.Checkbox, "RIGHT", 12, -2);
+
+	Mixin(self.Checkbox, NarrationForwardToParentMixin);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
 		if self.Checkbox:IsEnabled() then

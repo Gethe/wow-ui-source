@@ -85,7 +85,7 @@ end
 
 EditModeMagnetismManager = {};
 
-hooksecurefunc("UpdateUIParentPosition", function() EditModeMagnetismManager:UpdateUIParentPoints() end);
+hooksecurefunc("UpdateUIParentPosition", function() EditModeMagnetismManager:UpdateTopLevelParentPoints() end);
 
 EditModeMagnetismManager.magneticFrames = {};
 
@@ -94,16 +94,16 @@ EditModeMagnetismManager.magnetismRange = 8;
 EditModeMagnetismManager.sqrMagnetismRange = EditModeMagnetismManager.magnetismRange * EditModeMagnetismManager.magnetismRange;
 EditModeMagnetismManager.sqrCornerMagnetismRange = EditModeMagnetismManager.sqrMagnetismRange * 2;
 
-function EditModeMagnetismManager:UpdateUIParentPoints()
-	self.uiParentCenterX, self.uiParentCenterY = UIParent:GetCenter();
+function EditModeMagnetismManager:UpdateTopLevelParentPoints()
+	self.topLevelParentCenterX, self.topLevelParentCenterY = UIParent:GetCenter();
 
 	local left, bottom, width, height = UIParent:GetRect();
-	self.uiParentWidth = width;
-	self.uiParentHeight = height;
-	self.uiParentLeft = left;
-	self.uiParentRight = left + width;
-	self.uiParentBottom = bottom;
-	self.uiParentTop = bottom + height;
+	self.topLevelParentWidth = width;
+	self.topLevelParentHeight = height;
+	self.topLevelParentLeft = left;
+	self.topLevelParentRight = left + width;
+	self.topLevelParentBottom = bottom;
+	self.topLevelParentTop = bottom + height;
 end
 
 function EditModeMagnetismManager:SetMagnetismRange(magnetismRange)
@@ -130,14 +130,14 @@ end
 
 function EditModeMagnetismManager:RegisterGridLine(line, verticalLine, centerOffset)
 	if verticalLine then
-		self.magneticGridLines.vertical[line] = self.uiParentCenterX + centerOffset;
+		self.magneticGridLines.vertical[line] = self.topLevelParentCenterX + centerOffset;
 	else
-		self.magneticGridLines.horizontal[line] = self.uiParentCenterY + centerOffset;
+		self.magneticGridLines.horizontal[line] = self.topLevelParentCenterY + centerOffset;
 	end
 end
 
 function EditModeMagnetismManager:GetEligibleMagneticFrames(systemFrame)
-	-- UIParent is always eligible
+	-- The top-level parent is always eligible.
 	local eligibleFrames = {
 		horizontal	= { UIParent },
 		vertical	= { UIParent },
@@ -175,25 +175,25 @@ function EditModeMagnetismManager:CheckReplaceMagneticFrameInfo(currentMagneticF
 	end
 end
 
--- Returns the points we want to check when seeing if a point relative to UIParent is close enough to snap to.
-function EditModeMagnetismManager:GetUIParentCheckPoints(systemFrame, verticalLines)
+-- Returns the points we want to check when seeing if a point relative to the top-level parent is close enough to snap to.
+function EditModeMagnetismManager:GetTopLevelParentCheckPoints(systemFrame, verticalLines)
 	local systemFrameCenterX, systemFrameCenterY = systemFrame:GetScaledSelectionCenter();
 	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
 
 	return verticalLines
 	and {
-		{ point = "LEFT", relativePoint = "LEFT", source = systemFrameLeft, target = self.uiParentLeft },
-		{ point = "RIGHT", relativePoint = "RIGHT", source = systemFrameRight, target = self.uiParentRight },
-		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterX, target = self.uiParentCenterX },
-		{ point = "LEFT", relativePoint = "CENTER", source = systemFrameLeft, target = self.uiParentCenterX },
-		{ point = "RIGHT", relativePoint = "CENTER", source = systemFrameRight, target = self.uiParentCenterX },
+		{ point = "LEFT", relativePoint = "LEFT", source = systemFrameLeft, target = self.topLevelParentLeft },
+		{ point = "RIGHT", relativePoint = "RIGHT", source = systemFrameRight, target = self.topLevelParentRight },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterX, target = self.topLevelParentCenterX },
+		{ point = "LEFT", relativePoint = "CENTER", source = systemFrameLeft, target = self.topLevelParentCenterX },
+		{ point = "RIGHT", relativePoint = "CENTER", source = systemFrameRight, target = self.topLevelParentCenterX },
 	}
 	or {
-		{ point = "TOP", relativePoint = "TOP", source = systemFrameTop, target = self.uiParentTop },
-		{ point = "BOTTOM", relativePoint = "BOTTOM", source = systemFrameBottom, target = self.uiParentBottom },
-		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterY, target = self.uiParentCenterY },
-		{ point = "TOP", relativePoint = "CENTER", source = systemFrameTop, target = self.uiParentCenterY },
-		{ point = "BOTTOM", relativePoint = "CENTER", source = systemFrameBottom, target = self.uiParentCenterY },
+		{ point = "TOP", relativePoint = "TOP", source = systemFrameTop, target = self.topLevelParentTop },
+		{ point = "BOTTOM", relativePoint = "BOTTOM", source = systemFrameBottom, target = self.topLevelParentBottom },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterY, target = self.topLevelParentCenterY },
+		{ point = "TOP", relativePoint = "CENTER", source = systemFrameTop, target = self.topLevelParentCenterY },
+		{ point = "BOTTOM", relativePoint = "CENTER", source = systemFrameBottom, target = self.topLevelParentCenterY },
 	};
 end
 
@@ -215,14 +215,14 @@ function EditModeMagnetismManager:GetGridLineCheckPoints(systemFrame, verticalLi
 	};
 end
 
--- Find the closest grid line (or UIParent side/center point) and returns the distance, point and offset to use (if it ends up being closer than any magnetic frames)
+-- Find the closest grid line (or top-level parent side/center point) and return the distance, point, and offset to use if it ends up being closer than any magnetic frames.
 function EditModeMagnetismManager:FindClosestGridLine(systemFrame, verticalLines)
 	local closestDistance, closestPoint, closestRelativePoint;
 	local closestOffset = 0;
 
-	-- First find the closest distance to the sides and center of UIParent
-	local uiParentCheckPoints = self:GetUIParentCheckPoints(systemFrame, verticalLines);
-	for _, checkPoint in ipairs(uiParentCheckPoints) do
+	-- First find the closest distance to the sides and center of the top-level parent
+	local topLevelParentCheckPoints = self:GetTopLevelParentCheckPoints(systemFrame, verticalLines);
+	for _, checkPoint in ipairs(topLevelParentCheckPoints) do
 		local distance = abs(checkPoint.target - checkPoint.source);
 		if not closestDistance or distance < closestDistance then
 			closestDistance = distance;
@@ -250,14 +250,14 @@ function EditModeMagnetismManager:FindClosestGridLine(systemFrame, verticalLines
 
 					-- In some scenarios we need to invert the offset
 					if checkPoint.point == "TOP" then
-						closestOffset = gridLineOffset - self.uiParentTop;
+						closestOffset = gridLineOffset - self.topLevelParentTop;
 					elseif checkPoint.point == "RIGHT" then
-						closestOffset = gridLineOffset - self.uiParentRight;
+						closestOffset = gridLineOffset - self.topLevelParentRight;
 					elseif checkPoint.point == "CENTER" then
 						if verticalLines then
-							closestOffset = gridLineOffset - self.uiParentCenterX;
+							closestOffset = gridLineOffset - self.topLevelParentCenterX;
 						else
-							closestOffset = gridLineOffset - self.uiParentCenterY;
+							closestOffset = gridLineOffset - self.topLevelParentCenterY;
 						end
 					else
 						closestOffset = gridLineOffset;
@@ -410,7 +410,7 @@ function EditModeMagnetismManager:GetMagneticFrameInfoOptions(systemFrame)
 	return horizontalMagneticFrameInfo, verticalMagneticFrameInfo, cornerMagneticFrameInfo;
 end
 
-local function IsGridLineOrUIParent(frame)
+local function IsGridLineOrTopLevelParent(frame)
 	return frame and (frame.isGridLine or frame == UIParent);
 end
 
@@ -421,8 +421,8 @@ function EditModeMagnetismManager:GetMagneticFrameInfos(systemFrame)
 	if cornerMagneticFrameInfo then
 		-- Prioritize corner snaps
 		return { cornerMagneticFrameInfo };
-	elseif horizontalMagneticFrameInfo and IsGridLineOrUIParent(horizontalMagneticFrameInfo.frame) and verticalMagneticFrameInfo and IsGridLineOrUIParent(verticalMagneticFrameInfo.frame) then
-		-- If horizontal and vertical are both grid lines or UIParent then we are gonna double snap to them
+	elseif horizontalMagneticFrameInfo and IsGridLineOrTopLevelParent(horizontalMagneticFrameInfo.frame) and verticalMagneticFrameInfo and IsGridLineOrTopLevelParent(verticalMagneticFrameInfo.frame) then
+		-- If horizontal and vertical are both grid lines or the top-level parent then we double snap to them.
 		return { horizontalMagneticFrameInfo, verticalMagneticFrameInfo };
 	elseif horizontalMagneticFrameInfo or verticalMagneticFrameInfo then
 		-- Snap to the closest frame info between the horizontal and vertical

@@ -136,6 +136,24 @@ function ProfessionsReagentSlotMixin:SetShowOnlyRequired(value, skipUpdate)
 	end
 end
 
+function ProfessionsReagentSlotMixin:IsReagentItemReadyForAllocationText(reagent)
+	if reagent.itemID and reagent.itemID > 0 then
+		local item = Item:CreateFromItemID(reagent.itemID);
+		if item:IsItemDataCached() then
+			return true;
+		else
+			item:ContinueOnItemLoad(function()
+				-- check that the callback is for same item being displayed
+				if reagent.itemID == item:GetItemID() then
+					self:UpdateAllocationText();
+				end
+			end);
+			return false;
+		end
+	end
+	return true;
+end
+
 function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	if not reagentSlotSchematic then
@@ -144,7 +162,9 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 
 	local currentReagent = self:GetReagent();
 	if currentReagent then
-		self:SetNameText(Professions.GetReagentName(currentReagent));
+		if self:IsReagentItemReadyForAllocationText(currentReagent) then
+			self:SetNameText(Professions.GetReagentName(currentReagent));
+		end
 	end
 
 	-- Optional slots do not currently use the name text.
@@ -227,8 +247,10 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	-- For basic slots, index 1 corresponds to either a fixed reagent or a
 	-- quality reagent whose name is identical to the adjacent reagents in the table.
 	local reagent = reagentSlotSchematic.reagents[foundIndex or 1];
-	local reagentName = Professions.GetReagentName(reagent);
-	self:SetNameText(("%s %s"):format(quantityText, reagentName));
+	if self:IsReagentItemReadyForAllocationText(reagent) then
+		local reagentName = Professions.GetReagentName(reagent);
+		self:SetNameText(("%s %s"):format(quantityText, reagentName));
+	end
 end
 
 function ProfessionsReagentSlotMixin:GetAllocationDetails()

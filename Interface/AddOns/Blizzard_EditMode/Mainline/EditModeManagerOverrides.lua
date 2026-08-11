@@ -37,6 +37,8 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshPersonalResourceDisplay();
 	self:RefreshEncounterEvents();
 	self:RefreshDamageMeter();
+	self:RefreshRaidWarning();
+	self:RefreshLossOfControl();
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()
@@ -45,6 +47,7 @@ function EditModeAccountSettingsMixin:EditModeFrameReset()
 	self:ResetRaidFrames();
 	self:ResetArenaFrames();
 	self:ResetHudTooltip();
+	self:ResetRaidWarning();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);

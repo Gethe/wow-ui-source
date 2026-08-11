@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="PartyFrame.lua"/>
-	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame, EditModeUnitFrameSystemTemplate, PingTopLevelPassThroughAttributeTemplate" frameStrata="LOW" parent="UIParent" toplevel="true">
+	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame, EditModeUnitFrameSystemTemplate, PingTopLevelPassThroughAttributeTemplate" frameStrata="LOW" parent="UIParent" toplevel="true" roleset="unitFrames">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Party" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>

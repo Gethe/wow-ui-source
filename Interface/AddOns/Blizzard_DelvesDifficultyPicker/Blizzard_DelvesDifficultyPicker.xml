@@ -153,6 +153,36 @@
 				</Layers>
 			</Frame>
 
+			<Button parentKey="TieredEntranceViewRewardsButton" mixin="TieredEntranceViewRewardsMixin">
+				<Size x="49" y="48"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="10"/>
+				</Anchors>
+				<NormalTexture atlas="lair-button-reward" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture atlas="lair-button-reward-pressed"  useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture atlas="lair-button-reward-disable" useAtlasSize="true" >
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</DisabledTexture>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			
 			<!-- Delve Background -->
 			<Frame parentKey="DelveBackgroundWidgetContainer" inherits="UIWidgetContainerTemplate" frameStrata="BACKGROUND">
 				<Size x="1" y="1"/>

@@ -2,5 +2,6 @@
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
 ## AllowLoadGameType: mists
+Blizzard_ItemUpgradeUI_Bootstrap.lua [Bootstrap]
 Mists/Blizzard_ItemUpgradeUI.lua
 Mists/Blizzard_ItemUpgradeUI.xml

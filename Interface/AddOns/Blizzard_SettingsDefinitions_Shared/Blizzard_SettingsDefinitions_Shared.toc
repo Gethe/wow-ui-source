@@ -1,6 +1,4 @@
 ## Title: Blizzard_SettingsDefinitions_Shared
-## Author: Blizzard Entertainment
-## DefaultState: enabled
 ## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar, Blizzard_Colors, Blizzard_AccessibilityTemplates
 ## AllowLoad: Both
 ## LoadSavedVariablesFirst: 1
@@ -17,3 +15,7 @@ AccessibilitySettingsPreview.lua
 [Family]\TextSizePreview.lua [AllowLoadGameType mainline]
 [Family]\TextSizePreview.xml [AllowLoadGameType mainline]
 [Family]\Text.lua [AllowLoadGameType mainline]
+AudioAssist.lua
+AudioAssist.xml
+Subtitles.lua
+Subtitles.xml

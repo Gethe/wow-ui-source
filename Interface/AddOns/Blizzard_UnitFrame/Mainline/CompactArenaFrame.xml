@@ -3,7 +3,7 @@
 
 	<Cooldown name="ArenaUnitFrameCooldownTemplate" inherits="CooldownFrameTemplate" virtual="true">
 		<SwipeTexture>
-			<Color r="0" g="0" b="0" a="0.8"/>
+			<Color r="0" g="0" b="0" a="0.64"/>
 		</SwipeTexture>
 	</Cooldown>
 
@@ -16,7 +16,7 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="0.5"/>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
 						<Anchor point="BOTTOMRIGHT" x="0.5" y="0"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
@@ -25,7 +25,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate" setAllPoints="true"/>
+			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" y="1"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Cooldown>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -161,7 +166,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="CompactArenaFrameTemplate" inherits="CompactPartyFrameTemplate, UIParentRightManagedFrameTemplate, EditModeArenaUnitFrameSystemTemplate" mixin="CompactArenaFrameMixin" hidden="true" virtual="true">
+	<Frame name="CompactArenaFrameTemplate" inherits="CompactPartyFrameTemplate, RightManagedFrameTemplate, EditModeArenaUnitFrameSystemTemplate" mixin="CompactArenaFrameMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="12" type="number"/>
 			<KeyValue key="titleText" value="ARENA" type="global"/>

@@ -48,23 +48,4 @@
 			<Attribute name="showRaid" type="boolean" value="true"/>
 		</Attributes>
 	</Frame>
-
-	<!-- A frame used for managing auras -->
-	<Frame name="SecureAuraHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
-		<Scripts>
-			<OnLoad function="SecureAuraHeader_OnLoad"/>
-			<OnEvent function="SecureAuraHeader_OnEvent"/>
-			<OnShow function="SecureAuraHeader_OnShow"/>
-			<OnHide function="SecureAuraHeader_OnHide"/>
-			<OnUpdate function="SecureAuraHeader_OnUpdate" />
-			<OnAttributeChanged function="SecureAuraHeader_OnAttributeChanged"/>
-		</Scripts>
-	</Frame>
-
-	<!-- A frame used for an individual button in a secure aura header template. Provided as a convenience for user addon authors. -->
-	<Button name="SecureAuraButtonTemplate" inherits="SecureActionButtonTemplate" registerForClicks="RightButtonDown" virtual="true">
-		<Attributes>
-			<Attribute name="type2" value="cancelaura"/>
-		</Attributes>
-	</Button>
 </Ui>

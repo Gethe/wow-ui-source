@@ -117,7 +117,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	if not memberInfo.lastOnlineHour then
 		self.OnlineText:SetText(GUILD_ONLINE_LABEL);
 	else
-		self.OnlineText:SetText(RecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
+		self.OnlineText:SetText(TimeUtil.GetRecentTimeDate(memberInfo.lastOnlineYear, memberInfo.lastOnlineMonth, memberInfo.lastOnlineDay, memberInfo.lastOnlineHour));
 	end
 
 	local personalNoteText = self.NoteBackground.PersonalNoteText;

@@ -54,6 +54,10 @@ function SpellMixin:GetSpellDescription()
 	return C_Spell.GetSpellDescription(self:GetSpellID());
 end
 
+function SpellMixin:GetSpellDescriptionForItemLocation(itemLocation)
+	return C_Spell.GetSpellDescriptionForItemLocation(self:GetSpellID(), itemLocation);
+end
+
 -- Add a callback to be executed when spell data is loaded, if the spell data is already loaded then execute it immediately
 function SpellMixin:ContinueOnSpellLoad(callbackFunction)
 	if type(callbackFunction) ~= "function" or self:IsSpellEmpty() then

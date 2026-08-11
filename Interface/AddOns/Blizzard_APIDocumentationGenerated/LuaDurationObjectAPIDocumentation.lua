@@ -2,6 +2,7 @@ local LuaDurationObjectAPI =
 {
 	Name = "LuaDurationObjectAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =

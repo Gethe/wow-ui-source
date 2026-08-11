@@ -88,6 +88,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+				{ Name = "suppressEvents", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

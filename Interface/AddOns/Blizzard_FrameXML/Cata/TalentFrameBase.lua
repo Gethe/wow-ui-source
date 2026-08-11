@@ -53,16 +53,16 @@ function TalentFrame_Update(TalentFrame)
 	-- desaturate the background if this isn't the active talent group
 	local backgroundPiece = _G[talentFrameName.."BackgroundTopLeft"];
 	backgroundPiece:SetTexture(base.."TopLeft");
-	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece:SetDesaturated(not isActiveTalentGroup);
 	backgroundPiece = _G[talentFrameName.."BackgroundTopRight"];
 	backgroundPiece:SetTexture(base.."TopRight");
-	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece:SetDesaturated(not isActiveTalentGroup);
 	backgroundPiece = _G[talentFrameName.."BackgroundBottomLeft"];
 	backgroundPiece:SetTexture(base.."BottomLeft");
-	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece:SetDesaturated(not isActiveTalentGroup);
 	backgroundPiece = _G[talentFrameName.."BackgroundBottomRight"];
 	backgroundPiece:SetTexture(base.."BottomRight");
-	SetDesaturation(backgroundPiece, not isActiveTalentGroup);
+	backgroundPiece:SetDesaturated(not isActiveTalentGroup);
 
 	local numTalents = GetNumTalents(selectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons

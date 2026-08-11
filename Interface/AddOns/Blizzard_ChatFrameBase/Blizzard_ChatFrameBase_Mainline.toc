@@ -2,9 +2,11 @@
 ## Dep: Blizzard_AutoComplete
 ## Dep: Blizzard_Settings_Shared
 ## Dep: Blizzard_TimerunningUtil
+## Dep: Blizzard_FrameXMLUtil [AllowLoad game]
 ## Dep: Blizzard_GlueStubs [AllowLoad glue]
 ## Dep: Blizzard_EditMode [AllowLoad game]
 ## Dep: Blizzard_TransmogShared [AllowLoad game]
+## Dep: Blizzard_GameMenuEsc
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Shared\HistoryKeeper.lua

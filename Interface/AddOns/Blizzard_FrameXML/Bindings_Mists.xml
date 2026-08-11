@@ -1114,13 +1114,13 @@
 	</Binding>
 
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		if ( SHOW_ENEMIES ) then
-			SetCVar("nameplateShowEnemies", 0);
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		if ( showEnemies ) then
+			Settings.SetValue("nameplateShowEnemies", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowEnemies", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -1128,13 +1128,15 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_FRIENDS ) then
-			SetCVar("nameplateShowFriends", 0);
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( showFriends ) then
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -1142,19 +1144,21 @@
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
-			SetCVar("nameplateShowEnemies", 1);
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( not showEnemies or not showFriends ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			Settings.SetValue("nameplateShowFriendlyNpcs", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			end
 		else
-			SetCVar("nameplateShowEnemies", 0);
-			SetCVar("nameplateShowFriends", 0);
+			Settings.SetValue("nameplateShowEnemies", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			Settings.SetValue("nameplateShowFriendlyNpcs", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
@@ -1232,25 +1236,39 @@
 	</Binding>
 
 	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal();
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSTOYBOX" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
+		end
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
 	</Binding>
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
-		ToggleEncounterJournal();
+		if not DISALLOW_FRAME_TOGGLING and CanShowEncounterJournal() then
+			ToggleEncounterJournal();
+		end
 	</Binding>
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_SPELL);
@@ -1268,7 +1286,9 @@
 		ToggleSpellBook(BOOKTYPE_WHAT_HAS_CHANGED);
 	</Binding>
 	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
-		ToggleGlyphFrame();
+		if SHOW_INSCRIPTION_LEVEL and UnitLevel("player") >= SHOW_INSCRIPTION_LEVEL then
+			ToggleGlyphFrame();
+		end
 	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		ToggleTalentFrame();
@@ -1287,16 +1307,22 @@
 		ToggleMiniMapRotation();
 	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleBattlefieldMap();
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleBattlefieldMap();
+		end
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
 	</Binding>
 	<Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
-		ToggleAchievementFrame();
+		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+			ToggleAchievementFrame();
+		end
 	</Binding>
 	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
-		ToggleAchievementFrame(1);
+		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+			ToggleAchievementFrame(1);
+		end
 	</Binding>
 	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("TokenFrame");

@@ -50,7 +50,7 @@ end
 
 function CombatOverrides.CreateFloatingCombatTextSetting(category)
 	Settings.SetupCVarCheckbox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
-	Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", "Blizzard_CombatText");
+	Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", CombatText_LoadUI);
 end
 
 function CombatOverrides.CreateOccludedSilhouettePlayerSetting(category)
@@ -64,4 +64,8 @@ function CombatOverrides.RunSettingsCallback(callback)
 	if not C_GameRules.IsPlunderstorm() then
 		callback();
 	end
+end
+
+function IsMouseoverCastSupported()
+	return true;
 end

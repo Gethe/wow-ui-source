@@ -351,6 +351,89 @@ function DirtiableMixin:MarkDirty()
 	self.dirty = true;
 end
 
+-- This mixin implements a small ordered dirty-update runner. Consumers
+-- define their own dirty flags and phase order. Phase methods return any
+-- downstream flags that should be processed later in the same pass.
+DirtyPhaseMixin = {};
+
+function DirtyPhaseMixin:InitDirtyPhases()
+	self.dirty = false;
+	self.dirtyFlags = CreateFlags();
+	self.dirtyPhases = {};
+end
+
+function DirtyPhaseMixin:OnDirtyChanged(_dirty)
+	-- Override in the consumer to schedule or cancel dirty processing.
+end
+
+function DirtyPhaseMixin:SetDirtyPhases(phases)
+	assert(type(phases) == "table", "phases must be a table.");
+
+	for _index, phase in ipairs(phases) do
+		assert(phase.flag ~= nil, "phase.flag must be provided.");
+		assert(type(phase.handler) == "function", "phase.handler must be a function.");
+	end
+
+	self.dirtyPhases = phases;
+end
+
+function DirtyPhaseMixin:IsDirty(mask)
+	if mask == nil then
+		return self.dirty;
+	end
+
+	return self.dirtyFlags:IsSet(mask);
+end
+
+function DirtyPhaseMixin:UpdateDirtyState()
+	local dirty = self.dirtyFlags:IsAnySet();
+
+	if self.dirty ~= dirty then
+		self.dirty = dirty;
+		self:OnDirtyChanged(dirty);
+	end
+end
+
+function DirtyPhaseMixin:MarkDirty(mask)
+	self.dirtyFlags:Set(mask);
+
+	if not self.dirty then
+		self:UpdateDirtyState();
+	end
+end
+
+function DirtyPhaseMixin:MarkClean(mask)
+	self.dirtyFlags:Clear(mask);
+
+	if self.dirty then
+		self:UpdateDirtyState();
+	end
+end
+
+function DirtyPhaseMixin:ProcessDirtyFlags()
+	if not self:IsDirty() then
+		return;
+	end
+
+	-- Dirty processing is single-pass; phases should only return later phases.
+	for _index, phase in ipairs(self.dirtyPhases) do
+		if self.dirtyFlags:IsSet(phase.flag) then
+			self.dirtyFlags:Clear(phase.flag);
+
+			local downstreamMask = phase.handler();
+			if downstreamMask ~= nil then
+				self.dirtyFlags:Set(downstreamMask);
+			end
+		end
+	end
+
+	self:UpdateDirtyState();
+
+	if self:IsDirty() then
+		assertsafe(false, "Dirty flags were not fully cleared during update pass (remaining flags: %d)", self.dirtyFlags:GetFlags());
+	end
+end
+
 MixinUtil = {};
 
 -- Calls an owned function on each entry of a table of mixin instances, checking that the instance does define that function

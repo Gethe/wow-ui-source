@@ -18,6 +18,7 @@
 					<KeyValues>
 						<KeyValue key="baseWidth" value="512" type="number"/>
 						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+						<KeyValue key="scaleWeight" value="0.8" type="number"/>
 					</KeyValues>
 					<Size x="512" y="256"/>
 					<Anchors>
@@ -52,7 +53,7 @@
 								</Layer>
 							</Layers>
 						</Frame>
-						<SimpleHTML parentKey="HtmlText" inherits="UserScaledFrameTemplate" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
+						<SimpleHTML parentKey="HtmlText" inherits="UserScaledFrameTemplate" mixin="NarrationHTMLMixin" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" resizeToFitContents="true" hidden="true">
 							<KeyValues>
 								<KeyValue key="baseWidth" value="450" type="number"/>
 								<KeyValue key="useScaleWeight" value="true" type="boolean"/>

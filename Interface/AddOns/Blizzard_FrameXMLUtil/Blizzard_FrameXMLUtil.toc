@@ -6,6 +6,7 @@
 ArenaUtil.lua
 [Family]\ArenaUtil.lua [AllowLoadGameType classic]
 PartyUtil.lua
+Classic\PartyUtil.lua [AllowLoadGameType classic]
 [Family]\QuestUtils.lua
 AchievementUtil.lua [AllowLoadGameType mainline]
 [Family]\MapUtil.lua
@@ -14,6 +15,7 @@ AzeriteEssenceUtil.lua [AllowLoadGameType mainline]
 AuraUtil.lua
 [Family]\AuraUtil.lua
 EditModeAuraDataProvider.lua
+GameTimeUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 RuneforgeUtil.lua [AllowLoadGameType mainline]
@@ -22,7 +24,12 @@ ItemUtil.lua
 PVPUtil.lua [AllowLoadGameType mainline]
 AnimationSystem.lua
 CurrencyContainer.lua
-DifficultyUtil.lua
+Classic\DifficultyUtil_Base.lua [AllowLoadGameType classic]
+DifficultyUtil_Shared.lua [AllowLoadGameType classic]
+Classic\DifficultyUtil.lua [AllowLoadGameType classic]
+Mainline\DifficultyUtil_Base.lua [AllowLoadGameType mainline]
+DifficultyUtil_Shared.lua [AllowLoadGameType mainline]
+Mainline\DifficultyUtil.lua [AllowLoadGameType mainline]
 RenownRewardUtil.lua [AllowLoadGameType mainline]
 TitleUtil.lua [AllowLoadGameType mainline]
 AdventureGuideUtil.lua
@@ -35,7 +42,6 @@ CurrencyUtil.lua [AllowLoadGameType mainline]
 [Family]\ExpansionUtil.lua [AllowLoadGameType mainline]
 [Family]\Blizzard_QuestSuperTracking.lua [AllowLoadGameType mainline]
 FadingFrame.lua
-[Family]\RaidWarning.lua
 Cooldown.lua
 [Family]\Cooldown.xml
 DragonridingUtil.lua [AllowLoadGameType mainline]

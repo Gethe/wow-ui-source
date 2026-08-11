@@ -183,7 +183,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<PlayerModel parentKey="PetModel">
+			<ModelScene parentKey="PetModelScene" inherits="NoCameraControlModelSceneMixinTemplate">
 				<Size x="250" y="210"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-40" y="20"/>
@@ -198,12 +198,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
-					</OnLoad>
-				</Scripts>
-			</PlayerModel>
+			</ModelScene>
 		</Frames>
 		<Scripts>
 			<OnLoad>

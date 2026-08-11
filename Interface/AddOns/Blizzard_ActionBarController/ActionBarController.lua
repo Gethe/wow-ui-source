@@ -232,5 +232,5 @@ function ValidateActionBarTransition()
 	end
 
 	MultiActionBar_Update();
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end

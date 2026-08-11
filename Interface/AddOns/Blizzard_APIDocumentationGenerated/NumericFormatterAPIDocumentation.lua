@@ -2,6 +2,7 @@ local NumericFormatterAPI =
 {
 	Name = "NumericFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -9,6 +10,7 @@ local NumericFormatterAPI =
 		{
 			Name = "FormatNumber",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

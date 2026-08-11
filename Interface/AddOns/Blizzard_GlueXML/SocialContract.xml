@@ -63,7 +63,7 @@
 					<Anchor point="CENTER" x="-12" y="5"/>
 				</Anchors>
 				<Frames>
-					<SimpleHTML parentKey="Text" resizeToFitContents="true">
+					<SimpleHTML parentKey="Text" mixin="NarrationHTMLMixin" resizeToFitContents="true">
 						<Size x="395" y="480"/>
 						<KeyValues>
 							<KeyValue key="scrollable" value="true" type="boolean"/>

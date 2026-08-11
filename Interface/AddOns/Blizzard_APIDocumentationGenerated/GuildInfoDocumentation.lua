@@ -153,6 +153,15 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "IsDiscordStreamSeparate",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "separateStream", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEncounterGuildNewsEnabled",
 			Type = "Function",
 
@@ -465,6 +474,12 @@ local GuildInfo =
 			Name = "GuildRanksUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_RANKS_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "GuildRanksUpdateActivePlayer",
+			Type = "Event",
+			LiteralName = "GUILD_RANKS_UPDATE_ACTIVE_PLAYER",
 			SynchronousEvent = true,
 		},
 		{

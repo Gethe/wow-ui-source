@@ -42,7 +42,7 @@
 		</KeyValues>
 	</CheckButton>
 
-	<Frame name="MultiBarBottomLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBarBottomLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar1ButtonTemplate" type="string"/>
@@ -72,7 +72,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBarBottomRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBarBottomRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar2ButtonTemplate" type="string"/>
@@ -101,7 +101,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBarLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBarLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="35" y="454"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar4ButtonTemplate" type="string"/>
@@ -130,7 +130,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBarRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBarRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="35" y="454"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar3ButtonTemplate" type="string"/>
@@ -159,7 +159,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBar5" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBar5" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar5ButtonTemplate" type="string"/>
@@ -188,7 +188,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBar6" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBar6" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar6ButtonTemplate" type="string"/>
@@ -217,7 +217,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MultiBar7" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+	<Frame name="MultiBar7" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true" roleset="actionBars">
 		<Size x="454" y="35"/>
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MultiBar7ButtonTemplate" type="string"/>

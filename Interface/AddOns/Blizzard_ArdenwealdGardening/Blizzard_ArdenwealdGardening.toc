@@ -2,4 +2,5 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 
+Blizzard_ArdenwealdGardening_Bootstrap.lua [Bootstrap]
 Blizzard_ArdenwealdGardening.xml

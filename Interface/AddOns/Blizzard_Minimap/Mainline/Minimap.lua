@@ -1,6 +1,6 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
-MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for UIParentManageFramePositions
+MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for ManageFramePositions
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
@@ -257,8 +257,8 @@ function MinimapMixin:OnEvent(event, ...)
 		self.ZoomOut:SetEnabled(zoom ~= 0);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if C_Minimap.ShouldUseHybridMinimap() then
-			if not HybridMinimap then
-				UIParentLoadAddOn("Blizzard_HybridMinimap");
+			if not HybridMinimap_LoadUI() then
+				return;
 			end
 			C_Minimap.GetUiMapID = function() return C_Map.GetBestMapForUnit("player"); end
 			HybridMinimap:Enable();
@@ -412,6 +412,10 @@ function MinimapClusterMixin:SetEditModeScale(scale)
 		self.BorderTop:SetScale(headerScale);
 		self.ZoneTextButton:SetScale(headerScale);
 	end
+end
+
+function MinimapClusterMixin:SetIconScale(scale)
+	self.MinimapContainer.Minimap:SetIconScale(scale);
 end
 
 local function ResetFramePoints(frame, accountForFrameScale)

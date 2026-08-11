@@ -123,12 +123,12 @@ function PetFrameMixin:OnShow()
 	UnitFrame_Update(self);
 	self:Update();
 	TotemFrame:Update();
-	UIParentManagedFrameMixin.OnShow(self);
+	ManagedFrameMixin.OnShow(self);
 end
 
 function PetFrameMixin:OnHide()
 	TotemFrame:Update();
-	UIParentManagedFrameMixin.OnHide(self);
+	ManagedFrameMixin.OnHide(self);
 end
 
 function PetFrameMixin:OnUpdate(elapsed)

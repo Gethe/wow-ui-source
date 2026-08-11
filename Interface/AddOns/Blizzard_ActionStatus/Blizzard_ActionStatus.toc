@@ -1,6 +1,0 @@
-## Title: Blizzard_ActionStatus
-## Dep: Blizzard_FrameXML [AllowLoad game]
-## Dep: Blizzard_GlueXML [AllowLoad glue]
-## AllowLoad: Both
-ActionStatus.lua
-ActionStatus.xml

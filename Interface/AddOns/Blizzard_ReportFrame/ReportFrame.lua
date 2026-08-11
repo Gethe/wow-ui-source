@@ -33,3 +33,14 @@ end
 function ReportFrameMixin:ManageButton(button, isActive)
 	button:SetEnabled(isActive);
 end
+
+function ReportFrame_EscapePressed()
+	if ReportFrame and ReportFrame:IsShown() then
+		ReportFrame:Hide();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, ReportFrame_EscapePressed);

@@ -25,7 +25,8 @@ DefaultCompactUnitFrameOptions = {
 	displayIncomingSummon = true,
 	displayInOtherGroup = true,
 	displayInOtherPhase = true,
-	showDispelIndicatorOverlay = true,
+	dispelIndicatorOverlayType = Enum.RaidDispelOverlayType.UseDebuffColor,
+	dispelIndicatorOverlayAnimation = false,
 
 	--If class colors are enabled also show the class colors for npcs in your raid frames or
 	--raid-frame-style party frames.

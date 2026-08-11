@@ -1,7 +1,7 @@
 ## Title: Blizzard_GameMenu
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip
+## Dependencies: Blizzard_GameTooltip, Blizzard_StaticPopup
 ## AllowLoadGameType: plunderstorm
 WoWLabs\GameMenuFrame.lua
 WoWLabs\GameMenuFrame.xml

@@ -52,6 +52,7 @@
 			</Animations>
 		</Frame>
 
+		<!-- Used for pings in the world or on units -->
 		<Frame name="PingPinFrameTemplate" mixin="PingPinFrameMixin" hidden="true" virtual="true">
 			<Size x="100" y="100"/>
 			<Anchors>
@@ -59,7 +60,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK" textureSubLevel="1">
-					<Texture parentKey="Icon">
+					<Texture parentKey="Icon" hidden="true">
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>
@@ -149,6 +150,40 @@
 						</Layer>
 					</Layers>
 				</Frame>
+				<Frame parentKey="ActionInfo" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK" textureSubLevel="1">
+							<Texture parentKey="Icon">
+								<Size x="30" y="30"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK" textureSubLevel="2">
+							<Texture parentKey="IconOverlay">
+								<Anchors>
+									<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+							</Anchors>
+							<SwipeTexture>
+								<Color r="0" g="0" b="0" a="0.49"/>
+							</SwipeTexture>
+						</Cooldown>
+					</Frames>
+				</Frame>
 			</Frames>
 			<Animations>
 				<AnimationGroup parentKey="IntroAnimGround_FlipBook" mixin="PingPinFlipBookAnimMixin">
@@ -207,6 +242,35 @@
 					<Alpha duration="0.23" order="1" fromAlpha="1" toAlpha="0"/>
 				</AnimationGroup>
 			</Animations>
+		</Frame>
+
+		<!-- Used for pings on UI -->
+		<Frame name="UnitPingIconFrameTemplate" mixin="UnitPingIconFrameMixin" virtual="true">
+			<Size x="30" y="30"/>
+			<Frames>
+				<Frame parentKey="IconFrame" hidden="true" setAllPoints="true">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="BackgroundMarker">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Icon">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+			</Scripts>
 		</Frame>
 	</ScopedModifier>
 </Ui>

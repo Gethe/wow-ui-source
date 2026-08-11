@@ -148,7 +148,7 @@ function RaidFinderQueueFrameIneligibleFrame_UpdateFrame(self)
 			else
 				self.leaveQueueButton:SetText(UNLIST_ME);
 			end
-			if ( RaidBrowser_IsEmpowered() ) then
+			if ( (not IsInGroup()) or UnitIsGroupLeader("player") ) then
 				self.leaveQueueButton:Enable();
 			else
 				self.leaveQueueButton:Disable();

@@ -2,7 +2,9 @@ CVarCallbackRegistry:SetCVarCachable("useClassicGuildUI");
 
 DISPLAYED_COMMUNITIES_INVITATIONS = DISPLAYED_COMMUNITIES_INVITATIONS or {};
 
-PERFORMANCEBAR_UPDATE_INTERVAL = 1;
+local PERFORMANCEBAR_UPDATE_INTERVAL = 1;
+local PERFORMANCEBAR_LOW_LATENCY = 300;
+local PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 
 -- Leaving in some of the original alert pane priorities (but commented out) so we don't have to go find them again.
 -- These came from SVN revision 401288.
@@ -395,7 +397,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		self:EvaluateAlertVisibility();
 		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
 	elseif ( event == "UPDATE_BINDINGS" ) then
-		if ( CommunitiesFrame_IsEnabled() ) then
+		if ( C_Club.IsEnabled() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 		elseif ( IsInGuild() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
@@ -475,7 +477,7 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 		if ( C_CVar.GetCVarBool("useClassicGuildUI") ) then
 			self.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
 			self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
-		elseif ( CommunitiesFrame_IsEnabled() ) then
+		elseif ( C_Club.IsEnabled() ) then
 			self.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 			self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
 		elseif ( IsInGuild() ) then
@@ -526,7 +528,7 @@ function GuildMicroButtonMixin:HasUnseenInvitations()
 end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon()
-	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
+	if C_Club.IsEnabled() and self:IsEnabled() then
 		self.NotificationOverlay:SetShown(C_SocialRestrictions.CanReceiveChat() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
@@ -688,7 +690,7 @@ function UpdateMicroButtons()
 end
 
 function SocialsMicroButton_UpdateNotificationIcon(self)
-	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
+	if C_Club.IsEnabled() and self:IsEnabled() then
 		--self.NotificationOverlay:SetShown(HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
 		if ( not C_SocialRestrictions.IsChatDisabled() and (HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages())) then
 			if ((not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not FriendsFrame:IsShown()) then
@@ -757,7 +759,7 @@ end
 
 function CollectionMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "Mounts");
-	SetDesaturation(self:GetDisabledTexture(), true);
+	self:GetDisabledTexture():SetDesaturated(true);
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("TOYS_UPDATED");
 	self:RegisterEvent("COMPANION_LEARNED");
@@ -804,6 +806,10 @@ function CollectionsMicroButton_SetAlertShown(shown)
 end
 
 function CollectionMicroButtonMixin:OnClick(button, down)
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleCollectionsJournal();
 	end
@@ -813,7 +819,7 @@ EJMicroButtonMixin = {};
 
 function EJMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "EJ");
-	SetDesaturation(self:GetDisabledTexture(), true);
+	self:GetDisabledTexture():SetDesaturated(true);
 	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
 	self.minLevel = SHOW_LFD_LEVEL;
@@ -893,7 +899,11 @@ function EJMicroButtonMixin:OnEvent(event, ...)
 end
 
 function EJMicroButtonMixin:OnClick(button, down)
-	if ( not KeybindFrames_InQuickKeybindMode() ) then
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if ( not KeybindFrames_InQuickKeybindMode() ) and CanShowEncounterJournal() then
 		ToggleEncounterJournal();
 	end
 end
@@ -991,4 +1001,102 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 		self.disabledTooltip = nil;
 		self:Enable();
 	end
+end
+
+MainMenuMicroButtonMixin = {};
+
+function MainMenuMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "MainMenu");
+	self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+	self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
+
+	self.hover = nil;
+	self.updateInterval = 0;
+end
+
+function MainMenuMicroButtonMixin:OnUpdate(elapsed)
+	if (self.updateInterval > 0) then
+		self.updateInterval = self.updateInterval - elapsed;
+	else
+		self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+		local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+		local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+
+		if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+			self.PerformanceIndicator:SetVertexColor(1, 0, 0);
+		elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+			self.PerformanceIndicator:SetVertexColor(1, 1, 0);
+		else
+			self.PerformanceIndicator:SetVertexColor(0, 1, 0);
+		end
+		if (self.hover) then
+			MainMenuBarPerformanceBarFrame_OnEnter(self);
+		end
+	end
+end
+
+function MainMenuMicroButtonMixin:OnMouseDown()
+	if ( self.down ) then
+		self.down = nil; -- I'm pretty sure none of this should ever get run.
+		if ( not GameMenuFrame:IsShown() ) then
+			CloseMenus();
+			CloseAllWindows()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+			ShowUIPanel(GameMenuFrame);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+			HideUIPanel(GameMenuFrame);
+			MainMenuMicroButton_SetNormal();
+		end
+		return;
+	end
+
+	MainMenuMicroButton_SetPushed();
+	self.down = 1;
+end
+
+function MainMenuMicroButtonMixin:OnMouseUp()
+	if ( self.down ) then
+		self.down = nil;
+		if ( self:IsMouseOver() ) then
+			if ( not GameMenuFrame:IsShown() ) then
+				CloseMenus();
+				CloseAllWindows()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+				ShowUIPanel(GameMenuFrame);
+			else
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+				HideUIPanel(GameMenuFrame);
+				MainMenuMicroButton_SetNormal();
+			end
+		end
+		UpdateMicroButtons();
+		return;
+	end
+	if ( self:GetButtonState() == "NORMAL" ) then
+		MainMenuMicroButton_SetPushed();
+		self.down = 1;
+	else
+		MainMenuMicroButton_SetNormal();
+		self.down = 1;
+	end
+end
+
+function MainMenuMicroButtonMixin:OnEnter()
+	self.hover = 1;
+	self.updateInterval = 0;
+end
+
+function MainMenuMicroButtonMixin:OnLeave()
+	self.hover = nil;
+	GameTooltip:Hide();
+end
+
+function MainMenuMicroButtonMixin:OnEvent()
+	self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+end
+
+function MainMenuMicroButtonMixin:UpdateNotificationIcon()
+	-- Classic doesnt have this notification icon
+	return;
 end

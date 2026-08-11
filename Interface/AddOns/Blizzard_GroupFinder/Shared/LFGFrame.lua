@@ -324,7 +324,7 @@ function LFG_DisplayGroupLeaderWarning(eventFrame)
 
 	if ( leaderName and eventFrame.lastLeader ~= leaderName ) then
 		--We'll hold this message a little bit longer than most.
-		RaidNotice_AddMessage(RaidWarningFrame, format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
+		RaidWarningUtil.AddMessage(format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
 		if ( not eventFrame.lastLeader ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(format(LFG_LEADER_CHANGED_WARNING, leaderName), info.r, info.g, info.b, info.id);

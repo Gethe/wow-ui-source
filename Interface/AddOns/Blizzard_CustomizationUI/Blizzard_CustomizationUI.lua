@@ -70,17 +70,21 @@ end
 ----------------- Randomize Appearance Button -----------------
 
 -- Expects to inherit CustomizationSmallButtonMixin
-CustomizationRandomizeAppearanceButtonMixin = {};
+CustomizationRandomizeAppearanceButtonMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function CustomizationRandomizeAppearanceButtonMixin:OnClick()
 	CustomizationSmallButtonMixin.OnClick(self);
 	self:GetCustomizationFrame():RandomizeAppearance();
 end
 
+function CustomizationRandomizeAppearanceButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Reset Camera Button -----------------
 
 -- Expects to inherit CustomizationSmallButtonMixin
-CustomizationResetCameraButtonMixin = {};
+CustomizationResetCameraButtonMixin = CreateFromMixins(NarrationSkipTooltipsMixin);
 
 function CustomizationResetCameraButtonMixin:OnClick()
 	CustomizationSmallButtonMixin.OnClick(self);
@@ -89,9 +93,13 @@ function CustomizationResetCameraButtonMixin:OnClick()
 	customizationFrame:UpdateCameraMode();
 end
 
+function CustomizationResetCameraButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Zoom Button -----------------
 
-CustomizationZoomButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin);
+CustomizationZoomButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin, NarrationSkipTooltipsMixin);
 
 function CustomizationZoomButtonMixin:DoClickAction()
 	self:GetCustomizationFrame():ZoomCamera(self.clickAmount);
@@ -101,9 +109,13 @@ function CustomizationZoomButtonMixin:DoHoldAction(elapsed)
 	self:GetCustomizationFrame():ZoomCamera(self.holdAmountPerSecond * elapsed);
 end
 
+function CustomizationZoomButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
+end
+
 ----------------- Rotate Button -----------------
 
-CustomizationRotateButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin);
+CustomizationRotateButtonMixin = CreateFromMixins(CustomizationClickOrHoldButtonMixin, NarrationSkipTooltipsMixin);
 
 function CustomizationRotateButtonMixin:DoClickAction()
 	self:GetCustomizationFrame():RotateSubject(self.clickAmount);
@@ -111,6 +123,10 @@ end
 
 function CustomizationRotateButtonMixin:DoHoldAction(elapsed)
 	self:GetCustomizationFrame():RotateSubject(self.holdAmountPerSecond * elapsed);
+end
+
+function CustomizationRotateButtonMixin:NarrationGetName()
+	return self.simpleTooltipLine;
 end
 
 ----------------- Category Button -----------------
@@ -155,20 +171,20 @@ function CustomizationCategoryButtonMixin:OnClick()
 
 	if self.categoryData.subcategory then
 		hadCategoryChange = not customizationFrame:IsSelectedSubcategory(self.categoryData);
-		if hadCategoryChange then 
+		if hadCategoryChange then
 			customizationFrame:SetSelectedSubcategory(self.categoryData);
 		end
 	else
-		-- If selecting a new main Category, we need to clear the Subcategory and 
+		-- If selecting a new main Category, we need to clear the Subcategory and
 		-- force it to pick a new best valid one in SetCategory().
 		hadCategoryChange = not customizationFrame:IsSelectedCategory(self.categoryData);
-		if hadCategoryChange then 
+		if hadCategoryChange then
 			customizationFrame:SetSelectedCategory(self.categoryData);
 			customizationFrame:SetSelectedSubcategory(nil);
 		end
 	end
 
-	-- If we didn't change category with this click, then we won't run SetCustomizations(), 
+	-- If we didn't change category with this click, then we won't run SetCustomizations(),
 	-- which would have updated our button's state. So, update it here.
 	if not hadCategoryChange then
 		self:SetChecked(true);
@@ -178,6 +194,15 @@ end
 
 function CustomizationCategoryButtonMixin:GetDebugName()
 	return self.categoryData and self.categoryData.name or nil;
+end
+
+function CustomizationCategoryButtonMixin:NarrationGetName()
+	return self.categoryData and self.categoryData.name or nil;
+end
+
+function CustomizationCategoryButtonMixin:NarrationGetContext()
+	-- This is a selection button, not a checkbox; narrate as a plain button.
+	return NARRATION_OBJECT_BUTTON;
 end
 
 ----------------- Customization Frame -----------------
@@ -347,7 +372,7 @@ function CustomizationFrameBaseMixin:SetCustomizations(categories)
 	keepState = self:HasSelectedSubcategory();
 	if needsCategorySelected or self:NeedsSubcategorySelected() then
 		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState);
-	else 
+	else
 		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState);
 	end
 

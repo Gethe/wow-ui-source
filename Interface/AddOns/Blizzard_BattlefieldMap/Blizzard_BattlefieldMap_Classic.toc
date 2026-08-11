@@ -1,0 +1,12 @@
+## Title: Blizzard Battlefield Map
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BattlefieldMapOptions
+## RequiredDep: Blizzard_MapCanvas
+## AllowLoad: game
+## AllowLoadGameType: classic
+Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
+Classic\Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
+
+Classic\Blizzard_BattlefieldMap.lua
+Classic\Blizzard_BattlefieldMap.xml
+Classic\Localization.lua

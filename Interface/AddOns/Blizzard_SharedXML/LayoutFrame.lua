@@ -564,6 +564,10 @@ function GridLayoutFrameMixin:Layout()
 		anchorPoint = self.layoutFramesGoingRight and "TOPLEFT" or "TOPRIGHT";
 	end
 
+	if self.paddingToLast then
+		layout.primaryPaddingStrategy = GridLayoutUtilPrimaryPaddingStrategy.AllSpacingToLast;
+	end
+
 	-- Apply the layout and then update our size
 	GridLayoutUtil.ApplyGridLayout(layoutChildren, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
 	ResizeLayoutMixin.Layout(self);

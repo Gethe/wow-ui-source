@@ -349,7 +349,7 @@
 		if ( not showEnemies or not showFriends ) then
 			Settings.SetValue("nameplateShowEnemies", true);
 			Settings.SetValue("nameplateShowFriendlyPlayers", true);
-		if ( Settings.GetValue("nameplateShowAll") ) then
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -404,7 +404,9 @@
 	</Binding>
 
 	<Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
-		ToggleAchievementFrame();
+		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+			ToggleAchievementFrame();
+		end
 	</Binding>
 
 	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
@@ -643,27 +645,6 @@
 	<Binding name="RAIDTARGETNONE" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTarget("target", 0);
 	</Binding>
-
-<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
-<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.TogglePingListener(keystate == "down");
-</Binding>
-
-<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Attack);
-</Binding>
-
-<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Warning);
-</Binding>
-
-<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.OnMyWay);
-</Binding>
-
-<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
-	C_Ping.SendMacroPing(Enum.PingSubjectType.Assist);
-</Binding>
 
 <!-- Housing Layout Edit Mode keybindings: These are unused in WoWHack and are listed
      here so they don't overwrite our default bindings when not found. -->

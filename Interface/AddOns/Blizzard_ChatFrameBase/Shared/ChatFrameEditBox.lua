@@ -167,6 +167,8 @@ function ChatFrameEditBoxBaseMixin:ProcessChatType(msg, index, send)
 			end
 		elseif (index == "CHANNEL") then
 			self:ExtractChannel(msg);
+		elseif (index == "GUILD_DISCORD" and not C_Discord.IsUserOAuthed()) then
+			self:ClearChat();
 		else
 			self:SetChatType(index);
 			self:SetText(msg);

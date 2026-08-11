@@ -3,6 +3,8 @@ GlueMenuFrameMixin = {};
 function GlueMenuFrameMixin:OnShow()
 	BaseLayoutMixin.OnShow(self);
 
+	NarrationUtil.NarrateCurrentScreen(NARRATION_CONTEXT_GAME_MENU);
+
 	GlueParent_AddModalFrame(self);
 	self:InitButtons();
 end

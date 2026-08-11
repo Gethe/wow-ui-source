@@ -3,5 +3,6 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 
+Blizzard_AlliedRacesUI_Bootstrap.lua [Bootstrap]
 Blizzard_AlliedRacesFrameUI.xml 
 Blizzard_AlliedRacesFrameUI.lua

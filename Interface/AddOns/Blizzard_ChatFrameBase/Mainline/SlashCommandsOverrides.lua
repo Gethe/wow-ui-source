@@ -55,6 +55,7 @@ if not C_Glue.IsOnGlueScreen() then
 	SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PING, SLASH_COMMAND_CATEGORY.PING, function(msg)
 		local action, target = SecureCmdOptionParse(msg);
 		local pingType;
+
 		if action then
 			pingType = pingNameToTypeTable[CleanupPingTypeString(action)];
 		end
@@ -66,7 +67,55 @@ if not C_Glue.IsOnGlueScreen() then
 			return;
 		end
 
-		C_Ping.SendMacroPing(pingType, target);
+		local pingMacroInfo = {
+			type = pingType,
+			targetToken = target
+		};
+		C_Ping.SendMacroPing(pingMacroInfo);
+	end);
+
+	SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PING_SPELL, SLASH_COMMAND_CATEGORY.PING, function(msg)
+		local spell = SecureCmdOptionParse(msg);
+		if not spell then
+			return;
+		end
+
+		local spellID = tonumber(spell);
+		if not spellID then
+			-- Spell name passed in, get spellID.
+			local spellInfo = C_Spell.GetSpellInfo(spell);
+			if not spellInfo then
+				return;
+			end
+
+			spellID = spellInfo.spellID;
+		end
+
+		local pingMacroInfo = {
+			spellID = spellID
+		};
+		C_Ping.SendMacroPing(pingMacroInfo);
+	end);
+
+	SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PING_ITEM, SLASH_COMMAND_CATEGORY.PING, function(msg)
+		local item = SecureCmdOptionParse(msg);
+		if not item then
+			return;
+		end
+
+		local itemID = tonumber(item);
+		if not itemID then
+			-- Item name passed in, get itemID.
+			itemID = C_Item.GetItemIDForItemInfo(item);
+			if itemID == 0 then
+				return;
+			end
+		end
+
+		local pingMacroInfo = {
+			itemID = itemID
+		};
+		C_Ping.SendMacroPing(pingMacroInfo);
 	end);
 end
 
@@ -150,7 +199,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.CALENDAR, SLASH_COMMAND_CATE
 	end
 
 	if ( not C_AddOns.IsAddOnLoaded("Blizzard_Calendar") ) then
-		UIParentLoadAddOn("Blizzard_Calendar");
+		Calendar_LoadUI();
 	end
 	if ( Calendar_Toggle ) then
 		Calendar_Toggle();
@@ -169,7 +218,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SET_TITLE, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRAMESTACK, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
+	DebugTools_LoadUI();
 
 	local showHiddenArg, showRegionsArg, showAnchorsArg;
 	local pattern = "^%s*(%S+)(.*)$";
@@ -289,8 +338,8 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMMUNITY, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAF, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if(C_RecruitAFriend.IsEnabled()) then
-		ToggleRafPanel();
+	if(C_RecruitAFriend.IsSystemEnabled()) then
+		ToggleRAFPanel();
 	end
 end);
 

@@ -5,6 +5,7 @@
 ## AllowLoad: game
 ## Dependencies: Blizzard_ClassMenu, Blizzard_HelpPlate
 ## AllowLoadGameType: mists
+Blizzard_EncounterJournal_Bootstrap.lua [Bootstrap]
 Cata\Blizzard_EncounterJournal.lua
 Cata\Blizzard_EncounterJournal.xml
 Localization.lua

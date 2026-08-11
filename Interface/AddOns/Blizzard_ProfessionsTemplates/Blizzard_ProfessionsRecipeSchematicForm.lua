@@ -22,9 +22,9 @@ StaticPopupDialogs["PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT"] = {
 
 local cooldownFormatter = CreateFromMixins(SecondsFormatterMixin);
 cooldownFormatter:Init(
-	SecondsFormatterConstants.ZeroApproximationThreshold, 
+	SecondsFormatterConstants.ZeroApproximationThreshold,
 	SecondsFormatter.Abbreviation.None,
-	SecondsFormatterConstants.DontRoundUpLastUnit, 
+	SecondsFormatterConstants.DontRoundUpLastUnit,
 	SecondsFormatterConstants.DontConvertToLower);
 cooldownFormatter:SetDesiredUnitCount(2);
 
@@ -38,8 +38,8 @@ local function CreateVerticalLayoutOrganizer(anchor, xPadding, yPadding)
 
 	function OrganizerMixin:Add(frame, order, xPadding, yPadding)
 		table.insert(self.entries, {
-			frame = frame, 
-			order = order, 
+			frame = frame,
+			order = order,
 			xPadding = xPadding or 0,
 			yPadding = yPadding or 0,
 		});
@@ -101,7 +101,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		Professions.SetShouldAllocateBestQualityReagents(checked);
 
 		self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, checked);
-		
+
 		self:UpdateAllSlots();
 
 		-- Trick to re-fire the OnEnter script to update the tooltip.
@@ -144,7 +144,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	end);
 
 	self.statsChangedHandler = GenerateClosure(self.OnAllocationsChanged, self);
-	
+
 	local function SetFavoriteTooltip(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		GameTooltip_AddHighlightLine(GameTooltip, button:GetChecked() and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE);
@@ -484,10 +484,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		-- would first need to be guaranteed that no state is accessed
 		-- off the details frame that would not have been set as expected.
 		self.transaction:SetAllocationsChangedHandler(nil);
-		
+
 		if self.transaction:IsRecraft() == nil then
 			self.transaction:SetRecraft(isRecraft);
-		end	
+		end
 	end
 
 	local function AllocateModification(slotIndex, reagentSlotSchematic)
@@ -517,7 +517,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	-- reagents. If so, also hide the check box so that the player doesn't reactivate the option for no benefit.
 	local alwaysUsesLowestQuality = recipeInfo.alwaysUsesLowestQuality;
 	local shouldAllocateBest = not alwaysUsesLowestQuality and Professions.ShouldAllocateBestQualityReagents();
-	
+
 	if newTransaction or not self.transaction:IsManuallyAllocated() then
 		self.transaction:SanitizeOptionalAllocations();
 		-- Unless the allocation has been manually changed, the 'best quality reagent' option is used to
@@ -539,7 +539,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		local allocationsCopy = self.transaction:GetAllocationsCopy(slotIndex);
 		self.QualityDialog:ReinitAllocations(allocationsCopy);
 	end
-		
+
 	local isCooldownOrganized = false;
 	local function UpdateCooldown()
 		local function UpdateText(fontString)
@@ -562,7 +562,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				fontString:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				return true;
 			end
-			
+
 			if cooldown then
 				local function SetCooldownRemaining(cooldown)
 					fontString:SetText(COOLDOWN_REMAINING.." "..cooldownFormatter:Format(cooldown));
@@ -586,7 +586,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			fontString:SetText("");
 			return false;
 		end
-			
+
 		local cooldownFontString;
 		if minimized then
 			cooldownFontString = self.MinimizedCooldown;
@@ -661,7 +661,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		if not (minimized or self.isInspection or isRecraft) then
 			self:UpdateRecipeDescription();
 		end
-		
+
 		-- Description needs to be included in layout since other frames are anchored to it.
 		organizer:Add(self.Description, LayoutEntry.Description, 0, 5);
 		organizer:Layout();
@@ -679,7 +679,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	self.OutputIcon:SetScript("OnLeave", function()
-		GameTooltip_Hide(); 
+		GameTooltip_Hide();
 		self.OutputIcon:SetScript("OnUpdate", nil);
 	end);
 
@@ -723,20 +723,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.RecipeLevelBar:Show();
 		end
 	end
-	
+
 	self.RecraftingRequiredTools:Hide();
 	self.RequiredTools:Hide();
 	if not self.isInspection then
 		if #C_TradeSkillUI.GetRecipeRequirements(recipeID) > 0 then
 			local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
 			fontString:Show();
-			
+
 			self.UpdateRequiredTools = function()
 				-- Requirements need to be fetched on every update because it contains the updated
 				-- .met field that we need to colorize the string correctly.
 				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeID);
 				if (#requirements > 0) then
-					local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
+					local requirementsText = StringUtil.JoinAlternatingConditionalColor(", ", RED_FONT_COLOR, unpack(FormatRequirements(requirements)));
 					local maxWidth = minimized and 250 or 800;
 					local multiline = minimized;
 					SetTextToFit(fontString, PROFESSIONS_REQUIRED_TOOLS:format(requirementsText), maxWidth, multiline);
@@ -761,7 +761,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	local slotParents =
 	{
-		[Enum.CraftingReagentType.Basic] = self.Reagents, 
+		[Enum.CraftingReagentType.Basic] = self.Reagents,
 		[Enum.CraftingReagentType.Modifying] = self.OptionalReagents,
 	};
 
@@ -792,11 +792,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 				local function OnFlyoutItemSelected(o, flyout, elementData)
 					Professions.TransitionToRecraft(elementData.itemGUID);
-					
+
 					local itemLocation = C_Item.GetItemLocation(elementData.itemGUID);
 					C_Sound.PlayItemSound(Enum.ItemSoundType.Drop, itemLocation);
 				end
-	
+
 				flyout:RegisterCallback(ProfessionsFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 			end
 		end);
@@ -849,7 +849,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
 			local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 			local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
-			
+
 			local slots = self.reagentSlots[sectionType];
 			if not slots then
 				slots = {};
@@ -864,7 +864,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			end
 
 			slot:SetParent(slotParents[sectionType]);
-			
+
 			slot.CustomerState:SetShown(false);
 			slot:Init(self.transaction, reagentSlotSchematic);
 			slot:Show();
@@ -898,7 +898,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								end
 
 								self.QualityDialog:RegisterCallback(ProfessionsQualityDialogMixin.Event.Accepted, OnAllocationsAccepted, slot);
-								
+
 								local allocationsCopy = self.transaction:GetAllocationsCopy(slotIndex);
 								local disallowZeroAllocations = true;
 								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, self.transaction:ShouldUseCharacterInventoryOnly());
@@ -1005,12 +1005,12 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 						local function OnUndoClicked(o, flyout)
 							AllocateModification(slotIndex, reagentSlotSchematic);
-							
+
 							slot:RestoreOriginalReagent();
-							
+
 							self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 						end
-						
+
 						local function OnFlyoutItemShiftClicked(o, flyout, elementData)
 							local handled, link = Professions.HandleReagentLink(elementData.reagent);
 							if not handled then
@@ -1039,7 +1039,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 								self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 							end
-							
+
 							-- A prompt is required if the allocation would cause a modification to be discarded. Allocating
 							-- the same reagent as the modification has no effect.
 							local replacedReagent;
@@ -1057,7 +1057,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							if replacedReagent then
 								local name = Professions.GetReagentName(replacedReagent);
 								local dialogData = {callback = AllocateFlyoutItem, name = name};
-								StaticPopup_Show("PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT", nil, nil, dialogData);	
+								StaticPopup_Show("PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT", nil, nil, dialogData);
 							else
 								AllocateFlyoutItem();
 							end
@@ -1099,7 +1099,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			end
 		end
 	end
-	
+
 	if isSalvage then
 		if not self.salvageSlot then
 			self.salvageSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentSalvageTemplate");
@@ -1211,9 +1211,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				flyout:RegisterCallback(ProfessionsFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 			elseif buttonName == "RightButton" then
 				self.transaction:ClearEnchantAllocations();
-	
+
 				self.enchantSlot:ClearReagent();
-	
+
 				self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 			end
 		end);
@@ -1266,7 +1266,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			local offsetY = minimized and -148 or -168;
 			self.Reagents:SetPoint("TOPLEFT", 28, offsetY + PROFESSIONS_SCHEMATIC_REAGENTS_Y_OFFSET);
 		else
-			local offset = (self.RecipeSourceButton:IsShown() or self.FirstCraftBonus:IsShown()) and -50 or -20; 
+			local offset = (self.RecipeSourceButton:IsShown() or self.FirstCraftBonus:IsShown()) and -50 or -20;
 			self.Reagents:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, offset);
 		end
 	else
@@ -1281,7 +1281,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	local finishingSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
-	
+
 	do
 		local spacingX = self.forCraftingOrders and 35 or 5;
 		local spacingY = -5;
@@ -1384,7 +1384,7 @@ function ProfessionsRecipeSchematicFormMixin:InitDetails(recipeInfo)
 		if not minimized then
 			Professions.LayoutFinishingSlots(finishingSlots, self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer);
 		end
-		
+
 		if not (minimized and not recipeInfo.supportsQualities) then
 			self.Details:ClearAllPoints();
 			if minimized then
@@ -1435,8 +1435,8 @@ function ProfessionsRecipeSchematicFormMixin:UpdateDetailsStats(operationInfo)
 			operationInfo = self:GetRecipeOperationInfo();
 		end
 
-		if operationInfo then		
-			self.Details:SetStats(operationInfo, self.currentRecipeInfo.supportsQualities, self.currentRecipeInfo.isGatheringRecipe);			
+		if operationInfo then
+			self.Details:SetStats(operationInfo, self.currentRecipeInfo.supportsQualities, self.currentRecipeInfo.isGatheringRecipe);
 			self:UpdateRecipeDescription();
 		end
 	end

@@ -116,7 +116,7 @@ end
 
 function UnitPowerBarAlt_OnUpdate(self, elapsed)
 	if ( self.barInfo.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
-		UnitPowerBarAlt_SetDisplayedPower(self, GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed));
+		UnitPowerBarAlt_SetDisplayedPower(self, InterpolatorUtil.GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed));
 	end
 end
 
@@ -546,7 +546,7 @@ function PlayerPowerBarAltMixin:SetupPlayerPowerBarPosition()
 	EncounterBar:Layout();
 	if EncounterBar:IsInDefaultPosition() then
 		self.barTooltipAnchor = "ANCHOR_RIGHT";
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 	end
 end
 
@@ -663,7 +663,7 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 	self.fractional = useFractional;
 	self.startIndex = startIndex;
 
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 
 	CounterBar_SetNumbers(self);
 end

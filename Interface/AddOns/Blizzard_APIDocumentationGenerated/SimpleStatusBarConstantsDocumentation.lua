@@ -29,6 +29,18 @@ local SimpleStatusBarConstants =
 			},
 		},
 		{
+			Name = "StatusBarRenderMode",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Linear", Type = "StatusBarRenderMode", EnumValue = 0, Documentation = { "Render the status bar using the existing linear horizontal or vertical fill behavior." } },
+				{ Name = "Radial", Type = "StatusBarRenderMode", EnumValue = 1, Documentation = { "Render the status bar by driving the managed texture's radial progress fill percent instead of resizing the texture anchors." } },
+			},
+		},
+		{
 			Name = "StatusBarTimerDirection",
 			Type = "Enumeration",
 			NumValues = 2,

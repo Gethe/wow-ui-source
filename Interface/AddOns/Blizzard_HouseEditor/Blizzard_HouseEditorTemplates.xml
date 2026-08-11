@@ -110,7 +110,23 @@
 	<Frame name="HouseEditorDecorCountTemplate" mixin="HouseEditorDecorCountMixin" inherits="HouseEditorBudgetCountTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture atlas="house-decor-budget-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="Icon" atlas="house-decor-budget-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HouseEditorPetCountTemplate" mixin="HouseEditorPetCountMixin" inherits="HouseEditorBudgetCountTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="house-decor-pets-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT"/>

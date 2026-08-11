@@ -2,4 +2,5 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 
+Blizzard_CovenantCallings_Bootstrap.lua [Bootstrap]
 CovenantCallings.xml

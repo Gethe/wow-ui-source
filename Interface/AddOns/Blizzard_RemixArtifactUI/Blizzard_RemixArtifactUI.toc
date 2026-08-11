@@ -6,5 +6,6 @@
 ## AllowLoad: Game
 ## Dependencies: Blizzard_ArtifactUI, Blizzard_SharedTalentUI
 
+Blizzard_RemixArtifactUI_Bootstrap.lua [Bootstrap]
 Blizzard_RemixArtifactUI.lua
 Blizzard_RemixArtifactUI.xml

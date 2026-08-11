@@ -28,6 +28,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="Button" inherits="UIButtonTemplate" setAllPoints="true"/>
+		</Frames>
 	</Frame>
 
 	<Frame name="HouseUpgradeRewardFrameLargeTemplate" mixin="HouseUpgradeRewardFrameMixin" virtual="true">
@@ -248,12 +251,6 @@
 						</Anchors>
 						<Size x="128" y="128"/>
 						<Frames>
-							<Frame parentKey="HouseBarFrame" propagateMouseInput="Motion">
-								<Size x="128" y="128"/>
-								<Anchors>
-									<Anchor point="CENTER" x="-4"/>
-								</Anchors>
-							</Frame>
 							<Frame parentKey="Bar" propagateMouseInput="Motion">
 								<Size x="128" y="128"/>
 								<Anchors>

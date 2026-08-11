@@ -1,0 +1,9 @@
+## Title: Blizzard_VisualAlerts
+## Dep: Blizzard_SharedXMLGame
+## AllowLoad: game
+VisualAlert.lua
+VisualAlertTarget.lua
+VisualAlertTemplates.lua
+VisualAlertTemplates.xml
+VisualAlertsManager.lua
+VisualAlertsManager.xml

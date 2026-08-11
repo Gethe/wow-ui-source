@@ -9,7 +9,7 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	text = WEEKLY_REWARDS_CONFIRM_SELECT,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept = function(dialog, data)
+	OnAccept = function(_dialog, data)
 		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD);
 		C_WeeklyRewards.ClaimReward(data);
 		HideUIPanel(WeeklyRewardsFrame);
@@ -52,6 +52,12 @@ function WeeklyRewardsMixin:SetUpConditionalActivities()
 end
 
 function WeeklyRewardsMixin:OnLoad()
+	self.Activities = {};
+	for _, concessionReward in ipairs({self.ConcessionsFrame.Rewards:GetChildren()}) do
+		concessionReward:SetWeeklyRewardsFrame(self);
+		table.insert(self.Activities, concessionReward);
+	end
+
 	self:SetUpActivity(self.RaidFrame, RAIDS, "evergreen-weeklyrewards-category-raids", Enum.WeeklyRewardChestThresholdType.Raid);
 	self:SetUpActivity(self.MythicFrame, DUNGEONS, "evergreen-weeklyrewards-category-dungeons", Enum.WeeklyRewardChestThresholdType.Activities);
 	self:SetUpActivity(self.WorldFrame, WORLD, "evergreen-weeklyrewards-category-world", Enum.WeeklyRewardChestThresholdType.World);
@@ -129,6 +135,8 @@ function WeeklyRewardsMixin:SetUpActivity(activityTypeFrame, name, atlas, activi
 			prevFrame = alreadyCreatedFrame;
 		else
 			local frame = CreateFrame("FRAME", nil, self, "WeeklyRewardActivityTemplate");
+			table.insert(self.Activities, frame);
+
 			if prevFrame then
 				frame:SetPoint("LEFT", prevFrame, "RIGHT", 9, 0);
 			else
@@ -184,11 +192,14 @@ function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 	self.SelectRewardButton:SetShown(canClaimRewards);
 
-	-- always hide concession, if there are rewards the refresh will show it
-	self.ConcessionFrame:Hide();
+	local hasConcessions = false;
+	for _, concessionReward in ipairs({self.ConcessionsFrame.Rewards:GetChildren()}) do
+		concessionReward:Hide();
+	end
 
 	local activities = C_WeeklyRewards.GetActivities();
 	for i, activityInfo in ipairs(activities) do
+		-- Note that some frames may not be ever found if the activityInfo does not match here, so make sure that such cases are handled gracefully (disabled, hidden, etc.).
 		local frame = self:GetActivityFrame(activityInfo.type, activityInfo.index);
 		if frame then
 			-- hide current progress for current week if rewards are present
@@ -199,10 +210,16 @@ function WeeklyRewardsMixin:Refresh(playSheenAnims)
 				frame:MarkForPendingSheenAnim();
 			end
 			frame:Refresh(activityInfo);
+
+			if not hasConcessions and frame.type == Enum.WeeklyRewardChestThresholdType.Concession and frame:IsShown() then
+				hasConcessions = true;
+			end
 		end
 	end
+	self.ConcessionsFrame:SetShown(hasConcessions);
+	self.ConcessionsFrame.Rewards:Layout();
 
-	if C_WeeklyRewards.HasAvailableRewards() then
+	if hasConcessions then
 		self:SetHeight(737);
 	else
 		self:SetHeight(657);
@@ -255,7 +272,7 @@ function WeeklyRewardsMixin:UpdatePreviousClaim()
 end
 
 function WeeklyRewardsMixin:SelectActivity(activityFrame)
-	if self:IsReadOnly() then
+	if self:IsReadOnly() or not self.hasAvailableRewards then
 		return;
 	end
 
@@ -273,7 +290,6 @@ end
 
 function WeeklyRewardsMixin:UpdateSelection()
 	local selectedActivity = self.selectedActivity;
-	local useAtlasSize = true;
 	self.SelectRewardButton:SetEnabled(selectedActivity ~= nil);
 
 	for i, frame in ipairs(self.Activities) do
@@ -967,6 +983,10 @@ end
 
 WeeklyRewardsConcessionMixin = { };
 
+function WeeklyRewardsConcessionMixin:SetWeeklyRewardsFrame(weeklyRewardsFrame)
+	self.weeklyRewardsFrame = weeklyRewardsFrame;
+end
+
 function WeeklyRewardsConcessionMixin:SetSelectionState(state)
 	if state == SELECTION_STATE_SELECTED then
 		self.SelectedTexture:Show();
@@ -986,6 +1006,8 @@ end
 
 function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
 	self.info = nil;
+	self.hasRewards = #activityInfo.rewards > 0;
+	self.unlocked = activityInfo.progress >= activityInfo.threshold;
 
 	local comparison = function(entry1, entry2)
 		if ( entry1.type ~= entry2.type ) then
@@ -996,7 +1018,6 @@ function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
 	end
 	table.sort(activityInfo.rewards, comparison);
 
-	local rewardIndex;
 	for i, rewardInfo in ipairs(activityInfo.rewards) do
 		-- no mythic keystone items
 		local icon;
@@ -1008,14 +1029,28 @@ function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
 		end
 
 		if icon then
+			self.RewardsFrame.CompletedIcon:SetShown(not C_WeeklyRewards.HasAvailableRewards() and self.unlocked);
 			self.RewardsFrame.Text:SetText(string.format(WEEKLY_REWARDS_CONCESSION_FORMAT, icon, rewardInfo.quantity));
 			self.RewardsFrame:Layout();
 			self.info = activityInfo;
 			self.displayedRewardIndex = i;
-			self:Show();
 			break;
 		end
 	end
+
+	if self.unlocked then
+		self.Background:SetDesaturated(false);
+		self.RewardsFrame.Label:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		self.RewardsFrame.Text:SetDesaturateEmbeddedTextures(false);
+		self.RewardsFrame.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	else
+		self.Background:SetDesaturated(true);
+		self.RewardsFrame.Label:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		self.RewardsFrame.Text:SetDesaturateEmbeddedTextures(true);
+		self.RewardsFrame.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+	end
+
+	self:SetShown(self.info ~= nil);
 end
 
 function WeeklyRewardsConcessionMixin:OnEnter()
@@ -1031,17 +1066,43 @@ function WeeklyRewardsConcessionMixin:OnUpdate()
 	if self.info and GameTooltip:GetOwner() ~= self and self.RewardsFrame:IsMouseOver() then
 		GameTooltip:SetOwner(self.RewardsFrame, "ANCHOR_RIGHT");
 		local rewardInfo = self.info.rewards[self.displayedRewardIndex];
+
+		-- Prefix with unlock info if there is a threshold specified.
+		if self.info.threshold > 0 then
+			local name = "";
+			if rewardInfo.type == Enum.CachedRewardType.Item then
+				name = C_Item.GetItemInfo(rewardInfo.id);
+			elseif rewardInfo.type == Enum.CachedRewardType.Currency then
+				name = C_CurrencyInfo.GetCurrencyInfo(rewardInfo.id).name;
+			end
+
+			if name then
+				GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_UNLOCK_REWARD);
+				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CONCESSION_THRESHOLD:format(self.info.threshold, name));
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			end
+		end
+
+		local tooltipInfo;
 		if rewardInfo.type == Enum.CachedRewardType.Item then
 			local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID);
-			GameTooltip:SetHyperlink(itemHyperlink);
+			tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", itemHyperlink);
 		elseif rewardInfo.type == Enum.CachedRewardType.Currency then
-			GameTooltip:SetCurrencyByID(rewardInfo.id);
+			tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", rewardInfo.id);
+		end
+
+		if tooltipInfo then
+			-- Append so that any prefix tooltip info does not get cleared.
+			tooltipInfo.append = true;
+			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 	end
 end
 
 function WeeklyRewardsConcessionMixin:OnMouseDown()
-	self:GetParent():SelectActivity(self);
+	if self.weeklyRewardsFrame and self.unlocked then
+		self.weeklyRewardsFrame:SelectActivity(self);
+	end
 end
 
 function WeeklyRewardsConcessionMixin:GetDisplayedItemDBID()
@@ -1054,7 +1115,7 @@ end
 
 WeeklyRewardConfirmSelectionMixin = { }
 
-function WeeklyRewardConfirmSelectionMixin:OnEvent(event, ...)
+function WeeklyRewardConfirmSelectionMixin:OnEvent(_event, ...)
 	self:RefreshRewards();
 end
 
@@ -1072,7 +1133,7 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 	local hasMissingData = false;
 	if self.itemDBID then
 		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(self.itemDBID);
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemHyperlink);
+		local itemName, _itemLink, itemQuality, _itemLevel, _itemMinLevel, _itemType, _itemSubType, _itemStackCount, _itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemHyperlink);
 		itemFrame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
 		local count = 0;
 		for i, rewardInfo in ipairs(self.activityInfo.rewards) do

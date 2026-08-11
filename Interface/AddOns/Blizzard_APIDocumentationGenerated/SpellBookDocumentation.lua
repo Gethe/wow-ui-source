@@ -867,6 +867,7 @@ local SpellBook =
 				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
 				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown category of the spell. A nil value indicates the spell does not have a cooldown category." } },
 				{ Name = "startRecoveryCategory", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown start recovery category of the spell. A nil value indicates the spell does not have a cooldown start recovery category." } },
+				{ Name = "itemID", Type = "number", Nilable = true, Documentation = { "If the itemID parameter is set, it's the itemID associated with the cast of the spell." } },
 			},
 		},
 		{

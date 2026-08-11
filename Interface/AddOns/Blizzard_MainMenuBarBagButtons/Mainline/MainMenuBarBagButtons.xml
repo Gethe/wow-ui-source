@@ -41,7 +41,7 @@
 		</Scripts>
 	</ItemButton>
 
-	<Frame name="BagsBar" inherits="EditModeBagsSystemTemplate" mixin="BagsBarMixin" parent="UIParent">
+	<Frame name="BagsBar" inherits="EditModeBagsSystemTemplate" mixin="BagsBarMixin" parent="UIParent" roleset="microMenu">
 		<Size x="1" y="47"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MicroButtonAndBagsBar"/>

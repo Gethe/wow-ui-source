@@ -101,7 +101,7 @@
 						<Anchor point="TOPRIGHT" x="-12" y="-12"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="ActiveGlow" atlas="decor-ability-expert-fx-circlehighlight" useAtlasSize="true" hidden="true">
+				<Texture parentKey="ActiveGlow" atlas="decor-ability-expert-fx-circlehighlight" useAtlasSize="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -132,7 +132,7 @@
 				<KeyValues>
 					<KeyValue key="syncKey" value="HousingSubModeActiveAnims" type="string"/>
 				</KeyValues>
-				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="0">
+				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="-360">
 					<Origin point="CENTER"/>
 				</Rotation>
 			</AnimationGroup>

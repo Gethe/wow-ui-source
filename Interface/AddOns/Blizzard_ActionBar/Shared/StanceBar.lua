@@ -6,6 +6,8 @@ StanceBarMixin = {};
 function StanceBarMixin:OnLoad()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 	self:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
+
+	self.numForms = 0;
 end
 
 function StanceBarMixin:OnEvent(event)
@@ -142,7 +144,20 @@ function StanceButtonMixin:StanceButtonMixin_OnLeave()
 	GameTooltip_Hide();
 end
 
--- Used by action bar template
+-- Override for BaseActionButtonInfoMixin. 
 function StanceButtonMixin:HasAction()
     return GetShapeshiftFormInfo(self.index);
+end
+
+-- Override for BaseActionButtonInfoMixin.
+function StanceButtonMixin:GetActionButtonInfo()
+	local texture, isActive, isCastable, spellID = GetShapeshiftFormInfo(self.index);
+	local info = {
+		id = spellID,
+		texture = texture,
+		isActive = isActive,
+		isCastable = isCastable
+	};
+
+	return info;
 end

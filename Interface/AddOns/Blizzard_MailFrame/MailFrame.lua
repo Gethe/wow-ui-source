@@ -75,6 +75,17 @@ function MailFrame_Hide()
 	StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 end
 
+local function RegisterWithPlayerInteractionManager()
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.MailInfo,
+		{
+			frame = "MailFrame",
+			showFunc = MailFrame_Show,
+			hideFunc = MailFrame_Hide,
+		});
+end
+
+RegisterWithPlayerInteractionManager();
+
 function MailFrame_OnEvent(self, event, ...)
 	if ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
@@ -242,13 +253,13 @@ function InboxFrame_Update()
 				senderText:SetTextColor(0.75, 0.75, 0.75);
 				subjectText:SetTextColor(0.75, 0.75, 0.75);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(0.5, 0.5, 0.5);
-				SetDesaturation(buttonIcon, true);
+				buttonIcon:SetDesaturated(true);
 				button.IconBorder:SetVertexColor(0.5, 0.5, 0.5);
 			else
 				senderText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				subjectText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(1.0, 0.82, 0);
-				SetDesaturation(buttonIcon, false);
+				buttonIcon:SetDesaturated(false);
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then

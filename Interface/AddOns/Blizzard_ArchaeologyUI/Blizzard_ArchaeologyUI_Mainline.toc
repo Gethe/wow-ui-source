@@ -1,6 +1,7 @@
 ## Title: Blizzard Archaeology UI
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HelpPlate
+## Dependencies: Blizzard_FrameXMLUtil, Blizzard_HelpPlate
+Blizzard_ArchaeologyUI_Bootstrap.lua [Bootstrap]
 Blizzard_ArchaeologyUI.lua
 Blizzard_ArchaeologyUI.xml
 Localization.lua

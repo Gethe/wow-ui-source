@@ -71,6 +71,18 @@ local AccountConstants =
 			},
 		},
 		{
+			Name = "AccountGetListRequestType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "AccountGetListRequestType", EnumValue = 0 },
+				{ Name = "Battlepets", Type = "AccountGetListRequestType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "AccountSequenceCacheType",
 			Type = "Enumeration",
 			NumValues = 3,

@@ -1,0 +1,8 @@
+## Title: Blizzard Splash Frame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_UIPanelTemplates, Blizzard_UIPanels_Game, Blizzard_GameMenuEsc
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\SplashFrame.lua
+Mainline\SplashFrame.xml

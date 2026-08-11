@@ -318,6 +318,27 @@ function MajorFactionButtonUnlockedStateMixin:OnLeave()
 	end
 end
 
+function ToggleMajorFactionRenown(majorFactionID)
+	if not majorFactionID then
+		ToggleFrame(MajorFactionRenownFrame);
+		return;
+	end
+
+	if MajorFactionRenownFrame:IsShown() then
+		if MajorFactionRenownFrame:GetCurrentFactionID() == majorFactionID then
+			HideUIPanel(MajorFactionRenownFrame);
+			return;
+		end
+
+		HideUIPanel(MajorFactionRenownFrame);
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ShowUIPanel(MajorFactionRenownFrame);
+	else
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ToggleMajorFactionRenown();
+	end
+end
+
 function MajorFactionButtonUnlockedStateMixin:OnClick()
 	if MajorFactionRenownFrame and MajorFactionRenownFrame:IsShown() then
 		-- Close the renown track if it is already open for this faction

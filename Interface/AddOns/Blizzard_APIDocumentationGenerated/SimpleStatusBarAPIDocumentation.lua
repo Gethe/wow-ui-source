@@ -63,6 +63,19 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "GetRenderMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "renderMode", Type = "StatusBarRenderMode", Nilable = false },
+			},
+		},
+		{
 			Name = "GetReverseFill",
 			Type = "Function",
 
@@ -236,6 +249,16 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "SetRenderMode",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "renderMode", Type = "StatusBarRenderMode", Nilable = false },
+			},
+		},
+		{
 			Name = "SetReverseFill",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -294,6 +317,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

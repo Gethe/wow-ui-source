@@ -44,6 +44,160 @@
 		</KeyValues>
 	</CheckButton>
 
+	<Frame name="CharCustomizeAlteredFormDropdownItemIconTemplate" mixin="CharCustomizeAlteredFormDropdownItemIconMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<Texture parentKey="Ring" atlas="charactercreate-ring-metallight-small" useAtlasSize="false">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="RingHighlight" atlas="charactercreate-ring-select-small" useAtlasSize="false" hidden="true">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="CharCustomizeAlteredFormDropdownItemTemplate" mixin="CharCustomizeAlteredFormDropdownItemMixin" virtual="true">
+		<Size x="280" y="50"/>
+		<Frames>
+			<Frame parentKey="IconFrame" inherits="CharCustomizeAlteredFormDropdownItemIconTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-4" y="5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalLarge" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="5"/>
+						<Anchor point="RIGHT" relativeKey="$parent.IconFrame" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<Texture parentKey="Separator" file="Interface\Common\UI-TooltipDivider" hidden="true">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="4" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<DropdownButton name="CharCustomizeAlteredFormsDropdownTemplate" mixin="CharCustomizeAlteredFormsDropdownMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<!-- Cover the gap between the ring icon and the text, and the arrow below the icon -->
+		<HitRectInsets>
+			<AbsInset left="-20" right="0" top="0" bottom="-20"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<Texture parentKey="Ring" atlas="charactercreate-ring-metallight" useAtlasSize="false">
+					<Size x="109" y="110"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<!-- Text is dynamically sized outside the bounds of the actual button.
+				 OnEnter/OnLeave/OnClick are forwarded (see where they're set in OnLoad)
+				 Note: we could alternatively make the parent a ResizeLayoutFrame.
+				  -->
+				<FontString parentKey="Text" inherits="Game46Font_Shadow2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-20" y="0"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+
+				<FontString parentKey="Count" inherits="NumberFont_Outline_Large2" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="5"/>
+					</Anchors>
+				</FontString>
+
+				<Texture parentKey="Arrow" atlas="bag-arrow">
+					<Size x="15" y="24"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ArrowHighlight" atlas="bag-arrow" alpha="0.4" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Arrow" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Arrow" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="HighlightTexture" atlas="questlog-quest-glow-yellow" hidden="true">
+					<Size x="590" y="100"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Text"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="RingHighlight" atlas="charactercreate-ring-select" useAtlasSize="false">
+					<Size x="93" y="93"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</DropdownButton>
+
 	<CheckButton name="CharCustomizeConditionalModelButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
 		<Size x="64" y="64"/>
 		<KeyValues>
@@ -93,6 +247,12 @@
 					<Anchor point="TOPRIGHT" x="-41" y="-37"/>
 				</Anchors>
 			</Frame>
+
+			<DropdownButton parentKey="FormsDropdown" inherits="CharCustomizeAlteredFormsDropdownTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-41" y="-37"/>
+				</Anchors>
+			</DropdownButton>
 
 			<Frame parentKey="Categories" inherits="SpaceToFitHorizontalLayoutFrame">
 				<KeyValues>

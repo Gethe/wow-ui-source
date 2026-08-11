@@ -8,6 +8,22 @@ local QuestHubInfo =
 	Functions =
 	{
 		{
+			Name = "IsAreaPOICurrentlyRelatedToHub",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "hubAreaPoiID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRelated", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestCurrentlyRelatedToHub",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -15,7 +31,7 @@ local QuestHubInfo =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "hubAreaPoiID", Type = "number", Nilable = false },
 			},
 
 			Returns =

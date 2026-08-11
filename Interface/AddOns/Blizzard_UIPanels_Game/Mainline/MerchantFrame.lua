@@ -80,6 +80,17 @@ function MerchantFrame_MerchantClosed()
 	HideUIPanel(MerchantFrame);
 end
 
+local function RegisterWithPlayerInteractionManager()
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.Merchant,
+		{
+			frame = "MerchantFrame",
+			showFunc = MerchantFrame_MerchantShow,
+			hideFunc = MerchantFrame_MerchantClosed,
+		});
+end
+
+RegisterWithPlayerInteractionManager();
+
 function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" and "MERCHANT_FILTER_ITEM_UPDATE" ) then
 		self.update = true;
@@ -899,10 +910,10 @@ function MerchantFrame_UpdateCanRepairAll()
 	if ( MerchantRepairAllButton.Icon ) then
 		local repairAllCost, canRepair = GetRepairAllCost();
 		if ( canRepair ) then
-			SetDesaturation(MerchantRepairAllButton.Icon, false);
+			MerchantRepairAllButton.Icon:SetDesaturated(false);
 			MerchantRepairAllButton:Enable();
 		else
-			SetDesaturation(MerchantRepairAllButton.Icon, true);
+			MerchantRepairAllButton.Icon:SetDesaturated(true);
 			MerchantRepairAllButton:Disable();
 		end
 	end
@@ -911,10 +922,10 @@ end
 function MerchantFrame_UpdateGuildBankRepair()
 	local repairAllCost, canRepair = GetRepairAllCost();
 	if ( canRepair ) then
-		SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
+		MerchantGuildBankRepairButton.Icon:SetDesaturated(false);
 		MerchantGuildBankRepairButton:Enable();
 	else
-		SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
+		MerchantGuildBankRepairButton.Icon:SetDesaturated(true);
 		MerchantGuildBankRepairButton:Disable();
 	end
 end

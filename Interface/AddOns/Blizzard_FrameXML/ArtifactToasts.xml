@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="ArtifactToasts.lua"/>
-
 	<Frame name="ArtifactLevelUpToast" parent="UIParent" hidden="true" mixin="ArtifactLevelUpToastMixin">
 		<Size x="128" y="128"/>
 		<Anchors>
@@ -247,7 +245,7 @@
 				<Alpha childKey="ArtifactName" startDelay="0.75" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="NewTrait" startDelay="0.85" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="UnlockTrait" startDelay="1.25" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				
+
 				<Alpha startDelay="4" duration="0.75" order="3" fromAlpha="1" toAlpha="0"/>
 
 				<Scripts>

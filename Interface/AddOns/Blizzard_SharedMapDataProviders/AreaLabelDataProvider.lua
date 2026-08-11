@@ -90,7 +90,7 @@ function AreaLabelFrameMixin:OnUpdate()
 				else
 					color = QuestDifficultyColors["difficult"];
 				end
-				color = ConvertRGBtoColorString(color);
+				color = RGBTableToColorCode(color);
 				if playerMinLevel ~= playerMaxLevel then
 					name = name..color.." ("..playerMinLevel.."-"..playerMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
 				else
@@ -117,7 +117,7 @@ function AreaLabelFrameMixin:OnUpdate()
 						--If you unlocked pet battles but have no team, level ranges are meaningless so make them grey
 						color = QuestDifficultyColors["header"];
 					end
-					color = ConvertRGBtoColorString(color);
+					color = RGBTableToColorCode(color);
 
 					local petBattlesDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.PetBattlesDisabled);
 					if not petBattlesDisabled then

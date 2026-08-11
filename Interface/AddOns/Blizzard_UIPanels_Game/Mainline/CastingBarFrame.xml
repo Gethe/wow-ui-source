@@ -99,23 +99,6 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	<StatusBar name="CastingBarFrameAnimsTemplate" virtual="true">
-		<Animations>
-			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.2"/>
-				<Scripts>
-					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="HoldFadeOutAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
-				<Scripts>
-					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-	</StatusBar>
 
 	<!-- WARNING: TargetsVisibleWhilePlayingAnimGroupTemplate is likely to fail to find its targets since they're defined
 		in a child frame, which will cause the base frame to be hidden instead. That's ok with CastingBarFrameTemplate
@@ -202,7 +185,7 @@
 			</AnimationGroup>
 		</Animations>
 	</StatusBar>
-	<StatusBar name="CastingBarFrameBaseTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true">
+	<StatusBar name="CastingBarFrameBaseTemplate" mixin="CastingBarMixin" virtual="true">
 		<BarTexture atlas="ui-castingbar-filling-standard" useAtlasSize="true"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -413,7 +396,7 @@
 
 	<StatusBar name="CastingBarFrameTemplate" inherits="CastingBarFrameBaseTemplate, CastingBarFrameAnimsFXTemplate" virtual="true"/>
 
-	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true">
+	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" virtual="true">
 		<Size x="150" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -436,7 +419,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Icon">
 					<Size x="20" y="20"/>
 					<Anchors>
@@ -482,7 +465,7 @@
 		</Scripts>
 	</StatusBar>
 
-	<StatusBar name="PlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate, UIParentBottomManagedFrameTemplate, EditModeCastBarSystemTemplate" fixedFrameStrata="true" frameStrata="HIGH" mixin="PlayerCastingBarMixin">
+	<StatusBar name="PlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate, BottomManagedFrameTemplate, EditModeCastBarSystemTemplate" fixedFrameStrata="true" frameStrata="HIGH" mixin="PlayerCastingBarMixin">
 		<Size x="208" y="11"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>

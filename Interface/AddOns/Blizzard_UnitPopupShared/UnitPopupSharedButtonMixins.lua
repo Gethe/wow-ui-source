@@ -47,6 +47,9 @@ local function CanShowTooltip(entry, contextData)
 end
 
 local function ConfigureButtonDescription(description, entry, contextData)
+	if contextData.menuElementPreInitializer then
+		description:AddInitializer(contextData.menuElementPreInitializer);
+	end
 	description:AddInitializer(function(button, description, menu)
 		ConfigureButton(button, entry, contextData);
 	end);
@@ -578,10 +581,12 @@ UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendBut
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 	local accountInfo = contextData.accountInfo;
 	local promptText;
-	if not C_Glue.IsOnGlueScreen() then 
-	if accountInfo then
-		if accountInfo.isBattleTagFriend then
-			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
+	if not C_Glue.IsOnGlueScreen() then
+		if accountInfo then
+			if accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title then
+				promptText = string.format(REMOVE_TITLE_FRIEND_CONFIRMATION, accountInfo.accountName);
+			elseif accountInfo.isBattleTagFriend then
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			else
 				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			end
@@ -592,8 +597,6 @@ function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 		local text2 = nil;
 		StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, text2, contextData.bnetIDAccount);
 	end
-
-
 end
 
 UnitPopupSetBNetNoteButtonMixin = CreateFromMixins(UnitPopupSetNoteButtonMixin);
@@ -612,6 +615,16 @@ end
 
 function UnitPopupViewBnetFriendsButtonMixin:OnClick(contextData)
 	FriendsFriendsFrame_Show(contextData.bnetIDAccount);
+end
+
+function UnitPopupViewBnetFriendsButtonMixin:CanShow(contextData)
+	if not UnitPopupFriendsButtonMixin.CanShow(self, contextData) then
+		return false;
+	end
+
+	-- We don't support viewing the friends of a title friend
+	local isTitleFriend = contextData.accountInfo and (contextData.accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title);
+	return not isTitleFriend;
 end
 
 UnitPopupBnetBlockButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -931,8 +944,8 @@ function UnitPopupPartyInstanceLeaveButtonMixin:GetText(contextData)
 	return C_PartyInfo.IsPartyWalkIn() and INSTANCE_WALK_IN_LEAVE or INSTANCE_PARTY_LEAVE;
 end
 
--- Overwritten in UnitPopupButtons.lua
 function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
+	return PartyUtil.CanLeaveInstance();
 end
 
 function UnitPopupPartyInstanceLeaveButtonMixin:IsEnabled(contextData)
@@ -2188,6 +2201,10 @@ function UnitPopupAddFriendButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupAddFriendButtonMixin:CanShow(contextData)
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return false;
+	end
+
 	if UnitPopupSharedUtil.HasBattleTag() then
 		return false;
 	end
@@ -2243,10 +2260,15 @@ function UnitPopupAddFriendMenuButtonMixin:GetEntries()
 	return {
 		UnitPopupAddBtagFriendButtonMixin,
 		UnitPopupAddCharacterFriendButtonMixin,
+		UnitPopupAddTitleFriendButtonMixin,
 	}
 end
 
 UnitPopupAddCharacterFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupAddCharacterFriendButtonMixin:CanShow(contextData)
+	return C_FriendList.IsLegacyFriendSystemEnabled();
+end
 
 function UnitPopupAddCharacterFriendButtonMixin:GetText(contextData)
 	return ADD_CHARACTER_FRIEND;
@@ -2335,7 +2357,8 @@ function UnitPopupAddBtagFriendButtonMixin:OnClick(contextData)
 			C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
 		else
 			local accountInfo = contextData.accountInfo;
-			if accountInfo then
+			local hasValidBattleTag = accountInfo and accountInfo.battleTag and accountInfo.battleTag ~= "";
+			if hasValidBattleTag then
 				BNSendFriendInvite(accountInfo.battleTag);
 			else
 				BNCheckBattleTagInviteToUnit(contextData.unit);
@@ -2349,7 +2372,7 @@ function UnitPopupAddBtagFriendButtonMixin:IsEnabled(contextData)
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	local hasBattleTag = UnitPopupSharedUtil.HasBattleTag();
 	local isPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
-	if not UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isPlayer) then
+	if not UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isPlayer, Enum.BattleNetFriendLevel.BattleTag) then
 		return false;
 	end
 
@@ -2382,6 +2405,54 @@ end
 
 -- Overwritten in UnitPopupButtons.lua
 function UnitPopupAddGuildBtagFriendButtonMixin:CanShow(contextData)
+end
+
+UnitPopupAddTitleFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupAddTitleFriendButtonMixin:GetText(_contextData)
+	return ADD_WOW_FRIEND;
+end
+
+function UnitPopupAddTitleFriendButtonMixin:IsDisabledInKioskMode()
+	return true;
+end
+
+function UnitPopupAddTitleFriendButtonMixin:OnClick(contextData)
+	local battleTag = select(2, BNGetInfo());
+	if not battleTag then
+		StaticPopupSpecial_Show(CreateBattleTagFrame);
+	else
+		local clubInfo = contextData.clubInfo;
+		local clubMemberInfo = contextData.clubMemberInfo;
+		if clubInfo and clubMemberInfo then
+			C_Club.SendTitleFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
+		else
+			C_BattleNet.BNCheckTitleFriendInviteToUnit(contextData.unit);
+		end
+	end
+
+	return MenuResponse.Close;
+end
+
+function UnitPopupAddTitleFriendButtonMixin:IsEnabled(contextData)
+	if not BNFeaturesEnabledAndConnected() or not C_BattleNet.AreTitleFriendsEnabled() then
+		return false;
+	end
+
+	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
+	local hasBattleTag = UnitPopupSharedUtil.HasBattleTag();
+	local isPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
+	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isPlayer, Enum.BattleNetFriendLevel.Title);
+end
+
+function UnitPopupAddTitleFriendButtonMixin:CanShow(contextData)
+	local clubInfo = contextData.clubInfo;
+	local isBattleNetClub = clubInfo and clubInfo.clubType == Enum.ClubType.BattleNet;
+	if isBattleNetClub then
+		return false;
+	end
+
+	return BNFeaturesEnabledAndConnected() and C_BattleNet.AreTitleFriendsEnabled();
 end
 
 UnitPopupRaidTargetButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2897,7 +2968,7 @@ function UnitPopupCommunitiesBtagFriendButtonMixin:CanShow(contextData)
 
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	local isPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
-	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer);
+	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer, Enum.BattleNetFriendLevel.BattleTag);
 end
 
 function UnitPopupCommunitiesBtagFriendButtonMixin:OnClick(contextData)
@@ -3327,6 +3398,10 @@ function UnitPopupSubsectionTitleMixin:IsTitle()
 	return true;
 end
 
+function UnitPopupSubsectionTitleMixin:ShouldQueueDivider()
+	return true;
+end
+
 UnitPopupSubsectionSeperatorMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupSubsectionSeperatorMixin:IsDivider()
@@ -3593,7 +3668,23 @@ function UnitPopupPromoteDemoteNeighborhoodManagerButtonMixin:CanShow(contextDat
 	end
 	return contextData.playerIsOwner and contextData.targetResidentType ~= Enum.ResidentType.Owner;
 end
+UnitPopupDeleteDiscordMessageButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
+function UnitPopupDeleteDiscordMessageButtonMixin:GetText(contextData)
+	return DISCORD_CHAT_MESSAGE_CLICK_DELETE;
+end
+
+function UnitPopupDeleteDiscordMessageButtonMixin:OnClick(contextData)
+	-- discord currently does not support deletion of messages through the SocialSDK
+end
+
+function UnitPopupDeleteDiscordMessageButtonMixin:CanShow(contextData)
+	return true;
+end
+
+function UnitPopupDeleteDiscordMessageButtonMixin:IsEnabled(contextData)
+	return true;
+end
 UnitPopupRecentAllyNoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupRecentAllyNoteButtonMixin:GetText(contextData)
@@ -3645,6 +3736,32 @@ end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:IsEnabled(contextData)
 	return BNFeaturesEnabledAndConnected();
+end
+
+UnitPopupAddRecentAllyTitleFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:GetText(_contextData)
+	return ADD_WOW_FRIEND;
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:CanShow(_contextData)
+	return BNFeaturesEnabledAndConnected() and C_BattleNet.AreTitleFriendsEnabled();
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:IsDisabledInKioskMode()
+	return true;
+end
+
+function UnitPopupAddRecentAllyTitleFriendButtonMixin:OnClick(contextData)
+	local battleTag = select(2, BNGetInfo());
+	if not battleTag then
+		StaticPopupSpecial_Show(CreateBattleTagFrame);
+	else
+		local characterName = contextData.recentAllyData.characterData.fullName;
+		EventRegistry:TriggerEvent("BattleNetInviteFrame.TitleFriendInviteByNameRequested", characterName);
+	end
+
+	return MenuResponse.Close;
 end
 
 UnitPopupReportRecentAllyButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);

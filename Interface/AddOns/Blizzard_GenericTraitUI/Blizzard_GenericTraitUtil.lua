@@ -60,6 +60,10 @@ local GenericTraitFrameLayoutOptions = {
 		HideCurrencyDisplay = true,
 		SuppressSubTreeConfirmation = true,
 	},
+
+	AltarOfCorrosion = {
+		HeaderSize = { Width = 500, Height = 120 },
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -79,6 +83,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Zul'Aman Loa Blessing
 	[1166] = GenericTraitFrameLayoutOptions.ZulAmanLoaBlessing,
+
+	-- Altar of Corrosion
+	[1191] = GenericTraitFrameLayoutOptions.AltarOfCorrosion,
 };
 
 local GenericTraitFrameTutorials = {

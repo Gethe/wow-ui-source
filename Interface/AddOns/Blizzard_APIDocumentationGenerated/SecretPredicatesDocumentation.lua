@@ -24,6 +24,11 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs reject access for tainted callers if the object has the secret Text aspect assigned." },
 		},
 		{
+			Name = "RequiresNonSecretAura",
+			Type = "Precondition",
+			Documentation = { "Guarded APIs require that that the requested aura be non-secret at the time of the API call. This does not raise a blocked action error - instead, protected APIs will return no values." },
+		},
+		{
 			Name = "RequiresScriptObjectAlphaAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnWithError",
@@ -37,6 +42,12 @@ local SecretPredicates =
 			Name = "RequiresStatusBarDesaturationAccess",
 			Type = "Precondition",
 			FailureMode = "ReturnWithError",
+		},
+		{
+			Name = "RequiresUnitAuraAccess",
+			Type = "Precondition",
+			FailureMode = "Error",
+			Documentation = { "Guarded APIs and events require that callers have access to unit aura data." },
 		},
 		{
 			Name = "RequiresUnitIdentityAccess",
@@ -68,6 +79,11 @@ local SecretPredicates =
 			Name = "SecretWhenUnitAuraRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when combat, encounter, challenge mode, or PvP match addon restrictions are in effect. Individual spells may be flagged as never or always secret, which takes priority over restrictions." },
+		},
+		{
+			Name = "SecretWhenAurasRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values when combat, encounter, challenge mode, or PvP match addon restrictions are in effect." },
 		},
 		{
 			Name = "SecretWhenCooldownsRestricted",
@@ -110,6 +126,16 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled or in the party/raid. For compound tokens (eg. 'boss1target'), results are secret if any unit in the chain fails this." },
 		},
 		{
+			Name = "SecretWhenUnitNameIdentityRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values under regular unit identity secrecy rules, except in PvP when the queried unit is a player." },
+		},
+		{
+			Name = "SecretWhenUnitPossessionRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs and events produce secret values based on aura secrecy, except for unit tokens under the player's direct control." },
+		},
+		{
 			Name = "SecretWhenUnitPowerMaxRestricted",
 			Type = "Secret",
 			Documentation = { "Guarded APIs and events produce secret values when the unit isn't player-controlled. Individual power types may be flagged as never or always secret, which takes priority." },
@@ -122,7 +148,7 @@ local SecretPredicates =
 		{
 			Name = "SecretWhenUnitStatsRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values when access to unit auras would generally produce secret values." },
+			Documentation = { "Guarded APIs and events produce secret values when access to unit stats would generally produce secret values." },
 		},
 		{
 			Name = "SecretWhenUnitThreatStateRestricted",

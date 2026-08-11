@@ -1,7 +1,7 @@
 ## Title: Blizzard_ActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_FrameXML, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Minimap, Blizzard_MicroMenu
+## Dependencies: Blizzard_QuickKeybind, Blizzard_EditMode, Blizzard_FrameXML, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Minimap, Blizzard_MicroMenu, Blizzard_GameMenuEsc
 ## AllowLoadGameType: classic
 ## AllowLoad: Game
 Shared\ActionButtonUtil.lua
@@ -19,6 +19,7 @@ Shared\ReputationBar.xml
 Classic\MainMenuBar.lua
 Classic\MainMenuBar.xml
 Shared\ActionButton.lua
+Classic\ActionButtonOverrides.lua
 Shared\ActionButtonComponentTemplate.xml
 Classic\ActionButtonTemplate.xml
 Shared\ActionBar.lua

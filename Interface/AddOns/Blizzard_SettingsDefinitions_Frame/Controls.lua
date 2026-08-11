@@ -66,10 +66,7 @@ local function Register()
 		local initializer = CreateAutoLootInitializer(setting);
 		layout:AddInitializer(initializer);
 
-		if C_CVar.GetCVar("combinedBags") then
-			-- Use Combined Inventory Bags
-			Settings.SetupCVarCheckbox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
-		end
+		ControlsOverrides.SetupCombinedBagsSetting(category);
 	end);
 
 	-- Enable Interact Key

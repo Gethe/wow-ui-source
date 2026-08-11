@@ -49,6 +49,7 @@ HousingTutorialHelpTipSystems = {
 	HouseFinderMap = "HouseFinderMapHelptips",
 	HouseFinderVisitHouse = "HouseFinderVisitHouseHelptips",
 	TeleportToHouse = "TeleportToHouseHelpTips",
+	PetBeds = "PetBedHelpTips",
 };
 ------------------------------------------
 

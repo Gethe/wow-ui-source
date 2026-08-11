@@ -1,7 +1,7 @@
 ## Title: Blizzard_ZoneAbility
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIPanels_Game, Blizzard_ActionBarController
+## Dependencies: Blizzard_UIPanels_Game, Blizzard_ActionBarController, Blizzard_ActionBar, Blizzard_PingUI
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 ZoneAbility.lua

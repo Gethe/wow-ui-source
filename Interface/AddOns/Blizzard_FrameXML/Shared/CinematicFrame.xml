@@ -22,7 +22,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentRaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parentKey="raidBossEmoteFrame">
+			<Frame parentKey="BossEmoteFrame" inherits="RaidWarningFrameTemplate" >
+				<KeyValues>
+					<KeyValue key="maxMessageSlots" value="2" type="number"/>
+					<KeyValue key="maxTotalLines" value="4" type="number"/>
+					<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.BossEmote" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>

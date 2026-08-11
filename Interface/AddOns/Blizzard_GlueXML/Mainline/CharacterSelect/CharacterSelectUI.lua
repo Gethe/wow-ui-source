@@ -46,6 +46,7 @@ function CharacterSelectUIMixin:OnLoad()
 			CharSelectAccountUpgradePanel:EvaluateShownState();
 		else
 			CharacterSelectLogo:Show();
+			NarrationUtil.NarrateCurrentScreen(NARRATION_HIDE_INTERFACE_ENABLED);
 		end
 
 		SetCharacterSelectUIVisibilityState(visibilityState);
@@ -673,14 +674,17 @@ function CharacterSelectHeaderMixin:OnDoubleClick()
 end
 
 function CharacterSelectHeaderMixin:Initialize(characterID)
+	self.isSelected = false;
+
 	local characterGuid = GetCharacterGUID(characterID);
 	if characterGuid then
 		self.basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
 
 		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-		self.SelectedBackdrop:SetShown(characterID == selectedCharacterID);
-		local nameFontStyle = characterID == selectedCharacterID and "GlueFontNormalHuge" or "GlueFontNormalLarge";
-		local characterContextFontStyle = characterID == selectedCharacterID and "GlueFontHighlightLarge" or "GlueFontHighlight";
+		self.isSelected = characterID == selectedCharacterID;
+		self.SelectedBackdrop:SetShown(self.isSelected);
+		local nameFontStyle = self.isSelected and "GlueFontNormalHuge" or "GlueFontNormalLarge";
+		local characterContextFontStyle = self.isSelected and "GlueFontHighlightLarge" or "GlueFontHighlight";
 		self.Name:SetFontObject(nameFontStyle);
 		self.CharacterContext:SetFontObject(characterContextFontStyle);
 
@@ -719,12 +723,51 @@ function CharacterSelectHeaderMixin:SetTooltipAndShow()
 	else
 		GlueTooltip:Hide();
 	end
+
+	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.ManualFocus);
+	if narrationInfo then
+		EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+	end
 end
 
+function CharacterSelectHeaderMixin:NarrationShouldIgnoreFocus()
+	return true;
+end
+
+function CharacterSelectHeaderMixin:NarrationGetName()
+	return self.basicCharacterInfo and self.basicCharacterInfo.name or "";
+end
+
+function CharacterSelectHeaderMixin:NarrationGetContext()
+	if self.isSelected then
+		return NARRATION_STATUS_SELECTED;
+	end
+
+	return nil;
+end
+
+function CharacterSelectHeaderMixin:NarrationGetDescription()
+	local basicCharacterInfo = self.basicCharacterInfo;
+	if not basicCharacterInfo then
+		return nil;
+	end
+
+	local realmName = basicCharacterInfo.realmName;
+	local level = NARRATION_LEVEL_FORMAT:format(basicCharacterInfo.experienceLevel);
+	local className = basicCharacterInfo.className;
+	local location = basicCharacterInfo.location;
+	local professionName0, professionName1 = CharacterSelectUtil.GetProfessionNames(basicCharacterInfo);
+	local realmAddress = basicCharacterInfo.realmAddress;
+	local money = CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress) and basicCharacterInfo.money or 0;
+	local moneyString = (money > 0) and NarrationUtil.MakeNarrationStringForMoney(money) or nil;
+	return NarrationUtil.MakeNarrationString(realmName, level, className, location, professionName0, professionName1, moneyString);
+end
 
 CharacterDeletionDialogMixin = {}
 
 function CharacterDeletionDialogMixin:OnLoad()
+	self.EditBox:SetNarrationLabelRegion(self.Background.Text2);
+
 	self.Background.Button1:SetScript("OnClick", function()
 		self:DeleteCharacter();
 	end);
@@ -758,9 +801,30 @@ function CharacterDeletionDialogMixin:OnShow()
 	end
 
 	local basicInfo = GetBasicCharacterInfo(self.characterGuid);
-    self.Background.Text1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
-    self.Background:SetHeight(16 + self.Background.Text1:GetHeight() + self.Background.Text2:GetHeight() + 23 + self.EditBox:GetHeight() + 8 + self.Background.Button1:GetHeight() + 16);
-    self.Background.Button1:Disable();
+	self.Background.Text1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
+	self.Background:SetHeight(16 + self.Background.Text1:GetHeight() + self.Background.Text2:GetHeight() + 23 + self.EditBox:GetHeight() + 8 + self.Background.Button1:GetHeight() + 16);
+	self.Background.Button1:Disable();
+
+	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.Notification);
+	if narrationInfo then
+		EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+	end
+end
+
+function CharacterDeletionDialogMixin:NarrationShouldIgnoreFocus()
+	return true;
+end
+
+function CharacterDeletionDialogMixin:NarrationGetContext()
+	return NARRATION_REGION_TYPE_DIALOG;
+end
+
+function CharacterDeletionDialogMixin:NarrationGetName()
+	return self.Background.Text1:GetText();
+end
+
+function CharacterDeletionDialogMixin:NarrationGetDescription()
+	return self.Background.Text2:GetText();
 end
 
 function CharacterDeletionDialogMixin:OnHide()
@@ -817,6 +881,23 @@ end
 
 function CharacterListEditGroupFrameMixin:OnShow()
 	GlueParent_AddModalFrame(self);
+
+	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.Notification);
+	if narrationInfo then
+		EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+	end
+end
+
+function CharacterListEditGroupFrameMixin:NarrationShouldIgnoreFocus()
+	return true;
+end
+
+function CharacterListEditGroupFrameMixin:NarrationGetContext()
+	return NARRATION_REGION_TYPE_DIALOG;
+end
+
+function CharacterListEditGroupFrameMixin:NarrationGetName()
+	return self.Title:GetText();
 end
 
 function CharacterListEditGroupFrameMixin:OnHide()

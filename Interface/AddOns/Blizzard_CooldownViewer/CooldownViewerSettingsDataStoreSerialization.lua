@@ -10,6 +10,8 @@ local SAVE_FIELD_ID_LAYOUT_ID_DATA = 4;
 local SAVE_FIELD_ID_COOLDOWN_ORDER = 1;
 local SAVE_FIELD_ID_CATEGORY_OVERRIDES = 2;
 local SAVE_FIELD_ID_ALERT_OVERRIDES = 3;
+local SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS = 4;
+local SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS = 5;
 
 local ENCODING_VERSION_PAYLOAD_DELIMITER = "|";
 
@@ -103,6 +105,18 @@ end
 local function CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, alerts)
 	if alerts then
 		layoutManager:WriteCooldownAlertsToLayout(layoutObject, alerts);
+	end
+end
+
+local function CheckWriteHiddenGroupBuffsToLayout_v5(layoutManager, layoutObject, hiddenGroupBuffs)
+	if hiddenGroupBuffs then
+		layoutManager:WriteHiddenGroupBuffsToLayout(layoutObject, hiddenGroupBuffs);
+	end
+end
+
+local function CheckWriteGroupBuffVisualAlertsToLayout_v5(layoutManager, layoutObject, visualAlerts)
+	if visualAlerts then
+		layoutManager:WriteGroupBuffVisualAlertsToLayout(layoutObject, visualAlerts);
 	end
 end
 
@@ -215,6 +229,28 @@ local function ReadDataVersion4(dataTable, layoutManager, serializer)
 			end
 		end
 	end
+
+	return layoutIDLookup;
+end
+
+local function ReadDataVersion5(dataTable, layoutManager, serializer)
+	local layoutIDLookup = ReadDataVersion4(dataTable, layoutManager, serializer);
+
+	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
+	if layouts then
+		for _classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
+			for layoutID, layout in pairs(classAndSpecLayouts) do
+				local layoutObject = layoutManager:GetLayout(layoutIDLookup[layoutID]);
+				assertsafe(layoutObject ~= nil, "Unable to find layout[%s] that should have been added", tostring(layoutIDLookup[layoutID]));
+				if layoutObject then
+					CheckWriteHiddenGroupBuffsToLayout_v5(layoutManager, layoutObject, layout[SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS]);
+					CheckWriteGroupBuffVisualAlertsToLayout_v5(layoutManager, layoutObject, layout[SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS]);
+				end
+			end
+		end
+	end
+
+	return layoutIDLookup;
 end
 
 local versionedDataReaders =
@@ -223,6 +259,7 @@ local versionedDataReaders =
 	[2] = ReadDataVersion2,
 	[3] = ReadDataVersion3,
 	[4] = ReadDataVersion4,
+	[5] = ReadDataVersion5,
 };
 
 local versionedEncoders =
@@ -250,7 +287,7 @@ local versionedEncoders =
 };
 
 function CooldownViewerDataStoreSerializationMixin:GetCurrentSaveFormatVersion()
-	return 4;
+	return 5;
 end
 
 function CooldownViewerDataStoreSerializationMixin:GetCurrentEncodingVersion()
@@ -414,6 +451,16 @@ function CooldownViewerDataStoreSerializationMixin:SerializeLayouts(singleLayout
 					end
 				end
 			end
+		end
+
+		local hiddenGroupBuffs = CooldownManagerLayout_GetHiddenGroupBuffs(layout);
+		if hiddenGroupBuffs then
+			outputLayoutContainer[SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS] = hiddenGroupBuffs;
+		end
+
+		local groupBuffVisualAlerts = CooldownManagerLayout_GetGroupBuffVisualAlerts(layout);
+		if groupBuffVisualAlerts then
+			outputLayoutContainer[SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS] = groupBuffVisualAlerts;
 		end
 
 		-- Always add the layout to the container, newly created layouts still need to be saved and will not contain any customizations yet, just a name, id, and spec tag.

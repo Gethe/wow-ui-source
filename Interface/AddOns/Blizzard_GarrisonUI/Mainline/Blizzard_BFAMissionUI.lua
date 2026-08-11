@@ -6,6 +6,12 @@
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
 
+local function BFAMissionFrame_EscapePressed()
+	return BFAMissionFrame:EscapePressed();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, BFAMissionFrame_EscapePressed);
+
 ---------------------------------------------------------------------------------
 -- BFA Mission Frame
 ---------------------------------------------------------------------------------
