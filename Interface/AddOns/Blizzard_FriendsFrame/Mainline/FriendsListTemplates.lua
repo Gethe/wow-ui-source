@@ -434,7 +434,9 @@ function FriendsListSocialViewMixin:GenerateDataProvider()
 	local dataProvider = CreateTreeDataProvider();
 	local activeSearchInfo = self:BuildActiveSearchInfo();
 	local friendsData = C_BattleNet.SearchFriends(activeSearchInfo);
-	self:InsertFriendsIntoDataProvider(dataProvider, friendsData);
+	if friendsData then
+		self:InsertFriendsIntoDataProvider(dataProvider, friendsData);
+	end
 
 	return dataProvider;
 end
