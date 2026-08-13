@@ -123,8 +123,8 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 		if self.displayMode == DelvesDisplayMode.Traits then
 			self.ChallengesContainerFrame:CheckPartyLeader();
 		end
-	end 
-end 
+	end
+end
 
 function DelvesDifficultyPickerFrameMixin:GetTieredEntranceTypeData(entranceType)
 	entranceType = entranceType or self.entranceType;
@@ -134,7 +134,7 @@ end
 function DelvesDifficultyPickerFrameMixin:OnShow()
 	self:ClearAllPoints();
 	self.entranceType = C_DelvesUI.GetTieredEntranceType();
-	
+
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, function(dropdown)
@@ -155,7 +155,7 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 		self:TryShowHelpTip();
 		self.newTiers = {};
 	end);
-	
+
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self:SetInitialTier();
 	self:SetupViewRewardButton(self.entranceType);
@@ -322,10 +322,10 @@ function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
 				self.newTiers[tierInfo.tier] = true;
 				self.Dropdown.NewLabel:Show();
 				newHighestUnlockedTier = tierInfo.tier;
-			-- Tier is locked, but old highest is higher somehow or doesn't exist - we should rollback or reset 
+			-- Tier is locked, but old highest is higher somehow or doesn't exist - we should rollback or reset
 			elseif not tierInfo.unlocked and oldHighestUnlockedTier >= tierInfo.tier then
 				newHighestUnlockedTier = tierInfo.tier - 1;
-				if newHighestUnlockedTier < 1 or not tierInfos[newHighestUnlockedTier] then 
+				if newHighestUnlockedTier < 1 or not tierInfos[newHighestUnlockedTier] then
 					newHighestUnlockedTier = 1;
 				end
 				break;
@@ -398,7 +398,8 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 end
 
 local function IsSelected(tierInfo)
-	return DelvesDifficultyPickerFrame:GetSelectedTierInfo().tier == tierInfo.tier;
+	local selectedTierInfo = DelvesDifficultyPickerFrame:GetSelectedTierInfo();
+	return selectedTierInfo and selectedTierInfo.tier == tierInfo.tier;
 end
 
 local function SetSelected(tierInfo)
@@ -475,7 +476,7 @@ local function SetupTierButton(rootDescription, tierInfo, isLocked, newTiers, en
 	end);
 end
 
-local function SetupTierMenu(rootDescription, entranceTypeData)	
+local function SetupTierMenu(rootDescription, entranceTypeData)
 	rootDescription:SetTag(entranceTypeData.menuTag);
 
 	local buttonSize = 20;
@@ -610,7 +611,7 @@ function DelvesDifficultyPickerFrameMixin:SetInitialTier()
 				DelvesDifficultyPickerFrame:SetPreviouslySelectedTierInfo(lastSelectedTierInfo);
 
 			else
-				for _, tierInfo in pairs(self.tierInfos) do 
+				for _, tierInfo in pairs(self.tierInfos) do
 					if tierInfo.unlocked and tierInfo.tier > self.selectedTierInfo.tier then
 						DelvesDifficultyPickerFrame:SetSelectedTierInfo(tierInfo);
 						DelvesDifficultyPickerFrame:SetPreviouslySelectedTierInfo(tierInfo);
@@ -644,7 +645,7 @@ function DelvesDifficultyPickerFrameMixin:UpdateWidgets()
 		self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(backgroundWidgetSetID);
 		self.Bg:Hide();
 	end
-	
+
 	-- If level selected or player eligible for tier, show modifiers
 	if self.selectedTierInfo then
 		self.DelveModifiersWidgetContainer:RegisterForWidgetSet(self.selectedTierInfo.modifierUIWidgetSetID);
@@ -659,7 +660,7 @@ end
 function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
 	for _, widgetFrame in UIWidgetManager:EnumerateWidgetsByWidgetTag(BOUNTIFUL_DELVE_WIDGET_TAG) do
 		local playerKeyState = GetPlayerKeyState();
-		
+
 		-- Cancel the model scene effect if player does not own any keys
 		if playerKeyState ~= DelvesKeyState.Normal and widgetFrame.effectController then
 			widgetFrame.effectController:CancelEffect();
@@ -682,7 +683,7 @@ end
 
 local function EntranceTierSort(leftInfo, rightInfo)
 	return leftInfo.tier < rightInfo.tier;
-end  
+end
 
 function CustomGossipFrameBaseMixin:SetupTiers()
 	self.tierInfos = C_DelvesUI.GetDelveEntranceTiers();
@@ -697,14 +698,14 @@ function CustomGossipFrameBaseMixin:SetupTiers()
 	self:UpdatePortalButtonState();
 end
 
-function DelvesDifficultyPickerFrameMixin:TryShow(textureKit) 
+function DelvesDifficultyPickerFrameMixin:TryShow(textureKit)
 	self.textureKit = textureKit;
 	self.ScenarioLabel:SetText(C_DelvesUI.GetDelveEntranceTitleString() or DELVE_LABEL);
 	self.Title:SetText(C_DelvesUI.GetDelveEntranceHeaderString());
 	self.Description:SetText(C_DelvesUI.GetDelveEntranceDescriptionString());
 	self:SetupTiers();
 	ShowUIPanel(self);
-end 
+end
 
 function DelvesDifficultyPickerFrameMixin:OnHide()
 	self.DelveBackgroundWidgetContainer:UnregisterForWidgetSet();
@@ -719,7 +720,7 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 		self.bountifulAnimFrame = nil;
 	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-end		
+end
 
 --[[ Enter Button ]]
 DelvesDifficultyPickerEnterDelveButtonMixin = {};
@@ -786,19 +787,19 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 			end
 		end
 	end
-end 
+end
 
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnLeave()
-	GameTooltip:Hide(); 
-end 
+	GameTooltip:Hide();
+end
 
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	local selectedTierInfo = DelvesDifficultyPickerFrame:GetSelectedTierInfo();
 	if not selectedTierInfo then
-		return; 
+		return;
 	end
 	C_DelvesUI.SelectDelveEntranceTier(selectedTierInfo.tier);
-end 
+end
 
 function DelvesDifficultyPickerFrameMixin:OnPartyEligibilityChanged(playerName, maxEligibleLevel)
 	self.partyTierEligibility[playerName] = maxEligibleLevel;
@@ -866,14 +867,14 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 	if not tierRewards then
 		return;
 	end
-	
+
 	for _, reward in ipairs(tierRewards) do
-		if reward.rewardType == Enum.TieredEntranceRewardType.Item then 
+		if reward.rewardType == Enum.TieredEntranceRewardType.Item then
 			local item = Item:CreateFromItemID(reward.id);
 			continuableContainer:AddContinuable(item);
 		else
-			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(reward.id, reward.quantity); 
-			if IsCurrencyContainer then 
+			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(reward.id, reward.quantity);
+			if IsCurrencyContainer then
 				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, quantity);
 				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true});
 			else
@@ -885,7 +886,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 
 	continuableContainer:ContinueOnLoad(function()
 		for  _, reward in ipairs(tierRewards) do
-			if	reward.rewardType == Enum.TieredEntranceRewardType.Item then 
+			if	reward.rewardType == Enum.TieredEntranceRewardType.Item then
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
 				local contextQuality = reward.context and C_Item.GetDelvePreviewItemQuality(reward.id, reward.context) or nil;
 				table.insert(rewardInfo, {id = reward.id, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
@@ -992,7 +993,7 @@ function TieredEntranceViewRewardsMixin:OnClick()
 
 	local selectedTierInfo = DelvesDifficultyPickerFrame:GetSelectedTierInfo();
 	local difficultyID = selectedTierInfo and selectedTierInfo.difficultyID or 0;
-		
+
 	OpenEncounterJournalToTieredEntrance(instanceID, difficultyID);
 end
 

@@ -49,7 +49,12 @@ end
 function TutorialManager:OnSettingsLoaded(cvar, value)
 	EventRegistry:TriggerEvent("TutorialManager.TutorialsInit");
 	local tutorialsSetting = Settings.GetSetting("showTutorials");
-	self.IsActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
+	local isActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
+	if isActive == self.IsActive then
+		-- Begin() may have already announced this state; only re-broadcast on an actual transition.
+		return;
+	end
+	self.IsActive = isActive;
 	if self.IsActive then
 		EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
 	else

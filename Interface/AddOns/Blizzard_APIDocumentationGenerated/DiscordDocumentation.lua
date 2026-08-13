@@ -40,6 +40,22 @@ local Discord =
 			},
 		},
 		{
+			Name = "GetDiscordUserName",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "userID", Type = "DiscordID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "userName", Type = "KStringDiscordUserName", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDisplayNameType",
 			Type = "Function",
 			HasRestrictions = true,
