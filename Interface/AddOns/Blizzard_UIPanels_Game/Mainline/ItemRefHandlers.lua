@@ -316,11 +316,13 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUser,
 	function(link, text, linkData, contextData)
 		if ( contextData.button == "RightButton" ) then
 
-			local bnetIDAccount, discordUserID, globalName, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
+			-- this should match "GetDiscordUserLink()" in ItemRef.lua
+			local bnetIDAccount, discordUserID, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
+			discordUserID = tonumber(discordUserID);
 
 			local menuContextData = 
 			{
-				name = string.format(DISCORD_USER_WITH_ID, globalName);
+				name = string.format(DISCORD_USER_WITH_ID, C_Discord.GetDiscordUserName(discordUserID));
 				lineID = lineID,
 				communityClubID = nil,
 				communityStreamID = nil,
@@ -343,11 +345,12 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUserCommunity,
 	function(link, text, linkData, contextData)
 		if ( contextData.button == "RightButton" ) then
 
-			local bnetIDAccount, discordUserID, username, clubId, streamId, epoch, position = string.split(":", linkData.options);
+			local bnetIDAccount, discordUserID, clubId, streamId, epoch, position = string.split(":", linkData.options);
+			discordUserID = tonumber(discordUserID);
 
 			local menuContextData = 
 			{
-				name = string.format(DISCORD_USER_WITH_ID, username);
+				name = string.format(DISCORD_USER_WITH_ID, C_Discord.GetDiscordUserName(discordUserID));
 				lineID = nil,
 				communityClubID = clubId,
 				communityStreamID = streamId,

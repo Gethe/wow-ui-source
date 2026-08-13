@@ -15,6 +15,12 @@ function NewPlayerExperience:Begin()
 end
 
 function NewPlayerExperience:OnTutorialsEnabled()
+	if self.IsActive then
+		-- Guard against a duplicate TutorialsEnabled broadcast re-running TutorialLogic:Begin().
+		return;
+	end
+	self.IsActive = true;
+
 	local _, _, _, completed = GetAchievementInfo(TutorialManager.NPE_AchievementID);
 	if ( completed == true ) then
 		-- we have completed the NPE at least once, check to see if Tutorials are on
@@ -40,7 +46,6 @@ function NewPlayerExperience:OnTutorialsEnabled()
 	SetCVar("nameplateShowEnemies", 1); -- 0
 	MainMenuMicroButton_SetAlertsEnabled(false, "NPEv2"); --Turns off microtips
 	TutorialLogic:Begin();
-	self.IsActive = true;
 end
 
 function NewPlayerExperience:OnTutorialsDisabled()
