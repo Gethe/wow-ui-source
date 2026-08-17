@@ -964,12 +964,16 @@ local suppressedCooldownCategories = {
 	[1141] = true, -- Item burst cooldown category
 };
 
-function ShouldDisplaySpellCooldown(cooldownInfo)
-	if not cooldownInfo then
+function CooldownViewerCooldownItemMixin:ShouldDisplaySpellCooldown(spellCooldownInfo)
+	if not spellCooldownInfo then
 		return false;
 	end
 
-	if cooldownInfo.activeCategory and suppressedCooldownCategories[cooldownInfo.activeCategory] then
+	if spellCooldownInfo.activeCategory and suppressedCooldownCategories[spellCooldownInfo.activeCategory] then
+		return false;
+	end
+
+	if spellCooldownInfo.isOnGCD and self:GetEquipSlot() then
 		return false;
 	end
 
@@ -980,7 +984,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 	if not self:HasVisualDataSource_Charges() then
 		local spellCooldownInfo = self:GetSpellCooldownInfo();
 
-		if ShouldDisplaySpellCooldown(spellCooldownInfo) then
+		if self:ShouldDisplaySpellCooldown(spellCooldownInfo) then
 			local spellID = self:GetSpellID();
 			-- CDMDebugGetDebugger():CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
 
