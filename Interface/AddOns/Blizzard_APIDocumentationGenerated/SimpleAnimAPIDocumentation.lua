@@ -176,7 +176,7 @@ local SimpleAnimAPI =
 			Name = "HookScript",
 			Type = "Function",
 			RequiresAssignableScript = true,
-			SecretArguments = "NotAllowed",
+			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
@@ -354,7 +354,7 @@ local SimpleAnimAPI =
 			Name = "SetScript",
 			Type = "Function",
 			RequiresAssignableScript = true,
-			SecretArguments = "NotAllowed",
+			SecretArguments = "AllowedWhenUntainted",
 			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =

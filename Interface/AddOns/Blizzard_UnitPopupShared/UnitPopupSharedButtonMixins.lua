@@ -3464,6 +3464,11 @@ function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
 		return false; 
 	end
 
+	-- override to allow set role for LFG Lair
+	if OverrideLFGSetRoleRestriction() then
+		return true;
+	end
+
 	if HasLFGRestrictions() then
 		return false;
 	end

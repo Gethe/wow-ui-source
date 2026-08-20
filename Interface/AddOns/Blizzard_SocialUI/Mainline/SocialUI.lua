@@ -103,6 +103,7 @@ function SocialUIFrameMixin:InitializeTabSystem()
 	self:InitializeTabDefinitions();
 	self.availableTabData = {};
 	self.selectedTab = nil;
+	self.lastSelectedTabType = nil;
 	self.deferredOpenTabType = nil;
 	self.deferredSideWindowType = nil;
 	self.glowingTabTypes = {};
@@ -137,6 +138,10 @@ end
 
 local function IsTabSupported(tabData)
 	return tabData.IsSupported == nil or tabData.IsSupported();
+end
+
+local function IsTabEnabled(tabData)
+	return tabData.GetEnabledState == nil or tabData.GetEnabledState();
 end
 
 function SocialUIFrameMixin:InitializeTabDefinitions()
@@ -304,7 +309,7 @@ function SocialUIFrameMixin:Reset()
 	if deferredOpenTabType then
 		self:SelectTab(deferredOpenTabType);
 	else
-		self:SelectFirstAvailableTab();
+		self:SelectBestDefaultTab();
 	end
 
 	local deferredSideWindowType = self:ConsumeDeferredSideWindow();
@@ -461,9 +466,33 @@ function SocialUIFrameMixin:OnOpenToTabRequested(tabType)
 	ToggleSocialUI();
 end
 
-function SocialUIFrameMixin:SelectFirstAvailableTab()
-	local firstAvailableTabType = #self.availableTabData > 0 and self.availableTabData[1].tabType or nil;
-	self:SelectTab(firstAvailableTabType);
+function SocialUIFrameMixin:SelectBestDefaultTab()
+	local bestDefaultTabType = self:GetBestDefaultTabType();
+	self:SelectTab(bestDefaultTabType);
+end
+
+function SocialUIFrameMixin:GetBestDefaultTabType()
+	local lastSelectedTabData = self:GetDataForAvailableTab(self.lastSelectedTabType);
+	local canReturnToLastSelectedTab = (lastSelectedTabData ~= nil) and IsTabEnabled(lastSelectedTabData);
+	if canReturnToLastSelectedTab then
+		return self.lastSelectedTabType;
+	end
+
+	return self:GetFirstEnabledTabType();
+end
+
+function SocialUIFrameMixin:GetFirstEnabledTabType()
+	for _index, tabData in ipairs(self.availableTabData) do
+		if IsTabEnabled(tabData) then
+			return tabData.tabType;
+		end
+	end
+
+	return nil;
+end
+
+function SocialUIFrameMixin:ClearLastSelectedTab()
+	self.lastSelectedTabType = nil;
 end
 
 function SocialUIFrameMixin:SelectTab(tabType)
@@ -473,6 +502,14 @@ function SocialUIFrameMixin:SelectTab(tabType)
 	end
 
 	self.selectedTab = tabType;
+
+	-- Our list of tabs is rebuilt pretty often (ex. when showing the UI, when a feature is enabled/disabled, etc.)
+	-- Rebuilding (and closing the UI) clears out your selected tab, so we remember it here to auto select it afterwards
+	local shouldRememberTabSelection = tabType ~= nil;
+	if shouldRememberTabSelection then
+		self.lastSelectedTabType = tabType;
+	end
+
 	self:OnNewTabSelected();
 end
 

@@ -9,6 +9,7 @@ function SocialUITabMixin:Initialize(tabData)
 	self.tooltipText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(tabData.tabName);
 	self.activeAtlas = tabData.iconAtlas;
 	self.inactiveAtlas = tabData.iconInactiveAtlas or tabData.iconAtlas;
+	self:SetChecked(false);
 	self:RefreshCounter();
 	self:RefreshEnabledState();
 end
@@ -377,6 +378,17 @@ local SocialUIBattleNetControlsContainerEvents =
 	"PLAYER_FLAGS_CHANGED",
 	"FRAMES_LOADED",
 };
+
+function SocialUIBattleNetControlsContainerMixin:OnLoad()
+	--[[
+	Text truncation can cause the image substitution markup to be rendered
+	instead of the status icon. Extend the text anchor generously so that the
+	truncation does not occur.
+	]]--
+	self.OnlineStatusDropdown.Text:ClearAllPoints();
+	self.OnlineStatusDropdown.Text:SetPoint("TOPRIGHT", self.OnlineStatusDropdown.Arrow, "LEFT", 40, 0);
+	self.OnlineStatusDropdown.Text:SetPoint("TOPLEFT", 8, -8);
+end
 
 function SocialUIBattleNetControlsContainerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SocialUIBattleNetControlsContainerEvents);

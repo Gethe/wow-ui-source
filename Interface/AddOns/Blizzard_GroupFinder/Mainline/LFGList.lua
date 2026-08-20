@@ -1707,10 +1707,11 @@ function LFGListApplicationViewer_UpdateInfo(self)
 
 	self.DescriptionFrame.activityName = activityInfo.fullName;
 
+	local commentText = activeEntryInfo.comment or "";
 	if activeEntryInfo.censored then
 		self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, CENSORED_LFG_GROUP_HEADER_WARNNG);
+		commentText = "";
 	else
-		local commentText = activeEntryInfo.comment;
 		if ( commentText == "" and activeEntryInfo.questID ) then
 			commentText = LFGListUtil_GetQuestDescription(activeEntryInfo.questID);
 		end
@@ -1720,6 +1721,8 @@ function LFGListApplicationViewer_UpdateInfo(self)
 			self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, commentText);
 		end
 	end
+
+	self.DescriptionFrame.comment = commentText;
 
 	local hasRestrictions = false;
 	if (activityInfo.isPvpActivity) then

@@ -450,7 +450,18 @@ end
 -- Expects a HousingFramesUtil.HouseChestTabs value
 function HouseEditorStorageFrameMixin:TrySetTab(tabEnum)
 	local tabID = self.tabsByEnum[tabEnum];
-	if not tabID or not self:IsTabAvailable(tabID) then
+	if not tabID then
+		return false;
+	end
+
+	-- There's a chance we may get this as part of an editor mode change that we haven't reacted to yet
+	-- So be sure to update that first as it will affect tab availability
+	local currentMode = C_HouseEditor.GetActiveHouseEditorMode();
+	if self.catalogSearcher and currentMode ~= self.catalogSearcher:GetEditorModeContext() then
+		self:UpdateEditorMode(currentMode);
+	end
+
+	if not self:IsTabAvailable(tabID) then
 		return false;
 	end
 
@@ -463,7 +474,7 @@ function HouseEditorStorageFrameMixin:IsTabAvailable(tabID)
 		return true;
 	end
 
-	local showingRooms = self.catalogSearcher:GetEditorModeContext() == Enum.HouseEditorMode.Layout;
+	local showingRooms = self.catalogSearcher and self.catalogSearcher:GetEditorModeContext() == Enum.HouseEditorMode.Layout;
 	if tabID == self.marketTabID then
 		local marketEnabled = self:ShouldShowMarketTab();
 		return marketEnabled and not showingRooms;

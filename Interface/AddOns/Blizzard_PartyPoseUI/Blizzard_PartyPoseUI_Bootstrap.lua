@@ -5,15 +5,15 @@ function PartyPose_LoadUI()
 end
 
 function IslandsPartyPoseFrame_TryShow(mapID, winner)
-	if PartyPose_LoadUI() then
-		IslandsPartyPoseFrame:LoadScreenData(mapID, winner);
+	if IslandsPartyPose_LoadUI() then
+		IslandsPartyPoseFrame:LoadScreen(mapID, winner);
 		ShowUIPanel(IslandsPartyPoseFrame);
 	end
 end
 
 function WarfrontsPartyPoseFrame_TryShow(mapID, winner)
-	if PartyPose_LoadUI() then
-		WarfrontsPartyPoseFrame:LoadScreenData(mapID, winner);
+	if WarfrontsPartyPose_LoadUI() then
+		WarfrontsPartyPoseFrame:LoadScreen(mapID, winner);
 		ShowUIPanel(WarfrontsPartyPoseFrame);
 	end
 end
