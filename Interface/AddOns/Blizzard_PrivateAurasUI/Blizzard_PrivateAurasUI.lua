@@ -277,7 +277,11 @@ function PrivateAuraMixin:ApplyVisualAlert(visualAlert)
 	self.currentVisualAlert = visualAlert;
 
 	if visualAlert then
-		self.activeVisualAlert = PrivateVisualAlertsManager:AcquireAlert(visualAlert, self);
+		-- visualAlert is secret due to the spell ID it is based on being secret.
+		-- visualAlert then controls template name for the pooled frames but pools do not support template name being a secret.
+		-- Manually unwrap it here in the secure environment as a workaround.
+		local visualAlertType = secretunwrap(visualAlert); 
+		self.activeVisualAlert = PrivateVisualAlertsManager:AcquireAlert(visualAlertType, self);
 		self.activeVisualAlert:SetManualRelease(true);
 	end
 end

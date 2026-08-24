@@ -739,6 +739,8 @@ local Unit =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "target", Type = "UnitToken", Nilable = false },
+				{ Name = "canAssistImmunePC", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canAssistUninteractable", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -2185,6 +2187,22 @@ local Unit =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsPlayerControlledOrGroupMember",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true for 'player', 'pet', 'vehicle', or any of 'partyn', 'partypetn', 'raidn', 'raidpetn'" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
