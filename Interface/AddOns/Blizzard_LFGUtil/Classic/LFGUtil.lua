@@ -123,3 +123,7 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 
 	return name, FRIENDS_WOW_NAME_COLOR_CODE, nil, playerLink;
 end
+
+function OverrideLFGSetRoleRestriction()
+	return false;
+end

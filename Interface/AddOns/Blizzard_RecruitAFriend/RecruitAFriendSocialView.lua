@@ -113,13 +113,14 @@ function RecruitAFriendFrameSocialViewMixin:OnLoad()
 	SocialUIScrollableElementExtentPreviewerMixin.OnLoad(self);
 	self:RegisterScrollableTemplatesForExtentPreview({ self.scrollContentsTemplate });
 
+	-- The base OnLoad sets the "no recruits" text, so we initialize our scrollbox first
+	self:InitializeNoRecruitsScrollBox();
 	RecruitAFriendFrameMixin.OnLoad(self);
 
 	self:InitializeRecruitHeader();
 	self:InitializeTopDividerAnchoring();
 	self:InitializeActionButton();
 	self:InitializeClaimOrViewRewardButton();
-	self:InitializeNoRecruitsScrollBox();
 end
 
 function RecruitAFriendFrameSocialViewMixin:InitializeRecruitHeader()
@@ -176,6 +177,9 @@ function RecruitAFriendFrameSocialViewMixin:OnShow()
 	RecruitAFriendFrameMixin.OnShow(self);
 
 	EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", self.OnTextScaleUpdated, self);
+
+	-- We stop listening for scale changes while we're hidden, so refresh everything that scales with the font size
+	self:OnTextScaleUpdated();
 end
 
 function RecruitAFriendFrameSocialViewMixin:OnTextScaleUpdated()
@@ -236,6 +240,8 @@ end
 
 function RecruitAFriendFrameSocialViewMixin:SetNoRecruitsText(text)
 	self.NoRecruitsScrollBox.NoRecruitsDesc:SetText(text);
+	self.NoRecruitsScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	self.NoRecruitsScrollBox:ScrollToBegin();
 end
 
 RecruitAFriendSocialViewActionButtonMixin = CreateFromMixins(SocialUIActionButtonMixin);

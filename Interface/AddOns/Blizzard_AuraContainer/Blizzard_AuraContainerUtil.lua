@@ -24,11 +24,21 @@ function AuraContainerUtil.CanApplyIdentityCandidateFilters(unitToken, auraData)
 		return true;
 	end
 
-	if auraData.isHarmful and UnitCanAssist("player", unitToken) then
+	-- Filtering helpful spells on the active player / any group members (or their pets) is always allowed.
+	-- In some edge cases like with Mind Control, the UnitCanAssist checks below can return false for group members.
+	if auraData.isHelpful and UnitIsPlayerControlledOrGroupMember(unitToken) then
+		return true;
+	end
+
+	-- For the purpose of this test ignore immune/uninteractable restrictions otherwise
+	-- filters won't be applied when the player is in a vehicle, teleporting, etc.
+	local canAssistImmune = true;
+	local canAssistUninteractable = true;
+	if auraData.isHarmful and UnitCanAssist("player", unitToken, canAssistImmune, canAssistUninteractable) then
 		return false;
 	end
 
-	if auraData.isHelpful and not UnitCanAssist("player", unitToken) then
+	if auraData.isHelpful and not UnitCanAssist("player", unitToken, canAssistImmune, canAssistUninteractable) then
 		return false;
 	end
 

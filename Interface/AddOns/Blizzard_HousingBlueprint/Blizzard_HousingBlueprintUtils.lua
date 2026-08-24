@@ -23,11 +23,6 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 			HousingFramesUtil.ShowBlueprintImport(blueprintInfo.shareCode);
 		end);
 	end
-
-	if blueprintInfo.isAutoSave then
-		rootDescription:CreateTitle(HOUSING_BLUEPRINT_COLLECTION_READONLY_BACKUP);
-		return;			
-	end
 	
 	rootDescription:CreateButton(HOUSING_BLUEPRINT_EXPORT_CHAT_LINK_BUTTON, function()
 		local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(blueprintInfo.shareCode);
@@ -39,21 +34,26 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 		CopyToClipboard(blueprintInfo.shareCode);
 		ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
 	end);
-	rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RENAME, function()
-		HousingBlueprintRenameFrame:ShowForBlueprint(blueprintInfo);
-	end);
-	rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_DELETE, function()
-		local popupData = {
-			shareCode = blueprintInfo.shareCode,
-			onDeleteConfirmed = params.onDeleteConfirm,
-			onClosed = params.onStateChange,
-			confirmationString = HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING,
-		};
-		StaticPopup_Show("CONFIRM_BLUEPRINT_DELETE", HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING, nil, popupData);
-		if params.onStateChange then
-			params.onStateChange();
-		end
-	end);
+
+	if blueprintInfo.isAutoSave then
+		rootDescription:CreateTitle(HOUSING_BLUEPRINT_COLLECTION_READONLY_BACKUP);
+	else
+		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_RENAME, function()
+			HousingBlueprintRenameFrame:ShowForBlueprint(blueprintInfo);
+		end);
+		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_DELETE, function()
+			local popupData = {
+				shareCode = blueprintInfo.shareCode,
+				onDeleteConfirmed = params.onDeleteConfirm,
+				onClosed = params.onStateChange,
+				confirmationString = HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING,
+			};
+			StaticPopup_Show("CONFIRM_BLUEPRINT_DELETE", HOUSING_BLUEPRINT_DELETE_CONFIRMATION_STRING, nil, popupData);
+			if params.onStateChange then
+				params.onStateChange();
+			end
+		end);
+	end
 end
 
 ----------------- Static Popups -----------------

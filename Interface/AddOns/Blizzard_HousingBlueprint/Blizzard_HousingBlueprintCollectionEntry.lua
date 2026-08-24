@@ -43,7 +43,7 @@ function HousingBlueprintCollectionEntryMixin:OnClick(button)
 	if button == "RightButton" then
 		self:ShowContextMenu();
 	else
-		if IsModifiedClick("CHATLINK") and not self.blueprintInfo.isAutoSave then
+		if IsModifiedClick("CHATLINK") then
 			local blueprintLink = C_HousingBlueprint.GetBlueprintHyperlink(self.blueprintInfo.shareCode);
 			if not ChatFrameUtil.InsertLink(blueprintLink) then
 				ChatFrameUtil.OpenChat(blueprintLink);
@@ -70,10 +70,7 @@ function HousingBlueprintCollectionEntryMixin:OnEnter()
 	
 	local dateTimeStr = self:GetDateTimeStr(--[[excludeTime=]]false);
 	GameTooltip_AddNormalLine(tooltip, HOUSING_BLUEPRINT_COLLECTION_TIMESTAMP_FMT:format(dateTimeStr));
-
-	if not self.blueprintInfo.isAutoSave then
-		GameTooltip_AddInstructionLine(tooltip, CLUB_FINDER_SHIFT_CLICK_LINK);
-	end
+	GameTooltip_AddInstructionLine(tooltip, CLUB_FINDER_SHIFT_CLICK_LINK);
 
 	GameTooltip:Show();
 	self:UpdateStateVisuals();

@@ -2,7 +2,9 @@ local ADDON_NAME, namespace = ...;
 local ADDON_PREFIX = "CDSyncTR";
 
 local MSG_INF, MSG_CD = "INF", "CD";
-local MAX_COOLDOWNS = 6;
+local MAX_BASE_COOLDOWNS = 6;
+local MAX_INTERRUPT_COOLDOWNS = 2;
+local MAX_COOLDOWNS = MAX_BASE_COOLDOWNS + MAX_INTERRUPT_COOLDOWNS;
 local MAX_ADDON_MESSAGE_LENGTH = 250;
 local THIRD_DECIMAL = "%.3f";
 local TRUNCATE_ZEROS = "%.?0+$";
@@ -64,12 +66,12 @@ function CooldownSyncRelayMixin:GetSupportedTrackedSpells()
 	if not specID then
 		return out, 0;
 	end
+
 	local trackedBySpec = namespace.TrackedCooldownsBySpec;
 	local spellList = trackedBySpec and trackedBySpec[specID];
 	if type(spellList) ~= "table" then
-		return out, specID;
+		spellList = {};
 	end
-
 	local outLookup = {};
 	local overrideOf = {};  -- overrideSpellID -> baseSpellID
 
@@ -113,9 +115,28 @@ function CooldownSyncRelayMixin:GetSupportedTrackedSpells()
 		end
 	end
 
-	if #out > MAX_COOLDOWNS then
-		for i = #out, MAX_COOLDOWNS + 1, -1 do
+	if #out > MAX_BASE_COOLDOWNS then
+		for i = #out, MAX_BASE_COOLDOWNS + 1, -1 do
 			out[i] = nil;
+		end
+	end
+
+	local interruptsBySpec = namespace.InterruptSpellsBySpec;
+	local interruptList = interruptsBySpec and interruptsBySpec[specID];
+	if type(interruptList) == "table" then
+		local interruptCount = 0;
+		for i = 1, #interruptList do
+			if interruptCount >= MAX_INTERRUPT_COOLDOWNS then
+				break;
+			end
+			local spellID = interruptList[i];
+			if C_SpellBook.IsSpellKnownOrInSpellBook(spellID) then
+				if outLookup[spellID] then
+					removeFromOut(spellID);
+				end
+				out[#out + 1] = spellID;
+				interruptCount = interruptCount + 1;
+			end
 		end
 	end
 

@@ -307,3 +307,7 @@ function CreatePendingInviteConfirmationText_GetWarnings(invite, name, guid, rol
 
 	return table.concat(warnings, "\n");
 end
+
+function OverrideLFGSetRoleRestriction()
+	return C_DelvesUI.HasActiveLFGLair();
+end
