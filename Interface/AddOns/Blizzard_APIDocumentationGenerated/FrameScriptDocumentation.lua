@@ -188,6 +188,15 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "GetScriptBucketThrottleLimits",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "limits", Type = "ScriptBucketThrottleLimits", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceLocation",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -471,6 +480,17 @@ local FrameScript =
 				{ Name = "DisallowTaintedAccess", Type = "TableSecurityOption", EnumValue = 0 },
 				{ Name = "DisallowSecretKeys", Type = "TableSecurityOption", EnumValue = 1 },
 				{ Name = "SecretWrapContents", Type = "TableSecurityOption", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ScriptBucketThrottleLimits",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "luaScriptBucketThrottleMaxMsPerSecondNormal", Type = "number", Nilable = false },
+				{ Name = "luaScriptBucketThrottleMaxMsPerSecondRestricted", Type = "number", Nilable = false },
+				{ Name = "luaScriptBucketThrottleMaxMsBurstNormal", Type = "number", Nilable = false },
+				{ Name = "luaScriptBucketThrottleMaxMsBurstRestricted", Type = "number", Nilable = false },
 			},
 		},
 		{
