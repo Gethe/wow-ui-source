@@ -3,7 +3,7 @@
 	<Frame name="MiniMapTracking" parent="MinimapBackdrop" mixin="MinimapTrackingSimpleMixin" enableMouse="true" hidden="true">
 		<Size x="33" y="33"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="12" y="-26"/>
+			<Anchor point="TOPLEFT" x="3" y="-50"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
