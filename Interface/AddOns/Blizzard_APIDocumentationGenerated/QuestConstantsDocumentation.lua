@@ -146,9 +146,16 @@ local QuestConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "MAX_QUEST_WATCHES", Type = "number", Value = 25 },
 				{ Name = "MAX_WORLD_QUEST_WATCHES", Type = "number", Value = 1 },
 				{ Name = "MAX_WORLD_QUEST_HARD_WATCHES", Type = "number", Value = 5 },
+			},
+		},
+		{
+			Name = "QuestWatchConsts_ClassicPreWrath",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MAX_QUEST_WATCHES", Type = "number", Value = 5 },
 			},
 		},
 	},
