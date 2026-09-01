@@ -596,7 +596,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:SetPaddedHeight(paddedHeigh
 end
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, playerChoiceLayout, parentOption)
-	local buttonStride = math.max(math.floor(#optionInfo.buttons / self.numColumns), 1);
+	local buttonStride = math.max(math.ceil(#optionInfo.buttons / self.numColumns), 1);
 
 	if buttonStride ~= self.lastStride then
 		self.layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, buttonStride, 20, 5);

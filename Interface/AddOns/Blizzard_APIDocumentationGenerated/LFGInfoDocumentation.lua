@@ -216,6 +216,15 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "IsInMatchmadeRaidWithoutRoleRequirements",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLFDEnabled",
 			Type = "Function",
 
