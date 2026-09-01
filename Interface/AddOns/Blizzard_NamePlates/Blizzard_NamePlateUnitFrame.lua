@@ -574,7 +574,7 @@ end
 function NamePlateUnitFrameMixin:UpdateHitTestArea(setupOptions)
 	if self:IsShowOnlyName() then
 		self:GetNamePlateFrame():ClearAllHitTestPoints();
-	elseif setupOptions.unitNameInsideHealthBar then
+	elseif setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
 		local extraXOffset = 10;
 		local extraYOffset = setupOptions.healthBarHeight / 2;
 
