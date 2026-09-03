@@ -65,6 +65,7 @@ local PetBattleConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

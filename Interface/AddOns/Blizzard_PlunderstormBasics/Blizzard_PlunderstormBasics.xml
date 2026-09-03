@@ -15,7 +15,7 @@
 	<Frame name="PlunderstormBasicsContainerFrame" mixin="PlunderstormBasicsContainerFrameMixin" inherits="VerticalLayoutFrame" frameLevel="1000" >
 		<Size x="476" y="1"/>
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="476" type="string"/>
+			<KeyValue key="fixedWidth" value="476" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" x="46" y="0"/>

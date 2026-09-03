@@ -109,6 +109,7 @@ local SpellDiminishUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

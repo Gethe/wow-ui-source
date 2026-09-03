@@ -357,6 +357,7 @@ local ContributionCollector =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

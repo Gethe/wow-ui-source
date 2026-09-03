@@ -2,13 +2,16 @@ DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 BUFF_DURATION_WARNING_TIME = 90;
 
 local DEBUFF_DISPLAY_INFO = {
-	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon" },
-	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon" },
-	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon" },
-	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon" },
-	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon" },
+	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffMagic" },
+	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffCurse" },
+	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffDisease" },
+	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffPoison" },
+	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon", dispelIconAtlas = "RaidFrame-Icon-DebuffBleed" },
 	["None"] = { color = DEBUFF_TYPE_NONE_COLOR, abbreviation = "", basicAtlas = "ui-debuff-border-default-noicon" },
 };
+
+CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
+CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
 
 AuraUtil = {};
 
@@ -27,6 +30,10 @@ end
 
 function AuraUtil.GetAuraDataByAuraInstanceID(...)
 	return CallDataProviderMethod("GetAuraDataByAuraInstanceID", ...);
+end
+
+function AuraUtil.GetUnitAuras(...)
+	return CallDataProviderMethod("GetUnitAuras", ...);
 end
 
 -- For backwards compatibility with old APIs, this helper function returns aura data values unpacked in the same order as before.
@@ -118,6 +125,18 @@ do
 	end
 end
 
+local function IsAuraFromPlayer(auraData)
+	return (auraData.sourceUnit ~= nil) and UnitIsUnit("player", auraData.sourceUnit) or false;
+end
+
+local function GetExpirationTimeForSort(auraData)
+	if auraData.expirationTime == nil or auraData.expirationTime == 0 then
+		return math.huge;
+	end
+
+	return auraData.expirationTime;
+end
+
 function AuraUtil.DefaultAuraCompare(a, b)
 	local aFromPlayer = (a.sourceUnit ~= nil) and UnitIsUnit("player", a.sourceUnit) or false;
 	local bFromPlayer = (b.sourceUnit ~= nil) and UnitIsUnit("player", b.sourceUnit) or false;
@@ -155,25 +174,149 @@ function AuraUtil.BigDefensiveAuraCompare(a, b)
 	return a.auraInstanceID < b.auraInstanceID;
 end
 
+function AuraUtil.UnitFrameDebuffComparator(a, b)
+	if a.debuffType ~= b.debuffType then
+		return a.debuffType < b.debuffType;
+	end
+
+	return AuraUtil.DefaultAuraCompare(a, b);
+end
+
+function AuraUtil.ImportantOnlyAuraCompare(auraA, auraB)
+	local aImportant = auraA.spellId ~= nil and C_Spell.IsSpellImportant(auraA.spellId);
+	local bImportant = auraB.spellId ~= nil and C_Spell.IsSpellImportant(auraB.spellId);
+
+	if aImportant ~= bImportant then
+		return aImportant;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.ExpirationAuraCompare(auraA, auraB)
+	local aFromPlayer = IsAuraFromPlayer(auraA);
+	local bFromPlayer = IsAuraFromPlayer(auraB);
+	if aFromPlayer ~= bFromPlayer then
+		return aFromPlayer;
+	end
+
+	if auraA.isPriorityAura ~= auraB.isPriorityAura then
+		return auraA.isPriorityAura;
+	end
+
+	if auraA.canApplyAura ~= auraB.canApplyAura then
+		return auraA.canApplyAura;
+	end
+
+	-- Permanent auras sort after timed auras.
+	local aExpirationTime = GetExpirationTimeForSort(auraA);
+	local bExpirationTime = GetExpirationTimeForSort(auraB);
+	if aExpirationTime ~= bExpirationTime then
+		return aExpirationTime < bExpirationTime;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.ExpirationOnlyAuraCompare(auraA, auraB)
+	-- Permanent auras sort after timed auras.
+	local aExpirationTime = GetExpirationTimeForSort(auraA);
+	local bExpirationTime = GetExpirationTimeForSort(auraB);
+	if aExpirationTime ~= bExpirationTime then
+		return aExpirationTime < bExpirationTime;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.NameAuraCompare(auraA, auraB)
+	local aFromPlayer = IsAuraFromPlayer(auraA);
+	local bFromPlayer = IsAuraFromPlayer(auraB);
+	if aFromPlayer ~= bFromPlayer then
+		return aFromPlayer;
+	end
+
+	if auraA.isPriorityAura ~= auraB.isPriorityAura then
+		return auraA.isPriorityAura;
+	end
+
+	if auraA.canApplyAura ~= auraB.canApplyAura then
+		return auraA.canApplyAura;
+	end
+
+	local aName = auraA.name or "";
+	local bName = auraB.name or "";
+	if aName ~= bName then
+		return aName < bName;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.NameOnlyAuraCompare(auraA, auraB)
+	local aName = auraA.name or "";
+	local bName = auraB.name or "";
+	if aName ~= bName then
+		return aName < bName;
+	end
+
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
+function AuraUtil.AuraInstanceIDOnlyAuraCompare(auraA, auraB)
+	return auraA.auraInstanceID < auraB.auraInstanceID;
+end
+
 AuraUtil.AuraFilters =
 {
-	Helpful = "HELPFUL",
-	Harmful = "HARMFUL",
-	Raid = "RAID",
-	IncludeNameplateOnly = "INCLUDE_NAME_PLATE_ONLY",
-	Player = "PLAYER",
-	Cancelable = "CANCELABLE",
-	NotCancelable = "NOT_CANCELABLE",
-	Maw = "MAW",
-	ExternalDefensive = "EXTERNAL_DEFENSIVE",
-	CrowdControl = "CROWD_CONTROL",
-	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
-	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
-	BigDefensive = "BIG_DEFENSIVE",
+	Helpful = "HELPFUL",								-- Include only helpful auras (buffs)
+	Harmful = "HARMFUL",								-- Include only harmful auras (debuffs)
+	Player = "PLAYER",									-- Include only auras that were cast by the player, or by the player's pet or vehicle
+	Raid = "RAID",										-- Include only helpful auras the player can apply and harmful auras the player can dispel
+	Cancelable = "CANCELABLE",							-- Include only auras that can be canceled by the player
+	-- NotCancelable ("NOT_CANCELABLE") was removed; use "!"..AuraUtil.AuraFilters.Cancelable ("!CANCELABLE").
+	-- A temporary fallback is provided by Blizzard_DeprecatedAuraFilters.
+	IncludeNameplateOnly = "INCLUDE_NAME_PLATE_ONLY",	-- When set, auras that are flagged as being nameplate-only will be included. When not set, nameplate-only auras will be filtered out.
+	Maw = "MAW",										-- When set, ONLY Torghast auras will be returned. When not set, Torghast auras will be filtered out.
+	ExternalDefensive = "EXTERNAL_DEFENSIVE",			-- Include only auras that are external defensives
+	CrowdControl = "CROWD_CONTROL",						-- Include only auras that have a crowd control effect (stun, fear, etc.)
+	RaidInCombat = "RAID_IN_COMBAT",					-- Include only auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs
+	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Include only auras someone in the player's raid can dispel (including helpful enrages on enemies)
+	BigDefensive = "BIG_DEFENSIVE",						-- Include only auras that are big defensives
+	Important = "IMPORTANT",							-- Include only auras that are flagged as important (helpful auras that show on enemy nameplates even if non-stealable)
+	Dispellable = "DISPELLABLE",						-- Include only auras that are dispellable, regardless of whether the player's raid can dispel them
 };
 
 function AuraUtil.CreateFilterString(...)
 	return string.join("|", ...);
+end
+
+-- A leading "!" negates a filter component, e.g. "!PLAYER" returns auras NOT cast by the player.
+-- IncludeNameplateOnly and Maw filters are not negatable (negation will be ignored if applied)
+AuraUtil.AuraFilterNegationPrefix = "!";
+
+function AuraUtil.IsValidFilterString(filterString)
+	-- Splitting here intentionally tokenizes on "|" and space characters to
+	-- permit callers to "TYPE | OUT | THEIR | STRINGS". This requires skipping
+	-- empty components as strsplit's tokenizer doesn't skip chains of delimiters.
+	for _index, component in ipairs({ string.split("| ", filterString) }) do
+		local negated = component:sub(1, 1) == AuraUtil.AuraFilterNegationPrefix;
+		if negated then
+			component = component:sub(2);
+		end
+
+		-- A bare "!" (negation prefix with nothing after it) is invalid; genuine empty components
+		-- from delimiter chains (e.g. "HELPFUL|PLAYER") are still skipped below.
+		if negated and component == "" then
+			return false, "A negation prefix ('!') must be followed by a filter component.";
+		end
+
+		if component ~= "" and not EnumUtil.IsValid(AuraUtil.AuraFilters, component) then
+			return false, string.format("Unknown aura filter component: '%s'", component);
+		end
+	end
+
+	return true;
 end
 
 AuraUtil.DispellableDebuffTypes =
@@ -199,14 +342,6 @@ AuraUtil.UnitFrameDebuffType = EnumUtil.MakeEnum(
 	"NonBossRaidDebuff",
 	"NonBossDebuff"
 );
-
-function AuraUtil.UnitFrameDebuffComparator(a, b)
-	if a.debuffType ~= b.debuffType then
-		return a.debuffType < b.debuffType;
-	end
-
-	return AuraUtil.DefaultAuraCompare(a, b);
-end
 
 function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
 	if aura == nil then
@@ -471,9 +606,13 @@ function AuraUtil.IsRoleAura(aura)
 	return aura.isTankRoleAura or aura.isHealerRoleAura or aura.isDPSRoleAura;
 end
 
-function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+function AuraUtil.GetAuraBorderColor(dispelType)
 	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
-	borderRegion:SetVertexColor(info.color:GetRGBA());
+	return info.color;
+end
+
+function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+	borderRegion:SetVertexColor(AuraUtil.GetAuraBorderColor(dispelType):GetRGBA());
 end
 
 function AuraUtil.SetAuraSymbol(fontstring, dispelType)
@@ -483,6 +622,19 @@ function AuraUtil.SetAuraSymbol(fontstring, dispelType)
 		fontstring:Show();
 	else
 		fontstring:Hide();
+	end
+end
+
+function AuraUtil.GetAuraDispelTypeIcon(dispelType)
+	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+	return info.dispelIconAtlas;
+end
+
+function AuraUtil.SetAuraDispelTypeIcon(texture, dispelType)
+	local dispelIconAtlas = AuraUtil.GetAuraDispelTypeIcon(dispelType);
+
+	if not CheckSetAtlas(texture, dispelIconAtlas, TextureKitConstants.IgnoreAtlasSize) then
+		texture:SetTexture(nil);
 	end
 end
 
@@ -500,9 +652,8 @@ function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelT
 end
 
 local function OnSwitchAuraDataProvider(...)
-	local whatAreTheArgs = { ... };
-	local realData = select(2, ...);
-	if realData then
+	local useActualDataProvider = select(2, ...);
+	if useActualDataProvider then
 		AuraUtil.ClearDataProvider();
 	else
 		AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
@@ -510,3 +661,66 @@ local function OnSwitchAuraDataProvider(...)
 end
 
 EventRegistry:RegisterFrameEventAndCallback("AURA_DATA_PROVIDER_SWITCH", OnSwitchAuraDataProvider, {});
+
+GroupBuffMixin = {};
+
+function GroupBuffMixin:OnLoad()
+	self:RegisterHiddenGroupBuffsChangedEvent();
+	self:RefreshHiddenGroupBuffs();
+	self:RegisterGroupBuffVisualAlertsChangedEvent();
+	self:RefreshGroupBuffVisualAlerts();
+end
+
+function GroupBuffMixin:RefreshHiddenGroupBuffs(spellIDs)
+	self.hiddenGroupBuffSpellIDs = {};
+	for _, spellID in ipairs(spellIDs or C_UnitAuras.GetHiddenGroupBuffs() or {}) do
+		self.hiddenGroupBuffSpellIDs[spellID] = true;
+	end
+end
+
+function GroupBuffMixin:IsGroupBuffHidden(spellID)
+	if spellID and self.hiddenGroupBuffSpellIDs then
+		return not not self.hiddenGroupBuffSpellIDs[spellID];
+	end
+
+	return false;
+end
+
+function GroupBuffMixin:OnHiddenGroupBuffsChanged(...)
+	local spellIDs = ...;
+	self:RefreshHiddenGroupBuffs(spellIDs);
+end
+
+function GroupBuffMixin:RegisterHiddenGroupBuffsChangedEvent()
+	EventRegistry:RegisterFrameEventAndCallback("HIDDEN_GROUP_BUFFS_CHANGED", self.OnHiddenGroupBuffsChanged, self);
+end
+
+function GroupBuffMixin:UnregisterHiddenGroupBuffsChangedEvent()
+	EventRegistry:UnregisterFrameEventAndCallback("HIDDEN_GROUP_BUFFS_CHANGED", self);
+end
+
+function GroupBuffMixin:RefreshGroupBuffVisualAlerts(visualAlerts)
+	self.groupBuffVisualAlerts = {};
+	for _, info in ipairs(visualAlerts or C_UnitAuras.GetGroupBuffVisualAlerts() or {}) do
+		self.groupBuffVisualAlerts[info.spellID] = info.visualValue;
+	end
+end
+
+function GroupBuffMixin:GetGroupBuffVisualAlert(spellID)
+	if spellID and self.groupBuffVisualAlerts then
+		return self.groupBuffVisualAlerts[spellID];
+	end
+end
+
+function GroupBuffMixin:OnGroupBuffVisualAlertsChanged(...)
+	local visualAlerts = ...;
+	self:RefreshGroupBuffVisualAlerts(visualAlerts);
+end
+
+function GroupBuffMixin:RegisterGroupBuffVisualAlertsChangedEvent()
+	EventRegistry:RegisterFrameEventAndCallback("GROUP_BUFF_VISUAL_ALERTS_CHANGED", self.OnGroupBuffVisualAlertsChanged, self);
+end
+
+function GroupBuffMixin:UnregisterGroupBuffVisualAlertsChangedEvent()
+	EventRegistry:UnregisterFrameEventAndCallback("GROUP_BUFF_VISUAL_ALERTS_CHANGED", self);
+end

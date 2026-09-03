@@ -1,6 +1,7 @@
 ## Title: Blizzard_GMChatUI
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_StatusUI
+Blizzard_GMChatUI_Bootstrap.lua [Bootstrap]
 Blizzard_GMChatUI.lua
 Blizzard_GMChatUI.xml
 Localization.lua

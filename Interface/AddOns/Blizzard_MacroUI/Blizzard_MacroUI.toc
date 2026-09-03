@@ -1,6 +1,8 @@
 ## Title: Blizzard Macro UI
 ## LoadOnDemand: 1
 ## AllowLoadGameType: mainline
+## OptionalDeps: Blizzard_Plunderstorm
+Blizzard_MacroUI_Bootstrap.lua [Bootstrap]
 Blizzard_MacroDefine.lua
 Blizzard_MacroScrollFrame.xml
 Blizzard_MacroUI.xml

@@ -110,7 +110,7 @@ end
 HouseEditorModeButtonMixin = CreateFromMixins(BaseHouseEditorModeButtonMixin);
 
 function HouseEditorModeButtonMixin:CheckEnabled()
-	if not HousingTutorialUtil.IsModeValidForTutorial(self.editorMode) and not HousingTutorialUtil.HousingQuestTutorialComplete() then
+	if not HousingTutorialUtil.IsModeValidForTutorial(self.editorMode) and not HousingTutorialUtil.HousingDecorQuestTutorialComplete() then
 		return false, HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, ERR_HOUSING_RESULT_NOT_IN_TUTORIAL);
 	end
 
@@ -123,16 +123,18 @@ function HouseEditorModeButtonMixin:CheckEnabled()
 	end
 
 	local availabilityResult = C_HouseEditor.GetHouseEditorModeAvailability(self.editorMode);
-	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
-	if not canActivate then
-		if errorText then
-			errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, errorText);
-		else
-			errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_FMT:format(self.modeName);
-		end
+	if availabilityResult == Enum.HousingResult.Success then
+		return true;
 	end
 
-	return canActivate, errorText;
+	local errorText = HousingResultToErrorText[availabilityResult];
+	if errorText then
+		errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, errorText);
+	else
+		errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_FMT:format(self.modeName);
+	end
+
+	return false, errorText;
 end
 
 function HouseEditorModeButtonMixin:EnterMode()

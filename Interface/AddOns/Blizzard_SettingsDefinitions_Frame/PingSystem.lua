@@ -40,6 +40,22 @@ local function Register()
         end
     end
 
+	-- Ping Targets
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.PingTargetOption.Environment, PING_TARGET_OPTION_ENVIRONMENT, OPTION_TOOLTIP_PING_TARGET_ENVIRONMENT);
+			container:Add(Enum.PingTargetOption.Units, PING_TARGET_OPTION_UNITS, OPTION_TOOLTIP_PING_TARGET_UNITS);
+			container:Add(Enum.PingTargetOption.All, PING_TARGET_OPTION_ALL, OPTION_TOOLTIP_PING_TARGET_ALL);
+			return container:GetData();
+		end
+
+		local setting = Settings.RegisterCVarSetting(category, "pingTarget", Settings.VarType.Number, PING_TARGET_OPTION);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_PING_TARGET);
+		initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+		initializer.additionalTooltipText = OPTION_TOOLTIP_PING_TARGET_KEYBIND;
+	end
+
     -- Show Pings in Chat
     do
         local setting = Settings.RegisterCVarSetting(category, "showPingsInChat", Settings.VarType.Boolean, SHOW_PINGS_IN_CHAT);
@@ -51,6 +67,9 @@ local function Register()
 		initializer:SetKioskProtected();
 		layout:AddInitializer(initializer);
     end
+
+	-- Show Pings on Raid Frames
+	Settings.SetupCVarCheckbox(category, "showPingsOnRaidFrames", SHOW_PINGS_ON_RAID_FRAMES, OPTION_TOOLTIP_SHOW_PINGS_ON_RAID_FRAMES);
 
     -- Keybinds Button
 	do

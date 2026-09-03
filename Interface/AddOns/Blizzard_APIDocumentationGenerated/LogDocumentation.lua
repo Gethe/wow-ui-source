@@ -57,6 +57,7 @@ local Log =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -45,6 +45,7 @@ local UIModifiedInstance =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,6 +1,8 @@
 -- Set to false in some locale specific files.
 TIME_UTIL_WHITE_SPACE_STRIPPABLE = true;
 
+TimeUtil = TimeUtil or {};
+
 SECONDS_PER_MIN = 60;
 SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN;
 SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
@@ -17,6 +19,38 @@ end
 
 function HasTimePassed(testTime, amountOfTime)
 	return ((time() - testTime) >= amountOfTime);
+end
+
+function TimeUtil.GetRecentTimeDate(year, month, day, hour)
+	local lastOnline;
+	if ( (year == 0) or (year == nil) ) then
+		if ( (month == 0) or (month == nil) ) then
+			if ( (day == 0) or (day == nil) ) then
+				if ( (hour == 0) or (hour == nil) ) then
+					lastOnline = LASTONLINE_MINS;
+				else
+					lastOnline = format(LASTONLINE_HOURS, hour);
+				end
+			else
+				lastOnline = format(LASTONLINE_DAYS, day);
+			end
+		else
+			lastOnline = format(LASTONLINE_MONTHS, month);
+		end
+	else
+		lastOnline = format(LASTONLINE_YEARS, year);
+	end
+	return lastOnline;
+end
+
+function TimeUtil.BetterDate(formatString, timeVal)
+	local dateTable = date("*t", timeVal);
+	local amString = (dateTable.hour >= 12) and TIMEMANAGER_PM or TIMEMANAGER_AM;
+
+	formatString = gsub(formatString, "^%%p", amString);
+	formatString = gsub(formatString, "([^%%])%%p", "%1"..amString);
+
+	return date(formatString, timeVal);
 end
 
 SecondsFormatter = {};
@@ -302,6 +336,27 @@ function SecondsToClock(seconds, displayZeroHours)
 		return format(HOURS_MINUTES_SECONDS, units.hours, units.minutes, units.seconds);
 	else
 		return format(MINUTES_SECONDS, units.minutes, units.seconds);
+	end
+end
+
+function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
+	local seconds, ms;
+	if ( hasMS ) then
+		seconds = floor(timeAmount / 1000);
+		ms = timeAmount - seconds * 1000;
+	else
+		seconds = timeAmount;
+	end
+
+	local hours = floor(seconds / 3600);
+	local minutes = floor((seconds / 60) - (hours * 60));
+	seconds = seconds - hours * 3600 - minutes * 60;
+	if ( hasMS ) then
+		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
+	elseif ( dropZeroHours and hours == 0 ) then
+		return format(MINUTES_SECONDS, minutes, seconds);
+	else
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
 	end
 end
 

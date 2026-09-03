@@ -1,8 +1,11 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard BoostTutorial
+## Title: Blizzard_BoostTutorial
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_Dispatcher, Blizzard_HelpPlate
+## Dep: middleclass
+## Dep: Blizzard_TutorialTemplates
+## Dep: Blizzard_Dispatcher
+## Dep: Blizzard_HelpPlate
 
+Blizzard_BoostTutorial_Bootstrap.lua [Bootstrap]
 Blizzard_TutorialPointerFrame.xml
 Blizzard_TutorialQuestManager.lua
 Blizzard_TutorialRangeManager.lua

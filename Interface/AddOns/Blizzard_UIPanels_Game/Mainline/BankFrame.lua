@@ -98,6 +98,20 @@ function BankFrame_Open()
 	end
 end
 
+local function RegisterWithPlayerInteractionManager()
+	local frameInfo =
+	{
+		frame = "BankFrame",
+		showFunc = BankFrame_Open,
+	};
+
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.Banker, frameInfo);
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.CharacterBanker, frameInfo);
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.AccountBanker, frameInfo);
+end
+
+RegisterWithPlayerInteractionManager();
+
 BankPanelSystemMixin = {};
 
 function BankPanelSystemMixin:GetBankPanel()
@@ -391,7 +405,7 @@ function BankUtil_IsAccountBankDepositRefundable(itemLocation)
 		return false;
 	end
 
-	return (BankFrame:GetActiveBankType() == Enum.BankType.Account) and C_Item.CanBeRefunded(itemLocation);
+	return (BankFrame:GetActiveBankType() == Enum.BankType.Account) and C_Bank.CanUseBank(Enum.BankType.Account) and C_Item.CanBeRefunded(itemLocation);
 end
 
 function BankPanelItemButtonMixin:HandleItemPickup()

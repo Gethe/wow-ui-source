@@ -2,4 +2,5 @@
 ## Title: Blizzard Hybrid Minimap
 ## RequiredDep: Blizzard_MapCanvas
 ## LoadOnDemand: 1
+Blizzard_HybridMinimap_Bootstrap.lua [Bootstrap]
 Blizzard_HybridMinimap.xml

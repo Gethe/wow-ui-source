@@ -3,6 +3,7 @@ local UIFileAssetShared =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

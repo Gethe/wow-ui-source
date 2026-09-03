@@ -76,7 +76,7 @@ function PlayerFrame_OnLoad(self)
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
-	UIParent_UpdateTopFramePositions();
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		local which = nil;
@@ -646,9 +646,10 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
 	PlayerLevelText:Hide();
 
-	PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
-	if PlayerFrameBottomManagedFramesContainer:IsShown() then
-		PlayerFrameBottomManagedFramesContainer:Layout();
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
+	playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+	if playerBottomManagedFrameContainer:IsShown() then
+		playerBottomManagedFrameContainer:Layout();
 	end
 end
 
@@ -751,15 +752,16 @@ function PlayerFrame_ToPlayerArt(self)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -29);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
 
 	if alternatePowerBar then
-		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
+		playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
 	else
-		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+		playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
 	end
 
-	if PlayerFrameBottomManagedFramesContainer:IsShown() then
-		PlayerFrameBottomManagedFramesContainer:Layout();
+	if playerBottomManagedFrameContainer:IsShown() then
+		playerBottomManagedFrameContainer:Layout();
 	end
 end
 

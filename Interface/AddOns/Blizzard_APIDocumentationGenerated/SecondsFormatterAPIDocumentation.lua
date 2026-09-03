@@ -2,6 +2,7 @@ local SecondsFormatterAPI =
 {
 	Name = "SecondsFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -9,12 +10,13 @@ local SecondsFormatterAPI =
 		{
 			Name = "CanApproximate",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the given number of seconds is within an appropriate range for approximated formatting." },
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 			},
 
 			Returns =
@@ -53,12 +55,13 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateDesiredUnitCount",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the unit count that a given number of seconds will use for formatting." },
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 			},
 
 			Returns =
@@ -69,12 +72,13 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMaxInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the maximum interval band that a given number of seconds will use for formatting." },
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 			},
 
 			Returns =
@@ -85,12 +89,13 @@ local SecondsFormatterAPI =
 		{
 			Name = "EvaluateMinInterval",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the minimum interval band that a given number of seconds will use for formatting." },
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 			},
 
 			Returns =
@@ -101,12 +106,13 @@ local SecondsFormatterAPI =
 		{
 			Name = "Format",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a number of seconds and returns the resulting string." },
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 				{ Name = "abbreviation", Type = "SecondsFormatterAbbreviation", Nilable = true, Documentation = { "Optional abbreviation mode to use in-place of the default." } },
 			},
 
@@ -118,6 +124,7 @@ local SecondsFormatterAPI =
 		{
 			Name = "FormatZero",
 			Type = "Function",
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns formatted string representing a zero second duration." },
 
@@ -142,7 +149,7 @@ local SecondsFormatterAPI =
 
 			Returns =
 			{
-				{ Name = "approximationSeconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "approximationSeconds", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -240,7 +247,7 @@ local SecondsFormatterAPI =
 
 			Returns =
 			{
-				{ Name = "threshold", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "threshold", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -269,6 +276,20 @@ local SecondsFormatterAPI =
 			Returns =
 			{
 				{ Name = "curve", Type = "LuaCurveObject", Nilable = true, Documentation = { "Nil if configured to static interval band." } },
+			},
+		},
+		{
+			Name = "GetRounding",
+			Type = "Function",
+			Documentation = { "Returns how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The configured rounding mode." } },
 			},
 		},
 		{
@@ -302,7 +323,7 @@ local SecondsFormatterAPI =
 
 			Arguments =
 			{
-				{ Name = "seconds", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "seconds", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -401,7 +422,7 @@ local SecondsFormatterAPI =
 
 			Arguments =
 			{
-				{ Name = "threshold", Type = "DurationSecondsDouble", Nilable = false },
+				{ Name = "threshold", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -427,6 +448,17 @@ local SecondsFormatterAPI =
 			},
 		},
 		{
+			Name = "SetRounding",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets how fractional seconds are rounded when not displaying milliseconds." },
+
+			Arguments =
+			{
+				{ Name = "rounding", Type = "SecondsFormatterRounding", Nilable = false, Documentation = { "The rounding mode to use." } },
+			},
+		},
+		{
 			Name = "SetStripIntervalWhitespace",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -446,6 +478,7 @@ local SecondsFormatterAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

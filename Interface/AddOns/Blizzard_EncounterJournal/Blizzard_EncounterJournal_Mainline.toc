@@ -4,7 +4,9 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## Dependencies: Blizzard_ClassMenu, Blizzard_Colors, Blizzard_HelpPlate
+## OptionalDeps: Blizzard_Plunderstorm
 ## AllowLoadGameType: mainline
+Blizzard_EncounterJournal_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_MonthlyActivities.lua
 Mainline\Blizzard_MonthlyActivities.xml
 Mainline\Blizzard_Journeys.lua

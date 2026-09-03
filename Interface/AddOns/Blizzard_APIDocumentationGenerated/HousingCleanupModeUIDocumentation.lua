@@ -68,6 +68,7 @@ local HousingCleanupModeUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

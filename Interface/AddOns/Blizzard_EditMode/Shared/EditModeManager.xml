@@ -403,6 +403,13 @@
 									<KeyValue key="advancedLayoutIndex" value="13" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="LossOfControl" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOSS_OF_CONTROL_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="14" type="number"/>
+								</KeyValues>
+							</Frame>
 
 							<!-- Misc Settings -->
 							<Frame parentKey="TalkingHeadFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -472,6 +479,13 @@
 									<KeyValue key="shouldEnableCVarName" value="lootUnderMouse" type="string"/>
 									<KeyValue key="shouldEnableCVarInverted" value="true" type="boolean"/>
 									<KeyValue key="allowAutoEnableCVar" value="true" type="boolean"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="RaidWarning" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_RAID_WARNING_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="10" type="number"/>
 								</KeyValues>
 							</Frame>
 						</Frames>

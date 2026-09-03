@@ -6,6 +6,12 @@
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
 
+local function OrderHallMissionFrame_EscapePressed()
+	return OrderHallMissionFrame:EscapePressed();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, OrderHallMissionFrame_EscapePressed);
+
 ---------------------------------------------------------------------------------
 -- Order Hall Mission Frame
 ---------------------------------------------------------------------------------

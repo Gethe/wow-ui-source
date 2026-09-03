@@ -91,6 +91,14 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="pingIconFrame" inherits="UnitPingIconFrameTemplate">
+				<KeyValues>
+					<KeyValue key="isRaidFrame" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CompactUnitFrame_OnLoad"/>

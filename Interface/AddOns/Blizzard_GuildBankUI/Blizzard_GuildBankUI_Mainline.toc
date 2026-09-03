@@ -1,0 +1,7 @@
+## Title: Blizzard Guild Bank UI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Blizzard_GuildBankUI_Bootstrap.lua [Bootstrap]
+Mainline\Blizzard_GuildBankUI.xml
+Localization.lua

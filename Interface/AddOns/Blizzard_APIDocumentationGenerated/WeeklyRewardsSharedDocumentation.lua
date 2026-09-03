@@ -3,6 +3,7 @@ local WeeklyRewardsShared =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

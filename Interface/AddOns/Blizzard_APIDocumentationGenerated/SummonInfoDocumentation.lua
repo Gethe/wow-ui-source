@@ -69,6 +69,7 @@ local SummonInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

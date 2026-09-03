@@ -1131,7 +1131,7 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
+								GameTooltip:SetText(format(PET_DIET_TEMPLATE, string.join(", ", GetPetFoodTypes())));
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

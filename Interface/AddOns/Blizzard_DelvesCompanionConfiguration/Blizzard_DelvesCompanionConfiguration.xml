@@ -279,79 +279,87 @@
                 </Layers>
             </Frame>
 
-            <!-- Companion Info -->
-            <Frame parentKey="CompanionInfoFrame" mixin="CompanionInfoFrameMixin">
-                <Size x="340" y="90"/>
-                <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionLevelFrame" relativePoint="BOTTOM" y="-17"/>
-                    <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture parentKey="InfoFrameShadow" atlas="delves-companion-shadow" useAtlasSize="false">
-                            <Size x="340" y="135"/>
-                            <Anchors>
-                                <Anchor point="CENTER" y="25"/>
-                            </Anchors>
-                        </Texture>
+			<!-- Companion Info -->
+			<Frame parentKey="CompanionInfoFrame" mixin="CompanionInfoFrameMixin">
+				<Size x="340" y="90"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CompanionLevelFrame" relativePoint="BOTTOM"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="InfoFrameShadow" atlas="delves-companion-shadow" useAtlasSize="false">
+							<Size x="340" y="135"/>
+							<Anchors>
+								<Anchor point="CENTER" y="25"/>
+							</Anchors>
+						</Texture>
 
-                        <FontString parentKey="CompanionName" justifyH="CENTER" inherits="SystemFont_Huge4">
-                            <Size x="340" y="30"/>
-                            <Anchors>
-                                <Anchor point="TOP"/>
-                            </Anchors>
-                        </FontString>
+						<FontString parentKey="CompanionName" justifyH="CENTER" inherits="SystemFont_Huge2">
+							<Size x="340" y="30"/>
+							<Anchors>
+								<Anchor point="TOP" y="-10"/>
+							</Anchors>
+						</FontString>
 
-                        <FontString parentKey="CompanionDescription" justifyH="CENTER" inherits="GameFontNormalLarge">
-                            <Size x="340" y="25"/>
-                            <Anchors>
-                                <Anchor point="TOP" relativeKey="$parent.CompanionName" relativePoint="BOTTOM" y="5"/>
-                            </Anchors>
-                        </FontString>
+						<FontString parentKey="CompanionDescription" justifyH="CENTER" inherits="GameFontNormalLarge">
+							<Size x="340" y="25"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CompanionName" relativePoint="BOTTOM" y="5"/>
+							</Anchors>
+						</FontString>
 
-                        <Texture name="CompanionInfoGLine" atlas="delves-companion-divider" useAtlasSize="false">
-                            <Size x="285" y="5"/>
-                            <Anchors>
-                                <Anchor point="TOP" relativeKey="$parent.CompanionDescription" relativePoint="BOTTOM" y="-10"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
+						<Texture name="CompanionInfoGLine" atlas="delves-companion-divider" useAtlasSize="false">
+							<Size x="285" y="5"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CompanionDescription" relativePoint="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 
-            <!-- Role and Trinket Slots -->
-            <Button parentKey="CompanionCombatRoleSlot" inherits="CompanionConfigSlotTemplate">
-                <KeyValues>
-                    <KeyValue type="string" key="type" value="Role"/>
-                </KeyValues>
-                <Anchors>
+			<!-- Role, Flavor, Trinket Slots -->
+			<Frame parentKey="CompanionSlots" inherits="VerticalLayoutFrame">
+				<Anchors>
                     <Anchor point="TOPLEFT" relativeKey="$parent.CompanionInfoFrame" relativePoint="BOTTOMLEFT" x="35" y="10"/>
-                </Anchors>
-            </Button>
-
-            <Button parentKey="CompanionCombatTrinketSlot" inherits="CompanionConfigSlotTemplate">
-                <KeyValues>
-                    <KeyValue type="string" key="type" value="Combat"/>
-                </KeyValues>
-                <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatRoleSlot" relativePoint="BOTTOM" y="-2"/>
-                </Anchors>
-            </Button>
-
-            <Button parentKey="CompanionUtilityTrinketSlot" inherits="CompanionConfigSlotTemplate">
-                <KeyValues>
-                    <KeyValue type="string" key="type" value="Utility"/>
-                </KeyValues>
-                <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatTrinketSlot" relativePoint="BOTTOM" y="-2"/>
-                </Anchors>
-            </Button>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="-13" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button parentKey="CompanionCombatRoleSlot" inherits="CompanionConfigSlotTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue type="string" key="type" value="Role"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="CompanionFlavorSlot" inherits="CompanionConfigSlotTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue type="string" key="type" value="Flavor"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="CompanionCombatTrinketSlot" inherits="CompanionConfigSlotTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue type="string" key="type" value="Combat"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="CompanionUtilityTrinketSlot" inherits="CompanionConfigSlotTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+							<KeyValue type="string" key="type" value="Utility"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
 
             <!-- Abilities Button -->
             <Button parentKey="CompanionConfigShowAbilitiesButton" inherits="UIPanelButtonTemplate" mixin="CompanionConfigShowAbilitiesButtonMixin">
                 <Size x="170" y="25"/>
                 <Anchors>
-                    <Anchor point="BOTTOM"  y="40"/>
+					<Anchor point="BOTTOM"  y="25"/>
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">

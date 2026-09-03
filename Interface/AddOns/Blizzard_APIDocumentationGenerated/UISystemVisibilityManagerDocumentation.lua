@@ -48,6 +48,7 @@ local UISystemVisibilityManager =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,7 +1,18 @@
 GameDialogDefsUtil = {};
 
 function GameDialogDefsUtil.GetSelfResurrectDialogOptions()
-	local resOptions = GetSortedSelfResurrectOptions();
+	local resOptions = C_DeathInfo.GetSelfResurrectOptions();
+	if ( resOptions ) then
+		table.sort(resOptions, function(a, b)
+			if ( a.canUse ~= b.canUse ) then
+				return a.canUse;
+			end
+			if ( a.isLimited ~= b.isLimited ) then
+				return not a.isLimited;
+			end
+			return a.priority < b.priority;
+		end);
+	end
 	if ( resOptions ) then
 		if ( C_InstanceEncounter.IsEncounterLimitingResurrections() ) then
 			return resOptions[1], resOptions[2];

@@ -386,6 +386,7 @@ local PlayerInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

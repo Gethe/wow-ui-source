@@ -67,6 +67,7 @@ local HousingLayoutUITypes =
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,3 @@
+## Title: Blizzard_TutorialTemplates
+## LoadOnDemand: 1
+Blizzard_TutorialTemplates.xml

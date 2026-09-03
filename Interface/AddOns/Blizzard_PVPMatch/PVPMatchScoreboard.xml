@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="PVPMatchScoreboard.lua"/>
 	
-	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" frameStrata="DIALOG" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" frameStrata="DIALOG" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" roleset="pvp">
 		<Size x="1024" y="420"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

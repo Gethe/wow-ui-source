@@ -37,6 +37,15 @@ end
 
 SettingsPanelMixin = {};
 
+function SettingsPanel_EscapePressed()
+	if SettingsPanel:IsShown() then
+		SettingsPanel:Close();
+		return true;
+	end
+
+	return false;
+end
+
 function SettingsPanelMixin:OnLoad()
 	self.settings = {};
 	self.categoryLayouts = {};
@@ -467,7 +476,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 			table.insert(settings, setting);
 		end
 	end
-	
+
 	SortTableByCommitOrder(settings);
 
 	local isKioskEnabled = Kiosk.IsEnabled();

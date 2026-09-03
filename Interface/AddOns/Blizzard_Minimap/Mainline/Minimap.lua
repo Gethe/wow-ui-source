@@ -1,6 +1,6 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
-MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for UIParentManageFramePositions
+MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for ManageFramePositions
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
@@ -257,8 +257,8 @@ function MinimapMixin:OnEvent(event, ...)
 		self.ZoomOut:SetEnabled(zoom ~= 0);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if C_Minimap.ShouldUseHybridMinimap() then
-			if not HybridMinimap then
-				UIParentLoadAddOn("Blizzard_HybridMinimap");
+			if not HybridMinimap_LoadUI() then
+				return;
 			end
 			C_Minimap.GetUiMapID = function() return C_Map.GetBestMapForUnit("player"); end
 			HybridMinimap:Enable();
@@ -414,6 +414,10 @@ function MinimapClusterMixin:SetEditModeScale(scale)
 	end
 end
 
+function MinimapClusterMixin:SetIconScale(scale)
+	self.MinimapContainer.Minimap:SetIconScale(scale);
+end
+
 local function ResetFramePoints(frame, accountForFrameScale)
 	local scale = accountForFrameScale and frame:GetScale() or 1;
 
@@ -453,6 +457,9 @@ function MinimapClusterMixin:SetRotateMinimap(rotateMinimap)
 	SetCVar("rotateMinimap", rotateMinimap);
 end
 
+function MinimapClusterMixin:SetShowPlayerCoords(show)
+	SetCVar("minimapShowPlayerCoords", show);
+end
 
 function MiniMapIndicatorFrame_UpdatePosition()
 	if MinimapCluster.Tracking:IsShown() then
@@ -1284,4 +1291,43 @@ function GarrisonMinimap_HideHelpTip(self)
 		HelpTip:Acknowledge(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 		GarrisonMinimap_ClearQueuedHelpTip(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 	end
+end
+
+MinimapPlayerCoordsMixin = {};
+
+function MinimapPlayerCoordsMixin:OnLoad()
+	self.updateThrottle = 0;
+	CVarCallbackRegistry:RegisterCallback("minimapShowPlayerCoords", self.CVarsUpdated, self);
+	CVarCallbackRegistry:RegisterCallback("coordsByTenths", self.CVarsUpdated, self);
+	self:CVarsUpdated();
+end
+
+function MinimapPlayerCoordsMixin:CVarsUpdated()
+	self.showPlayerCoords = GetCVarBool("minimapShowPlayerCoords");
+	self.coordsByTenths = GetCVarBool("coordsByTenths");
+end
+
+function MinimapPlayerCoordsMixin:OnUpdate(elapsed)
+	self.updateThrottle = self.updateThrottle - elapsed;
+	if self.updateThrottle > 0 then
+		return;
+	end
+	self.updateThrottle = 0.1;
+
+	if self.showPlayerCoords then
+		local mapID = C_Map.GetBestMapForUnit("player");
+		if mapID then
+			local position = C_Map.GetPlayerMapPosition(mapID, "player");
+			if position then
+				local x, y = position:GetXY();
+				if self.coordsByTenths then
+					self.CoordText:SetFormattedText(MINIMAP_PLAYER_COORDS, x * 100, y * 100);
+				else
+					self.CoordText:SetFormattedText(MINIMAP_PLAYER_COORDS_INTEGER, math.floor(x * 100 + 0.5), math.floor(y * 100 + 0.5));
+				end
+				return;
+			end
+		end
+	end
+	self.CoordText:SetText("");
 end

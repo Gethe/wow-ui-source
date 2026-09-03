@@ -26,6 +26,7 @@ local PlayerInfoShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

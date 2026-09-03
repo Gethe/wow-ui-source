@@ -22,6 +22,7 @@ local SimpleAnimAPI =
 		{
 			Name = "GetElapsed",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -61,6 +62,7 @@ local SimpleAnimAPI =
 		{
 			Name = "GetProgress",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -87,23 +89,26 @@ local SimpleAnimAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
+			RequiresSupportedScript = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "luaFunction", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
 			},
 		},
 		{
 			Name = "GetSmoothProgress",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -173,18 +178,26 @@ local SimpleAnimAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
+			RequiresAssignableScript = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "IsDelaying",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -198,6 +211,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsDone",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -211,6 +225,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsPaused",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -224,6 +239,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsPlaying",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -237,6 +253,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsStopped",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -275,6 +292,7 @@ local SimpleAnimAPI =
 			Name = "SetChildKey",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -321,7 +339,9 @@ local SimpleAnimAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "parent", Aspect = Enum.ForbiddenAspect.AddAnimations } },
 
 			Arguments =
 			{
@@ -342,12 +362,14 @@ local SimpleAnimAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
+			RequiresAssignableScript = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = true },
 			},
 		},
 		{
@@ -385,6 +407,7 @@ local SimpleAnimAPI =
 			Name = "SetTarget",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -400,6 +423,7 @@ local SimpleAnimAPI =
 			Name = "SetTargetKey",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -415,6 +439,7 @@ local SimpleAnimAPI =
 			Name = "SetTargetName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -429,6 +454,7 @@ local SimpleAnimAPI =
 		{
 			Name = "SetTargetParent",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ChangeAnimationTarget } },
 
 			Arguments =
 			{
@@ -456,6 +482,7 @@ local SimpleAnimAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

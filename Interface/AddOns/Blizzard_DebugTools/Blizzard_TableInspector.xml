@@ -281,7 +281,7 @@
 		</Frames>
 	</Frame>
 	
-	<Frame name="TableAttributeDisplay" inherits="TableAttributeDisplayTemplate">
+	<Frame name="TableAttributeDisplay" inherits="TableAttributeDisplayTemplate" roleset="alwaysIncluded">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

@@ -110,6 +110,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetLastCategoryCooldownSource",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Searches for the most recent spellID and itemID that started a cooldown in this category" },
+
+			Arguments =
+			{
+				{ Name = "spellCategory", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "The most recent spell associated with the category" } },
+				{ Name = "itemID", Type = "number", Nilable = true, Documentation = { "The item used to trigger this spell" } },
+			},
+		},
+		{
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -299,6 +318,24 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellDescriptionForItemLocation",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
 			Name = "GetSpellDisplayCount",
 			Type = "Function",
 			SecretWhenCooldownsRestricted = true,
@@ -450,7 +487,7 @@ local Spell =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -529,6 +566,7 @@ local Spell =
 			{
 				{ Name = "iconID", Type = "fileID", Nilable = false },
 				{ Name = "originalIconID", Type = "fileID", Nilable = false },
+				{ Name = "conditionalIconID", Type = "fileID", Nilable = true },
 			},
 		},
 		{
@@ -935,6 +973,15 @@ local Spell =
 			},
 		},
 		{
+			Name = "TargetSpellChecksItemCondition",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TargetSpellIsEnchanting",
 			Type = "Function",
 
@@ -1073,6 +1120,7 @@ local Spell =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

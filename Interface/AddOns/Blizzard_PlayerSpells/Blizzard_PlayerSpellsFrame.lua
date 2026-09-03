@@ -289,7 +289,7 @@ function PlayerSpellsFrameMixin:GetSpecID()
 	if self:IsInspecting() then
 		local inspectUnit = self:GetInspectUnit();
 		if inspectUnit then
-			return GetInspectSpecialization(inspectUnit);
+			return C_SpecializationInfo.GetInspectSpecialization(inspectUnit);
 		else
 			return select(3, self:GetInspectString());
 		end

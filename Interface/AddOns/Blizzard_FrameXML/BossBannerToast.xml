@@ -1,8 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="BossBannerToast.lua"/>
-	<Script file="TopBannerManager.lua"/>
-	
 	<Frame name="BossBannerLootFrameTemplate" parentArray="LootFrames" virtual="true">
 		<Size x="269" y="44"/>
 		<Layers>
@@ -165,7 +162,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
-				</Texture>	
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BannerMiddle" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="BLEND" useAtlasSize="true">
@@ -191,13 +188,13 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.BannerTop" x="0" y="36"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 				<Texture parentKey="RedFlash" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-RedFlash" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="0" y="3"/>
 					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="BottomFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BottomFillagree" useAtlasSize="true">
 					<Anchors>
@@ -275,7 +272,7 @@
 				<Alpha childKey="BannerBottom" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerBottom" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BannerMiddle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>				
+				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="SkullSpikes" startDelay="0.1" duration="0.1" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="SkullSpikes" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
@@ -297,7 +294,7 @@
 				<Alpha childKey="BannerBottomGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="BannerMiddleGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerMiddleGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
-				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>							
+				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 
@@ -319,7 +316,7 @@
 				<Alpha childKey="FlashBurstCenter" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="FlashBurstCenter" startDelay="0.25" duration="0.5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="FlashBurstCenter" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
-				
+
 				<Scripts>
 					<OnPlay>
 						local banner = self:GetParent();
@@ -336,8 +333,8 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimSwitch" setToFinalAlpha="true">
 				<Alpha childKey="SkullCircle" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Title" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>	
-				<Alpha childKey="SubTitle" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>				
+				<Alpha childKey="Title" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SubTitle" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="LootCircle" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimOut">

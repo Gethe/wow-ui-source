@@ -475,12 +475,29 @@ function UnitPopupMenuNeighborhoodRoster:GetEntries()
 	}
 end
 
+UnitPopupMenuDiscordUser = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("DISCORD_USER", UnitPopupMenuDiscordUser);
+function UnitPopupMenuDiscordUser:GetEntries()
+	return { 
+		UnitPopupReportChatButtonMixin,
+	}
+end
+
+UnitPopupMenuDiscordUserSelf = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("DISCORD_USER_SELF", UnitPopupMenuDiscordUserSelf);
+function UnitPopupMenuDiscordUserSelf:GetEntries()
+	return {
+		-- discord does not currently allow deletion of messages through the SocialSDK
+		-- UnitPopupDeleteDiscordMessageButtonMixin,
+	}
+end 
 
 UnitPopupMenuRecentAlly = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("RECENT_ALLY", UnitPopupMenuRecentAlly);
 function UnitPopupMenuRecentAlly:GetEntries()
 	return {
 		UnitPopupAddRecentAllyBattleTagFriendButtonMixin,
+		UnitPopupAddRecentAllyTitleFriendButtonMixin,
 		UnitPopupTargetButtonMixin,
 		UnitPopupRecentAllyNoteButtonMixin,
 		UnitPopupInteractSubsectionTitle,

@@ -1,4 +1,5 @@
 ## Title: Blizzard_Tutorials
+## Dep: middleclass
 ## Dep: Blizzard_TutorialManager
 ## Dep: Blizzard_UIFrameManager
 ## AllowLoadGameType: standard

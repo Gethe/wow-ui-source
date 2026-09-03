@@ -1,5 +1,18 @@
 local gridOptionsMax = 6;
 
+-- When a PlayerChoice is flagged as requiresSelection we don't want ESC to close the frame.
+local function PlayerChoiceFrame_EscapePressed()
+	return PlayerChoiceFrame:IsShown() and PlayerChoiceFrame.choiceInfo and PlayerChoiceFrame.choiceInfo.requiresSelection;
+end
+
+local function PlayerChoiceFrame_SuppressesGameMenuToggle()
+	-- Defined by Blizzard_PlayerChoice.lua when Player Choice should suppress the game menu toggle.
+	return ALLOW_PLAYER_CHOICE_ON_GAME_MENU_TOGGLE and PlayerChoiceFrame:IsShown();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, PlayerChoiceFrame_EscapePressed);
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, PlayerChoiceFrame_SuppressesGameMenuToggle);
+
 PlayerChoiceFrameMixin = {};
 
 function PlayerChoiceFrameMixin:OnLoad()
@@ -321,7 +334,7 @@ function PlayerChoiceFrameMixin:SetupFrame()
 	self.Background:SetShown(showExtraFrames);
 	self:EnableMouse(showExtraFrames);
 
-	local showChoicesAsGrid = self.choiceInfo.showChoicesAsGrid;
+	local showChoicesAsGrid = self.choiceInfo.playerChoiceLayout == Enum.PlayerChoiceLayout.Grid;
 	self.GridDivider:SetShown(showChoicesAsGrid);
 	self.GridNoSelectionHeader:SetShown(showChoicesAsGrid);
 	self.GridNoSelectionDescription:SetShown(showChoicesAsGrid);
@@ -429,8 +442,9 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self:ResetPlayerChoiceOptionHeightData();
 
 	local choiceInfo = self.choiceInfo;
-	local showChoicesAsGrid = choiceInfo.showChoicesAsGrid;
-	if showChoicesAsGrid then
+
+	local playerChoiceLayout = choiceInfo.playerChoiceLayout;
+	if playerChoiceLayout == Enum.PlayerChoiceLayout.Grid then
 		self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplateGrid;
 	else
 		self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
@@ -439,19 +453,23 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	local templateInfo = C_XMLUtil.GetTemplateInfo(self.optionFrameTemplate);
 	self.optionPools:GetOrCreatePool(templateInfo.type, self, self.optionFrameTemplate, HideAndAnchorTopLeft);
 
-	if showChoicesAsGrid then
+	if playerChoiceLayout == Enum.PlayerChoiceLayout.Grid then
 		self:SetupOptionsAsGrid();
 	else
-		local showAsList = choiceInfo.showChoicesAsList;
-		local soloOption = showAsList or (#choiceInfo.options == 1);
+		-- Any layout info derived from the choiceInfo that will apply to options.
+		local soloOption = playerChoiceLayout == Enum.PlayerChoiceLayout.List or (#choiceInfo.options == 1);
+		local layoutInfo = {
+			playerChoiceLayout = playerChoiceLayout,
+			soloOption = soloOption,
+			hideAnswerArt = choiceInfo.hideAnswerArt
+		};
 
 		-- First create and call Setup on all the options.
 		-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
-
 		for optionIndex, optionInfo in ipairs(choiceInfo.options) do
 			local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
 			optionFrame.layoutIndex = optionIndex;
-			optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption, showAsList);
+			optionFrame:Setup(optionInfo, self.uiTextureKit, layoutInfo);
 		end
 
 		self:AlignOptionHeights(soloOption);

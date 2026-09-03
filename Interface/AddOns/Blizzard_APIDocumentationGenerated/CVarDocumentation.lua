@@ -8,6 +8,15 @@ local CVar =
 	Functions =
 	{
 		{
+			Name = "AreCVarsLoaded",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "loaded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCVar",
 			Type = "Function",
 			SecretArguments = "NotAllowed",
@@ -168,6 +177,7 @@ local CVar =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

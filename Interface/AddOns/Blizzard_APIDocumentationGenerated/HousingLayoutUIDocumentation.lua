@@ -60,6 +60,33 @@ local HousingLayoutUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetBaseRoomFloor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "floor", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHighestOccupiedFloorIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "highestFloorIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLowestOccupiedFloorIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lowestFloorIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveRooms",
 			Type = "Function",
 
@@ -69,22 +96,35 @@ local HousingLayoutUI =
 			},
 		},
 		{
-			Name = "GetNumFloors",
+			Name = "GetRoomPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns the max room placement budget for the current owned house's interior; Can be increased via house level" },
 
 			Returns =
 			{
-				{ Name = "numFloors", Type = "number", Nilable = false },
+				{ Name = "placementBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House or Plot" } },
 			},
 		},
 		{
-			Name = "GetRoomPlacementBudget",
+			Name = "GetRoomPlayerIsIn",
 			Type = "Function",
-			Documentation = { "Returns the max room placement budget for the current house interior; Can be increased via house level" },
+			MayReturnNothing = true,
+			Documentation = { "Returns the guid of the interior room the player is standing in, or nil if not currently standing in one" },
 
 			Returns =
 			{
-				{ Name = "placementBudget", Type = "number", Nilable = false },
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSelectedBlueprintFloorplan",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "roomID", Type = "number", Nilable = false },
+				{ Name = "shareCode", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -131,11 +171,11 @@ local HousingLayoutUI =
 		{
 			Name = "GetSpentPlacementBudget",
 			Type = "Function",
-			Documentation = { "Returns how much of the current house's room placement budget has been spent; Different kinds of rooms take up different budget amounts, so this value isn't an individual room count, see GetNumActiveRooms for that" },
+			Documentation = { "Returns how much of the current owned house's room placement budget has been spent; Different kinds of rooms take up different budget amounts, so this value isn't an individual room count, see GetNumActiveRooms for that" },
 
 			Returns =
 			{
-				{ Name = "spentPlacementBudget", Type = "number", Nilable = false },
+				{ Name = "spentPlacementBudget", Type = "number", Nilable = true, Documentation = { "Will be nil if not in an owned House" } },
 			},
 		},
 		{
@@ -160,11 +200,20 @@ local HousingLayoutUI =
 		{
 			Name = "HasRoomPlacementBudget",
 			Type = "Function",
-			Documentation = { "Returns whether there's a max room placement budget available and active for the current player, in the current house interior" },
+			Documentation = { "Returns whether there's a max room placement budget available and active for the current player, in the current house's interior" },
 
 			Returns =
 			{
 				{ Name = "hasBudget", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSelectedBlueprintFloorplan",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasSelectedBlueprintFloorplan", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -289,6 +338,22 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "RoomHasStairs",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true of the provided roomGUID is a stairwell. Returns false if roomGUID is invalid" },
+
+			Arguments =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasStairs", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -406,17 +471,18 @@ local HousingLayoutUI =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
 				{ Name = "roomID", Type = "number", Nilable = false },
+				{ Name = "blueprintShareCode", Type = "cstring", Nilable = true },
 			},
 		},
 		{
-			Name = "HousingLayoutNumFloorsChanged",
+			Name = "HousingLayoutOccupiedFloorRangeChanged",
 			Type = "Event",
-			LiteralName = "HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+			LiteralName = "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "prevNumFloors", Type = "number", Nilable = false },
-				{ Name = "numFloors", Type = "number", Nilable = false },
+				{ Name = "lowestFloor", Type = "number", Nilable = false },
+				{ Name = "highestFloor", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -479,9 +545,7 @@ local HousingLayoutUI =
 			Documentation = { "Fired when info for a newly placed room has been recieved while in Layout Mode" },
 			Payload =
 			{
-				{ Name = "prevNumFloors", Type = "number", Nilable = false },
-				{ Name = "currNumFloors", Type = "number", Nilable = false },
-				{ Name = "isUpstairs", Type = "bool", Nilable = false },
+				{ Name = "playAddedSound", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -537,6 +601,7 @@ local HousingLayoutUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

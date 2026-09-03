@@ -1,11 +1,13 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_TransmogShared
+## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_TransmogShared, Blizzard_FrameXMLUtil, Blizzard_ManagedFrameSystem, Blizzard_GameMenuEsc
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Shared\PlayerInteractionFrameManager.lua
+Shared\CastingBarFrameTemplates.lua
+Shared\CastingBarFrameTemplates.xml
 Shared\CastingBarFrame.lua
-Mainline\CastingBarFrame.lua
 Mainline\CastingBarFrame.xml
 Mainline\DressUpFrames.lua
 Mainline\DressUpFrames.xml
@@ -27,6 +29,7 @@ Mainline\QuestFrame.lua
 Mainline\QuestFrame.xml
 Mainline\QuestInfo.lua
 Mainline\QuestInfo.xml
+Mainline\GossipFrameAPI.lua
 Mainline\MerchantFrame.lua
 Mainline\MerchantFrame.xml
 Mainline\TradeFrame.lua
@@ -86,6 +89,4 @@ Mainline\GossipFrame.lua
 Mainline\GossipFrame.xml
 Shared\VehicleSeatIndicator.lua
 Shared\VehicleSeatIndicator.xml
-Shared\PlayerInteractionFrameManager.lua
-Shared\PlayerInteractionFrameManager.xml
 Mainline\Localization.lua

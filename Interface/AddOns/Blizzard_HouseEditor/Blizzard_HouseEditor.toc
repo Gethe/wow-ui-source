@@ -1,9 +1,8 @@
 ## Title: Blizzard House Editor
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HousingTemplates, Blizzard_CustomizationUI, Blizzard_HousingMarketCart, Blizzard_CatalogShopSharedTemplates, Blizzard_HousingControls
+## Dependencies: Blizzard_HousingTemplates, Blizzard_CustomizationUI, Blizzard_HousingMarketCart, Blizzard_CatalogShopSharedTemplates, Blizzard_HousingControls, Blizzard_HousingBlueprint, Blizzard_GameMenuEsc
 ## AllowLoadGameType: standard
-
 
 Blizzard_HouseEditorTemplates.lua
 Blizzard_HouseEditorTemplates.xml
@@ -15,6 +14,8 @@ Blizzard_HouseEditorCustomizationDyeTemplates.lua
 Blizzard_HouseEditorCustomizationDyeTemplates.xml
 Blizzard_HouseEditorCustomizationRoomTemplates.lua
 Blizzard_HouseEditorCustomizationRoomTemplates.xml
+Blizzard_HouseEditorCustomizationPetTemplates.lua
+Blizzard_HouseEditorCustomizationPetTemplates.xml
 Blizzard_HouseEditorCustomizeMode.lua
 Blizzard_HouseEditorCustomizeMode.xml
 

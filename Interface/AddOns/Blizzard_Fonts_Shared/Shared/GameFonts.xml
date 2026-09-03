@@ -386,6 +386,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="SystemFont_NamePlateLevel" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="10" slug="true" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="10" slug="true" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="10" slug="true" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="10" slug="true" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="10" slug="true" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
 	<!-- Number Fonts, These fonts are used as a way to localize numbers (in some locations.) -->
 	<FontFamily name="NumberFont_GameNormal" virtual="true">
 		<Member alphabet="roman">

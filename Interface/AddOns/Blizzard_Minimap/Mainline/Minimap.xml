@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
+	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent" roleset="minimap">
 		<Size x="256" y="256"/>
 		<KeyValues>
 			<KeyValue key="scaleMinimapHeader" value="false" type="boolean"/>
@@ -394,6 +394,21 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Minimap>
+					<Frame parentKey="PlayerCoords" mixin="MinimapPlayerCoordsMixin">
+						<Size x="90" y="10"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="Minimap" relativePoint="BOTTOM" x="0" y="-18"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="CoordText" inherits="GameFontHighlightSmall" justifyH="CENTER" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="InstanceDifficulty" inherits="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin">

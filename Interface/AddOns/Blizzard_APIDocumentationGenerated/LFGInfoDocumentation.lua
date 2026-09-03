@@ -117,6 +117,15 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetActiveLFGDungeonName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -208,6 +217,15 @@ local LFGInfo =
 		},
 		{
 			Name = "IsInLFGFollowerDungeon",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInMatchmadeRaidWithoutRoleRequirements",
 			Type = "Function",
 
 			Returns =
@@ -512,6 +530,7 @@ local LFGInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

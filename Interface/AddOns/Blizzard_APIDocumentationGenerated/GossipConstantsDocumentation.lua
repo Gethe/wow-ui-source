@@ -104,6 +104,7 @@ local GossipConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

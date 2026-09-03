@@ -21,7 +21,7 @@ function TalentFrameBaseButtonsParentMixin:OnUpdate(dt)
 	local isPanning = self:IsPanning();
 	if isPanning then
 		if self:IsPanningMouseButtonDown() then
-			local cursorX, cursorY = GetScaledCursorPosition();
+			local cursorX, cursorY = InputUtil.GetCursorPosition(UIParent);
 			local deltaX = cursorX - self.panningPosX;
 			local deltaY = cursorY - self.panningPosY;
 
@@ -32,7 +32,7 @@ function TalentFrameBaseButtonsParentMixin:OnUpdate(dt)
 			self:StopPanning();
 		end
 	elseif self:IsEdgePanningEnabled() and DoesAncestryIncludeAny(talentFrame, GetMouseFoci()) then
-		local cursorX, cursorY = GetScaledCursorPosition();
+		local cursorX, cursorY = InputUtil.GetCursorPosition(UIParent);
 		local scale = self:GetScale();
 
 		local horizontalMovement = 0;
@@ -101,7 +101,7 @@ function TalentFrameBaseButtonsParentMixin:IsPanning()
 end
 
 function TalentFrameBaseButtonsParentMixin:MarkPanningPosition()
-	local cursorX, cursorY = GetScaledCursorPosition();
+	local cursorX, cursorY = InputUtil.GetCursorPosition(UIParent);
 	self.panningPosX = cursorX;
 	self.panningPosY = cursorY;
 end
@@ -411,7 +411,7 @@ function TalentFrameBaseMixin:SetZoomLevelInternal(zoomLevel)
 	local panHeightDelta = newPanHeight - oldPanHeight;
 
 	local left, top = self:GetPanViewCornerPosition();
-	local cursorX, cursorY = GetScaledCursorPosition();
+	local cursorX, cursorY = InputUtil.GetCursorPosition(UIParent);
 	local relativeCursorX = (cursorX - left);
 	local relativeCursorY = (top - cursorY);
 	local normalizedCursorX = (relativeCursorX / frameWidth);

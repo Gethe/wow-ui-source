@@ -350,13 +350,13 @@ function HousingCornerstoneHouseInfoFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CornerstoneHouseInfoFrameEvents);
 	C_Housing.RequestCurrentHouseInfo();
 	self:UpdateHouseInfo();
+	EventRegistry:TriggerEvent("HouseInfoFrame.Toggled", true);
 end
 
 function HousingCornerstoneHouseInfoFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstoneHouseInfoFrameEvents);
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
-
-	HousingControlsFrame.OwnerControlFrame.HouseInfoButton:UpdateState();
+	EventRegistry:TriggerEvent("HouseInfoFrame.Toggled", false);
 end
 
 function HousingCornerstoneHouseInfoFrameMixin:OnEvent(event, ...)

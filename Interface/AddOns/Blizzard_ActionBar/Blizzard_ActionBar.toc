@@ -1,0 +1,72 @@
+## Title: Blizzard_ActionBar
+## Dep: Blizzard_StoreUI [AllowLoadGameType mainline]
+## Dep: Blizzard_QuickKeybind
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_FrameXML [AllowLoadGameType classic]
+## Dep: Blizzard_UIPanels_Game [AllowLoadGameType mainline]
+## Dep: Blizzard_TextStatusBar
+## Dep: Blizzard_Flyout
+## Dep: Blizzard_Minimap [AllowLoadGameType classic]
+## Dep: Blizzard_Colors [AllowLoadGameType mainline]
+## Dep: Blizzard_HelpPlate [AllowLoadGameType mainline]
+## Dep: Blizzard_MicroMenu
+## Dep: Blizzard_PingUI [AllowLoadGameType mainline]
+## Dep: Blizzard_GameMenuEsc
+Shared\ActionButtonUtil.lua
+[Family]\ActionButtonUtilOverrides.lua
+Shared\ActionButtonSpellAlerts.lua
+Shared\ActionButtonSpellAlerts.xml
+[Family]\AssistedCombatManager.lua [AllowLoadGameType mainline]
+Shared\StatusTrackingBar.lua
+[Family]\StatusTrackingBarTemplate.xml
+Shared\ExpBar.lua
+[Family]\ExpBarOverrides.lua
+[Family]\ExpBar.xml
+Shared\ReputationBar.lua
+[Family]\ReputationBarOverrides.lua
+Shared\ReputationBar.xml
+[Family]\AzeriteBar.lua [AllowLoadGameType mainline]
+[Family]\AzeriteBar.xml [AllowLoadGameType mainline]
+[Family]\ArtifactBar.lua [AllowLoadGameType mainline]
+[Family]\ArtifactBar.xml [AllowLoadGameType mainline]
+[Family]\HonorBar.lua [AllowLoadGameType mainline]
+[Family]\HonorBar.xml [AllowLoadGameType mainline]
+[Family]\HouseFavorBar.lua [AllowLoadGameType mainline]
+[Family]\HouseFavorBar.xml [AllowLoadGameType mainline]
+[Family]\MainMenuBar.lua [AllowLoadGameType classic]
+[Family]\MainMenuBar.xml [AllowLoadGameType classic]
+Shared\ActionButton.lua
+[Family]\ActionButtonOverrides.lua
+[Game]\ActionButtonOverrides.lua [AllowLoadGameType plunderstorm]
+Shared\ActionButtonComponentTemplate.xml
+[Family]\ActionButtonTemplate.xml
+Shared\ActionBar.lua
+Shared\ActionBarTemplate.xml
+Shared\MultiActionBars.lua
+Shared\MultiActionBars.xml
+Shared\MainActionBar.lua
+[Family]\MainActionBarOverrides.lua
+[Family]\MainActionBar.xml
+Shared\VehicleLeaveButton.lua
+Shared\VehicleLeaveButton.xml
+Shared\StatusTrackingManager.lua
+[Family]\StatusTrackingManagerOverrides.lua
+[Family]\StatusTrackingBar.xml
+Shared\StanceBar.lua
+[Family]\StanceBarOverrides.lua [AllowLoadGameType classic]
+[Family]\StanceBar.xml
+Shared\ExtraActionBar.lua
+Shared\ExtraActionBar.xml
+Shared\PossessActionBar.lua
+[Family]\PossessActionBar.xml
+[Game]\CustomActionBarOverlays.lua [AllowLoadGameType plunderstorm]
+[Game]\CustomActionBarOverlays.xml [AllowLoadGameType plunderstorm]
+Shared\PetActionBar.lua
+[Family]\PetActionBar.xml
+[Family]\MultiCastActionBarFrame.lua [AllowLoadGameType wrath, cata]
+[Family]\MultiCastActionBarFrame.xml [AllowLoadGameType wrath, cata]
+Shared\SpellFlyout.lua
+Shared\SpellFlyout.xml
+[Game]\KeybindReminder.lua [AllowLoadGameType plunderstorm]
+[Game]\KeybindReminder.xml [AllowLoadGameType plunderstorm]
+Shared\Localization.lua

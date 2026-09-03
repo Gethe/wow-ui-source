@@ -5,8 +5,10 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## Dependencies: Blizzard_ContentTracking, Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil, Blizzard_TransmogShared
+## OptionalDeps: Blizzard_Plunderstorm
 
 ## AllowLoadGameType: mainline
+Blizzard_Collections_Bootstrap.lua [Bootstrap]
 Mainline\Blizzard_CollectionTemplates.xml
 Mainline\Blizzard_Collections.xml
 Mainline\Blizzard_MountCollection.lua

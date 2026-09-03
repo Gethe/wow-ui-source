@@ -1,7 +1,11 @@
 
 function DynamicResizeButton_Resize(self)
-	local padding = 40;
-	local width = self:GetWidth();
-	local textWidth = self:GetTextWidth() + padding;
-	self:SetWidth(math.max(width, textWidth));
+	local currentWidth = self:GetWidth();
+	local textWidth = self:GetTextWidth() + self.padding;
+	local newWidth = math.max(currentWidth, textWidth);
+	if self.maxWidth then
+		newWidth = math.min(newWidth, self.maxWidth);
+	end
+
+	self:SetWidth(newWidth);
 end

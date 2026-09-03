@@ -72,6 +72,15 @@ local SpecializationShared =
 			},
 		},
 		{
+			Name = "GetSpecializationSystem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "system", Type = "SpecializationSystem", Nilable = false },
+			},
+		},
+		{
 			Name = "HasLootSpecializations",
 			Type = "Function",
 
@@ -117,6 +126,7 @@ local SpecializationShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

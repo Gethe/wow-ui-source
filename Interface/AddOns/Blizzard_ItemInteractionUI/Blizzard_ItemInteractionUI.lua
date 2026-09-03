@@ -87,7 +87,7 @@ local FrameSpecificDefaults = {
 	glowOverLayOffsetY = 0,
 	descriptionOffset = 38,
 	tutorialBitFlag = nil,
-	costDisplayOffsetY = -100;
+	costDisplayOffsetY = -100,
 };
 
 local FrameSpecificOverrides = {
@@ -96,7 +96,7 @@ local FrameSpecificOverrides = {
 		glowOverLayOffsetY = 7,
 		itemSlotOffsetY = 0,
 		descriptionOffset = 75,
-		costDisplayOffsetY = -80;
+		costDisplayOffsetY = -80,
 	},
 
 	[Enum.UIItemInteractionType.RunecarverScrapping] = {
@@ -106,6 +106,7 @@ local FrameSpecificOverrides = {
 	},
 
 	[Enum.UIItemInteractionType.ItemConversion] = {
+		descriptionOffset = 45,
 	},
 };
 

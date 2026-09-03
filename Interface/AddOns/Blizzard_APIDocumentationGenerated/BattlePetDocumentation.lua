@@ -255,6 +255,7 @@ local BattlePet =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

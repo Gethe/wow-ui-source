@@ -21,3 +21,14 @@ do
 	};
 	RegisterUIPanel(InspectRecipeFrame, attributes);
 end
+
+local function ProfessionsFrame_EscapePressed()
+	if ProfessionsFrame:IsShown() then
+		ProfessionsFrame:CheckConfirmClose();
+		return true;
+	end
+
+	return false;
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, ProfessionsFrame_EscapePressed);

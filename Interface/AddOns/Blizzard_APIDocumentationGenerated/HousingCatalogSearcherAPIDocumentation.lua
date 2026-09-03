@@ -2,6 +2,7 @@ local HousingCatalogSearcherAPI =
 {
 	Name = "HousingCatalogSearcherAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -545,6 +546,7 @@ local HousingCatalogSearcherAPI =
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

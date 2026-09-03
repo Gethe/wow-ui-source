@@ -56,6 +56,10 @@ function CommunitiesCalendarButtonMixin:OnLeave()
 end
 
 function CommunitiesCalendarButtonMixin:OnClick()
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	local selectedClubInfo = self:GetCommunitiesFrame():GetSelectedClubInfo();
 	if selectedClubInfo ~= nil and (selectedClubInfo.clubType == Enum.ClubType.Guild or selectedClubInfo.clubType == Enum.ClubType.Character) then
 		C_Calendar.SetNextClubId(selectedClubInfo.clubId);

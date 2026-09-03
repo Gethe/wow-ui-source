@@ -306,7 +306,7 @@
 					</DropdownButton>
 					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" mixin="PerksProgramProductDetailsContainerMixin" frameLevel="1000">
 						<KeyValues>
-							<KeyValue key="fixedWidth" value="360" type="string"/>
+							<KeyValue key="fixedWidth" value="360" type="number"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="RIGHT" x="-46" y="0"/>

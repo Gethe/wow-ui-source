@@ -3,6 +3,18 @@ local RolodexConstants =
 	Tables =
 	{
 		{
+			Name = "RolodexContactMigrationResult",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "ContactAdded", Type = "RolodexContactMigrationResult", EnumValue = 0 },
+				{ Name = "ContactUpdated", Type = "RolodexContactMigrationResult", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "RolodexContextLevelType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -17,11 +29,23 @@ local RolodexConstants =
 			},
 		},
 		{
+			Name = "RolodexDbFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "RolodexDbFlags", EnumValue = 0 },
+				{ Name = "PromotedFromContact", Type = "RolodexDbFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "RolodexType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 23,
 			Fields =
 			{
 				{ Name = "None", Type = "RolodexType", EnumValue = 0 },
@@ -45,6 +69,7 @@ local RolodexConstants =
 				{ Name = "Duel", Type = "RolodexType", EnumValue = 18 },
 				{ Name = "PetBattle", Type = "RolodexType", EnumValue = 19 },
 				{ Name = "PvPKill", Type = "RolodexType", EnumValue = 20 },
+				{ Name = "LegacyFriend", Type = "RolodexType", EnumValue = 23 },
 			},
 		},
 		{
@@ -60,6 +85,7 @@ local RolodexConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

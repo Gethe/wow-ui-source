@@ -35,7 +35,7 @@
 					<OnTextChanged method="OnTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<Button parentKey="AddGroupButton" inherits="UIButtonTemplate">
+			<Button parentKey="AddGroupButton" inherits="UIButtonTemplate" mixin="CharacterSelectAddGroupButtonMixin">
 				<Size x="42" y="42"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="10" y="0"/>
@@ -46,6 +46,9 @@
 					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
 				</KeyValues>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
@@ -61,7 +64,7 @@
 				</Anchors>
 			</EventFrame>
 			<!-- Has a global name to support timerunning behavior -->
-			<Button name="CharSelectCreateCharacterButton" parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" text="CREATE_CHARACTER">
+			<Button name="CharSelectCreateCharacterButton" parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" mixin="CharacterSelectCreateCharacterButtonMixin" text="CREATE_CHARACTER">
 				<Size x="205" y="42"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="-57" y="23"/>
@@ -73,8 +76,13 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Button>
-			<Button parentKey="DeleteCharacterButton" inherits="UIButtonTemplate">
+			<Button parentKey="DeleteCharacterButton" inherits="UIButtonTemplate" mixin="CharacterSelectDeleteCharacterButtonMixin">
 				<Size x="42" y="42"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.CreateCharacterButton" relativePoint="RIGHT" x="6" y="0"/>
@@ -85,9 +93,12 @@
 					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
 				</KeyValues>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</Button>
 			<!-- Has a global name to support legacy behavior -->
-			<Button name="CharSelectUndeleteCharacterButton" parentKey="UndeleteButton" inherits="BigRedRefreshButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
+			<Button name="CharSelectUndeleteCharacterButton" parentKey="UndeleteButton" inherits="BigRedRefreshButtonTemplate" mixin="CharacterSelectUndeleteButtonMixin" hidden="true" motionScriptsWhileDisabled="true">
 				<KeyValues>
 					<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP" type="global"/>
 					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
@@ -98,12 +109,18 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.DeleteCharacterButton" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</Button>
-			<Button parentKey="BackToActiveButton" inherits="GlueButtonTemplate" hidden="true" text="CANCEL">
+			<Button parentKey="BackToActiveButton" inherits="GlueButtonTemplate" mixin="CharacterSelectBackToActiveButtonMixin" hidden="true" text="CANCEL">
 				<Size x="232" y="42"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="23"/>
 				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

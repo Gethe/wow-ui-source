@@ -1,3 +1,8 @@
+UIModeUtil.RegisterMode("PetBattle", {
+	 -- Pet battles need only the standard hide most blocklist.
+	rolesetBlocklist = UIModeUtil.CreateExtendedBlocklist(),
+});
+
 NUM_BATTLE_PETS_IN_BATTLE = 3;
 NUM_BATTLE_PET_ABILITIES = 3;
 BATTLE_PET_ABILITY_SWITCH = 4;
@@ -52,19 +57,6 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
-
-local PetBattlesOverrides = {}
-function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
-	if petSpeciesID == 3175 then
-		return -0.45, -2, 0;
-	elseif petSpeciesID == 2003 then
-		return -0.8, 0.6, -0.4;
-	elseif petSpeciesID == 504 then
-		return -3.0, -0.0, -0.5;
-	elseif petSpeciesID == 4257 then
-		return -1, -1.75, 0;
-	end
-end
 
 --------------------------------------------
 -------------Pet Battle Frame---------------
@@ -169,7 +161,7 @@ function PetBattleFrame_UpdateInstructions(self)
 end
 
 function PetBattleFrame_Display(self)
-	AddFrameLock("PETBATTLES");		-- FrameLock removed by PetBattleFrame_Remove
+	UIModeUtil.SetModeActive("PetBattle", true);		-- Deactivated by PetBattleFrame_Remove
 	self:Show();
 	if ( FCFManager_GetNumDedicatedFrames("PET_BATTLE_COMBAT_LOG") == 0 ) then
 		FCF_OpenTemporaryWindow("PET_BATTLE_COMBAT_LOG");
@@ -378,7 +370,7 @@ function PetBattleFrame_ShowMultiWildNotification(self)
 		end
 		
 		if (text) then
-			RaidNotice_AddMessage(RaidWarningFrame, text, ChatTypeInfo["RAID_BOSS_EMOTE"], 5.0 );
+			RaidWarningUtil.AddMessage(text, ChatTypeInfo["RAID_BOSS_EMOTE"], 5.0);
 		end
 	end
 end
@@ -477,7 +469,7 @@ function PetBattleFrame_Remove(self)
 	ActionButtonSpellAlertManager:HideAlert(PetBattleFrame.BottomFrame.CatchButton);
 	PetBattleFrame.BottomFrame.CatchButton.playedSound = false;
 	self:Hide();
-	RemoveFrameLock("PETBATTLES");
+	UIModeUtil.SetModeActive("PetBattle", false);
 end
 
 local TIMER_BAR_TEXCOORD_LEFT = 0.56347656;
@@ -1105,25 +1097,27 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	end
 
 	--Update the 3D model of the pet
-	if ( self.PetModel ) then
-		self.PetModel:SetDisplayInfo(C_PetBattles.GetDisplayID(petOwner, petIndex));
-		self.PetModel:SetRotation(-BATTLE_PET_DISPLAY_ROTATION);
-		self.PetModel:SetDoBlend(false);
-
+	if ( self.PetModelScene ) then
 		local petSpeciesID = C_PetBattles.GetPetSpeciesID(petOwner, petIndex);
-		local x, y, z = PetBattlesOverrides.GetPositionOverride(petSpeciesID);
-		if x and y and z then
-			self.PetModel:SetPosition(x, y, z);
-		else
-			self.PetModel:SetPosition(0, 0, 0);
-		end
+		local cardModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(petSpeciesID);
 
-		if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then
-			self.PetModel:SetAnimation(6, 0); --Display the dead animation
-			--self.PetModel:SetAnimation(0, 0);
-		else
-			self.PetModel:SetAnimation(742, 0); -- Display the PetBattleStand animation
-			--self.PetModel:SetAnimation(742, 0);
+		local forceSceneChange = true;
+		self.PetModelScene:TransitionToModelSceneID(cardModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+
+		local battlePetActor = self.PetModelScene:GetActorByTag("unwrapped");
+		if ( battlePetActor ) then
+			local _name, _icon, _petType, _creatureID, _sourceText, _description, _isWild, _canBattle, _tradable, _unique, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(petSpeciesID);
+			battlePetActor:SetModelByCreatureDisplayID(displayID, true);
+			battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
+
+			battlePetActor:StopAnimationKit();
+			battlePetActor:SetAnimation(0);
+			if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then
+				battlePetActor:SetAnimation(6); --Display the dead animation
+			else
+				battlePetActor:SetAnimation(742); -- Display the PetBattleStand animation
+			end
+			self.PetModelScene:SetFrameLevel(self.PetModelScene:GetParent():GetFrameLevel() - 1);
 		end
 	end
 

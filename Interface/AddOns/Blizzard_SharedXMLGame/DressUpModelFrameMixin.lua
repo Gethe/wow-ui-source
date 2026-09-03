@@ -304,8 +304,8 @@ end
 
 function TransmogAndMountDressupFrameMixin:RemoveWeapons()
 	for actor in self.ModelScene:EnumerateActiveActors() do
-		local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-		local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+		local mainHandSlotID = C_PaperDollInfo.GetInventorySlotInfo("MAINHANDSLOT");
+		local offHandSlotID = C_PaperDollInfo.GetInventorySlotInfo("SECONDARYHANDSLOT");
 		actor:UndressSlot(mainHandSlotID);
 		actor:UndressSlot(offHandSlotID);
 	end

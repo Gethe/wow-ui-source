@@ -1,8 +1,0 @@
-## Title: Blizzard CombatLog
-## LoadOnDemand: 1
-## Dependencies: Blizzard_CombatLogBase, Blizzard_CombatLogProcessor
-## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Mainline\Blizzard_CombatLog.lua
-Mainline\Blizzard_CombatLog.xml

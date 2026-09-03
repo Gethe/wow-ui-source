@@ -220,6 +220,10 @@ end
 
 function CommunitiesGuildEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
+		if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+			return;
+		end
+
 		if ( CalendarFrame ) then
 			CalendarFrame_OpenToGuildEventIndex(self.index);
 		else
@@ -249,7 +253,7 @@ function CommunitiesGuildNewsButton_OnClick(self, button)
 
 			if (newsType == NEWS_PLAYER_ACHIEVEMENT) or (newsType == NEWS_GUILD_ACHIEVEMENT) then
 				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
-					OpenAchievementFrameToAchievement(self.newsInfo.newsDataID);
+					ShowAchievementFrameForAchievement(self.newsInfo.newsDataID);
 				end);
 			elseif IsLootNews(newsType) then
 				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()

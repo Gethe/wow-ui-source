@@ -32,6 +32,7 @@ local RestrictedActionsConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

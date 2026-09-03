@@ -2,5 +2,6 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_GMChatUI
+Blizzard_BehavioralMessaging_Bootstrap.lua [Bootstrap]
 Blizzard_BehavioralMessaging.xml
 Blizzard_Register.lua

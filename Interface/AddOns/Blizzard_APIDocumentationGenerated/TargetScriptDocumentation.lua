@@ -203,6 +203,7 @@ local TargetScript =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

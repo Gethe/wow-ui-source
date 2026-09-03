@@ -12,6 +12,7 @@ local CatalogShopConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -135,32 +135,39 @@ function ChatFrameUtil.CreateMessageEventFilterRegistry()
 		end
 	end
 
-	function registry:ProcessFilters(chatFrame, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+	function registry:ProcessFilters(chatFrame, event, ...)
 		local filters = GetFiltersForEvent(event);
 		local shouldDiscardMessage = false;
+		
+		if not filters or filters:IsEmpty() then
+			return shouldDiscardMessage, ...;
+		end
 
-		if filters then
-			for _, filter in filters:Enumerate() do
-				local newArg1, newArg2, newArg3, newArg4, newArg5, newArg6, newArg7, newArg8, newArg9, newArg10, newArg11, newArg12, newArg13, newArg14;
-				shouldDiscardMessage, newArg1, newArg2, newArg3, newArg4, newArg5, newArg6, newArg7, newArg8, newArg9, newArg10, newArg11, newArg12, newArg13, newArg14
-					= securecallfunction(GetWrappedCallback(filter), chatFrame, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+		local transformedArguments = SafePack(...);
 
-				-- Callbacks can return nil to skip processing a message without
-				-- replacing any event parameters. The nil case will also occur
-				-- if the callback function errored. If the first return is a
-				-- truthy value, discard the entire message and stop executing
-				-- filters in the chain.
+		for _, filter in filters:Enumerate() do
+			local results = SafePack(securecallfunction(GetWrappedCallback(filter), chatFrame, event, SafeUnpack(transformedArguments)));
 
-				if shouldDiscardMessage then
-					break;
-				elseif newArg1 then
-					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14
-						= newArg1, newArg2, newArg3, newArg4, newArg5, newArg6, newArg7, newArg8, newArg9, newArg10, newArg11, newArg12, newArg13, newArg14;
-				end
+			-- The first return value from callbacks is expected to be
+			-- a boolean that indicates if we should entirely filter out
+			-- this message.
+
+			shouldDiscardMessage = results[1];
+			if shouldDiscardMessage then
+				break;
+			end
+
+			-- The second return onwards replace the arguments we fed into
+			-- the callback. An exception to this is if the callback returns
+			-- a nil or false value as the second return value, which acts
+			-- as a signal to skip and continue running other filters.
+
+			if results[2] then
+				transformedArguments = SafePack(SafeUnpack(results, 2));
 			end
 		end
 
-		return shouldDiscardMessage, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14;
+		return shouldDiscardMessage, SafeUnpack(transformedArguments);
 	end
 
 	return registry;

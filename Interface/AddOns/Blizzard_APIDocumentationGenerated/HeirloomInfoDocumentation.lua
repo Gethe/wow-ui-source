@@ -105,6 +105,7 @@ local HeirloomInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -99,6 +99,7 @@ local Client =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

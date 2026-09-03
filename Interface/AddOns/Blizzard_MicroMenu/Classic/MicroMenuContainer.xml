@@ -8,7 +8,7 @@
 		</Anchors>
 	</Frame>
 	
-	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" frameLevel="51" mixin="MicroMenuContainerMixin">
+	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" frameLevel="51" mixin="MicroMenuContainerMixin" roleset="microMenu">
 		<Size x="1" y="1"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT"/>

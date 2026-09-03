@@ -1072,14 +1072,14 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	else
 		-- Set the dropdownframe scale
 		local uiScale;
-		local uiParentScale = UIParent:GetScale();
+		local topLevelParentScale = UIParent:GetScale();
 		if ( GetCVar("useUIScale") == "1" ) then
 			uiScale = tonumber(GetCVar("uiscale"));
-			if ( uiParentScale < uiScale ) then
-				uiScale = uiParentScale;
+			if ( topLevelParentScale < uiScale ) then
+				uiScale = topLevelParentScale;
 			end
 		else
-			uiScale = uiParentScale;
+			uiScale = topLevelParentScale;
 		end
 		listFrame:SetScale(uiScale);
 

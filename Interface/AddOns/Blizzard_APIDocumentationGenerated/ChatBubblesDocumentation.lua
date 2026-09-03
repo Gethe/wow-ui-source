@@ -31,6 +31,7 @@ local ChatBubbles =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

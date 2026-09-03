@@ -1,4 +1,0 @@
-## Title: Blizzard Trainer UI
-## LoadOnDemand: 1
-Blizzard_TrainerUI.xml
-Localization.lua

@@ -170,6 +170,7 @@ local TradeInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

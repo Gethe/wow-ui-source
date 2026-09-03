@@ -444,6 +444,7 @@ end
 QuestHubPinMixin = {};
 
 function QuestHubPinMixin:OnAcquired(poiInfo)
+	self.linkedAreaPOIPins = {};
 	self.poiInfo = poiInfo;
 	self:SetDataProvider(poiInfo.dataProvider); -- catch-22 issue.
 
@@ -550,6 +551,7 @@ function QuestHubPinMixin:UpdatePriorityQuestDisplay()
 		clone:ClearAllPoints();
 		clone:SetPoint("CENTER", self, "BOTTOM", 0, 6);
 		clone:Show();
+		clone:SetFrameStrata("HIGH");
 		clone:SetAlpha(1);
 		clone:SetScale(0.85);
 	end
@@ -817,16 +819,29 @@ function QuestHubPinMixin:ShouldSuppressPin(pin)
 		return true;
 	end
 
-	if self:IsRelatedQuestOfferPin(pin) then
+	if self:IsLinkedPin(pin) then
 		return true;
 	end
 
 	return false;
 end
 
-function QuestHubPinMixin:IsRelatedQuestOfferPin(pin)
+function QuestHubPinMixin:IsLinkedPin(pin)
 	if pin:MatchesTag(MapPinTags.QuestOffer) then
 		return self:GetDataProvider():GetLinkedQuestHub(pin) == self;
+	end
+
+	if pin:MatchesTag(MapPinTags.IsSuppressible) then
+		if pin:MatchesTag(MapPinTags.AreaPOI) then
+			local areaPoiID = pin:GetPoiInfo().areaPoiID;
+			local isLinked = self.linkedAreaPOIPins[areaPoiID]; -- check cache first.
+			if isLinked == nil then
+				isLinked = C_QuestHub.IsAreaPOICurrentlyRelatedToHub(areaPoiID, self:GetPoiInfo().areaPoiID);
+				self.linkedAreaPOIPins[areaPoiID] = isLinked;
+			end
+
+			return isLinked;
+		end
 	end
 
 	return false;

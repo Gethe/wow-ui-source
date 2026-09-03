@@ -2,4 +2,6 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_GameMenuEsc
+Blizzard_CovenantPreviewUI_Bootstrap.lua [Bootstrap]
 Blizzard_CovenantPreviewUI.xml

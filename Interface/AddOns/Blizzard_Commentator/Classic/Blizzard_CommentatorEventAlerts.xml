@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CommentatorEventAlertsFrame" inherits="RaidWarningFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<KeyValues>
+			<KeyValue key="maxMessageSlots" value="2" type="number"/>
+			<KeyValue key="maxTotalLines" value="4" type="number"/>
+			<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.BGSystem" type="global"/>
+			<KeyValue key="defaultDisplayTime" value="5" type="number"/>
+			<KeyValue key="maxTextHeight" value="25" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIWidgetTopCenterContainerFrame" relativePoint="BOTTOM" x="0" y="-10"/>
+		</Anchors>
+	</Frame>
+</Ui>

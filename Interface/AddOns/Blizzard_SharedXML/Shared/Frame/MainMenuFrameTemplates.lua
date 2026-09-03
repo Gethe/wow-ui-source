@@ -19,6 +19,7 @@ function MainMenuFrameMixin:Reset()
 	self.buttonPool:ReleaseAll();
 	self.sectionSpacing = nil;
 	self.nextLayoutIndex = 1;
+	self.buttonCount = 0;
 end
 
 function MainMenuFrameMixin:AddButton(text, callback, isDisabled, disabledText)
@@ -31,6 +32,13 @@ function MainMenuFrameMixin:AddButton(text, callback, isDisabled, disabledText)
 
 	newButton:SetText(text);
 	newButton:SetScript("OnClick", callback);
+
+	self.buttonCount = (self.buttonCount or 0) + 1;
+	local buttonIndex = self.buttonCount;
+	local mainMenu = self;
+	newButton.NarrationGetIndexInfo = function()
+		return NarrationUtil.MakeIndexInfo(buttonIndex, mainMenu.buttonCount);
+	end;
 
 	newButton:SetMotionScriptsWhileDisabled(true);
 	newButton:SetEnabled(not isDisabled);

@@ -81,6 +81,7 @@ local SimpleMapSceneAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

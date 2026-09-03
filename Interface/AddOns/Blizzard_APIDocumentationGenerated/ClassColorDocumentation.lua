@@ -32,6 +32,7 @@ local ClassColor =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

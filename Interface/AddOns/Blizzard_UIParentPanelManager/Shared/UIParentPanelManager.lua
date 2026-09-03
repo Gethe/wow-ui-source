@@ -4,6 +4,7 @@ local _, addonTable = ...; -- Used for passing functions between UIParentPanelMa
 UIPANEL_SKIP_SET_POINT = true;
 UIPANEL_DO_SET_POINT = nil;
 UIPANEL_VALIDATE_CURRENT_FRAME = true;
+UIPANEL_SKIP_SHOWN_CHECK = true;
 
 -- Move this stuff to UIParentPanelManager for TBC when it is created
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -23,11 +24,6 @@ UISpecialFrames = {
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
-};
-
-UIMenus = {
-	"DropDownList1",
-	"DropDownList2",
 };
 
 local CHECK_FIT_DEFAULT_EXTRA_WIDTH = 20;
@@ -138,8 +134,8 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 	elseif ( attribute == "panel-update" ) then
 		local frame = self:GetAttribute("panel-frame");
 		self:UpdateUIPanelPositions(frame);
-	elseif ( attribute == "uiparent-manage" ) then
-		addonTable.UIParentManageFramePositions(self);
+	elseif ( attribute == "manage-frame-positions" ) then
+		addonTable.ManageFramePositions(self);
 	elseif ( attribute == "panel-maximize" ) then
 		local frame = self:GetAttribute("panel-frame");
 		self:MoveUIPanel(GetUIPanelAttribute(frame, "area"), "fullscreen", UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
@@ -157,11 +153,46 @@ local FramePositionDelegate = CreateFrame("FRAME");
 FramePositionDelegate:SetForbidden();
 FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAttributeChanged);
 
+function FramePositionDelegate:RepairUIPanelState()
+	if self.updatingPanels then
+		-- Do not repair panel state while updating panel positions.
+		--
+		-- Layout evaluation may re-enter ShowUIPanel (for example through
+		-- auto-minimize callbacks), and SetUIPanel temporarily assigns
+		-- frames to slots before those frames become shown.
+		return;
+	end
+
+	local framesToRepair = {};
+
+	for key in pairs(FRAME_POSITION_KEYS) do
+		local frame = self[key];
+
+		if ( frame and not frame:IsShown() ) then
+			table.insert(framesToRepair, frame);
+		end
+	end
+
+	for _index, frame in ipairs(framesToRepair) do
+		self:HideUIPanelImplementation(frame, UIPANEL_SKIP_SET_POINT);
+	end
+
+	if not TableIsEmpty(framesToRepair) then
+		self:UpdateUIPanelPositions();
+	end
+end
+
 function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 	if ( AreAllPanelsDisallowed() ) then
 		self:ShowUIPanelFailed(frame);
 		return;
 	end
+
+	-- Frames hidden via direct Frame:Hide() calls bypass HideUIPanel and can
+	-- leave stale panel occupancy state behind. Repair any such state before
+	-- evaluating placement for newly shown panels.
+
+	self:RepairUIPanelState();
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
@@ -583,11 +614,11 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		self:UpdateScaleForFit(currentFrame);
 	end
 
-	local topOffset = UIParent:GetAttribute("TOP_OFFSET");
-	local leftOffset = UIParent:GetAttribute("LEFT_OFFSET");
-	local centerOffset = UIParent:GetAttribute("CENTER_OFFSET");
-	local rightOffset = UIParent:GetAttribute("RIGHT_OFFSET");
-	local xSpacing = UIParent:GetAttribute("PANEl_SPACING_X");
+	local topOffset = GetUIPanelLayoutAttribute("TOP_OFFSET");
+	local leftOffset = GetUIPanelLayoutAttribute("LEFT_OFFSET");
+	local centerOffset = GetUIPanelLayoutAttribute("CENTER_OFFSET");
+	local rightOffset = GetUIPanelLayoutAttribute("RIGHT_OFFSET");
+	local xSpacing = GetUIPanelLayoutAttribute("PANEl_SPACING_X");
 
 	local frame = self:GetUIPanel("left");
 	if ( frame ) then
@@ -602,11 +633,11 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		frame:ClearAllPoints();
 		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", (leftOffset + xOff)/scale, yPos/scale);
 		centerOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
-		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
+		SetUIPanelLayoutAttribute("CENTER_OFFSET", centerOffset);
 		frame:Raise();
 	else
 		centerOffset = leftOffset;
-		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
+		SetUIPanelLayoutAttribute("CENTER_OFFSET", centerOffset);
 
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
@@ -621,7 +652,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", (leftOffset + xOff)/scale, yPos/scale);
 			rightOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
-			UIParent:SetAttribute("RIGHT_OFFSET", rightOffset);
+			SetUIPanelLayoutAttribute("RIGHT_OFFSET", rightOffset);
 			frame:Raise();
 		end
 	end
@@ -666,7 +697,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 				end
 			end
 			self:SetUIPanel("center", nil, 1);
-			rightOffset = centerOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
+			rightOffset = centerOffset + GetUIPanelLayoutAttribute("DEFAULT_FRAME_WIDTH");
 		end
 		if ( frame ) then
 			frame:Raise();
@@ -676,10 +707,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( leftPanel ) then
 			rightOffset = GetUIPanelWidth(leftPanel) + (GetUIPanelAttribute(leftPanel,"xoffset") or 0);
 		else
-			rightOffset = leftOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") * 2
+			rightOffset = leftOffset + GetUIPanelLayoutAttribute("DEFAULT_FRAME_WIDTH") * 2
 		end
 	end
-	UIParent:SetAttribute("RIGHT_OFFSET", rightOffset);
+	SetUIPanelLayoutAttribute("RIGHT_OFFSET", rightOffset);
 
 	frame = self:GetUIPanel("right");
 	if ( frame ) then
@@ -763,36 +794,38 @@ function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	end
 end
 
-function FramePositionDelegate:UIParentManageBottomFrameContainer()
+function FramePositionDelegate:ManageBottomFrameContainer()
 	local customOverlayHeight = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CustomActionbarOverlayHeightOffset);
 	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
 	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + BOTTOM_FRAME_CONTAINER_MARGIN or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
-	UIParentBottomManagedFrameContainer.fixedWidth = 573;
-	UIParentBottomManagedFrameContainer:ClearAllPoints();
-	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);
-	UIParentBottomManagedFrameContainer:Layout();
-	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
+	local bottomManagedFrameContainer = GetBottomManagedFrameContainer();
+	bottomManagedFrameContainer.fixedWidth = 573;
+	bottomManagedFrameContainer:ClearAllPoints();
+	bottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);
+	bottomManagedFrameContainer:Layout();
+	bottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 
-	local width, height = UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:GetSize();
-	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:SetShown(width > 0 and height > 0);
+	local width, height = bottomManagedFrameContainer.BottomManagedLayoutContainer:GetSize();
+	bottomManagedFrameContainer.BottomManagedLayoutContainer:SetShown(width > 0 and height > 0);
 end
 
-function FramePositionDelegate:UIParentManageRightFrameContainer()
+function FramePositionDelegate:ManageRightFrameContainer()
 	local rightAnchor = EditModeUtil:GetRightContainerAnchor();
 	if(rightAnchor) then
-		UIParentRightManagedFrameContainer:ClearAllPoints();
-		UIParentRightManagedFrameContainer.fixedHeight = UIParent:GetHeight() - MinimapCluster:GetHeight() - 100;
-		rightAnchor:SetPoint(UIParentRightManagedFrameContainer, true);
-		UIParentRightManagedFrameContainer:Layout();
-		UIParentRightManagedFrameContainer.BottomManagedLayoutContainer:Layout();
+		local rightManagedFrameContainer = GetRightManagedFrameContainer();
+		rightManagedFrameContainer:ClearAllPoints();
+		rightManagedFrameContainer.fixedHeight = UIParent:GetHeight() - MinimapCluster:GetHeight() - 100;
+		rightAnchor:SetPoint(rightManagedFrameContainer, true);
+		rightManagedFrameContainer:Layout();
+		rightManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 	end
 end
 
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
-function UIParent_ManageFramePositions()
+function ManageFramePositions()
 	--Dispatch to secure code
-	FramePositionDelegate:SetAttribute("uiparent-manage", true);
+	FramePositionDelegate:SetAttribute("manage-frame-positions", true);
 end
 
 function ToggleFrame(frame)
@@ -850,8 +883,12 @@ function ShowUIPanel(frame, force, contextKey)
 	FramePositionDelegate:SetAttribute("panel-show", true);
 end
 
-function HideUIPanel(frame, skipSetPoint)
-	if ( not frame or not frame:IsShown() ) then
+function HideUIPanel(frame, skipSetPoint, skipShownCheck)
+	if ( not frame ) then
+		return;
+	end
+
+	if ( not skipShownCheck and not frame:IsShown() ) then
 		return;
 	end
 
@@ -927,7 +964,7 @@ end
 -- local MINIMAP_OVERLAP_ALLOWED = 60;
 
 function GetMaxUIPanelsWidth()
---[[	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
+--[[	local bufferBoundry = UIParent:GetRight() - GetUIPanelLayoutAttribute("RIGHT_OFFSET_BUFFER");
 	if ( Minimap:IsShown() and not MinimapCluster:IsUserPlaced() ) then
 		-- If the Minimap is in the default place, make sure you wont overlap it either
 		return min(MinimapCluster:GetLeft()+MINIMAP_OVERLAP_ALLOWED, bufferBoundry);
@@ -936,7 +973,7 @@ function GetMaxUIPanelsWidth()
 		return bufferBoundry;
 	end
 ]]
-	return UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
+	return UIParent:GetRight() - GetUIPanelLayoutAttribute("RIGHT_OFFSET_BUFFER");
 end
 
 function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
@@ -954,26 +991,26 @@ function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
 end
 
 function CanShowRightUIPanel(frame)
-	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
-	local rightSide = UIParent:GetAttribute("RIGHT_OFFSET") + width;
+	local width = frame and GetUIPanelWidth(frame) or GetUIPanelLayoutAttribute("DEFAULT_FRAME_WIDTH");
+	local rightSide = GetUIPanelLayoutAttribute("RIGHT_OFFSET") + width;
 	return rightSide <= GetMaxUIPanelsWidth();
 end
 
 function CanShowCenterUIPanel(frame)
-	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
-	local rightSide = UIParent:GetAttribute("CENTER_OFFSET") + width;
+	local width = frame and GetUIPanelWidth(frame) or GetUIPanelLayoutAttribute("DEFAULT_FRAME_WIDTH");
+	local rightSide = GetUIPanelLayoutAttribute("CENTER_OFFSET") + width;
 	return rightSide < GetMaxUIPanelsWidth();
 end
 
 function CanShowUIPanels(leftFrame, centerFrame, rightFrame)
-	local offset = UIParent:GetAttribute("LEFT_OFFSET");
+	local offset = GetUIPanelLayoutAttribute("LEFT_OFFSET");
 
 	if ( leftFrame ) then
 		offset = offset + GetUIPanelWidth(leftFrame);
 		if ( centerFrame ) then
 			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" ) then
-				offset = offset + ( GetUIPanelAttribute(centerFrame, "width") or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") );
+				offset = offset + ( GetUIPanelAttribute(centerFrame, "width") or GetUIPanelLayoutAttribute("DEFAULT_FRAME_WIDTH") );
 			else
 				offset = offset + GetUIPanelWidth(centerFrame);
 			end
@@ -1050,6 +1087,22 @@ function CloseSpecialWindows()
 	return found;
 end
 
+local function IsAnyWindowShown(...)
+	for i = 1, select("#", ...) do
+		local frame =  (select(i, ...));
+
+		if frame and frame:IsShown() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function CloseSingleWindow(frame)
+	HideUIPanel(frame, UIPANEL_SKIP_SET_POINT, UIPANEL_SKIP_SHOWN_CHECK);
+end
+
 function CloseWindows(ignoreCenter, frameToIgnore, context)
 	-- This function will close all frames that are not the current frame
 	local leftFrame = GetUIPanel("left");
@@ -1057,30 +1110,30 @@ function CloseWindows(ignoreCenter, frameToIgnore, context)
 	local rightFrame = GetUIPanel("right");
 	local doublewideFrame = GetUIPanel("doublewide");
 	local fullScreenFrame = GetUIPanel("fullscreen");
-	local found = leftFrame or centerFrame or rightFrame or doublewideFrame or fullScreenFrame;
+	local found = IsAnyWindowShown(leftFrame, centerFrame, rightFrame, doublewideFrame, fullScreenFrame);
 	local ignoreControlLostLeft =  ( leftFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( leftFrame, "ignoreControlLost" ) )
 	local ignoreControlLostRight =  ( rightFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( rightFrame, "ignoreControlLost" ) )
 	local ignoreControlLostCenter =  ( centerFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( centerFrame, "ignoreControlLost" ) )
 
 	if ( ( not frameToIgnore or frameToIgnore ~= leftFrame ) and not ignoreControlLostLeft ) then
-		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
+		CloseSingleWindow(leftFrame);
 	end
 
-	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
-	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
+	CloseSingleWindow(fullScreenFrame);
+	CloseSingleWindow(doublewideFrame);
 
 	if ( ( not frameToIgnore or frameToIgnore ~= centerFrame ) and not ignoreControlLostCenter ) then
 		if ( centerFrame ) then
 			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" or not ignoreCenter ) then
-				HideUIPanel(centerFrame, UIPANEL_SKIP_SET_POINT);
+				CloseSingleWindow(centerFrame);
 			end
 		end
 	end
 
 	if ( ( not frameToIgnore or frameToIgnore ~= rightFrame ) and not ignoreControlLostRight ) then
 		if ( rightFrame ) then
-			HideUIPanel(rightFrame, UIPANEL_SKIP_SET_POINT);
+			CloseSingleWindow(rightFrame);
 		end
 	end
 
@@ -1089,11 +1142,6 @@ function CloseWindows(ignoreCenter, frameToIgnore, context)
 	UpdateUIPanelPositions();
 
 	return found;
-end
-
--- When the player loses control we close all UIs, unless they're handled below
-function CloseAllWindows_WithExceptions()
-	CloseAllWindows(IsOptionFrameOpen(), "lossOfControl");
 end
 
 function CloseAllWindows(ignoreCenter, context)
@@ -1106,16 +1154,12 @@ function CloseAllWindows(ignoreCenter, context)
 	return anyClosed;
 end
 
--- this function handles possibly tainted values and so
--- should always be called from secure code using securecall()
-function CloseMenus()
-	for index, value in pairs(UIMenus) do
-		local menu = _G[value];
-		if ( menu and menu:IsShown() ) then
-			menu:Hide();
-		end
-	end
+-- When the player loses control we close all UIs, unless they're handled below
+function CloseAllWindows_WithExceptions()
+	CloseAllWindows(IsOptionFrameOpen(), "lossOfControl");
 end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOnPost, CloseAllWindows);
 
 function UpdateUIPanelPositions(currentFrame)
 	FramePositionDelegate:SetAttribute("panel-frame", currentFrame)
@@ -1142,14 +1186,6 @@ function IsOptionFrameOpen()
 	else
 		return nil;
 	end
-end
-
-function LowerFrameLevel(frame)
-	frame:SetFrameLevel(frame:GetFrameLevel()-1);
-end
-
-function RaiseFrameLevel(frame)
-	frame:SetFrameLevel(frame:GetFrameLevel()+1);
 end
 
 function PassClickToParent(self, ...)

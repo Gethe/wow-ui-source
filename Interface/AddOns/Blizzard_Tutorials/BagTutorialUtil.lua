@@ -36,7 +36,6 @@ function BagTutorialBaseMixin:Init(helpTipInfos, helpTipSystem, bitfield, bitfla
 
 	self:AddState("ListenForBagUpdate", "StartPhase_ListenForBagUpdate", "StopPhase_ListenForBagUpdate");
 	self:AddState("TellPlayerToOpenBags", "StartPhase_TellPlayerToOpenBags", "StopPhase_TellPlayerToOpenBags");
-	self:AddState("HelpPlayerOpenAllBags", "StartPhase_HelpPlayerOpenAllBags", "StopPhase_HelpPlayerOpenAllBags");
 	self:AddState("PointAtItem", "StartPhase_PointAtItem", "StopPhase_PointAtItem");
 
 	self:SetInitialStateName("ListenForBagUpdate");
@@ -60,18 +59,6 @@ end
 function BagTutorialBaseMixin:StopPhase_TellPlayerToOpenBags()
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	HelpTip:HideAllSystem(self:GetSystem());
-end
-
-function BagTutorialBaseMixin:StartPhase_HelpPlayerOpenAllBags()
-	EventRegistry:RegisterCallback("ContainerFrame.OpenAllBags", function(owner)
-		self:BeginState("PointAtBagItem");
-	end, self);
-
-	ToggleAllBags();
-end
-
-function BagTutorialBaseMixin:StopPhase_HelpPlayerOpenAllBags()
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenAllBags", self);
 end
 
 function BagTutorialBaseMixin:StartPhase_PointAtItem()
@@ -113,19 +100,11 @@ function BagTutorialBaseMixin:OnBagUpdate()
 end
 
 function BagTutorialBaseMixin:CheckOpenInventory()
-	if self:GetActiveStateName() == "HelpPlayerOpenAllBags" then
-		return;
-	end
-
 	if not IsAnyStandardHeldBagOpen() then
 		if self:GetActiveStateName() ~= "TellPlayerToOpenBags" then
 			self:BeginState("TellPlayerToOpenBags");
 		end
 	else
-		if not AreAllStandardHeldBagsOpen() then
-			self:BeginState("HelpPlayerOpenAllBags");
-		end
-
 		self:BeginState("PointAtItem");
 	end
 end

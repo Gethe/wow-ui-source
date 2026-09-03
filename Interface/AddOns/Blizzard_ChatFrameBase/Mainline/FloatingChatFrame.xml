@@ -514,7 +514,7 @@
 				FCF_StopAlertFlash(self);
 			</OnShow>
 			<OnHide>
-				--If UIParent is hidden (Alt-Z), OnHide is called, but self:IsShown() is still true (self:IsVisible() would be false)
+				--If the top-level parent is hidden (Alt-Z), OnHide is called, but self:IsShown() is still true (self:IsVisible() would be false)
 				if ( not self:IsShown() ) then
 					if ( not self.minimized ) then
 						SetChatWindowShown(self:GetID(), false);
@@ -628,7 +628,7 @@
 	</Button>
 
 	<!-- Main dock manager -->
-	<Frame name="GeneralDockManager" inherits="DockManagerTemplate">
+	<Frame name="GeneralDockManager" inherits="DockManagerTemplate" roleset="chat">
 		<Scripts>
 			<OnLoad>
 				FCFDock_OnLoad(self);
@@ -642,7 +642,7 @@
 	</Frame>
 	<!-- Main chat window -->
 	<Button name="ChatFrame1Tab" inherits="ChatTabTemplate" hidden="true" id="1" />
-	<ScrollingMessageFrame name="ChatFrame1" mixin="PrimaryChatFrameMixin" hidden="true" inherits="FloatingChatFrameTemplate, EditModeChatFrameSystemTemplate" id="1">
+	<ScrollingMessageFrame name="ChatFrame1" mixin="PrimaryChatFrameMixin" hidden="true" inherits="FloatingChatFrameTemplate, EditModeChatFrameSystemTemplate" id="1" roleset="chat">
 		<KeyValues>
 			<KeyValue key="allowAtGlues" value="true" type="boolean"/>
 		</KeyValues>
@@ -656,7 +656,7 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<DropdownButton name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
+	<DropdownButton name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin" roleset="chat">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>

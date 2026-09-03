@@ -35,6 +35,7 @@ local GameUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

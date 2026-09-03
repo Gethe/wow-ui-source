@@ -109,7 +109,7 @@
 	<Texture name="CRFManagerDividerVertical" atlas="GM-bgOpen-divider-vertical" useAtlasSize="true" virtual="true"/>
 	<Texture name="CRFManagerDividerHorizontal" atlas="GM-bgOpen-divider-horizontal" useAtlasSize="true" virtual="true"/>
 
-	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="MEDIUM" hidden="true" toplevel="true" parent="UIParent">
+	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="MEDIUM" hidden="true" toplevel="true" parent="UIParent" roleset="unitFrames">
 		<Size x="222" y="140"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>

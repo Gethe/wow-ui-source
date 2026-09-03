@@ -241,6 +241,14 @@ end
 function MapCanvasScrollControllerMixin:CalculateScrollExtentsAtScale(scale)
 	local xOffset = self:NormalizeHorizontalSize((self:GetWidth() * .5) / scale);
 	local yOffset = self:NormalizeVerticalSize((self:GetHeight() * .5) / scale);
+
+	-- When the viewport becomes larger than the canvas at the current scale,
+	-- the calculated offset exceeds 0.5 and would produce inverted scroll
+	-- extents, which error with strict math assertions when later clamped.
+
+	xOffset = math.min(xOffset, 0.5);
+	yOffset = math.min(yOffset, 0.5);
+
 	return 0.0 + xOffset, 1.0 - xOffset, 0.0 + yOffset, 1.0 - yOffset;
 end
 

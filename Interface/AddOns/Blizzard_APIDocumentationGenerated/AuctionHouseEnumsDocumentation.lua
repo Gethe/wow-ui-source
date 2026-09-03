@@ -149,6 +149,7 @@ local AuctionHouseEnums =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

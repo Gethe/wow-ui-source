@@ -324,7 +324,7 @@ function LFG_DisplayGroupLeaderWarning(eventFrame)
 
 	if ( leaderName and eventFrame.lastLeader ~= leaderName ) then
 		--We'll hold this message a little bit longer than most.
-		RaidNotice_AddMessage(RaidWarningFrame, format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
+		RaidWarningUtil.AddMessage(format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
 		if ( not eventFrame.lastLeader ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(format(LFG_LEADER_CHANGED_WARNING, leaderName), info.r, info.g, info.b, info.id);
@@ -752,7 +752,17 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.background:SetWidth(294);
 			LFGDungeonReadyDialog.instanceInfo.underline:Show();
 
-			local labelText = (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS) and BATTLEGROUND_IS_READY or RANDOM_DUNGEON_IS_READY;
+			local labelText = RANDOM_DUNGEON_IS_READY;
+
+			-- override if needed with training grounds labels by type
+			if (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS) then
+				if (C_PvP.IsTrainingGroundsArena(id)) then
+					labelText = ARENA_IS_READY;
+				elseif (C_PvP.IsTrainingGroundsBG(id)) then
+					labelText = BATTLEGROUND_IS_READY;
+				end
+			end
+
 			LFGDungeonReadyDialog.label:SetText(labelText);
 
 			LFGDungeonReadyDialog.instanceInfo:Hide();

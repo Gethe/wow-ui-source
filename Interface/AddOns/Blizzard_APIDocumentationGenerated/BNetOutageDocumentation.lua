@@ -25,6 +25,7 @@ local BNetOutage =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

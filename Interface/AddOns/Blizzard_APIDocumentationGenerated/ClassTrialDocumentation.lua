@@ -28,6 +28,7 @@ local ClassTrial =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

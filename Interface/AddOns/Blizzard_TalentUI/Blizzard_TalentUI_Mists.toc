@@ -1,6 +1,8 @@
 ## Title: Blizzard Talent UI
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_HelpPlate
+Blizzard_TalentUI_Bootstrap.lua [Bootstrap]
+Mists\Blizzard_TalentUI_Bootstrap.lua [Bootstrap]
 Classic\Blizzard_TalentUI_Shared.lua
 Classic\Blizzard_TalentUI_Shared.xml
 Mists\Blizzard_TalentUI.lua

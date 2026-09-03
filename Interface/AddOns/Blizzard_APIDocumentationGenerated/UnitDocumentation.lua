@@ -739,6 +739,8 @@ local Unit =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "target", Type = "UnitToken", Nilable = false },
+				{ Name = "canAssistImmunePC", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canAssistUninteractable", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -833,7 +835,7 @@ local Unit =
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
@@ -876,7 +878,7 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -898,6 +900,7 @@ local Unit =
 			Name = "UnitClass",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -916,6 +919,7 @@ local Unit =
 			Name = "UnitClassBase",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1285,6 +1289,7 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssigned",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1300,6 +1305,7 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1477,6 +1483,7 @@ local Unit =
 		{
 			Name = "UnitHonorLevel",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1601,6 +1608,7 @@ local Unit =
 		{
 			Name = "UnitInRaid",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1756,6 +1764,7 @@ local Unit =
 		{
 			Name = "UnitIsCharmed",
 			Type = "Function",
+			SecretWhenUnitPossessionRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1939,6 +1948,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupAssistant",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1954,6 +1964,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupLeader",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2107,6 +2118,7 @@ local Unit =
 		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2123,6 +2135,7 @@ local Unit =
 		{
 			Name = "UnitIsPVP",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2182,8 +2195,25 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsPlayerControlledOrGroupMember",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true for 'player', 'pet', 'vehicle', or any of 'partyn', 'partypetn', 'raidn', 'raidpetn'" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsPossessed",
 			Type = "Function",
+			SecretWhenUnitPossessionRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2214,6 +2244,7 @@ local Unit =
 		{
 			Name = "UnitIsRaidOfficer",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2337,6 +2368,7 @@ local Unit =
 		{
 			Name = "UnitLeadsAnyGroup",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2367,7 +2399,7 @@ local Unit =
 		{
 			Name = "UnitName",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
+			SecretWhenUnitNameIdentityRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -2529,6 +2561,7 @@ local Unit =
 		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2803,11 +2836,12 @@ local Unit =
 			Name = "UnitRace",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -2925,6 +2959,7 @@ local Unit =
 		{
 			Name = "UnitSex",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2940,6 +2975,7 @@ local Unit =
 		{
 			Name = "UnitSexBase",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -4438,7 +4474,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4453,7 +4489,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4467,7 +4503,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4481,7 +4517,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4495,7 +4531,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4511,7 +4547,7 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "complete", Type = "bool", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4525,7 +4561,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4539,7 +4575,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4553,7 +4589,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4568,7 +4604,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4642,7 +4678,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4656,7 +4692,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4670,7 +4706,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4818,7 +4854,7 @@ local Unit =
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 				{ Name = "delayTimeMs", Type = "number", Nilable = false, NeverSecret = true },
 			},
 		},
@@ -4837,7 +4873,7 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
-				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+				{ Name = "castBarID", Type = "UnitCastBarID", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4883,6 +4919,7 @@ local Unit =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

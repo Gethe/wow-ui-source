@@ -102,12 +102,12 @@
 				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 			</OnClick>
 			<OnDisable>
-				SetDesaturation(self:GetNormalTexture(), true);
+				self:GetNormalTexture():SetDesaturated(true);
 				self:SetAlpha(0.5);
 				self.raceName:SetText("");
 			</OnDisable>
 			<OnEnable>
-				SetDesaturation(self:GetNormalTexture(), false);
+				self:GetNormalTexture():SetDesaturated(false);
 				self:SetAlpha(0.83);
 			</OnEnable>
 		</Scripts>

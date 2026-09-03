@@ -48,6 +48,7 @@ local UIGenericWidgetDisplay =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

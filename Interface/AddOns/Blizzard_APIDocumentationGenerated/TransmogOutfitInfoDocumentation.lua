@@ -20,6 +20,21 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "CanPlayerTransmogSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ChangeDisplayedOutfit",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -613,6 +628,15 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "IsTransmogEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsableDiscountAvailable",
 			Type = "Function",
 
@@ -995,6 +1019,7 @@ local TransmogOutfitInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

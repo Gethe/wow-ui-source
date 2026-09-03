@@ -303,6 +303,7 @@ local HousingExpertModeUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

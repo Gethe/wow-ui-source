@@ -6,5 +6,6 @@
 ## RequiredDep: Blizzard_UIWidgets, Blizzard_HelpPlate
 ## AllowLoadGameType: standard
 
+Blizzard_IslandsQueueUI_Bootstrap.lua [Bootstrap]
 Blizzard_IslandsQueueUI.lua
 Blizzard_IslandsQueueUI.xml

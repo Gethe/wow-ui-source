@@ -61,6 +61,7 @@ local SimpleAnimVertexColorAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -11,10 +11,12 @@ CUF_OTHER_HEAL_PREDICTION_COLOR_MINI = CreateColor(2/255, 101/255, 18/255, 1);
 local NATIVE_UNIT_FRAME_HEIGHT = 36;
 local NATIVE_UNIT_FRAME_WIDTH = 72;
 local NATIVE_UNIT_FRAME_AURA_SIZE = 11;
-local NATIVE_UNIT_FRAME_AURA_SCALE_MIN = 0.5;
-local NATIVE_UNIT_FRAME_AURA_SCALE_MAX = 2;
 local CENTER_STATUS_ICON_SCALE = 2;
 local NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE = NATIVE_UNIT_FRAME_AURA_SIZE * CENTER_STATUS_ICON_SCALE;
+local NATIVE_UNIT_FRAME_DEBUFF_SCALE_MIN = 0.5;
+local NATIVE_UNIT_FRAME_DEBUFF_SCALE_MAX = 2;
+local NATIVE_UNIT_FRAME_BUFF_SCALE_MIN = 0.5;
+local NATIVE_UNIT_FRAME_BUFF_SCALE_MAX = 2;
 local NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MIN = 0.5;
 local NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MAX = 1;
 
@@ -214,8 +216,9 @@ function CompactUnitFrame_OnUpdate(self, elapsed)
 
 	if self.aurasDirty then
 		local forceUpdate = true;
-		local avoidAnchorChange = true;
-		self:UpdatePrivateAuras(forceUpdate, avoidAnchorChange);
+		self.avoidPrivateAuraAnchorChange = true;
+		self:UpdatePrivateAuras(forceUpdate);
+		self.avoidPrivateAuraAnchorChange = nil;
 		self.aurasDirty = false;
 	end
 
@@ -258,17 +261,19 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		else
 			CompactUnitFrame_UnregisterEvents(frame);
 		end
+
 		if ( unit and not hideCastBar ) then
-			if ( frame.castBar ) then
-				frame.castBar:SetAndUpdateShowCastbar(true);
-				frame.castBar:SetUnit(unit, false, true);
+			if ( frame.CastBarsContainer ) then
+				frame.CastBarsContainer.castBar:SetAndUpdateShowCastbar(true);
+				frame.CastBarsContainer.castBar:SetUnit(unit, false, true);
 			end
 		else
-			if ( frame.castBar ) then
-				frame.castBar:SetAndUpdateShowCastbar(false);
-				frame.castBar:SetUnit(nil, nil, nil);
+			if ( frame.CastBarsContainer ) then
+				frame.CastBarsContainer.castBar:SetAndUpdateShowCastbar(false);
+				frame.CastBarsContainer.castBar:SetUnit(nil, nil, nil);
 			end
 		end
+
 		CompactUnitFrame_UpdateAll(frame);
 
 		frame:UpdatePrivateAuras();
@@ -306,8 +311,8 @@ end
 --7. Selection highlight position and texture.
 --8. Aggro highlight position and texture
 --9. Role icon position
-function CompactUnitFrame_SetUpFrame(frame, func)
-	func(frame);
+function CompactUnitFrame_SetUpFrame(frame, func, ...)
+	func(frame, ...);
 	CompactUnitFrame_UpdateAll(frame);
 end
 
@@ -398,8 +403,9 @@ local function CompactUnitFrame_ChangePrivateAuraSetting(frame, key, count)
 	if frame[key] ~= count then
 		frame[key] = count;
 		local forceUpdatePrivateAuras = true;
-		local avoidAnchorChange = true;
-		frame:UpdatePrivateAuras(forceUpdatePrivateAuras, avoidAnchorChange);
+		frame.avoidPrivateAuraAnchorChange = true;
+		frame:UpdatePrivateAuras(forceUpdatePrivateAuras);
+		frame.avoidPrivateAuraAnchorChange = nil;
 	end
 end
 
@@ -427,9 +433,9 @@ end
 --Internally accessed functions
 
 --Update Functions
-function CompactUnitFrame_UpdateAll(frame, ...)
-	if frame.optionTable and frame.optionTable.updateAllSetupFunc then
-		frame.optionTable.updateAllSetupFunc(frame, ...);
+function CompactUnitFrame_UpdateAll(frame)
+	if frame.updateAllSetupFunc then
+		frame.updateAllSetupFunc(frame, frame.updateAllSetupFuncArg);
 	end
 
 	CompactUnitFrame_UpdateInVehicle(frame);
@@ -471,8 +477,9 @@ function CompactUnitFrame_UpdateAll(frame, ...)
 end
 
 function CompactUnitFrame_UpdateAllFromEditMode(frame)
-	local avoidPrivateAuraAnchorChange = true;
-	CompactUnitFrame_UpdateAll(frame, avoidPrivateAuraAnchorChange);
+	frame.avoidPrivateAuraAnchorChange = true;
+	CompactUnitFrame_UpdateAll(frame);
+	frame.avoidPrivateAuraAnchorChange = nil;
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
@@ -793,6 +800,9 @@ function ShouldShowName(frame)
 		if frame.optionTable.displayNameByPlayerNameRules then
 			if frame.IsSimplified and frame:IsSimplified() and (not frame.IsTarget or not frame:IsTarget()) then
 				failedRequirement = true;
+			elseif frame.forceShowUnitName then
+				-- If this is set, return true for all non-simplified nameplates.
+				return true;
 			elseif UnitShouldDisplayName(frame.unit) then
 				return true;
 			end
@@ -833,7 +843,8 @@ function CompactUnitFrame_UpdateName(frame)
 	else
 		local name;
 		if frame.optionTable.updateNameUsesGetUnitName then
-			name = GetUnitName(frame.unit, true);
+			local includeRealmName = not frame.hideRealmName;
+			name = GetUnitName(frame.unit, includeRealmName);
 		else
 			name = UnitName(frame.unit);
 		end
@@ -851,8 +862,9 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( frame.optionTable.highlightNameOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
-			frame.name:SetVertexColor(1.0, 1.0, 0.0);
+		if ( frame.optionTable.nameMouseoverColor and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
+			local nameMouseoverColor = frame.optionTable.nameMouseoverColor;
+			frame.name:SetVertexColor(nameMouseoverColor.r, nameMouseoverColor.g, nameMouseoverColor.b);
 		elseif ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
@@ -889,7 +901,7 @@ function CompactUnitFrame_UpdateSelectionHighlight(frame)
 		frame.selectionHighlight:Hide();
 	else
 		local shouldHighlight = UnitIsUnit(frame.displayedUnit, "target") or -- Highlight on target
-			(frame.optionTable.highlightOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover")); -- Highlight on mouseover
+			(frame.optionTable.displaySelectionHighlightOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover")); -- Highlight on mouseover
 		if shouldHighlight then
 			frame.selectionHighlight:Show();
 		else
@@ -928,8 +940,8 @@ end
 local function SetBorderColor(frame, r, g, b, a)
 	if frame.HealthBarsContainer.border then
 		frame.HealthBarsContainer.border:SetVertexColor(r, g, b, a);
-		if frame.castBar and frame.castBar.border then
-			frame.castBar.border:SetVertexColor(r, g, b, a);
+		if frame.CastBarsContainer and frame.CastBarsContainer.castBar.border then
+			frame.CastBarsContainer.castBar.border:SetVertexColor(r, g, b, a);
 		end
 	end
 end
@@ -937,8 +949,8 @@ end
 local function SetBorderUnderline(frame, r, g, b, a)
 	if frame.HealthBarsContainer.border then
 		frame.HealthBarsContainer.border:SetUnderlineColor(r, g, b, a);
-		if frame.castBar and frame.castBar.border then
-			frame.castBar.border:SetVertexColor(r, g, b, a);
+		if frame.CastBarsContainer and frame.CastBarsContainer.castBar.border then
+			frame.CastBarsContainer.castBar.border:SetVertexColor(r, g, b, a);
 		end
 	end
 end
@@ -1650,12 +1662,16 @@ function CompactUnitFrame_ClearWidgetSet(frame)
 end
 
 --Utility Functions
-local function CompactUnitFrame_GetIconScale(frame)
-	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.IconSize), NATIVE_UNIT_FRAME_AURA_SCALE_MIN, NATIVE_UNIT_FRAME_AURA_SCALE_MAX);
+local function CompactUnitFrame_GetDebuffIconScale(frame)
+	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.DebuffIconSize), NATIVE_UNIT_FRAME_DEBUFF_SCALE_MIN, NATIVE_UNIT_FRAME_DEBUFF_SCALE_MAX);
 end
 
 local function CompactUnitFrame_GetBigDefensiveIconScale(frame)
 	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.BigDefensiveIconSize), NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MIN, NATIVE_UNIT_FRAME_BIG_DEFENSIVE_SCALE_MAX);
+end
+
+local function CompactUnitFrame_GetBuffIconScale(frame)
+	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1, Enum.EditModeUnitFrameSetting.BuffIconSize), NATIVE_UNIT_FRAME_BUFF_SCALE_MIN, NATIVE_UNIT_FRAME_BUFF_SCALE_MAX);
 end
 
 function CompactUnitFrame_IsPvpFrame(frame)
@@ -1666,7 +1682,7 @@ function CompactUnitFrame_IsPartyFrame(frame)
 	return frame.groupType == CompactRaidGroupTypeEnum.Raid or frame.groupType == CompactRaidGroupTypeEnum.Party;
 end
 
-function CompactUnitFrame_GetOptionDisplayPowerBar(frame, options)
+local function CompactUnitFrame_GetOptionDisplayPowerBar(frame, options)
 	if CompactUnitFrame_IsPvpFrame(frame) then
 		return options.pvpDisplayPowerBar;
 	else
@@ -1674,7 +1690,7 @@ function CompactUnitFrame_GetOptionDisplayPowerBar(frame, options)
 	end
 end
 
-function CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(frame, options)
+local function CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(frame, options)
 	if CompactUnitFrame_IsPvpFrame(frame) then
 		return options.pvpDisplayOnlyHealerPowerBars;
 	else
@@ -1752,8 +1768,16 @@ function CompactUnitFrame_GetOptionDispelIndicatorType(frame)
 	end
 end
 
-function CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(frame)
-	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.showDispelIndicatorOverlay;
+function CompactUnitFrame_GetOptionDispelIndicatorOverlayType(frame)
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorOverlayType;
+end
+
+function CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(frame)
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorOverlayAnimation;
+end
+
+function CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(frame)
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorAnimatedBorder;
 end
 
 function CompactUnitFrame_GetOptionShowBigDefensive(frame)
@@ -1770,35 +1794,31 @@ end
 
 function CompactUnitFrame_UpdateLevel(frame, activePlayerLevel)
 	if ( frame.optionTable.showLevel ) then
+		frame.LevelFrame:Show();
 		local effectiveLevel = UnitLevel(frame.unit);
 
 		if ( effectiveLevel > 0 ) then
 			activePlayerLevel = activePlayerLevel or UnitLevel("player"); -- Optional arg.
 
 			-- Normal level target
-			frame.LevelFrame.levelText:SetText(effectiveLevel);
+			frame.LevelFrame.LevelText:SetText(effectiveLevel);
 			-- Color level number
-			--if ( UnitCanAttack("player", frame.unit) ) then
+			if ( UnitCanAttack("player", frame.unit) ) then
 				local color = GetRelativeDifficultyColor(activePlayerLevel, effectiveLevel);
-				frame.LevelFrame.levelText:SetVertexColor(color.r, color.g, color.b);
-			--else
-				--frame.LevelFrame.levelText:SetVertexColor(1.0, 0.82, 0.0);
-			--end
+				frame.LevelFrame.LevelText:SetVertexColor(color.r, color.g, color.b);
+			else
+				frame.LevelFrame.LevelText:SetVertexColor(UNIT_LEVEL_NON_ATTACKABLE.r, UNIT_LEVEL_NON_ATTACKABLE.g, UNIT_LEVEL_NON_ATTACKABLE.b);
+			end
 
-			frame.LevelFrame.levelText:Show();
-			frame.LevelFrame.highLevelTexture:Hide();
+			frame.LevelFrame.LevelText:Show();
+			frame.LevelFrame.HighLevelTexture:Hide();
 		else
 			-- Target is too high level to tell
-			frame.LevelFrame.levelText:Hide();
-			frame.LevelFrame.highLevelTexture:Show();
+			frame.LevelFrame.LevelText:Hide();
+			frame.LevelFrame.HighLevelTexture:Show();
 		end
-	else
-		if ( frame.LevelFrame and frame.LevelFrame.levelText ) then
-			frame.LevelFrame.levelText:Hide();
-		end
-		if ( frame.LevelFrame and frame.LevelFrame.highLevelTexture ) then
-			frame.LevelFrame.highLevelTexture:Hide();
-		end
+	elseif (frame.LevelFrame) then
+		frame.LevelFrame:Hide();
 	end
 end
 
@@ -1906,7 +1926,7 @@ local CompactUnitFrameLayoutTemplates = {
 	},
 };
 
-local function CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, element, templateType, containerTypeKey)
+function CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, element, templateType, containerTypeKey)
 	if element then
 		element:ClearAllPoints();
 	end
@@ -1922,12 +1942,13 @@ local function CompactUnitFrameLayout_SetupAbsorbElement(element, ...)
 	end
 end
 
-function DefaultCompactUnitFrameSetup(frame, avoidPrivateAuraAnchorChange)
+function DefaultCompactUnitFrameSetup(frame)
 	-- We need to call our setup function on UpdateAll since our layout depends on the unit assigned into the frame
 	-- This is specifically for deciding whether to show the power bar due to settings like displayOnlyHealerPowerBars
-	local optionTable = DefaultCompactUnitFrameOptions;
-	optionTable.updateAllSetupFunc = DefaultCompactUnitFrameSetup;
+	frame.updateAllSetupFunc = DefaultCompactUnitFrameSetup;
+	frame.updateAllSetupFuncArg = nil;
 
+	local optionTable = DefaultCompactUnitFrameOptions;
 	CompactUnitFrame_SetOptionTable(frame, optionTable);
 
 	local options = DefaultCompactUnitFrameSetupOptions;
@@ -1936,10 +1957,6 @@ function DefaultCompactUnitFrameSetup(frame, avoidPrivateAuraAnchorChange)
 	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.groupType, NATIVE_UNIT_FRAME_HEIGHT);
 	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.groupType);
 	local auraOrganizationType = EditModeManagerFrame:GetRaidFrameAuraOrganizationType(frame.groupType);
-
-	-- Icon Scale affects the sizes of the "gameplay" type icons like auras and available dispel types.
-	local iconScale = CompactUnitFrame_GetIconScale(frame);
-	local auraSize = NATIVE_UNIT_FRAME_AURA_SIZE * iconScale;
 
 	-- Component Scale affects the sizes of the status text, name, ready check, and center status (summon/rez/LoS...but NOT THE BIG DEFENSIVE)
 	-- This scale is proportional to the size of the unit frame and cannot currently be adjusted
@@ -2032,17 +2049,27 @@ function DefaultCompactUnitFrameSetup(frame, avoidPrivateAuraAnchorChange)
 	CompactUnitFrame_SetMaxDebuffs(frame, 5);
 	CompactUnitFrame_SetMaxDispelDebuffs(frame, isPvPFrame and 0 or 3);
 
-	frame:SetBorderScale(iconScale);
-	frame:SetAuraSize(auraSize);
-	frame:SetCenterDefensiveAuraSize(NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale * CompactUnitFrame_GetBigDefensiveIconScale(frame));
+	-- Debuff Icon Scale affects the sizes of the "gameplay" type icons like auras and available dispel types.
+	local debuffIconScale = CompactUnitFrame_GetDebuffIconScale(frame);
+	local buffIconScale = CompactUnitFrame_GetBuffIconScale(frame);
+
+	frame:SetDebuffBorderScale(debuffIconScale);
+	frame:SetBuffBorderScale(buffIconScale);
+	frame:SetDebuffAuraSize(NATIVE_UNIT_FRAME_AURA_SIZE * debuffIconScale);
+	frame:SetBuffAuraSize(NATIVE_UNIT_FRAME_AURA_SIZE * buffIconScale);
+	frame:SetBigDefensiveAuraSize(NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale * CompactUnitFrame_GetBigDefensiveIconScale(frame));
 	frame:SetAuraOrganizationType(auraOrganizationType);
 	frame:SetPowerBarUsedHeight(powerBarUsedHeight);
 
 	local forceUpdatePrivateAuras = true;
-	frame:UpdatePrivateAuras(forceUpdatePrivateAuras, avoidPrivateAuraAnchorChange);
+	frame:UpdatePrivateAuras(forceUpdatePrivateAuras);
 
 	local centerStatusIconSize = NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale;
 	frame.centerStatusIcon:SetSize(centerStatusIconSize, centerStatusIconSize);
+
+	frame.pingIconFrame:SetGUIDMatch(function(guid)
+		return frame.unit and guid == UnitGUID(frame.unit);
+	end);
 end
 
 local nativeMiniUnitFrameHeight = 18;
@@ -2180,28 +2207,44 @@ end
 
 PrivateAuraAnchorSettingsContainerMixin = {};
 
-function PrivateAuraAnchorSettingsContainerMixin:SetBorderScale(borderScale)
-	self.borderScale = borderScale;
+function PrivateAuraAnchorSettingsContainerMixin:SetDebuffBorderScale(debuffBorderScale)
+	self.debuffBorderScale = debuffBorderScale;
 end
 
-function PrivateAuraAnchorSettingsContainerMixin:GetBorderScale()
-	return self.borderScale;
+function PrivateAuraAnchorSettingsContainerMixin:GetDebuffBorderScale()
+	return self.debuffBorderScale;
 end
 
-function PrivateAuraAnchorSettingsContainerMixin:SetAuraSize(auraSize)
-	self.auraSize = auraSize;
+function PrivateAuraAnchorSettingsContainerMixin:SetBuffBorderScale(buffBorderScale)
+	self.buffBorderScale = buffBorderScale;
 end
 
-function PrivateAuraAnchorSettingsContainerMixin:SetCenterDefensiveAuraSize(size)
-	self.centerDefensiveAuraSize = size;
+function PrivateAuraAnchorSettingsContainerMixin:GetBuffBorderScale()
+	return self.buffBorderScale;
 end
 
-function PrivateAuraAnchorSettingsContainerMixin:GetCenterDefensiveAuraSize()
-	return self.centerDefensiveAuraSize or NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE;
+function PrivateAuraAnchorSettingsContainerMixin:SetDebuffAuraSize(debuffAuraSize)
+	self.debuffAuraSize = debuffAuraSize;
 end
 
-function PrivateAuraAnchorSettingsContainerMixin:GetAuraSize()
-	return self.auraSize or NATIVE_UNIT_FRAME_AURA_SIZE;
+function PrivateAuraAnchorSettingsContainerMixin:GetDebuffAuraSize()
+	return self.debuffAuraSize or NATIVE_UNIT_FRAME_AURA_SIZE;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetBuffAuraSize(buffAuraSize)
+	self.buffAuraSize = buffAuraSize;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetBuffAuraSize()
+	return self.buffAuraSize or NATIVE_UNIT_FRAME_AURA_SIZE;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:SetBigDefensiveAuraSize(size)
+	self.bigDefensiveAuraSize = size;
+end
+
+function PrivateAuraAnchorSettingsContainerMixin:GetBigDefensiveAuraSize()
+	return self.bigDefensiveAuraSize or NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE;
 end
 
 function PrivateAuraAnchorSettingsContainerMixin:SetAuraOrganizationType(auraOrganizationType)
@@ -2259,15 +2302,17 @@ function CompactUnitIndividualPrivateAuraAnchorMixin:AddPrivateAuraAnchor(unit)
 			unitToken = unit,
 			auraIndex = self:GetPrivateAuraIndex(),
 			parent = self,
-			showCountdownFrame = true,
+			showCooldownFrame = true,
+			showCooldownEdge = false,
 			showCountdownNumbers = false,
+			showDispelIcon = false,
 			isContainer = self:IsContainer(),
 			iconInfo =
 			{
 				iconAnchor = self:GetIconAnchor(),
-				iconWidth = self:GetAuraSize(),
-				iconHeight = self:GetAuraSize(),
-				borderScale = self:GetBorderScale(),
+				iconWidth = self:GetDebuffAuraSize(),
+				iconHeight = self:GetDebuffAuraSize(),
+				borderScale = self:GetDebuffBorderScale(),
 			},
 			durationAnchor = nil,
 		};
@@ -2276,14 +2321,14 @@ function CompactUnitIndividualPrivateAuraAnchorMixin:AddPrivateAuraAnchor(unit)
 	end
 end
 
-function CompactUnitIndividualPrivateAuraAnchorMixin:SetPrivateAuraAnchorUnit(unit, force, avoidAnchorChange)
+function CompactUnitIndividualPrivateAuraAnchorMixin:SetPrivateAuraAnchorUnit(unit, force)
 	if unit == self.privateAuraUnit and not force then
 		return;
 	end
 
 	self.privateAuraUnit = unit;
 
-	if avoidAnchorChange and self.anchorID then
+	if self.avoidPrivateAuraAnchorChange and self.anchorID then
 		self:TriggerPrivateAuraSettingsUpdate();
 	else
 		self:RemovePrivateAuraAnchor();
@@ -2293,7 +2338,7 @@ end
 
 BasePrivateAuraBehaviorMixin = CreateFromMixins(PrivateAuraAnchorSettingsContainerMixin);
 
-function BasePrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate, avoidAnchorChange)
+function BasePrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate)
 	-- nop, override as needed
 end
 
@@ -2318,8 +2363,8 @@ do
 	end
 end
 
-function ContainerPrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate, avoidAnchorChange)
-	self:SetPrivateAuraAnchorUnit(self.displayedUnit, forceUpdate, avoidAnchorChange);
+function ContainerPrivateAuraBehaviorMixin:UpdatePrivateAuras(forceUpdate)
+	self:SetPrivateAuraAnchorUnit(self.displayedUnit, forceUpdate);
 end
 
 function ContainerPrivateAuraBehaviorMixin:IsContainer()
@@ -2339,15 +2384,19 @@ function ContainerPrivateAuraBehaviorMixin:SetPrivateAuraAnchorSettings()
 	self:SetAttribute("ignore-dispel-debuffs", not CompactUnitFrame_GetOptionDisplayDispelDebuffs(self));
 	self:SetAttribute("dispel-indicator-option", CompactUnitFrame_GetOptionDispelIndicatorType(self));
 	self:SetAttribute("display-larger-role-specific-debuffs", CompactUnitFrame_GetOptionDisplayLargerRoleSpecificDebuffs(self));
-	self:SetAttribute("show-dispel-indicator-overlay", CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(self));
+	self:SetAttribute("dispel-indicator-overlay-type", CompactUnitFrame_GetOptionDispelIndicatorOverlayType(self));
+	self:SetAttribute("dispel-indicator-overlay-animation", CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(self));
+	self:SetAttribute("dispel-indicator-animated-border", CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(self));
 	self:SetAttribute("show-big-defensive", CompactUnitFrame_GetOptionShowBigDefensive(self));
-	self:SetAttribute("big-defensive-size", self:GetCenterDefensiveAuraSize());
-	self:SetAttribute("icon-size", self:GetAuraSize());
+	self:SetAttribute("big-defensive-size", self:GetBigDefensiveAuraSize());
+	self:SetAttribute("debuff-size", self:GetDebuffAuraSize());
+	self:SetAttribute("buff-size", self:GetBuffAuraSize());
+	self:SetAttribute("debuff-border-scale", self:GetDebuffBorderScale());
+	self:SetAttribute("buff-border-scale", self:GetBuffBorderScale());
 	self:SetAttribute("always-hide-duration", true);
 	self:SetAttribute("set-aura-size-to-icon-size", true);
 	self:SetAttribute("power-bar-used-height", self:GetPowerBarUsedHeight());
 	self:SetAttribute("group-type", self.groupType);
-	self:SetAttribute("suppress-dispel-border-icons", true);
 end
 
 function ContainerPrivateAuraBehaviorMixin:AddPrivateAuraAnchor(unit)

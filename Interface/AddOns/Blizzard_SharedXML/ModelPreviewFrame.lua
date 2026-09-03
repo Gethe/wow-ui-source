@@ -123,7 +123,7 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		SetupItemPreviewActor(actor, displayID);
 	else
 		local _, _cameraIDs, _actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
-		
+
 		local useNativeForm = true;
 		local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
 		local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;

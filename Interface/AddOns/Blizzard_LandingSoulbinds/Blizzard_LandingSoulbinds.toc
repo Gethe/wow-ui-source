@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 
+Blizzard_LandingSoulbinds_Bootstrap.lua [Bootstrap]
 Blizzard_LandingSoulbindButton.xml
 Blizzard_LandingRenownButton.xml
 Blizzard_LandingSoulbindPanel.xml

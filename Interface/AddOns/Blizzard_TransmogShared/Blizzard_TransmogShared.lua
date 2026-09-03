@@ -147,7 +147,7 @@ function TransmogUtil.GetBestWeaponInfoForIllusionDressup()
 end
 
 function TransmogUtil.GetSlotID(slotName)
-	local slotID = GetInventorySlotInfo(slotName);
+	local slotID = C_PaperDollInfo.GetInventorySlotInfo(slotName);
 	SLOT_ID_TO_NAME[slotID] = slotName;
 	return slotID;
 end
@@ -283,7 +283,7 @@ function TransmogUtil.OpenCollectionUI()
 	end
 
 	if CollectionsJournal then
-		if not CollectionsJournal:IsVisible() or not WardrobeCollectionFrame:IsVisible() then
+		if not DISALLOW_FRAME_TOGGLING and ( not CollectionsJournal:IsVisible() or not WardrobeCollectionFrame:IsVisible() ) then
 			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 		end
 		return true;
@@ -369,7 +369,7 @@ function TransmogUtil.ParseCustomSetSlashCommand(msg)
 		-- accessor for next value
 		local readIndex = 0;
 		local function GetNextReadValue()
-			readIndex = readIndex + 1; 
+			readIndex = readIndex + 1;
 			return readlist[readIndex];
 		end
 

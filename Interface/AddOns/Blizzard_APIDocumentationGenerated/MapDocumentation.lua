@@ -604,6 +604,11 @@ local Map =
 			{
 				{ Name = "point", Type = "UiMapPoint", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "wasSet", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -739,6 +744,7 @@ local Map =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

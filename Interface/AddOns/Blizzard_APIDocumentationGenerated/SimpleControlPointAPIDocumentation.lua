@@ -57,6 +57,7 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -74,6 +75,7 @@ local SimpleControlPointAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

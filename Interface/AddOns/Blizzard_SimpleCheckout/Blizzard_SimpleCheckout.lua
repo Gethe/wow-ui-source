@@ -1,7 +1,12 @@
 
 SimpleCheckoutMixin = {};
 
+local function GetAppropriateTopLevelParent()
+	return SimpleCheckoutOutbound.GetAppropriateTopLevelParent();
+end
+
 function SimpleCheckoutMixin:OnLoad()
+	FrameUtil.SetParentMaintainRenderLayering(self, GetAppropriateTopLevelParent());
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 end
@@ -12,6 +17,10 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		if (StoreFrame:IsShown()) then
 			self:CalculateDesiredSize();
 			self:RecalculateSize();
+			local parent = GetAppropriateTopLevelParent();
+			FrameUtil.SetParentMaintainRenderLayering(self, parent);
+			self.Background:FixupToParent(parent);
+			self:SetIgnoreParentAlpha(false);
 			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
 				self:SetFocus();
@@ -26,9 +35,10 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		if (CatalogShopFrame:IsShown()) then
 			self:CalculateDesiredSize();
 			self:RecalculateSize();
-			local parent = SimpleCheckoutOutbound.GetAppropriateTopLevelParent();
+			local parent = GetAppropriateTopLevelParent();
 			FrameUtil.SetParentMaintainRenderLayering(self, parent);
 			self.Background:FixupToParent(parent);
+			self:SetIgnoreParentAlpha(false);
 			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
 				self:SetFocus();
@@ -70,7 +80,7 @@ function SimpleCheckoutMixin:OnHide()
 	self:SetAttribute("isshown", false);
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-	
+
 	self:CloseCheckout();
 end
 
@@ -95,7 +105,7 @@ do
 			return 3;
 		elseif multiplier > 1.4 then
 			return 2;
-		else 
+		else
 			return 1;
 		end
 	end
@@ -107,7 +117,7 @@ do
 
 		local desiredWidth = baseWidth * scaleMultiplier;
 		local desiredHeight = baseHeight * scaleMultiplier;
-	
+
 		while scaleMultiplier >= 2 and (desiredWidth > physicalWidth * 0.9 or desiredHeight > physicalHeight * 0.9) do
 			scaleMultiplier = scaleMultiplier - 1;
 
@@ -154,9 +164,10 @@ function SimpleCheckoutMixin:RecalculateSize()
 	-- position frame on a pixel boundary.
 	local left = math.floor((physicalWidth - uiWidth) / 2) * pixelSize;
 	local bottom = math.floor((physicalHeight - uiHeight) / 2) * pixelSize;
+	local parent = self:GetParent() or GetAppropriateTopLevelParent();
 
 	self:ClearAllPoints();
-	self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left, bottom);
+	self:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", left, bottom);
 	self:SetSize(desiredWidth, desiredHeight);
 
 	self.CloseButton:SetSize(20 * pixelSize, 20 * pixelSize);
@@ -169,7 +180,7 @@ end
 
 SimpleCheckoutBackgroundMixin = {};
 function SimpleCheckoutBackgroundMixin:OnLoad()
-	self:FixupToParent(UIParent);
+	self:FixupToParent(GetAppropriateTopLevelParent());
 end
 
 function SimpleCheckoutBackgroundMixin:FixupToParent(newParent)

@@ -120,6 +120,7 @@ local ContentTrackingTypes =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

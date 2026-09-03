@@ -140,6 +140,7 @@ local LobbyMatchmakerInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

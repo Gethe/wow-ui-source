@@ -46,6 +46,7 @@ local MythicPlusInfoShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

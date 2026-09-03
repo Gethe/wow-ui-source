@@ -49,11 +49,13 @@ HousingTutorialHelpTipSystems = {
 	HouseFinderMap = "HouseFinderMapHelptips",
 	HouseFinderVisitHouse = "HouseFinderVisitHouseHelptips",
 	TeleportToHouse = "TeleportToHouseHelpTips",
+	PetBeds = "PetBedHelpTips",
 };
 ------------------------------------------
 
 HousingTutorialData = {
 	HouseFinderTutorial = {
+		PrimaryFrame = "HouseFinderFrame",
 		NeighborhoodScrollFrame = "HouseFinderFrame.NeighborhoodListFrame.ScrollFrame",
 		NeighborhoodMapFrame = "HouseFinderFrame.HouseFinderMapCanvasFrame",
 		VisitHouseButton = "HouseFinderFrame.PlotInfoFrame.VisitHouseButton",

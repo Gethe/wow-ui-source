@@ -271,23 +271,24 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 		end
 
 		local entryInfo = catalogEntryFrame.entryInfo;
+		local entryVariantID = catalogEntryFrame.entryVariantID;
 
 		local tooltipType
 
-		if entryInfo.entryID.entryType == Enum.HousingCatalogEntryType.Decor then
+		if entryVariantID and entryVariantID.entryType == Enum.HousingCatalogEntryType.Decor then
 			tooltipType = PTR_IssueReporter.TooltipTypes.housingDecor
-		elseif entryInfo.entryID.entryType == Enum.HousingCatalogEntryType.Room then
+		elseif entryVariantID and entryVariantID.entryType == Enum.HousingCatalogEntryType.Room then
 			tooltipType = PTR_IssueReporter.TooltipTypes.housingRoom
 		else
 			return;
 		end
 
 		if (tooltip) then
-			PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, entryInfo.entryID.recordID, entryInfo.name)
+			PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, entryVariantID.recordID, entryInfo.name)
 		else
 			GameTooltip:ClearAllPoints()
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-			PTR_IssueReporter.HookIntoTooltip(GameTooltip, tooltipType, entryInfo.entryID.recordID, entryInfo.name, true)
+			GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+			PTR_IssueReporter.HookIntoTooltip(GameTooltip, tooltipType, entryVariantID.recordID, entryInfo.name, true)
 			GameTooltip:Show()
 		end
 	end
@@ -303,7 +304,7 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 			PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.housingComponent, componentInfo.componentID, componentInfo.name, false, nil, componentInfo)
 		elseif (C_HouseEditor.GetActiveHouseEditorMode() == Enum.HouseEditorMode.Customize) then
 			GameTooltip:ClearAllPoints()
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.housingComponent, componentInfo.componentID, componentInfo.name, true, nil, componentInfo)
 			GameTooltip:Show()
 		end
@@ -320,7 +321,7 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 			PTR_IssueReporter.HookIntoTooltip(existingTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, false, nil, fixtureInfo)
 		else
 			GameTooltip:ClearAllPoints()
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, true, nil, fixtureInfo)
 			GameTooltip:Show()
 		end

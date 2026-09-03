@@ -35,16 +35,24 @@ function MinimalTabMixin:OnSelected(newSelected)
 		self.Text:SetFontObject("GameFontHighlightSmall");
 	else
 		self.Text:SetPoint("BOTTOM", 0, 4);
-		self.Text:SetFontObject("GameFontNormalSmall");
+		self.Text:SetFontObject(self.over and "GameFontHighlightSmall" or "GameFontNormalSmall");
 	end
 end
 
 function MinimalTabMixin:OnEnter()
+	self.over = true;
 	self:UpdateAtlas();
+	if not self:IsSelected() then
+		self.Text:SetFontObject("GameFontHighlightSmall");
+	end
 end
 
 function MinimalTabMixin:OnLeave()
+	self.over = nil;
 	self:UpdateAtlas();
+	if not self:IsSelected() then
+		self.Text:SetFontObject("GameFontNormalSmall");
+	end
 end
 
 function MinimalTabMixin:OnEnable()

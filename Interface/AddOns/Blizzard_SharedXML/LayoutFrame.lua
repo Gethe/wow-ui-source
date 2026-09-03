@@ -226,7 +226,9 @@ function LayoutMixin:GetChildPadding(child)
 end
 
 local function GetSize(desired, fixed, minimum, maximum)
-	return fixed or Clamp(desired, minimum or desired, maximum or desired);
+	minimum = minimum or desired;
+	maximum = math.max(maximum or desired, minimum);
+	return fixed or Clamp(desired, minimum, maximum);
 end
 
 local function GetSizeHelper(expand, fixedSize, childSize)
@@ -562,6 +564,10 @@ function GridLayoutFrameMixin:Layout()
 		anchorPoint = self.layoutFramesGoingRight and "BOTTOMLEFT" or "BOTTOMRIGHT";
 	else
 		anchorPoint = self.layoutFramesGoingRight and "TOPLEFT" or "TOPRIGHT";
+	end
+
+	if self.paddingToLast then
+		layout.primaryPaddingStrategy = GridLayoutUtilPrimaryPaddingStrategy.AllSpacingToLast;
 	end
 
 	-- Apply the layout and then update our size

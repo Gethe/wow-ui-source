@@ -19,9 +19,9 @@ local HouseEditorLayoutModeShownEvents =
 	"GLOBAL_MOUSE_DOWN",
 	"UPDATE_BINDINGS",
 	"HOUSING_LAYOUT_ROOM_RECEIVED",
-	"HOUSING_LAYOUT_ROOM_REMOVED",
 	"HOUSING_LAYOUT_ROOM_MOVED",
-	"HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
+	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
 	"HOUSING_LAYOUT_ROOM_SNAPPED",
 	"HOUSING_LAYOUT_ROOM_MOVE_INVALID",
 };
@@ -55,7 +55,7 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED" then
 		local hasSelection = ...;
 		if hasSelection then
-			self:GetParent():ExpandHouseStorage();
+			self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
 		end
 		self:UpdateShownInstructions();
 	elseif event == "GLOBAL_MOUSE_UP" or event == "GLOBAL_MOUSE_DOWN" then
@@ -77,25 +77,39 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 		end
 	elseif event == "UPDATE_BINDINGS" then
 		self:UpdateKeybinds();
-	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
+		local anySelected, roomID, blueprintCode = ...;
+		if anySelected then
+			-- On selecting a floorplan, ensure the Storage UI is open to the proper tab
+			local tabEnum = blueprintCode and HousingFramesUtil.HouseChestTabs.Blueprints or HousingFramesUtil.HouseChestTabs.Storage;
+			self:GetParent():TryShowHouseStorageTab(tabEnum);
+		end
 		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" then
+		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+		self:UpdateShownInstructions();
+		self:UpdateFloorInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_RECEIVED" then
-		local prevNumFloors, currNumFloors, isUpStairs = ...;
-		if not isUpStairs and prevNumFloors >= currNumFloors then
-			--upstairs rooms don't play a sound because downstairs is playing a sound
-			--downstairs rooms that add a new floor play the floor added sound instead
-			--revisit this code if we add basements
+		local playAddedSound = ...;
+		-- Check that we haven't temporarily paused room add sounds, or that we're past the pause end time
+		if playAddedSound and ((not self.roomAddSoundPauseEnd) or (GetTime() > self.roomAddSoundPauseEnd)) then
+			self.roomAddSoundPauseEnd = nil;
 			PlaySound(SOUNDKIT.HOUSING_ROOM_ADDED);
 		end
-	elseif event == "HOUSING_LAYOUT_ROOM_REMOVED" then
-		-- TODO: Guessing this should have a remove-specific sound played here?
 	elseif event == "HOUSING_LAYOUT_ROOM_MOVED" then
 		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVED);
-	elseif event == "HOUSING_LAYOUT_NUM_FLOORS_CHANGED" then
-		local prevNumFloors, currNumFloors = ...;
-		if prevNumFloors < currNumFloors then
+	elseif event == "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED" then
+		local lowestFloor, highestFloor = ...;
+		if (self.previousHighestFloor and self.previousHighestFloor < highestFloor)
+			or (self.previousLowestFloor and self.previousLowestFloor > lowestFloor) then
 			PlaySound(SOUNDKIT.HOUSING_FLOOR_ADDED);
+			self:UpdateFloorInstructions();
 		end
+		self.previousHighestFloor = highestFloor;
+		self.previousLowestFloor = lowestFloor;
+	elseif event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" then
+		self:UpdateFloorInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_SNAPPED" then
 		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVE_SNAP);
 	elseif event == "HOUSING_LAYOUT_ROOM_MOVE_INVALID" then
@@ -104,16 +118,26 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 end
 
 function HouseEditorLayoutModeMixin:OnShow()
+	self.previousLowestFloor = C_HousingLayout.GetLowestOccupiedFloorIndex();
+	self.previousHighestFloor = C_HousingLayout.GetHighestOccupiedFloorIndex();
 	self:UpdateShownInstructions();
+	self:UpdateFloorInstructions();
 	self:UpdateKeybinds();
 	FrameUtil.RegisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
 	self:GetParent():ShowHouseStorage();
 	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorLayoutMode);
 	PlaySound(SOUNDKIT.HOUSING_ENTER_LAYOUT_MODE);
+
+	if C_HousingLayout.HasSelectedBlueprintFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+	elseif C_HousingLayout.HasSelectedDoor() or C_HousingLayout.HasSelectedFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
+	end
 end
 
 function HouseEditorLayoutModeMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
+	self.roomAddSoundPauseEnd = nil;
 
 	local referenceKey = self;
 	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
@@ -134,10 +158,16 @@ function HouseEditorLayoutModeMixin:TryHandleEscape()
 	return false;
 end
 
+function HouseEditorLayoutModeMixin:StartRoomAddSoundPause()
+	-- Refrain from playing any room add sounds for the next 30 seconds
+	-- Useful in cases like Blueprint importing where room add sounds would overlap with any Blueprint import sounds
+	self.roomAddSoundPauseEnd = GetTime() + 30;
+end
+
 function HouseEditorLayoutModeMixin:UpdateShownInstructions()
-	local isRoomSelected = C_HousingLayout.HasAnySelections();
-	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isRoomSelected);
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, isRoomSelected);
+	local isAnythingSelected = C_HousingLayout.HasAnySelections();
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isAnythingSelected);
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, isAnythingSelected);
 	self.Instructions:UpdateLayout();
 end
 
@@ -145,6 +175,24 @@ function HouseEditorLayoutModeMixin:SetInstructionShown(instructionSet, shouldSh
 	for _, instruction in ipairs(instructionSet) do
 		instruction:SetShown(shouldShow);
 	end
+end
+
+function HouseEditorLayoutModeMixin:UpdateFloorInstructions()
+	local currentFloor = C_HousingLayout.GetViewedFloor();
+	local canGoUp = C_HousingLayout.CanSetViewedFloor(currentFloor + 1);
+	local canGoDown = C_HousingLayout.CanSetViewedFloor(currentFloor - 1);
+
+	if (not canGoUp) and (not canGoDown) then
+		-- If can't go up OR down, then there's likely only one floor, so don't show these at all
+		self.Instructions.FloorUpInstruction:Hide();
+		self.Instructions.FloorDownInstruction:Hide();
+	else
+		self.Instructions.FloorUpInstruction:SetEnabled(canGoUp);
+		self.Instructions.FloorUpInstruction:Show();
+		self.Instructions.FloorDownInstruction:SetEnabled(canGoDown);
+		self.Instructions.FloorDownInstruction:Show();
+	end
+	self.Instructions:UpdateLayout();
 end
 
 function HouseEditorLayoutModeMixin:UpdateKeybinds()
@@ -215,11 +263,11 @@ function HouseEditorLayoutFloorLineMixin:Init(floorIndex)
 	self.floorIndex = floorIndex;
 	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(floorIndex + 1));
 
-	local isTopFloor = floorIndex == (C_HousingLayout.GetNumFloors() - 1);
+	local isTopFloor = floorIndex == C_HousingLayout.GetHighestOccupiedFloorIndex();
 	self.TopDivider:SetShown(isTopFloor);
 
-	local isFloorOne = floorIndex == 0;
-	self.DoorIcon:SetShown(isFloorOne);
+	local isBaseRoomFloor = floorIndex == C_HousingLayout.GetBaseRoomFloor();
+	self.DoorIcon:SetShown(isBaseRoomFloor);
 
 	local isActive = self:IsActive();
 	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
@@ -235,7 +283,7 @@ end
 local HouseEditorLayoutFloorSelectShownEvents =
 {
 	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
-	"HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
 	"HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
 };
 
@@ -264,7 +312,7 @@ function HouseEditorLayoutFloorSelectMixin:OnHide()
 end
 
 function HouseEditorLayoutFloorSelectMixin:OnEvent(event, ...)
-	if event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" or event == "HOUSING_LAYOUT_NUM_FLOORS_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+	if event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" or event == "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
 		self:UpdateFloorInfo();
 	end
 end
@@ -298,7 +346,7 @@ function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	local dataProvider = CreateDataProvider();
 
 	-- Floor indices are 0-based.
-	for floorIndex = C_HousingLayout.GetNumFloors() - 1, 0, -1 do
+	for floorIndex = C_HousingLayout.GetHighestOccupiedFloorIndex(), C_HousingLayout.GetLowestOccupiedFloorIndex(), -1 do
 		dataProvider:Insert(floorIndex);
 	end
 

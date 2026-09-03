@@ -470,6 +470,7 @@ local AddOns =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -38,6 +38,7 @@ local CraftingOrderUIConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

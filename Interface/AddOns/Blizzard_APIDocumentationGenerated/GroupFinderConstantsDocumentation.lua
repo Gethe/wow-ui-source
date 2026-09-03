@@ -3,6 +3,7 @@ local GroupFinderConstants =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

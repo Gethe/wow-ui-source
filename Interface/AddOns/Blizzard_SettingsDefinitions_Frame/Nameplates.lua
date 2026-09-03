@@ -18,7 +18,15 @@ function NamePlatePreviewMixin:OnShow()
 			self.name:SetText(UNIT_NAMEPLATES_TARGET_NAME_PREVIEW);
 			self.name:SetShown(not self:IsSimplified());
 
-			if CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Legacy then
+			if self.colorNameWithClassColor then
+				local _, class = UnitClass(self.unit);
+				if class then
+					local classColor = RAID_CLASS_COLORS[class];
+					if classColor then
+						self.name:SetVertexColor(classColor.r, classColor.g, classColor.b);
+					end
+				end
+			elseif CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Legacy then
 				self.name:SetVertexColor(1.0, 0.0, 0.0);
 			else
 				self.name:SetVertexColor(1.0, 1.0, 1.0);
@@ -90,7 +98,7 @@ function NamePlatePreviewMixin:ShowPreviewNamePlateCastBar()
 		isSpellTarget = true,
 		castTime = 3.0,
 	};
-	unitFrame.castBar:SimulateCast(castData);
+	unitFrame.CastBarsContainer.castBar:SimulateCast(castData);
 end
 
 function NamePlatePreviewMixin:HidePreviewNamePlateCastBar()
@@ -99,7 +107,7 @@ function NamePlatePreviewMixin:HidePreviewNamePlateCastBar()
 		return;
 	end
 
-	local castBar = unitFrame.castBar;
+	local castBar = unitFrame.CastBarsContainer.castBar;
 	castBar:UpdateShownState(false);
 end
 
@@ -408,9 +416,8 @@ local function Register()
 			return container:GetData();
 		end
 
-		local defaultValue = 2;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES",
-			Settings.VarType.Number, SHOW_NPC_NAMES, defaultValue, GetValue, SetValue);
+			Settings.VarType.Number, SHOW_NPC_NAMES, NameplatesOverrides.NPCNamesDefaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
 
@@ -447,7 +454,7 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end);
 
-		-- Enemy Units
+	-- Enemy Units
 	InterfaceOverrides.RunSettingsCallback(function()
 		local enemyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES, "NAMEPLATES");
 		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
@@ -472,10 +479,33 @@ local function Register()
 		local friendlyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS, "FRIENDNAMEPLATES");
 		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyPlayers", UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
 
-		-- Minions
-		local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyPlayerMinions", UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS);
-		initializer:Indent();
-		initializer:SetParentInitializer(friendUnitInitializer);
+		do
+			-- Minions
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyPlayerMinions", UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS);
+			initializer:Indent();
+			initializer:SetParentInitializer(friendUnitInitializer);
+		end
+
+		do
+			-- Show Only Name
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowOnlyNameForFriendlyPlayerUnits", UNIT_NAMEPLATES_FRIENDLY_PLAYER_SHOW_ONLY_NAME, OPTION_TOOLTIP_UNIT_NAMEPLATES_FRIENDLY_PLAYER_SHOW_ONLY_NAME);
+			initializer:Indent();
+			initializer:SetParentInitializer(friendUnitInitializer);
+		end
+
+		do
+			-- Use Class Color for Name
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateUseClassColorForFriendlyPlayerUnitNames", UNIT_NAMEPLATES_FRIENDLY_PLAYER_NAME_USE_CLASS_COLOR, OPTION_TOOLTIP_UNIT_NAMEPLATES_FRIENDLY_PLAYER_NAME_USE_CLASS_COLOR);
+			initializer:Indent();
+			initializer:SetParentInitializer(friendUnitInitializer);
+		end
+
+		do
+			-- Show Realm Name
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyRealmName", UNIT_NAMEPLATES_SHOW_FRIENDLY_REALM_NAME, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_REALM_NAME);
+			initializer:Indent();
+			initializer:SetParentInitializer(friendUnitInitializer);
+		end
 	end);
 
 	-- Friendly Npc nameplates
@@ -548,12 +578,15 @@ local function Register()
 	if C_CVar.GetCVar("nameplateStyle") then
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
+
+			if (NameplatesOverrides.ShowClassicStyleOption()) then container:Add(Enum.NamePlateStyle.Classic, UNIT_NAMEPLATES_STYLE_CLASSIC); end
 			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
 			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
 			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
 			container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
 			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
 			container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
+
 			return container:GetData();
 		end
 
@@ -611,7 +644,7 @@ local function Register()
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellName, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellIcon, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET_TOOLTIP);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP);
+			if (NameplatesOverrides.ShowHighlightImportantCastsOption()) then container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP); end
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET_TOOLTIP);
 			return container:GetData();
 		end
@@ -786,6 +819,54 @@ local function Register()
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_SIMPLIFIED_NONE);
 		initializer.OnHide = OnDropdownHidden;
 	end
+
+	-- Nameplate Class Colors
+	if (NameplatesOverrides.ShowClassColorSetting()) then
+		-- Just using local constants here (as opposed to a full enum) since "friendly" and "enemy" are two separate CVars under the hood.
+		local CLASS_COLOR_NONE = 0;
+		local CLASS_COLOR_FRIENDLY = 1;
+		local CLASS_COLOR_ENEMY = 2;
+		local CLASS_COLOR_FRIENDLY_ENEMY = bit.bor(CLASS_COLOR_FRIENDLY, CLASS_COLOR_ENEMY);
+		local defaultValue = bit.bor(GetCVarDefault("nameplateShowFriendlyClassColor"), GetCVarDefault("nameplateShowClassColor"));
+
+		local function GetValue()
+			local friendlyClassColors = GetCVarBool("nameplateShowFriendlyClassColor");
+			local enemyClassColors = GetCVarBool("nameplateShowClassColor");
+
+			if (friendlyClassColors and enemyClassColors) then
+				return CLASS_COLOR_FRIENDLY_ENEMY;
+			elseif (friendlyClassColors) then
+				return CLASS_COLOR_FRIENDLY;
+			elseif (enemyClassColors) then
+				return CLASS_COLOR_ENEMY;
+			else
+				return CLASS_COLOR_NONE;
+			end
+		end
+
+		local function SetValue(mask)
+			local friendlyClassColorsValue = bit.band(mask, CLASS_COLOR_FRIENDLY) ~= 0;
+			local enemyClassColorsValue = bit.band(mask, CLASS_COLOR_ENEMY) ~= 0;
+
+			SetCVar("nameplateShowFriendlyClassColor", friendlyClassColorsValue);
+			SetCVar("nameplateShowClassColor", enemyClassColorsValue);
+		end
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:AddCheckbox(1, UNIT_NAMEPLATES_CLASS_COLOR_FRIENDLY, UNIT_NAMEPLATES_CLASS_COLOR_FRIENDLY_TOOLTIP);
+			container:AddCheckbox(2, UNIT_NAMEPLATES_CLASS_COLOR_ENEMY, UNIT_NAMEPLATES_CLASS_COLOR_ENEMY_TOOLTIP);
+			return container:GetData();
+		end
+
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CLASS_COLOR", Settings.VarType.Number, UNIT_NAMEPLATES_CLASS_COLOR, defaultValue, GetValue, SetValue);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_CLASS_COLOR_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_CLASS_COLOR_NONE);
+		initializer.OnHide = OnDropdownHidden;
+	end
+
+	NameplatesOverrides.AdjustNameplateSettings(category);
 end
 
 SettingsRegistrar:AddRegistrant(Register);

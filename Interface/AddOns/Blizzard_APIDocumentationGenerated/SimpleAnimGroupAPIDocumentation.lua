@@ -10,6 +10,7 @@ local SimpleAnimGroupAPI =
 			Name = "CreateAnimation",
 			Type = "Function",
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.AddAnimations } },
 
 			Arguments =
 			{
@@ -73,6 +74,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "GetElapsed",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -86,6 +88,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "GetLoopState",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -112,6 +115,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "GetProgress",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -125,18 +129,20 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
+			RequiresSupportedScript = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "luaFunction", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
 			},
 		},
 		{
@@ -159,18 +165,26 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
+			RequiresAssignableScript = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = false },
-				{ Name = "bindingType", Type = "number", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = false },
+				{ Name = "bindingType", Type = "ScriptBindingType", Nilable = false, Default = "Extrinsic" },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "IsDone",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -184,6 +198,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "IsPaused",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -197,6 +212,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "IsPendingFinish",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -210,6 +226,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "IsPlaying",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -223,6 +240,7 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "IsReverse",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -317,12 +335,14 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
+			RequiresAssignableScript = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptBindings } },
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
-				{ Name = "script", Type = "luaFunction", Nilable = true },
+				{ Name = "scriptTypeName", Type = "ScriptTypeName", Nilable = false },
+				{ Name = "script", Type = "LuaFunctionReference", Nilable = true },
 			},
 		},
 		{
@@ -352,6 +372,7 @@ local SimpleAnimGroupAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

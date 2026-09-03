@@ -151,6 +151,7 @@ local ItemInteractionUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

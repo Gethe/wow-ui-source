@@ -7,9 +7,20 @@ end
 function NewPlayerExperience:Begin()
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", self.OnTutorialsEnabled, self);
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsDisabled", self.OnTutorialsDisabled, self);
+
+	-- TutorialManager may have already broadcast TutorialsEnabled before this addon finished loading, so sync state now.
+	if TutorialManager:GetIsActive() then
+		self:OnTutorialsEnabled();
+	end
 end
 
 function NewPlayerExperience:OnTutorialsEnabled()
+	if self.IsActive then
+		-- Guard against a duplicate TutorialsEnabled broadcast re-running TutorialLogic:Begin().
+		return;
+	end
+	self.IsActive = true;
+
 	local _, _, _, completed = GetAchievementInfo(TutorialManager.NPE_AchievementID);
 	if ( completed == true ) then
 		-- we have completed the NPE at least once, check to see if Tutorials are on
@@ -26,7 +37,7 @@ function NewPlayerExperience:OnTutorialsEnabled()
 			return;
 		end
 	end
-	
+
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);
 	HelpTip:ForceHideAll();
@@ -35,7 +46,6 @@ function NewPlayerExperience:OnTutorialsEnabled()
 	SetCVar("nameplateShowEnemies", 1); -- 0
 	MainMenuMicroButton_SetAlertsEnabled(false, "NPEv2"); --Turns off microtips
 	TutorialLogic:Begin();
-	self.IsActive = true;
 end
 
 function NewPlayerExperience:OnTutorialsDisabled()

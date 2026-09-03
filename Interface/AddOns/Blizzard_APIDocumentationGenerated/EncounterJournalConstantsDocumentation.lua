@@ -123,6 +123,7 @@ local EncounterJournalConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -155,6 +155,7 @@ local FrameAPIUnitPositionFrame =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -79,6 +79,26 @@ function BNet_GetTruncatedBattleTag(battleTag)
 	end
 end
 
+function BNet_GetBattleTagSelf()
+	local _deprecatedPresenceID, battleTag, _opaqueID, _broadcastText, _isAFK, _isBusy, _isRealIDEnabled = BNGetInfo();
+	return battleTag or "";
+end
+
+function BNet_GetBroadcastTextSelf()
+	local _deprecatedPresenceID, _battleTag, _opaqueID, broadcastText, _isAFK, _isBusy, _isRealIDEnabled = BNGetInfo();
+	return broadcastText or "";
+end
+
+function BNet_GetBattleTagComponents(battleTag)
+	if not battleTag then
+		return;
+	end
+
+	local tagSplitSymbol = "#";
+	local prefix, suffix = string.split(tagSplitSymbol, battleTag);
+	return { prefix = prefix, tagSplitSymbol = tagSplitSymbol, suffix = suffix };
+end
+
 -- if we don't have a character name or it's for a game that doesn't have toons like Heroes, use the battletag
 function BNet_GetValidatedCharacterName(characterName, battleTag, client, clientTextureSize)
 	if (not characterName) or (characterName == "") or (client == BNET_CLIENT_HEROES) then
@@ -98,4 +118,26 @@ function BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, 
 	local yOffset = texYOffset or 0;
 	
 	return CreateTextureMarkup(texture, fileWidth, fileHeight, width, height, 0, 1, 0, 1, xOffset, yOffset).." "..BNet_GetValidatedCharacterName(characterName, battleTag, client);
+end
+
+local BATTLE_NET_FRIEND_LEVEL_RANK =
+{
+	[Enum.BattleNetFriendLevel.Title] = 1,
+	[Enum.BattleNetFriendLevel.BattleTag] = 2,
+	[Enum.BattleNetFriendLevel.RealID] = 3,
+};
+assertsafe(Enum.BattleNetFriendLevelMeta.NumValues == table.count(BATTLE_NET_FRIEND_LEVEL_RANK), "Not all BattleNetFriendLevels have a label defined in BATTLE_NET_FRIEND_LEVEL_RANK!");
+
+function BNet_GetFriendLevelRank(friendLevel)
+	return BATTLE_NET_FRIEND_LEVEL_RANK[friendLevel];
+end
+
+function BNet_IsFriendLevelEqualOrHigher(friendLevel, comparisonLevel)
+	local friendRank = BATTLE_NET_FRIEND_LEVEL_RANK[friendLevel];
+	local comparisonRank = BATTLE_NET_FRIEND_LEVEL_RANK[comparisonLevel];
+	if not friendRank or not comparisonRank then
+		return false;
+	end
+
+	return friendRank >= comparisonRank;
 end

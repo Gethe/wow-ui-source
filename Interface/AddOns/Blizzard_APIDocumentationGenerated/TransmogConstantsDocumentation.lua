@@ -36,6 +36,7 @@ local TransmogConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

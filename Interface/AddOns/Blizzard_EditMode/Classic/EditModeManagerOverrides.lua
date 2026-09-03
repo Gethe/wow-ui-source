@@ -20,6 +20,7 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
 	self.settingsCheckButtons.StanceBar.shouldHide = false;
 	self.settingsCheckButtons.PetActionBar.shouldHide = false;
 	self.settingsCheckButtons.PossessActionBar.shouldHide = false;
+	self.settingsCheckButtons.RaidWarning.shouldHide = false;
 
 	self:PrepareSettingCheckButtonVisibilityForClassicFlavor();
 end
@@ -46,6 +47,7 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
 	self:RefreshPetFrame();
+	self:RefreshRaidWarning();
 
 	self:EditModeFrameSetupForClassicFlavor();
 end
@@ -58,6 +60,7 @@ function EditModeAccountSettingsMixin:EditModeFrameReset()
 	self:ResetTargetAndFocus();
 	self:ResetPartyFrames();
 	self:ResetRaidFrames();
+	self:ResetRaidWarning();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
@@ -77,7 +80,7 @@ function EditModeManagerFrameMixin:GetRightActionBarBottomLimit()
 end
 
 function EditModeManagerFrameMixin:GetBottomActionBars()
-	-- Note: Classic's other bottom action bars are handled by UIParent_ManageFramePositions.
+	-- Note: Classic's other bottom action bars are handled by ManageFramePositions.
 	-- MainActionBar is the only one that we want to consistently be in the default position.
 	return { MainActionBar };
 end

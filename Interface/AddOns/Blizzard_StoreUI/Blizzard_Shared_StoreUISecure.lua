@@ -1140,7 +1140,7 @@ function StoreFrame_OnLoad(self)
 			end
 		);
 	end
-	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	self:SetPoint("CENTER", nil, "CENTER", 0, 20); -- Intentionally not anchored to the top-level parent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
 	self.productCardPoolCollection = CreateFramePoolCollection();

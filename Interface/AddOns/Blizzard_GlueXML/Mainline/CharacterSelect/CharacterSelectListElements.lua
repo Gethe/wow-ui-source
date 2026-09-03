@@ -175,6 +175,19 @@ function CharacterSelectListGroupHeaderMixin:Init(elementData)
 	self.Text:SetText(self.groupName);
 end
 
+function CharacterSelectListGroupHeaderMixin:NarrationGetName()
+	return self.groupName;
+end
+
+function CharacterSelectListGroupHeaderMixin:NarrationGetContext()
+	local parentGroupElementData = self:GetParent():GetElementData();
+	if parentGroupElementData.collapsed then
+		return NARRATION_GROUP_COLLAPSED;
+	else
+		return NARRATION_GROUP_EXPANDED;
+	end
+end
+
 
 CharacterSelectListCharacterMixin = {};
 
@@ -220,6 +233,30 @@ function CharacterSelectListCharacterMixin:OnDoubleClick()
 			CharacterSelect_EnterWorld();
 		end
 	end
+end
+
+function CharacterSelectListCharacterMixin:NarrationGetName()
+	return NarrationUtil.MakeNarrationString(
+		self.InnerContent.Text.Name:GetText(),
+		self.InnerContent.Text.Info:GetText(),
+		self.InnerContent.Text.Status:GetText()
+	);
+end
+
+function CharacterSelectListCharacterMixin:NarrationGetDescription()
+	return self:IsSelected() and NARRATION_STATUS_SELECTED or nil;
+end
+
+function CharacterSelectListCharacterMixin:NarrationGetIndexInfo()
+	local index = self:GetCharacterIndex();
+	local last = true;
+	local lastCharacterIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+	local lastIndex = math.max(CharacterSelectListUtil.GetTotalGroupSlotCount() + 1, lastCharacterIndex);
+	return NarrationUtil.MakeIndexInfo(index, lastIndex);
+end
+
+function CharacterSelectListCharacterMixin:NarrationNavigationShouldSkipTooltips()
+	return true;
 end
 
 function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)

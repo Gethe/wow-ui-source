@@ -109,78 +109,18 @@ function CooldownViewerAlert_GetPayload(alert)
 	return alert[COOLDOWN_ALERT_FIELD_PAYLOAD];
 end
 
-local soundTypeToTextMapping;
-local soundTypeToSoundKitMapping;
-local function CreateSoundTypeMapping(currentTable)
-	for key, value in pairs (currentTable) do
-		if value.soundEnum and value.text and value.soundKitID then
-			soundTypeToTextMapping[value.soundEnum] = value.text;
-			soundTypeToSoundKitMapping[value.soundEnum] = value.soundKitID;
-		elseif type(value) == "table" then
-			CreateSoundTypeMapping(value);
-		end
-	end
-end
-
-local function CheckCreateSoundAlertData()
-	if not soundTypeToTextMapping then
-		soundTypeToTextMapping = {};
-		soundTypeToSoundKitMapping = {};
-		CreateSoundTypeMapping(CooldownViewerSoundData);
-	end
-end
-
-local function GetSoundTypeText(alertPayload)
-	CheckCreateSoundAlertData();
-	return soundTypeToTextMapping[alertPayload];
-end
-
-local function GetSoundTypeSoundKit(alertPayload)
-	CheckCreateSoundAlertData();
-	return soundTypeToSoundKitMapping[alertPayload];
-end
-
-local visualTypeToTextMapping;
-local visualTypeToTemplateMapping;
-local function CreateVisualTypeMapping(currentTable)
-	for key, value in pairs (currentTable) do
-		if value.enum and value.text and value.animTemplate then
-			visualTypeToTextMapping[value.enum] = value.text;
-			visualTypeToTemplateMapping[value.enum] = value.animTemplate;
-		end
-	end
-end
-
-local function CheckCreateVisualAlertData()
-	if not visualTypeToTextMapping then
-		visualTypeToTextMapping = {};
-		visualTypeToTemplateMapping = {};
-		CreateVisualTypeMapping(CooldownViewerVisualData);
-	end
-end
-
-local function GetVisualTypeText(alertPayload)
-	CheckCreateVisualAlertData();
-	return visualTypeToTextMapping[alertPayload];
-end
-
-local function GetVisualTypeTemplate(alertPayload)
-	CheckCreateVisualAlertData();
-	return visualTypeToTemplateMapping[alertPayload];
-end
-
 function CooldownViewerAlert_GetPayloadText(alert)
 	local alertPayload = CooldownViewerAlert_GetPayload(alert);
 	local alertType = CooldownViewerAlert_GetType(alert);
 
 	if alertType == Enum.CooldownViewerAlertType.Sound then
-		if alertPayload == CooldownViewerSound.TextToSpeech then
+		if alertPayload == Enum.CooldownViewerSound.TextToSpeech then
 			return COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH;
 		end
 
-		return GetSoundTypeText(alertPayload) or "";
+		return CooldownViewerUtil.GetSoundTypeText(alertPayload) or "";
 	elseif alertType == Enum.CooldownViewerAlertType.Visual then
-		return GetVisualTypeText(alertPayload) or "";
+		return VisualAlert_GetTypeText(alertPayload) or "";
 	end
 
 	return "";
@@ -190,11 +130,11 @@ function CooldownViewerAlert_GetPayloadContextData(alert)
 	local alertPayload = CooldownViewerAlert_GetPayload(alert);
 	local alertType = CooldownViewerAlert_GetType(alert);
 	if alertType == Enum.CooldownViewerAlertType.Sound then
-		if alertPayload ~= CooldownViewerSound.TextToSpeech then
-			return GetSoundTypeSoundKit(alertPayload);
+		if alertPayload ~= Enum.CooldownViewerSound.TextToSpeech then
+			return CooldownViewerUtil.GetSoundTypeSoundKit(alertPayload);
 		end
 	elseif alertType == Enum.CooldownViewerAlertType.Visual then
-		return GetVisualTypeTemplate(alertPayload);
+		return VisualAlert_GetTypeTemplate(alertPayload);
 	end
 
 	return nil;
@@ -228,35 +168,41 @@ local function CooldownViewerAlert_PlayTTSAlert(_cooldownItem, spellName, alert)
 	end
 end
 
-local function CooldownViewerAlert_PlaySoundAlert(_cooldownItem, spellName, alert)
+local function CooldownViewerAlert_PlaySoundAlert(_cooldownItem, _spellName, alert, soundSubType)
 	local soundKit = CooldownViewerAlert_GetPayloadContextData(alert);
 	if soundKit then
-		PlaySound(soundKit);
+		local playSoundParams = {
+			soundKitID = soundKit,
+			uiSoundSubType = soundSubType,
+		};
+		C_Sound.PlaySoundWithOptions(playSoundParams);
 	end
 end
 
 local function CooldownViewerAlert_PlayVisualAlert(cooldownItem, _spellName, alert)
-	CooldownViewerVisualAlertsManager:AcquireAlert(CooldownViewerAlert_GetPayload(alert), cooldownItem);
+	VisualAlertsManager:AcquireAlert(CooldownViewerAlert_GetPayload(alert), cooldownItem);
 end
 
 local alertTypePlayer =
 {
-	[Enum.CooldownViewerAlertType.Visual] = CooldownViewerAlert_PlayVisualAlert,
-	[Enum.CooldownViewerAlertType.Sound] = function(cooldownItem, spellName, alert)
+	[Enum.CooldownViewerAlertType.Visual] = function(cooldownItem, spellName, alert, _soundSubType)
+		CooldownViewerAlert_PlayVisualAlert(cooldownItem, spellName, alert);
+	end,
+	[Enum.CooldownViewerAlertType.Sound] = function(cooldownItem, spellName, alert, soundSubType)
 		local alertPayload = CooldownViewerAlert_GetPayload(alert);
 
-		if alertPayload == CooldownViewerSound.TextToSpeech then
+		if alertPayload == Enum.CooldownViewerSound.TextToSpeech then
 			CooldownViewerAlert_PlayTTSAlert(cooldownItem, spellName, alert);
 		else
-			CooldownViewerAlert_PlaySoundAlert(cooldownItem, spellName, alert);
+			CooldownViewerAlert_PlaySoundAlert(cooldownItem, spellName, alert, soundSubType);
 		end
 	end,
 }
 
-function CooldownViewerAlert_PlayAlert(cooldownItem, spellName, alert)
+function CooldownViewerAlert_PlayAlert(cooldownItem, spellName, alert, soundSubType)
 	local alertType = CooldownViewerAlert_GetType(alert);
 	local player = alertTypePlayer[alertType];
 	if player then
-		player(cooldownItem, spellName, alert);
+		player(cooldownItem, spellName, alert, soundSubType);
 	end
 end

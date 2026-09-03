@@ -15,6 +15,7 @@ local PVPMgrConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

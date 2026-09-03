@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_StaticPopup_Glue, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
+## Dependencies: Blizzard_StaticPopup_Glue, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame, Blizzard_Narration
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mists
@@ -40,6 +40,7 @@ Classic\CharacterServicesPaidNameChange.xml
 Classic\CharacterServicesPaidCharacterTransfer.lua
 Classic\CharacterServicesPaidCharacterTransfer.xml
 Classic\CharacterServicesFreeCharacterTransfer.lua
+Shared\CharacterServicesFreeCharacterTransfer.lua
 Classic\CharacterServicesFreeCharacterTransfer.xml
 Classic\CharacterServicesPaidFactionChange.lua
 Classic\CharacterServicesPaidFactionChange.xml

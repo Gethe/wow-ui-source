@@ -269,6 +269,7 @@ local CombatAudioAlertShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

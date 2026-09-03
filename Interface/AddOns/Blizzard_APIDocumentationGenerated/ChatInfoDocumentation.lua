@@ -756,6 +756,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -793,6 +794,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -856,6 +858,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -882,6 +885,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -908,6 +912,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -934,6 +939,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -961,6 +967,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -988,6 +995,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1015,6 +1023,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1042,6 +1051,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1069,6 +1079,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1096,6 +1107,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1123,6 +1135,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1150,6 +1163,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1177,6 +1191,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1204,6 +1219,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1231,6 +1247,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1268,6 +1285,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1295,6 +1313,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1322,6 +1341,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1348,6 +1368,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1374,6 +1395,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1400,6 +1422,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1426,6 +1449,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1453,6 +1477,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1479,6 +1504,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1506,6 +1532,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1533,6 +1560,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1559,6 +1587,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1586,6 +1615,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1612,6 +1642,34 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatMsgGuildDiscord",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_GUILD_DISCORD",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "playerName", Type = "cstring", Nilable = false },
+				{ Name = "languageName", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "channelName", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "playerName2", Type = "cstring", Nilable = false },
+				{ Name = "specialFlags", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "channelIndex", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "channelBaseName", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "languageID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "lineID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "bnSenderID", Type = "number", Nilable = false },
+				{ Name = "isMobile", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1638,6 +1696,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1665,6 +1724,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1692,6 +1752,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1719,6 +1780,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1745,6 +1807,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1771,6 +1834,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1798,6 +1862,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1825,6 +1890,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1852,6 +1918,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1879,6 +1946,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1906,6 +1974,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1933,6 +2002,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1960,6 +2030,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -1987,6 +2058,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2014,6 +2086,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2040,6 +2113,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2066,6 +2140,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2092,6 +2167,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2119,6 +2195,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2146,6 +2223,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2173,6 +2251,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2200,6 +2279,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2227,6 +2307,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2254,6 +2335,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2280,6 +2362,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2307,6 +2390,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2334,6 +2418,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2361,6 +2446,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2388,6 +2474,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2415,6 +2502,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2442,6 +2530,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2469,6 +2558,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2496,6 +2586,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2523,6 +2614,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2550,6 +2642,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2738,6 +2831,7 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "discordInfo", Type = "DiscordChatInfo", Nilable = false },
 			},
 		},
 		{
@@ -2752,6 +2846,7 @@ local ChatInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

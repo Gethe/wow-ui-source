@@ -1,0 +1,33 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<ScopedModifier useForbiddenObjectTable="true">
+		<Button name="AuraButton" intrinsic="true">
+			<Mixins>
+				<Mixin key="AuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
+				<Mixin key="AuraButtonPrivateMixin" source="secure"/>
+			</Mixins>
+			<KeyValues>
+				<KeyValue key="tooltipAnchorPoint" value="ANCHOR_BOTTOMLEFT"/>
+				<KeyValue key="tooltipOffsetX" value="0" type="number"/>
+				<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+				<KeyValue key="tooltipHideInCombat" value="false" type="boolean"/>
+			</KeyValues>
+			<ForbiddenAspects>
+				<ForbiddenAspect aspect="UntrustedScriptExecution"/>
+				<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
+				<ForbiddenAspect aspect="ScriptedInput"/>
+				<ForbiddenAspect aspect="AlwaysPropagateInput"/>
+				<ForbiddenAspect aspect="QueryFocus"/>
+				<ForbiddenAspect aspect="ChangeParent"/>
+				<ForbiddenAspect aspect="RemoveSecretAspects"/>
+			</ForbiddenAspects>
+			<Scripts>
+				<OnLoad method="OnLoad_Intrinsic"/>
+				<OnEnter method="OnEnter_Intrinsic"/>
+				<OnLeave method="OnLeave_Intrinsic"/>
+				<OnClick method="OnClick_Intrinsic"/>
+			</Scripts>
+		</Button>
+	 </ScopedModifier>
+</Ui>

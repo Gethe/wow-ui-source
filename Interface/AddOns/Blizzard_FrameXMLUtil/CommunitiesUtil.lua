@@ -35,7 +35,8 @@ local STREAM_TYPE_SORT_ORDER = {
 	[Enum.ClubStreamType.Guild] = 1,
 	[Enum.ClubStreamType.General] = 2,
 	[Enum.ClubStreamType.Officer] = 3,
-	[Enum.ClubStreamType.Other] = 4,
+	[Enum.ClubStreamType.Discord] = 4,
+	[Enum.ClubStreamType.Other] = 5,
 };
 
 local function CompareStreams(lhsStream, rhsStream)
@@ -296,7 +297,7 @@ function CommunitiesUtil.FindCommunityAndStreamByName(communityName, streamName)
 end
 
 function CommunitiesUtil.FindGuildStreamByType(clubStreamType)
-	if clubStreamType ~= Enum.ClubStreamType.Guild and clubStreamType ~= Enum.ClubStreamType.Officer then
+	if clubStreamType ~= Enum.ClubStreamType.Guild and clubStreamType ~= Enum.ClubStreamType.Officer and clubStreamType ~= Enum.ClubStreamType.Discord then
 		return;
 	end
 

@@ -816,7 +816,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+				<FontString parentKey="Name" inherits="GameFontNormal" propagateMouseInput="Both" justifyH="LEFT" maxLines="1">
 					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-6"/>
@@ -1068,7 +1068,7 @@
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
-							<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-2" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-42" y="0"/>
 						</Anchors>
 						<Scripts>
 							<!--Note: The clearButton's OnClick is also changed in Lua-->
@@ -1130,7 +1130,7 @@
 					<Button parentKey="RefreshButton">
 						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.CategoryName" relativePoint="RIGHT" x="15" y="1"/>
+							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="5">
@@ -1266,7 +1266,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="EntryName" inherits="GameFontNormalLarge" justifyH="LEFT">
+						<FontString parentKey="EntryName" inherits="GameFontNormalLarge" propagateMouseInput="Both" justifyH="LEFT">
 							<Size x="0" y="18"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="12" y="-10"/>
@@ -1475,10 +1475,7 @@
 							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								C_LFGList.RemoveListing();
-							</OnClick>
+							<OnClick function="LFGListApplicationViewerRemoveEntryButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="EditButton" inherits="LFGListMagicButtonTemplate" text="EDIT">

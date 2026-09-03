@@ -45,7 +45,7 @@ end
 
 function ScrollBoxListTreeListViewMixin:EnumerateDataProviderEntireRange()
 	local indexBegin, indexEnd = nil, nil;
-	self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+	return self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
 end
 
 function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
@@ -54,7 +54,7 @@ end
 
 function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProviderEntireRange()
 	local indexBegin, indexEnd = nil, nil;
-	self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+	return self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
 end
 
 function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)

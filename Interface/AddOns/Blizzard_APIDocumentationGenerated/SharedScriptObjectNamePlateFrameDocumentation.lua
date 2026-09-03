@@ -3,6 +3,7 @@ local SharedScriptObjectNamePlateFrame =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

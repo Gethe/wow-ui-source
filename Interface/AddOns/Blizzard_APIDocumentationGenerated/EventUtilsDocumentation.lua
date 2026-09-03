@@ -46,6 +46,7 @@ local EventUtils =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

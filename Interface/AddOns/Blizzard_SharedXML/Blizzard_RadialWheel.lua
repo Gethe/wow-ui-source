@@ -27,7 +27,7 @@ function RadialWheelFrameMixin:OnUpdate()
 end
 
 local function GetScaledCursorPosition_Insecure()
-	local x, y = GetScaledCursorPositionForFrame(C_UI.GetUIParent());
+    local x, y = InputUtil.GetCursorPosition(C_UI.GetUIParent());
 	return x, y;
 end
 

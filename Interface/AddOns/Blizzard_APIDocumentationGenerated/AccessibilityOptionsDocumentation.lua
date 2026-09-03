@@ -16,6 +16,7 @@ local AccessibilityOptions =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

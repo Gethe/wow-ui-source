@@ -243,6 +243,7 @@ local DamageMeter =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

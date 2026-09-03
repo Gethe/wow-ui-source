@@ -1,5 +1,7 @@
 RaidFramePreviewMixin = { };
 
+RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, SettingsPanel_EscapePressed);
+
 function RaidFramePreviewMixin:OnLoad()
 	CompactUnitFrame_SetUpFrame(self.RaidFrame, DefaultCompactUnitFrameSetup);
 	CompactUnitFrame_SetUnit(self.RaidFrame, "player");
@@ -11,9 +13,6 @@ local function Register()
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
-
-	-- Nameplates (Hook for Classic. Names and Nameplates options Have been moved to Nameplates.lua for 12.0.)
-	InterfaceOverrides.AdjustNameplateSettings(category, layout);
 
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
@@ -156,6 +155,9 @@ local function Register()
 
 	-- Housing Settings
 	InterfaceOverrides.CreateHousingSettings(category, layout);
+
+	-- Coordinates Settings
+	InterfaceOverrides.CreateCoordinatesSettings(category, layout);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

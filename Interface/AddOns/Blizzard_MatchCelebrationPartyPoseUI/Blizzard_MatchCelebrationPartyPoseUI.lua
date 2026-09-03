@@ -1,8 +1,14 @@
 MatchCelebrationPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
+local function MatchCelebrationPartyPoseFrame_EscapePressed()
+	return MatchCelebrationPartyPoseFrame:IsShown();
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.AddOn, MatchCelebrationPartyPoseFrame_EscapePressed);
+
 function MatchCelebrationPartyPoseMixin:OnLoad()
 	PartyPoseMixin.OnLoad(self);
-	PartyPoseUtil.AddDismissClickHandler(self.LeaveButton, self);
+	PartyPoseUtil.AddDismissClickHandler(self.ButtonContainer.LeaveButton, self);
 end
 
 function MatchCelebrationPartyPoseMixin:Dismiss()
@@ -15,10 +21,10 @@ function MatchCelebrationPartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate
 
 	local showExtraButton = C_PartyPose.HasExtraAction(partyPoseData.partyPoseInfo.partyPoseID);
 	if showExtraButton then
-		self.ButtonContainer.ExtraButton:Show(); 
+		self.ButtonContainer.ExtraButton:Show();
 		self.ButtonContainer.ExtraButton:SetText(partyPoseData.partyPoseInfo.extraButtonText or CLOSE);
 	else
-		self.ButtonContainer.ExtraButton:Hide(); 
+		self.ButtonContainer.ExtraButton:Hide();
 	end
 
 	local hideLeaveButton = FlagsUtil.IsSet(partyPoseData.partyPoseInfo.flags, Enum.PartyPoseFlags.HideLeaveInstanceButton);
@@ -33,11 +39,11 @@ function MatchCelebrationPartyPoseMixin:GetPartyPoseDataFromPartyPoseID(partyPos
 	local partyPoseData = PartyPoseMixin.GetPartyPoseDataFromPartyPoseID(self, partyPoseID, winner);
 
 	local textureKit = partyPoseData.partyPoseInfo.uiTextureKit or "";
-	local titleBGAtlas = GetFinalNameFromTextureKit("%s-header", textureKit); 
+	local titleBGAtlas = GetFinalNameFromTextureKit("%s-header", textureKit);
 	local modelSceneBackgroundAtlas = GetFinalNameFromTextureKit("%s-background", textureKit);
-	local topperAtlas = GetFinalNameFromTextureKit("%s-topper", textureKit); 
+	local topperAtlas = GetFinalNameFromTextureKit("%s-topper", textureKit);
 
-	partyPoseData.themeData = { 
+	partyPoseData.themeData = {
 		TitleBG = C_Texture.GetAtlasInfo(titleBGAtlas) and titleBGAtlas or "scoreboard-header-alliance",
 		Topper =  C_Texture.GetAtlasInfo(topperAtlas) and topperAtlas or nil;
 		topperOffset = -45,
@@ -57,15 +63,15 @@ function MatchCelebrationPartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate
 	PartyPoseMixin.LoadPartyPose(self, partyPoseData, forceUpdate);
 
 	self.ExtraButton:SetText(self.partyPoseData.partyPoseInfo.extraButtonText or "");
-	self.ExtraButton:SetEnabled(C_PartyPose.HasExtraAction(self.partyPoseData.partyPoseInfo.partyPoseID)); 
+	self.ExtraButton:SetEnabled(C_PartyPose.HasExtraAction(self.partyPoseData.partyPoseInfo.partyPoseID));
 	self.ExtraButton:Show();
 end
 
 MatchCelebrationExtraButtonMixin = {};
 
 function MatchCelebrationExtraButtonMixin:OnClick()
-	local partyPoseID = MatchCelebrationPartyPoseFrame.partyPoseData.partyPoseInfo.partyPoseID; 
-	if partyPoseID then 
+	local partyPoseID = MatchCelebrationPartyPoseFrame.partyPoseData.partyPoseInfo.partyPoseID;
+	if partyPoseID then
 		C_PartyPose.ExtraAction(partyPoseID);
 		HideUIPanel(MatchCelebrationPartyPoseFrame);
 	end

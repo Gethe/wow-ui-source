@@ -17,6 +17,7 @@ local GARRISON_TYPEConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -347,6 +347,7 @@ local ScenarioInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

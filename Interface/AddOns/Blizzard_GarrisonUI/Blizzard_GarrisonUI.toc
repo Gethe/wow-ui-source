@@ -1,0 +1,42 @@
+## Title: Blizzard_GarrisonUI
+## Dep: Blizzard_GarrisonBase
+## Dep: Blizzard_GarrisonTemplates
+## Dep: Blizzard_AdventureMap
+## Dep: Blizzard_Colors
+## Dep: Blizzard_HelpPlate
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_GameMenuEsc
+## LoadOnDemand: 1
+## AllowLoadGameType: mainline
+[Family]\Blizzard_GarrisonUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_GarrisonBuildingUI.lua
+[Family]\Blizzard_GarrisonBuildingUI.xml
+[Family]\Blizzard_GarrisonMissionUI.lua
+[Family]\Blizzard_GarrisonMissionUI.xml
+[Family]\Blizzard_GarrisonShipyardUI.lua
+[Family]\Blizzard_GarrisonShipyardUI.xml
+[Family]\Blizzard_GarrisonLandingPage.lua
+[Family]\Blizzard_GarrisonLandingPage.xml
+[Family]\Blizzard_GarrisonCapacitiveDisplay.lua
+[Family]\Blizzard_GarrisonCapacitiveDisplay.xml
+[Family]\Blizzard_GarrisonMonumentUI.lua
+[Family]\Blizzard_GarrisonMonumentUI.xml
+[Family]\Blizzard_GarrisonRecruiterUI.lua
+[Family]\Blizzard_GarrisonRecruiterUI.xml
+[Family]\Blizzard_OrderHallMissionUI.lua
+[Family]\Blizzard_OrderHallMissionUI.xml
+[Family]\Blizzard_BFAMissionUI.lua
+[Family]\Blizzard_BFAMissionUI.xml
+[Family]\Blizzard_AdventuresCombatLog.lua
+[Family]\Blizzard_AdventuresCombatLog.xml
+[Family]\Blizzard_AdventuresCompleteScreen.lua
+[Family]\Blizzard_AdventuresCompleteScreen.xml
+[Family]\Blizzard_AdventuresPuck.lua
+[Family]\Blizzard_AdventuresPuck.xml
+[Family]\Blizzard_AdventuresBoard.lua
+[Family]\Blizzard_AdventuresBoard.xml
+[Family]\Blizzard_AdventuresRewardsScreen.lua
+[Family]\Blizzard_AdventuresRewardsScreen.xml
+[Family]\Blizzard_CovenantMissionUI.lua
+[Family]\Blizzard_CovenantMissionUI.xml
+[Family]\Localization.lua

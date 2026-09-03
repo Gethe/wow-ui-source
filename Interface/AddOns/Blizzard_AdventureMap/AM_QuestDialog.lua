@@ -109,7 +109,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 	end
 
 	local xp = GetQuestLogRewardXP(self.questID);
-	if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
+	if xp > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 		self:AddReward(BreakUpLargeNumbers(xp), "Interface\\Icons\\XP_Icon", nil, 0, "NumberFontNormal");
 	end
 

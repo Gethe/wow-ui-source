@@ -1,0 +1,6 @@
+## Title: Blizzard_UIModes
+## Dependencies: Blizzard_FrameXMLBase
+## AllowLoad: Game
+
+Blizzard_UIModeManager.lua
+Blizzard_UIModeUtil.lua

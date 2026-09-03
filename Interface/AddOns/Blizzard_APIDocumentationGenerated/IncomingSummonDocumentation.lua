@@ -60,6 +60,7 @@ local IncomingSummon =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

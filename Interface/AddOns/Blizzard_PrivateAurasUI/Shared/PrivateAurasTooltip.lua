@@ -7,8 +7,8 @@ end
 
 function PrivateAurasTooltipMixin:ShowAuraTooltip(unit, auraInfo)
 	if auraInfo.isPrivate then
-		PrivateAurasTooltip:SetUnitPrivateAura(unit, auraInfo.auraInstanceID);
+		self:SetUnitPrivateAura(unit, auraInfo.auraInstanceID);
 	else
-		PrivateAurasTooltip:SetUnitAuraByAuraInstanceID(unit, auraInfo.auraInstanceID);
+		self:SetUnitAuraByAuraInstanceID(unit, auraInfo.auraInstanceID);
 	end
 end

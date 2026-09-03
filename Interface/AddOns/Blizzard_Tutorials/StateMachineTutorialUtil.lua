@@ -36,7 +36,7 @@ function StateMachineBasedTutorialMixin:GetTutorialFlag()
 end
 
 function StateMachineBasedTutorialMixin:IsTutorialFlagSet()
-	if EventUtil.AreVariablesLoaded() then
+	if C_CVar.AreCVarsLoaded() then
 		local hasCompleted = GetCVarBitfield(self:GetTutorialCVar(), self:GetTutorialFlag());
 		return hasCompleted;
 	end

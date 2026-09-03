@@ -1,0 +1,32 @@
+## Title: Blizzard_ChatFrame
+## LoadFirst: 1 [AllowLoadGameType classic]
+## Dep: Blizzard_EditMode [AllowLoadGameType mainline]
+## Dep: Blizzard_UIPanelTemplates [AllowLoadGameType classic]
+## Dep: Blizzard_FrameXML [AllowLoadGameType classic]
+## Dep: Blizzard_ChatFrameBase
+## Dep: Blizzard_VoiceToggleButton
+## Dep: Blizzard_AutoComplete [AllowLoadGameType wrath, cata, mists]
+Shared\VoiceChatDots.lua [AllowLoadGameType mainline]
+Shared\VoiceChatDots.xml [AllowLoadGameType mainline]
+Shared\VoiceChatTranscriptionButton.lua
+Shared\VoiceChatTranscriptionButton.xml
+[Family]\VoiceChatHeadsetButton.lua
+[Family]\VoiceChatHeadsetButton.xml
+[Family]\FloatingChatFrameVoiceChat.xml [AllowLoadGameType mainline]
+[Family]\FloatingChatFrameAlertFrame.xml [AllowLoadGameType mainline]
+[Family]\BattlegroundChatFilters.lua
+[Family]\BattlegroundChatFilters.xml
+Shared\VoiceChatTranscriptionFrame.lua
+[Family]\TextToSpeechFrameConstants.lua
+Shared\TextToSpeechCommands.lua
+Shared\TextToSpeechFrame.lua
+Shared\TextToSpeechFrame.xml
+Shared\TextToSpeech.lua
+Shared\TextToSpeech.xml
+Mainline\ChatConfigFrame.lua [AllowLoadGameType mainline]
+Vanilla\ChatConfigFrame.lua [AllowLoadGameType vanilla, tbc]
+Wrath\ChatConfigFrame.lua [AllowLoadGameType wrath, cata, mists]
+[Family]\ChatConfigFrame_Shared.lua [AllowLoadGameType classic]
+[Family]\ChatConfigFrame.xml
+Shared\ClassTalentHelper.lua [AllowLoadGameType mainline]
+[Family]\Localization.lua

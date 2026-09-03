@@ -386,6 +386,7 @@ local ProfessionConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

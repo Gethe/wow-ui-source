@@ -122,13 +122,13 @@ end
 function GroupLootFrame_EnableLootButton(button)
 	button:Enable();
 	button:SetAlpha(1.0);
-	SetDesaturation(button:GetNormalTexture(), false);
+	button:GetNormalTexture():SetDesaturated(false);
 end
 
 function GroupLootFrame_DisableLootButton(button)
 	button:Disable();
 	button:SetAlpha(0.35);
-	SetDesaturation(button:GetNormalTexture(), true);
+	button:GetNormalTexture():SetDesaturated(true);
 end
 
 local groupLootFrameEvents =

@@ -60,6 +60,7 @@ local FrameAPIQuestPOI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

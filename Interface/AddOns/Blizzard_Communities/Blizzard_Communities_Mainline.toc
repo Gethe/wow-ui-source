@@ -1,5 +1,6 @@
 ## Title: Blizzard_Communities
-## RequiredDep: Blizzard_SharedXML, Blizzard_GuildControlUI, Blizzard_TimerunningUtil, Blizzard_HelpPlate
+## RequiredDep: Blizzard_SharedXML, Blizzard_GuildControlUI, Blizzard_TimerunningUtil, Blizzard_HelpPlate, Blizzard_ChatFrameBase, Blizzard_ChatFrame, Blizzard_FrameXMLUtil
+## OptionalDeps: Blizzard_Plunderstorm
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## AllowLoadGameType: mainline
 
@@ -24,6 +25,7 @@ CommunitiesHyperlink.lua
 CommunitiesCalendar.xml
 GuildRewards.xml
 GuildPerks.xml
+Mainline\CommunitiesFrame_Bootstrap.lua
 Mainline\GuildInfo.lua
 GuildInfo.xml
 GuildNews.xml

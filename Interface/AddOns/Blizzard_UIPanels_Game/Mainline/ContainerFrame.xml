@@ -287,7 +287,7 @@
 	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame6" inherits="ContainerFrameReagentBagTemplate"/>
 
-	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true">
+	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" roleset="bags">
 		<KeyValues>
 			<KeyValue key="onCloseCallback" value="ContainerFrameCombinedBagsMixin.Close" type="global"/> <!-- NOTE: Will pass close button as first argument, use a function that doesn't care about that -->
 			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>

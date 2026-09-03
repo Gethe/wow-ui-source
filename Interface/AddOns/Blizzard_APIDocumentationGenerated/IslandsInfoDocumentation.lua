@@ -30,6 +30,7 @@ local IslandsInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -1,3 +1,22 @@
+g_auctionHouseFilters = g_auctionHouseFilters or nil;
+
+local DefaultFiltersSavedVars =
+{
+	minLevel = 0,
+	maxLevel = 0,
+	filters = CopyTable(AUCTION_HOUSE_DEFAULT_FILTERS),
+};
+
+local function SetSavedVarsToDefault()
+	local shallow = false;
+	g_auctionHouseFilters = CopyTable(DefaultFiltersSavedVars, shallow);
+end
+
+if not g_auctionHouseFilters then
+	-- No existing vars. Create the defaults.
+	SetSavedVarsToDefault();
+end
+
 AuctionHouseSearchButtonMixin = {};
 
 function AuctionHouseSearchButtonMixin:OnClick()
@@ -56,33 +75,29 @@ AuctionHouseFilterButtonMixin = {};
 function AuctionHouseFilterButtonMixin:OnLoad()
 	WowStyle1FilterDropdownMixin.OnLoad(self);
 
-	self:Reset();
-
 	self.ClearFiltersButton:SetScript("OnClick", function()
 		self:Reset();
 	end);
 end
 
 function AuctionHouseFilterButtonMixin:ToggleFilter(filter)
-	self.filters[filter] = not self.filters[filter];
+	g_auctionHouseFilters.filters[filter] = not g_auctionHouseFilters.filters[filter];
 
 	self:GetParent():OnFilterToggled();
 end
 
 function AuctionHouseFilterButtonMixin:Reset()
-	self.filters = CopyTable(AUCTION_HOUSE_DEFAULT_FILTERS);
-	self.minLevel = 0;
-	self.maxLevel = 0;
+	SetSavedVarsToDefault();
 	self.ClearFiltersButton:Hide();
 end
 
 function AuctionHouseFilterButtonMixin:GetFilters()
-	return self.filters;
+	return g_auctionHouseFilters.filters;
 end
 
 function AuctionHouseFilterButtonMixin:CalculateFiltersArray()
 	local filtersArray = {};
-	for key, value in pairs(self.filters) do
+	for key, value in pairs(g_auctionHouseFilters.filters) do
 		if value then
 			table.insert(filtersArray, key);
 		end
@@ -91,7 +106,7 @@ function AuctionHouseFilterButtonMixin:CalculateFiltersArray()
 end
 
 function AuctionHouseFilterButtonMixin:GetLevelRange()
-	return self.minLevel, self.maxLevel;
+	return g_auctionHouseFilters.minLevel, g_auctionHouseFilters.maxLevel;
 end
 
 AuctionHouseSearchBoxMixin = {};
@@ -114,7 +129,7 @@ AuctionHouseSearchBarMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
 function AuctionHouseSearchBarMixin:OnLoad()
 	local function IsSelected(filter)
-		return self.FilterButton.filters[filter];
+		return g_auctionHouseFilters.filters[filter];
 	end
 
 	local function SetSelected(filter)
@@ -131,18 +146,18 @@ function AuctionHouseSearchBarMixin:OnLoad()
 		levelRangeFrame:AddInitializer(function(frame, elementDescription, menu)
 			frame:Reset();
 
-			local minLevel = self.FilterButton.minLevel;
+			local minLevel = g_auctionHouseFilters.minLevel;
 			if minLevel > 0 then
 				frame:SetMinLevel(minLevel);
 			end
 
-			local maxLevel = self.FilterButton.maxLevel;
+			local maxLevel = g_auctionHouseFilters.maxLevel;
 			if maxLevel > 0 then
 				frame:SetMaxLevel(maxLevel);
 			end
 
 			frame:SetLevelRangeChangedCallback(function(minLevel, maxLevel)
-				self.FilterButton.minLevel, self.FilterButton.maxLevel = minLevel, maxLevel;
+				g_auctionHouseFilters.minLevel, g_auctionHouseFilters.maxLevel = minLevel, maxLevel;
 				self:UpdateClearFiltersButton();
 			end);
 		end);
@@ -161,7 +176,9 @@ end
 
 function AuctionHouseSearchBarMixin:OnShow()
 	self.SearchBox:Reset();
-	self.FilterButton:Reset();
+	local compareDepth = 2;
+	local savedVarsAreDefault = tCompare(DefaultFiltersSavedVars, g_auctionHouseFilters, compareDepth);
+	self.FilterButton.ClearFiltersButton:SetShown(not savedVarsAreDefault);
 end
 
 function AuctionHouseSearchBarMixin:OnFilterToggled()
@@ -170,8 +187,8 @@ end
 
 function AuctionHouseSearchBarMixin:UpdateClearFiltersButton()
 	local areFiltersDefault = tCompare(self.FilterButton:GetFilters(), AUCTION_HOUSE_DEFAULT_FILTERS);
-	local minLevel, maxLevel = self.FilterButton:GetLevelRange();
-	self.FilterButton.ClearFiltersButton:SetShown(not areFiltersDefault or minLevel ~= 0 or maxLevel ~= 0);
+	g_auctionHouseFilters.minLevel, g_auctionHouseFilters.maxLevel = self.FilterButton:GetLevelRange();
+	self.FilterButton.ClearFiltersButton:SetShown(not areFiltersDefault or g_auctionHouseFilters.minLevel ~= 0 or g_auctionHouseFilters.maxLevel ~= 0);
 end
 
 function AuctionHouseSearchBarMixin:SetSearchText(searchText)
@@ -184,9 +201,9 @@ end
 
 function AuctionHouseSearchBarMixin:StartSearch()
 	local searchString = self.SearchBox:GetSearchString();
-	local minLevel, maxLevel = self:GetLevelFilterRange();
+	g_auctionHouseFilters.minLevel, g_auctionHouseFilters.maxLevel = self:GetLevelFilterRange();
 	local filtersArray = self.FilterButton:CalculateFiltersArray();
-	self:GetAuctionHouseFrame():SendBrowseQuery(searchString, minLevel, maxLevel, filtersArray);
+	self:GetAuctionHouseFrame():SendBrowseQuery(searchString, g_auctionHouseFilters.minLevel, g_auctionHouseFilters.maxLevel, filtersArray);
 end
 
 function AuctionHouseSearchBarMixin:StartFavoritesSearch()

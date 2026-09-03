@@ -2,6 +2,7 @@ local LuaDurationManualClockAPI =
 {
 	Name = "LuaDurationManualClockAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -14,7 +15,7 @@ local LuaDurationManualClockAPI =
 
 			Arguments =
 			{
-				{ Name = "delta", Type = "DurationSeconds", Nilable = false },
+				{ Name = "delta", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -34,7 +35,7 @@ local LuaDurationManualClockAPI =
 
 			Arguments =
 			{
-				{ Name = "delta", Type = "DurationSeconds", Nilable = false },
+				{ Name = "delta", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -57,6 +58,7 @@ local LuaDurationManualClockAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

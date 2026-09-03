@@ -123,6 +123,7 @@ local PlayerLocation =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

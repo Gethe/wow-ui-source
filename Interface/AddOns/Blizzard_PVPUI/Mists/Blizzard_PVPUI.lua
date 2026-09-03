@@ -184,8 +184,8 @@ function PVPQueueFrame_SetCategoryButtonState(button, enabled)
 		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
 		button.Name:SetFontObject("GameFontDisableLarge");
 	end
-	SetDesaturation(button.Icon, not enabled);
-	SetDesaturation(button.Ring, not enabled);
+	button.Icon:SetDesaturated(not enabled);
+	button.Ring:SetDesaturated(not enabled);
 	button:SetEnabled(enabled);
 end
 

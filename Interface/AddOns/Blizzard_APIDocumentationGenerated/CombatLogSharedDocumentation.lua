@@ -22,6 +22,7 @@ local CombatLogShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

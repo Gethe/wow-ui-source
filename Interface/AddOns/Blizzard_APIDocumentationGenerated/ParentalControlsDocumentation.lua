@@ -24,6 +24,7 @@ local ParentalControls =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

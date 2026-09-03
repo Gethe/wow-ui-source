@@ -31,6 +31,7 @@ local WowSurveyConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

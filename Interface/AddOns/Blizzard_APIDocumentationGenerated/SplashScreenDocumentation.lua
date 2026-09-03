@@ -82,6 +82,7 @@ local SplashScreen =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -3,6 +3,7 @@
 ## ShowInAddOnList: 0
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+Blizzard_PerksProgram_Bootstrap.lua [Bootstrap]
 Blizzard_PerksProgramElements.lua
 Blizzard_PerksProgramProducts.lua
 Blizzard_PerksProgramModel.lua

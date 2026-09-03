@@ -12,6 +12,16 @@ TableUtil.Constants =
 	IsIndexTable = true,
 };
 
+-- Global aliases for backwards compatibility.
+tIndexOf = table.indexof;
+tContains = table.contains;
+CountTable = table.count;
+TableIsEmpty = table.isempty;
+tUnorderedRemove = table.removeunordered;
+tDeleteItem = table.removevalue;
+GetKeysArray = table.keys;
+GetValuesArray = table.values;
+
 function ipairs_reverse(table)
 	local function Enumerator(table, index)
 		index = index - 1;
@@ -57,35 +67,6 @@ function CreateTableReverseEnumerator(tbl, minIndex, maxIndex)
 	return Enumerator, tbl, maxIndex;
 end
 
-function tDeleteItem(tbl, item)
-	local size = #tbl;
-	local index = size;
-	while index > 0 do
-		if item == tbl[index] then
-			tRemove(tbl, index);
-		end
-		index = index - 1;
-	end
-	return size - #tbl;
-end
-
-function tIndexOf(tbl, item)
-	for i, v in ipairs(tbl) do
-		if item == v then
-			return i;
-		end
-	end
-end
-
-function tContains(tbl, item)
-	for k, v in pairs(tbl) do
-		if item == v then
-			return true;
-		end
-	end
-	return false;
-end
-
 function TableUtil.SafeCountTable(tbl, isIndexTable)
 	if tbl == nil then
 		return 0;
@@ -95,7 +76,7 @@ function TableUtil.SafeCountTable(tbl, isIndexTable)
 		return #tbl;
 	end
 
-	return CountTable(tbl);
+	return table.count(tbl);
 end
 
 function TableUtil.SafeCountIndexTable(tbl)
@@ -234,14 +215,6 @@ function tInsertUnique(tbl, item)
 	return nil;
 end
 
-function tUnorderedRemove(tbl, index)
-	if index ~= #tbl then
-		tbl[index] = tbl[#tbl];
-	end
-
-	tRemove(tbl);
-end
-
 function CopyTable(settings, shallow)
 	local copy = {};
 	for k, v in pairs(settings) do
@@ -273,14 +246,6 @@ end
 function SetTablePairsToTable(destination, source)
 	tWipe(destination);
 	MergeTable(destination, source);
-end
-
-function CountTable(tbl)
-	local count = 0;
-	for k, v in pairs(tbl) do
-		count = count + 1;
-	end
-	return count;
 end
 
 function Accumulate(tbl)
@@ -423,10 +388,6 @@ function FindSortedIndex(tbl, searchComparison)
 	return FindSortedIndexImplementation(tbl, searchComparison, startingIndex, 1, numTable);
 end
 
-function TableIsEmpty(tbl)
-	return next(tbl) == nil;
-end
-
 function TableHasAnyEntries(tbl)
 	return next(tbl) ~= nil;
 end
@@ -529,24 +490,6 @@ function GetRandomTableValue(tbl)
 		end
 	end
 	return value;
-end
-
-function GetKeysArray(tbl)
-	local keysArray = {};
-	for key in pairs(tbl) do
-		tInsert(keysArray, key);
-	end
-
-	return keysArray;
-end
-
-function GetValuesArray(tbl)
-	local valuesArray = {};
-	for key, value in pairs(tbl) do
-		tInsert(valuesArray, value);
-	end
-
-	return valuesArray;
 end
 
 function GetPairsArray(tbl)
@@ -767,11 +710,11 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 	end
 
 	function t:GetTop()
-		return #sortedArray > 0 and sortedArray[1];
+		return #sortedArray > 0 and sortedArray[1] or nil;
 	end
 
 	function t:GetBottom()
-		return #sortedArray > 0 and sortedArray[#sortedArray];
+		return #sortedArray > 0 and sortedArray[#sortedArray] or nil;
 	end
 
 	function t:Pop()
@@ -785,11 +728,11 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 		return top;
 	end
 
-	function t:Iterate(callback)
+	function t:Iterate(callback, ...)
 		local posToKeyMap = isAssociative and tInvert(keyToPosMap) or nil;
 		for pos, v in ipairs(sortedArray) do
 			local key = isAssociative and posToKeyMap[pos] or pos;
-			local done = callback(key, v);
+			local done = callback(key, v, ...);
 			if done then
 				return;
 			end

@@ -20,6 +20,7 @@ local AsyncAssistActionsConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

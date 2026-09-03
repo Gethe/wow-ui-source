@@ -548,6 +548,99 @@ function WorldMapNavBarButtonMixin:OnClick()
 	self:GetParent():GoToMap(self.data.id)
 end
 
+local function SetCoordText(fontString, floatFormatString, integerFormatString, coordsByTenths, x, y, mapName)
+	local scaledX = x * 100;
+	local scaledY = y * 100;
+	if coordsByTenths then
+		fontString:SetFormattedText(floatFormatString, scaledX, scaledY, mapName);
+	else
+		fontString:SetFormattedText(integerFormatString, Round(scaledX), Round(scaledY), mapName);
+	end
+end
+
+WorldMapCoordsPanelMixin = { };
+
+function WorldMapCoordsPanelMixin:OnLoad()
+	CVarCallbackRegistry:RegisterCallback("worldMapShowPlayerCoords", self.CVarsUpdated, self);
+	CVarCallbackRegistry:RegisterCallback("worldMapShowCursorCoords", self.CVarsUpdated, self);
+	CVarCallbackRegistry:RegisterCallback("coordsByTenths", self.CVarsUpdated, self);
+	self:CVarsUpdated();
+end
+
+function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
+	local mapID = self:GetParent():GetMapID();
+
+	local shouldShowPlayer = false;
+	if self.showPlayerCoords then
+		local playerPosition = C_Map.GetPlayerMapPosition(mapID, "player");
+		if playerPosition then
+			local x, y = playerPosition:GetXY();
+			SetCoordText(self.PlayerCoords.Label, WORLD_MAP_PLAYER_COORDS, WORLD_MAP_PLAYER_COORDS_INTEGER, self.coordsByTenths, x, y);
+			shouldShowPlayer = true;
+		else
+			local playerMapID = C_Map.GetBestMapForUnit("player");
+			if playerMapID then
+				local actualPosition = C_Map.GetPlayerMapPosition(playerMapID, "player");
+				if actualPosition then
+					local x, y = actualPosition:GetXY();
+					local mapInfo = C_Map.GetMapInfo(playerMapID);
+					local mapName = mapInfo and mapInfo.name or UNKNOWN;
+					SetCoordText(self.PlayerCoords.Label, WORLD_MAP_PLAYER_COORDS_MAP_NAME, WORLD_MAP_PLAYER_COORDS_MAP_NAME_INTEGER, self.coordsByTenths, x, y, mapName);
+					shouldShowPlayer = true;
+				end
+			end
+		end
+	end
+	if self.PlayerCoords:IsShown() ~= shouldShowPlayer then
+		self.PlayerCoords:SetShown(shouldShowPlayer);
+		self:Layout();
+	end
+
+	local showCursorCoords = self.showCursorCoords and self:GetParent():IsCanvasMouseFocusOrPinFocus();
+	if showCursorCoords then
+		local cursorX, cursorY = self:GetParent():GetNormalizedCursorPosition();
+		SetCoordText(self.CursorCoords.Label, WORLD_MAP_CURSOR_COORDS, WORLD_MAP_CURSOR_COORDS_INTEGER, self.coordsByTenths, cursorX, cursorY);
+	end
+	if self.CursorCoords:IsShown() ~= showCursorCoords then
+		self.CursorCoords:SetShown(showCursorCoords);
+		self:Layout();
+	end
+end
+
+function WorldMapCoordsPanelMixin:AttachToNeighbor(frame, x, y, requireBottomLeft)
+	self.neighbors = self.neighbors or {};
+	table.insert(self.neighbors, {frame = frame, x = x, y = y, requireBottomLeft = requireBottomLeft});
+end
+
+function WorldMapCoordsPanelMixin:CVarsUpdated()
+	self.showPlayerCoords = GetCVarBool("worldMapShowPlayerCoords");
+	self.showCursorCoords = GetCVarBool("worldMapShowCursorCoords");
+	self.coordsByTenths = GetCVarBool("coordsByTenths");
+end
+
+function WorldMapCoordsPanelMixin:Refresh()
+	--intentionally blank
+end
+
+function WorldMapCoordsPanelMixin:PostRefresh()
+	if self.neighbors then
+		local attachedToNeighbor = false;
+		for _, neighbor in ipairs(self.neighbors) do
+			local locationOk = not neighbor.requireBottomLeft or neighbor.frame.displayLocation == Enum.MapOverlayDisplayLocation.BottomLeft;
+			if neighbor.frame:IsVisible() and locationOk then
+				self:ClearAllPoints();
+				self:SetPoint("BOTTOMLEFT", neighbor.frame, "BOTTOMRIGHT", neighbor.x, neighbor.y);
+				attachedToNeighbor = true;
+				break;
+			end
+		end
+		if not attachedToNeighbor then
+			self:ClearAllPoints();
+			self:SetPoint("BOTTOMLEFT", self:GetParent(), "BOTTOMLEFT", 68, 2);
+		end
+	end
+end
+
 WorldMapSidePanelToggleMixin = { };
 
 function WorldMapSidePanelToggleMixin:OnClick()
@@ -665,6 +758,8 @@ function WorldMapThreatFrameMixin:Refresh()
 		self.ModelSceneTop:Hide();
 		self.ModelSceneBottom:Hide();
 	end
+
+	self:SetShown(show);
 end
 
 function WorldMapThreatFrameMixin:RefreshModels()

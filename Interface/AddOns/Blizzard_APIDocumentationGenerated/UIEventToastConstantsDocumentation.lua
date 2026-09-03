@@ -77,6 +77,7 @@ local UIEventToastConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -984,6 +984,7 @@ local ClubFinder =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

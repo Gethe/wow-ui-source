@@ -68,6 +68,7 @@ local HousingInspectModeUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

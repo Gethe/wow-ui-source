@@ -1,4 +1,5 @@
 ## Title: Blizzard Azerite Respec UI
 ## LoadOnDemand: 1
 
+Blizzard_AzeriteRespecUI_Bootstrap.lua [Bootstrap]
 Blizzard_AzeriteRespecUI.xml

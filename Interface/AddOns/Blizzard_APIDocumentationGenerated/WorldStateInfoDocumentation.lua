@@ -86,6 +86,7 @@ local WorldStateInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

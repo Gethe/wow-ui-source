@@ -1,7 +1,7 @@
 TextureUtil = {};
 
 function GetTextureInfo(obj)
-	if obj:GetObjectType() == "Texture" then
+	if obj:IsObjectType("Texture") then
 		local assetName = obj:GetAtlas();
 		local assetType = "Atlas";
 
@@ -22,6 +22,38 @@ function GetTextureInfo(obj)
 
 		local ulX, ulY, blX, blY, urX, urY, brX, brY = obj:GetTexCoord();
 		return assetName, assetType, ulX, ulY, blX, blY, urX, urY, brX, brY;
+	end
+end
+
+function TextureUtil.AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
+	if ( not texture.frame ) then
+		texture.frame = 1;
+		texture.throttle = throttle;
+		texture.numColumns = floor(textureWidth / frameWidth);
+		texture.numRows = floor(textureHeight / frameHeight);
+		texture.columnWidth = frameWidth / textureWidth;
+		texture.rowHeight = frameHeight / textureHeight;
+	end
+
+	local frame = texture.frame;
+	if ( not texture.throttle or texture.throttle > throttle ) then
+		local framesToAdvance = floor(texture.throttle / throttle);
+		while ( frame + framesToAdvance > numFrames ) do
+			frame = frame - numFrames;
+		end
+
+		frame = frame + framesToAdvance;
+		texture.throttle = 0;
+
+		local left = mod(frame - 1, texture.numColumns) * texture.columnWidth;
+		local right = left + texture.columnWidth;
+		local bottom = ceil(frame / texture.numColumns) * texture.rowHeight;
+		local top = bottom - texture.rowHeight;
+		texture:SetTexCoord(left, right, top, bottom);
+
+		texture.frame = frame;
+	else
+		texture.throttle = texture.throttle + elapsed;
 	end
 end
 
@@ -434,13 +466,12 @@ local addressModeLookup = {
 -- so that as the region changes size, it continues to look correct.
 -- SetAtlas is preferred and checked first before falling back to set texture.
 -- Whether or not the asset refers to an atlas or a texture, UV wrapping will only work as expected if the asset contains a single image.
-function SetTextureWithAddressModeOptions(region, asset, autoSize, addressModeU, addressModeV)
+function SetTextureWithAddressModeOptions(region, asset, autoSize, addressModeU, addressModeV, resetTextureCoords)
 	local hData = addressModeLookup[addressModeU or TextureKitConstants.AddressModeClamp];
 	local vData = addressModeLookup[addressModeV or TextureKitConstants.AddressModeClamp];
 
 	-- NOTE: filterMode and resetTexCoords not supported in this API yet, just use defaults.
 	local filterMode = nil;
-	local resetTextureCoords = nil;
 	if not CheckSetAtlas(region, asset, autoSize, filterMode, resetTextureCoords, hData.descriptor, vData.descriptor) then
 		region:SetTexture(asset, hData.descriptor, vData.descriptor, filterMode);
 	end

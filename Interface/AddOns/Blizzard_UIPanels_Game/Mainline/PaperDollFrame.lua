@@ -367,13 +367,14 @@ function PaperDoll_IsEquippedSlot(slot)
 	if ( slot ) then
 		slot = tonumber(slot);
 		if ( slot ) then
-                        if (EQUIPPED_FIRST and EQUIPPED_LAST) then 
-		         	return slot >= EQUIPPED_FIRST and slot <= EQUIPPED_LAST;
-                        else
-			return slot >= INVSLOT_FIRST_EQUIPPED and slot <= INVSLOT_LAST_EQUIPPED;
-		        end
-	       end
+			if (EQUIPPED_FIRST and EQUIPPED_LAST) then
+				return slot >= EQUIPPED_FIRST and slot <= EQUIPPED_LAST;
+			else
+				return slot >= INVSLOT_FIRST_EQUIPPED and slot <= INVSLOT_LAST_EQUIPPED;
+			end
+		end
 	end
+
 	return false;
 end
 
@@ -1002,7 +1003,7 @@ function PaperDollFrame_SetSpellPower(statFrame, unit)
 	statFrame:Show();
 end
 
-local function GetSecondaryBonus(rating, base, bonusCoeff)	
+local function GetSecondaryBonus(rating, base, bonusCoeff)
 	-- For Legion Remix Timerunners, secondary stat bonuses all come from auras not actual stats
 	-- BonusCoeff is only from mastery, all other call sights should be 1
 	-- default bonus coeff call sights where we don't use this
@@ -1162,7 +1163,7 @@ function PaperDollFrame_SetManaRegen(statFrame, unit)
 		return;
 	end
 
-	if ( not UnitHasMana("player") ) then
+	if ( UnitPowerMax("player", Enum.PowerType.Mana) <= 0 ) then
 		PaperDollFrame_SetLabelAndText(statFrame, MANA_REGEN, NOT_APPLICABLE, false, 0);
 		statFrame.tooltip = nil;
 		return;
@@ -1189,7 +1190,7 @@ function Mastery_OnEnter(statFrame)
 	local mastery, bonusCoeff = GetMasteryEffect();
 	local masteryBonus = GetSecondaryBonus(CR_MASTERY, mastery, bonusCoeff);
 
-	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();	
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
 	if (primaryTalentTree) then
 		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(primaryTalentTree)
 		local hasAddedAnyMasterySpell = false;
@@ -1495,12 +1496,12 @@ end
 
 function PaperDollItemSlotButton_OnLoad(self)
 	EnchantingItemButtonAnimMixin.OnLoad(self);
-	
+
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	
+
 	local slotName = PaperDollItemSlotButton_GetSlotName(self);
-	local id, textureName, checkRelic = GetInventorySlotInfo(slotName);
+	local id, textureName, checkRelic = C_PaperDollInfo.GetInventorySlotInfo(slotName);
 	self:SetID(id);
 
 	local texture = self.icon;
@@ -1558,7 +1559,7 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 	EnchantingItemButtonAnimMixin.OnShow(self);
 
 	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
-	
+
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
@@ -1644,7 +1645,7 @@ function PaperDollItemSlotButton_OnClick(self, button)
 			if ( canPickupInventoryItem ) then
 				PickupInventoryItem(self:GetID());
 			end
-			
+
 			if ( validateAutoEquip and not canPickupInventoryItem ) then
 				local profession = C_TradeSkillUI.GetProfessionByInventorySlot(self:GetID());
 				local tag = profession and ProfessionEquipError[profession] or nil;
@@ -1667,9 +1668,9 @@ function PaperDollItemSlotButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		if C_Item.DoesItemExist(itemLocation) then
 			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-				if C_Item.CanViewItemPowers(itemLocation) then 
+				if C_Item.CanViewItemPowers(itemLocation) then
 					OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-				else 
+				else
 					UIErrorsFrame:AddExternalErrorMessage(AZERITE_PREVIEW_UNAVAILABLE_FOR_CLASS);
 				end
 				return;
@@ -1761,23 +1762,11 @@ function PaperDollItemSlotButton_OnEnter(self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	EquipmentFlyout_UpdateFlyout(self);
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		self:SetTooltipAnchor(GameTooltip);
 	end
 
-	GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
-	if ( not hasItem ) then
-		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		local asRelic = self.checkRelic and UnitHasRelicSlot("player");
-		if asRelic then
-			GameTooltip:SetText(_G[RELICSLOT]);
-		else
-			local slotName = PaperDollItemSlotButton_GetSlotName(self);
-			GameTooltip:SetText(_G[strupper(slotName)]);
-			GameTooltip:Show();
-		end
-	end
+	local suppressComparison = true;
+	ItemUtil.DisplayEquipSlotTooltip(self, GameTooltip, self:GetID(), suppressComparison, self.checkRelic);
 
 	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 	if itemLocation and itemLocation:IsValid() then
@@ -1791,7 +1780,7 @@ end
 function PaperDollItemSlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:Hide();
-	
+
 	ClearCursorHoveredItem();
 	ResetCursor();
 end
@@ -1970,6 +1959,7 @@ function PaperDollFrame_UpdateStats()
 			if ( showStat ) then
 				statFrame.onEnterFunc = nil;
 				statFrame.UpdateTooltip = nil;
+				statFrame.tooltip3 = nil;
 				PAPERDOLL_STATINFO[stat.stat].updateFunc(statFrame, "player");
 				if ( not stat.hideAt or stat.hideAt ~= statFrame.numericValue ) then
 					if ( numStatInCat == 0 ) then
@@ -2546,7 +2536,7 @@ function PaperDollTitlesPane_InitButton(button, elementData)
 	local playerTitle = elementData.playerTitle;
 	button.text:SetText(playerTitle.name);
 	button.titleId = playerTitle.id;
-	
+
 	local selected = PaperDollFrame.TitleManagerPane.selected == playerTitle.id;
 	PaperDollTitlesPane_SetButtonSelected(button, selected);
 
@@ -2759,13 +2749,19 @@ function PaperDollFrame_HideInventoryFixupComplete(self)
 	MicroButtonPulseStop(CharacterMicroButton);
 end
 
-PaperDollItemSlotButtonMixin = {}
+PaperDollItemSlotButtonBaseMixin = {};
+
+function PaperDollItemSlotButtonBaseMixin:SetTooltipAnchor(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+end
+
+PaperDollItemSlotButtonMixin = CreateFromMixins(PaperDollItemSlotButtonBaseMixin);
 
 function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
 end
 
-PaperDollItemSocketDisplayMixin = {};
+PaperDollItemSocketDisplayMixin = CreateFromMixins(PaperDollItemSlotButtonBaseMixin);
 
 function PaperDollItemSocketDisplayMixin:SetItem(item)
 	-- Currently only showing socket display for timerunning characters

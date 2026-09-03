@@ -36,3 +36,20 @@ end
 function FCF_CanOpenNewWindow()
 	return FCF_GetNextOpenChatWindowIndex() ~= nil;
 end
+
+function AllowChatFramesToShow(chatFrame)
+	-- This is InGame, and we always show while InGame. chatFrame is not referenced, only Glues.
+	return true;
+end
+
+function FCFDockOverflow_CloseLists()
+	local list = GENERAL_CHAT_DOCK.overflowButton.list;
+	if ( list:IsShown() ) then
+		list:Hide();
+		return true;
+	else
+		return false;
+	end
+end
+
+RegisterGameMenuEscHandler(GameMenuEscPriority.Menu, FCFDockOverflow_CloseLists);

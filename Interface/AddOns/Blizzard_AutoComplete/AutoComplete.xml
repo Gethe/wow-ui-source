@@ -27,7 +27,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	<Frame name="AutoCompleteBox" enableMouse="true" hidden="true" inherits="TooltipBackdropTemplate">
+	<Frame name="AutoCompleteBox" enableMouse="true" hidden="true" inherits="TooltipBackdropTemplate" flattenRenderLayers="true">
 		<Size x="5" y="5"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

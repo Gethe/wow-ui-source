@@ -156,6 +156,7 @@ local QuestInfoSystem =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

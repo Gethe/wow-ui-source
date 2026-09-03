@@ -110,6 +110,9 @@
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Button>
 	<Button name="HousingCatalogRoomEntryTemplate" mixin="HousingCatalogRoomEntryMixin" inherits="BaseHousingCatalogEntryTemplate" virtual="true">
 		<Layers>

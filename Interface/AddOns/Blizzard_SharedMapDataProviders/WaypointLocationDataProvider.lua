@@ -1,5 +1,9 @@
 WaypointLocationDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function WaypointLocationDataProviderMixin:GetPinTemplate()
+	return "WaypointLocationPinTemplate";
+end
+
 function WaypointLocationDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	-- canvas handlers
@@ -28,11 +32,13 @@ end
 function WaypointLocationDataProviderMixin:OnShow()
 	self:RegisterEvent("USER_WAYPOINT_UPDATED");
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+	EventRegistry:RegisterCallback("MapCanvas.PingWaypointLocation", self.OnPingWaypointLocation, self);
 end
 
 function WaypointLocationDataProviderMixin:OnHide()
 	self:UnregisterEvent("USER_WAYPOINT_UPDATED");
 	self:UnregisterEvent("SUPER_TRACKING_CHANGED");
+	EventRegistry:UnregisterCallback("MapCanvas.PingWaypointLocation", self);
 end
 
 function WaypointLocationDataProviderMixin:OnEvent(event, ...)
@@ -40,7 +46,7 @@ function WaypointLocationDataProviderMixin:OnEvent(event, ...)
 end
 
 function WaypointLocationDataProviderMixin:RemoveAllData()
-	self:GetMap():RemoveAllPinsByTemplate("WaypointLocationPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
 	self.pin = nil;
 end
 
@@ -50,7 +56,7 @@ function WaypointLocationDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapID = self:GetMap():GetMapID();
 	local posVector = C_Map.GetUserWaypointPositionForMap(mapID);
 	if posVector then
-		self.pin = self:GetMap():AcquirePin("WaypointLocationPinTemplate");
+		self.pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 		self.pin:SetPosition(posVector:GetXY());
 	end
 end
@@ -108,10 +114,19 @@ function WaypointLocationDataProviderMixin:CanPlacePin()
 	return not worldMapTrackingPinDisabled and (self.toggleActive or IsControlKeyDown());
 end
 
+function WaypointLocationDataProviderMixin:OnPingWaypointLocation()
+	if self.pin then
+		local numLoops = 2;
+		self:PingPin("index", 1, "PIN_FRAME_LEVEL_QUEST_PING", numLoops);
+	end
+end
+
 WaypointLocationPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WaypointLocationPinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
+	-- need some type of key-value for pinging
+	self.index = 1;
 end
 
 function WaypointLocationPinMixin:OnAcquired()
@@ -134,6 +149,7 @@ end
 function WaypointLocationPinMixin:OnMouseClickAction(mouseButton)
 	if IsModifiedClick("CHATLINK") then
 		ChatFrameUtil.InsertLink(C_Map.GetUserWaypointHyperlink());
+		self:CopySlashCommandToClipboard();
 		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
 	elseif mouseButton == "LeftButton" then
 		local shouldSuperTrack = not C_SuperTrack.IsSuperTrackingUserWaypoint();
@@ -157,3 +173,50 @@ end
 function WaypointLocationPinMixin:OnMouseLeave()
 	GameTooltip:Hide();
 end
+
+local POSITION_FACTOR = 100;
+
+function WaypointLocationPinMixin:CopySlashCommandToClipboard()
+	local waypoint = C_Map.GetUserWaypoint();
+	if waypoint then
+		local mapID = waypoint.uiMapID;
+		local x = waypoint.position.x * POSITION_FACTOR;
+		local y = waypoint.position.y * POSITION_FACTOR;
+		-- want 1 decimal place value
+		local slashCommand = SLASH_MAPPIN1..string.format(" %d %.1f %.1f", mapID, x, y);
+		CopyToClipboard(slashCommand);
+	end
+end
+
+local function ValidateNumberValue(value, usePositionFactor)
+	local result = tonumber(value);
+	if not result or result < 0 then
+		return nil;
+	end
+	if usePositionFactor then
+		if result > POSITION_FACTOR then
+			return nil;
+		end
+		result = result / POSITION_FACTOR;
+	end
+	return result;
+end
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.MAPPIN, SLASH_COMMAND_CATEGORY.MAP, function(msg)
+	local mapID, x, y = string.split(" ", msg, 3);
+	mapID = ValidateNumberValue(mapID, false);
+	x = ValidateNumberValue(x, true);
+	y = ValidateNumberValue(y, true);
+	if not mapID or not x or not y then
+		return;
+	end
+
+	if not C_Map.CanSetUserWaypointOnMap(mapID) then
+		return;
+	end
+
+	local uiMapPoint = UiMapPoint.CreateFromCoordinates(mapID, x, y);
+	if C_Map.SetUserWaypoint(uiMapPoint) then
+		OpenMapToUserWaypoint();
+	end
+end);

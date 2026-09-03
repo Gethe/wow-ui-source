@@ -10,6 +10,7 @@ local CombatTextShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

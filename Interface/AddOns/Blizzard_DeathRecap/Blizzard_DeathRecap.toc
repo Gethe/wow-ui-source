@@ -1,5 +1,6 @@
 ## Title: Blizzard DeathRecap
 ## LoadOnDemand: 1
+Blizzard_DeathRecap_Bootstrap.lua [Bootstrap]
 Blizzard_DeathRecap.lua
 Blizzard_DeathRecap.xml
 Localization.lua

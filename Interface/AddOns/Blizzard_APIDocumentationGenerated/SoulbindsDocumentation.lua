@@ -739,6 +739,7 @@ local Soulbinds =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

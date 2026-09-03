@@ -70,7 +70,7 @@ function UnitPopupSharedUtil.IsBNetFriend(contextData)
 	return accountInfo and accountInfo.isFriend;
 end
 
-function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer)
+function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer, requestedFriendLevel)
 	if isLocalPlayer or not haveBattleTag then
 		return false;
 	end
@@ -78,9 +78,17 @@ function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBa
 	local hasClubInfo = contextData.clubInfo and contextData.clubMemberInfo;
 	if not (isPlayer or hasClubInfo or contextData.accountInfo) then
 		return false;
-end
+	end
 
-	return not UnitPopupSharedUtil.IsBNetFriend(contextData);
+	if not UnitPopupSharedUtil.IsBNetFriend(contextData) then
+		return true;
+	end
+
+	if requestedFriendLevel then
+		return UnitPopupSharedUtil.IsFriendshipUpgrade(contextData, requestedFriendLevel);
+	end
+
+	return false;
 end
 
 function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullName)

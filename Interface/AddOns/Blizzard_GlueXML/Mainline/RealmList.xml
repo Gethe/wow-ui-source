@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="RealmListTabButtonTemplate" parentArray="RealmSelectionTabs" virtual="true">
+	<Button name="RealmListTabButtonTemplate" mixin="RealmListTabButtonMixin" parentArray="RealmSelectionTabs" virtual="true">
 		<Size x="115" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -57,9 +57,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				RealmListTab_OnClick(self);
-			</OnClick>
+			<OnClick method="OnClick"/>
 		</Scripts>
 		<ButtonText parentKey="Text">
 			<Anchors>
@@ -70,7 +68,7 @@
 		<HighlightFont style="GlueFontHighlightSmall"/>
 		<DisabledFont style="GlueFontDisableSmall"/>
 	</Button>
-	<Button name="RealmSortButtonTemplate" virtual="true">
+	<Button name="RealmSortButtonTemplate" mixin="RealmListSortButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
@@ -97,6 +95,11 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 		<ButtonText name="$parentText">
 			<Anchors>
 				<Anchor point="LEFT" x="8" y="0"/>
@@ -120,7 +123,7 @@
 	</Button>
 
 
-	<Button name="RealmListRealmButtonTemplate" virtual="true">
+	<Button name="RealmListRealmButtonTemplate" mixin="RealmListRealmButtonMixin" virtual="true">
 		<Size x="512" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -153,20 +156,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
-				if (realmInfo.version and realmInfo.version.major) then
-					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
-					GlueTooltip:SetText(realmInfo.version.major.."."..realmInfo.version.minor.."."..realmInfo.version.revision.."  "..realmInfo.version.build.." CfgID: "..realmInfo.version.cfgConfigsID);
-				end
-			</OnEnter>
-			<OnLeave>
-				if GlueTooltip:GetOwner() == self then
-				GlueTooltip:Hide();
-				end
-			</OnLeave>
-			<OnClick function="RealmSelectButton_OnClick"/>
-			<OnDoubleClick function="RealmSelectButton_OnDoubleClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDoubleClick method="OnDoubleClick"/>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Size x="220" y="12"/>
@@ -248,75 +241,51 @@
 							</Frame>
 							<Button name="RealmNameSort" inherits="RealmSortButtonTemplate" text="REALM_NAME">
 								<Size x="223" y="19"/>
+								<KeyValues>
+									<KeyValue key="sortKey" value="name" type="string"/>
+									<KeyValue key="columnIndex" value="1" type="number"/>
+									<KeyValue key="narrationTooltipAnchorOffsetX" value="-325" type="number"/>
+									<KeyValue key="tooltipText" value="REALMLIST_REALMNAME_TOOLTIP" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="21" y="-50"/>
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										RealmList_PushSortOrdering("name");
-									</OnClick>
-									<OnEnter>
-										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -325, 0);
-										GlueTooltip:SetText(REALMLIST_REALMNAME_TOOLTIP);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
-								</Scripts>
 							</Button>
 							<Button name="RealmTypeSort" inherits="RealmSortButtonTemplate" text="REALM_TYPE">
 								<Size x="80" y="19"/>
+								<KeyValues>
+									<KeyValue key="sortKey" value="realmType" type="string"/>
+									<KeyValue key="columnIndex" value="2" type="number"/>
+									<KeyValue key="narrationTooltipAnchorOffsetX" value="-200" type="number"/>
+									<KeyValue key="tooltipText" value="REALMLIST_TYPE_TOOLTIP" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="RealmNameSort" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										RealmList_PushSortOrdering("realmType");
-									</OnClick>
-									<OnEnter>
-										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -200, 0);
-										GlueTooltip:SetText(REALMLIST_TYPE_TOOLTIP);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
-								</Scripts>
 							</Button>
 							<Button name="RealmCharactersSort" inherits="RealmSortButtonTemplate" text="REALM_CHARACTERS">
 								<Size x="100" y="19"/>
+								<KeyValues>
+									<KeyValue key="sortKey" value="numCharacters" type="string"/>
+									<KeyValue key="columnIndex" value="3" type="number"/>
+									<KeyValue key="narrationTooltipAnchorOffsetX" value="-165" type="number"/>
+									<KeyValue key="tooltipText" value="REALMLIST_NUMCHARACTERS_TOOLTIP" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="RealmTypeSort" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										RealmList_PushSortOrdering("numCharacters");
-									</OnClick>
-									<OnEnter>
-										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -165, 0);
-										GlueTooltip:SetText(REALMLIST_NUMCHARACTERS_TOOLTIP);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
-								</Scripts>
 							</Button>
 							<Button name="RealmLoadSort" inherits="RealmSortButtonTemplate" text="REALM_LOAD">
 								<Size x="138" y="19"/>
+								<KeyValues>
+									<KeyValue key="sortKey" value="population" type="string"/>
+									<KeyValue key="columnIndex" value="4" type="number"/>
+									<KeyValue key="narrationTooltipAnchorOffsetX" value="-280" type="number"/>
+									<KeyValue key="tooltipText" value="REALMLIST_POPULATION_TOOLTIP" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="RealmCharactersSort" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										RealmList_PushSortOrdering("population");
-									</OnClick>
-									<OnEnter>
-										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -280, 0);
-										GlueTooltip:SetText(REALMLIST_POPULATION_TOOLTIP);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
-								</Scripts>
 							</Button>
 
 							<Button name="RealmListTab1" inherits="RealmListTabButtonTemplate" id="1">

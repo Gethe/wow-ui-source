@@ -281,11 +281,11 @@ function GenericItemSocketingFrameMixin:Update()
 				gemBorder:Show();
 				if ( gemColor == "Meta" ) then
 					-- Special stuff for meta gem sockets
-					SetDesaturation(openBracket, true);
-					SetDesaturation(closedBracket, true);
+					openBracket:SetDesaturated(true);
+					closedBracket:SetDesaturated(true);
 				else
-					SetDesaturation(openBracket, false);
-					SetDesaturation(closedBracket, false);
+					openBracket:SetDesaturated(false);
+					closedBracket:SetDesaturated(false);
 				end
 				SetupTextureKitOnFrame(gemInfo.textureKit, openBracket, openBracketAtlas, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 				SetupTextureKitOnFrame(gemInfo.textureKit, closedBracket, closedBracketAtlas, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);

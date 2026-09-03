@@ -42,7 +42,20 @@ local SecondsFormatterShared =
 				{ Name = "StripIgnoreLocale", Type = "SecondsFormatterIntervalWhitespace", EnumValue = 2, Documentation = { "Always strip whitespace from interval unit strings even if the client locale should normally preserve whitespace." } },
 			},
 		},
+		{
+			Name = "SecondsFormatterRounding",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "RoundUp", Type = "SecondsFormatterRounding", EnumValue = 0, Documentation = { "Round fractional seconds up to the next whole second when not displaying milliseconds." } },
+				{ Name = "Truncate", Type = "SecondsFormatterRounding", EnumValue = 1, Documentation = { "Truncate fractional seconds to the current whole second when not displaying milliseconds." } },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,7 @@
+## Title: Blizzard_RaidWarning
+## Dependencies: Blizzard_FrameXMLUtil, Blizzard_EditMode
+## AllowLoad: Game
+
+RaidWarningUtil.lua
+RaidWarning.lua
+RaidWarning.xml

@@ -22,6 +22,7 @@ local CompactUnitFrames =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

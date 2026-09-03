@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="EventToastManager.lua"/>
-
 	<AnimationGroup name="ShowToastAnimGroupTemplate" setToFinalAlpha="true" virtual="true">
 		<Alpha parentKey="anim1" startDelay="1.8" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 		<Scripts>
@@ -1089,7 +1087,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="EventToastManagerWeeklyRewardToastUpgradeTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardUpgradeToastMixin" alpha="0" virtual="true">
 		<Size x="520" y="90"/>
 		<KeyValues>
@@ -1328,7 +1326,7 @@
 						</Rotation>
 						<Alpha childKey="FX_Circ_Glow" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
 						<Alpha childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromAlpha="0.5" toAlpha="0"/>
-						<Scale childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromScaleX="0.65" fromScaleY="0.65" toScaleX="0.8" toScaleY="0.8"/>			
+						<Scale childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromScaleX="0.65" fromScaleY="0.65" toScaleX="0.8" toScaleY="0.8"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1337,7 +1335,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="EventToastFlightpointDiscoveredTemplate" mixin="EventToastFlightpointDiscoveredMixin" inherits="EventToastWithIconLargeTextTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
@@ -1439,7 +1437,7 @@
 		</Scripts>
 	</Frame>
 
-	
+
 	<Frame name="EventToastHouseUpgradeAvailableTemplate" mixin="EventToastHouseUpgradeAvailableMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true" alpha="0">
 		<Size x="845" y="495"/>
 		<KeyValues>

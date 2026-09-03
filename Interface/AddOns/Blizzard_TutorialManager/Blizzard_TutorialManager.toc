@@ -1,5 +1,7 @@
 ## Title: Blizzard_TutorialManager
+## Dep: middleclass
 ## Dep: Blizzard_Dispatcher
+## Dep: Blizzard_TutorialTemplates
 ## Dep: Blizzard_HelpPlate
 
 Blizzard_TutorialQueue.lua

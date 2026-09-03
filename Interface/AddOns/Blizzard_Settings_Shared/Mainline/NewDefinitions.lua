@@ -86,8 +86,28 @@ NewSettings["12.0.1"] = {
 	"raidFramesDisplayLargerRoleSpecificDebuffs",
 	"raidFramesCenterBigDefensive",
 	"raidFramesDispelIndicatorType",
-	"raidFramesDispelIndicatorOverlay",
 }
+
+NewSettings["12.1.0"] = {
+	"SETTINGS_MAP_COORDS_SECTION", -- entire section is new
+	"pingTarget",
+	"showPingsOnRaidFrames",
+	"TOGGLEPINGTARGET",
+	"nameplateShowOnlyNameForFriendlyPlayerUnits",
+	"nameplateUseClassColorForFriendlyPlayerUnitNames",
+	"nameplateShowFriendlyRealmName",
+	"SOCIAL_ENABLE_DISCORD_FUNCTIONALITY",
+	"raidFramesDispelIndicatorOverlay",
+	"raidFramesDispelIndicatorOverlayAnimation",
+	"ADVANCED_COOLDOWN_SETTINGS",
+	"ADVANCED_COOLDOWN_SETTINGS1",
+	"accessibilityScreenNarrationEnabled",
+};
+
+NewSettings["12.1.5"] = {
+	"minimapShowPlayerCoords",
+	"coordsByTenths",
+};
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
 	return C_PhotoSharing.IsEnabled();

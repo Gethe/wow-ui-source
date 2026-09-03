@@ -91,6 +91,7 @@ local AdventureMap =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

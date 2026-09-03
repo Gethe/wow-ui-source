@@ -228,6 +228,7 @@ local SocialQueue =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

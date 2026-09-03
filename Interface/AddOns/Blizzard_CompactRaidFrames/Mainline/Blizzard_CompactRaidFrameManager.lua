@@ -917,8 +917,7 @@ function CRFFlowFilterFunc(token)
 			return false;
 		end
 
-		local showingMTandMA = CompactRaidFrameManager_GetSetting("DisplayMainTankAndAssist");
-		if ( raidRole and (showingMTandMA and showingMTandMA ~= "0") ) then	--If this character is already displayed as a Main Tank/Main Assist, we don't want to show them a second time
+		if ( raidRole and CompactRaidFrameManager.container:ShouldDisplayMainTankAndAssist() ) then	--If this character is already displayed as a Main Tank/Main Assist, we don't want to show them a second time
 			return false;
 		end
 	end

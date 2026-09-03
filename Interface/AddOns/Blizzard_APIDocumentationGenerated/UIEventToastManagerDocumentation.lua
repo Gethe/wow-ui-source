@@ -94,6 +94,7 @@ local UIEventToastManager =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -303,6 +303,7 @@ local ItemUpgrade =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

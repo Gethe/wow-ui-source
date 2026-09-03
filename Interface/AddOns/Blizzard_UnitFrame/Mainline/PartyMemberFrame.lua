@@ -576,12 +576,12 @@ function PartyMemberFrameMixin:UpdateOnlineStatus()
 
 		healthBar:SetValue(unitHPMax);
 		healthBar:SetStatusBarDesaturated(true);
-		SetDesaturation(self.Portrait, true);
+		self.Portrait:SetDesaturated(true);
 		self.PartyMemberOverlay.Disconnect:Show();
 		self.PetFrame:Hide();
 	else
 		healthBar:SetStatusBarDesaturated(false);
-		SetDesaturation(self.Portrait, false);
+		self.Portrait:SetDesaturated(false);
 		self.PartyMemberOverlay.Disconnect:Hide();
 	end
 end

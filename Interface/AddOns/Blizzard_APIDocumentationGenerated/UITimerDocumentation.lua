@@ -36,6 +36,22 @@ local UITimer =
 			},
 		},
 		{
+			Name = "NewTimedSignalMap",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Creates a new timed signal map that invokes the supplied callback with each key as it becomes due." },
+
+			Arguments =
+			{
+				{ Name = "callback", Type = "TimedSignalMapCallback", Nilable = false, Documentation = { "Callback to execute when each entry becomes due." } },
+			},
+
+			Returns =
+			{
+				{ Name = "signalMap", Type = "TimedSignalMap", Nilable = false, Documentation = { "The newly created timed signal map." } },
+			},
+		},
+		{
 			Name = "NewTimer",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -73,6 +89,7 @@ local UITimer =
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

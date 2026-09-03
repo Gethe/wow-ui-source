@@ -2,10 +2,6 @@ function DressUpFrameLinkingSupported()
 	return false;
 end
 
-function DisplayTypeUnassignedSupported()
-	return false;
-end
-
-function HelpPlatesSupported()
-	return false;
+function ShowEquippedGearSpellFrameMixin:ApplyOverrides()
+	self.OverlayFX.OverlayLocked:SetSize(30, 30);
 end

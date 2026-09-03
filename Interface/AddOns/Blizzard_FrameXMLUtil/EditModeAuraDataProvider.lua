@@ -91,13 +91,31 @@ local editModeAuraDataProvider =
 		CreateAuras();
 		local auraData = editModeAurasBySlot[slot];
 		assertsafe(auraData ~= nil, "EditMode SampleAura indexed by invalid slot: %s", tostring(slot));
-		return auraData;
+		local shallow = false;
+		return CopyTable(auraData, shallow);
 	end,
 
 	GetAuraDataByAuraInstanceID = function(unit, auraInstanceID)
 		CreateAuras();
 		return editModeAurasByInstanceID[auraInstanceID];
-	end
+	end,
+
+	GetUnitAuras = function(unit, filter, maxCount)
+		CreateAuras();
+		local slots = BuildAuraSlotsFromFilter(filter);
+		local auras = {};
+
+		for index, slot in ipairs(slots) do
+			if maxCount ~= nil and index > maxCount then
+				break;
+			end
+
+			local shallow = false;
+			table.insert(auras, CopyTable(editModeAurasBySlot[slot], shallow));
+		end
+
+		return auras;
+	end,
 };
 
 function GetEditModeAuraDataProvider()

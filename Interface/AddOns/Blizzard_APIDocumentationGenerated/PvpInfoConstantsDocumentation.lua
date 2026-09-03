@@ -41,6 +41,7 @@ local PvpInfoConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

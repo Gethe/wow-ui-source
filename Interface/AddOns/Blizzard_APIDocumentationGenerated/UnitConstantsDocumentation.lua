@@ -10,11 +10,22 @@ local UnitConstants =
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "auraIndex", Type = "number", Nilable = false },
 				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
-				{ Name = "showCountdownFrame", Type = "bool", Nilable = false },
-				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
-				{ Name = "isContainer", Type = "bool", Nilable = false },
+				{ Name = "showCooldownFrame", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showCooldownEdge", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showDispelIcon", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isContainer", Type = "bool", Nilable = false, Default = false },
 				{ Name = "iconInfo", Type = "PrivateAuraIconInfo", Nilable = true },
 				{ Name = "durationAnchor", Type = "AnchorBinding", Nilable = true },
+			},
+		},
+		{
+			Name = "GroupBuffVisualAlertInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "visualValue", Type = "VisualAlertType", Nilable = false },
 			},
 		},
 		{
@@ -29,35 +40,7 @@ local UnitConstants =
 			},
 		},
 		{
-			Name = "UnitAuraUpdateInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "isFullUpdate", Type = "bool", Nilable = false, Default = false },
-				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
-				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true, ConditionalSecretContents = true },
-				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
-			},
-		},
-		{
-			Name = "UnitPrivateAuraAnchorInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "anchorID", Type = "number", Nilable = false },
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "auraIndex", Type = "number", Nilable = false },
-				{ Name = "showCountdownFrame", Type = "bool", Nilable = false },
-				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
-				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
-				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
-				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
-				{ Name = "isContainer", Type = "bool", Nilable = true },
-				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitPrivateAuraAppliedSoundInfo",
+			Name = "UnitAuraSoundInfo",
 			Type = "Structure",
 			Fields =
 			{
@@ -68,7 +51,38 @@ local UnitConstants =
 				{ Name = "outputChannel", Type = "string", Nilable = true },
 			},
 		},
+		{
+			Name = "UnitAuraUpdateInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isFullUpdate", Type = "bool", Nilable = false, Default = false },
+				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true },
+				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitPrivateAuraAnchorInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "anchorID", Type = "number", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "auraIndex", Type = "number", Nilable = false },
+				{ Name = "showCooldownFrame", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showCooldownEdge", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showDispelIcon", Type = "bool", Nilable = false, Default = false },
+				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
+				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
+				{ Name = "isContainer", Type = "bool", Nilable = true },
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

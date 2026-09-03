@@ -1,7 +1,7 @@
 
 function CooldownFrame_Set(self, start, duration, enable, forceShowDrawEdge, modRate)
 	if enable and enable ~= 0 and start > 0 and duration > 0 then
-		self:SetDrawEdge(forceShowDrawEdge);
+		self:SetDrawEdge(not not forceShowDrawEdge);
 		self:SetCooldown(start, duration, modRate);
 	else
 		CooldownFrame_Clear(self);
@@ -12,8 +12,8 @@ function CooldownFrame_Clear(self)
 	self:Clear();
 end
 
-function CooldownFrame_SetDisplayAsPercentage(self, percentage)
-	local seconds = 100;	-- any number, really
+function CooldownFrame_SetDisplayAsPercentage(self, percentage, seconds)
+	seconds = seconds or 100;	-- Any number, really. Default to 100 if seconds not provided for cleaner percentages.
 	self:Pause();
 	self:SetCooldown(GetTime() - (seconds * Saturate(percentage)), seconds);
 end

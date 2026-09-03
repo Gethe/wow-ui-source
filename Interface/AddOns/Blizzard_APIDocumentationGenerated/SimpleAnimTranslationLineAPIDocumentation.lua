@@ -15,6 +15,7 @@ local SimpleAnimTranslationLineAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

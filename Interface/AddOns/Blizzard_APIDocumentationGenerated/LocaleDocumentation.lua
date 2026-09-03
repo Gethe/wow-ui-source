@@ -81,6 +81,7 @@ local Locale =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

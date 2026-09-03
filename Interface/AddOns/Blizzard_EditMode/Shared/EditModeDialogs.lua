@@ -496,6 +496,7 @@ function EditModeSystemSettingsDialogMixin:OnLoad()
 	local function resetExtraButton(pool, button)
 		Pool_HideAndClearAnchors(pool, button);
 		button:Enable();
+		button:SetNewTagID(nil); -- Clear to ensure it doesn't get reused with the wrong setting
 	end
 	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);
 end

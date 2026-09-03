@@ -87,12 +87,20 @@ function CustomizationOptionFrameBaseMixin:GetDebugName()
 	return string.format("[%02d] %s", index, name);
 end
 
+function CustomizationOptionFrameBaseMixin:NarrationGetName()
+	if not self.optionData then
+		return nil;
+	end
+	return self.optionData.name;
+end
+
 ----------------- Option Slider -----------------
 
 CustomizationOptionSliderMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, SliderWithButtonsAndLabelMixin, CustomizationFrameWithTooltipMixin);
 
 function CustomizationOptionSliderMixin:OnLoad()
 	CustomizationFrameWithTooltipMixin.OnLoad(self);
+	Mixin(self.Slider, NarrationForwardToParentMixin);
 end
 
 function CustomizationOptionSliderMixin:SetupAnchors(tooltip)
@@ -147,6 +155,10 @@ function CustomizationOptionSliderMixin:OnSliderValueChanged(value, userInput)
 	end
 end
 
+function CustomizationOptionSliderMixin:NarrationGetContext()
+	return NARRATION_OBJECT_SLIDER;
+end
+
 ----------------- Option Check Button -----------------
 
 CustomizationOptionCheckButtonMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, CustomizationFrameWithTooltipMixin);
@@ -155,6 +167,7 @@ function CustomizationOptionCheckButtonMixin:CustomizationOptionCheckButton_OnLo
 	self.Button:SetScript("OnClick", GenerateClosure(self.OnCheckButtonClick, self));
 	self.Button:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
 	self.Button:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
+	Mixin(self.Button, NarrationForwardToParentMixin);
 end
 
 function CustomizationOptionCheckButtonMixin:SetupOption(optionData)
@@ -189,6 +202,11 @@ function CustomizationOptionCheckButtonMixin:OnCheckButtonClick()
 	customizationFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
 
+function CustomizationOptionCheckButtonMixin:NarrationGetContext()
+	local checkboxContext = NarrationUtil.GetCheckboxContext(self.Button);
+	return NarrationUtil.MakeNarrationString(checkboxContext);
+end
+
 ----------------- Dropdown with Steppers + Label -----------------
 
 -- Expects to inherit DropdownWithSteppersAndLabelTemplate
@@ -202,7 +220,31 @@ function CustomizationDropdownWithSteppersAndLabelMixin:OnLoad()
 	self.Dropdown:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self.Dropdown, "BOTTOMRIGHT"));
 	self.Dropdown:EnableMouseWheel(true);
 
+	Mixin(self.Dropdown, NarrationForwardToParentMixin);
+
 	EventRegistry:RegisterCallback("Customization.SetMissingOptionWarningEnabled", self.SetMissingOptionWarningEnabled, self);
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetContext()
+	return NARRATION_OBJECT_DROPDOWN;
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetDescription()
+	if not self.optionData then
+		return nil;
+	end
+	local currentChoice = self:GetCurrentChoice();
+	if currentChoice and currentChoice.name ~= "" then
+		return currentChoice.name;
+	end
+	return nil;
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:NarrationGetIndexInfo()
+	if not self.optionData then
+		return nil;
+	end
+	return NarrationUtil.MakeIndexInfo(self:GetCurrentChoiceIndex(), #self:GetOptionData().choices);
 end
 
 function CustomizationDropdownWithSteppersAndLabelMixin:SetupAnchors(tooltip)

@@ -84,6 +84,7 @@ local InvasionInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

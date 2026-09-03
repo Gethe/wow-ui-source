@@ -1,4 +1,5 @@
 ## Title: Blizzard Obliterum Forge UI
 ## LoadOnDemand: 1
 
+Blizzard_ObliterumUI_Bootstrap.lua [Bootstrap]
 Blizzard_ObliterumUI.xml

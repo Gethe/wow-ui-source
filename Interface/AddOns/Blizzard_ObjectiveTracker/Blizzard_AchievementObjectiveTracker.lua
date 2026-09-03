@@ -77,7 +77,7 @@ function AchievementObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			local _, achievementName = GetAchievementInfo(block.id);
 			rootDescription:CreateTitle(achievementName);
 			rootDescription:CreateButton(OBJECTIVES_VIEW_ACHIEVEMENT, function()
-				OpenAchievementFrameToAchievement(block.id);
+				ShowAchievementFrameForAchievement(block.id);
 			end);
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
 				self:UntrackAchievement(block.id);

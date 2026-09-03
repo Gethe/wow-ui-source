@@ -148,6 +148,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorAlphaTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -158,6 +159,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorAlphaThumbTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -192,6 +194,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorValueTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -202,6 +205,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorValueThumbTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -212,6 +216,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorWheelTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -222,6 +227,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorWheelThumbTexture",
 			Type = "Function",
+			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -238,6 +244,7 @@ local SimpleColorSelectAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

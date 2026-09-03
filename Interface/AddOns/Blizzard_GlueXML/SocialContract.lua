@@ -37,12 +37,26 @@ function SocialContractFrameMixin:OnLoad()
 	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, CreateScrollBoxLinearView());
 end
 
+function SocialContractFrameMixin:NarrationShouldIgnoreFocus()
+	-- The social contract text shouldn't narrate on mouse over.
+	return true;
+end
+
+function SocialContractFrameMixin:NarrationGetName()
+	return self.ScrollBox.Text:NarrationGetName();
+end
+
 function SocialContractFrameMixin:OnShow()
 	self.ScrollBox:RegisterCallback(BaseScrollBoxEvents.OnScroll, self.Update, self);
 
 	self:SetBodyText(HTML_START .. SOCIAL_CONTRACT_TEXT1 .. SOCIAL_CONTRACT_TEXT2 .. SOCIAL_CONTRACT_TEXT3 .. HTML_END);
 
 	GlueParent_AddModalFrame(self);
+
+	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.Notification);
+	if narrationInfo then
+		EventRegistry:TriggerEvent("Narration.Speak", narrationInfo);
+	end
 end
 
 function SocialContractFrameMixin:OnHide()

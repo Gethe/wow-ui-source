@@ -158,7 +158,7 @@ InspectSpecMixin = {};
 function InspectSpecMixin:OnShow()
 	local spec = nil;
 	if(INSPECTED_UNIT ~= nil) then
-		spec = GetInspectSpecialization(INSPECTED_UNIT);
+		spec = C_SpecializationInfo.GetInspectSpecialization(INSPECTED_UNIT);
 	end
 	if(spec ~= nil and spec > 0) then
 		local role1 = GetSpecializationRoleByID(spec);

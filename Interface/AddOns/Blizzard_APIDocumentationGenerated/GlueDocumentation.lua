@@ -40,6 +40,7 @@ local Glue =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

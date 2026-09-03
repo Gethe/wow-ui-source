@@ -2,6 +2,7 @@ local LuaColorCurveObjectAPI =
 {
 	Name = "LuaColorCurveObjectAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -173,6 +174,7 @@ local LuaColorCurveObjectAPI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -4,6 +4,7 @@ APIDocumentationMixin = {};
 function APIDocumentationMixin:OnLoad()
 	self.tables = {};
 	self.functions = {};
+	self.globalFunctions = {};
 	self.systems = {};
 	self.fields = {};
 	self.events = {};
@@ -288,6 +289,10 @@ function APIDocumentationMixin:FindSystemByName(systemName)
 	return nil;
 end
 
+function APIDocumentationMixin:FindGlobalFunctionByName(functionName)
+	return self.globalFunctions[functionName];
+end
+
 function APIDocumentationMixin:AddDocumentationTable(documentationInfo)
 	if documentationInfo.Name then
 		self:AddSystem(documentationInfo);
@@ -339,6 +344,10 @@ function APIDocumentationMixin:AddFunction(documentationInfo)
 	Mixin(documentationInfo, FunctionsAPIMixin);
 
 	table.insert(self.functions, documentationInfo);
+
+	if documentationInfo.System.Type == "System" and not documentationInfo.System.Namespace then
+		self.globalFunctions[documentationInfo.Name] = documentationInfo;
+	end
 
 	if documentationInfo.Arguments then
 		for i, field in ipairs(documentationInfo.Arguments) do

@@ -2,6 +2,7 @@
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent, Blizzard_HelpPlate
 
+Blizzard_PlayerSpells_Bootstrap.lua [Bootstrap]
 ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml
 ClassTalents/Blizzard_ClassTalentUtil.lua
 ClassTalents/Blizzard_ClassTalentLoadoutDialogTemplates.xml

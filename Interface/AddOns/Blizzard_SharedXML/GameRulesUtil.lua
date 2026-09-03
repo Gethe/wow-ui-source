@@ -131,8 +131,12 @@ function GameRulesUtil.EJShouldShowTutorials()
 	return C_PlayerInfo.IsTutorialsTabAvailable();
 end
 
+function GameRulesUtil.IsPlayerAtEffectiveMaxLevel()
+	return UnitLevel("player") >= GameRulesUtil.GetEffectiveMaxLevelForPlayer();
+end
+
 function GameRulesUtil.CanShowExperienceBar()
-	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled() and not C_GameRules.IsGameRuleActive(Enum.GameRule.ExperienceBarDisabled);
+	return not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled() and not C_GameRules.IsGameRuleActive(Enum.GameRule.ExperienceBarDisabled);
 end
 
 function GameRulesUtil.GetActionButtonTypeOverlayStrategy()

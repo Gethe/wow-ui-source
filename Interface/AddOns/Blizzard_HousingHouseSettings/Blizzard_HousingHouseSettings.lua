@@ -22,6 +22,14 @@ local PlotAccessFlags =
 	Enum.HouseSettingFlags.PlotAccessParty,
 };
 
+local BlueprintExportFlags =
+{
+	Enum.HouseSettingFlags.BlueprintExportNeighbors,
+	Enum.HouseSettingFlags.BlueprintExportGuild,
+	Enum.HouseSettingFlags.BlueprintExportFriends,
+	Enum.HouseSettingFlags.BlueprintExportParty,
+};
+
 function HousingHouseSettingsFrameMixin:OnLoad()
 	self.PlotAccess:SetupOptions(HOUSING_HOUSE_SETTINGS_PLOTACCESS, PlotAccessFlags, Enum.HouseSettingFlags.PlotAccessAnyone);
 	self.PlotAccess:SetOptionSelectedCallback(self.OnAccessChanged);
@@ -30,6 +38,10 @@ function HousingHouseSettingsFrameMixin:OnLoad()
 	self.HouseAccess:SetupOptions(HOUSING_HOUSE_SETTINGS_HOUSEACCESS, HouseAccessFlags, Enum.HouseSettingFlags.HouseAccessAnyone);
 	self.HouseAccess:SetOptionSelectedCallback(self.OnAccessChanged);
 	self.HouseAccess:SetupAccessTypeDropdown();
+
+	self.BlueprintExport:SetupOptions(HOUSING_HOUSE_SETTINGS_BLUEPRINTEXPORT, BlueprintExportFlags, Enum.HouseSettingFlags.BlueprintExportAnyone);
+	self.BlueprintExport:SetOptionSelectedCallback(self.OnAccessChanged);
+	self.BlueprintExport:SetupAccessTypeDropdown();
 
 	self.IgnoreListButton:SetScript("OnClick", self.OnIgnoreListClicked);
 	self.AbandonHouseButton:SetScript("OnClick", GenerateClosure(self.OnAbandonHouseClicked, self));
@@ -45,6 +57,7 @@ function HousingHouseSettingsFrameMixin:SetHouseInfo(houseInfo)
 		self.HouseNameText:SetText("");
 		self.PlotAccess:DisableSettings();
 		self.HouseAccess:DisableSettings();
+		self.BlueprintExport:DisableSettings();
 		self.AbandonHouseButton:Disable();
 		self.SaveButton:Disable();
 		return;
@@ -54,6 +67,7 @@ function HousingHouseSettingsFrameMixin:SetHouseInfo(houseInfo)
 	local selectedSettings = C_Housing.GetHousingAccessFlags();
 	self.PlotAccess:SetSelectedSettings(selectedSettings);
 	self.HouseAccess:SetSelectedSettings(selectedSettings);
+	self.BlueprintExport:SetSelectedSettings(selectedSettings);
 	self.AbandonHouseButton:Enable();
 	if self.selectedOwnerID and self.selectedOwnerID ~= -1 then
 		self.SaveButton:Enable();
@@ -181,6 +195,7 @@ function HousingHouseSettingsFrameMixin:OnSaveClicked()
 	if self.characterList then
 		local newOwnerGUID = self.characterList[self.selectedOwnerID].playerGUID;
 		local accessSettings = FlagsUtil.Combine(self.PlotAccess.selectedOptions, self.HouseAccess.selectedOptions, true);
+		accessSettings = FlagsUtil.Combine(accessSettings, self.BlueprintExport.selectedOptions, true)
 		C_Housing.SaveHouseSettings(newOwnerGUID, accessSettings);
 	end
 	HideUIPanel(self);

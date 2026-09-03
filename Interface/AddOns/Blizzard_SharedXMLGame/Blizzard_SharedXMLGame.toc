@@ -11,6 +11,5 @@ Tooltip\TooltipDataRules.lua [AllowLoadGameType mainline]
 Tooltip\TooltipComparisonManager.lua [AllowLoadGameType mainline]
 StaticModelInfo.lua [AllowLoadGameType mainline]
 DressUpModelFrameMixin.lua [AllowLoadGameType mainline]
-[Family]\ListTemplates.lua [AllowLoadGameType mainline]
-[Family]\ListTemplates.xml [AllowLoadGameType mainline]
+Mainline\LootSpecialization.lua [AllowLoadGameType mainline]
 CompactUnitFramesConstants.lua

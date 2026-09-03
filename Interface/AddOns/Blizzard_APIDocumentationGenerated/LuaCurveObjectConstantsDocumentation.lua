@@ -17,6 +17,7 @@ local LuaCurveObjectConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

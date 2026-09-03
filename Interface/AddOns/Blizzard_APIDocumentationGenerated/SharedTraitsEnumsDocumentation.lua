@@ -3,6 +3,7 @@ local SharedTraitsEnums =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

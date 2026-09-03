@@ -49,6 +49,7 @@ local DungeonEncounterConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

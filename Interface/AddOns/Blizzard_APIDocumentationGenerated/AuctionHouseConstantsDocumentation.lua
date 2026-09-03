@@ -11,6 +11,7 @@ local AuctionHouseConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

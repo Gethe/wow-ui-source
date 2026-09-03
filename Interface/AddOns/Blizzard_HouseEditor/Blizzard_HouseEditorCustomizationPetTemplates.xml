@@ -1,0 +1,230 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+<Frame name="CustomizeDecorPetFrameTemplate" mixin="CustomizeDecorPetFrameMixin" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
+		<Size x="350" y="651"/>
+		<Anchors>
+			<Anchor point="LEFT" y="150"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="house-chest-container-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="HeaderBackground" atlas="house-chest-header-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="404" y="68"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-68"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="CornerBorder" atlas="house-chest-corbel-topright" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="74" y="49"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-2.5" y="-2.5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the storage frame -->
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true"/>
+
+			<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate">
+				<Size y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-20"/>
+					<Anchor point="TOPRIGHT" x="-160" y="-20"/>
+				</Anchors>
+			</EditBox>
+
+			<DropdownButton parentKey="Filters" inherits="WowStyle1FilterDropdownTemplate">
+				<Size y="20" x="120"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="RIGHT" x="-25" y="0"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="OptionsContainer">
+				<KeyValues>
+					<KeyValue key="horizontalSpacing" value="5" type="number"/>
+					<KeyValue key="verticalSpacing" value="10" type="number"/>
+					<KeyValue key="topPadding" value="0" type="number"/>
+					<KeyValue key="bottomPadding" value="0" type="number"/>
+					<KeyValue key="leftPadding" value="15" type="number"/>
+					<KeyValue key="rightPadding" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="0" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<KeyValues>
+							<!-- How many rows are scrolled past at once via scroll wheel -->
+							<KeyValue key="wheelPanScalar" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" x="-23"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOP"/>
+							<Anchor point="LEFT" relativeKey="$parent.ScrollBox" relativePoint="RIGHT" x="5" y="0"/>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.OptionsContainer" relativePoint="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CollapseButton">
+				<Size x="32" y="74"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="house-chest-close-drawer-button" setAllPoints="true" />
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="OverlayIcon" atlas="house-chest-close-drawer-button" setAllPoints="true" alphaMode="ADD" alpha="0.5" hidden="true" />
+					</Layer>
+				</Layers>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DecorPetCustomizationTemplate" mixin="DecorPetCustomizationMixin" enableMouse="true" virtual="true">
+		<Size x="270" y="170"/>
+		<Frames>
+			<Frame parentKey="AssignPetContainer">
+				<Size x="270" y="80"/>
+				<Anchors>
+					<Anchor point="TOP" y="-10" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PetIconSlot" file="Interface\Buttons\UI-Quickslot2">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="40"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="AssignPetText" inherits="GameFontHighlight" text="HOUSING_DECOR_CUSTOMIZATION_PET_ASSIGN">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PetIconSlot" relativePoint="RIGHT" x="5" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PetCustomName" inherits="GameFontHighlight" text="" hidden="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PetIconSlot" relativePoint="RIGHT" x="5" y="6"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PetName" inherits="GameFontNormalSmall" text="" hidden="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PetIconSlot" relativePoint="RIGHT" x="5" y="-6" />
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PetIcon" atlas="ItemUpgrade_GreenPlusIcon">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PetIconSlot" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="PetApplyDescription" inherits="GameFontNormalSmall" text="HOUSING_DECOR_CUSTOMIZATION_PET_APPEAR" wordwrap="true">
+							<Size x="160"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.AssignPetContainer" relativePoint="BOTTOM" x="0" y="-45" />
+							</Anchors>
+							<Color r="0.8" g="0.8" b="0.8"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<DropdownButton parentKey="BehaviorDropdown" inherits="WowStyle2DropdownTemplate">
+				<Size x="200" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.AssignPetContainer" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BehaviorLabel" inherits="GameFontHighlight" text="HOUSING_DECOR_CUSTOMIZATION_PET_BEHAVIOR">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BehaviorDropdown" relativePoint="TOP" y="10" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="HousingPetEntryTemplate" mixin="HousingPetEntryMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="backgroundDefault" value="house-chest-list-Item-default" type="string" />
+			<KeyValue key="backgroundActive" value="house-chest-list-Item-active" type="string" />
+			<KeyValue key="backgroundPressed" value="house-chest-list-Item-pressed" type="string" />
+		</KeyValues>
+		<Size x="97" y="97"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="house-chest-list-item-default" setAllPoints="true">
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="HoverBackground" atlas="house-chest-list-item-default" setAllPoints="true" alpha="0.75" alphaMode="ADD" hidden="true">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NoPetIcon" atlas="house-chest-icon-hidden" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

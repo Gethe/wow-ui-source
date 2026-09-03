@@ -43,6 +43,7 @@ local PerksVendorConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

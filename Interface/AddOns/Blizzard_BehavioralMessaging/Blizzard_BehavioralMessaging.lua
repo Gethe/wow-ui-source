@@ -155,8 +155,8 @@ function BehavioralMessagingTrayMixin:EvaluateLayout()
 	self:Layout();
 	self:SetShown(index > 0);
 
-	-- Anchoring occurs in UIParent_UpdateTopFramePositions.
-	UIParent_UpdateTopFramePositions();
+	-- Anchoring occurs in StatusTrayManager.UpdateTrayAndBuffFrameLayout.
+	StatusTrayManager.UpdateTrayAndBuffFrameLayout();
 end
 
 function BehavioralMessagingTrayMixin:OnNotificationAchknowledged(notification)

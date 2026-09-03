@@ -51,7 +51,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Frame name="VehicleSeatIndicator" enableMouse="false" inherits="UIParentRightManagedFrameTemplate, EditModeVehicleSeatIndicatorSystemTemplate" mixin="VehicleSeatIndicatorMixin" hidden="true">
+	<Frame name="VehicleSeatIndicator" enableMouse="false" inherits="RightManagedFrameTemplate, EditModeVehicleSeatIndicatorSystemTemplate" mixin="VehicleSeatIndicatorMixin" hidden="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="3" type="number"/>

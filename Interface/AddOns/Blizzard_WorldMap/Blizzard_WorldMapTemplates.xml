@@ -193,6 +193,38 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="WorldMapCoordsPanelTemplate" inherits="VerticalLayoutFrame" mixin="WorldMapCoordsPanelMixin" virtual="true">
+		<Size x="100" y="30"/>
+		<Frames>
+			<Frame parentKey="CursorCoords">
+				<Size x="100" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" type="number" value="1"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" parentKey="Label" justifyH="LEFT" text="WORLD_MAP_CURSOR_COORDS"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerCoords">
+				<Size x="100" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" type="number" value="2"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" parentKey="Label" justifyH="LEFT" text="WORLD_MAP_PLAYER_COORDS"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+
 	<Frame name="WorldMapSidePanelToggleTemplate" mixin="WorldMapSidePanelToggleMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>

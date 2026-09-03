@@ -130,6 +130,7 @@ local SimpleAnimFlipBookAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

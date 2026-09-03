@@ -1,7 +1,7 @@
 ## Title: Blizzard Quest Timer
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip
+## Dependencies: Blizzard_GameTooltip, Blizzard_ManagedFrameSystem
 ## AllowLoad: game
 ## AllowLoadGameType: classic
 Blizzard_QuestTimer.lua

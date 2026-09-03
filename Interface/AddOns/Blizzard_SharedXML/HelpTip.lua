@@ -141,6 +141,7 @@ HelpTip.supressHelpTips = {};
 
 do
 	local function HelpTipReset(framePool, frame)
+		frame:SetParent(nil);
 		frame:ClearAllPoints();
 		frame:Hide();
 		frame:Reset();
@@ -390,38 +391,32 @@ function HelpTipTemplateMixin:OnLoad()
 end
 
 function HelpTipTemplateMixin:OnShow()
+	if not self.info then
+		return;
+	end
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
-local function AssertMissingInfo(infoText)
-	return string.format("Missing info table for helptip: %s", infoText);
-end
-
 function HelpTipTemplateMixin:OnHide()
+	if not self.info then
+		return;
+	end
+
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	
 	local info = self.info;
-	assertsafe(info, AssertMissingInfo, self.lastInfoText);
+	-- clear out .info now in case of possible reentry from callbacks
+	self.info = nil;
 
 	local relativeRegion = self.relativeRegion;
 	if relativeRegion then
 		FrameWatcher:StopWatchingFrame(relativeRegion);
 	end
 
-	if info then
-		if not self.acknowledged and info.acknowledgeOnHide then
-			self:HandleAcknowledge();
-		end
-	end
-
 	local hideReason = self:GetHideReason();
 	self:SetHideReason(nil);
-
-	-- Have to release before doing callbacks or reentry could happen because of deferred OnShow/OnHide
-	local acknowledged = self.acknowledged;
-	HelpTip:Release(self);
 
 	if info then
 		local appendFrame = info.appendFrame;
@@ -432,12 +427,15 @@ function HelpTipTemplateMixin:OnHide()
 		end
 
 		if info.onHideCallback then
-			info.onHideCallback(acknowledged, info.callbackArg, hideReason);
+			info.onHideCallback(self.acknowledged, info.callbackArg, hideReason);
 		end
-
-		if acknowledged and info.onAcknowledgeCallback then
+		if not self.acknowledged and info.acknowledgeOnHide then
+			self:HandleAcknowledge();
+		end
+		if self.acknowledged and info.onAcknowledgeCallback then
 			info.onAcknowledgeCallback(info.callbackArg);
 		end
+		HelpTip:Release(self);
 	end
 end
 
@@ -447,7 +445,6 @@ end
 
 -- this exists because OnHide can be deferred
 function HelpTipTemplateMixin:Close()
-	self.closed = true;
 	self:Hide();
 end
 
@@ -696,9 +693,7 @@ function HelpTipTemplateMixin:HandleAcknowledge()
 end
 
 function HelpTipTemplateMixin:Reset()
-	self.info = nil;
 	self.relativeRegion = nil;
-	self.closed = false;
 	self.acknowledged = false;
 	self.CloseButton:Hide();
 	self.OkayButton:Hide();
@@ -710,7 +705,7 @@ function HelpTipTemplateMixin:Reset()
 end
 
 function HelpTipTemplateMixin:Matches(parent, text)
-	if self.closed then
+	if not self.info then
 		return false;
 	end
 	local textMatched = not text or self.info.text == text;
@@ -718,7 +713,7 @@ function HelpTipTemplateMixin:Matches(parent, text)
 end
 
 function HelpTipTemplateMixin:MatchesSystem(system, text)
-	if self.closed then
+	if not self.info then
 		return false;
 	end
 	local textMatched = not text or self.info.text == text;

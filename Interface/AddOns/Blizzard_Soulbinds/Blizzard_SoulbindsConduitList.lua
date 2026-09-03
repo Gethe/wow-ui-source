@@ -63,7 +63,7 @@ function ConduitListCategoryButtonMixin:SetCollapsed(collapsed)
 	self.collapsed = collapsed;
 
 	if collapsed then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
@@ -101,7 +101,7 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 		self.ConduitName:SetSize(150, 30);
 		self.ConduitName:SetText(item:GetItemName());
 		self.ConduitName:SetHeight(self.ConduitName:GetStringHeight());
-		
+
 		local yOffset = self.ConduitName:GetNumLines() > 1 and -6 or 0;
 		self.ConduitName:ClearAllPoints();
 		self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, yOffset);
@@ -210,7 +210,7 @@ function ConduitListConduitButtonMixin:UpdateVisuals(state)
 	self.ItemLevel:SetAlpha(dark and .2 or 1);
 	self.IconOverlayDark:SetShown(dark);
 	self.IconDark:SetShown(dark);
-	
+
 	local specIconAlpha = dark and .2 or self.Spec.stateAlpha;
 	local specIconAtlas = dark and "soulbinds_collection_specborder_tertiary" or self.Spec.stateAtlas;
 	self.Spec.IconOverlay:SetAtlas(specIconAtlas, TextureKitConstants.UseAtlasSize);
@@ -225,7 +225,7 @@ end
 function ConduitListConduitButtonMixin:GetState()
 	local soulbindID = Soulbinds.GetOpenSoulbindID();
 	local conduitID = self.conduitData.conduitID;
-	
+
 	local pendingInstallNodeID = C_Soulbinds.FindNodeIDPendingInstall(soulbindID, conduitID);
 	if pendingInstallNodeID > 0 then
 		return ConduitListConduitButtonMixin.State.Pending;
@@ -291,7 +291,7 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 		end
 
 		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 178, 0);
-		
+
 		local conduitID = self.conduit:GetConduitID();
 		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
 
@@ -302,7 +302,7 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 			if C_Soulbinds.FindNodeIDPendingUninstall(soulbindID, conduitID) == 0 then
 				if C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID) then
 					GameTooltip_AddErrorLine(GameTooltip, CONDUIT_COLLECTION_ITEM_SOCKETED);
-				end	
+				end
 			end
 		end
 		GameTooltip:Show();
@@ -331,7 +331,7 @@ function ConduitListConduitButtonMixin:OnLeave(collectionData)
 	for index, texture in ipairs(self.Hovers) do
 		texture:Hide();
 	end
-	
+
 	Soulbinds.ClearPreviewConduit();
 	SoulbindViewer:OnCollectionConduitLeave();
 end
@@ -378,7 +378,7 @@ function ConduitListSectionMixin:Init(elementData)
 	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Container, "TOPLEFT");
 	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
 	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
-	
+
 	self.CategoryButton:Init(self.conduitType, elementData.collapsed);
 
 	self:SetCollapsed(elementData.collapsed);
@@ -407,13 +407,13 @@ function ConduitListSectionMixin:Init(elementData)
 		conduitData.item = Item:CreateFromItemID(conduitData.conduitItemID);
 		self.currentContinuable:AddContinuable(conduitData.item);
 	end
-	
+
 	self.currentContinuable:ContinueOnLoad(function()
 		local sorter = function(lhs, rhs)
 			if lhs.sortingCategory == rhs.sortingCategory then
 				if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
 					if lhs.conduitRank ~= rhs.conduitRank then
-						return lhs.conduitRank > rhs.conduitRank;	
+						return lhs.conduitRank > rhs.conduitRank;
 					end
 					return lhs.item:GetItemName() < rhs.item:GetItemName();
 				else
@@ -428,7 +428,7 @@ function ConduitListSectionMixin:Init(elementData)
 		for index, conduitData in ipairs(conduitDatas) do
 			frames[index]:Init(conduitData);
 		end
-		
+
 		local newConduitData = elementData.newConduitData;
 		if newConduitData then
 			elementData.newConduitData = nil;
@@ -593,7 +593,7 @@ function ConduitListMixin:PlayLearnAnimation(button)
 		local ADD_CONDUIT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(259, 2101299);
 		modelScene.effect = StaticModelInfo.SetupModelScene(modelScene, ADD_CONDUIT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
 	end
-	
+
 	modelScene:SetPoint("CENTER", button);
 	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay = 0, duration = 0.769, speed = 1 },};
 	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
@@ -603,12 +603,12 @@ end
 
 function ConduitListMixin:OnCollectionDataUpdated(conduitData)
 	local conduitType = conduitData.conduitType;
-	
+
 	local dataProvider = self.ScrollBox:GetDataProvider();
 	local dataIndex, foundElementData = dataProvider:FindByPredicate(function(elementData)
 		return elementData.conduitType == conduitType;
 	end);
-	
+
 	if dataIndex then
 		local conduitID = conduitData.conduitID;
 		local existingConduitIndex = FindInTableIf(foundElementData.conduitDatas, function(elementData)

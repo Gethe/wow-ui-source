@@ -159,7 +159,7 @@ local function DevTools_InitFunctionCache(context)
 	local ret = {};
 
 	for _,k in ipairs(DT.functionSymbols) do
-		local v = getglobal(k);
+		local v = _G[k];
 		if (type(v) == 'function') then
 			ret[v] = '[' .. k .. ']';
 		end
@@ -185,7 +185,7 @@ local function DevTools_InitUserdataCache(context)
 	-- secret keys, which breaks population of these caches and prevents any
 	-- value with a userdata handle being dumped.
 	for _,k in ipairs(DT.userdataSymbols) do
-		local v = getglobal(k);
+		local v = _G[k];
 		if (type(v) == 'table') and canaccesstable(v) then
 			local u = rawget(v,0);
 			if (type(u) == 'userdata') then

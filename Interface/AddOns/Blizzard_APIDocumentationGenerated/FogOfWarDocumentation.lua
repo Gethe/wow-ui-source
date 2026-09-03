@@ -63,6 +63,7 @@ local FogOfWar =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

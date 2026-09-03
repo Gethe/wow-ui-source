@@ -47,6 +47,7 @@ local LevelSquish =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

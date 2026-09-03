@@ -21,6 +21,9 @@ function NamePlateHealthBarMixin:OnLoad()
 	-- Use AbbreviateLargeNumbers for large values.
 	self.capNumericDisplay = true;
 
+	-- Whether the selectedBorder should be shown (e.g., based off NamePlate style).
+	self.shouldUseSelectedBorder = true;
+
 	self:UpdateTextDisplay();
 
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.INFO_DISPLAY_CVAR, self.OnInfoDisplayCVarChanged, self);
@@ -85,6 +88,12 @@ function NamePlateHealthBarMixin:UpdateTextDisplay()
 end
 
 function NamePlateHealthBarMixin:UpdateSelectionBorder()
+	if (not self:ShouldUseSelectedBorder()) then
+		self.selectedBorder:Hide();
+		self.deselectedOverlay:Hide();
+		return;
+	end
+
 	local isTarget = self:IsTarget();
 	local isFocus = self:IsFocus();
 
@@ -145,6 +154,14 @@ function NamePlateHealthBarMixin:SetIsFocus(isFocus)
 	self.isFocus = isFocus;
 
 	self:UpdateSelectionBorder();
+end
+
+function NamePlateHealthBarMixin:ShouldUseSelectedBorder()
+	return self.shouldUseSelectedBorder;
+end
+
+function NamePlateHealthBarMixin:SetShouldUseSelectedBorder(shouldUseSelectedBorder)
+	self.shouldUseSelectedBorder = shouldUseSelectedBorder;
 end
 
 function NamePlateHealthBarMixin:ShouldBeShown()

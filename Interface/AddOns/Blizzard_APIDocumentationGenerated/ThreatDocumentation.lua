@@ -41,6 +41,7 @@ local Threat =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

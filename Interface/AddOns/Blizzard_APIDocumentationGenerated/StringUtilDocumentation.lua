@@ -185,24 +185,6 @@ local StringUtil =
 			},
 		},
 		{
-			Name = "trim",
-			Type = "Function",
-			Namespace = "string",
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns a string with all bytes in the 'characters' set removed from the start and end." },
-
-			Arguments =
-			{
-				{ Name = "str", Type = "stringView", Nilable = false },
-				{ Name = "characters", Type = "stringView", Nilable = false, Default = " \\r\\n\\t" },
-			},
-
-			Returns =
-			{
-				{ Name = "trimmed", Type = "stringView", Nilable = false },
-			},
-		},
-		{
 			Name = "TruncateWhenZero",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -257,6 +239,7 @@ local StringUtil =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

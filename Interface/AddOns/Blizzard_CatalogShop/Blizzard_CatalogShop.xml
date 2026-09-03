@@ -448,7 +448,7 @@
 			
 			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
-					<KeyValue key="fixedWidth" value="320" type="string"/>
+					<KeyValue key="fixedWidth" value="320" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-45" y="45"/>

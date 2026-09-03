@@ -11,6 +11,7 @@ local TalentAndGlyphConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

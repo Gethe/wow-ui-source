@@ -21,6 +21,7 @@ local ConfigurationWarningConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

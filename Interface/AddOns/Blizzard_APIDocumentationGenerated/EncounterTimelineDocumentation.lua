@@ -14,7 +14,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "loopTimerDuration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "loopTimerDuration", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -74,7 +74,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "currentTime", Type = "DurationSeconds", Nilable = false },
+				{ Name = "currentTime", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -119,7 +119,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "highlightTime", Type = "DurationSeconds", Nilable = false },
+				{ Name = "highlightTime", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -181,7 +181,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "timeElapsed", Type = "DurationSeconds", Nilable = false },
+				{ Name = "timeElapsed", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -198,7 +198,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "timeRemaining", Type = "DurationSeconds", Nilable = false },
+				{ Name = "timeRemaining", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -244,7 +244,7 @@ local EncounterTimeline =
 			Arguments =
 			{
 				{ Name = "maxEventCount", Type = "number", Nilable = true, Documentation = { "Maximum number of sorted events to return." } },
-				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
+				{ Name = "maxEventDuration", Type = "Seconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
 				{ Name = "excludeTerminalStates", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that are terminal states such as Canceled or Finished." } },
 				{ Name = "excludeHiddenEvents", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that should be hidden by user configuration, such as events on long tracks when the user has opted to not show long countdowns." } },
 			},
@@ -293,7 +293,7 @@ local EncounterTimeline =
 
 			Returns =
 			{
-				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "maxEventDuration", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -576,7 +576,7 @@ local EncounterTimeline =
 			Fields =
 			{
 				{ Name = "maxEventCount", Type = "number", Nilable = true, Documentation = { "Maximum number of sorted events to return." } },
-				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
+				{ Name = "maxEventDuration", Type = "Seconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
 				{ Name = "excludeTerminalStates", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that are terminal states such as Canceled or Finished." } },
 				{ Name = "excludeHiddenEvents", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that should be hidden by user configuration, such as events on long tracks when the user has opted to not show long countdowns." } },
 			},
@@ -591,8 +591,8 @@ local EncounterTimeline =
 				{ Name = "spellName", Type = "string", Nilable = false, Documentation = { "Spell name associated with this event. For script events, this may instead be the contents of the 'overrideName' field if it wasn't empty." } },
 				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Spell ID associated with this event." } },
 				{ Name = "iconFileID", Type = "fileID", Nilable = false, Documentation = { "Icon file ID associated with this event." } },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false, NeverSecret = true, Documentation = { "Base duration of this event at the point that it was queued onto the timeline." } },
-				{ Name = "maxQueueDuration", Type = "DurationSeconds", Nilable = false, NeverSecret = true, Documentation = { "Hold duration for this event after it reaches the end of the timeline. During this period, the event will sit in the queued track of the timeline until manually finished or this added duration expires." } },
+				{ Name = "duration", Type = "Seconds", Nilable = false, NeverSecret = true, Documentation = { "Base duration of this event at the point that it was queued onto the timeline." } },
+				{ Name = "maxQueueDuration", Type = "Seconds", Nilable = false, NeverSecret = true, Documentation = { "Hold duration for this event after it reaches the end of the timeline. During this period, the event will sit in the queued track of the timeline until manually finished or this added duration expires." } },
 				{ Name = "icons", Type = "EncounterEventIconmask", Nilable = false, Documentation = { "Bitmask of active icon states for this event." } },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false, Documentation = { "Severity of this event." } },
 				{ Name = "isApproximate", Type = "bool", Nilable = false, Documentation = { "If true, this event is an approximation and may not occur exactly when the timeline suggests it will." } },
@@ -605,8 +605,8 @@ local EncounterTimeline =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "iconFileID", Type = "fileID", Nilable = false },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
-				{ Name = "maxQueueDuration", Type = "DurationSeconds", Nilable = false, Default = 0 },
+				{ Name = "duration", Type = "Seconds", Nilable = false },
+				{ Name = "maxQueueDuration", Type = "Seconds", Nilable = false, Default = 0 },
 				{ Name = "overrideName", Type = "stringView", Nilable = false, Default = "" },
 				{ Name = "icons", Type = "EncounterEventIconmask", Nilable = true },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false, Default = "Medium" },
@@ -620,15 +620,16 @@ local EncounterTimeline =
 			{
 				{ Name = "id", Type = "EncounterTimelineTrack", Nilable = false },
 				{ Name = "type", Type = "EncounterTimelineTrackType", Nilable = false },
-				{ Name = "minimumDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "The exclusive lower bound of durations for events on this track. If zero, this should be treated as an inclusive lower bound. This bound is ignored by the timeline sequence in circumstances where an adjacent Sorted track would exceed its maximum event count, requiring events be pushed 'to the left' by one track." } },
-				{ Name = "maximumDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "The inclusive upper bound of durations for events on this track." } },
-				{ Name = "minimumEventIntroDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Lower duration bound for events that want to transition onto this track from an Indeterminate position. Events below this duration are artificially kept in the indeterminate track state until they can transition into a later track in the timeline sequence." } },
-				{ Name = "minimumEventGapDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Minimum duration gap that must exist between two sequential candidate events for this track. If two event durations have a distance under this figure, the later of the two events will be artifically kept in the indeterminate track state until it can transition into a later track in the timeline sequence." } },
+				{ Name = "minimumDuration", Type = "Seconds", Nilable = true, Documentation = { "The exclusive lower bound of durations for events on this track. If zero, this should be treated as an inclusive lower bound. This bound is ignored by the timeline sequence in circumstances where an adjacent Sorted track would exceed its maximum event count, requiring events be pushed 'to the left' by one track." } },
+				{ Name = "maximumDuration", Type = "Seconds", Nilable = true, Documentation = { "The inclusive upper bound of durations for events on this track." } },
+				{ Name = "minimumEventIntroDuration", Type = "Seconds", Nilable = true, Documentation = { "Lower duration bound for events that want to transition onto this track from an Indeterminate position. Events below this duration are artificially kept in the indeterminate track state until they can transition into a later track in the timeline sequence." } },
+				{ Name = "minimumEventGapDuration", Type = "Seconds", Nilable = true, Documentation = { "Minimum duration gap that must exist between two sequential candidate events for this track. If two event durations have a distance under this figure, the later of the two events will be artifically kept in the indeterminate track state until it can transition into a later track in the timeline sequence." } },
 				{ Name = "maximumEventCount", Type = "number", Nilable = true, Documentation = { "The maximum number of events permitted within this track. This only applies to Sorted tracks." } },
 				{ Name = "sortDirection", Type = "EncounterTimelineEventSortDirection", Nilable = true, Documentation = { "Sort ordering for events within this track. This only applies to Sorted tracks." } },
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

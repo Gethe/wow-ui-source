@@ -241,6 +241,14 @@ local function InitVoiceSettings(category, layout)
 			setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 			outputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
+
+			-- The active device isn't a cvar and doesn't update until the voice proxy responds so the dropdown has to be refreshed on these events.
+			local function OnOutputDeviceUpdated()
+				Settings.NotifyUpdate("PROXY_VOICE_OUTPUT_DEVICE");
+			end
+
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_OUTPUT_DEVICES_UPDATED", OnOutputDeviceUpdated);
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_ACTIVE_OUTPUT_DEVICE_UPDATED", OnOutputDeviceUpdated);
 		end
 
 		-- Volume
@@ -302,6 +310,14 @@ local function InitVoiceSettings(category, layout)
 			setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 			inputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
+
+			-- The active device isn't a cvar and doesn't update until the voice proxy responds so the dropdown has to be refreshed on these events.
+			local function OnInputDeviceUpdated()
+				Settings.NotifyUpdate("PROXY_VOICE_INPUT_DEVICE");
+			end
+
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_INPUT_DEVICES_UPDATED", OnInputDeviceUpdated);
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_ACTIVE_INPUT_DEVICE_UPDATED", OnInputDeviceUpdated);
 		end
 
 		-- Volume
@@ -355,7 +371,7 @@ local function InitVoiceSettings(category, layout)
 	do
 		local chatModeInitializer = nil;
 		do
-			local function GetOptionData(options)
+			local function GetOptionData()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(Enum.CommunicationMode.PushToTalk, PUSH_TO_TALK, OPTION_TOOLTIP_VOICE_TYPE1);
 				container:Add(Enum.CommunicationMode.OpenMic, OPEN_MIC, OPTION_TOOLTIP_VOICE_TYPE2);

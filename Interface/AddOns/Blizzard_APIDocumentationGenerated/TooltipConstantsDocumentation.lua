@@ -46,6 +46,7 @@ local TooltipConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

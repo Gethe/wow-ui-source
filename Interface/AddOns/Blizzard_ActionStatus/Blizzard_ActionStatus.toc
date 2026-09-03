@@ -2,5 +2,6 @@
 ## Dep: Blizzard_FrameXML [AllowLoad game]
 ## Dep: Blizzard_GlueXML [AllowLoad glue]
 ## AllowLoad: Both
-ActionStatus.lua
-ActionStatus.xml
+## AllowLoadGameType: mainline
+[Family]\ActionStatus.lua
+[Family]\ActionStatus.xml

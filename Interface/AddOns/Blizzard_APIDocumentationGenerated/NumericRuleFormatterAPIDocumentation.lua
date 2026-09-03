@@ -2,6 +2,7 @@ local NumericRuleFormatterAPI =
 {
 	Name = "NumericRuleFormatterAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -75,6 +76,7 @@ local NumericRuleFormatterAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

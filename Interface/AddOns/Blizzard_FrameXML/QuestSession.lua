@@ -447,13 +447,13 @@ function QuestSessionStartDialogMixin:Confirm()
 
 		self:Hide();
 
-		StaticPopup_ShowCustomGenericConfirmation({ 
-			text = string.format(QUEST_SESSION_ABANDON_WARNING, questTitles), 
-			callback = CompleteConfirmation, 
+		StaticPopup_ShowCustomGenericConfirmation({
+			text = string.format(QUEST_SESSION_ABANDON_WARNING, questTitles),
+			callback = CompleteConfirmation,
 			cancelCallback = function() self:Cancel(); end,
 			acceptText = CONTINUE,
 			cancelText = CANCEL,
-			showAlert = true, 
+			showAlert = true,
 		});
 	else
 		CompleteConfirmation();
@@ -913,6 +913,18 @@ function QuestSessionManagerMixin:OnInviteToPartyConfirmation(name, willConvertT
 	self:ShowCheckDialog(self.ConfirmInviteToGroupDialog, name, willConvertToRaid);
 end
 
+function ShowQuestSessionGroupInviteConfirmation(invite, text)
+	QuestSessionManager:ShowGroupInviteConfirmation(invite, text);
+end
+
+function ShowQuestSessionGroupInviteReceivedConfirmation(name, text)
+	QuestSessionManager:ShowGroupInviteReceivedConfirmation(name, text);
+end
+
+function HandleQuestSessionInviteToPartyConfirmation(name, willConvertToRaid)
+	QuestSessionManager:OnInviteToPartyConfirmation(name, willConvertToRaid);
+end
+
 function QuestSessionManagerMixin:IsTimeout(resultCode)
 	return resultCode == Enum.QuestSessionResult.MemberTimeout or resultCode == Enum.QuestSessionResult.Timeout;
 end
@@ -1017,7 +1029,7 @@ function QuestSessionManagerMixin:GetSessionManagementFailureReason()
 
 	if command == Enum.QuestSessionCommand.Start then
 		local failureReason = self.StartDialog:GetDialogFailureReason();
-		if failureReason ~= nil then 
+		if failureReason ~= nil then
 			return failureReason;
 		end
 	end

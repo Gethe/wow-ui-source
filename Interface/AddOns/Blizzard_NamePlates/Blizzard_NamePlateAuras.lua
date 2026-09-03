@@ -66,6 +66,7 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.ENEMY_PLAYER_AURA_DISPLA
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.FRIENDLY_PLAYER_AURA_DISPLAY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_DEBUFFS_ON_FRIENDLY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.AURA_SCALE_CVAR);
+CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_ALL_PERSONAL_AURAS_CVAR);
 
 -- For displaying all the buffs/debuffs/crowd control/loss of control auras on a nameplate.
 NamePlateAurasMixin = CreateFromMixins(NamePlateComponentMixin);
@@ -111,6 +112,7 @@ function NamePlateAurasMixin:SetUnit(unitToken)
 		CVarCallbackRegistry:RegisterCallback(NamePlateConstants.FRIENDLY_PLAYER_AURA_DISPLAY_CVAR, self.UpdateShownState, self);
 		CVarCallbackRegistry:RegisterCallback(NamePlateConstants.SHOW_DEBUFFS_ON_FRIENDLY_CVAR, self.UpdateShownState, self);
 		CVarCallbackRegistry:RegisterCallback(NamePlateConstants.AURA_SCALE_CVAR, self.UpdateAuraScale, self);
+		CVarCallbackRegistry:RegisterCallback(NamePlateConstants.SHOW_ALL_PERSONAL_AURAS_CVAR, self.RefreshAuras, self);
 
 		local unitAuraUpdateInfo = nil;
 		self:RefreshAuras(unitAuraUpdateInfo);
@@ -125,6 +127,7 @@ function NamePlateAurasMixin:SetUnit(unitToken)
 		CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.FRIENDLY_PLAYER_AURA_DISPLAY_CVAR, self);
 		CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.SHOW_DEBUFFS_ON_FRIENDLY_CVAR, self);
 		CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.AURA_SCALE_CVAR, self);
+		CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.SHOW_ALL_PERSONAL_AURAS_CVAR, self);
 
 		self:UnregisterEvent("LOSS_OF_CONTROL_UPDATE");
 		self:UnregisterEvent("LOSS_OF_CONTROL_ADDED");
@@ -170,6 +173,21 @@ function NamePlateAurasMixin:SetIsSimplified(isSimplified)
 	self:UpdateShownState();
 end
 
+function NamePlateAurasMixin:IsAuraCrowdControl(aura)
+	-- Spells using common and generic spell auras from a pre-defined list are considered crowd control.
+	if C_Spell.IsSpellCrowdControl(aura.spellId) then
+		return true;
+	end
+
+	-- Spells using very specific spell auras that aren't generically considered "Crowd Control" can
+	-- still be flagged to show for all players in the crowd control section.
+	if aura.nameplateShowAll then
+		return true;
+	end
+
+	return false;
+end
+
 function NamePlateAurasMixin:AddAura(aura, checkFilters)
 	local auraInstanceID = aura.auraInstanceID;
 
@@ -181,7 +199,7 @@ function NamePlateAurasMixin:AddAura(aura, checkFilters)
 
 		self.buffList[auraInstanceID] = aura;
 		return true;
-	elseif C_Spell.IsSpellCrowdControl(aura.spellId) then
+	elseif self:IsAuraCrowdControl(aura) then
 		self.crowdControlList[auraInstanceID] = aura;
 		return true;
 	else
@@ -189,7 +207,7 @@ function NamePlateAurasMixin:AddAura(aura, checkFilters)
 			return false;
 		end
 
-		if not aura.nameplateShowPersonal then
+		if not aura.nameplateShowPersonal and not CVarCallbackRegistry:GetCVarValueBool(NamePlateConstants.SHOW_ALL_PERSONAL_AURAS_CVAR) then
 			return false;
 		end
 
@@ -239,19 +257,9 @@ function NamePlateAurasMixin:RemoveAura(auraInstanceID)
 	return false;
 end
 
-local function BuffCompare(a, b)
-	local aImportant = a.spellId ~= nil and C_Spell.IsSpellImportant(a.spellId);
-	local bImportant = b.spellId ~= nil and C_Spell.IsSpellImportant(b.spellId);
-	if aImportant ~= bImportant then
-		return aImportant;
-	end
-
-	return a.auraInstanceID < b.auraInstanceID;
-end
-
 function NamePlateAurasMixin:ParseAllAuras()
 	if self.buffList == nil then
-		self.buffList = TableUtil.CreatePriorityTable(BuffCompare, TableUtil.Constants.AssociativePriorityTable);
+		self.buffList = TableUtil.CreatePriorityTable(AuraUtil.ImportantOnlyAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 		self.debuffList = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 		self.crowdControlList = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
 	else
@@ -313,7 +321,7 @@ function NamePlateAurasMixin:GetLossOfControlAura()
 		return self.explicitAuraList.GetTop();
 	end
 
-	local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, LOSS_OF_CONTROL_ACTIVE_INDEX);
+	local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, Constants.LossOfControlConsts.LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if not lossOfControlData then
 		return nil;
 	end

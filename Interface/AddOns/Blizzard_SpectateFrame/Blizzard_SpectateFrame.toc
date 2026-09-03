@@ -1,7 +1,7 @@
 ## Title: Blizzard_SpectateFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIPanels_Game
+## Dependencies: Blizzard_UIPanels_Game, Blizzard_UIModes
 ## AllowLoadGameType: plunderstorm
 ## AllowLoad: Game
 SpectateFrame.lua

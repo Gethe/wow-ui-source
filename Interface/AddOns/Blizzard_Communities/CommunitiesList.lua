@@ -750,7 +750,9 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 			self:UpdateUnreadNotification();
 		end
 	elseif event == "PLAYER_GUILD_UPDATE" then
-		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+		if self.GuildTabardEmblem:IsShown() then
+			SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+		end
 	elseif event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" then
 		self:UpdateUnreadNotification();
 	end

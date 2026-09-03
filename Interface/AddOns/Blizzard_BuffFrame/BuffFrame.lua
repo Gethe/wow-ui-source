@@ -18,15 +18,6 @@ local s_spellIDToHelpTipInfo = {
 	},
 };
 
-
---AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon..
---Which just seems wrong, so I still have to talk to designers and see if we want to invest in a system to show temp enchants other than weapon
-local textureMapping = {
-	[1] = 16,	--Main hand
-	[2] = 17,	--Off-hand
-	[3] = 18,	--Ranged
-};
-
 local CollapseAndExpandButton_Orientation_Horizontal = 0;
 local CollapseAndExpandButton_Orientation_Vertical = 1;
 local CollapseAndExpandButton_ExpandDirection_Left = 0;
@@ -418,6 +409,10 @@ function AuraFrameEditModeMixin:TryEditModeUpdateAuraButtons()
 	return self.hasInitializedForEditMode;
 end
 
+function AuraFrameEditModeMixin:UpdatePrivateAuraAnchors()
+	-- override as necessary
+end
+
 BaseAuraFrameMixin = {};
 
 function BaseAuraFrameMixin:GetIconLimitSettingEnum()
@@ -669,42 +664,29 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 	end, usePackedAura);
 end
 
---AubrieTODO: Figure out how we want to refactor this function to include non-weapon enchants..
-function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs(...)
-	local RETURNS_PER_ITEM = 4;
-	local numVals = select("#", ...);
-	local numItems = numVals / RETURNS_PER_ITEM;
-
-	if numItems == 0 then
-		return;
-	end
-
-	for itemIndex = numItems, 1, -1 do	--Loop through the items from the back.
+function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs()
+	-- Process slots in reverse equipment order to preserve legacy display ordering.
+	for _itemIndex, slot in ipairs({ INVSLOT_RANGED, INVSLOT_OFFHAND, INVSLOT_MAINHAND }) do
 		-- If we can't display any more buffs then stop
 		if #self.auraInfo > self.maxAuras then
 			break;
 		end
 
-		local hasEnchant, enchantExpiration, enchantCharges = select(RETURNS_PER_ITEM * (itemIndex - 1) + 1, ...);
-		if hasEnchant and enchantExpiration then
-			-- Show buff durations if necessary
-			if enchantExpiration then
-				enchantExpiration = enchantExpiration / 1000;
-			end
-			local expirationTime =  GetTime() + enchantExpiration;
-
-			local hideUnlessExpanded = enchantExpiration > BUFF_DURATION_WARNING_TIME;
+		local enchantmentInfo = C_PaperDollInfo.GetTemporaryEnchantmentInfo(slot);
+		if enchantmentInfo and enchantmentInfo.hasExpirationTime then
+			local expirationTime = GetTime() + (enchantmentInfo.remainingTimeMs / 1000);
+			local hideUnlessExpanded = (enchantmentInfo.remainingTimeMs / 1000) > BUFF_DURATION_WARNING_TIME;
 			if hideUnlessExpanded then
 				self.numHideableBuffs = self.numHideableBuffs + 1;
 			end
 
 			local aura = {
 				auraType = "TempEnchant",
-				texture = GetInventoryItemTexture("player", textureMapping[itemIndex]),
-				count = enchantCharges,
+				texture = GetInventoryItemTexture("player", slot),
+				count = enchantmentInfo.chargesRemaining,
 				hideUnlessExpanded = hideUnlessExpanded,
 				expirationTime = expirationTime,
-				ID = textureMapping[itemIndex]
+				ID = slot
 			};
 			table.insert(self.auraInfo, aura);
 		end
@@ -716,7 +698,7 @@ function BuffFrameMixin:UpdateAuras()
 
 	-- Update our auraInfo.
 	self.numHideableBuffs = 0;
-	self:UpdateTemporaryEnchantmentBuffs(GetWeaponEnchantInfo());
+	self:UpdateTemporaryEnchantmentBuffs();
 	self:UpdatePlayerBuffs();
 
 	-- Sync to ConsolidatedBuffs frame, if needed.
@@ -751,13 +733,19 @@ end
 
 function DebuffFrameMixin:Update() -- Override
 	AuraFrameEditModeMixin.Update(self);
-	local unit = PlayerFrame.unit;
-	if unit ~= self.unit then
-		for _, anchor in ipairs(self.PrivateAuraAnchors) do
-			anchor:SetUnit(unit);
-		end
+
+	if PlayerFrame.unit ~= self.unit then
+		self:UpdatePrivateAuraAnchors(PlayerFrame.unit);
+		self.unit = PlayerFrame.unit;
+	end	
+end
+
+function DebuffFrameMixin:UpdatePrivateAuraAnchors(unit)
+	unit = unit or PlayerFrame.unit;
+	local showDispelType = self.AuraContainer.showDispelType;
+	for _, anchor in ipairs(self.PrivateAuraAnchors) do
+		anchor:SetUnit(unit, showDispelType);
 	end
-	self.unit = unit;
 end
 
 function DebuffFrameMixin:UpdateAuraButtons()  -- Override
@@ -858,18 +846,7 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 
 	if mostCriticalDebuffIndex then
 		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
-
-		if RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown() then
-			DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-		elseif RaidWarningFrame then
-			DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
-		else
-			-- Fallback location only if RaidWarningFrame doesn't exist. We
-			-- want to anchor to RaidWarningFrame even if it's hidden to
-			-- make some room for the default position of Boss Warning text
-			-- displays.
-			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
-		end
+		RaidWarningUtil.UpdateCenterScreenAnchors();
 	else
 		DeadlyDebuffFrame:Hide();
 	end
@@ -903,14 +880,7 @@ function AuraButtonMixin:OnClick(button)
 		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
 	elseif self.auraType == "TempEnchant" then
 		if button == "RightButton" then
-			--AubrieTODO: Figure out what we want to do with temp item enchants.
-			if self:GetID() == 16 then
-				CancelItemTempEnchantment(1);
-			elseif self:GetID() == 17 then
-				CancelItemTempEnchantment(2);
-			elseif self:GetID() == 18 then
-				CancelItemTempEnchantment(3);
-			end
+			C_PaperDollInfo.CancelTemporaryEnchantment(self:GetID());
 		end
 	end
 end
@@ -1214,23 +1184,12 @@ end
 DeadlyDebuffFrameMixin = {};
 
 function DeadlyDebuffFrameMixin:OnShow()
-	self:RegisterEvent("CHAT_MSG_RAID_WARNING");
-	self:RegisterEvent("RAID_BOSS_EMOTE");
-end
-
-function DeadlyDebuffFrameMixin:OnEvent(event, ...)
-	if event == "RAID_BOSS_EMOTE" then
-		DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-	elseif event == "CHAT_MSG_RAID_WARNING" then
-		DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
-	end
+	RaidWarningUtil.UpdateCenterScreenAnchors();
 end
 
 function DeadlyDebuffFrameMixin:OnHide()
-	self:UnregisterEvent("CHAT_MSG_RAID_WARNING");
-	self:UnregisterEvent("RAID_BOSS_EMOTE");
-
 	self.lastSpellID = nil;
+	RaidWarningUtil.UpdateCenterScreenAnchors();
 end
 
 function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
@@ -1249,11 +1208,8 @@ end
 
 BuffFramePrivateAuraAnchorMixin = {};
 
-function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
-	if unit == self.unit then
-		return;
-	end
-	self.unit = unit;
+function BuffFramePrivateAuraAnchorMixin:SetUnit(unit, showDispelType)
+	self.unit = unit; -- This is really just for debugging now.
 
 	if self.anchorID then
 		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
@@ -1282,8 +1238,10 @@ function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
 			unitToken = unit,
 			auraIndex = self.auraIndex,
 			parent = self,
-			showCountdownFrame = false,
+			showCooldownFrame = false,
+			showCooldownEdge = false,
 			showCountdownNumbers = false,
+			showDispelIcon = showDispelType,
 			isContainer = false,
 			iconInfo =
 			{
@@ -1385,4 +1343,9 @@ end
 function ConsolidatedBuffsTooltipAurasMixin:Update()
 	self:UpdateAuraButtons();
 	self:UpdateGridLayout();
+end
+
+function ConsolidatedBuffsTooltipAurasMixin:UpdateAuraContainerAnchor()
+	-- We can use default anchors since this is always within the tooltip,
+	-- so this function doesn't have to do anything.
 end

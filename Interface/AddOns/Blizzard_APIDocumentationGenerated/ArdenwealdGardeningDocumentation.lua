@@ -44,6 +44,7 @@ local ArdenwealdGardening =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

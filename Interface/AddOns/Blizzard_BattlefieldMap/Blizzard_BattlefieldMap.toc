@@ -1,6 +1,13 @@
-## Title: Blizzard Battlefield Map
+## Title: Blizzard_BattlefieldMap
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: BattlefieldMapOptions
-## RequiredDep: Blizzard_MapCanvas Blizzard_SharedMapDataProviders Blizzard_ObjectiveTracker
-Blizzard_BattlefieldMap.lua
-Blizzard_BattlefieldMap.xml
+## Dep: Blizzard_MapCanvas
+## Dep: Blizzard_SharedMapDataProviders [AllowLoadGameType mainline]
+## Dep: Blizzard_ObjectiveTracker [AllowLoadGameType mainline]
+## Dep: Blizzard_ColorPickerFrame [AllowLoadGameType mainline]
+## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_BattlefieldMap.lua
+[Family]\Blizzard_BattlefieldMap.xml
+[Family]\Localization.lua [AllowLoadGameType classic]

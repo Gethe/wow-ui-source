@@ -81,6 +81,7 @@ local SimpleAnimPathAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

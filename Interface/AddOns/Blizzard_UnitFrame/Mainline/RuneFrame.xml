@@ -183,7 +183,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="RuneFrameTemplate" mixin="RuneFrameMixin" inherits="HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" virtual="true">
+	<Frame name="RuneFrameTemplate" mixin="RuneFrameMixin" inherits="HorizontalLayoutFrame, PlayerBottomManagedFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spacing" value="-1" type="number"/>
 		</KeyValues>
@@ -230,7 +230,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" inherits="RuneFrameTemplate" scale="0.95">
+	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" inherits="RuneFrameTemplate" scale="0.95" roleset="unitFrames">
 		<Size x="130" y="24" />
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>

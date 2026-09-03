@@ -2,6 +2,7 @@ local AbbreviateConfigAPI =
 {
 	Name = "AbbreviateConfigAPI",
 	Type = "ScriptObject",
+	ObjectType = "Userdata",
 	Environment = "All",
 
 	Functions =
@@ -39,6 +40,7 @@ local AbbreviateConfigAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

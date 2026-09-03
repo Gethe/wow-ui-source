@@ -57,7 +57,7 @@ function AdventureObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			elseif (block.trackableType == Enum.ContentTrackingType.Appearance) and IsModifiedClick("DRESSUP") then
 				DressUpVisual(block.trackableID);
 			elseif block.targetType == Enum.ContentTrackingTargetType.Achievement then
-				OpenAchievementFrameToAchievement(block.targetID);
+				ShowAchievementFrameForAchievement(block.targetID);
 			elseif block.targetType == Enum.ContentTrackingTargetType.Profession then
 				self:ClickProfessionTarget(block.targetID);
 			else

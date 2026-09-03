@@ -128,6 +128,7 @@ local SimpleLineAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

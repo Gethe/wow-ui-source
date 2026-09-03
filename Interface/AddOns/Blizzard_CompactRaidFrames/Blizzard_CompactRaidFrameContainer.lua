@@ -24,6 +24,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("LFG_UPDATE");
 
 	EventRegistry:RegisterCallback("EditMode.Exit", function()
 		self:ApplyMultipleToFrames(
@@ -67,7 +68,7 @@ function CompactRaidFrameContainerMixin:OnEvent(event, ...)
 				self:TryUpdate();
 			end
 		end
-	elseif event == "PLAYER_ENTERING_WORLD" then
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "LFG_UPDATE" then
 		self:TryUpdate();
 	end
 end
@@ -124,6 +125,11 @@ function CompactRaidFrameContainerMixin:SetDisplayMainTankAndAssist(displayFlagg
 		self.displayFlaggedMembers = displayFlaggedMembers;
 		self:TryUpdate();
 	end
+end
+
+function CompactRaidFrameContainerMixin:ShouldDisplayMainTankAndAssist()
+	--Matchmade raids with no role requirements can end up with arbitrarily many auto-flagged main tanks.
+	return self.displayFlaggedMembers and not C_LFGInfo.IsInMatchmadeRaidWithoutRoleRequirements();
 end
 
 function CompactRaidFrameContainerMixin:SetBorderShown(showBorder)
@@ -190,7 +196,7 @@ function CompactRaidFrameContainerMixin:LayoutFrames()
 
 	FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
 
-	if self.displayFlaggedMembers then
+	if self:ShouldDisplayMainTankAndAssist() then
 		self:AddFlaggedUnits();
 		FlowContainer_AddLineBreak(self);
 	end

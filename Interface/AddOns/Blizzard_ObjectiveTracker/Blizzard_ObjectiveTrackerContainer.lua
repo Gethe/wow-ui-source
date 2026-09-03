@@ -24,7 +24,7 @@ function ObjectiveTrackerContainerMixin:OnSizeChanged()
 end
 
 function ObjectiveTrackerContainerMixin:OnShow()
-	UIParentManagedFrameMixin.OnShow(self);
+	ManagedFrameMixin.OnShow(self);
 	self:UpdateHeight();
 end
 
@@ -109,7 +109,7 @@ function ObjectiveTrackerContainerMixin:Update(dirtyUpdate)
 	end
 
 	if self:IsInDefaultPosition() then
-		UIParent_ManageFramePositions();
+		ManageFramePositions();
 	end	
 end
 

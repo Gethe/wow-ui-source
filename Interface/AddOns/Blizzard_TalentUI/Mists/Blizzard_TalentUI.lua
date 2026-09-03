@@ -1187,15 +1187,15 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 		if ( disable and not button.disabled ) then
 			button.disabled = true;
-			SetDesaturation(button.specIcon, true);
-			SetDesaturation(button.roleIcon, true);
-			SetDesaturation(button.ring, true);
+			button.specIcon:SetDesaturated(true);
+			button.roleIcon:SetDesaturated(true);
+			button.ring:SetDesaturated(true);
 			button.specName:SetFontObject("GameFontDisable");
 		elseif ( not disable and button.disabled ) then
 			button.disabled = false;
-			SetDesaturation(button.specIcon, false);
-			SetDesaturation(button.roleIcon, false);
-			SetDesaturation(button.ring, false);
+			button.specIcon:SetDesaturated(false);
+			button.roleIcon:SetDesaturated(false);
+			button.ring:SetDesaturated(false);
 			button.specName:SetFontObject("GameFontNormal");
 		end
 		

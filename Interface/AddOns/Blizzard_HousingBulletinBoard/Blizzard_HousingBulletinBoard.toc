@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_HousingTemplates
 ## AllowLoadGameType: standard
 
+Blizzard_HousingBulletinBoard_Bootstrap.lua [Bootstrap]
 Blizzard_HousingBulletinBoard.lua
 Blizzard_HousingBulletinBoard.xml
 Blizzard_HousingBulletinBoardRegistration.lua

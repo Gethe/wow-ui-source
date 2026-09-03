@@ -32,6 +32,7 @@ local UnitAuraShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

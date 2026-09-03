@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="GuildInviteFrame.lua"/>
 	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
 		<Size x="310" y="188"/>
 		<Anchors>
@@ -64,7 +63,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentTabardBackground" x="1" y="-1"/>
 					</Anchors>
 					<Color r="1" g="0" b="0"/>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>	
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -73,7 +72,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" relativeTo="$parentBackground" x="0" y="-12"/>
 					</Anchors>
-					<TexCoords left="0.56640625" right="0.79687500" top="0.00781250" bottom="0.60156250"/>	
+					<TexCoords left="0.56640625" right="0.79687500" top="0.00781250" bottom="0.60156250"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -133,7 +132,7 @@
 						GuildInviteFrame:Hide();
 					</OnClick>
 				</Scripts>
-			</Button>			
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

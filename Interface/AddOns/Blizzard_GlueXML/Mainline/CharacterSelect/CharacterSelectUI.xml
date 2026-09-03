@@ -60,6 +60,7 @@
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
 					<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateLeft_OnUpdate" type="global"/>
+					<KeyValue key="narrationName" value="NARRATION_ROTATE_LEFT_BUTTON" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="-18" y="0"/>
@@ -69,6 +70,7 @@
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
 					<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateRight_OnUpdate" type="global"/>
+					<KeyValue key="narrationName" value="NARRATION_ROTATE_RIGHT_BUTTON" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="18" y="0"/>
@@ -101,6 +103,9 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" letters="18">
+				<KeyValues>
+					<KeyValue key="narrationLabel" value="NARRATION_CAMP_NAME" type="global"/>
+				</KeyValues>
 				<Size x="260" y="32"/>
 				<FontString inherits="ChatFontNormal"/>
 				<Anchors>

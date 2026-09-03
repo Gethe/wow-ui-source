@@ -50,6 +50,10 @@ function AccountStoreUtil.SetAccountStoreShown(shown)
 end
 
 function AccountStoreUtil.ToggleAccountStore()
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		AccountStoreFrame:SetStoreFrontID(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+	end
+
 	AccountStoreUtil.SetAccountStoreShown(not AccountStoreFrame:IsShown());
 end
 

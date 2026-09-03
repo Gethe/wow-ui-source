@@ -39,6 +39,7 @@ local BehavioralMessaging =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -528,12 +528,12 @@ end
 
 function CharacterMicroButtonMixin:OnEnable()
 	self:SetAlpha(1);
-	SetDesaturation(self.Portrait, false);
+	self.Portrait:SetDesaturated(false);
 end
 
 function CharacterMicroButtonMixin:OnDisable()
 	self:SetAlpha(0.5);
-	SetDesaturation(self.Portrait, true);
+	self.Portrait:SetDesaturated(true);
 end
 
 function CharacterMicroButtonMixin:UpdateMicroButton()
@@ -901,6 +901,14 @@ function AchievementMicroButtonMixin:OnClick(button, down)
 		return;
 	end
 
+	if DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
+	if not ((HasCompletedAnyAchievement() or IsInGuild()) and CanShowAchievementUI()) then
+		return;
+	end
+
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleAchievementFrame();
 	end
@@ -1109,7 +1117,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		self:EvaluateAlertVisibility();
 		C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
 	elseif ( event == "UPDATE_BINDINGS" ) then
-		if ( CommunitiesFrame_IsEnabled() ) then
+		if ( C_Club.IsEnabled() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 		elseif ( IsInGuild() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
@@ -1185,7 +1193,7 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 	else
 		self:Enable();
 		self:SetNormal();
-		if ( CommunitiesFrame_IsEnabled() ) then
+		if ( C_Club.IsEnabled() ) then
 			self.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 			self.newbieText = NEWBIE_TOOLTIP_COMMUNITIESTAB;
 		elseif ( IsInGuild() ) then
@@ -1230,7 +1238,7 @@ function GuildMicroButtonMixin:HasUnseenInvitations()
 end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon()
-	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
+	if C_Club.IsEnabled() and self:IsEnabled() then
 		self.NotificationOverlay:SetShown(C_SocialRestrictions.CanReceiveChat() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
@@ -1282,7 +1290,7 @@ function LFDMicroButtonMixin:OnLoad()
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 
-	SetDesaturation(self:GetDisabledTexture(), true);
+	self:GetDisabledTexture():SetDesaturated(true);
 	self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 
 	self.disabledTooltip =	function()
@@ -1382,7 +1390,7 @@ end
 
 function CollectionMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "Collections");
-	SetDesaturation(self:GetDisabledTexture(), true);
+	self:GetDisabledTexture():SetDesaturated(true);
 
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -1443,7 +1451,7 @@ function CollectionsMicroButton_SetAlertShown(shown)
 end
 
 function CollectionMicroButtonMixin:OnClick(button, down)
-	if (Kiosk.IsEnabled()) then
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1471,7 +1479,7 @@ EJMicroButtonMixin = {};
 
 function EJMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "AdventureGuide");
-	SetDesaturation(self:GetDisabledTexture(), true);
+	self:GetDisabledTexture():SetDesaturated(true);
 	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
 
@@ -1620,11 +1628,11 @@ function EJMicroButtonMixin:UpdateAlerts(flag)
 end
 
 function EJMicroButtonMixin:OnClick(button, down)
-	if (Kiosk.IsEnabled()) then
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
-	if ( not KeybindFrames_InQuickKeybindMode() ) then
+	if ( not KeybindFrames_InQuickKeybindMode() ) and CanShowEncounterJournal() then
 		ToggleEncounterJournal();
 	end
 end
@@ -1766,6 +1774,10 @@ function HelpMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "GameMenu");
 
 	self:RegisterForClicks("AnyUp");
+
+	self:SetScript("OnClick", function()
+		ToggleHelpFrame();
+	end);
 end
 
 

@@ -64,6 +64,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanSurrenderArena",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "CanSurrenderArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanToggleWarMode",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1042,6 +1051,36 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsTrainingGroundsArena",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonsID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrainingGroundsArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrainingGroundsBG",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonsID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrainingGroundsBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWarModeActive",
 			Type = "Function",
 
@@ -1090,7 +1129,11 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "JoinRandomTrainingGround",
+			Name = "JoinRandomTrainingGroundArena",
+			Type = "Function",
+		},
+		{
+			Name = "JoinRandomTrainingGroundBattleground",
 			Type = "Function",
 		},
 		{
@@ -1897,6 +1940,7 @@ local PvpInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

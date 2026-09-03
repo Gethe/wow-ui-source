@@ -70,7 +70,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="WeeklyRewardActivityTemplate" parentArray="Activities" mixin="WeeklyRewardsActivityMixin" virtual="true" frameLevel="200">
+	<Frame name="WeeklyRewardActivityTemplate" mixin="WeeklyRewardsActivityMixin" virtual="true" frameLevel="200">
 		<Size x="219" y="126"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -493,6 +493,78 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="WeeklyRewardsConcessionTemplate" mixin="WeeklyRewardsConcessionMixin" virtual="true">
+		<Size x="440" y="45"/>
+		<KeyValues>
+			<KeyValue key="type" value="Enum.WeeklyRewardChestThresholdType.Concession" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="evergreen-weeklyrewards-reward-coin" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="evergreen-weeklyrewards-reward-coin-selected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.Background" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardsFrame" inherits="HorizontalLayoutFrame" frameLevel="1000">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="24" type="number"/>
+					<KeyValue key="spacing" value="4" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CompletedIcon" atlas="activities-icon-checkmark" useAtlasSize="true" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_REWARDS_GET_CONCESSION">
+							<Size y="24"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="Text" inherits="GameFontHighlight">
+							<Size y="24"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="UnselectedFrame" setAllPoints="true" frameLevel="1100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="evergreen-weeklyrewards-reward-coin-unselected" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true" toplevel="true" frameLevel="100">
 		<Size x="1165" y="657"/>
 		<Anchors>
@@ -570,7 +642,6 @@
 					<OnMouseDown function="nop"/>
 				</Scripts>
 			</Frame>
-
 			<Frame parentKey="HeaderFrame">
 				<Size x="1056" y="85"/>
 				<Anchors>
@@ -613,97 +684,46 @@
 				</Anchors>
 			</Frame>
 			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" drawLayer="BACKGROUND" frameLevel="300"/>
-			<Frame parentKey="ConcessionFrame" parentArray="Activities" mixin="WeeklyRewardsConcessionMixin">
-				<Size x="440" y="45"/>
-				<KeyValues>
-					<KeyValue key="type" value="Enum.WeeklyRewardChestThresholdType.Concession" type="global"/>
-					<KeyValue key="index" value="1" type="number"/>
-					<KeyValue key="hasRewards" value="true" type="boolean"/>	<!-- this is only visible when rewards are present -->
-				</KeyValues>
+			<Frame parentKey="ConcessionsFrame">
+				<Size x="1056" y="85"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="63"/>
+					<Anchor point="BOTTOM" x="0" y="50"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="evergreen-weeklyrewards-reward-coin" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="Divider1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="TOP" x="-18" y="11"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Divider2" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOP" x="18" y="11"/>
-							</Anchors>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
-						<FontString inherits="SystemFont_Shadow_Large2" text="WEEKLY_REWARDS_OR">
+						<FontString parentKey="HeaderText" inherits="SystemFont_Shadow_Large2" text="WEEKLY_REWARDS_OR">
 							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="5"/>
+								<Anchor point="TOP" x="0" y="-3"/>
 							</Anchors>
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="SelectedTexture" atlas="evergreen-weeklyrewards-reward-coin-selected" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.Background" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="RewardsFrame" inherits="HorizontalLayoutFrame" frameLevel="1000">
-						<KeyValues>
-							<KeyValue key="fixedHeight" value="24" type="number"/>
-							<KeyValue key="spacing" value="4" type="number"/>
-							<KeyValue key="expand" value="true" type="boolean"/>
-						</KeyValues>
+					<Frame parentKey="Rewards" inherits="HorizontalLayoutFrame">
 						<Anchors>
-							<Anchor point="CENTER"/>
+							<Anchor point="BOTTOM" x="0" y="11"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_REWARDS_GET_CONCESSION">
-									<Size y="24"/>
-									<KeyValues>
-										<KeyValue key="layoutIndex" value="1" type="number"/>
-									</KeyValues>
-								</FontString>
-								<FontString parentKey="Text" inherits="GameFontHighlight">
-									<Size y="24"/>
-									<KeyValues>
-										<KeyValue key="layoutIndex" value="2" type="number"/>
-									</KeyValues>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Frame parentKey="UnselectedFrame" setAllPoints="true" frameLevel="1100">
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture atlas="evergreen-weeklyrewards-reward-coin-unselected" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
+						<KeyValues>
+							<KeyValue key="spacing" value="30" type="number"/>
+							<KeyValue key="fixedHeight" value="47" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Frame parentKey="ConcessionFrame1" inherits="WeeklyRewardsConcessionTemplate" hidden="true">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+									<KeyValue key="index" value="1" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="ConcessionFrame2" inherits="WeeklyRewardsConcessionTemplate" hidden="true">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+									<KeyValue key="index" value="2" type="number"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
 			</Frame>
 			<Button parentKey="SelectRewardButton" inherits="UIPanelButtonTemplate" text="WEEKLY_REWARDS_SELECT_REWARD" frameLevel="6000" hidden="true">
 				<Size x="182" y="23"/>

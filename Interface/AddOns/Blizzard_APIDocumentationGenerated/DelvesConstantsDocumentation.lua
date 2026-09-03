@@ -5,28 +5,30 @@ local DelvesConstants =
 		{
 			Name = "CompanionConfigSlotTypes",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Role", Type = "CompanionConfigSlotTypes", EnumValue = 0 },
 				{ Name = "Utility", Type = "CompanionConfigSlotTypes", EnumValue = 1 },
 				{ Name = "Combat", Type = "CompanionConfigSlotTypes", EnumValue = 2 },
+				{ Name = "Flavor", Type = "CompanionConfigSlotTypes", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "CurioRarity",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Common", Type = "CurioRarity", EnumValue = 1 },
 				{ Name = "Uncommon", Type = "CurioRarity", EnumValue = 2 },
 				{ Name = "Rare", Type = "CurioRarity", EnumValue = 3 },
 				{ Name = "Epic", Type = "CurioRarity", EnumValue = 4 },
+				{ Name = "EpicTier2", Type = "CurioRarity", EnumValue = 5 },
 			},
 		},
 		{
@@ -41,17 +43,31 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "TieredEntranceTierFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IsLFG", Type = "TieredEntranceTierFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TieredEntranceType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
 				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
 				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "Lairs", Type = "TieredEntranceType", EnumValue = 4 },
+				{ Name = "Placeholder_5", Type = "TieredEntranceType", EnumValue = 5 },
+				{ Name = "Placeholder_6", Type = "TieredEntranceType", EnumValue = 6 },
 			},
 		},
 		{
@@ -102,6 +118,7 @@ local DelvesConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

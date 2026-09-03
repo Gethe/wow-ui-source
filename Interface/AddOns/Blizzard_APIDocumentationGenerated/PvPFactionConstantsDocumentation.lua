@@ -15,6 +15,7 @@ local PvPFactionConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

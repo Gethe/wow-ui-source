@@ -36,7 +36,8 @@ PlayerUtil = {};
 function PlayerUtil.GetCurrentSpecID()
 	local currentSpecialization = C_SpecializationInfo.GetSpecialization();
 	if currentSpecialization then
-		return C_SpecializationInfo.GetSpecializationInfo(currentSpecialization);
+		local specId = C_SpecializationInfo.GetSpecializationInfo(currentSpecialization);
+		return specId;
 	end
 
 	return nil;
@@ -107,7 +108,7 @@ end
 
 function PlayerUtil.IsPlayerEffectivelyTank()
 	local assignedRole = UnitGroupRolesAssigned("player");
-	if assignedRole == "NONE" then
+	if GetSpecializationSystem() == Enum.SpecializationSystem.ChrSpecialization and assignedRole == "NONE" then
 		local spec = C_SpecializationInfo.GetSpecialization();
 		return spec and GetSpecializationRole(spec) == "TANK";
 	end

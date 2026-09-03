@@ -232,7 +232,7 @@ end
 
 function StatusTrackingBarContainerMixin:UpdateShownState()
 	self:SetShown(self.shownBarIndex ~= StatusTrackingBarInfo.BarsEnum.None or self.isInEditMode);
-	UIParent_ManageFramePositions();
+	ManageFramePositions();
 end
 
 function StatusTrackingBarContainerMixin:FadeIn()

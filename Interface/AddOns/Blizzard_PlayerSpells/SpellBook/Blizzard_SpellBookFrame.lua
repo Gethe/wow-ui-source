@@ -130,11 +130,6 @@ function SpellBookFrameMixin:OnEvent(event, ...)
 	elseif event == "LEARNED_SPELL_IN_SKILL_LINE" then
 		local spellID, skillLineIndex, isGuildSpell = ...;
 		self:UpdateAllSpellData();
-		for _, categoryMixin in ipairs(self.categoryMixins) do
-			if categoryMixin:IsAvailable() and categoryMixin:ContainsSkillLine(skillLineIndex) then
-				self.CategoryTabSystem:GetTabButton(categoryMixin:GetTabID()):EnableNewSpellsGlow();
-			end
-		end
 	elseif event == "USE_GLYPH" then
 		-- Player has used a glyph or remover and is choosing what spell to use it on
 		-- Time for "pending glyph" visuals

@@ -13,6 +13,8 @@ UI.xsd">
 		</Attributes>
 	</Frame>
 
-	<!-- Convenience template to opt a frame into being a unit frame ping receiver. -->
+	<!-- Convenience templates to opt a non top level frame into being a ping receiver. -->
 	<Frame name="PingableUnitFrameTemplate" mixin="PingableType_UnitFrameMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingableActionButtonTemplate" mixin="PingableType_ActionButtonMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingableCooldownViewerItemTemplate" mixin="PingableType_CooldownViewerItemMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
 </Ui>

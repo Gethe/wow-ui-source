@@ -21,7 +21,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CriticalEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+	<Frame name="CriticalEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent" roleset="encounterUI">
 		<Size x="600" y="48"/>
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.CriticalWarnings" type="global"/>
@@ -29,7 +29,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="MediumEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+	<Frame name="MediumEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent" roleset="encounterUI">
 		<Size x="550" y="36"/>
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.MediumWarnings" type="global"/>
@@ -37,7 +37,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="MinorEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+	<Frame name="MinorEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent" roleset="encounterUI">
 		<Size x="500" y="36"/>
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.NormalWarnings" type="global"/>

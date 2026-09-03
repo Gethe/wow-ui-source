@@ -10,6 +10,7 @@
 				<OnLeave method="OnLeave"/>
 				<OnLoad method="OnLoad"/>
 				<OnUpdate method="OnUpdate"/>
+				<OnHide method="OnHide"/>
 			</Scripts>
 			<Frames>
 				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" reverse="true" inherits="CooldownFrameTemplate" useParentLevel="true" hidden="true">
@@ -32,11 +33,11 @@
 		<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" useParentLevel="true" frameLevel="200" virtual="true">
 			<Layers>
 				<Layer level="ARTWORK" textureSubLevel="-6">
-					<Texture parentKey="Background" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
+					<Texture parentKey="Background" parentArray="OverlayColorElements" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="-5">
-					<Texture parentKey="Gradient" setAllPoints="true"/>
-					<Texture parentKey="Border" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
+					<Texture parentKey="Gradient" parentArray="OverlayColorElements" setAllPoints="true"/>
+					<Texture parentKey="Border" parentArray="OverlayColorElements" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="-4">
 					<Texture inherits="CompactDispelDebuffTemplate"/>
@@ -44,8 +45,60 @@
 					<Texture inherits="CompactDispelDebuffTemplate"/>
 				</Layer>
 			</Layers>
+			<Animations>
+				<AnimationGroup looping="BOUNCE" parentKey="PulseAnim">
+					<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" />
+				</AnimationGroup>
+			</Animations>
 		</Frame>
 
-		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidBossEmoteFrameTemplate" frameStrata="HIGH"/>
+		<Frame name="CompactUnitFrameAnimatedDispelBorderTemplate" inherits="MarchingAntsTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="verticalAsset" value="UI-RaidFrames-SingleAnt-Vertical" type="string"/>
+				<KeyValue key="horizontalAsset" value="UI-RaidFrames-SingleAnt-Horiz" type="string"/>
+				<KeyValue key="cornersAsset" value="UI-RaidFrames-AntCorners" type="string"/>
+
+				<KeyValue key="leftOffsetP1X" value="-1" type="number"/>
+				<KeyValue key="leftOffsetP1Y" value="-4" type="number"/>
+				<KeyValue key="leftOffsetP2X" value="-1" type="number"/>
+				<KeyValue key="leftOffsetP2Y" value="4" type="number"/>
+
+				<KeyValue key="rightOffsetP1X" value="1" type="number"/>
+				<KeyValue key="rightOffsetP1Y" value="-4" type="number"/>
+				<KeyValue key="rightOffsetP2X" value="1" type="number"/>
+				<KeyValue key="rightOffsetP2Y" value="4" type="number"/>
+
+				<KeyValue key="topOffsetP1X" value="4" type="number"/>
+				<KeyValue key="topOffsetP1Y" value="1" type="number"/>
+				<KeyValue key="topOffsetP2X" value="-4" type="number"/>
+				<KeyValue key="topOffsetP2Y" value="1" type="number"/>
+
+				<KeyValue key="bottomOffsetP1X" value="4" type="number"/>
+				<KeyValue key="bottomOffsetP1Y" value="-1" type="number"/>
+				<KeyValue key="bottomOffsetP2X" value="-4" type="number"/>
+				<KeyValue key="bottomOffsetP2Y" value="-1" type="number"/>
+
+				<KeyValue key="cornerOffsetP1X" value="0" type="number"/>
+				<KeyValue key="cornerOffsetP1Y" value="0" type="number"/>
+				<KeyValue key="cornerOffsetP2X" value="0" type="number"/>
+				<KeyValue key="cornerOffsetP2Y" value="0" type="number"/>
+			</KeyValues>
+		</Frame>
+
+		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidWarningFrameTemplate" mixin="PrivateRaidBossEmoteFrameMixin" frameStrata="HIGH">
+			<KeyValues>
+				<KeyValue key="maxMessageSlots" value="2" type="number"/>
+				<KeyValue key="maxTotalLines" value="4" type="number"/>
+				<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.BossEmote" type="global"/>
+			</KeyValues>
+		</Frame>
+
+		<Frame name="PrivateVisualAlertsManager" inherits="VisualAlertsManagerTemplate"/>
+
+		<Frame name="PrivateGroupBuffsManager" mixin="GroupBuffMixin">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+			</Scripts>
+		</Frame>
 	</ScopedModifier>
 </Ui>

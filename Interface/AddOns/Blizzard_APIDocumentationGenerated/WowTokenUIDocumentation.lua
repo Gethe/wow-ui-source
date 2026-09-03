@@ -145,6 +145,7 @@ local WowTokenUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

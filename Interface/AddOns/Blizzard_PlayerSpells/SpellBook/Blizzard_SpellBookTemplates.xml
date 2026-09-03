@@ -35,28 +35,9 @@
 		</Layers>
 	</Frame>
 
-	<Button name="SpellBookCategoryTabTemplate" inherits="TabSystemButtonTemplate" mixin="SpellBookCategoryTabMixin" virtual="true">
+	<Button name="SpellBookCategoryTabTemplate" inherits="TabSystemButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="isTabOnTop" value="true" type="boolean"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="NewSpellsGlow" atlas="SquareMask" setAllPoints="true" hidden="true">
-					<Color r="1" g="0" b="0" />
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="NewSpellsGlowAnim" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-				<Alpha childKey="NewSpellsGlow" fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
-				<Alpha childKey="NewSpellsGlow" fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-		
 	</Button>
 </Ui>

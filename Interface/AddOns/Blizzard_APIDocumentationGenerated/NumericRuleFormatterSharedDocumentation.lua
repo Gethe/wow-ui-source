@@ -41,6 +41,7 @@ local NumericRuleFormatterShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

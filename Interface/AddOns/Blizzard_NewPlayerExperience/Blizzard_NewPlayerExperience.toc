@@ -1,8 +1,8 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard New Player Experience
+## Title: Blizzard_NewPlayerExperience
 ## LoadOnDemand: 1
-## RequiredDep: Blizzard_TutorialManager
+## RequiredDep: middleclass, Blizzard_TutorialManager, Blizzard_LFGUtil
 
+Blizzard_NewPlayerExperience_Bootstrap.lua [Bootstrap]
 Blizzard_TutorialKeyboardMouseFrame.xml
 
 Blizzard_TutorialData.lua

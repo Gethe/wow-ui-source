@@ -1,7 +1,7 @@
 ## Title: Blizzard_GroupFinder
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_LFGUtil
 ## AllowLoad: game
 ## AllowLoadGameType: tbc
 Classic\Constants.lua

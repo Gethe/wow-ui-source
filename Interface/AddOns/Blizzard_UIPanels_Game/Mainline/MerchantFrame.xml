@@ -259,13 +259,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllButton.Icon, true);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
+							MerchantRepairAllButton.Icon:SetDesaturated(true);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(true);
 							MerchantGuildBankRepairButton:Disable();
 							self:Disable();
 						else
-							SetDesaturation(MerchantRepairAllButton.Icon, false);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
+							MerchantRepairAllButton.Icon:SetDesaturated(false);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(false);
 							self:Enable();
 							MerchantGuildBankRepairButton:Enable();
 						end
@@ -381,13 +381,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllButton.Icon, true);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
+							MerchantRepairAllButton.Icon:SetDesaturated(true);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(true);
 							MerchantGuildBankRepairButton:Disable();
 							MerchantRepairAllButton:Disable();
 						else
-							SetDesaturation(MerchantRepairAllButton.Icon, false);
-							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
+							MerchantRepairAllButton.Icon:SetDesaturated(false);
+							MerchantGuildBankRepairButton.Icon:SetDesaturated(false);
 							self:Enable();
 							MerchantRepairAllButton:Enable();
 						end
@@ -454,12 +454,12 @@
 										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
-									SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
+									self.UndoFrame.Arrow:SetDesaturated(GetNumBuybackItems() == 0);
 									UpdateCursorAfterBuyBack(self);
 								end
 							</OnEvent>
 							<OnShow>
-								SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
+								self.UndoFrame.Arrow:SetDesaturated(GetNumBuybackItems() == 0);
 							</OnShow>
 							<OnClick>
 								BuybackItem(GetNumBuybackItems());

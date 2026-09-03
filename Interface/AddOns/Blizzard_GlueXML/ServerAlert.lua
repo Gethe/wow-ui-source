@@ -115,3 +115,20 @@ end
 function CollapsibleServerAlertMixin:SetExpanded(expanded, isUserInput)
 	return self.ExpandBar:SetExpanded(expanded, isUserInput);
 end
+
+function CollapsibleServerAlertMixin:NarrationGetName()
+	return NARRATION_SERVER_ALERT_NAME;
+end
+
+function CollapsibleServerAlertMixin:NarrationGetContext()
+	local expandedState = self.ExpandBar:IsExpanded() and NARRATION_EXPANDED or NARRATION_COLLAPSED;
+	return NarrationUtil.MakeNarrationString(NARRATION_SERVER_ALERT_CONTEXT, expandedState);
+end
+
+function CollapsibleServerAlertMixin:NarrationGetDescription()
+	if self.ExpandBar:IsExpanded() then
+		return self.Box:GetAlertText();
+	end
+
+	return nil;
+end

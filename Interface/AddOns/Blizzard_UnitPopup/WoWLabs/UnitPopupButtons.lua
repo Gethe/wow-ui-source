@@ -16,6 +16,10 @@ function UnitPopupAchievementButtonMixin:CanShow(contextData)
 end		
 
 function UnitPopupAchievementButtonMixin:OnClick(contextData)
+	if Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING then
+		return;
+	end
+
 	InspectAchievements(contextData.unit);
 end
 
@@ -85,13 +89,7 @@ function UnitPopupGuildSettingButtonMixin:GetText(contextData)
 end 
 
 function UnitPopupGuildSettingButtonMixin:OnClick(contextData)
-	if not GuildControlUI then
-		UIParentLoadAddOn("Blizzard_GuildControlUI");
-	end
-
-	if not GuildControlUI:IsShown() then
-		ShowUIPanel(GuildControlUI);
-	end
+	GuildControlUI_Show();
 end 
 
 function UnitPopupGuildSettingButtonMixin:CanShow(contextData)
@@ -277,7 +275,7 @@ function UnitPopupAddGuildBtagFriendButtonMixin:CanShow(contextData)
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	local hasBattleTag = UnitPopupSharedUtil.HasBattleTag();
 	local isAPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
-	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isAPlayer);
+	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isAPlayer, Enum.BattleNetFriendLevel.BattleTag);
 end	
 
 function UnitPopupBnetInviteButtonMixin:CanShow(contextData)
@@ -573,4 +571,12 @@ end
 
 function UnitPopupGlueRemovePartyButton:OnClick(contextData)
 	C_WoWLabsMatchmaking.RemovePlayerFromParty(self:GetGUID()); 
+end
+
+function UnitPopupAddTitleFriendButtonMixin:CanShow(_contextData)
+	return false;
+end
+
+function UnitPopupAddTitleFriendButtonMixin:IsEnabled(_contextData)
+	return false;
 end
