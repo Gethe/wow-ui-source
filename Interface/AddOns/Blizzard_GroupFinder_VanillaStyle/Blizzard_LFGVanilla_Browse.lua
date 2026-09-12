@@ -263,6 +263,12 @@ end
 
 function LFGBrowseSearchEntry_Update(self)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(self.resultID);
+	if not searchResultInfo then
+		self:Hide();
+		return;
+	end
+	self:Show();
+
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local isSolo = searchResultInfo.numMembers == 1;
 	local soloRoles = nil;
