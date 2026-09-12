@@ -112,11 +112,8 @@ local function SubTimeAndGameTimeCardLayout(card)
 	local container = card.ForegroundContainer;
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
 
-	-- Skip time-specific display for unknown (cross-game) licenses
-	if displayInfo.hasUnknownLicense then
-		container.RectIcon:Hide();
-		return;
-	end
+	-- Subs and game time don't typically interact with the license system. Deferred time might, but the license can be ignored here.
+	-- We shouldn't need to early exit like in other unknown license scenarios.
 
 	local atlasWidth = 140;
 	local atlasHeight = 140;
@@ -330,7 +327,6 @@ local function AccessCardLayout(card)
 
 	-- Skip access-specific display for unknown (cross-game) licenses
 	if displayInfo.hasUnknownLicense then
-		container.RectIcon:Hide();
 		return;
 	end
 

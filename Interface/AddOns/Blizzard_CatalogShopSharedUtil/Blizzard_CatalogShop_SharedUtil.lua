@@ -1259,10 +1259,22 @@ function CatalogShopUtil.GetTimeTexture(productInfo, productType)
 		return nil;
 	end
 
-	local textureName = prefix.."-time-"..productInfo.licenseTermDuration;
+	local termDuration;
+	local usingDeferredTimeDays = false;
+	if productInfo.licenseTermDuration > 0 then
+		termDuration = productInfo.licenseTermDuration;
+	elseif productInfo.deferredGameTimeDays > 0 then
+		termDuration = productInfo.deferredGameTimeDays;
+		usingDeferredTimeDays = true;
+	else
+		return nil;
+	end
+
+	local textureName = prefix.."-time-"..termDuration;
 	if productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
 		return textureName.."mo";
-	elseif productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+	elseif productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days or usingDeferredTimeDays then
+		-- Currently, we assume that any deferred time displays are in days
 		return textureName.."day";
 	else
 		return nil;
