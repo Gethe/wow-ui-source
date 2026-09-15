@@ -159,7 +159,7 @@ $Products | ForEach-Object {
     $_.BuildConfig = $Info.BuildConfig
     $_.CDNConfig = $Info.CDNConfig
     $_.Build = $Info.Build
-    $_.Schema = [Version]::new($Version.Major, $Version.Minor, $Version.Build)
+    $_.Schema = [Version]::new($Version.Major, $Version.Minor, [Math]::Max(0, $Version.Build))
     $_.Version = $Version
 }
 
