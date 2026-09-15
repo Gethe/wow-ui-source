@@ -547,6 +547,10 @@ function AuraContainerAuraGroupOwnerMixin:ShouldIncludeAuraInGroup(auraGroup, un
 		end
 	end
 
+	if auraData.processedAuraType == AuraUtil.AuraUpdateChangedType.None then
+		return false;
+	end
+
 	if not AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, auraGroup:GetCandidateFilters()) then
 		return false;
 	end

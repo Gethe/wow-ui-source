@@ -419,6 +419,10 @@ function AuraContainerAuraSlotOwnerMixin:ShouldIncludeAuraInSlot(auraSlot, unitT
 		end
 	end
 
+	if auraData.processedAuraType == AuraUtil.AuraUpdateChangedType.None then
+		return false;
+	end
+
 	if not AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, auraSlot:GetCandidateFilters()) then
 		return false;
 	end

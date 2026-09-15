@@ -36,7 +36,7 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 	self.currencyPool:ReleaseAll();
 	if textureKitInfo and textureKitInfo.isThemed then
 		local displayInfo = C_ScenarioInfo.GetDisplayInfo();
-		if displayInfo then
+		if displayInfo and displayInfo.themeColor then
 			self.ThemeOverlay:Show();
 			self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
 		else

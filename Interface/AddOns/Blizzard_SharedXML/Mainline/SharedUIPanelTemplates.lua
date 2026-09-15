@@ -332,10 +332,20 @@ function SidePanelTabButtonMixin:SetChecked(checked)
 	end
 end
 
+function SidePanelTabButtonMixin:GetTooltipTextSetupFunction()
+	-- override as needed
+	return nil;
+end
+
 function SidePanelTabButtonMixin:OnEnter()
 	local tooltip = GetAppropriateTooltip();
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
-	tooltip:SetText(self.tooltipText);
+	
+	local setupFn = self:GetTooltipTextSetupFunction();
+	if not setupFn or not setupFn(tooltip) then
+		tooltip:SetText(self.tooltipText);
+	end
+
 	tooltip:Show();
 end
 

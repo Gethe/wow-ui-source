@@ -136,7 +136,7 @@
 
 	<Frame name="CooldownViewerSettingsBarCategoryTemplate" inherits="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsBarCategoryMixin" virtual="true"/>
 
-	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
+	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="CooldownViewerSettingsTabMixin" parentArray="TabButtons" virtual="true"/>
 
 	<Frame name="CooldownViewerSettingsTabWithNewOptionTemplate" inherits="CooldownViewerSettingsTabTemplate, NewDefinitionsCheckerTemplate" mixin="CooldownViewerSettingsTabWithNewOptionMixin" virtual="true">
 		<Layers>

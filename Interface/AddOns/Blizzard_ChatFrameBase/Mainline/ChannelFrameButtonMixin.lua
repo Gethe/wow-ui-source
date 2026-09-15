@@ -47,13 +47,13 @@ end
 
 function ChannelFrameButtonMixin:OnGroupStatusChanged()
 	if ChannelFrame:ShouldShowTutorial() then
-		UIFrameFlash(self.Flash, 1.0, 1.0, -1, false, 0, 0);
+		ChatFrameUtil.StartFlash(self.Flash, self.Flash.FlashAnim);
 	end
 end
 
 function ChannelFrameButtonMixin:OnClick()
 	PropertyButtonMixin.OnClick(self);
-	UIFrameFlashStop(self.Flash);
+	ChatFrameUtil.StopFlash(self.Flash, self.Flash.FlashAnim, false);
 end
 
 function ChannelFrameButtonMixin:OnEnter()
@@ -83,5 +83,5 @@ function ChannelFrameButtonMixin:OnMouseUp()
 end
 
 function ChannelFrameButtonMixin:HideTutorial()
-	UIFrameFlashStop(self.Flash);
+	ChatFrameUtil.StopFlash(self.Flash, self.Flash.FlashAnim, false);
 end

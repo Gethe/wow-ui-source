@@ -86,7 +86,6 @@ local UIEventToastManager =
 				{ Name = "subtitleTooltip", Type = "string", Nilable = true },
 				{ Name = "titleTooltipUiWidgetSetID", Type = "number", Nilable = true },
 				{ Name = "subtitleTooltipUiWidgetSetID", Type = "number", Nilable = true },
-				{ Name = "hideDefaultAtlas", Type = "bool", Nilable = true },
 				{ Name = "showSoundKitID", Type = "number", Nilable = true },
 				{ Name = "hideSoundKitID", Type = "number", Nilable = true },
 				{ Name = "colorTint", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },

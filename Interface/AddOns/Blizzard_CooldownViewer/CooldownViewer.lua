@@ -434,6 +434,8 @@ function CooldownViewerItemMixin:ResetCooldownData()
 	CooldownViewerItemDataMixin.ResetCooldownData(self);
 
 	self.alertsByEvent = {};
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
 	self.pandemicAlertTriggerTime = nil;
 	self.pandemicStartTime = nil;
 	self.pandemicEndTime = nil;
@@ -1010,13 +1012,13 @@ end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedItem(timeNow)
 	if not self:IsUsingVisualDataSource_Any() then
-		local equipSlot = self:GetEquipSlot(); -- TODO: Support potions as well, this won't just be equipslot
+		local equipSlot = self:GetEquipSlot();
 		if equipSlot then
-			local startTime, duration, enable = GetInventoryItemCooldown("player", equipSlot);
+			local startTime, duration, enable, isOnGCD = GetInventoryItemCooldown("player", equipSlot);
 			local endTime = startTime + duration;
 			self.cooldownIsActive = endTime > timeNow;
-			self.cooldownEnabled = enable;
-			self.isOnGCD = false;
+			self.cooldownEnabled = enable == 1;
+			self.isOnGCD = isOnGCD;
 
 			if self.cooldownIsActive and self.cooldownEnabled then
 				self:AddVisualDataSource_Item();
@@ -1036,6 +1038,8 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedIte
 			self.cooldownPaused = false;
 			self.cooldownDesaturated = self.isOnActualCooldown;
 			self.cooldownPlayFlash = self.isOnActualCooldown;
+
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckCacheCooldownValuesFromEquippedItem", "Start: %.2f, Duration: %.2f, active: %s, gcd: %s, availableAlertTime: %.2f", self.cooldownStartTime or 0, self.cooldownDuration or 0, tostring(self.cooldownIsActive), tostring(self.isOnGCD), self.availableAlertTriggerTime or 0);
 		end
 	end
 end

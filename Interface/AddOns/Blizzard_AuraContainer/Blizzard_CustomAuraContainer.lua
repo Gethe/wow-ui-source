@@ -80,6 +80,9 @@ local function ValidateCandidateFilters(candidateFilters)
 	-- and will not be visible in the container. Spell ID matching is only permitted
 	-- for helpful buffs on assistable units, and harmful buffs on non-assistable
 	-- units.
+	--
+	-- Auras that can't be matched by spell ID are rejected outright, so this can
+	-- only ever admit never-secret spells on units where matching isn't permitted.
 	if candidateFilters.includeSpellIDs ~= nil then
 		assert(type(candidateFilters.includeSpellIDs) == "table", "includeSpellIDs must be a table or nil");
 	end

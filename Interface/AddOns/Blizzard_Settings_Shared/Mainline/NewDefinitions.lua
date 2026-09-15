@@ -107,6 +107,7 @@ NewSettings["12.1.0"] = {
 NewSettings["12.1.5"] = {
 	"minimapShowPlayerCoords",
 	"coordsByTenths",
+	"CAAPulsePlayerHealthPercent",
 };
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()

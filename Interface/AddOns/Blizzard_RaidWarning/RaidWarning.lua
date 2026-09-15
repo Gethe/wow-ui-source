@@ -36,6 +36,8 @@ RaidWarningFrameMixin = {};
 local function ResetString(_pool, fontString)
 	FadingFrame_StopTextScaling(fontString);
 	fontString:Hide();
+	-- Must clear the text (and its secret aspect) before ClearAllPoints so anchoring stops being secret.
+	fontString:ClearText();
 	fontString:ClearAllPoints();
 	fontString:SetMaxLines(0);
 	fontString.messageType = nil;

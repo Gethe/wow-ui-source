@@ -190,6 +190,9 @@ function TextToSpeech_StopAll()
 		queuedMessageTimer = nil;
 	end
 	queuedMessages = {};
+
+	-- Purged utterances never signal VOICE_CHAT_TTS_PLAYBACK_FINISHED, so playback state has to be cleared here or everything after this would be queued and never spoken.
+	playbackActive = false;
 	C_VoiceChat.StopSpeakingText();
 end
 

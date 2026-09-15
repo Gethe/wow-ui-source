@@ -18,9 +18,9 @@ local CombatAudioAlertShared =
 		{
 			Name = "CombatAudioAlertCategory",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "General", Type = "CombatAudioAlertCategory", EnumValue = 0 },
@@ -32,6 +32,7 @@ local CombatAudioAlertShared =
 				{ Name = "PlayerResource2", Type = "CombatAudioAlertCategory", EnumValue = 6 },
 				{ Name = "PartyHealth", Type = "CombatAudioAlertCategory", EnumValue = 7 },
 				{ Name = "PlayerDebuffs", Type = "CombatAudioAlertCategory", EnumValue = 8 },
+				{ Name = "PlayerHealthPulse", Type = "CombatAudioAlertCategory", EnumValue = 9 },
 			},
 		},
 		{
@@ -140,6 +141,26 @@ local CombatAudioAlertShared =
 				{ Name = "NoResourceFull", Type = "CombatAudioAlertPlayerResourceFormatValues", EnumValue = 3 },
 				{ Name = "NoResourceNoPercent", Type = "CombatAudioAlertPlayerResourceFormatValues", EnumValue = 4 },
 				{ Name = "NoResourceNoPercentDiv10", Type = "CombatAudioAlertPlayerResourceFormatValues", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertPulsePercentValues",
+			Type = "Enumeration",
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 9,
+			Fields =
+			{
+				{ Name = "Off", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 0 },
+				{ Name = "Under90Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 1 },
+				{ Name = "Under80Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 2 },
+				{ Name = "Under70Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 3 },
+				{ Name = "Under60Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 4 },
+				{ Name = "Under50Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 5 },
+				{ Name = "Under40Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 6 },
+				{ Name = "Under30Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 7 },
+				{ Name = "Under20Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 8 },
+				{ Name = "Under10Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 9 },
 			},
 		},
 		{

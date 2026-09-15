@@ -196,7 +196,7 @@ local DamageMeter =
 			Documentation = { "Aggregated data for a single source (unit) in a damage meter combat session." },
 			Fields =
 			{
-				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true, ConditionalSecret = true },
 				{ Name = "sourceCreatureID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "classFilename", Type = "cstring", Nilable = false, NeverSecret = true },

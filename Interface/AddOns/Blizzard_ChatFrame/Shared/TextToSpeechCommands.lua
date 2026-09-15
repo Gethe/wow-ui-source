@@ -84,6 +84,12 @@ local function GetNumericValueForNarration(value)
 	return TEXTTOSPEECH_NEGATIVE_QUANTITY_FORMAT:format(math.abs(value));
 end
 
+-- Speech engines read a colon next to a bracket as an emoticon ("sound:[1 - 93]" becomes "sound sad smiley face 1 to 93"), so break the sequence up for narration only.
+local function GetNarrationSafeText(text)
+	local narrationSafeText = text:gsub("([:;])([%(%)%[%]])", "%1 %2");
+	return narrationSafeText;
+end
+
 function TextToSpeechCommandsMixin:GetCommandHelpText(cmd)
 	-- A command may have multiple help text entries, each will display separately.
 	local helpTextEntries = {};
@@ -172,7 +178,7 @@ function TextToSpeechCommandsMixin:PlayMessage(narratedText)
 end
 
 function TextToSpeechCommandsMixin:SpeakConfirmation(displayText, narratedText, skipQueue)
-	narratedText = narratedText or displayText;
+	narratedText = GetNarrationSafeText(narratedText or displayText);
 
 	if skipQueue then
 		self:PlayMessage(narratedText);
@@ -800,6 +806,45 @@ do
 	CAACommands:AddCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, CAA_InterruptCastSuccessHandler, "CAAInterruptCastSuccess", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_NARRATED, INTERRUPT_CAST_SUCCESS_DISABLED, INTERRUPT_CAST_SUCCESS_ENABLED, nil, nil, formattedSoundHelpText);
 end
 
+-- Pulse Your Health
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local PULSE_HEALTH_MIN = Enum.CombatAudioAlertPulsePercentValuesMeta.MinValue;
+	local PULSE_HEALTH_MAX = Enum.CombatAudioAlertPulsePercentValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
+				local cvarVal = index - 1;
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_PulseYourHealthHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= PULSE_HEALTH_MIN and cvarVal <= PULSE_HEALTH_MAX then
+			local info = CombatAudioAlertUtil.GetPulseHealthPercentInfo(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_PULSE_PLAYER_HEALTH_LABEL, info.str));
+			SetCVar("CAAPulsePlayerHealthPercent", cvarVal);
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_PULSE_YOUR_HEALTH, CAA_PulseYourHealthHandler, nil, SLASH_CAA_HELP_PULSE_YOUR_HEALTH, SLASH_CAA_PULSE_YOUR_HEALTH_NARRATED, PULSE_HEALTH_MIN, PULSE_HEALTH_MAX);
+end
+
+-- Pulse Your Health Volume
+AddCAAVolumeCommand(SLASH_CAA_PULSE_YOUR_HEALTH_VOLUME, SLASH_CAA_HELP_PULSE_YOUR_HEALTH_VOLUME, SLASH_CAA_PULSE_YOUR_HEALTH_VOLUME_NARRATED, SLASH_CAA_PULSE_YOUR_HEALTH_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerHealthPulse);
+
 -- Say Your Health
 do
 	local function CAA_SayYourHealthHandler(cmd, arg)
@@ -1197,9 +1242,9 @@ do
 
 		local cvarVal = tonumber(arg);
 		if cvarVal and cvarVal >= SAY_PARTY_HEALTH_MIN and cvarVal <= SAY_PARTY_HEALTH_MAX then
-			C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, cvarVal);
 			local info = CombatAudioAlertUtil.GetPartyHealthPercentInfo(cvarVal);
 			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_PARTY_HEALTH_LABEL, info.str));
+			SetCVar("CAAPartyHealthPercent", cvarVal);
 			return true;
 		end
 

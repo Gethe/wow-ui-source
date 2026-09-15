@@ -13,6 +13,7 @@ local CombatAudioAlertConstants =
 				{ Name = "CAASayCombatEndDefault", Type = "bool", Value = true },
 				{ Name = "CAAPlayerHealthPercentDefault", Type = "number", Value = 0 },
 				{ Name = "CAAPlayerHealthFormatDefault", Type = "number", Value = 1 },
+				{ Name = "CAAPulsePlayerHealthPercentDefault", Type = "number", Value = 0 },
 				{ Name = "CAATargetNameDefault", Type = "bool", Value = true },
 				{ Name = "CAATargetHealthPercentDefault", Type = "number", Value = 2 },
 				{ Name = "CAATargetHealthFormatDefault", Type = "number", Value = 3 },

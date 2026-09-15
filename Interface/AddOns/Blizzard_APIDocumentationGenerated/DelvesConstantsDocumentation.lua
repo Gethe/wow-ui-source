@@ -104,6 +104,8 @@ local DelvesConstants =
 				{ Name = "DELVES_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
 				{ Name = "DELVES_COMPANION_INFO_SELECTION_CHARACTER_DATA_ELEMENT_ID", Type = "number", Value = 13 },
 				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
+				{ Name = "DELVES_COMPANION_BRANN_CREATURE_ID", Type = "number", Value = 210759 },
+				{ Name = "DELVES_COMPANION_VALEERA_CREATURE_ID", Type = "number", Value = 248567 },
 			},
 		},
 		{

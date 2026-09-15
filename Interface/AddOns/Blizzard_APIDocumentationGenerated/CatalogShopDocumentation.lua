@@ -772,6 +772,7 @@ local CatalogShop =
 				{ Name = "decorQuantity", Type = "DecorQuantity", Nilable = true },
 				{ Name = "isVCProduct", Type = "bool", Nilable = false },
 				{ Name = "containsHousingItem", Type = "bool", Nilable = false },
+				{ Name = "deferredGameTimeDays", Type = "number", Nilable = false },
 			},
 		},
 		{

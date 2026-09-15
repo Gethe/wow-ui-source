@@ -277,6 +277,19 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		iconFrame.Icon:SetAtlas(atlas);
 		iconFrame.IconBorder:Hide();
 		iconFrame.Icon:SetSize(224, 224);
+	elseif productType == CatalogShopConstants.ProductType.Subscription or productType == CatalogShopConstants.ProductType.GameTime then
+		-- Both sub time and game time have the same display type, but their Atlases are distinct
+		CatalogShopFrame.ServicesContainerFrame:Show();
+		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
+		iconFrame.ProductCounter:Hide();
+		iconFrame.ProductCounterText:Hide();
+		iconFrame.IconBorder:Hide();
+		iconFrame.Icon:SetSize(320, 320);
+
+		local timeTexture = CatalogShopUtil.GetTimeTexture(self.selectedProductInfo, productType);
+		if timeTexture then
+			iconFrame.Icon:SetAtlas(timeTexture);
+		end
 	elseif displayInfo.hasUnknownLicense then
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
@@ -303,19 +316,6 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 			iconFrame.ProductCounterText:Hide();
 		end
 		iconFrame.Icon:SetSize(224, 224);
-	elseif productType == CatalogShopConstants.ProductType.Subscription or productType == CatalogShopConstants.ProductType.GameTime then
-		-- Both sub time and game time have the same display type, but their Atlases are distinct
-		CatalogShopFrame.ServicesContainerFrame:Show();
-		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
-		iconFrame.ProductCounter:Hide();
-		iconFrame.ProductCounterText:Hide();
-		iconFrame.IconBorder:Hide();
-		iconFrame.Icon:SetSize(320, 320);
-
-		local timeTexture = CatalogShopUtil.GetTimeTexture(self.selectedProductInfo, productType);
-		if timeTexture then
-			iconFrame.Icon:SetAtlas(timeTexture);
-		end
 	elseif productType == CatalogShopConstants.ProductType.TradersTenders then
 		CatalogShopFrame.ServicesContainerFrame:Show();
 		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;

@@ -37,6 +37,20 @@ local function RemoveDisplayElement(displayElements, element)
 	end
 end
 
+local function PlayAnimationGroups(animationGroups)
+	for _index, displayElement in ipairs(animationGroups) do
+		local animationGroup = UnpackDisplayElement(displayElement);
+		animationGroup:Play();
+	end
+end
+
+local function StopAnimationGroups(animationGroups)
+	for _index, displayElement in ipairs(animationGroups) do
+		local animationGroup = UnpackDisplayElement(displayElement);
+		animationGroup:Stop();
+	end
+end
+
 local function GetStatusBarInterpolationForUpdateMode(interpolation, updateMode)
 	if updateMode == Enum.CustomAuraButtonUpdateMode.Update then
 		return interpolation;
@@ -297,6 +311,32 @@ function CustomAuraButtonSharedMixin:ClearPandemicLeaveAnimations()
 	self.pandemicLeaveAnimations = {};
 end
 
+function CustomAuraButtonSharedMixin:AddAuraAssignedAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.auraAssignedAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemoveAuraAssignedAnimation(animationGroup)
+	RemoveDisplayElement(self.auraAssignedAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraAssignedAnimations()
+	self.auraAssignedAnimations = {};
+end
+
+function CustomAuraButtonSharedMixin:AddAuraShownAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.auraShownAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemoveAuraShownAnimation(animationGroup)
+	RemoveDisplayElement(self.auraShownAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraShownAnimations()
+	self.auraShownAnimations = {};
+end
+
 function CustomAuraButtonSharedMixin:GetSpellName()
 	return ExportDisplayElement(self.spellName);
 end
@@ -347,6 +387,8 @@ function CustomAuraButtonPrivateMixin:OnLoad_Intrinsic()
 	self.pandemicEnterAnimations = {};
 	self.pandemicActiveAnimations = {};
 	self.pandemicLeaveAnimations = {};
+	self.auraAssignedAnimations = {};
+	self.auraShownAnimations = {};
 	self.pandemicStartTime = nil;
 	self.pandemicEndTime = nil;
 	self.pandemicUpdateSignal = AuraButtonTimedSignalMap:RegisterCallback(function() self:UpdatePandemicDisplay(); end);
@@ -639,8 +681,27 @@ function CustomAuraButtonPrivateMixin:ApplySpellName(_unitToken, auraData)
 	end
 end
 
+function CustomAuraButtonPrivateMixin:ApplyAuraAssignmentAnimations(_unitToken, auraData, updateMode)
+	if updateMode == Enum.CustomAuraButtonUpdateMode.Assignment then
+		StopAnimationGroups(self.auraAssignedAnimations);
+
+		if auraData ~= nil then
+			PlayAnimationGroups(self.auraAssignedAnimations);
+		end
+	end
+end
+
 function CustomAuraButtonPrivateMixin:ApplyVisibility(_unitToken, auraData)
-	self:SetShown(secretwrap(auraData ~= nil));
+	local wasAuraShown = self:IsShown();
+	local isAuraShown = auraData ~= nil;
+
+	self:SetShown(secretwrap(isAuraShown));
+
+	if isAuraShown and not wasAuraShown then
+		PlayAnimationGroups(self.auraShownAnimations);
+	elseif not isAuraShown then
+		StopAnimationGroups(self.auraShownAnimations);
+	end
 end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, updateMode)
@@ -655,6 +716,7 @@ function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, upd
 	self:ApplyCasterName(unitToken, auraData);
 	self:ApplySpellName(unitToken, auraData);
 	self:ApplyPandemicDisplay(unitToken, auraData, updateMode);
+	self:ApplyAuraAssignmentAnimations(unitToken, auraData, updateMode);
 	self:ApplyVisibility(unitToken, auraData);
 end
 
@@ -677,20 +739,6 @@ function CustomAuraButtonPrivateMixin:IsInPandemicWindow()
 	end
 
 	return false;
-end
-
-local function PlayAnimationGroups(animationGroups)
-	for _index, displayElement in ipairs(animationGroups) do
-		local animationGroup = UnpackDisplayElement(displayElement);
-		animationGroup:Play();
-	end
-end
-
-local function StopAnimationGroups(animationGroups)
-	for _index, displayElement in ipairs(animationGroups) do
-		local animationGroup = UnpackDisplayElement(displayElement);
-		animationGroup:Stop();
-	end
 end
 
 function CustomAuraButtonPrivateMixin:EnterPandemicWindow()

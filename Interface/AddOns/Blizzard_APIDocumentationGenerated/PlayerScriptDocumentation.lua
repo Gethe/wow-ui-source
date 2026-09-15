@@ -691,6 +691,7 @@ local PlayerScript =
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "realmName", Type = "cstring", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = true },
 			},
 		},
 		{

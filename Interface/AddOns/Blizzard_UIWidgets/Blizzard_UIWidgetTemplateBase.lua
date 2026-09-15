@@ -1338,7 +1338,7 @@ local scenarioHeaderTextureKitInfo =
 	["jailerstower-scenario-nodeaths"] = {fontObject = GameFontNormalLarge, fontMinLineHeight = 16, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
 	["plunderstorm-scenariotracker-active"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
 	["plunderstorm-scenariotracker-waiting"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
-	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
+	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, headerTextWidth = 188, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
 }
 
 local scenarioHeaderDefaultFontObject = GameFontNormalMed3;

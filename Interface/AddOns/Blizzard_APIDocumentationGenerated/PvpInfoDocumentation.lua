@@ -596,7 +596,20 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetRandomTrainingGroundRewards",
+			Name = "GetRandomTrainingGroundArenaRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRandomTrainingGroundBGRewards",
 			Type = "Function",
 
 			Returns =
@@ -843,12 +856,21 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "HasRandomTrainingGroundWinToday",
+			Name = "HasRandomTrainingGroundArenaWinToday",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "hasRandomTrainingGroundWinToday", Type = "bool", Nilable = false },
+				{ Name = "hasRandomTrainingGroundArenaWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasRandomTrainingGroundBGWinToday",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasRandomTrainingGroundBGWinToday", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1133,7 +1155,7 @@ local PvpInfo =
 			Type = "Function",
 		},
 		{
-			Name = "JoinRandomTrainingGroundBattleground",
+			Name = "JoinRandomTrainingGroundBG",
 			Type = "Function",
 		},
 		{

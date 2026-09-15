@@ -62,7 +62,7 @@ function TieredEntranceTraitsContainerMixin:Update(numTraits, traitTreeID, spell
 	else
 		self:SetEnabled(true);
 		local displayInfo = C_ScenarioInfo.GetDisplayInfo();
-		if displayInfo then
+		if displayInfo and displayInfo.themeColor then
 			self.ThemeOverlay:Show();
 			self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
 		else

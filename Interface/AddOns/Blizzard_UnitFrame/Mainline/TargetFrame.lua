@@ -319,47 +319,12 @@ function TargetFrameMixin:CheckFaction()
 
 	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
 	if (self.showPVP and (not unitFramePvPContextualDisabled)) then
-		local factionGroup = UnitFactionGroup(self.unit);
 		local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
-		if (UnitIsPVPFreeForAll(self.unit)) then
-			local honorLevel = UnitHonorLevel(self.unit);
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-			if (honorRewardInfo) then
-				targetFrameContentContextual.PrestigePortrait:SetAtlas("honorsystem-portrait-neutral", TextureKitConstants.IgnoreAtlasSize);
-				targetFrameContentContextual.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-				targetFrameContentContextual.PrestigePortrait:Show();
-				targetFrameContentContextual.PrestigeBadge:Show();
-				targetFrameContentContextual.PvpIcon:Hide();
-			else
-				targetFrameContentContextual.PrestigePortrait:Hide();
-				targetFrameContentContextual.PrestigeBadge:Hide();
-				targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
-				targetFrameContentContextual.PvpIcon:Show();
-			end
-		elseif (factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit)) then
-			local honorLevel = UnitHonorLevel(self.unit);
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-			if (honorRewardInfo) then
-				targetFrameContentContextual.PrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
-				targetFrameContentContextual.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-				targetFrameContentContextual.PrestigePortrait:Show();
-				targetFrameContentContextual.PrestigeBadge:Show();
-				targetFrameContentContextual.PvpIcon:Hide();
-			else
-				targetFrameContentContextual.PrestigePortrait:Hide();
-				targetFrameContentContextual.PrestigeBadge:Hide();
-				if (factionGroup == "Horde") then
-					targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-				elseif (factionGroup == "Alliance") then
-					targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-				end
-				targetFrameContentContextual.PvpIcon:Show();
-			end
-		else
-			targetFrameContentContextual.PrestigePortrait:Hide();
-			targetFrameContentContextual.PrestigeBadge:Hide();
-			targetFrameContentContextual.PvpIcon:Hide();
-		end
+		UnitFrameUtil.UpdateUnitPvPIndicator({
+			pvpIcon = targetFrameContentContextual.PvpIcon,
+			prestigePortrait = targetFrameContentContextual.PrestigePortrait,
+			prestigeBadge = targetFrameContentContextual.PrestigeBadge,
+		}, self.unit);
 	end
 end
 

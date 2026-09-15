@@ -49,6 +49,7 @@ local UnitConstants =
 				{ Name = "soundFileName", Type = "string", Nilable = true },
 				{ Name = "soundFileID", Type = "number", Nilable = true },
 				{ Name = "outputChannel", Type = "string", Nilable = true },
+				{ Name = "throttleSeconds", Type = "number", Nilable = true },
 			},
 		},
 		{

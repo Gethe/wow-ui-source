@@ -43,6 +43,10 @@ function ChatFrameMixin:OnLoad()
 	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and
 	-- FCF_FadeOutScrollbar.
 	self.ScrollBar:SetAlpha(0);
+
+	local flashAnim = self.ScrollToBottomButton.Flash.FlashAnim;
+	flashAnim.FadeIn:SetEndDelay(ChatFrameConstants.ScrollToBottomFlashInterval);
+	flashAnim.FadeOut:SetEndDelay(ChatFrameConstants.ScrollToBottomFlashInterval);
 end
 
 
@@ -75,7 +79,7 @@ local function ShouldAddRecentAllyIconToName(frameChatType, senderGUID)
 	-- Don't add the icon if the chat frame is a whisper window
 	if not senderGUID or isWhisper then
 		return false;
-	end 
+	end
 
 	return C_RecentAllies.IsRecentAllyByGUID(senderGUID);
 end
@@ -409,7 +413,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 		elseif (type == "PING") then
 			-- arg2 is formatted natively for pings, containing potientially role text
 			local outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type), arg2);
-			
+
 			--Add Timestamps
 			local chatTimestampFmt = ChatFrameUtil.GetTimestampFormat();
 			if ( chatTimestampFmt ) then
@@ -700,12 +704,12 @@ function ChatFrameMixin:OnUpdate(elapsedSec)
 	if flash then
 		local shouldFlash = not self:AtBottom();
 
-		if shouldFlash ~= UIFrameIsFlashing(flash) then
+		if shouldFlash ~= flash.FlashAnim:IsPlaying() then
 			if shouldFlash then
-				UIFrameFlash(flash, .1, .1, -1, false, ChatFrameConstants.ScrollToBottomFlashInterval, ChatFrameConstants.ScrollToBottomFlashInterval);
+				ChatFrameUtil.StartFlash(flash, flash.FlashAnim);
 				FCF_FadeInScrollbar(self);
 			else
-				UIFrameFlashStop(flash);
+				ChatFrameUtil.StopFlash(flash, flash.FlashAnim, false);
 			end
 		end
 	end

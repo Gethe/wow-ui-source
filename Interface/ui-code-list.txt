@@ -3919,6 +3919,7 @@ Interface\AddOns\Blizzard_UnitFrame\Mainline\TargetFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrame.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrameUtil.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.xml
 Interface\AddOns\Blizzard_UnitFrame\Shared\CompactPartyFrame.lua

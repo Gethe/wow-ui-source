@@ -43,7 +43,7 @@
 				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
 				<Texture name="$parentOverHealAbsorbGlow" parentKey="overHealAbsorbGlow"/>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
+			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight" atlas="RaidFrame-AgroFrame" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">

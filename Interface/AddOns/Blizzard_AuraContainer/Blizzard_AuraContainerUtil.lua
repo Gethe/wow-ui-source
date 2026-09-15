@@ -110,6 +110,11 @@ function AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, can
 				return false;
 			end
 		end
+	elseif candidateFilters.includeSpellIDs ~= nil then
+		-- Testing exact spell IDs isn't permitted on this unit. If, however,
+		-- the filters are set up to only show explicitly included auras then
+		-- apply a by-default rejection of all unfilterable spells.
+		return false;
 	end
 
 	if candidateFilters.processedAuraType ~= nil and auraData.processedAuraType ~= candidateFilters.processedAuraType then
@@ -395,6 +400,8 @@ function AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, owner
 	for _index, target in ipairs(targets) do
 		target = AuraContainerUtil.InitializeInboundScriptObject(target);
 		target:AddSecretAspect(Enum.SecretAspect.Alpha);
+		target:AddSecretAspect(Enum.SecretAspect.VertexColor);
+		target:AddSecretAspect(Enum.SecretAspect.TexCoords);
 	end
 
 	return animationGroup;
