@@ -1,0 +1,98 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="AuctionCategoryButtonTemplate" parentArray="FilterButtons" inherits="TruncatedTooltipScriptTemplate" virtual="true">
+		<Size x="132" y="21"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Lines" atlas="auctionhouse-nav-button-tertiary-filterline" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="18" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+					<Size x="136" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" atlas="auctionhouse-nav-button-select" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="AuctionFrameFilter_OnLoad"/>
+			<OnEnter function="AuctionFrameFilter_OnEnter"/>
+			<OnLeave function="AuctionFrameFilter_OnLeave"/>
+			<OnMouseDown function="AuctionFrameFilter_OnMouseDown"/>
+			<OnMouseUp function="AuctionFrameFilter_OnMouseUp"/>
+		</Scripts>
+		<ButtonText parentKey="Text" justifyH="LEFT">
+			<Size x="0" y="8"/>
+			<Anchors>
+				<Anchor point="LEFT" x="4" y="0"/>
+				<Anchor point="RIGHT" x="-4" y="0"/>
+			</Anchors>
+			<Shadow>
+				<Offset>
+					<AbsDimension x="1" y="-1"/>
+				</Offset>
+				<Color r="0" g="0" b="0"/>
+			</Shadow>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+	</Button>
+
+	<Frame name="AuctionHouseCategoriesListTemplate" mixin="AuctionHouseCategoriesListMixin" virtual="true">
+		<Size x="168" y="438"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+			<KeyValue key="backgroundAtlas" value="auctionhouse-background-categories" type="string"/>
+			<KeyValue key="textureWidthClassic" value="138" type="number"/>
+			<KeyValue key="textureHeightClassic" value="434" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowClassicScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="-4"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\QuestFrame\UI-TextBackground-BackdropBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnShow method="OnShow"/>
+			</Scripts>
+	</Frame>
+</Ui>

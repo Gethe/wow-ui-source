@@ -1,0 +1,27 @@
+## Title: Blizzard_Commentator
+## SavedVariables: CommentatorSave
+## Dependencies: Blizzard_UIModes, Blizzard_GameMenuEsc
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+
+Blizzard_Commentator_Bootstrap.lua [Bootstrap]
+FadeToBlack.xml
+CommentatorVictoryFanfare.xml
+
+Blizzard_CommentatorConstants.lua
+Blizzard_CommentatorUtil.lua
+Blizzard_CommentatorScoreboard.lua
+Mainline/Blizzard_CommentatorScoreboard.xml
+Mainline/Blizzard_CommentatorSpell.lua
+Mainline/Blizzard_CommentatorSpell.xml
+Blizzard_CommentatorSpellTray.lua
+Mainline/Blizzard_CommentatorSpellTray.xml
+Mainline/Blizzard_CommentatorModelScene.lua
+Mainline/Blizzard_CommentatorModelScene.xml
+Mainline/Blizzard_CommentatorUnitFrame.lua
+Mainline/Blizzard_CommentatorUnitFrame.xml
+Blizzard_CommentatorNamePlate.lua
+Mainline/Blizzard_CommentatorNamePlate.xml
+Mainline/Blizzard_Commentator.lua
+Mainline/Blizzard_Commentator.xml

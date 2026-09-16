@@ -1,0 +1,56 @@
+local LevelSquish =
+{
+	Name = "LevelSquish",
+	Type = "System",
+	Namespace = "C_LevelSquish",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "ConvertFollowerLevel",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "maxFollowerLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "squishedLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ConvertPlayerLevel",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "squishedLevel", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(LevelSquish);

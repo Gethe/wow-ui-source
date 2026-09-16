@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LFGReadyCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true" mixin="LFGReadyCheckPopupMixin">
+		<Size x="306" y="100"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="-35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="YesButton" inherits="UIPanelButtonTemplate" text="READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOP" x="-7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CompleteLFGReadyCheck(true);
+						LFGReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CompleteLFGReadyCheck(false);
+						LFGReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

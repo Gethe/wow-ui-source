@@ -1,0 +1,117 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="InspectPvpStatTemplate" virtual="true">
+		<Size x="320" y="88"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentBGType" parentKey="BGType" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-28"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="RatingLabel" inherits="GameFontNormal" text="PVP_RATING">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGType" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Rating" inherits="GameFontHighlight" text="0">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RatingLabel" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WinsLabel" inherits="GameFontNormal" text="WINS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGType" relativePoint="BOTTOMLEFT" x="110" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Wins" inherits="GameFontHighlight" text="0">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WinsLabel" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="InspectPVPFrame" enableMouse="true" parent="InspectFrame" hidden="true" useParentLevel="true" setAllPoints="true" id="2" mixin="InspectPVPFrameMixin">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\PVPFrame\PVP-Conquest-Misc">
+					<Size x="320" y="355"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-64"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.888"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Div1" file="Interface\Common\UI-TooltipDivider">
+					<Size x="315" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BG" relativePoint="TOPLEFT" x="2" y="-88"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Div2" file="Interface\Common\UI-TooltipDivider">
+					<Size x="315" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Div1" x="0" y="-88"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Div3" file="Interface\Common\UI-TooltipDivider">
+					<Size x="315" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Div2" x="0" y="-88"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RatedBG" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BG"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(PVP_RATED_BATTLEGROUNDS);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Arena2v2" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RatedBG" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(ARENA_BATTLES_2V2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Arena3v3" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena2v2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(ARENA_BATTLES_3V3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Arena5v5" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(ARENA_BATTLES_5V5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

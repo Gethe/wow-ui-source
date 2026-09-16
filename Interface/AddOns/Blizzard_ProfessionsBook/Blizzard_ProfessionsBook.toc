@@ -1,0 +1,7 @@
+## Title: Blizzard Professions Book
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HelpPlate
+
+Blizzard_ProfessionsBook_Bootstrap.lua [Bootstrap]
+Blizzard_ProfessionsBook.lua
+Blizzard_ProfessionsBook.xml

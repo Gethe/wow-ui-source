@@ -1,0 +1,270 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="RaidFinderRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				local showDisabled = false;
+				self:SetNormalAtlas(GetIconForRole(self.role, showDisabled));
+				self.background:SetAtlas(GetBackgroundForRole(self.role), TextureKitConstants.IgnoreAtlasSize);
+				self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Frame name="RaidFinderFrame" useParentLevel="true" parent="GroupFinderFrame" hidden="true">
+		<Size x="338" y="428"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="224" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentRoleBackground">
+					<Size x="321" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-28"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="1" g="0" b="0" a="0.0"/>
+						<MaxColor r="1" g="0.5" b="0" a="0.2"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NoRaidsCover" enableMouse="true" hidden="true" frameStrata="HIGH" toplevel="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-25"/>
+					<Anchor point="BOTTOMLEFT" x="3" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="320" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRoleInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-26" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-6" y="-109" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="217" y="496"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-144" />
+					<Anchor point="BOTTOMRIGHT" x="-4" y="26" />
+				</Anchors>
+			</Frame>
+			<Frame name="RaidFinderQueueFrame">
+				<Size x="338" y="428"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER">
+							<Size x="512" y="256"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="28"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentRoleButtonTank" inherits="RaidFinderRoleButtonTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="role" value="TANK" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="50" y="336"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonHealer" inherits="RaidFinderRoleButtonTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="role" value="HEALER" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="25" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonDPS" inherits="RaidFinderRoleButtonTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="role" value="DAMAGER" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="23" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonLeader" inherits="LFGRoleButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonDPS" relativePoint="RIGHT" x="32" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local showDisabled = false;
+								self:SetNormalAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
+								showDisabled = true;
+								self:SetDisabledAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
+								self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, true);
+								LFGFrameRoleCheckButton_OnEnter(self);
+							</OnEnter>
+						</Scripts>
+					</Button>
+					<DropdownButton parentKey="SelectionDropdown" name="$parentSelectionDropdown" inherits="WowStyle1DropdownTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="131" y="289"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="RAID">
+									<Size x="115" y="24"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</DropdownButton>
+					<ScrollFrame name="$parentScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="6" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-2" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+						</KeyValues>
+						<Size x="303" y="253"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-29" y="28"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="$parentChildFrame" inherits="LFGRewardFrameTemplate">
+								<Scripts>
+									<OnShow>
+										RaidFinderQueueFrameRewards_UpdateFrame();
+									</OnShow>
+								</Scripts>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								LFGBackfillCover_SetUp(self, {LFG_SUBTYPEID_RAID}, LE_LFG_CATEGORY_RF, RaidFinderFrameFindRaidButton_Update);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								LFGCooldownCover_SetUp(self, self:GetParent().PartyBackfill);
+								LFGCooldownCover_ChangeSettings(self, false, false);
+							</OnLoad>
+							<OnShow>
+								RaidFinderFrameFindRaidButton_Update();
+							</OnShow>
+							<OnHide>
+								RaidFinderFrameFindRaidButton_Update();
+							</OnHide>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentIneligibleFrame" hidden="true" enableMouse="true">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="" justifyH="CENTER" parentKey="description">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="-0" y="-70"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" parentKey="leaveQueueButton">
+								<Size x="153" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(RaidFinderQueueFrameCooldownFrame:GetFrameLevel() + 2);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="RaidFinderQueueFrame_OnLoad"/>
+					<OnShow function="RaidFinderQueueFrame_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Button name="$parentFindRaidButton" inherits="MagicButtonTemplate" text="FIND_RAID" motionScriptsWhileDisabled="true">
+				<Size x="135" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
+						if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
+							LeaveSingleLFG(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
+						else
+							RaidFinderQueueFrame_Join();
+						end
+					</OnClick>
+					<OnEnter>
+						if ( self.disabledTooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="RaidFinderFrame_OnLoad"/>
+			<OnEvent function="RaidFinderFrame_OnEvent"/>
+			<OnShow function="RaidFinderFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

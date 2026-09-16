@@ -1,0 +1,125 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+<!--
+*******************************************************************************
+	Dialog Header Template
+
+	Header used for dialogs
+*******************************************************************************
+-->
+	<Frame name="DialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
+		<Size x="200" y="39"/>
+		<KeyValues>
+			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+			<KeyValue key="headerTextPadding" value="64" type="number"/>
+
+			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
+			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="11" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeftBG" atlas="UI-Frame-DiamondMetal-Header-CornerLeft" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBG" atlas="UI-Frame-DiamondMetal-Header-CornerRight" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterBG" atlas="_UI-Frame-DiamondMetal-Header-Tile" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftBG" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBG" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
+	Dialog Border Templates
+
+	This family of borders are used when you want your frame to look like a
+	dialog.
+*******************************************************************************
+-->
+	<Frame name="DialogBorderNoCenterTemplate" useParentLevel="true" inherits="NineSlicePanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="Dialog" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="DialogBorderTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderDarkTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderTranslucentTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderOpaqueTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+</Ui>

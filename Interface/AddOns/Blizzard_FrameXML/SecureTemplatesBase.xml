@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!-- A base template for secure frames -->
+	<Frame name="SecureFrameTemplate" protected="true" propagateMouseInputMask="Clicks" virtual="true"/>
+
+	<!-- A variant of SecureFrameTemplate that will propagate all attribute queries to the parent -->
+	<Frame name="SecureFrameParentPropagationTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="useparent*" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+	<!-- Insecure Templates for use by addons -->
+	<Frame name="InsecureMouseMotionPropagatorTemplate" propagateMouseInput="Motion" virtual="true"/>
+	<Frame name="InsecureMouseClicksPropagatorTemplate" propagateMouseInput="Clicks" virtual="true"/>
+	<Frame name="InsecureKeyboardInputPropagatorTemplate" propagateKeyboardInput="true" virtual="true"/>
+	<Frame name="InsecureHyperlinkPropagatorTemplate" propagateHyperlinksToParent="true" virtual="true"/>
+</Ui>

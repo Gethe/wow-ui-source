@@ -1,0 +1,17 @@
+## Title: Blizzard Restricted AddOn Environment
+## AllowLoad: Game
+## AllowLoadGameType: classic, standard
+## Dependencies: Blizzard_FrameXML
+
+RestrictedInfrastructure.lua
+RestrictedEnvironment.lua [LoadIntoEnvironment secure]
+RestrictedExecution.lua
+RestrictedFrames.lua
+SecureHandlers.lua
+SecureHandlerTemplates.xml
+SecureStateDriver.lua
+SecureHoverDriver.lua
+SecureGroupHeaders.lua
+SecureGroupHeaders.xml
+SecureAuraHeader.lua [AllowLoadGameType classic]
+SecureAuraHeader.xml [AllowLoadGameType classic]

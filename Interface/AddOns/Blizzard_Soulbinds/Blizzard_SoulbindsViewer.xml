@@ -1,0 +1,386 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SoulbindsViewer.lua"/>
+
+	<Button name="SoulbindsUndoButtonTemplate" virtual="true">
+		<Size x="18" y="17"/>
+		<NormalTexture atlas="Soulbinds_Tree_Undo"/>
+		<HighlightTexture atlas="Soulbinds_Tree_Undo" alphaMode="ADD" alpha=".2"/>
+		<DisabledTexture atlas="Soulbinds_Tree_Undo" desaturated="true"/>
+	</Button>
+	
+	<Frame name="SoulbindViewer" mixin="SoulbindViewerMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
+		<Size x="939" y="926"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Background2" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-25"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="ConduitPreview" atlas="Soulbinds_Background_NoConduits" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="BackgroundBlackOverlay" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+					<Color a=".3"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="4">
+				<Texture parentKey="ActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="205" y="-45"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="ActivateFX2" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ActivateFX" relativePoint="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="5">
+				<Texture parentKey="ForgeSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Alpha order="1" fromAlpha="0" toAlpha="0" duration="4"/>
+							<Translation order="2" offsetX="-1422" offsetY="0"/>
+							<Translation order="2" offsetX="1941" offsetY="0" duration="5.9"/>
+							<Translation order="2" offsetX="-1422" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Alpha order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
+							<Alpha order="2" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="BackgroundSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Translation order="1" offsetX="941" offsetY="0"/>
+							<Translation order="1" offsetX="-2140" offsetY="0" startDelay="0" duration="40.9" />
+							<Translation order="1" offsetX="941" offsetY="0" startDelay="40.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.06" startDelay="0" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0.06" toAlpha="0" startDelay="40.8" duration="0.1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="GridSheen" atlas="soulbinds_backgroundfx_gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="320" y="320"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER" x="-91" y="32"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Alpha order="1" fromAlpha="0" toAlpha="0" duration="1.4"/>
+							<Scale smoothing="IN" duration="5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="14" toScaleY="14"/>
+							<Scale smoothing="IN" duration=".1" order="3" fromScaleX="1" fromScaleY="1" toScaleX=".001" toScaleY=".001" startDelay="1"/>
+							<Alpha order="2" fromAlpha="0" toAlpha=".3" startDelay="0" duration=".1"/>
+							<Alpha order="2" fromAlpha=".3" toAlpha="0" startDelay=".1" duration="10.5"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+
+				<Texture parentKey="BackgroundRuneLeft" atlas="soulbinds_tree_activatefx_runes1" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER" x="-330" y="44"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Translation order="1" offsetX="0" offsetY="100"/>
+							<Translation order="1" offsetX="0" offsetY="-250" startDelay="0" duration="15.9" />
+							<Translation order="1" offsetX="0" offsetY="100" startDelay="15.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.1" startDelay="0" duration="8"/>
+							<Alpha order="1" fromAlpha="0.1" toAlpha="0" startDelay="8" duration="8"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="BackgroundRuneRight" atlas="soulbinds_tree_activatefx_runes2" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER" x="150" y="44"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Translation order="1" offsetX="0" offsetY="-50"/>
+							<Translation order="1" offsetX="0" offsetY="150" startDelay="0" duration="11.9" />
+							<Translation order="1" offsetX="0" offsetY="-50" startDelay="11.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.07" startDelay="0" duration="6"/>
+							<Alpha order="1" fromAlpha=".07" toAlpha="0" startDelay="6" duration="6"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<MaskTexture parentKey="ForgeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_forge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ForgeSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="BackgroundMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BackgroundRuneLeft"/>
+						<MaskedTexture childKey="BackgroundRuneRight"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="FullMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_full">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BackgroundSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="GridMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_grid">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="GridSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<Texture parentKey="ShadowTop" atlas="_Soulbinds_ShadowHorizontal" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+						<Anchor point="TOPRIGHT" x="-20" y="-20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShadowBottom" atlas="_Soulbinds_ShadowHorizontal" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShadowLeft" atlas="!Soulbinds_ShadowVertical" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+						<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShadowRight" atlas="!Soulbinds_ShadowVertical" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-20" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="6">
+				<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Fx" setAllPoints="true" frameLevel="120">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture parentKey="ActivateFXLensFlare1" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_LensFlare" useAtlasSize="false">
+							<Size x="9367" y="387"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-50"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha=".5" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXLensFlare2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_LensFlare" useAtlasSize="false">
+							<Size x="1367" y="387"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.ActivateFX" relativePoint="CENTER" x="20"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Rotation smoothing="NONE" duration="0" order="1" degrees="90"/>
+									<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha=".05" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRunes1" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Runes1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.ActivateFX" relativePoint="LEFT" x="92" y="-18"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha=".2" toAlpha="0"/>
+									<Translation startDelay="0" offsetX="0" offsetY="-20" duration="1.4" order="1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRunes2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Runes2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.ActivateFX" relativePoint="RIGHT" x="-88" y="155"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay="0" duration="1.4" order="1" fromAlpha=".2" toAlpha="0"/>
+									<Translation startDelay="0" offsetX="0" offsetY="20" duration="1.4" order="1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXDiamond" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Diamond" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.ActivateFX" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha childKey="ActivateFXDiamond" smoothing="OUT" order="1" startDelay="0" duration="1.4" fromAlpha="1" toAlpha="0"/>
+									<Scale childKey="ActivateFXDiamond" smoothing="OUT" order="1" duration="0.3" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+									<Scale childKey="ActivateFXDiamond" smoothing="OUT" order="1" startDelay="0.3" duration="1.1" fromScaleX="1" fromScaleY="1" toScaleX="0.9" toScaleY="0.9"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXDiamondArrows" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_DiamondArrows" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFXDiamond" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha childKey="ActivateFXDiamondArrows" smoothing="OUT" startDelay="0" order="1" duration="1.4" fromAlpha="1" toAlpha="0"/>
+									<Scale childKey="ActivateFXDiamondArrows" smoothing="OUT" duration="0.28" order="1" fromScaleX="2" fromScaleY="2" toScaleX="1" toScaleY="1"/>
+									<Scale childKey="ActivateFXDiamondArrows" smoothing="OUT" order="1" startDelay="0.3" duration="1.1" fromScaleX="1" fromScaleY="1" toScaleX="0.9" toScaleY="0.9"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXDiamondFlipped" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Diamond" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFXDiamond" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha childKey="ActivateFXDiamondFlipped" duration="0.28" order="1" fromAlpha=".1" toAlpha="0"/>
+									<Scale childKey="ActivateFXDiamondFlipped" smoothing="IN" duration="0.28" order="1" fromScaleX="3" fromScaleY="3" toScaleX="0.01" toScaleY="1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXStarfield" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Stars" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFXDiamond" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha childKey="ActivateFXStarfield" duration="0.28" order="1" fromAlpha="0.5" toAlpha="0"/>
+									<Scale childKey="ActivateFXStarfield" smoothing="IN" duration=".28" order="1" fromScaleX="4" fromScaleY="4" toScaleX="2" toScaleY="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRingLarge" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Ring" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFXDiamond" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Scale childKey="ActivateFXRingLarge" smoothing="IN" duration="0.3" order="1" fromScaleX="3.68" fromScaleY="3.68" toScaleX="1.104" toScaleY="1.104"/>
+									<Alpha childKey="ActivateFXRingLarge" duration="0.3" order="1" fromAlpha="0.75" toAlpha="0"/>
+									<Scale childKey="ActivateFXRingLarge" startDelay="0.3" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRingSmall" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Ring" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFXDiamond" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Scale childKey="ActivateFXRingSmall" duration="0.3" order="1" fromScaleX="2.729" fromScaleY="2.729" toScaleX="0.91" toScaleY="0.91"/>
+									<Alpha childKey="ActivateFXRingSmall" duration="0.3" order="1" fromAlpha="0.203" toAlpha="0"/>
+									<Scale childKey="ActivateFXRingSmall" startDelay="0.3" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.94" toScaleY="0.94"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Border" setAllPoints="true" frameLevel="110"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="120">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="SelectGroup" inherits="SoulbindSelectGroupTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="42" y="15"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Tree" inherits="SoulbindTreeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="292" y="-89"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ConduitList" inherits="ConduitListTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Background"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="ActivateSoulbindButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
+				<Size x="152" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="-93" y="72"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CommitConduitsButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_APPLY_CONDUITS_BUTTON">
+				<Size x="152" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ActivateSoulbindButton" relativePoint="TOP" x="0" y="14"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

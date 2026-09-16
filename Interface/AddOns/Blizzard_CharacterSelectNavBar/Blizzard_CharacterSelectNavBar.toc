@@ -1,0 +1,6 @@
+## Title: Blizzard_CharacterSelectNavBar
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML, Blizzard_GameModeSelect, Blizzard_GlueMenuFrame
+## AllowLoad: Glue
+CharacterSelectNavBar.lua
+CharacterSelectNavBar.xml

@@ -1,0 +1,6 @@
+## Title: Blizzard_UIParentUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+
+UIParentUtil.lua

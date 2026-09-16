@@ -1,0 +1,4 @@
+## Title: Blizzard_DeprecatedPaperDoll
+## Notes: C API functions that are exposed for backwards compatibility. They will be removed at the next expansion. Upgrade your code to the new APIs as soon as possible.
+
+Deprecated_PaperDoll.lua

@@ -1,0 +1,8 @@
+## Title: Blizzard End Match UI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: plunderstorm
+## AllowLoad: Game
+
+Blizzard_EndOfMatchUI.lua
+Blizzard_EndOfMatchUI.xml

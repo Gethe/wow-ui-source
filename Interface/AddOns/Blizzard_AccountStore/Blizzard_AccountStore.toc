@@ -1,0 +1,17 @@
+## Title: Blizzard_AccountStore
+## AllowLoad: Both
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_StaticPopup
+## Dep: Blizzard_UIParentPanelManager [AllowLoad game]
+
+Blizzard_AccountStoreUtil.lua
+Blizzard_AccountStoreCategoryList.lua
+Blizzard_AccountStoreCategoryList.xml
+Blizzard_AccountStoreCardTemplates.lua
+Blizzard_AccountStoreCardTemplates.xml
+Blizzard_AccountStoreItemRack.lua
+Blizzard_AccountStoreItemRack.xml
+Blizzard_AccountStoreItemDisplay.lua
+Blizzard_AccountStoreItemDisplay.xml
+Blizzard_AccountStore.lua
+Blizzard_AccountStore.xml

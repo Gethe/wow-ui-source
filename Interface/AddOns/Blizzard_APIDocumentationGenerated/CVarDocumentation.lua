@@ -1,0 +1,206 @@
+local CVar =
+{
+	Name = "CVarScripts",
+	Type = "System",
+	Namespace = "C_CVar",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "AreCVarsLoaded",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "loaded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCVar",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCVarBitfield",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCVarBool",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCVarDefault",
+			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "defaultValue", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCVarInfo",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RegisterCVar",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "ResetTestCVars",
+			Type = "Function",
+		},
+		{
+			Name = "SetCVar",
+			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCVarBitfield",
+			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			RequiresIndexInRange = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "value", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+		{
+			Name = "CVarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Predicates =
+	{
+		{
+			Name = "RequiresIndexInRange",
+			Type = "Precondition",
+			FailureMode = "Error",
+		},
+		{
+			Name = "RequiresNonReadOnlyCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresNonSecureCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+		{
+			Name = "RequiresValidAndPublicCVar",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
+};
+
+APIDocumentation:AddDocumentationTable(CVar);

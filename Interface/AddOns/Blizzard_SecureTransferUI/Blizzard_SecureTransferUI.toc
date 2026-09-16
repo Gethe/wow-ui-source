@@ -1,0 +1,5 @@
+## Title: Blizzard_SecureTransferUI
+## AllowLoad: Both
+## RequiredDep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
+Blizzard_SecureTransferUI.xml

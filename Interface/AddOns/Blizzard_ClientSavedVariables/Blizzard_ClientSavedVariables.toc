@@ -1,0 +1,3 @@
+## Title: Blizzard_ClientSavedVariables
+## LoadOnDemand: 0
+## SavedVariablesPerCharacter: CHANNELPULLOUT_FADEFRAMES, DISPLAYED_COMMUNITIES_INVITATIONS

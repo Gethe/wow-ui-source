@@ -1,0 +1,30 @@
+## Title: Blizzard_SettingsDefinitions_Frame
+## Dependencies: Blizzard_SettingsDefinitions_Shared, Blizzard_Colors, Blizzard_GameMenuEsc
+## AllowLoad: Game
+[Family]\GameplaySettingsGroup.lua
+[Family]\InterfaceOverrides.lua
+[Family]\ControlsOverrides.lua
+[Family]\CombatOverrides.lua
+[Family]\SocialOverrides.lua
+[Family]\ColorblindOverrides.lua
+[Family]\KeybindingsOverrides.lua
+[Family]\AccessibilityOverrides.lua
+[Family]\NameplatesOverrides.lua
+Controls.xml
+Interface.lua
+Interface.xml
+Combat.lua
+ActionBars.lua
+Social.lua
+PingSystem.xml
+Keybindings.xml
+# NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of the lua file.
+Accessibility.lua
+Accessibility.xml [AllowLoadGameType mainline]
+[Family]\Colorblind.xml
+CombatAudioAlertConstants.lua
+CombatAudioAlertUtil.lua
+Mounts.lua [AllowLoadGameType mainline]
+AdvancedOptions.lua [AllowLoadGameType mainline]
+Nameplates.lua
+Nameplates.xml

@@ -1,0 +1,186 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="GuildRoster.lua"/>
+
+	<Frame name="CommunitiesGuildMemberDetailFrameTemplate" mixin="CommunitiesGuildMemberDetailMixin" toplevel="true" enableMouse="true" virtual="true">
+		<Size x="212" y="270"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
+					<Size x="165" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="17" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ZoneLabel" inherits="GameFontNormalSmall" text="ZONE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ZoneText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="147" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ZoneLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RankLabel" inherits="GameFontNormalSmall" text="RANK_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ZoneLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RankText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RankLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OnlineText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.OnlineLabel" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NoteLabel" inherits="GameFontNormalSmall" text="NOTE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OnlineLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OfficerNoteLabel" inherits="GameFontNormalSmall" text="OFFICER_NOTE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-43"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="1"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						HideParentPanel(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="RemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="12"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil and memberInfo.name ~= nil then
+							local data = { name = memberInfo.name, guid = memberInfo.guid, };
+							StaticPopup_Show("REMOVE_GUILDMEMBER", nil, nil, data);
+						end
+					</OnClick>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Button parentKey="GroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RemoveButton" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_PartyInfo.InviteUnit(self:GetParent().Name:GetText());
+					</OnClick>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<DropdownButton parentKey="RankDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</DropdownButton>
+			<Frame parentKey="NoteBackground" enableMouse="true" inherits="TooltipBackdropTemplate">
+				<Size x="181" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PersonalNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+							<Size x="165" y="32"/>
+							<Anchors>
+								<Anchor point="TOP" x="1" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnMouseUp>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil then
+							local currentNote = memberInfo.memberNote or "";
+							local data = { guid = memberInfo.guid, currentNote = currentNote, isPublic = true, };
+							StaticPopup_Show("SET_GUILD_COMMUNITIY_NOTE", nil, nil, data);
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="OfficerNoteBackground" inherits="TooltipBackdropTemplate">
+				<Size x="181" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OfficerNoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+							<Size x="165" y="32"/>
+							<Anchors>
+								<Anchor point="TOP" x="1" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnMouseUp>
+						local memberInfo = self:GetParent():GetMemberInfo();
+						if memberInfo ~= nil and memberInfo.guid ~= nil then
+							local currentNote = memberInfo.officerNote or "";
+							local data = { guid = memberInfo.guid, currentNote = currentNote, isPublic = false, };
+							StaticPopup_Show("SET_GUILD_COMMUNITIY_NOTE", nil, nil, data);
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

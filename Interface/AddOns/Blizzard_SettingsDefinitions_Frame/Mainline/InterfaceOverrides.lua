@@ -1,0 +1,305 @@
+InterfaceOverrides = {}
+
+function InterfaceOverrides.AdjustDisplaySettings(category)
+end
+
+function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
+	-- TODO: As of 12.0.7, Classic Raid Frame options closely match Mainline ones.
+	-- Unfork these at a point where it's convenient, with overrides
+	-- to hide any options that Classic doesn't want.
+
+	-- Raid Frame Preview
+	do
+		local data = { };
+		local initializer = Settings.CreatePanelInitializer("RaidFramePreviewTemplate", data);
+		layout:AddInitializer(initializer);
+	end
+
+	-- Incoming Heals
+	if C_CVar.GetCVar("raidFramesDisplayIncomingHeals") then
+		Settings.SetupCVarCheckbox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);
+	end
+
+	-- Power Bars
+	local raidFramesDisplayPowerBarsSetting, raidFramesDisplayPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
+
+	local _, raidFramesDisplayOnlyHealerPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyHealerPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS);
+	local function EnableRaidFramesDisplayOnlyHealerPowerBarsSetting()
+		return raidFramesDisplayPowerBarsSetting:GetValue();
+	end
+	raidFramesDisplayOnlyHealerPowerBarsInitializer:SetParentInitializer(raidFramesDisplayPowerBarsInitializer, EnableRaidFramesDisplayOnlyHealerPowerBarsSetting);
+
+	-- Aggro Highlight
+	if C_CVar.GetCVar("raidFramesDisplayAggroHighlight") then
+		Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+	end
+
+	-- Class Colors
+	do
+		local displayClassColorsSetting = Settings.RegisterCVarSetting(category, "raidFramesDisplayClassColor", Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+		local function GetCVarHealthBarColor()
+			local healthColorString = CVarCallbackRegistry:GetCVarValue("raidFramesHealthBarColor");
+			local color = CreateColorFromHexString(healthColorString);
+			return color or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+		end
+
+		local function OpenHealthBarColorPicker(swatch, button, isDown)
+			local info = {};
+			info.swatch = swatch;
+
+			local healthColor = GetCVarHealthBarColor();
+			info.r, info.g, info.b = healthColor:GetRGB();
+
+			local currentColor = CreateColor(0, 0, 0, 0); -- Making this here to avoid churn
+			info.swatchFunc = function()
+				local r,g,b = ColorPickerFrame:GetColorRGB();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			info.cancelFunc = function()
+				local r,g,b = ColorPickerFrame:GetPreviousValues();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			ColorPickerFrame:SetupColorPickerAndShow(info);
+		end
+
+		local clickRequiresSet = true;
+		local invertClickRequiresSet = true;
+		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
+			displayClassColorsSetting,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
+			OpenHealthBarColorPicker,
+			clickRequiresSet,
+			invertClickRequiresSet,
+			GetCVarHealthBarColor,
+			COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR
+		);
+
+		layout:AddInitializer(displayClassColorsInitializer);
+
+		Settings.SetupCVarColorSwatch(category, "raidFramesHealthBarColorBG", COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR_BG, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_BG_COLOR);
+	end
+
+	-- Pets
+	Settings.SetupCVarCheckbox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
+
+	-- Main Tank and Assist
+	Settings.SetupCVarCheckbox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
+
+	-- Debuffs
+	do
+		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
+
+		local function IsModifiable()
+			return debuffSetting:GetValue();
+		end
+
+		-- Bigger Role Debuffs
+		local _, largerDebuffsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayLargerRoleSpecificDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER);
+		largerDebuffsInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+
+		-- Only Dispellable Debuffs
+		local _, dispellableInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		dispellableInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Center Big Defensive Buffs
+	Settings.SetupCVarCheckbox(category, "raidFramesCenterBigDefensive", COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES);
+
+	-- Dispel Indicator Types (upper right poison, magic, disease, bleed, curse)
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelDisplayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelDisplayType.DispellableByMe, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME);
+			container:Add(Enum.RaidDispelDisplayType.DisplayAll, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL);
+			return container:GetData();
+		end
+
+		local dispelSetting, dispelInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorType", Settings.VarType.Number, GetOptions, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE);
+
+		-- Dispel Color Overlay
+		local function IsModifiable()
+			return tonumber(dispelSetting:GetValue()) ~= Enum.RaidDispelDisplayType.Disabled;
+		end
+
+		local function GetDispelIndicatorOverlayOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelOverlayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelOverlayType.UseDebuffColor, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DEBUFF_COLOR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_DEBUFF_COLOR);
+			container:Add(Enum.RaidDispelOverlayType.UseBlack, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_BLACK, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_OVERLAY_TYPE_BLACK);
+			return container:GetData();
+		end
+
+		local _, dispelOverlayInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorOverlay", Settings.VarType.Number, GetDispelIndicatorOverlayOptions, COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
+		dispelOverlayInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
+
+		-- Dispel Overlay Flashing Animation
+		local _, dispelOverlayAnimationInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlayAnimation", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION);
+		dispelOverlayAnimationInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
+
+		-- Dispel Overlay Animated Border (MarchingAnts)
+		local _, animatedBorderInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorAnimatedBorder", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER);
+		animatedBorderInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
+	
+	end
+
+	-- Health Text
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
+			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
+			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
+			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropdown(category, "raidFramesHealthText", Settings.VarType.String, GetOptions, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
+	end
+end
+
+function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(PVP_FRAMES_LABEL));
+
+	-- Pvp Power Bars
+	local pvpFramesDisplayPowerBarsSetting, pvpFramesDisplayPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "pvpFramesDisplayPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
+
+	local _, pvpFramesDisplayOnlyHealerPowerBarsInitializer = Settings.SetupCVarCheckbox(category, "pvpFramesDisplayOnlyHealerPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS);
+	local function EnablePvpFramesDisplayOnlyHealerPowerBarsSetting()
+		return pvpFramesDisplayPowerBarsSetting:GetValue();
+	end
+	pvpFramesDisplayOnlyHealerPowerBarsInitializer:SetParentInitializer(pvpFramesDisplayPowerBarsInitializer, EnablePvpFramesDisplayOnlyHealerPowerBarsSetting);
+
+	-- Pvp Class Colors
+	Settings.SetupCVarCheckbox(category, "pvpFramesDisplayClassColor", PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+	-- Pvp Pets
+	Settings.SetupCVarCheckbox(category, "pvpOptionDisplayPets", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
+
+	-- Pvp Health Text
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add("none", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
+			container:Add("health", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
+			container:Add("losthealth", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
+			container:Add("perc", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropdown(category, "pvpFramesHealthText", Settings.VarType.String, GetOptions, PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
+	end
+end
+
+function InterfaceOverrides.CreateHousingSettings(category, layout)
+	-----Housing
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(HOUSING_SETTINGS_LABEL));
+
+	--Decor Light Radius indicators
+	do
+		local lightRadiusIndicatorSetting, lightRadiusIndicatorInitializer = Settings.SetupCVarCheckbox(category, "housingDecorLightRadiusIndicatorsEnabled", DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_ENABLED);
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.LightRadiusIndicatorType.Always, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_ALWAYS);
+			container:Add(Enum.LightRadiusIndicatorType.Overlap, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_OVERLAP);
+			container:Add(Enum.LightRadiusIndicatorType.Never, DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER, OPTION_TOOLTIP_DECOR_LIGHT_RADIUS_INDICATOR_TYPE_NEVER);
+			return container:GetData();
+		end
+
+		local _, selectedDecorInitializer = Settings.SetupCVarDropdown(category, "housingSelectedDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_SELECTED_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+		local _, otherDecorInitializer = Settings.SetupCVarDropdown(category, "housingOtherDecorLightRadiusIndicatorType", Settings.VarType.Number, GetOptions, OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE, OPTION_TOOLTIP_OTHER_DECOR_LIGHT_RADIUS_INDICATOR_TYPE);
+
+		lightRadiusIndicatorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, BINDING_TAG_HOUSE);
+		selectedDecorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, BINDING_TAG_HOUSE);
+		otherDecorInitializer:AddSearchTags(HOUSING_SETTINGS_LABEL, DECOR_LIGHT_RADIUS_INDICATOR_ENABLED, BINDING_TAG_HOUSE);
+
+		local function IsModifiable()
+			return lightRadiusIndicatorSetting:GetValue();
+		end
+
+		selectedDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
+		otherDecorInitializer:SetParentInitializer(lightRadiusIndicatorInitializer, IsModifiable);
+	end
+end
+
+function InterfaceOverrides.CreateCoordinatesSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION));
+
+	Settings.SetupCVarCheckbox(category, "worldMapShowPlayerCoords", SETTINGS_PLAYER_MAP_COORDS, SETTINGS_PLAYER_MAP_COORDS_TOOLTIP);
+	Settings.SetupCVarCheckbox(category, "worldMapShowCursorCoords", SETTINGS_CURSOR_MAP_COORDS, SETTINGS_CURSOR_MAP_COORDS_TOOLTIP);
+	Settings.SetupCVarCheckbox(category, "minimapShowPlayerCoords", SETTINGS_MINIMAP_PLAYER_COORDS, SETTINGS_MINIMAP_PLAYER_COORDS_TOOLTIP);
+	Settings.SetupCVarCheckbox(category, "coordsByTenths", SETTINGS_COORDS_BY_TENTHS, SETTINGS_COORDS_BY_TENTHS_TOOLTIP);
+end
+
+-- These popups have a "Don't show this again" checkbox that the player can click to skip them in the future.
+local function ResetConfirmationPopups()
+	SetCVar("bankConfirmTabCleanUp", true);
+end
+
+function InterfaceOverrides.ShowTutorialsOnButtonClick()
+		SetCVar("closedInfoFrames", ""); -- reset the help plates too
+		SetCVar("closedInfoFramesAccountWide", "");
+		SetCVar("showNPETutorials", "1");
+		ResetTutorials();
+		TutorialFrame_ClearQueue();
+		if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
+			SetCVar("showTutorials", 1);
+		end
+
+		if GetTutorialsEnabled() and C_PlayerInfo.IsPlayerNPERestricted() then
+			NPE_LoadUI();
+		end
+		TriggerTutorial(1);
+		ResetConfirmationPopups();
+		TutorialManager:ResetTutorials();
+end
+
+function InterfaceOverrides.RunSettingsCallback(callback)
+	if not C_GameRules.IsPlunderstorm() then
+		callback();
+	end
+end
+
+function InterfaceOverrides.CreateQuestSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(QUEST_SETTINGS_LABEL));
+
+	local function SetQuestTracking(filter, value)
+		local filterIndex = MinimapUtil.GetFilterIndexForFilterID(filter);
+		if filterIndex then
+			C_Minimap.SetTracking(filterIndex, value);
+		end
+	end
+
+	-- Account completed quest filter
+	local function SetAccountCompletedQuestTracking(value)
+		SetQuestTracking(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
+	end
+
+	local function IsTrackingAccountCompletedQuests()
+		return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests);
+	end
+
+	local accountCompletedQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING",
+		Settings.VarType.Boolean, SETTINGS_ACCOUNT_COMPLETED_QUEST_FILTER, Settings.Default.False, IsTrackingAccountCompletedQuests, SetAccountCompletedQuestTracking);
+	Settings.CreateCheckbox(category, accountCompletedQuestFilterSetting, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
+
+	-- Trivial quest filter
+	local function SetTrivialQuestTracking(value)
+		SetQuestTracking(Enum.MinimapTrackingFilter.TrivialQuests, value);
+	end
+
+	local function IsTrackingTrivialQuests()
+		return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.TrivialQuests);
+	end
+
+	local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
+		Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
+	Settings.CreateCheckbox(category, trivialQuestFilterSetting);
+end

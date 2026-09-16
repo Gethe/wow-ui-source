@@ -1,0 +1,14 @@
+## Title: Blizzard_StaticPopup_Glue
+## Dependencies: Blizzard_StaticPopup, Blizzard_AutoComplete, Blizzard_AccessibilityTemplates
+## AllowLoad: glue
+
+GlueDialogDefs.lua
+[Family]\GlueDialogDefs.lua
+
+GlueDialog.lua
+[Family]\GlueDialog.lua
+GlueDialogUserScaledTemplates.lua
+GlueDialog.xml
+
+[Family]\GlueAnnouncementDialog.lua [AllowLoadGameType mainline]
+[Family]\GlueAnnouncementDialog.xml [AllowLoadGameType mainline]

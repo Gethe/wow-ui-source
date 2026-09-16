@@ -1,0 +1,55 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+<!--
+*******************************************************************************
+	Main Menu Frame Templates
+
+	Used by the "Esc key" GameMenu and GlueMenu.
+*******************************************************************************
+-->
+	<Button name="MainMenuFrameButtonTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="36"/>
+		<NormalFont style="GameFontHighlightLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+	</Button>
+
+	<Frame name="MainMenuFrameTemplate" mixin="MainMenuFrameMixin" inherits="VerticalLayoutFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainMenuFrameButtonTemplate" type="string"/>
+
+			<KeyValue key="topPadding" value="48" type="number"/>
+			<KeyValue key="bottomPadding" value="34" type="number"/>
+			<KeyValue key="leftPadding" value="28" type="number"/>
+			<KeyValue key="rightPadding" value="28" type="number"/>
+			<KeyValue key="spacing" value="0" type="number"/>
+
+			<!-- 
+			dialogHeaderFont: font for the header text
+			<KeyValue key="dialogHeaderFont" value="GameFontNormal" type="string"/>
+			-->
+		</KeyValues>
+		<Size x="260" y="1"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

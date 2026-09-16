@@ -1,0 +1,6 @@
+## Title: Blizzard_PartyPoseUI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
+Blizzard_PartyPoseUI_Bootstrap.lua [Bootstrap]
+Blizzard_PartyPoseUI.lua
+Blizzard_PartyPoseUI.xml

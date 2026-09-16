@@ -1,0 +1,954 @@
+
+
+function DressUpLink(link, forcedFrame)
+	return link and (DressUpItemLink(link, forcedFrame) or DressUpBattlePetLink(link, forcedFrame) or DressUpMountLink(link, forcedFrame));
+end
+
+function DressUpItemLink(link, forcedFrame)
+	if( link ) then 
+		if ( C_Item.IsDressableItemByID(link) ) then
+			return DressUpVisualLink(forcedFrame, link);
+		elseif ( HousingFramesUtil ) then
+			local handled = HousingFramesUtil.PreviewHousingItem(link);
+			-- For now this is superfluous because there aren't other elseifs after this one, but if one is ever added, I don't want
+			-- this not ending up being handled by PreviewHousingItem to inadvertently prevent the function from continuing on to them
+			if ( handled ) then
+				return handled;
+			end
+		end
+	end
+	return false;
+end
+
+function DressUpItemLocation(itemLocation, forcedFrame)
+	if( itemLocation and itemLocation:IsValid() ) then 
+		local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
+		-- non-equippable items won't have an appearanceID
+		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			return DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame);
+		end
+	end
+	return false;
+end
+
+function DressUpTransmogLink(link)
+	if not link then
+		return false;
+	end
+
+	local linkType = LinkUtil.SplitLinkData(link);
+	if linkType ~= LinkTypes.TransmogIllusion and linkType ~= LinkTypes.TransmogAppearance then
+		return false;
+	end
+
+	return DressUpVisual(link);
+end
+
+local function ShouldAcceptDressUp(frame)
+	local parentFrame = frame.parentFrame;
+	if parentFrame == nil then
+		return;
+	end
+
+	if parentFrame.ShouldAcceptDressUp then
+		return parentFrame:ShouldAcceptDressUp();
+	end
+
+	return parentFrame:IsShown();
+end
+
+local function GetFrameAndSetBackground(raceFilename, classFilename)
+	local frame;
+	if ShouldAcceptDressUp(SideDressUpFrame) then
+		frame = SideDressUpFrame;
+		if not raceFilename then
+			raceFilename = select(2, UnitRace("player"));
+		end
+	elseif ShouldAcceptDressUp(TransmogAndMountDressupFrame) then
+		frame = TransmogAndMountDressupFrame;
+		if not raceFilename then
+			raceFilename = select(2, UnitRace("player"));
+		end
+	else
+		frame = DressUpFrame;
+		if not classFilename then
+			classFilename = select(2, UnitClass("player"));
+		end
+	end
+
+	SetDressUpBackground(frame, raceFilename, classFilename);
+
+	return frame;
+end
+
+-- this is left for backwards compatability when forcedFrame was added to DressUpVisualLink
+function DressUpVisual(link, ...)
+	return DressUpVisualLink(nil, link, ...);
+end
+
+function DressUpVisualLink(forcedFrame, link, ...)
+	local frame = forcedFrame or GetFrameAndSetBackground();
+	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil, nil;
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if (not playerActor) then
+		return false;
+	end
+
+	local result = playerActor:TryOn(link, ...);
+	if ( result ~= Enum.ItemTryOnReason.Success ) then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+	end
+	return true;
+end
+
+-- For ctrl-clicking in the Appearances collection
+function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor then
+		return false;
+	end
+
+	local itemTransmogInfo;
+	-- if the equipped item has an active secondary appearance then only change the correct appearance
+	-- at the transmogrifier check the checkbox state
+	if C_Transmog.CanHaveSecondaryAppearanceForSlotID(transmogLocation.slotID) then
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(transmogLocation.slotID);
+		if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+			itemTransmogInfo = playerActor:GetItemTransmogInfo(transmogLocation.slotID);
+			if transmogLocation:IsSecondary() then
+				itemTransmogInfo.secondaryAppearanceID = appearanceID;
+			else
+				-- if the item on the actor doesn't already have a secondary, copy over one to the other (items previewed via other means do not have secondaries set)
+				if itemTransmogInfo.secondaryAppearanceID == Constants.Transmog.NoTransmogID then
+					itemTransmogInfo.secondaryAppearanceID = itemTransmogInfo.appearanceID;
+				end
+				itemTransmogInfo.appearanceID = appearanceID;
+			end
+		end
+	end
+
+	if not itemTransmogInfo then
+		itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID);
+	end
+
+	local weaponSlotID = nil;
+	local ignoreChildItems = true;
+	if categoryID then
+		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+		-- weapons that can go in either hand need the slot specified
+		weaponSlotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
+		-- configure the secondary for mainhands
+		if transmogLocation.slotID == INVSLOT_MAINHAND then
+			local isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+			itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
+			-- we only want child items if the appearance is from Legion Artifact category
+			if isLegionArtifact then
+				ignoreChildItems = false;
+			end
+		end
+	end
+
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, weaponSlotID, ignoreChildItems);
+	if result ~= Enum.ItemTryOnReason.Success then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+	end
+	return true;
+end
+
+function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
+	local frame = forcedFrame or GetFrameAndSetBackground();
+	local forcePlayerRefresh = true;
+	local link = nil;
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
+end
+
+function DressUpBattlePetLink(link, forcedFrame)
+	if( link ) then 
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		if ( linkType == "item") then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
+			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
+			if (creatureID and displayID) then
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
+			end
+		elseif ( linkType == "battlepet" ) then
+			local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
+			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
+			if ( speciesID == tonumber(linkID)) then
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
+			else
+				speciesID = tonumber(linkID);
+				local _;
+				_, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
+			end
+		end
+	end
+	return false
+end
+
+function DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame)
+	if ( not displayID and not creatureID ) then
+		return false;
+	end
+	
+	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
+
+	--Show the frame
+	frame:SetMode("battlepet");if ( not frame:IsShown() or frame:GetMode() ~= "battlepet" ) then
+		frame:SetMode("battlepet");
+		ShowUIPanel(frame);
+	end
+
+	local _, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
+	frame:SetLastLink(link);
+	frame.ModelScene:ClearScene();
+	frame.ModelScene:SetViewInsets(0, 0, 50, 0);
+	frame.ModelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+
+	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
+	if ( battlePetActor ) then
+		battlePetActor:SetModelByCreatureDisplayID(displayID, true);
+		battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+	end
+	return true;
+end
+
+function DressUpMountLink(link, forcedFrame)
+	if( link ) then
+		local mountID = 0;
+		local shouldSetModelFromHyperlink = false;
+
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		if linkType == "item" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
+			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
+		elseif linkType == "spell" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		elseif linkType == "mount" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+			shouldSetModelFromHyperlink = true;
+		end
+
+		if ( mountID ) then
+			return DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link);
+		end
+	end
+	return false
+end
+
+function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
+	if ( not mountID or mountID == 0 ) then
+		return false;
+	end
+
+	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
+	if ( not (shouldSetModelFromHyperlink and link) and not creatureDisplayID ) then
+		return false;
+	end
+
+	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
+
+	--Show the frame
+	if ( not frame:IsShown() or frame:GetMode() ~= "mount" ) then
+		frame:SetMode("mount");
+		ShowUIPanel(frame);
+	end
+	frame:SetLastLink(link);
+	frame.ModelScene:ClearScene();
+	frame.ModelScene:SetViewInsets(0, 0, 0, 0);
+	local forceEvenIfSame = true;
+	frame.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceEvenIfSame);
+	
+	local mountActor = frame.ModelScene:GetActorByTag("unwrapped");
+	if mountActor then
+
+		if shouldSetModelFromHyperlink and link then
+			mountActor:SetModelByHyperlink(link);
+		else
+			mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
+		end
+		
+		-- mount self idle animation
+		if (isSelfMount) then
+			mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+			mountActor:SetAnimation(618); -- MountSelfIdle
+		else
+			mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
+			mountActor:SetAnimation(0);
+		end
+		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);
+	end
+	return true;
+end
+
+function DressUpTexturePath(raceFileName)
+	-- HACK
+	if ( not raceFileName ) then
+		raceFileName = "Orc";
+	end
+	-- END HACK
+
+	return "Interface\\DressUpFrame\\DressUpBackground-"..raceFileName;
+end
+
+function SetDressUpBackground(frame, raceFilename, classFilename)
+	local texture = DressUpTexturePath(raceFilename);
+	
+	if ( frame.BGTopLeft ) then
+		frame.BGTopLeft:SetTexture(texture..1);
+	end
+	if ( frame.BGTopRight ) then
+		frame.BGTopRight:SetTexture(texture..2);
+	end
+	if ( frame.BGBottomLeft ) then
+		frame.BGBottomLeft:SetTexture(texture..3);
+	end
+	if ( frame.BGBottomRight ) then
+		frame.BGBottomRight:SetTexture(texture..4);
+	end
+	
+	if ( frame.ModelBackground and classFilename ) then
+		frame.ModelBackground:SetAtlas("dressingroom-background-"..classFilename);
+	end
+end
+
+local function RefreshTransmogSet(frame, fromLink)
+	if frame.transmogSetDressUpEnabled and fromLink then
+		local setID = C_Item.GetItemLearnTransmogSet(fromLink);
+		if setID then
+			frame:InitSetSelectionPanel(setID, fromLink);
+		end
+	end
+end
+
+local DRESS_UP_FRAME_MODEL_SCENE_ID = 596;
+function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink)
+	local shownThisFrame = false;
+	if ( forcePlayerRefresh or (not frame:IsShown() or frame:GetMode() ~= "player") ) then
+		shownThisFrame = true;
+
+		frame:SetLastLink(fromLink);
+		frame:SetMode("player");
+
+		-- If there's not enough space as-is, try minimizing.
+		if not CanShowRightUIPanel(frame) and frame.MaximizeMinimizeFrame and not frame.MaximizeMinimizeFrame:IsMinimized() then
+			local isAutomaticAction = true;
+			frame.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
+
+			-- Restore the frame to its original state if we still can't fit.
+			if not CanShowRightUIPanel(frame) then
+				frame.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
+			end
+		end
+
+		ShowUIPanel(frame);
+		frame.ModelScene:ClearScene();
+		frame.ModelScene:SetViewInsets(0, 0, 0, 0);
+		frame.ModelScene:ReleaseAllActors();
+		frame.ModelScene:TransitionToModelSceneID(DRESS_UP_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+
+		RefreshTransmogSet(frame, fromLink);
+
+		local overrideActorName = nil;
+		local sheatheWeapons = false;
+		local autoDress = true;
+		local hideWeapons = false;
+		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		local useNativeForm = not inAlternateForm;
+		SetupPlayerForModelScene(frame.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
+	end
+
+	if not shownThisFrame and frame:IsShown() and frame:GetMode() == "player" then
+		RefreshTransmogSet(frame, fromLink);
+	end
+end
+
+function DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame)
+	local frame = forcedFrame or GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor or not itemTransmogInfo then
+		return false;
+	end
+
+	playerActor:SetItemTransmogInfo(itemTransmogInfo);
+	return true;
+end
+
+function DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails, forcePlayerRefresh)
+	local frame = GetFrameAndSetBackground();
+	local itemModifiedAppearanceIDs, fromLink = nil, nil;
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor or not itemTransmogInfoList then
+		return false;
+	end
+
+	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
+		local ignoreChildItems = slotID ~= INVSLOT_MAINHAND;
+		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, ignoreChildItems);
+	end
+
+	if showCustomSetDetails then
+		frame:ForceCustomSetDetailsOn();
+	end
+end
+
+DressUpCustomSetMixin = { };
+
+function DressUpCustomSetMixin:GetItemTransmogInfoList()
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if playerActor then
+		return playerActor:GetItemTransmogInfoList();
+	end
+	return nil;
+end
+
+function DressUpCustomSetMixin:LoadCustomSet(customSetID)
+	if customSetID then
+		DressUpItemTransmogInfoList(C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID));
+	end
+end
+
+function SetUpSideDressUpFrame(parentFrame, closedWidth, openWidth, point, relativePoint, offsetX, offsetY)
+	local self = SideDressUpFrame;
+	if ( self.parentFrame ) then
+		if ( self.parentFrame == parentFrame ) then
+			return;
+		end
+		if ( self:IsShown() ) then
+			HideUIPanel(self);
+		end
+	end	
+	self.parentFrame = parentFrame;
+	self.closedWidth = closedWidth;
+	self.openWidth = openWidth;	
+	relativePoint = relativePoint or point;
+	self:SetParent(parentFrame);
+	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
+end
+
+function CloseSideDressUpFrame(parentFrame)
+	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame == parentFrame ) then
+		HideUIPanel(SideDressUpFrame);
+	end
+end
+
+function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID,  width, height, point, relativePoint, offsetX, offsetY, removeWeapons)
+	local self = TransmogAndMountDressupFrame;
+	self.parentFrame = parentFrame;
+	self.transmogSetID = transmogSetID;
+	self.mountID = mountID; 
+	self:SetSize(width, height); 
+	TransmogAndMountDressupFrame.removeWeapons = removeWeapons;
+	relativePoint = relativePoint or point;
+
+	self:SetParent(parentFrame);
+	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
+end
+
+DressUpCustomSetDetailsPanelMixin = { };
+
+local CLASS_BACKGROUND_SETTINGS = {
+	["DEFAULT"] = { desaturation = 0.5, alpha = 0.25 },
+	["DEATHKNIGHT"] = { desaturation = 0.5, alpha = 0.30 },
+	["DEMONHUNTER"] = { desaturation = 0.5, alpha = 0.30 },
+	["HUNTER"] = { desaturation = 0.5, alpha = 0.45 },
+	["MAGE"] = { desaturation = 0.5, alpha = 0.45 },
+	["PALADIN"] = { desaturation = 0.5, alpha = 0.21 },
+	["ROGUE"] = { desaturation = 0.5, alpha = 0.65 },
+	["SHAMAN"] = { desaturation = 0.5, alpha = 0.40 },
+	["WARLOCK"] = { desaturation = 0.5, alpha = 0.40 },	
+}
+
+function DressUpCustomSetDetailsPanelMixin:OnLoad()
+	self.slotPool = CreateFramePool("FRAME", self, "DressUpCustomSetSlotFrameTemplate");
+	local classFilename = select(2, UnitClass("player"));
+	self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
+	local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
+	self.ClassBackground:SetDesaturation(settings.desaturation);
+	self.ClassBackground:SetAlpha(settings.alpha);
+	local frameLevel = self:GetParent().NineSlice:GetFrameLevel();
+	self:SetFrameLevel(frameLevel + 1);
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnShow()
+	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+
+	local hasAlternateForm, _ = C_PlayerInfo.GetAlternateFormInfo();
+	if ( hasAlternateForm ) then
+		self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
+	end
+	self:Refresh();
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+	self:UnregisterEvent("UNIT_FORM_CHANGED");
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnEvent(event, ...)
+	if event == "TRANSMOG_COLLECTION_ITEM_UPDATE" then
+		if self.waitingOnItemData then
+			self:Refresh();
+		elseif self.mousedOverFrame then
+			self.mousedOverFrame:RefreshAppearanceTooltip();
+		end
+	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
+		self:MarkDirty();
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
+		local forcePlayerRefresh = true;
+		self:RefreshPlayerModel(forcePlayerRefresh);
+	end
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnUpdate()
+	self:SetScript("OnUpdate", nil);
+	self:Refresh();
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnKeyDown(key)
+	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
+		self.mousedOverFrame:OnCycleKeyDown();
+		return false;
+	end
+	return true;
+end
+
+function DressUpCustomSetDetailsPanelMixin:MarkDirty()
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function DressUpCustomSetDetailsPanelMixin:MarkWaitingOnItemData()
+	self.waitingOnItemData = true;
+end
+
+function DressUpCustomSetDetailsPanelMixin:OnAppearanceChange()
+	if self:IsShown() then
+		self:Refresh();
+	end
+end
+
+function DressUpCustomSetDetailsPanelMixin:SetMousedOverFrame(frame)
+	self.mousedOverFrame = frame;
+end
+
+function DressUpCustomSetDetailsPanelMixin:Refresh()
+	self.slotPool:ReleaseAll();
+	self.lastFrame = nil;
+	self.validMainHand = false;
+	self.waitingOnItemData = false;
+
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if not playerActor then
+		return;
+	end
+	local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
+	if not itemTransmogInfoList then
+		return;
+	end
+
+	-- for Legion Artifacts the offhand is virtual
+	local mainHandInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
+	if mainHandInfo.secondaryAppearanceID == Constants.Transmog.MainHandTransmogIsPairedWeapon then
+		local pairedTransmogID = C_TransmogCollection.GetPairedArtifactAppearance(mainHandInfo.appearanceID);
+		if pairedTransmogID then
+			itemTransmogInfoList[INVSLOT_OFFHAND].appearanceID = pairedTransmogID;
+		end
+	end
+
+	for _, slotID in ipairs(TransmogSlotOrder) do
+		local transmogInfo = itemTransmogInfoList[slotID];
+		if transmogInfo then
+			-- spacer before weapons
+			if slotID == INVSLOT_MAINHAND then
+				self:AddSlotFrame(nil, nil, nil);
+			end
+			-- primary
+			self:AddSlotFrame(slotID, transmogInfo, "appearanceID");
+			-- secondary
+			if transmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
+				self:AddSlotFrame(slotID, transmogInfo, "secondaryAppearanceID");
+			end
+			-- illusion
+			if transmogInfo.illusionID ~= Constants.Transmog.NoTransmogID then
+				self:AddSlotFrame(slotID, transmogInfo, "illusionID");
+			end
+		end
+	end
+end
+
+function DressUpCustomSetDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if playerActor then
+		local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
+	end
+	local itemModifiedAppearanceIDs = nil;
+	DressUpFrame_Show(DressUpFrame, itemModifiedAppearanceIDs, forcePlayerRefresh);
+
+	local showCustomSetDetails = false;
+	DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails, forcePlayerRefresh);
+	self:Refresh();
+end
+
+function DressUpCustomSetDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)
+	-- hide offhand if empty and mainhand has something
+	if slotID == INVSLOT_OFFHAND and self.validMainHand and transmogInfo.appearanceID == Constants.Transmog.NoTransmogID then
+		return;
+	end
+
+	local frame = self.slotPool:Acquire();
+	local isValid = false;
+	if transmogInfo then
+		isValid = frame:SetUp(slotID, transmogInfo, field);
+		frame:Show();
+	else
+		-- spacer
+		isValid = true;
+		frame:Hide();
+	end
+
+	if isValid then
+		frame.slotID = slotID;
+		if self.lastFrame then
+			frame:SetPoint("TOPLEFT", self.lastFrame, "BOTTOMLEFT");
+		else
+			frame:SetPoint("TOPLEFT", 18, -38);
+		end
+		self.lastFrame = frame;
+
+		if isValid and slotID == INVSLOT_MAINHAND and transmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			self.validMainHand = true;
+		end
+	else
+		frame:Hide();
+	end
+end
+
+DressUpCustomSetDetailsSlotMixin = { };
+
+function DressUpCustomSetDetailsSlotMixin:OnHide()
+	if self.itemDataLoadedCancelFunc then
+		self.itemDataLoadedCancelFunc();
+		self.itemDataLoadedCancelFunc = nil;
+	end
+	self.item = nil;
+end
+
+local CUSTOM_SET_SLOT_STATE_ERROR = 1;
+local CUSTOM_SET_SLOT_STATE_COLLECTED = 2;
+local CUSTOM_SET_SLOT_STATE_UNCOLLECTED = 3;
+
+local GRAY_FONT_ALPHA = 0.7;
+
+local TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK = "|A:common-icon-checkmark:16:16:0:-1|a "..TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN;
+
+function DressUpCustomSetDetailsSlotMixin:OnEnter()
+	if not self.transmogID then
+		return;
+	end
+
+	if self.item and not self.item:IsItemDataCached() then
+		self:GetParent():MarkDirty();
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.isHiddenVisual then
+		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
+	elseif not self.item then
+		-- illusion
+		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
+		if self.slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+		else
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
+		end
+	elseif self.slotState == CUSTOM_SET_SLOT_STATE_ERROR then
+		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
+		-- hasData should be true, there's a check that the item data is cached at the top of the function
+
+		if not canCollect and (self.slotID == INVSLOT_MAINHAND or self.slotID == INVSLOT_OFFHAND) then
+			local pairedTransmogID = C_TransmogCollection.GetPairedArtifactAppearance(self.transmogID);
+			if pairedTransmogID then
+				hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(pairedTransmogID);
+				if not hasData then
+					self:GetParent():MarkDirty();
+					return;
+				end
+			end
+		end
+
+		if canCollect then
+			local nameColor = self.item:GetItemQualityColor().color;
+			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+			local slotName = TransmogUtil.GetSlotName(self.slotID);
+			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			self:CheckForWarningString();
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE);
+		else
+			local hideVendorPrice = true;
+			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, hideVendorPrice);
+			self:CheckForWarningString();
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
+		end
+	elseif self.slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
+		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
+			self:GetParent():SetMousedOverFrame(self);
+			self:RefreshAppearanceTooltip();
+		else
+			local nameColor = self.item:GetItemQualityColor().color;
+			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+			local slotName = TransmogUtil.GetSlotName(self.slotID);
+			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			self:CheckForWarningString();
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+		end
+	else
+		local nameColor = self.item:GetItemQualityColor().color;
+		GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+		local slotName = TransmogUtil.GetSlotName(self.slotID);
+		GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+		self:CheckForWarningString();
+		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
+	end
+	GameTooltip:Show();
+end
+
+function DressUpCustomSetDetailsSlotMixin:CheckForWarningString()
+	local warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
+	if warningString then
+		GameTooltip_AddNormalLine(GameTooltip, warningString);
+	end
+end
+
+function DressUpCustomSetDetailsSlotMixin:OnLeave()
+	self:GetParent():SetMousedOverFrame(nil);
+	self.tooltipSourceIndex = nil;
+	self.tooltipCycle = nil;
+	GameTooltip:Hide();
+end
+
+function DressUpCustomSetDetailsSlotMixin:OnMouseUp()
+	if IsModifiedClick("CHATLINK") and self.transmogID then
+		local link;
+		if self.item then
+			local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(self.transmogID);
+			if appearanceSourceInfo then
+				link = appearanceSourceInfo.itemLink;
+			end
+		else
+			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
+		end
+		if link then
+			if not ChatFrameUtil.InsertLink(link) then
+				ChatFrameUtil.OpenChat(link);
+			end
+		end
+	end
+end
+
+function DressUpCustomSetDetailsSlotMixin:OnCycleKeyDown()
+	if not self.tooltipCycle and not self.tooltipSourceIndex then
+		return;
+	end
+	if IsShiftKeyDown() then
+		self.tooltipSourceIndex = self.tooltipSourceIndex - 1;
+	else
+		self.tooltipSourceIndex = self.tooltipSourceIndex + 1;
+	end
+	self:RefreshAppearanceTooltip();
+end
+
+function DressUpCustomSetDetailsSlotMixin:RefreshAppearanceTooltip()
+	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(self.transmogID);
+	local category = C_TransmogCollection.GetCategoryForItem(self.transmogID);
+	local slotName = TransmogUtil.GetSlotName(self.slotID);
+
+	local appearanceData = {
+		sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID, category, self.transmogLocation),
+		primarySourceID = self.transmogID,
+		selectedIndex = self.tooltipSourceIndex,
+		showUseError = true,
+		inLegionArtifactCategory = false,
+		subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]),
+		warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation),
+		showTrackingInfo = false,
+		slotType = nil
+	}
+
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, appearanceData);
+
+	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+	GameTooltip:Show();
+end
+
+function DressUpCustomSetDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
+	local transmogID = transmogInfo[field];
+	local isSecondary = true;
+	if field == "appearanceID" then
+		return self:SetAppearance(slotID, transmogID, not isSecondary);
+	elseif field == "secondaryAppearanceID" then
+		return self:SetAppearance(slotID, transmogID, isSecondary);
+	elseif field == "illusionID" then
+		return self:SetIllusion(slotID, transmogID);
+	end
+end
+
+function DressUpCustomSetDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, isSecondary);
+
+	local itemID = C_TransmogCollection.GetSourceItemID(transmogID);
+	if not itemID then
+		-- no empty slot for secondaries
+		if isSecondary then
+			return false;
+		end
+		self.Icon:SetTexture(nil);
+		self.IconBorder:SetTexture(nil);
+		self.HiddenIcon:Hide();
+		local slotName = TransmogUtil.GetSlotName(slotID);
+		self.Name:SetFormattedText(TRANSMOG_EMPTY_SLOT_FORMAT, _G[slotName]);
+		self.Name:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		self.Name:SetAlpha(GRAY_FONT_ALPHA);
+		self.transmogID = nil;
+	else
+		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(transmogID);
+		local hasAllData = false;
+		local category = C_TransmogCollection.GetCategoryForItem(transmogID);
+		transmogID, hasAllData = CollectionWardrobeUtil.GetPreferredSourceID(transmogID, appearanceInfo, category, self.transmogLocation);
+		if not hasAllData then
+			self:GetParent():MarkWaitingOnItemData();
+		end
+		itemID = C_TransmogCollection.GetSourceItemID(transmogID);
+
+		self.item = Item:CreateFromItemID(itemID);
+		if not self.item:IsItemDataCached() then
+			self.Icon:SetTexture(nil);
+			self.IconBorder:SetTexture(nil);
+			self.Name:SetText(nil);
+		end
+		self.itemDataLoadedCancelFunc = self.item:ContinueWithCancelOnItemLoad(GenerateClosure(self.SetItemInfo, self, transmogID, appearanceInfo, isSecondary));
+	end
+
+	return true;
+end
+
+function DressUpCustomSetDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, isSecondary)
+	local icon = C_TransmogCollection.GetSourceIcon(transmogID);
+	local name = self.item:GetItemName();
+	local slotState, isHiddenVisual;
+
+	if not appearanceInfo then
+		-- either uncollectable, or collectable but hidden until collected
+		local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(transmogID);
+		if canCollect then
+			slotState = CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
+		else
+			slotState = CUSTOM_SET_SLOT_STATE_ERROR;
+		end
+	elseif not appearanceInfo.isAnySourceValidForPlayer then
+		slotState = CUSTOM_SET_SLOT_STATE_ERROR;
+	elseif appearanceInfo.appearanceIsCollected then
+		-- collected
+		slotState = CUSTOM_SET_SLOT_COLLECTED;
+		isHiddenVisual = C_TransmogCollection.IsAppearanceHiddenVisual(transmogID);	
+	else
+		-- uncollected
+		slotState = CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
+	end
+
+	local useSmallIcon = isSecondary;
+	self:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual);
+end
+
+function DressUpCustomSetDetailsSlotMixin:SetIllusion(slotID, transmogID)
+	local illusionInfo = C_TransmogCollection.GetIllusionInfo(transmogID);
+	if not illusionInfo then
+		return false;
+	end
+
+	local name = C_TransmogCollection.GetIllusionStrings(illusionInfo.sourceID);
+	local useSmallIcon = true;
+	local slotState = illusionInfo.isCollected and CUSTOM_SET_SLOT_STATE_COLLECTED or CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
+	local isHiddenVisual = illusionInfo.isHideVisual;
+	self:SetDetails(transmogID, illusionInfo.icon, TRANSMOGRIFIED_ENCHANT:format(name), useSmallIcon, slotState, isHiddenVisual);
+
+	local isSecondary = false;
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Illusion, isSecondary);
+
+	return true;
+end
+
+function DressUpCustomSetDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
+	-- info for tooltip
+	self.transmogID = transmogID;
+	self.name = name;
+	self.slotState = slotState;
+	self.isHiddenVisual = isHiddenVisual;
+
+	local nameColor = NORMAL_FONT_COLOR;
+	local nameAlpha = 1;
+	local borderType;
+	if slotState == CUSTOM_SET_SLOT_STATE_ERROR then
+		nameColor = RED_FONT_COLOR;
+		borderType = "error";
+	elseif slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
+		nameColor = GRAY_FONT_COLOR;
+		borderType = "uncollected";
+		nameAlpha = GRAY_FONT_ALPHA;
+	elseif isHiddenVisual then
+		borderType = "uncollected";
+	else
+		-- this is something collected, show in default colors
+		if self.item then
+			nameColor = self.item:GetItemQualityColor().color;
+			local quality = self.item:GetItemQuality();
+			local colorName = ColorManager.GetColorDataForDressUpFrameQuality(quality);
+			borderType = colorName;
+		else
+			borderType = "illusion";
+		end
+	end
+
+	self.Name:SetText(name);
+	self.Name:SetTextColor(nameColor:GetRGB());
+	self.Name:SetAlpha(nameAlpha);
+
+	self.Icon:SetTexture(icon);
+	if slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED or isHiddenVisual then
+		self.Icon:SetAlpha(0.3);
+		self.Icon:SetDesaturated(true);
+	else
+		self.Icon:SetAlpha(1);
+		self.Icon:SetDesaturated(false);
+	end
+
+	if useSmallIcon then
+		borderType = "small-"..borderType;
+		self.Icon:SetSize(14, 14);
+		if isHiddenVisual then
+			self.HiddenIcon:SetSize(24, 20);
+		end
+	else
+		self.Icon:SetSize(20, 20);
+		if isHiddenVisual then
+			self.HiddenIcon:SetSize(26, 22);
+		end
+	end
+	self.IconBorder:SetAtlas("dressingroom-itemborder-"..borderType);
+	self.HiddenIcon:SetShown(isHiddenVisual);
+end

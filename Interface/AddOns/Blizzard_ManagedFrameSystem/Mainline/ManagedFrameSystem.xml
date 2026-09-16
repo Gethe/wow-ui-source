@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ManagedFrameContainer" inherits="ManagedFrameContainerBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="BottomManagedFrameContainer" frameStrata="LOW" inherits="ManagedFrameContainer"/>
+	<Frame name="RightManagedFrameContainer" frameStrata="LOW" inherits="ManagedFrameContainer"/>
+</Ui>

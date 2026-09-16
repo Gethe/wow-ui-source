@@ -1,0 +1,6 @@
+## Title: Blizzard Tiered Entrance Traits
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_UIFrameManager, Blizzard_SharedTalentUI
+## AllowLoadGameType: mainline
+Blizzard_TieredEntranceTraits.lua
+Blizzard_TieredEntranceTraits.xml

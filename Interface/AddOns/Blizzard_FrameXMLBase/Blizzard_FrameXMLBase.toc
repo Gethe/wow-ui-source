@@ -1,0 +1,25 @@
+## Title: Blizzard_FrameXMLBase
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_SharedXMLGame
+## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+IconDataProvider.lua
+[Family]\IconDataProviderOverrides.lua
+AnimatedStatusBar.lua
+AnimatedStatusBar.xml
+GradualAnimatedStatusBar.lua
+GradualAnimatedStatusBar.xml
+PowerDependencyLine.lua [AllowLoadGameType mainline]
+PowerDependencyLine.xml [AllowLoadGameType mainline]
+FlowContainer.lua
+PlayerMovementFrameFader.lua
+[Family]\Constants.lua [AllowLoadGameType classic]
+Shared\Constants.lua
+Constants.lua [AllowLoadGameType mainline]
+Vanilla\Constants.lua [AllowLoadGameType vanilla]
+TBC\Constants.lua [AllowLoadGameType tbc]
+Wrath\Constants.lua [AllowLoadGameType wrath cata mists]
+Cata\Constants.lua [AllowLoadGameType cata mists]
+Mists\Constants.lua [AllowLoadGameType mists]
+[Family]\Localization.lua [AllowLoadGameType mainline]
+Vanilla\Localization.lua [AllowLoadGameType vanilla]
+TBC\Localization.lua [AllowLoadGameType tbc wrath cata mists]

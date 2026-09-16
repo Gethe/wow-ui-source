@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<ContainedAlertFrame name="AlertFrameTemplate" toplevel="true" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Scripts>
+			<OnEnter function="AlertFrame_PauseOutAnimation"/>
+			<OnLeave function="AlertFrame_ResumeOutAnimation"/>
+			<OnClick function="AlertFrame_OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
+	<Frame name="AlertContainerTemplate" parent="UIParent" hidden="true" mixin="AlertContainerMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AlertFrame" mixin="AlertFrameMixin" inherits="AlertContainerTemplate">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="128"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

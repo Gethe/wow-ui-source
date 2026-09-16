@@ -1,0 +1,15 @@
+## Title: Blizzard_SharedXMLGame
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_Colors
+## AllowLoad: Game
+Shared\Localization.lua
+[Family]\Localization.lua [AllowLoadGameType mainline]
+[Game]\Localization.lua [AllowLoadGameType vanilla]
+Tooltip\TooltipUtil.lua [AllowLoadGameType mainline]
+Tooltip\TooltipDataHandler.lua [ExcludeLoadGameType vanilla]
+Tooltip\TooltipDataRules.lua [AllowLoadGameType mainline]
+Tooltip\TooltipComparisonManager.lua [AllowLoadGameType mainline]
+StaticModelInfo.lua [AllowLoadGameType mainline]
+DressUpModelFrameMixin.lua [AllowLoadGameType mainline]
+Mainline\LootSpecialization.lua [AllowLoadGameType mainline]
+CompactUnitFramesConstants.lua

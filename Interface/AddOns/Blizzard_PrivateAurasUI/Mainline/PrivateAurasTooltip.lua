@@ -1,0 +1,1 @@
+AddTooltipDataAccessor(GameTooltipDataMixin, "SetUnitPrivateAura", "GetUnitPrivateAura");

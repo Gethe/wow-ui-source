@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="GroupBuffFilterItemTemplate" mixin="GroupBuffFilterItemMixin" registerForDrag="LeftButton" ignoreChildrenForBounds="true" virtual="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" setAllPoints="true" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GroupBuffFilterSectionTemplate" mixin="GroupBuffFilterSectionMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="minimumHeight" value="22" type="number"/>
+			<KeyValue key="minimumWidth" value="344" type="number"/>
+			<KeyValue key="maximumWidth" value="344" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="Header" inherits="ListHeaderThreeSliceTemplate" registerForClicks="LeftButtonUp">
+				<Size x="0" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Container" inherits="GridLayoutFrame">
+				<KeyValues>
+					<KeyValue key="childXPadding" value="8" type="number"/>
+					<KeyValue key="childYPadding" value="8" type="number"/>
+					<KeyValue key="isHorizontal" value="true" type="boolean"/>
+					<KeyValue key="stride" value="7" type="number"/>
+					<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+					<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+					<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="315" y="70"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="13" y="-15"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GroupBuffFilterTemplate" mixin="GroupBuffFilterMixin" virtual="true">
+		<Frames>
+			<ScrollFrame parentKey="Scroll" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="false" type="boolean"/>
+					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
+					<KeyValue key="scrollBarTopY" value="0" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame parentKey="Content">
+						<Size x="344" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GroupBuffFilterEditVisualAlert" mixin="GroupBuffFilterEditVisualAlertMixin" inherits="CooldownViewerEditAlertBaseTemplate" toplevel="true" hidden="true">
+		<Size x="310" y="230"/>
+		<Frames>
+			<DropdownButton parentKey="VisualDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

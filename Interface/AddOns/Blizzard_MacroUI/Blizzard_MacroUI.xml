@@ -1,0 +1,249 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_MacroUI.lua"/>
+	
+	<Button name="MacroButtonTemplate" mixin="MacroButtonMixin" inherits="SelectorButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontHighlightSmallOutline">
+					<Size x="36" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="MacroFrame" mixin="MacroFrameMixin" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="424"/>
+		<KeyValues>
+			<KeyValue key="maxTabWidth" value="140" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString inherits="GameFontNormal" text="CREATE_MACROS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MacroFrame" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="MacroHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="256" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-210"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="75" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="MacroHorizontalBarLeft" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+				<Texture name="MacroFrameSelectedMacroBackground" file="Interface\Buttons\UI-EmptySlot">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-218"/>
+					</Anchors>
+				</Texture>
+				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Size x="256" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="TOPRIGHT" x="-4" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="MacroFrameEnterMacroText" inherits="GameFontHighlightSmall" text="ENTER_MACRO_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT" x="8" y="3"/>
+					</Anchors>
+				</FontString>
+				<FontString name="MacroFrameCharLimitText" inherits="GameFontHighlightSmall">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="-15" y="30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="SelectedMacroButton" name="MacroFrameSelectedMacroButton" frameStrata="HIGH" inherits="MacroButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" x="14" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:SetChecked(false);
+						PickupMacro(MacroFrame.selectedMacro);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame parentKey="MacroSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
+				<KeyValues>
+					<KeyValue key="buttonTemplate" value="MacroButtonTemplate" type="string"/>
+					<KeyValue key="retainScrollPosition" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="319" y="146"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-66"/>
+				</Anchors>
+			</Frame>
+			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="CHANGE_MACRO_NAME_ICON">
+				<Size x="170" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" x="55" y="-30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroEditButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="MacroFrameScrollFrame" inherits="MacroFrameScrollFrameTemplate">
+				<Size x="286" y="85"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT" x="11" y="-13"/>
+				</Anchors>
+				<ScrollChild>
+					<EditBox name="MacroFrameText" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
+						<Size x="286" y="85"/>
+						<Scripts>
+							<OnLoad>
+								ScrollingEdit_OnCursorChanged(self, 0, 0, 0, 0);
+							</OnLoad>
+							<OnTextChanged>
+								MacroFrame.textChanged = 1;
+								if ( MacroPopupFrame.mode == "new" ) then
+									MacroPopupFrame:Hide();
+								end
+								MacroFrameCharLimitText:SetFormattedText(MACROFRAME_CHAR_LIMIT, MacroFrameText:GetNumLetters());
+
+								ScrollingEdit_OnTextChanged(self, self:GetParent());
+							</OnTextChanged>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+							<OnUpdate>
+								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+							</OnUpdate>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="MacroFrameTextButton">
+				<Size x="286" y="85"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrameText"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MacroFrameText:SetFocus();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroCancelButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MacroFrameScrollFrame" relativePoint="TOPRIGHT" x="25" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroFrameCancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="MacroSaveButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="SAVE">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="MacroCancelButton" relativePoint="TOP" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroFrameSaveButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="MacroFrameTextBackground" inherits="TooltipBackdropTemplate">
+				<Size x="322" y="95"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrame" x="6" y="-289"/>
+				</Anchors>
+			</Frame>
+			<Button name="MacroFrameTab1" inherits="PanelTopTabButtonTemplate" text="GENERAL_MACROS" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="51" y="-28"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():SelectTab(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroFrameTab2" inherits="PanelTopTabButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MacroFrameTab1" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if ( self:GetFontString():IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(string.format(CHARACTER_SPECIFIC_MACROS, UnitName("player")), 1.0,1.0,1.0 );
+						end
+					</OnEnter>
+					<OnLoad inherit="prepend">
+						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
+						PanelTemplates_TabResize(self, -15, nil, nil, MACRO_TAB2_WIDTH);
+					</OnLoad>
+					<OnClick>
+						self:GetParent():SelectTab(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroDeleteButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="DELETE">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="MacroFrame" x="4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						StaticPopup_Show("CONFIRM_DELETE_SELECTED_MACRO");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MacroNewButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="NEW">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-82" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroNewButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="MacroExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

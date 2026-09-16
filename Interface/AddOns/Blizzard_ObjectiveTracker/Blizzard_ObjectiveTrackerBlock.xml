@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ObjectiveTrackerBlockTemplate" mixin="ObjectiveTrackerBlockMixin" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="ObjectiveTrackerLineFont">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="HeaderButton" mixin="ObjectiveTrackerBlockHeaderMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderText"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+</Ui>

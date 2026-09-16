@@ -1,0 +1,8 @@
+## Title: Blizzard_ManagedFrameSystem
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Shared\ManagedFrameSystem.lua
+Shared\ManagedFrameSystem.xml
+Mainline\ManagedFrameSystem.xml

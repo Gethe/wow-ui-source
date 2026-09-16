@@ -1,0 +1,75 @@
+local SimpleTextureAPI =
+{
+	Name = "SimpleTextureAPI",
+	Type = "ScriptObject",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "AddMaskTexture",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaskTexture",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumMaskTextures",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "size", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveMaskTexture",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SimpleTextureAPI);

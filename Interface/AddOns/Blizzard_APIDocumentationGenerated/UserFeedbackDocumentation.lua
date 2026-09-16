@@ -1,0 +1,56 @@
+local UserFeedback =
+{
+	Name = "UserFeedback",
+	Type = "System",
+	Namespace = "C_UserFeedback",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "SubmitBug",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bugInfo", Type = "cstring", Nilable = false },
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SubmitSuggestion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "suggestion", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(UserFeedback);

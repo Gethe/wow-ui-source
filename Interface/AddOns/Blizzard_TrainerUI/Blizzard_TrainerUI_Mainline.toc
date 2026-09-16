@@ -1,0 +1,7 @@
+## Title: Blizzard Trainer UI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Blizzard_TrainerUI_Bootstrap.lua [Bootstrap]
+Mainline\Blizzard_TrainerUI.xml
+Localization.lua

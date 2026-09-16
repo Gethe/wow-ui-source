@@ -1,0 +1,118 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_TableInspectorAttributeDataProvider.lua"/>
+
+	<Frame name="TableAttributeLineBaseTemplate" virtual="true">
+		<Size x="400" y="16"/>
+		<Frames>
+			<Frame parentKey="Key" inherits="TruncatedTooltipScriptTemplate">
+				<Size x="120" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="120" y="16"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<Frame name="TableAttributeLineTitleTemplate" mixin="TableAttributeLineTitleMixin" virtual="true">
+		<Size x="400" y="16"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="TableAttributeLineFixedValueTemplate" inherits="TableAttributeLineBaseTemplate, TruncatedTooltipScriptTemplate" mixin="TableAttributeLineFixedValueMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Value" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="310" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Key" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.truncatedTooltipScriptText = self.Value;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TableAttributeLineEditableTemplate" inherits="TableAttributeLineBaseTemplate" mixin="TableAttributeLineEditableMixin" virtual="true">
+		<Frames>
+			<EditBox parentKey="Value" autoFocus="false" bytes="64">
+				<Size x="310" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Key" relativePoint="RIGHT" x="8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" hidden="true">
+							<Color r="1.0" g="1.0" b="1.0" a="0.4"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEditFocusGained inherit="prepend" function="TableAttributeDisplayEditBox_OnEditFocusGained"/>
+					<OnEnterPressed function="TableAttributeDisplayEditBox_OnEnterPressed"/>
+					<OnEnter>
+						self.Highlight:Show();
+					</OnEnter>
+					<OnLeave>
+						self.Highlight:Hide();
+					</OnLeave>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+		</Frames>
+	</Frame>
+
+	<Frame name="TableAttributeLineReferenceTemplate" inherits="TableAttributeLineBaseTemplate" mixin="TableAttributeLineReferenceMixin" virtual="true">
+		<Frames>
+			<Button parentKey="ValueButton" inherits="TruncatedTooltipScriptTemplate">
+				<Size x="310" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Key" relativePoint="RIGHT" x="8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" hidden="true">
+							<Color r="1.0" g="1.0" b="1.0" a="0.4"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT">
+							<Size x="310" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown function="TableAttributeDisplayValueButton_OnMouseDown"/>
+					<OnEnter inherit="prepend">
+						self.Highlight:Show();
+					</OnEnter>
+					<OnLeave inherit="prepend">
+						self.Highlight:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

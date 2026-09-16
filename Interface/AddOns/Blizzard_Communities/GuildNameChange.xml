@@ -1,0 +1,224 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="CommunitiesGuildNameChangeAlertFrameTemplate" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="256" y="36"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontHighlightLeft" justifyH="CENTER" text="GUILD_NAME_ALERT" parentKey="Alert">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontDisableSmall" justifyH="CENTER" text="CLICK_HERE_FOR_MORE_INFO" parentKey="ClickText">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="ReportedGuildOrCommunityChangeTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="300" y="300"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="6" y="-68"/>
+			<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+					<Color r="1" g=".9" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Error" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-80"/>
+					</Anchors>
+					<Color r="1" g="0" b="0" a="1"/>
+				</FontString>
+				<FontString parentKey="GMText" inherits="GameFontHighlightCenter">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Error" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>				
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<EditBox name="NameChangeEditBoxTemplate" letters="24" inherits="InputBoxTemplate" autoFocus="false" virtual="true">
+		<Size x="200" y="20"/>
+		<Scripts>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost>
+			</OnEditFocusLost>
+			<OnEditFocusGained>
+				self:HighlightText();
+			</OnEditFocusGained>
+		</Scripts>
+	</EditBox>
+	<Frame name="GuildNameChangeFrameTemplate" inherits="ReportedGuildOrCommunityChangeTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RenameText" inherits="GameFontNormalMed3" text="RENAME_GUILD_LABEL">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="90"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="EditBox" inherits="NameChangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.RenameText" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</EditBox>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if IsGuildLeader() then
+							SubmitRequiredGuildRename(self:GetParent().EditBox:GetText());
+						else
+							self:GetParent():GetParent():SetGuildNameAlertBannerMode(true);
+						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Error:SetText(GUILD_NAME_ALERT_WARNING);
+				self.GMText:SetText(GUILD_NAME_ALERT_GM_HELP); 
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CommunityNameChangeFrameTemplate" inherits="ReportedGuildOrCommunityChangeTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="CLUB_FINDER_COMMUNITY_RENAME_BUTTON">
+				<Size x="180" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.GMText" relativePoint="BOTTOM" x="0" y="-140"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local communitiesFrame = self:GetParent():GetParent();
+						OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Error:SetText(CLUB_FINDER_COMMUNITY_NAME_CHANGE_ALERT);
+				self.GMText:SetText(CLUB_FINDER_COMMUNITY_NAME_CHANGE_DESCRIPTION_BOTTOM);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GuildPostingChangeFrameTemplate" inherits="ReportedGuildOrCommunityChangeTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="CLUB_FINDER_REPORTED_GUILD_REPOST_MESSAGE">
+				<Size x="180" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.GMText" relativePoint="BOTTOM" x="0" y="-140"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local recruitmentDialog = self:GetParent():GetParent().RecruitmentDialog;
+						if (not recruitmentDialog:IsShown()) then
+							recruitmentDialog:UpdatedPostingInformationInit();
+						else
+							recruitmentDialog:OnUpdatedPostingInformationRecieved();
+							recruitmentDialog:Hide();
+						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Error:SetText(CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED);
+				self.GMText:SetText(CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommunityPostingChangeFrameTemplate" inherits="ReportedGuildOrCommunityChangeTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="CLUB_FINDER_REPORTED_GUILD_REPOST_MESSAGE">
+				<Size x="180" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.GMText" relativePoint="BOTTOM" x="0" y="-140"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local communitiesFrame = self:GetParent():GetParent();
+						OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Error:SetText(CLUB_FINDER_COMMUNITY_POSTING_REMOVED_TEXT);
+				self.GMText:SetText(CLUB_FINDER_GUILD_POSTING_ALERT_REMOVED_DESC);
+			</OnLoad>
+		</Scripts>
+	</Frame>	
+	
+</Ui>

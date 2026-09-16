@@ -1,0 +1,67 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_PlayerSpellsFrame.lua"/>
+	
+	<Frame name="PlayerSpellsFrame" mixin="PlayerSpellsFrameMixin" inherits="PortraitFrameTemplate, TabSystemOwnerTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="minimizedWidth" value="809"/>
+			<KeyValue key="maximizedWidth" value="1618"/>
+		</KeyValues>
+		<Size x="1618" y="883"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-41"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="MaximizeMinimizeButton" inherits="MaximizeMinimizeButtonFrameTemplate" frameLevel="5510">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="100" type="number"/>
+					<KeyValue key="maxTabWidth" value="150" type="number"/>
+					<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SpecFrame" inherits="ClassSpecFrameTemplate" frameLevel="100" hidden="true">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="1612" type="number"/>
+					<KeyValue key="fixedHeight" value="856" type="number"/>
+				</KeyValues>
+				<Size x="1612" y="856"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="4"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="TalentsFrame" inherits="ClassTalentsFrameTemplate" frameLevel="100" hidden="true">
+				<Size x="1612" y="856"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="4"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SpellBookFrame" inherits="SpellBookFrameTemplate" frameLevel="100" hidden="true">
+				<KeyValues>
+					<KeyValue key="minimizedWidth" value="806"/>
+					<KeyValue key="maximizedWidth" value="1612"/>
+				</KeyValues>
+				<Size x="1612" y="856"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

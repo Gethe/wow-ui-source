@@ -1,0 +1,74 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<StatusBar name="NamePlateCastingBarTemplate" mixin="NamePlateCastingBarMixin" inherits="CastingBarFrameAnimsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="HideIconWhenNotInterruptible" value="true" type="boolean"/> <!-- May be overwritten by Lua. -->
+			<KeyValue key="classicStyleCastBar" value="false" type="boolean"/> <!-- May be overwritten by Lua. -->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ui-castingbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Border" file="Interface\Tooltips\Nameplate-Border-Castbar" hidden="true">
+					<!-- Note: Currently only used by Classic Style. -->
+					<Size x="128" y="16"/>
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</Texture>
+				<Texture parentKey="CastTargetIndicator" atlas="ui-hud-nameplates-targetedbyenemy">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Icon" hidden="true">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</Texture>
+				<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" smoothScaling="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" smoothScaling="true">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true">
+					<!-- Anchoring and size handled dynamically in lua.-->
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip" alphaMode="ADD">
+					<Size x="4" y="12"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="ImportantCastFlashAnim" looping="REPEAT">
+				<Alpha childKey="ImportantCastIndicator" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ImportantCastIndicator" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+
+</Ui>

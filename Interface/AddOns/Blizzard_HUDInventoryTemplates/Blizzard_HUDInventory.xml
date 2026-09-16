@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HUDInventoryTemplate" mixin="HUDInventoryMixin" enableMouse="true" virtual="true">
+		<!--
+		buttonTemplate: what template to use for individual buttons.
+		bagID: which bag's inventory is being shown.
+		startID: inventory index of the first item in the bag.
+		baseNumItemButtons: number of buttons to display to start.
+		commandPrefix: prefix for keybindings.
+		-->
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="HUDInventoryButtonTemplate" type="string"/>
+			<KeyValue key="bagID" value="Enum.BagIndex.Backpack" type="global"/>
+			<KeyValue key="startID" value="1" type="string"/>
+			<KeyValue key="baseNumItemButtons" value="4" type="number"/>
+			<!-- 
+			<KeyValue key="commandPrefix" value="" type="string"/>
+			-->
+		</KeyValues>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HUDInventoryBarTemplate" mixin="HUDInventoryBarMixin" inherits="HUDInventoryTemplate, HorizontalLayoutFrame" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<!-- 
+	This is no longer used but this should work if needed. Be sure to uncomment the associated Mixin.
+	<Frame name="HUDInventoryGridTemplate" mixin="HUDInventoryGridMixin" inherits="HUDInventoryTemplate, GridLayoutFrame" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	-->
+</Ui>

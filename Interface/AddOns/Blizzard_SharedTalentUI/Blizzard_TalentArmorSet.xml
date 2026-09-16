@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Button name="TalentArmorSetTemplate" mixin="TalentArmorSetMixin" inherits="TalentDisplayTemplate" virtual="true">
+		<Size x="135" y="180"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- This texture is being stretched and will be replace later -->
+				<Texture parentKey="Border" atlas="transmog-wardrobe-border-collected">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="5"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="NoCameraControlModelSceneMixinTemplate" enableMouseMotion="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</ModelScene>
+
+			<Frame parentKey="OverlayContainer" setAllPoints="true" frameLevel="100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LockedOverlay" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="LockedIcon" atlas="BonusChest-Lock" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+</Ui>

@@ -1,0 +1,144 @@
+## Title: Blizzard_FrameXML
+## Dep: Blizzard_ObjectAPI
+## Dep: Blizzard_FrameXMLBase
+## Dep: Blizzard_UIErrorsFrame
+## Dep: Blizzard_UIParentPanelManager [AllowLoadGameType mainline]
+## Dep: Blizzard_SettingsDefinitions_Frame
+## Dep: Blizzard_ItemButton
+## Dep: Blizzard_UnitPopup [AllowLoadGameType classic]
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_RaidWarning
+## Dep: Blizzard_UIPanelTemplates
+## Dep: Blizzard_GameTooltip
+## Dep: Blizzard_MoneyFrame
+## Dep: Blizzard_Colors
+## Dep: Blizzard_TransmogShared [AllowLoadGameType wrath, cata, mists, mainline]
+## Dep: Blizzard_LFGUtil
+## Dep: Blizzard_ManagedFrameSystem
+## Dep: Blizzard_MirrorTimer [AllowLoadGameType classic]
+## LoadFirst: 1
+Shared\Localization.lua
+AchievementDisplayFrame.lua [AllowLoadGameType mainline]
+AchievementDisplayFrame.xml [AllowLoadGameType mainline]
+RewardTrackTemplates.lua [AllowLoadGameType mainline]
+RewardTrackTemplates.xml [AllowLoadGameType mainline]
+ItemDisplay.lua [AllowLoadGameType mainline]
+ItemDisplay.xml [AllowLoadGameType mainline]
+Wrath\SparkleFrame.lua [AllowLoadGameType wrath, cata, mists]
+Wrath\SparkleFrame.xml [AllowLoadGameType wrath, cata, mists]
+CustomBindingManager.lua
+CustomBindingHandler.lua
+[Family]\TutorialFrame.lua
+[Family]\TutorialFrame.xml
+SecureTemplatesBase.xml
+SecureTemplates.lua
+SecureTemplates.xml
+AzeriteAnimationTemplates.xml [AllowLoadGameType mainline]
+QuestNPCModelFrameMixin.lua [AllowLoadGameType mainline]
+TabardModelFrameMixin.lua [AllowLoadGameType mainline]
+WardrobeCustomSets.lua [AllowLoadGameType wrath, cata, mists, mainline]
+WardrobeCustomSets.xml [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\NavigationBar.lua
+[Family]\NavigationBar.xml
+DeprecatedTemplates.lua
+DeprecatedTemplates.xml
+[Family]\CharacterFrameTemplates.xml [AllowLoadGameType vanilla, tbc, wrath]
+Cata\CharacterFrameTemplates.lua [AllowLoadGameType cata, mists]
+Cata\CharacterFrameTemplates.xml [AllowLoadGameType cata, mists]
+[Family]\AlertFrames.lua
+[Family]\AlertFrames.xml
+[Family]\AlertFrameSystems.lua
+[Family]\AlertFrameSystems.xml
+[Family]\CoinPickupFrame.lua
+[Family]\CoinPickupFrame.xml
+[Family]\StackSplitFrame.lua
+[Family]\StackSplitFrame.xml
+[Family]\ZoneText.lua
+[Family]\ZoneText.xml
+PVPUITemplates.lua [AllowLoadGameType mainline]
+PVPUITemplates.xml [AllowLoadGameType mainline]
+PVPHonorSystem.lua [AllowLoadGameType mainline]
+PVPHonorSystem.xml [AllowLoadGameType mainline]
+GuildUtil.lua
+InstanceDifficulty.lua [AllowLoadGameType mainline]
+InstanceDifficulty.xml [AllowLoadGameType mainline]
+EquipmentFlyout.lua [AllowLoadGameType cata, mists, mainline]
+EquipmentFlyout.xml [AllowLoadGameType cata, mists, mainline]
+Shared\LowHealthFrame.lua
+[Family]\LowHealthFrame.xml
+[Family]\CombatFeedback.lua
+Mainline\ReadyCheck.lua [AllowLoadGameType mainline]
+Mainline\ReadyCheck.xml [AllowLoadGameType mainline]
+Mainline\InstanceAbandon.lua [AllowLoadGameType mainline]
+Mainline\InstanceAbandon.xml [AllowLoadGameType mainline]
+CustomizationDebugFrame.xml [AllowLoadGameType mainline]
+Shared\CinematicFrame.lua
+[Family]\CinematicFrameButton.xml
+Shared\CinematicFrame.xml
+Mainline\RatingMenuFrame.xml [AllowLoadGameType mainline]
+TBC\WorldStateFrame.lua [AllowLoadGameType wrath, cata, mists]
+[Game]\WorldStateFrame.lua [AllowLoadGameType vanilla, tbc, mists]
+[Game]\WorldStateFrame.xml [AllowLoadGameType vanilla, tbc, mists]
+TBC\WorldStateFrame.xml [AllowLoadGameType wrath]
+Cata\WorldStateFrame.xml [AllowLoadGameType cata]
+[Family]\TalentFrameBase_Shared.lua [AllowLoadGameType classic]
+Vanilla\TalentFrameBase.lua [AllowLoadGameType vanilla, tbc, wrath]
+[Game]\TalentFrameBase.lua [AllowLoadGameType cata, mists]
+[Family]\Blizzard_TalentUITemplates.xml [AllowLoadGameType vanilla, tbc, wrath]
+Cata\Blizzard_TalentUITemplates.xml [AllowLoadGameType cata, mists]
+Cata\Blizzard_TalentUITemplates.xml [AllowLoadGameType cata, mists]
+[Family]\TalentFrameBase.lua [AllowLoadGameType mainline]
+[Family]\TalentFrameTemplates.xml [AllowLoadGameType mainline]
+MovieFrame.lua
+MovieFrame.xml
+BossBannerToast.lua [AllowLoadGameType mainline]
+TopBannerManager.lua [AllowLoadGameType mainline]
+BossBannerToast.xml [AllowLoadGameType mainline]
+EventToastManager.lua [AllowLoadGameType mainline]
+EventToastManager.xml [AllowLoadGameType mainline]
+[Family]\EquipmentManager.lua [AllowLoadGameType wrath, cata, mists, mainline]
+Shared\EquipmentManager.lua [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\RolePoll.lua
+[Family]\RolePoll.xml
+SpellActivationOverlay.lua [AllowLoadGameType cata, mists, mainline]
+SpellActivationOverlay.xml [AllowLoadGameType cata, mists, mainline]
+GuildInviteFrame.lua [AllowLoadGameType cata, mists, mainline]
+GuildInviteFrame.xml [AllowLoadGameType cata, mists, mainline]
+GhostFrame.lua [AllowLoadGameType cata, mists, mainline]
+GhostFrame.xml [AllowLoadGameType cata, mists, mainline]
+[Family]\StreamingFrame.lua
+[Family]\StreamingFrame.xml
+IconIntroAnimation.lua
+IconIntroAnimation.xml
+Timer.lua
+Timer.xml
+DestinyFrame.lua [AllowLoadGameType mists, mainline]
+DestinyFrame.xml [AllowLoadGameType mists, mainline]
+SharedPetBattleTemplates.lua [AllowLoadGameType mists, mainline]
+SharedPetBattleTemplates.xml [AllowLoadGameType mists, mainline]
+[Family]\LootHistory.lua
+[Family]\LootHistory.xml
+[Family]\ClassTrainerFrameTemplates.xml [AllowLoadGameType classic]
+FloatingPetBattleTooltip.lua [AllowLoadGameType mists, mainline]
+FloatingPetBattleTooltip.xml [AllowLoadGameType mists, mainline]
+BattlePetTooltip.lua [AllowLoadGameType mists, mainline]
+BattlePetTooltip.xml [AllowLoadGameType mists, mainline]
+LossOfControlFrame.lua [AllowLoadGameType mists, mainline]
+[Family]\LossOfControlFrame.lua [AllowLoadGameType mists]
+LossOfControlFrame.xml [AllowLoadGameType mists, mainline]
+ArtifactToasts.lua [AllowLoadGameType mainline]
+ArtifactToasts.xml [AllowLoadGameType mainline]
+AzeriteItemToasts.lua [AllowLoadGameType mainline]
+AzeriteItemToasts.xml [AllowLoadGameType mainline]
+AzeriteIslandsToast.lua [AllowLoadGameType mainline]
+AzeriteIslandsToast.xml [AllowLoadGameType mainline]
+AzeriteEmpoweredItemDataSource.lua [AllowLoadGameType mainline]
+QuestSession.lua [AllowLoadGameType mainline]
+QuestSession.xml [AllowLoadGameType mainline]
+TalkingHeadUI.lua [AllowLoadGameType mainline]
+TalkingHeadUI.xml [AllowLoadGameType mainline]
+MotionSickness.lua [AllowLoadGameType mainline]
+MotionSickness.xml [AllowLoadGameType mainline]
+ArchaeologyProgressBar.lua [AllowLoadGameType mainline]
+ArchaeologyProgressBar.xml [AllowLoadGameType mainline]
+[Family]\Localization.lua [AllowLoadGameType mainline]

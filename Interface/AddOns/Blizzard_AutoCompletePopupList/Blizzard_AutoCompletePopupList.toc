@@ -1,0 +1,6 @@
+## Title: Blizzard Auto Complete Popup List
+## AllowLoad: Both
+## LoadOnDemand: 1
+
+Blizzard_AutoCompletePopupList.lua
+Blizzard_AutoCompletePopupList.xml

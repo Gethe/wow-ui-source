@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="WorldQuestDataProvider.lua"/>
+
+	<Button name="WorldQuestPinTemplate" inherits="POIButtonTemplate, LegendHighlightableMapPoiPinTemplate" flattenRenderLayers="true" enableMouse="true" mixin="WorldQuestPinMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="questRewardTooltipStyle" value="TOOLTIP_QUEST_REWARDS_STYLE_WORLD_QUEST" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TrackedCheck" atlas="worldquest-emissary-tracker-checkmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TimeLowFrame" hidden="true">
+				<Size x="22" y="22" />
+				<Anchors>
+					<Anchor point="CENTER" x="9" y="-9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="worldquest-icon-clock" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Button>
+
+	<CinematicModel name="WorldQuestSpellEffectPinTemplate" hidden="true" mixin="WorldQuestSpellEffectPinMixin" virtual="true">
+		<Size x="400" y="400"/>
+	</CinematicModel>
+</Ui>

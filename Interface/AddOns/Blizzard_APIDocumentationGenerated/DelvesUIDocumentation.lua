@@ -1,0 +1,617 @@
+local DelvesUI =
+{
+	Name = "DelvesUI",
+	Type = "System",
+	Namespace = "C_DelvesUI",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "GetActiveDelveTier",
+			Type = "Function",
+			Documentation = { "Returns the entrance tier information for the active Delve (via party data). Assumes only Delves use this type for now." },
+
+			Returns =
+			{
+				{ Name = "tierInfo", Type = "TieredEntranceTierInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCompanionInfoForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerCompanionInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCreatureDisplayInfoForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurioLink",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Given the spell ID for an owned curio and its rarity, return a spell link style hyperlink for the curio spell, since they aren't items when learned" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false, NeverSecret = true },
+			},
+
+			Returns =
+			{
+				{ Name = "curioLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurioNodeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "curioType", Type = "CurioType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurioRarityByTraitCondAccountElementID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitCondAccountElementID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentDelvesSeasonNumber",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seasonNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceBackgroundWidgetSetID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "backgroundWidgetSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceDescriptionString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelveEntranceHeaderString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "header", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelveEntranceMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceTiers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "levelInfo", Type = "table", InnerType = "TieredEntranceTierInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelveEntranceTitleString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "title", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelvesAffixSpellsForSeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "affixSpellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelvesFactionForSeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelvesMinRequiredLevel",
+			Type = "Function",
+			Documentation = { "Players must be at or above the min level + offset to enter Delves. This function returns that min level." },
+
+			Returns =
+			{
+				{ Name = "minRequiredLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFactionForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFlavorNodeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFlavorNodeNameForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLockedTextForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetModelSceneForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "modelSceneID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerCompanionPDEID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "pdeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRoleNodeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRoleSubtreeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "roleType", Type = "CompanionRoleType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "subTreeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTieredEntranceOptionalAffixTraitTreeID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "treeID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTieredEntrancePDEID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "pdeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTieredEntranceType",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "entranceType", Type = "TieredEntranceType", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTraitTreeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnseenCuriosBySlotType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotType", Type = "CompanionConfigSlotTypes", Nilable = false },
+				{ Name = "ownedCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unseenCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldTierDifficultyForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "difficulty", Type = "WorldTierDifficulty", Nilable = false },
+			},
+		},
+		{
+			Name = "HasActiveDelve",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasActiveLFGLair",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasActiveLair",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDelveEntranceTierEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "IsEligibleForActiveDelveRewards",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInLair",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTraitTreeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isForCompanion", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestPartyEligibilityForDelveTiers",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries private party members to see what level they have unlocked for the Delve. Ineligible members are added to the tooltip of dropdown entries." },
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SaveSeenCuriosBySlotType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotType", Type = "CompanionConfigSlotTypes", Nilable = false },
+				{ Name = "ownedCurioNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SelectDelveEntranceTier",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "ActiveDelveDataUpdate",
+			Type = "Event",
+			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
+		},
+		{
+			Name = "DelveAssistAction",
+			Type = "Event",
+			LiteralName = "DELVE_ASSIST_ACTION",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when an assist action occurs in a delve." },
+			Payload =
+			{
+				{ Name = "data", Type = "DelveAssistActionData", Nilable = false },
+			},
+		},
+		{
+			Name = "DelvesAccountDataElementChanged",
+			Type = "Event",
+			LiteralName = "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when player account data element(s) have changed. This drives curio ranks, and the UI should update when this is sent." },
+		},
+		{
+			Name = "PartyEligibilityForDelveTiersChanged",
+			Type = "Event",
+			LiteralName = "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when responses come in from RequestPartyEligibilityForDelveTiers." },
+			Payload =
+			{
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "maxEligibleLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowDelvesCompanionConfigurationUI",
+			Type = "Event",
+			LiteralName = "SHOW_DELVES_COMPANION_CONFIGURATION_UI",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
+		},
+		{
+			Name = "WalkInDataUpdate",
+			Type = "Event",
+			LiteralName = "WALK_IN_DATA_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when the player or a private party member join a new walk-in instance or when the instance is shut down." },
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "CompanionRoleType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Dps", Type = "CompanionRoleType", EnumValue = 0 },
+				{ Name = "Heal", Type = "CompanionRoleType", EnumValue = 1 },
+				{ Name = "Tank", Type = "CompanionRoleType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "CurioType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Combat", Type = "CurioType", EnumValue = 0 },
+				{ Name = "Utility", Type = "CurioType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TieredEntranceRewardType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Item", Type = "TieredEntranceRewardType", EnumValue = 0 },
+				{ Name = "Currency", Type = "TieredEntranceRewardType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TieredEntranceRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "rewardType", Type = "TieredEntranceRewardType", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+		},
+		{
+			Name = "TieredEntranceTierInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "suggestedILvl", Type = "number", Nilable = false },
+				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = false },
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "tierDescription", Type = "string", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "TieredEntranceRewardInfo", Nilable = false },
+				{ Name = "modifierUIWidgetSetID", Type = "number", Nilable = false },
+				{ Name = "lockedReason", Type = "string", Nilable = true },
+				{ Name = "queueAsLFG", Type = "bool", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(DelvesUI);

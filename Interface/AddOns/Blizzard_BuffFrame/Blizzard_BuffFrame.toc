@@ -1,0 +1,12 @@
+## Title: Blizzard_BuffFrame
+## Dep: Blizzard_Minimap
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_RaidWarning
+## Dep: Blizzard_UIErrorsFrame
+BuffFrame.lua
+[Family]/BuffFrame.lua [AllowLoadGameType classic]
+BuffFrameTemplates.xml
+BuffFrame.xml
+ExternalDefensivesFrame.lua [AllowLoadGameType standard]
+ExternalDefensivesFrame.xml [AllowLoadGameType standard]

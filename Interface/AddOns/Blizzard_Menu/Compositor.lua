@@ -1,0 +1,461 @@
+local frameDummy = CreateFrame("Frame");
+local frameFactory = CreateFrameFactory();
+
+local function PoolReset(pool, region, new)
+	region:SetToDefaults();
+
+	-- The anchors were already cleared in SetToDefaults(), so we only need to hide the frame.
+	region:Hide();
+
+	if not new then
+		-- Set to dummy parent to avoid it remaining on screen when unused.
+		region:SetParent(frameDummy);
+	end
+end
+
+local function TemplatePoolReset(pool, region, new, template)
+	PoolReset(pool, region, new);
+
+	-- SetToDefaults() will set the frame's size to 0,0. We can't avoid calling SetToDefaults(),
+	-- so we need to restore the template to it's design size. There are other characteristics
+	-- of the frame that may have been defined in the XML that are different after calling
+	-- SetToDefaults(). We will need to fix that in the future.
+	local cache = frameFactory:GetTemplateInfoCache();
+	local templateInfo = cache:GetTemplateInfo(template);
+	local width, height = templateInfo.width, templateInfo.height;
+	if width ~= 0 and height ~= 0 then
+		region:SetSize(width, height);
+	end
+end
+
+local texturePool = CreateTexturePool(frameDummy, "ARTWORK", 7, nil, PoolReset);
+local fontStringPool = CreateFontStringPool(frameDummy, "ARTWORK", 7, nil, PoolReset);
+
+local function AcquireFrame(compositor, parent, frameTypeOrTemplate, resetFunc)
+	local frame, new = frameFactory:Create(parent, frameTypeOrTemplate, resetFunc);
+	table.insert(compositor.attachments, frame);
+
+	-- Parent reattachment is necessary as the frame may have been reparented in previous use.
+	frame:SetParent(parent);
+	-- If the parent is already the same, we have to set the frame strata manually, otherwise
+	-- SetParent returns immediately without making this change.
+	frame:SetFrameStrata(parent:GetFrameStrata());
+	frame:Show();
+
+	return frame;
+end
+
+--[[
+Note that these default functions are going to be deleted and replaced with a single
+reset/default function once it's available.
+]]
+local function SetRegionToDefaults(region)
+	region:SetToDefaults();
+
+	-- SetToDefaults() changes the size of the region to 0,0. Assign non-zero dimensions
+	-- to the region so it is not treated as having an invalid rect in various measurement processes.
+	region:SetSize(1,1);
+end
+
+local function SetTextureToDefaults(texture)
+	SetRegionToDefaults(texture);
+
+	texture:SetDrawLayer("ARTWORK");
+end
+
+local function SetFontStringToDefaults(fontString)
+	SetRegionToDefaults(fontString);
+
+	fontString:SetFontObject("GameFontHighlight");
+	fontString:SetTextColor(1,1,1,1);
+	fontString:SetWidth(150);
+	fontString:SetMaxLines(1);
+	fontString:SetJustifyH("LEFT");
+	fontString:SetJustifyV("MIDDLE");
+end
+
+local function SetFrameToDefaults(frame)
+	SetRegionToDefaults(frame);
+end
+
+local function SetButtonToDefaults(button)
+	SetFrameToDefaults(button);
+end
+
+local function SetCheckButtonToDefaults(checkButton)
+	SetButtonToDefaults(checkButton);
+end
+
+local function SetStatusBarToDefaults(statusBar)
+	SetFrameToDefaults(statusBar);
+
+	statusBar:SetColorFill(1,1,1,1);
+end
+
+local function SetEditBoxToDefaults(editBox)
+	SetFrameToDefaults(editBox);
+
+	editBox:SetFontObject("GameFontHighlight");
+	editBox:SetTextColor(1,1,1,1);
+	editBox:SetWidth(150);
+end
+
+local originalMetatables = {};
+
+local function SetOriginalMetatable(region)
+	local objType = region:GetObjectType();
+	originalMetatables[objType] = getmetatable(region);
+	region:Hide();
+end
+
+local configurationTbls = {};
+local defaultConfigurationTbl = nil;
+
+do
+	local function CreateConfigurationTbl(defaultFunc, factory, disallowedFunctions, redirectFunctions)
+		return {
+			defaultFunc = defaultFunc, 
+			factory = factory,
+			disallowedFunctions = disallowedFunctions,
+			redirectFunctions = redirectFunctions,
+		};
+	end
+
+	local function SetupConfigurationTbl(objType, defaultFunc, factory, disallowedFunctions, redirectFunctions)
+		configurationTbls[objType] = CreateConfigurationTbl(defaultFunc, factory, disallowedFunctions, redirectFunctions);
+	end
+
+	local function NewTicker(compositor, parent, timeSeconds, callback)
+		return compositor:NewTicker(parent, timeSeconds, callback);
+	end
+
+	local function AttachTexture(compositor, parent)
+		return compositor:AttachTexture(parent);
+	end
+	
+	local function AttachFontString(compositor, parent)
+		return compositor:AttachFontString(parent);
+	end
+	
+	local function AttachFrame(compositor, parent, frameType)
+		return compositor:AttachFrame(parent, frameType);
+	end
+	
+	local function AttachTemplate(compositor, parent, template)
+		return compositor:AttachTemplate(parent, template);
+	end
+
+	local regionRedirectFunctions = 
+	{
+	};
+
+	-- Functions added to compositor created frames.
+	local frameRedirectFunctions = 
+	{
+		["NewTicker"] = NewTicker,
+		["AttachTexture"] = AttachTexture,
+		["AttachFontString"] = AttachFontString,
+		["AttachFrame"] = AttachFrame,
+		["AttachTemplate"] = AttachTemplate,
+	};
+
+	local regionDisallowedFunctions = tInvert(
+	{
+	});
+	
+	local fontStringDisallowedFunctions = tInvert(
+	{
+		"SetFont",
+	});
+
+	--[[
+	Disallow these functions from being called so that they don't create child regions
+	the compositor won't be aware of.
+	AttachTexture and AttachFontString should be used instead of CreateTexture and CreateFontString.
+	]]--
+	local frameDisallowedFunctions = tInvert(
+	{
+		"SetForbidden",
+		"CreateTexture",
+		"CreateMaskTexture",
+		"CreateFontString",
+		"CreateAnimationGroup",
+		"CreateLine",
+	});
+	
+	SetOriginalMetatable(frameDummy:CreateTexture());
+	SetOriginalMetatable(frameDummy:CreateFontString());
+	SetOriginalMetatable(frameDummy);
+	SetOriginalMetatable(CreateFrame("Button"));
+	SetOriginalMetatable(CreateFrame("CheckButton"));
+	SetOriginalMetatable(CreateFrame("StatusBar"));
+	SetOriginalMetatable(CreateFrame("EditBox"));
+
+	defaultConfigurationTbl = CreateConfigurationTbl(SetFrameToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+	
+	--[[
+	Configuration tables are optional here, and will eventually be replaced once a Reinitialize() method is added for every
+	native frame type. Expect the 'defaultFunction' to disappear in a future patch.
+	]]
+	SetupConfigurationTbl("Texture", SetTextureToDefaults, texturePool, regionDisallowedFunctions, regionRedirectFunctions);
+	SetupConfigurationTbl("FontString", SetFontStringToDefaults, fontStringPool, fontStringDisallowedFunctions, regionRedirectFunctions);
+	SetupConfigurationTbl("Frame", SetFrameToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+	SetupConfigurationTbl("Button", SetButtonToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+	SetupConfigurationTbl("CheckButton", SetCheckButtonToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+	SetupConfigurationTbl("StatusBar", SetStatusBarToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+	SetupConfigurationTbl("EditBox", SetEditBoxToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
+end
+
+local function GetConfigurationTbl(region)
+	local objType = region:GetObjectType();
+	return configurationTbls[objType] or defaultConfigurationTbl;
+end
+
+local function GetDefaultFunc(region)
+	return GetConfigurationTbl(region).defaultFunc;
+end
+
+local function GetConfigFunc(region)
+	return GetConfigurationTbl(region).configFunc;
+end
+
+local function GetFactory(region)
+	return GetConfigurationTbl(region).factory;
+end
+
+local function GetOriginalMetatable(region)	
+	local objType = region:GetObjectType();
+	if not originalMetatables[objType] then
+		SetOriginalMetatable(region);
+	end
+
+	return originalMetatables[objType];
+end
+
+local function RestoreOriginalMetatable(region)
+	setmetatable(region, GetOriginalMetatable(region));
+end
+
+local function ConfigureMetatable(compositor, region)
+	local configTbl = GetConfigurationTbl(region);
+	local originalMetatable = GetOriginalMetatable(region);
+	local disallowedFunctions = configTbl.disallowedFunctions;
+	local redirectFunctions = configTbl.redirectFunctions;
+
+	--[[
+	This table is where all new insertions occur. The region should not have any keys at risk
+	of being modified after the compositor is initialized. The intention here is to restore the 
+	region to it's pristine "as first created" state.
+	]]--
+	local values = {};
+
+	local metatable = 
+	{
+		__index = function(tbl, key)
+			if disallowedFunctions[key] then
+				assertsafe(false, string.format("Use of function '%s' is disallowed. (Index)", key));
+				return function()
+					assertsafe(false, string.format("Use of function '%s' is disallowed (Call).", key));
+				end
+			end
+
+			--[[
+			Always return the value if it exists in the discard table first. Note that this value may have been
+			obtained from the original region, and shadow the original value.
+			]]--
+			local value = values[key];
+			if value ~= nil then
+				return value;
+			end
+			
+			--[[
+			If the value exists on the original region, we write the value to the discard table, preserving
+			the original value. This ensures that a value that was assigned in a template's OnLoad or XML 
+			is retained when the template is reacquired.
+			]]--
+			local originalValue = rawget(region, key);
+			if originalValue ~= nil then
+				rawset(values, key, originalValue);
+				return originalValue;
+			end
+
+			-- Finally return the original metatable value, which will generally be C_API script functions.
+			return originalMetatable.__index[key];
+		end,
+
+		__newindex = values,
+	};
+
+	-- Assign the redirect functions to the discard table, forwarding the compositor as their first argument.
+	for key, func in pairs(redirectFunctions) do
+		values[key] = function(...)
+			--assert(select(1, ...) == region);
+			-- ... expands to (parent, arg1, arg2, argn, ...) and are appended after the compositor.
+			return func(compositor, ...);
+		end;
+	end
+
+	--assert(region ~= frameDummy);
+	setmetatable(region, metatable);
+
+	table.insert(compositor.replacedMetatables, region);
+
+	return region;
+end
+
+CompositorMixin = {};
+
+do 
+	--[[
+	local function ReplaceRegionMetatables(compositor, ...)
+		for i = 1, select("#", ...) do
+			local region = select(i, ...);
+			ConfigureMetatable(compositor, region);
+		end
+	end
+	
+	local function RecursiveConfigureMetatables(compositor, ...)
+		for i = 1, select("#", ...) do
+			local frame = select(i, ...);
+			ConfigureMetatable(compositor, frame);
+	
+			--ReplaceRegionMetatables(compositor, frame:GetRegions());
+			--RecursiveConfigureMetatables(compositor, frame:GetChildren());
+		end
+	end
+	]]--
+	
+	function CompositorMixin:Init(target)
+		self.replacedMetatables = {};
+		self.attachments = {};
+		self.target = target;
+	
+		ConfigureMetatable(self, target);
+
+		--[[
+		Stopped restricting modifications to children. It was too expensive for complex
+		template types, and there still isn't a good way to restore templates to their original
+		state if they were modified via C_APIs. Will revisit this another time.
+		]]--
+		--RecursiveConfigureMetatables(self, target);
+	end
+end
+
+function CompositorMixin:GetBase()
+	return self.target;
+end
+
+function CompositorMixin:ClearTicker()
+	if self.ticker then
+		self.ticker:Cancel();
+		self.ticker = nil;
+	end
+end
+
+function CompositorMixin:NewTicker(parent, timeSeconds, callback)
+	self:ClearTicker();
+	self.ticker = C_Timer.NewTicker(timeSeconds, callback);
+end
+
+local function Configure(compositor, region, parent)
+	local defaultFunc = GetDefaultFunc(region);
+	defaultFunc(region);
+
+	ConfigureMetatable(compositor, region);
+end
+
+function CompositorMixin:CreateWithPool(parent, pool, defaultFunc, configFunc)
+	local region = pool:Acquire();
+	table.insert(self.attachments, region);
+
+	region:SetParent(parent);
+
+	--[[
+	Configure the region before showing, so that any scripts that were assigned to the region
+	previously are removed.
+	]]
+	Configure(self, region, parent);
+
+	region:Show();
+
+	return region;
+end
+
+function CompositorMixin:AttachTexture(parent)
+	return self:CreateWithPool(parent, texturePool);
+end
+
+function CompositorMixin:AttachFontString(parent)
+	return self:CreateWithPool(parent, fontStringPool);
+end
+
+function CompositorMixin:AttachFrame(parent, frameType)
+	local frame = AcquireFrame(self, parent, frameType, PoolReset);
+	Configure(self, frame, parent);
+	return frame;
+end
+
+--[[
+Attaching does not attempt to Configure() the acquired frame or make any metatable
+changes. It's the callsite's responsibility to fully initialize the frame under the
+assumption that is has been changed by its previous user. This will remain true until
+we've implemented a means of restoring a frame back to the state defined by the XML.
+]]--
+function CompositorMixin:AttachTemplate(parent, template)
+	-- We need to capture the template here so that after the SetToDefaults() call
+	-- we can restore the size defined in the template info. There are other characteristics
+	-- of the frame that may have been defined in the XML that are different after calling
+	-- SetToDefaults(). We will need to fix that in the future.
+	local function Reset(pool, region, new)
+		TemplatePoolReset(pool, region, new, template);
+	end
+	return AcquireFrame(self, parent, template, Reset);
+end
+
+local function ReleaseAttachments(compositor)
+	for index, region in ipairs(compositor.attachments) do
+		local factory = GetFactory(region);
+		factory:Release(region);
+	end
+
+	compositor.attachments = {};
+end
+
+function CompositorMixin:Clear()
+	self:ClearTicker();
+
+	for index, region in ipairs(self.replacedMetatables) do
+		if region ~= self.target then
+			RestoreOriginalMetatable(region);
+		end
+	end
+
+	ReleaseAttachments(self);
+
+	self.attachments = {};
+	self.replacedMetatables = {self.target};
+end
+
+local function SecureDetach(compositor)
+	compositor:ClearTicker();
+	
+	for index, region in ipairs(compositor.replacedMetatables) do
+		RestoreOriginalMetatable(region);
+	end
+	compositor.replacedMetatables = {};
+
+	ReleaseAttachments(compositor);
+end
+
+function CompositorMixin:Detach()
+	securecallfunction(SecureDetach, self);
+end
+
+CompositorMixin.__index = CompositorMixin;
+
+function CreateCompositor(target)
+	local tbl = {};
+	setmetatable(tbl, CompositorMixin);
+	tbl:Init(target);
+	return tbl;
+end

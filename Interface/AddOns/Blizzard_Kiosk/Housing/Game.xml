@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GameKioskSessionStartedDialog" mixin="GameKioskSessionStartedDialogMixin" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
+		<Size x="448" y="320"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="50"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="Background"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Trim"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Line">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Header" inherits="Game24Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="320" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-37" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Body" inherits="Game18Font" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
+					<Size x="320"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-100" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ContinueButton" inherits="SharedButtonLargeTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-100"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="KioskModeSplash" mixin="GameKioskModeSplashMixin" enableMouse="true" toplevel="true" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" nonBlocking="false"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BodyText1" inherits="Game60Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="260"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Button">
+				<Size x="328" y="90"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="110"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" atlas="kiosk-button" setAllPoints="true" nonBlocking="false"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalHuge" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" atlas="kiosk-button" alpha="0.3" setAllPoints="true" alphaMode="ADD" nonBlocking="false"/>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="Spinner" inherits="SpinnerWithShadowTemplate" hidden="true">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="40" y="40"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="KioskModeSplashEnd" mixin="GameKioskModeSplashEndMixin" enableMouse="true" toplevel="true" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" nonBlocking="false"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BodyText1" inherits="Game27Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="325"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="BodyText2" inherits="Game60Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="255"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="FooterText" inherits="Game20Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="50"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="KioskFrame" inherits="KioskFrameTemplate" mixin="GameKioskFrameMixin">
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

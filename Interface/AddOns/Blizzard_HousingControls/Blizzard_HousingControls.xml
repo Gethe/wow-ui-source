@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingControlsFrame" mixin="HousingControlsMixin" toplevel="true" parent="UIParent">
+		<Size x="150" y="50"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-30"/>
+		</Anchors>
+
+		<Frames>
+			<Frame parentKey="OwnerControlFrame" mixin="HousingOwnerControlsLayoutMixin" hidden="true">
+				<Size x="150" y="50"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="controls-frame">
+							<Size x="310" y="39"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="HouseEditorButton" inherits="HouseEditorButtonTemplate">
+						<Size x="68" y="68"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-12"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="SettingsButton" inherits="HouseSettingsButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HouseEditorButton" relativePoint="RIGHT" x="10" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ExitButton" inherits="HousingExitButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.SettingsButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="BlueprintsButton" inherits="HousingBlueprintActionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.HouseEditorButton" relativePoint="LEFT" x="-10" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="InspectorButton" inherits="HouseInspectorButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.BlueprintsButton" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="VisitorControlFrame" mixin="HousingVisitorControlsLayoutMixin" hidden="true">
+				<Size x="150" y="70"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="OwnerNameText" inherits="GameFontNormalHuge">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<Color color="HOUSING_CONTROL_PANEL_TITLE"/>
+						</FontString>
+						<Texture parentKey="Divider" atlas="controls-frame-guest" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.OwnerNameText" relativePoint="BOTTOM" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ButtonContainer" inherits="HorizontalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-5"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="VisitorInspectorButton" inherits="HouseInspectorButtonTemplate">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="BlueprintsButton" inherits="HousingBlueprintActionButtonTemplate">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="VisitorHouseInfoButton" inherits="HouseInfoButtonTemplate">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="3" type="number"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="VisitorExitButton" inherits="HousingExitButtonTemplate">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="4" type="number"/>
+								</KeyValues>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

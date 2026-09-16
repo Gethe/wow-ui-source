@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CooldownViewerEditAlertBaseTemplate" mixin="CooldownViewerEditAlertBaseMixin" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontHighlightHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="RIGHT" x="-25" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PrimaryLabel" inherits="GameFontNormalHuge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Button parentKey="AddButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

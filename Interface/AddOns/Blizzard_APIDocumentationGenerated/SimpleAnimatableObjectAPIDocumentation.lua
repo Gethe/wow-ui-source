@@ -1,0 +1,61 @@
+local SimpleAnimatableObjectAPI =
+{
+	Name = "SimpleAnimatableObjectAPI",
+	Type = "ScriptObject",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "CreateAnimationGroup",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "group", Type = "SimpleAnimGroup", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAnimationGroups",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "groups", Type = "SimpleAnimGroup", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "StopAnimating",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SimpleAnimatableObjectAPI);

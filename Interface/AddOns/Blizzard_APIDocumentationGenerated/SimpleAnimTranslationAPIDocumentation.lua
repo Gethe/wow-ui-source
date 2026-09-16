@@ -1,0 +1,49 @@
+local SimpleAnimTranslationAPI =
+{
+	Name = "SimpleAnimTranslationAPI",
+	Type = "ScriptObject",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "GetOffset",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SetOffset",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SimpleAnimTranslationAPI);

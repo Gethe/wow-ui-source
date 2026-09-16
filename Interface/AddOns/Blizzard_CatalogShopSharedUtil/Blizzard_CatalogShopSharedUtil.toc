@@ -1,0 +1,6 @@
+## Title: Blizzard_CatalogShopSharedUtil
+## AllowLoad: Both
+## LoadFirst: 1
+
+Blizzard_CatalogShop_Constants.lua
+Blizzard_CatalogShop_SharedUtil.lua

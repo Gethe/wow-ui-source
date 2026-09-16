@@ -1,0 +1,63 @@
+local ExpansionInfo =
+{
+	Name = "ExpansionInfo",
+	Type = "System",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "ClassicExpansionAtLeast",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAtLeast", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassicExpansionAtMost",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAtMost", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetClassicExpansionLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(ExpansionInfo);

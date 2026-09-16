@@ -1,0 +1,2827 @@
+FRIENDS_TO_DISPLAY = 10;
+FRIENDS_FRAME_FRIEND_HEIGHT = 34;
+IGNORES_TO_DISPLAY = 19;
+FRIENDS_FRAME_IGNORE_HEIGHT = 16;
+PENDING_INVITES_TO_DISPLAY = 4;
+PENDING_BUTTON_MIN_HEIGHT = 92;
+FRIENDS_FRIENDS_TO_DISPLAY = 11;
+FRIENDS_FRAME_FRIENDS_FRIENDS_HEIGHT = 16;
+WHOS_TO_DISPLAY = 17;
+FRIENDS_FRAME_WHO_HEIGHT = 16;
+MAX_WHOS_FROM_SERVER = 50;
+
+FRIENDS_SCROLLFRAME_HEIGHT = 307;
+FRIENDS_BUTTON_TYPE_DIVIDER = 1;
+FRIENDS_BUTTON_TYPE_BNET = 2;
+FRIENDS_BUTTON_TYPE_WOW = 3;
+FRIENDS_BUTTON_TYPE_INVITE = 4;
+FRIENDS_BUTTON_TYPE_INVITE_HEADER = 5;
+FRIENDS_BUTTON_TYPE_PARTY_INVITE = 6;
+FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER = 7;
+
+FRIENDS_TEXTURE_ONLINE = "Interface\\FriendsFrame\\StatusIcon-Online";
+FRIENDS_TEXTURE_AFK = "Interface\\FriendsFrame\\StatusIcon-Away";
+FRIENDS_TEXTURE_DND = "Interface\\FriendsFrame\\StatusIcon-DnD";
+FRIENDS_TEXTURE_OFFLINE = "Interface\\FriendsFrame\\StatusIcon-Offline";
+FRIENDS_TEXTURE_BROADCAST = "Interface\\FriendsFrame\\BroadcastIcon";
+SQUELCH_TYPE_IGNORE = 1;
+SQUELCH_TYPE_BLOCK_INVITE = 2;
+FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS = 5;
+FRIENDS_TOOLTIP_MAX_WIDTH = 200;
+FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
+
+FRIEND_TAB_COUNT = 4;
+FRIEND_TAB_FRIENDS = 1;
+FRIEND_TAB_WHO = 2;
+FRIEND_TAB_RAID = 3;
+FRIEND_TAB_QUICK_JOIN = 4;
+
+local INVITE_RESTRICTION_NO_GAME_ACCOUNTS = 0;
+local INVITE_RESTRICTION_CLIENT = 1;
+local INVITE_RESTRICTION_LEADER = 2;
+local INVITE_RESTRICTION_FACTION = 3;
+local INVITE_RESTRICTION_REALM = 4;
+local INVITE_RESTRICTION_INFO = 5;
+local INVITE_RESTRICTION_WOW_PROJECT_ID = 6;
+local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
+local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
+local INVITE_RESTRICTION_NONE = 9;
+local INVITE_RESTRICTION_MOBILE = 10;
+local INVITE_RESTRICTION_REGION = 11;
+local INVITE_RESTRICTION_QUEST_SESSION = 12;
+local INVITE_RESTRICTION_GAME_MODE = 13;
+
+local FriendListEntries = { };
+local playerRealmID;
+local playerRealmName;
+local playerFactionGroup;
+local whoSortValue = 1;
+
+FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "RecentAlliesFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
+FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame" };
+FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES = { "WhoFrame" };
+
+local function GetValidSubFrames()
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES
+	elseif C_SocialUI.IsSystemEnabled() then
+		return FRIENDSFRAME_SOCIALUI_ALLOWED_SUBFRAMES;
+	else
+		return FRIENDSFRAME_SUBFRAMES;
+	end
+end
+
+function FriendsFrame_ShowSubFrame(frameName)
+	local subFrames = GetValidSubFrames();
+	for index, value in pairs(subFrames) do
+		if ( value == frameName ) then
+			_G[value]:Show()
+		elseif ( value == "RaidFrame" ) then
+			if ( RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		else
+			_G[value]:Hide();
+		end
+	end
+end
+
+-- Hides every possible subframe, ignoring the currently valid set
+function FriendsFrame_HideAllPotentialSubFrames()
+	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
+		if ( value == "RaidFrame" ) then
+			if ( RaidFrame and RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		elseif _G[value] then
+			_G[value]:Hide();
+		end
+	end
+end
+
+function FriendsFrame_GetBestUIPanelWidth()
+	if FriendsFrame.IgnoreListWindow:IsShown() then
+		local padding = 10;
+		return FriendsFrame:GetWidth() + FriendsFrame.IgnoreListWindow:GetWidth() + padding;
+	end
+
+	return FriendsFrame:GetWidth();
+end
+
+-- The ignore list is anchored to the side of the FriendsFrame, but is part of the same UI
+-- We need to update UIPanelPositions when we hide/show the ignore list for cases where the player has other windows open
+function FriendsFrame_UpdateUIPanelWidth()
+	SetUIPanelAttribute(FriendsFrame, "width", FriendsFrame_GetBestUIPanelWidth());
+	UpdateUIPanelPositions(FriendsFrame);
+end
+
+function FriendsFrame_SummonButton_OnShow (self)
+	FriendsFrame_SummonButton_Update(self);
+end
+
+function FriendsFrame_ShouldShowSummonButton(self)
+	--returns shouldShow, enabled
+	local id = self:GetParent().id;
+	if ( not id ) then
+		return false, false;
+	end
+
+	local enable = false;
+	local bType = self:GetParent().buttonType;
+	if ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+		--Get the information by WoW friends list ID (not BNet id.)
+		local info = C_FriendList.GetFriendInfoByIndex(id);
+
+		if not info or not info.connected or info.rafLinkType == Enum.RafLinkType.None then
+			return false, false;
+		end
+
+		return true, C_RecruitAFriend.CanSummonFriend(info.guid);
+	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+		--Get the information by BNet friends list index.
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(id);
+
+		local restriction = FriendsFrame_GetInviteRestriction(id);
+		if restriction ~= INVITE_RESTRICTION_NONE or accountInfo.rafLinkType == Enum.RafLinkType.None then
+			return false, false;
+		else
+			return true, accountInfo.gameAccountInfo.canSummon;
+		end
+	else
+		return false, false;
+	end
+end
+
+function FriendsFrame_SummonButton_Update (self)
+	-- GAME RULES TODO:: The game mode portion here should be an explicit game rule.
+	if C_Glue.IsOnGlueScreen() or (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
+		return;
+	end
+
+	local shouldShow, enable = FriendsFrame_ShouldShowSummonButton(self);
+	self:SetShown(shouldShow);
+
+	local start, duration = C_RecruitAFriend.GetSummonFriendCooldown();
+
+	if ( duration > 0 ) then
+		self.duration = duration;
+		self.start = start;
+	else
+		self.duration = nil;
+		self.start = nil;
+	end
+
+
+	local normalTexture = self:GetNormalTexture();
+	local pushedTexture = self:GetPushedTexture();
+	self.enabled = enable;
+	if ( enable ) then
+		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
+		pushedTexture:SetVertexColor(1.0, 1.0, 1.0);
+	else
+		normalTexture:SetVertexColor(0.4, 0.4, 0.4);
+		pushedTexture:SetVertexColor(0.4, 0.4, 0.4);
+	end
+	CooldownFrame_Set(self.cooldown, start, duration, ((enable and 0) or 1));
+end
+
+function FriendsFrame_ClickSummonButton (self)
+	local id = self:GetParent().id;
+	if ( not id ) then
+		return;
+	end
+
+	if ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+		--Summon by WoW friends list ID (not BNet id.)
+		local info = C_FriendList.GetFriendInfoByIndex(id);
+
+		C_RecruitAFriend.SummonFriend(info.guid, info.name);
+	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+		--Summon by BNet friends list ID (index in this case.)
+		BNSummonFriendByIndex(id);
+	end
+end
+
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+	if connected or friendsList then
+		local contextData =
+		{
+			name = name,
+			friendsList = friendsList,
+			lineID = lineID,
+			communityClubID = communityClubID,
+			communityStreamID = communityStreamID,
+			communityEpoch = communityEpoch,
+			communityPosition = communityPosition,
+			chatType = chatType,
+			chatTarget = name,
+			chatFrame = chatFrame,
+			bnetIDAccount = nil,
+			guid = guid,
+		};
+
+		-- MENU RETEST IsOnGlueScreen
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
+		UnitPopup_OpenMenu(which, contextData);
+	end
+end
+
+function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, battleTag)
+	if connected or friendsList then
+		local contextData =
+		{
+			name = name,
+			friendsList = friendsList,
+			lineID = lineID,
+			communityClubID = communityClubID,
+			communityStreamID = communityStreamID,
+			communityEpoch = communityEpoch,
+			communityPosition = communityPosition,
+			chatType = chatType,
+			chatTarget = name,
+			chatFrame = chatFrame,
+			bnetIDAccount = bnetIDAccount,
+			battleTag = battleTag,
+		};
+
+		-- MENU RETEST IsOnGlueScreen
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
+		UnitPopup_OpenMenu(which, contextData);
+	end
+end
+
+local function FriendsFrame_UpdateTabHiddenStates(self)
+	local showFriends = true;
+	local showWho = true;
+	local showRaid = true;
+	local showQuickJoin = true;
+
+	local hideAllTabs = C_Glue.IsOnGlueScreen() or C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if hideAllTabs then
+		showFriends = false;
+		showWho = false;
+		showRaid = false;
+		showQuickJoin = false;
+		PanelTemplates_ShowTab(self, FRIEND_TAB_FRIENDS);
+		PanelTemplates_HideTab(self, FRIEND_TAB_WHO);
+		PanelTemplates_HideTab(self, FRIEND_TAB_RAID);
+		PanelTemplates_HideTab(self, FRIEND_TAB_QUICK_JOIN);
+	end
+	if C_SocialUI.IsSystemEnabled() then
+		showFriends = false;
+		showRaid = false;
+		showQuickJoin = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
+		showRaid = false;
+	end
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
+		showQuickJoin = false;
+	end
+
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_FRIENDS, showFriends);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_WHO, showWho);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_RAID, showRaid);
+	PanelTemplates_SetTabShown(self, FRIEND_TAB_QUICK_JOIN, showQuickJoin);
+end
+
+function FriendsFrame_OnLoad(self)
+	PanelTemplates_SetNumTabs(self, FRIEND_TAB_COUNT);
+	self.selectedTab = FRIEND_TAB_FRIENDS;
+
+	self:RegisterEvent("FRIENDLIST_UPDATE");
+	self:RegisterEvent("NEW_MATCHMAKING_PARTY_INVITE");
+	self:RegisterEvent("IGNORELIST_UPDATE");
+	self:RegisterEvent("WHO_LIST_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED");
+	self:RegisterEvent("BN_FRIEND_INFO_CHANGED");
+	self:RegisterEvent("BN_FRIEND_INVITE_LIST_INITIALIZED");
+	self:RegisterEvent("BN_FRIEND_INVITE_ADDED");
+	self:RegisterEvent("BN_FRIEND_INVITE_REMOVED");
+	self:RegisterEvent("BN_CUSTOM_MESSAGE_CHANGED");
+	self:RegisterEvent("BN_CUSTOM_MESSAGE_LOADED");
+	self:RegisterEvent("BN_BLOCK_LIST_UPDATED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("BN_CONNECTED");
+	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("BN_INFO_CHANGED");
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("SOCIAL_UI_SYSTEM_STATUS_UPDATED");
+	self:RegisterEvent("LEGACY_FRIEND_SYSTEM_STATUS_UPDATED");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+
+	PanelTemplates_UpdateTabs(self);
+	self.selectedFriend = 1;
+
+	self:SetParent(GetAppropriateTopLevelParent());
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if C_Glue.IsOnGlueScreen() or inGameFriendsListDisabled then
+		self:ClearAllPoints();
+		self:SetPoint("TOPLEFT", 50, -50);
+
+		-- disable non glue friend Tabs
+		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recentAlliesTabID, false);
+		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recruitAFriendTabID, false);
+	end
+
+	FriendsFrame_UpdateTabHiddenStates(self);
+
+	if C_Glue.IsOnGlueScreen() then
+		self:RegisterEvent("FRAMES_LOADED");
+	end
+
+	-- friends list
+	do
+		local view = CreateScrollBoxListLinearView();
+
+		view:SetElementFactory(function(factory, elementData)
+			local buttonType = elementData.buttonType;
+			if buttonType == FRIENDS_BUTTON_TYPE_DIVIDER then
+				factory("FriendsFrameFriendDividerTemplate");
+			elseif buttonType == FRIENDS_BUTTON_TYPE_INVITE_HEADER then
+				factory("FriendsPendingInviteHeaderButtonTemplate", FriendsFrame_UpdateFriendInviteHeaderButton);
+			elseif buttonType == FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER then
+				factory("FriendsPendingInviteHeaderButtonTemplate", FriendsFrame_UpdatePartyInviteHeaderButton);
+			elseif buttonType == FRIENDS_BUTTON_TYPE_INVITE then
+				factory("FriendsFrameFriendInviteTemplate", FriendsFrame_UpdateFriendInviteButton);
+			elseif buttonType == FRIENDS_BUTTON_TYPE_PARTY_INVITE then
+				factory("FriendsFrameFriendPartyInviteTemplate", FriendsFrame_UpdatePartyInviteButton);
+			else
+				factory("FriendsListButtonTemplate", FriendsFrame_UpdateFriendButton);
+			end
+		end);
+
+		ScrollUtil.InitScrollBoxListWithScrollBar(FriendsListFrame.ScrollBox, FriendsListFrame.ScrollBar, view);
+	end
+
+	-- Ignore list
+	do
+		local view = CreateScrollBoxListLinearView();
+		view:SetElementFactory(function(factory, elementData)
+			if elementData.header then
+				factory(elementData.header);
+			else
+				factory("IgnoreListButtonTemplate", IgnoreList_InitButton);
+			end
+		end);
+
+		ScrollUtil.InitScrollBoxListWithScrollBar(FriendsFrame.IgnoreListWindow.ScrollBox, FriendsFrame.IgnoreListWindow.ScrollBar, view);
+	end
+
+	-- Who list
+	do
+		local view = CreateScrollBoxListLinearView();
+		view:SetElementInitializer("WhoListButtonTemplate", function(button, elementData)
+			WhoList_InitButton(button, elementData);
+		end);
+
+		-- Scrollable text in the Who List can be resized by the player so the extent may change during a session
+		view:SetElementExtentCalculator(function(dataIndex, elementData)
+			local fontHeight = GetFontInfo(elementData.fontObject).height;
+			local padding = fontHeight + 2;
+			return fontHeight + padding;
+		end);
+
+		ScrollUtil.InitScrollBoxListWithScrollBar(WhoFrame.ScrollBox, WhoFrame.ScrollBar, view);
+	end
+
+	if not BNFeaturesEnabled() then
+		FriendsFrameBattlenetFrame:Hide();
+	end
+
+	FriendsFrame_UpdateQuickJoinTab(0);
+end
+
+function FriendsFrame_OnShow(self)
+	EventRegistry:RegisterCallback("FriendsFrame.IgnoreListVisibilityChanged", FriendsFrame_UpdateUIPanelWidth);
+
+	FriendsFrame_UpdateUIPanelWidth();
+	FriendsFrame_UpdateTabHiddenStates(self);
+
+	local onGlues =  C_Glue.IsOnGlueScreen();
+	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
+	if not onGlues and not inPlunderstorm then
+		playerRealmID = GetRealmID();
+		playerRealmName = GetRealmName();
+		playerFactionGroup = UnitFactionGroup("player");
+		UpdateMicroButtons();
+		FriendsFrame_CheckQuickJoinHelpTip();
+		FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
+		C_GuildInfo.GuildRoster();
+	end
+
+	FriendsList_Update(true);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+
+	FriendsFrameBattlenetFrame.UnavailableInfoFrame:ClearAllPoints();
+	FriendsFrameBattlenetFrame.UnavailableInfoFrame:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);
+	FriendsFrame_Update();
+	FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
+
+	EventRegistry:RegisterCallback("GameMode.Selected", function()
+		self:Hide();
+	end, self);
+
+	local enableRaidTab = false;
+	if not onGlues then
+		-- Raid tab is unavailable while in raid story content.
+		local inStoryRaid = DifficultyUtil.InStoryRaid();
+		enableRaidTab = not inStoryRaid;
+		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
+	end
+
+	if enableRaidTab then
+		FriendsFrameTab3:SetScript("OnEnter", nil);
+	else
+		FriendsFrameTab3:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(FriendsFrameTab3, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip:SetText(RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID));
+			GameTooltip:Show();
+		end);
+	end
+end
+
+function FriendsFrame_Update()
+	local selectedTab = PanelTemplates_GetSelectedTab(FriendsFrame) or FRIEND_TAB_FRIENDS;
+
+	FriendsTabHeader:SetShown(selectedTab == FRIEND_TAB_FRIENDS);
+
+	FriendsFrame_UpdateInsetVisibility();
+
+	if selectedTab == FRIEND_TAB_FRIENDS then
+		local selectedHeaderTab = FriendsTabHeader:GetTab() or 1;
+
+		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
+		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
+
+		for i, tab in ipairs(FriendsTabHeader:GetTabSet()) do
+			if i ~= selectedHeaderTab then
+				local tabButton = FriendsTabHeader:GetTabButton(tab);
+				tabButton.New:Hide();
+			end
+		end
+
+		if selectedHeaderTab == FriendsTabHeader.friendsTabID then
+			if C_FriendList.IsLegacyFriendSystemEnabled() then
+				C_FriendList.ShowFriends();
+			end
+			FriendsFrame:SetTitle(CONTACTS_LIST_TITLE);
+			FriendsFrame_ShowSubFrame("FriendsListFrame");
+		elseif selectedHeaderTab == FriendsTabHeader.recentAlliesTabID then
+			FriendsFrame:SetTitle(CONTACTS_RECENT_ALLIES_TITLE);
+			FriendsFrame_ShowSubFrame("RecentAlliesFrame");
+		elseif selectedHeaderTab == FriendsTabHeader.recruitAFriendTabID then
+			FriendsFrame:SetTitle(RECRUIT_A_FRIEND);
+			FriendsFrame_ShowSubFrame("RecruitAFriendFrame");
+		end
+	elseif ( selectedTab == FRIEND_TAB_WHO ) then
+		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
+		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
+		FriendsFrameTitleText:SetText(WHO_LIST);
+		FriendsFrame_ShowSubFrame("WhoFrame");
+		WhoList_Update();
+	elseif ( selectedTab == FRIEND_TAB_RAID ) then
+		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -60);
+		FriendsFrameIcon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+		FriendsFrameTitleText:SetText(RAID);
+		ClaimRaidFrame(FriendsFrame);
+		FriendsFrame_ShowSubFrame("RaidFrame");
+	elseif ( selectedTab == FRIEND_TAB_QUICK_JOIN ) then
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
+		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
+		FriendsFrameTitleText:SetText(QUICK_JOIN);
+		FriendsFrame_ShowSubFrame("QuickJoinFrame");
+	end
+end
+
+function FriendsFrame_UpdateInsetVisibility()
+	local selectedTab = PanelTemplates_GetSelectedTab(FriendsFrame) or FRIEND_TAB_FRIENDS;
+
+	-- Hide the inset when viewing the list of raid groups in the RaidUI (See RaidUI.lua/xml)
+	local isRaidTabSelected = selectedTab == FRIEND_TAB_RAID;
+	local isRaidListVisible = isRaidTabSelected and IsInRaid();
+	FriendsFrameInset:SetShown(not isRaidListVisible);
+end
+
+function FriendsFrame_UpdateQuickJoinTab(numGroups)
+	FriendsFrameTab4:SetText(QUICK_JOIN.." "..string.format(NUMBER_IN_PARENTHESES, numGroups));
+	PanelTemplates_TabResize(FriendsFrameTab4, 0);
+end
+
+function FriendsFrame_OnHide(self)
+	if not C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm) then
+		UpdateMicroButtons();
+		RaidInfoFrame:Hide();
+	end;
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+
+	local subFrames = GetValidSubFrames();
+	for index, value in pairs(subFrames) do
+		if ( value == "RaidFrame" ) then
+			if ( RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		else
+			_G[value]:Hide();
+		end
+	end
+	FriendsFriendsFrame:Hide();
+	local rafTabButton = FriendsTabHeader:GetTabButton(FriendsTabHeader.recruitAFriendTabID);
+	if rafTabButton then
+		rafTabButton.New:Hide();
+	end
+	FriendsFrame.IgnoreListWindow:Hide();
+
+	EventRegistry:UnregisterCallback("GameMode.Selected", self);
+	EventRegistry:UnregisterCallback("FriendsFrame.IgnoreListVisibilityChanged", self);
+end
+
+FriendsTabHeaderMixin = {};
+
+function FriendsTabHeaderMixin:OnLoad()
+	TabSystemOwnerMixin.OnLoad(self);
+	self:SetTabSystem(self.TabSystem);
+
+	self:GenerateHeaderTabs();
+
+	self:RegisterEvent("RAF_SYSTEM_ENABLED_STATUS");
+	self:RegisterEvent("RECENT_ALLIES_SYSTEM_STATUS_UPDATED");
+
+	local bnetAFK, bnetDND = select(5, BNGetInfo());
+	if bnetAFK then
+		self.bnStatus = FRIENDS_TEXTURE_AFK;
+	elseif bnetDND then
+		self.bnStatus = FRIENDS_TEXTURE_DND;
+	else
+		self.bnStatus = FRIENDS_TEXTURE_ONLINE;
+	end
+
+	local function IsSelected(status)
+		return self.bnStatus == status;
+	end
+
+	local function SetSelected(status)
+		if status ~= self.bnStatus then
+			self.bnStatus = status;
+
+			if status == FRIENDS_TEXTURE_ONLINE then
+				C_BattleNet.SetAFK(false);
+				C_BattleNet.SetDND(false);
+			elseif status == FRIENDS_TEXTURE_AFK then
+				C_BattleNet.SetAFK(true);
+			elseif status == FRIENDS_TEXTURE_DND then
+				C_BattleNet.SetDND(true);
+			end
+		end
+	end
+
+	local function CreateRadio(rootDescription, text, status)
+		local radio = rootDescription:CreateButton(text, nop, status);
+		radio:SetIsSelected(IsSelected);
+		radio:SetResponder(SetSelected);
+	end
+
+	self.StatusDropdown:SetWidth(51);
+	self.StatusDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_STATUS");
+
+		local optionText = "\124T%s.tga:16:16:0:0\124t %s";
+
+		local onlineText = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
+		CreateRadio(rootDescription, onlineText, FRIENDS_TEXTURE_ONLINE);
+
+		local afkText = string.format(optionText, FRIENDS_TEXTURE_AFK, FRIENDS_LIST_AWAY);
+		CreateRadio(rootDescription, afkText, FRIENDS_TEXTURE_AFK);
+
+		local dndText = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
+		CreateRadio(rootDescription, dndText, FRIENDS_TEXTURE_DND);
+	end);
+
+	self.StatusDropdown:SetSelectionTranslator(function(selection)
+		return string.format("\124T%s.tga:16:16:0:0\124t", selection.data);
+	end);
+
+	if not C_Glue.IsOnGlueScreen() then
+		self.StatusDropdown:SetScript("OnEnter", function()
+			local statusText;
+			if ( self.bnStatus == FRIENDS_TEXTURE_ONLINE ) then
+				statusText = FRIENDS_LIST_AVAILABLE;
+			elseif ( self.bnStatus == FRIENDS_TEXTURE_AFK ) then
+				statusText = FRIENDS_LIST_AWAY;
+			elseif ( self.bnStatus == FRIENDS_TEXTURE_DND ) then
+				statusText = FRIENDS_LIST_BUSY;
+			end
+
+			GameTooltip:SetOwner(self.StatusDropdown, "ANCHOR_RIGHT", -18, 0);
+			GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
+			GameTooltip:Show();
+		end);
+		self.StatusDropdown:SetScript("OnLeave", GameTooltip_Hide);
+	end
+end
+
+function FriendsTabHeaderMixin:OnShow()
+	self:RefreshTabVisibility();
+end
+
+function FriendsTabHeaderMixin:OnEvent(event, ...)
+	if event == "RAF_SYSTEM_ENABLED_STATUS" or event == "RECENT_ALLIES_SYSTEM_STATUS_UPDATED" then
+		self:RefreshTabVisibility();
+	end
+end
+
+function FriendsTabHeaderMixin:GenerateHeaderTabs()
+	self.friendsTabID = self:AddNamedTab(FRIENDS);
+	self.recentAlliesTabID = self:AddNamedTab(CONTACTS_RECENT_ALLIES_TAB_NAME);
+	self.recruitAFriendTabID = self:AddNamedTab(RECRUIT_A_FRIEND);
+end
+
+function FriendsTabHeaderMixin:RefreshTabVisibility()
+	-- Friends List Tab is always visible
+	self.TabSystem:SetTabShown(self.friendsTabID, true);
+
+	self.TabSystem:SetTabShown(self.recentAlliesTabID, C_RecentAllies.IsSystemEnabled());
+
+	local rafEnabled = C_RecruitAFriend.IsSystemEnabled();
+	if rafEnabled then
+		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+		rafEnabled = not C_Glue.IsOnGlueScreen() and (not inGameFriendsListDisabled);
+	end
+	self.TabSystem:SetTabShown(self.recruitAFriendTabID, rafEnabled);
+
+	self:TryUpdateInvalidTabSelection();
+end
+
+function FriendsTabHeaderMixin:TryUpdateInvalidTabSelection()
+	local tabButton = self:GetTabButton();
+	local tabButtonIsVisible = tabButton and tabButton:IsShown();
+	if not tabButtonIsVisible then
+		self:SelectFirstAvailableTab();
+	end
+end
+
+function FriendsTabHeaderMixin:GetTabButton(tabID)
+	if tabID then
+		return self.TabSystem:GetTabButton(tabID);
+	end
+end
+
+function FriendsTabHeaderMixin:SelectTab(tabID)
+	if tabID then
+		self.TabSystem:SetTab(tabID);
+		FriendsFrame_Update();
+	end
+end
+
+function FriendsTabHeaderMixin:SelectFirstAvailableTab()
+	self:SelectTab(1);
+end
+
+-- Used for the sub-tabs within Friends
+FriendsTabMixin = CreateFromMixins(TabSystemButtonMixin);
+
+function FriendsTabMixin:OnLoad()
+	for _, tabTexture in ipairs(self.RotatedTextures) do
+		tabTexture:SetHeight(tabTexture:GetHeight() * 0.75);
+	end
+end
+
+function FriendsTabMixin:OnClick()
+	TabSystemButtonMixin.OnClick(self);
+	FriendsFrame_Update();
+end
+
+-- Used for the tabs at the bottom
+FriendsFrameTabMixin = {};
+
+function FriendsFrameTabMixin:OnClick()
+	PanelTemplates_Tab_OnClick(self, FriendsFrame);
+	FriendsFrame_OnShow(FriendsFrame);
+end
+
+function FriendsListFrame_OnShow(self)
+	if C_SocialRestrictions.IsFriendsDisabled() then
+		self.ScrollBox:Hide();
+		self.ScrollBar:Hide();
+		self.FriendsDisabledText:SetText(SOCIAL_TAB_UNAVAILABLE:format(SOCIAL_UI_FRIENDS_TAB_NAME));
+		self.FriendsDisabledText:Show();
+		FriendsFrameAddFriendButton:Disable();
+		FriendsFrameAddFriendButton.disableTooltip = ADDING_FRIENDS_DISABLED;
+	else
+		self.ScrollBox:Show();
+		self.ScrollBar:Show();
+		self.FriendsDisabledText:Hide();
+		FriendsFrameAddFriendButton:Enable();
+		FriendsFrameAddFriendButton.disableTooltip = nil;
+	end
+end
+
+function FriendsListFrame_OnHide(self)
+	FriendsList_ClosePendingInviteDialogs();
+end
+
+function FriendsListFrame_SetInviteHeaderAnimPlaying(playing)
+	local frame = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return elementData.buttonType == FRIENDS_BUTTON_TYPE_INVITE_HEADER;
+	end);
+	if frame then
+		frame.Flash.Anim:SetPlaying(playing);
+	end
+end
+
+function FriendsListFrame_ToggleInvites()
+	local collapsed = GetCVarBool("friendInvitesCollapsed");
+	SetCVar("friendInvitesCollapsed", not collapsed);
+	FriendsListFrame_SetInviteHeaderAnimPlaying(false);
+	FriendsList_Update();
+end
+
+FriendsFrameInviteTemplateMixin = {};
+
+function FriendsFrameInviteTemplateMixin:OnLoad()
+	self.DeclineButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_INVITE_DECLINE");
+
+		rootDescription:CreateButton(DECLINE, function()
+			FriendsList_ClosePendingInviteDialogs();
+			BNDeclineFriendInvite(self.inviteID);
+		end);
+
+		rootDescription:CreateButton(REPORT_PLAYER, function()
+			local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
+			local bnetIDAccount = inviteInfo and inviteInfo.inviteID or nil;
+			local name = inviteInfo and inviteInfo.accountName or nil;
+			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
+			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
+			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
+		end);
+
+		if StaticPopup_Show then
+			rootDescription:CreateButton(BLOCK_INVITES, function()
+				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
+				local inviteID = inviteInfo and inviteInfo.inviteID or nil;
+				local accountName = inviteInfo and inviteInfo.accountName or nil;
+				StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName, nil, inviteID);
+			end);
+		end
+	end);
+end
+
+function FriendsList_ClosePendingInviteDialogs()
+	if StaticPopup_Hide then
+		StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
+	end
+end
+
+function FriendsList_CanWhisperFriend(friendType, friendIndex)
+	if friendType == FRIENDS_BUTTON_TYPE_BNET then
+		return true;
+	elseif friendType == FRIENDS_BUTTON_TYPE_WOW then
+		local info = C_FriendList.GetFriendInfoByIndex(friendIndex);
+		return info.connected;
+	end
+
+	return false;
+end
+
+local function InWoWLabs()
+	return C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
+end
+
+function FriendsList_Update(forceUpdate)
+	local numBNetTotal, numBNetOnline, numBNetFavorite, numBNetFavoriteOnline = BNGetNumFriends();
+	local numBNetOffline = numBNetTotal - numBNetOnline;
+	local numBNetFavoriteOffline = numBNetFavorite - numBNetFavoriteOnline;
+	EventRegistry:TriggerEvent("FriendsFrame.OnFriendsOnlineUpdated", numBNetOnline);
+
+
+	local numWoWTotal = 0;
+	local numWoWOnline = 0;
+	local numWoWOffline = 0;
+
+	if not C_Glue.IsOnGlueScreen() and not InWoWLabs() then
+		if C_FriendList.IsLegacyFriendSystemEnabled() then
+			numWoWTotal = C_FriendList.GetNumFriends();
+			numWoWOnline = C_FriendList.GetNumOnlineFriends();
+			numWoWOffline = numWoWTotal - numWoWOnline;
+		end
+		QuickJoinToastButton:UpdateDisplayedFriendCount();
+	end
+
+	if ( not FriendsListFrame:IsShown() and not forceUpdate) then
+		return;
+	end
+
+	local dataProvider = CreateDataProvider();
+
+	--party invites
+	if InGlue() then
+		local numPartyInvites = C_WoWLabsMatchmaking.GetNumPartyInvites();
+		if numPartyInvites > 0 then
+			dataProvider:Insert({buttonType=FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER});
+			if ( not GetCVarBool("partyInvitesCollapsed_Glue") ) then
+				for i = 1, numPartyInvites do
+					dataProvider:Insert({id=i, buttonType=FRIENDS_BUTTON_TYPE_PARTY_INVITE});
+				end
+			end
+		end
+	end
+
+	-- invites
+	local numInvites = BNGetNumFriendInvites();
+	if ( numInvites > 0 ) then
+		dataProvider:Insert({buttonType=FRIENDS_BUTTON_TYPE_INVITE_HEADER});
+		if ( not GetCVarBool("friendInvitesCollapsed") ) then
+			for i = 1, numInvites do
+				dataProvider:Insert({id=i, buttonType=FRIENDS_BUTTON_TYPE_INVITE});
+			end
+			-- add divider before friends
+			if ( numBNetTotal + numWoWTotal > 0 ) then
+				dataProvider:Insert({buttonType= FRIENDS_BUTTON_TYPE_DIVIDER});
+			end
+		end
+	end
+
+	local bnetFriendIndex = 0;
+	-- favorite friends, online and offline
+	for i = 1, numBNetFavorite do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
+	end
+	if (numBNetFavorite > 0) then
+		dataProvider:Insert({buttonType=FRIENDS_BUTTON_TYPE_DIVIDER});
+	end
+
+	-- online Battlenet friends
+	for i = 1, numBNetOnline - numBNetFavoriteOnline do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
+	end
+
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
+		-- online WoW friends
+		for i = 1, numWoWOnline do
+			dataProvider:Insert({id=i, buttonType=FRIENDS_BUTTON_TYPE_WOW});
+		end
+		-- divider between online and offline friends
+		if ( (numBNetOnline > 0 or numWoWOnline > 0) and (numBNetOffline > 0 or numWoWOffline > 0) ) then
+			dataProvider:Insert({buttonType=FRIENDS_BUTTON_TYPE_DIVIDER});
+		end
+	end;
+
+	-- offline Battlenet friends
+	for i = 1, numBNetOffline - numBNetFavoriteOffline do
+		bnetFriendIndex = bnetFriendIndex + 1;
+		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
+	end
+
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
+		-- offline WoW friends
+		for i = 1, numWoWOffline do
+			dataProvider:Insert({id=i+numWoWOnline, buttonType=FRIENDS_BUTTON_TYPE_WOW});
+		end
+	end
+
+	local retainScrollPosition = not forceUpdate;
+	FriendsListFrame.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition);
+
+	if not FriendsFrame.selectedFriendType then
+		local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
+			return elementData.buttonType == FRIENDS_BUTTON_TYPE_WOW or elementData.buttonType == FRIENDS_BUTTON_TYPE_BNET;
+		end);
+		if elementData then
+			FriendsFrame_SelectFriend(elementData.buttonType, elementData.id);
+		elseif FriendsFrameSendMessageButton ~= nil then
+			FriendsFrameSendMessageButton:Disable();
+		end
+	end
+
+	-- RID warning, upon getting the first RID invite
+	FriendsList_CheckRIDWarning();
+end
+
+function FriendsList_CheckRIDWarning()
+	local showRIDWarning = false;
+	local numInvites = BNGetNumFriendInvites();
+	if numInvites > 0 and not GetCVarBool("pendingInviteInfoShown") then
+		local isRIDEnabled = select(7, BNGetInfo());
+		if isRIDEnabled then
+			for i = 1, numInvites do
+				local inviteInfo = C_BattleNet.GetFriendInviteInfo(i);
+				local isRealID = inviteInfo and (inviteInfo.friendLevel == Enum.BattleNetFriendLevel.RealID) or nil;
+				if isRealID then
+					showRIDWarning = true;
+					break;
+				end
+			end
+		end
+	end
+
+	FriendsListFrame.RIDWarning:SetShown(showRIDWarning);
+end
+
+function IgnoreList_InitButton(button, elementData)
+	button.index = elementData.index;
+
+	if elementData.squelchType == SQUELCH_TYPE_IGNORE then
+		local name = C_FriendList.GetIgnoreName(button.index);
+		if not name then
+			button.name:SetText(UNKNOWN);
+		else
+			button.name:SetText(name);
+			button.type = SQUELCH_TYPE_IGNORE;
+		end
+	elseif elementData.squelchType == SQUELCH_TYPE_BLOCK_INVITE then
+		local blockID, blockName = BNGetBlockedInfo(button.index);
+		button.name:SetText(blockName);
+		button.type = SQUELCH_TYPE_BLOCK_INVITE;
+	end
+
+	local selectedSquelchType, selectedSquelchIndex = IgnoreList_GetSelected();
+	local selected = (selectedSquelchType == button.type) and (selectedSquelchIndex == button.index);
+	IgnoreList_SetButtonSelected(button, selected);
+end
+
+function IgnoreList_GetSelected()
+	local selectedSquelchType = FriendsFrame.selectedSquelchType;
+	local selectedSquelchIndex = 0;
+	if selectedSquelchType == SQUELCH_TYPE_IGNORE then
+		selectedSquelchIndex = C_FriendList.GetSelectedIgnore() or 0;
+	elseif selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE then
+		selectedSquelchIndex = BNGetSelectedBlock();
+	end
+	return selectedSquelchType, selectedSquelchIndex;
+end
+
+function IgnoreList_SetButtonSelected(button, selected)
+	if selected then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
+	end
+end
+
+function IgnoreList_Update()
+	local dataProvider = CreateDataProvider();
+
+	local numIgnores = C_FriendList.GetNumIgnores();
+	if numIgnores and numIgnores > 0 then
+		dataProvider:Insert({header="FriendsFrameIgnoredHeaderTemplate"});
+		for index = 1, numIgnores do
+			dataProvider:Insert({squelchType=SQUELCH_TYPE_IGNORE, index=index});
+		end
+	end
+
+	local numBlocks = BNGetNumBlocked();
+	if numBlocks and numBlocks > 0 then
+		dataProvider:Insert({header="FriendsFrameBlockedInviteHeaderTemplate"});
+		for index = 1, numBlocks do
+			dataProvider:Insert({squelchType=SQUELCH_TYPE_BLOCK_INVITE, index=index});
+		end
+	end
+	FriendsFrame.IgnoreListWindow.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	local selectedSquelchType, selectedSquelchIndex = IgnoreList_GetSelected();
+
+	local hasSelection = selectedSquelchType and selectedSquelchIndex > 0;
+	if not hasSelection then
+		local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
+			return elementData.squelchType ~= nil;
+		end);
+		if elementData then
+			FriendsFrame_SelectSquelched(elementData.squelchType, elementData.index);
+			hasSelection = true;
+		end
+	end
+
+	FriendsFrame.IgnoreListWindow.UnignorePlayerButton:SetEnabled(hasSelection);
+end
+
+function WhoList_InitButton(button, elementData)
+	local index = elementData.index;
+	local info = elementData.info;
+	button.index = index;
+
+	local classTextColor;
+	if info.filename then
+		classTextColor = RAID_CLASS_COLORS[info.filename];
+	else
+		classTextColor = HIGHLIGHT_FONT_COLOR;
+	end
+
+	local name = info.fullName;
+	if info.timerunningSeasonID then
+		name = TimerunningUtil.AddTinyIcon(name);
+		button.OriginalName = info.fullName;
+	end
+
+	button.Name:SetText(name);
+	button.Level:SetText(info.level);
+	button.Class:SetText(info.classStr);
+	button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
+
+	local variableColumnTable = { info.area, info.fullGuildName, info.raceStr };
+	local variableText = variableColumnTable[whoSortValue];
+	button.Variable:SetText(variableText);
+
+	if button.Variable:IsTruncated() or button.Level:IsTruncated() or button.Name:IsTruncated() then
+		button.tooltip1 = info.fullName;
+		button.tooltip2 = WHO_LIST_LEVEL_TOOLTIP:format(info.level);
+		button.tooltip3 = variableText;
+	else
+		button.tooltip1 = nil;
+		button.tooltip2 = nil;
+		button.tooltip3 = nil;
+	end
+
+	local selected = WhoFrame.selectedWho == index;
+	WhoListButton_SetSelected(button, selected);
+end
+
+function WhoListButton_SetSelected(button, selected)
+	if selected then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
+	end
+end
+
+function WhoList_SetSelectedButton(button)
+	local oldSelectedWho = WhoFrame.selectedWho;
+	WhoFrame.selectedWho = button and button.index or nil;
+	WhoFrame.selectedName = button and button.Name:GetText() or "";
+
+	local function UpdateButtonSelection(index, selected)
+		if index then
+			local button = WhoFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.index == index;
+			end);
+			if button then
+				WhoListButton_SetSelected(button, selected);
+			end
+		end
+	end;
+
+	UpdateButtonSelection(oldSelectedWho,  false);
+	UpdateButtonSelection(WhoFrame.selectedWho, true);
+
+	local hasSelectedWho = WhoFrame.selectedWho ~= nil;
+	WhoFrameGroupInviteButton:SetEnabled(hasSelectedWho);
+	WhoFrameAddFriendButton:SetEnabled(hasSelectedWho and C_FriendList.IsLegacyFriendSystemEnabled());
+end
+
+function WhoList_Update()
+	local numWhos, totalCount = C_FriendList.GetNumWhoResults();
+
+	local displayedText = "";
+	if ( totalCount > MAX_WHOS_FROM_SERVER ) then
+		displayedText = format(WHO_FRAME_SHOWN_TEMPLATE, MAX_WHOS_FROM_SERVER);
+	end
+	WhoFrameTotals:SetText(format(WHO_FRAME_TOTAL_TEMPLATE, totalCount).."  "..displayedText);
+
+	local dataProvider = CreateDataProvider();
+	for index = 1, numWhos do
+		local info = C_FriendList.GetWhoInfo(index);
+		-- All scrollable text in the Who List uses font that can be resized by the player
+		dataProvider:Insert({index=index, info=info, fontObject=UserScaledFontGameNormalSmall, });
+	end
+	WhoFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	if not C_SocialUI.IsSystemEnabled() then
+		PanelTemplates_SetTab(FriendsFrame, 2);
+		ShowUIPanel(FriendsFrame);
+	end
+end
+
+function WhoFrameColumn_SetWidth(frame, width)
+	frame:SetWidth(width);
+	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
+end
+
+function WhoFrameDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	if not C_Glue.IsOnGlueScreen() then
+		local function IsSelected(sortData)
+			return sortData.value == whoSortValue;
+		end
+
+		local function SetSelected(sortData)
+			whoSortValue = sortData.value;
+			C_FriendList.SortWho(sortData.sortType);
+
+			WhoList_Update();
+		end
+
+		WhoFrameDropdown_Initialize(self);
+
+		self:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_FRIENDS_WHO");
+
+			local userScaledFontObject = self.fontObject;
+			local radioHeight = GetFontInfo(userScaledFontObject).height + 4;
+			local zoneOption = rootDescription:CreateRadio(ZONE, IsSelected, SetSelected, {value = 1, sortType = "zone"});
+			zoneOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
+
+			local guildOption = rootDescription:CreateRadio(GUILD, IsSelected, SetSelected, {value = 2, sortType = "guild"});
+			guildOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
+
+			local raceOption = rootDescription:CreateRadio(RACE, IsSelected, SetSelected, {value = 3, sortType = "race"});
+			raceOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
+		end);
+	end
+end
+
+-- This dropdown is slightly larger than normal to match the other "Who" headers that use resizable text
+function WhoFrameDropdown_Initialize(self)
+	self.Text:SetFontObject(self.fontObject);
+	self.Text:ClearAllPoints();
+	self.Text:SetPoint("LEFT", self, 8, 0);
+	self.Text:SetPoint("RIGHT", self.Arrow, "LEFT", -8, 0);
+
+	self.Arrow:SetPoint("RIGHT", self, -1, -2);
+end
+
+function WhoFrameDropdown_OnShow(self)
+	whoSortValue = 1;
+end
+
+function WhoFrameDropdown_OnEnter(self)
+	self.TabHighlight:Show();
+end
+
+function WhoFrameDropdown_OnLeave(self)
+	self.TabHighlight:Hide();
+end
+
+SummonButtonMixin = {};
+
+function SummonButtonMixin:OnLoad()
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
+		local normalTexture = self:GetNormalTexture();
+		normalTexture:ClearAllPoints();
+		normalTexture:SetPoint("CENTER");
+		normalTexture:SetSize(self:GetSize());
+		normalTexture:SetAtlas("socialqueuing-friendlist-summonbutton-up");
+
+		local pushedTexture = self:GetPushedTexture();
+		pushedTexture:ClearAllPoints();
+		pushedTexture:SetPoint("CENTER");
+		pushedTexture:SetSize(self:GetSize());
+		pushedTexture:SetAtlas("socialqueuing-friendlist-summonbutton-down");
+
+		self.cooldown:SetSize(self:GetSize());
+		self.cooldown:SetHideCountdownNumbers(true);
+		self.cooldown:SetSwipeColor(0, 0, 0);
+	end
+end
+
+function SummonButtonMixin:OnShow()
+	FriendsFrame_SummonButton_OnShow(self);
+end
+
+function SummonButtonMixin:OnClick(button, down)
+	FriendsFrame_ClickSummonButton(self, button, down);
+end
+
+function SummonButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
+	if ( self.duration ) then
+		GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
+	end
+	GameTooltip:Show();
+end
+
+function SummonButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function FriendsFrame_OnEvent(self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		if ( self:IsShown() ) then
+			FriendsListFrame.ScrollBox:ForEachFrame(function(button)
+				if button.summonButton and button.summonButton:IsShown() then
+					FriendsFrame_SummonButton_Update(button.summonButton);
+				end
+			end);
+		end
+	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
+		FriendsList_Update();
+	elseif ( event == "BN_FRIEND_INVITE_ADDED" or event == "NEW_MATCHMAKING_PARTY_INVITE" ) then
+		FriendsList_Update();
+	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
+		FriendsList_Update();
+		-- update Friends of Friends
+		local bnetIDAccount = ...;
+		if ( event == "BN_FRIEND_LIST_SIZE_CHANGED" and bnetIDAccount ) then
+			FriendsFriendsFrame.requested[bnetIDAccount] = nil;
+			if ( FriendsFriendsFrame:IsShown() ) then
+				FriendsFriendsFrame:Update();
+			end
+		end
+	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
+		local arg1 = ...;
+		if ( arg1 ) then	--There is no bnetIDAccount given if this is ourself.
+			FriendsList_Update();
+		else
+			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
+		end
+	elseif ( event == "BN_CUSTOM_MESSAGE_LOADED" ) then
+			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
+	elseif ( event == "NEW_MATCHMAKING_PARTY_INVITE" ) then
+		local collapsed = GetCVarBool("partyInvitesCollapsed_Glue");
+		if ( collapsed ) then
+			FriendsListFrame_SetInviteHeaderAnimPlaying(true, FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER);
+		end
+		FriendsList_Update();
+	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
+		-- flash the invites header if collapsed
+		local collapsed = GetCVarBool("friendInvitesCollapsed");
+		if ( collapsed ) then
+			FriendsListFrame_SetInviteHeaderAnimPlaying(true, FRIENDS_BUTTON_TYPE_INVITE_HEADER);
+		end
+		FriendsList_Update();
+	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
+		FriendsList_Update();
+	elseif ( event == "BN_FRIEND_INVITE_REMOVED" ) then
+		FriendsList_Update();
+	elseif ( event == "IGNORELIST_UPDATE" or event == "BN_BLOCK_LIST_UPDATED" ) then
+		IgnoreList_Update();
+	elseif ( event == "WHO_LIST_UPDATE" ) then
+		WhoList_Update();
+		FriendsFrame_Update();
+	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
+		FriendsFrameStatusDropdown:GenerateMenu();
+		FriendsFrame_CheckBattlenetStatus();
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
+		FriendsFrame_CheckBattlenetStatus();
+		-- We want to remove any friends from the frame so they don't linger when it's first re-opened.
+		if (event == "BN_DISCONNECTED") then
+			FriendsList_Update(true);
+		end
+	elseif ( event == "SOCIAL_QUEUE_UPDATE" or event == "GROUP_LEFT" or event == "GROUP_JOINED" ) then
+		if ( self:IsVisible() ) then
+			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
+			FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
+		end
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		if ( self:IsVisible() ) then
+			local canRequestGuildRoster = ...;
+			if ( canRequestGuildRoster ) then
+				C_GuildInfo.GuildRoster();
+			end
+		end
+	elseif ( event == "PLAYER_GUILD_UPDATE") then
+		C_GuildInfo.GuildRoster();
+	elseif ( event == "SOCIAL_UI_SYSTEM_STATUS_UPDATED" ) then
+		if C_SocialUI.IsSystemEnabled() then
+			HideUIPanel(FriendsFrame);
+			-- Hiding FriendsFrame only closes out the subframes returned by GetValidSubFrames
+			-- However, the Social UI system just turned on, so GetValidSubFrames has already narrowed down to the allowed set
+			-- This means the subframes that were valid while the system was disabled could be showing. We need to force hide them all to be safe
+			FriendsFrame_HideAllPotentialSubFrames();
+		end
+	elseif ( event == "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED" ) then
+		-- Let's reset the selected friend if the legacy system status changes
+		-- We may be disabling it (in which case the selected friend is no longer valid)
+		local isLegacyFriendSelected = FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW;
+		if isLegacyFriendSelected then
+			FriendsFrame.selectedFriendType = nil;
+			FriendsFrame.selectedFriend = nil;
+		end
+
+		FriendsList_Update();
+	elseif ( event == "FRAMES_LOADED" ) then
+		FriendsFrame_CheckBattlenetStatus();
+	end
+
+end
+
+function FriendsFrame_SelectFriend(friendType, id)
+	local oldFriendType = FriendsFrame.selectedFriendType;
+	local oldFriendId = FriendsFrame.selectedFriend;
+	if ( friendType == FRIENDS_BUTTON_TYPE_WOW ) then
+		C_FriendList.SetSelectedFriend(id);
+	elseif ( friendType == FRIENDS_BUTTON_TYPE_BNET ) then
+		BNSetSelectedFriend(id);
+	end
+	FriendsFrame.selectedFriendType = friendType;
+	FriendsFrame.selectedFriend = id;
+
+	local function UpdateButtonSelection(type, id, selected)
+		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+			return elementData.buttonType == type and elementData.id == id;
+		end);
+		if button then
+			FriendsFrame_FriendButtonSetSelection(button, selected);
+		end
+	end;
+
+	UpdateButtonSelection(oldFriendType, oldFriendId, false);
+	UpdateButtonSelection(friendType, id, true);
+	if FriendsFrameSendMessageButton ~= nil then
+		FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
+	end
+end
+
+function FriendsFrame_SelectSquelched(squelchType, index)
+	local oldSquelchType, oldSquelchIndex = IgnoreList_GetSelected();
+
+	if ( squelchType == SQUELCH_TYPE_IGNORE ) then
+		C_FriendList.SetSelectedIgnore(index);
+	elseif ( squelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
+		BNSetSelectedBlock(index);
+	end
+	FriendsFrame.selectedSquelchType = squelchType;
+
+	local function UpdateButtonSelection(type, index, selected)
+		local button = FriendsFrame.IgnoreListWindow.ScrollBox:FindFrameByPredicate(function(button, elementData)
+			return elementData.squelchType == type and elementData.index == index;
+		end);
+		if button then
+			IgnoreList_SetButtonSelected(button, selected);
+		end
+	end;
+
+	UpdateButtonSelection(oldSquelchType, oldSquelchIndex, false);
+	UpdateButtonSelection(squelchType, index, true);
+end
+
+function FriendsFrameSendMessageButton_OnClick(self)
+	local name;
+	if ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW ) then
+		name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
+		ChatFrameUtil.SendTell(name);
+	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(FriendsFrame.selectedFriend);
+		if accountInfo then
+			ChatFrameUtil.SendBNetTell(accountInfo.accountName);
+		end
+	end
+	if ( name ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end
+
+function FriendsFrameMuteButton_OnClick(self)
+	SetSelectedMute(self:GetID());
+	MutedList_Update();
+end
+
+function FriendsFrameUnsquelchButton_OnClick(self)
+	local selectedSquelchType = FriendsFrame.selectedSquelchType;
+	if ( selectedSquelchType == SQUELCH_TYPE_IGNORE ) then
+		C_FriendList.DelIgnoreByIndex(C_FriendList.GetSelectedIgnore());
+	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
+		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
+		BNSetBlocked(blockID, false);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function FriendsFrameIgnorePlayerButton_OnClick(self)
+	if UnitCanCooperate("player", "target") and UnitIsHumanPlayer("target") then
+		local name, server = UnitName("target");
+		local fullname = name;
+		if server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
+			fullname = name.."-"..server;
+		end
+		C_FriendList.AddIgnore(fullname);
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	else
+		StaticPopup_Show("ADD_IGNORE");
+	end
+end
+
+function FriendsFrame_UnIgnore(button, name)
+	if ( not C_FriendList.DelIgnore(name) ) then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_IGNORE_NOT_FOUND);
+	end
+end
+
+function FriendsFrame_UnBlock(button, blockID)
+	BNSetBlocked(blockID, false);
+end
+
+function FriendsFrame_RemoveFriend()
+	if ( FriendsFrame.selectedFriend ) then
+		C_FriendList.RemoveFriendByIndex(FriendsFrame.selectedFriend);
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	end
+end
+
+function FriendsFrame_SendMessage()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
+	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
+	ChatFrameUtil.SendTell(name);
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+function FriendsFrame_GroupInvite()
+	if not C_FriendList.IsLegacyFriendSystemEnabled() then
+		return;
+	end
+
+	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
+	C_PartyInfo.InviteUnit(name);
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+local FRIEND_TAB_TO_SOCIAL_TAB =
+{
+	[FRIEND_TAB_FRIENDS] = SocialUITabType and SocialUITabType.Friends,
+	[FRIEND_TAB_RAID] = SocialUITabType and SocialUITabType.RaidList,
+	[FRIEND_TAB_QUICK_JOIN] = SocialUITabType and SocialUITabType.QuickJoin,
+};
+
+local function IsSocialUIReplacingFriendsFrame()
+	return SocialUIControl and SocialUIControl.IsEnabled();
+end
+
+function ToggleFriendsFrame(requestedTab)
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if not C_Glue.IsOnGlueScreen() and inGameFriendsListDisabled then
+		return;
+	end
+
+	if IsSocialUIReplacingFriendsFrame() then
+		local specificTabRequestedByUser = requestedTab ~= nil;
+		local preferRAFTabOverDefault = not specificTabRequestedByUser and C_RecruitAFriend.IsSystemEnabled() and HelpTip:IsShowing(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
+		if preferRAFTabOverDefault then
+			SocialUIControl.ToggleToTab(SocialUITabType.RecruitAFriend);
+			return;
+		end
+
+		local socialTab = requestedTab and FRIEND_TAB_TO_SOCIAL_TAB[requestedTab];
+		if socialTab then
+			SocialUIControl.ToggleToTab(socialTab);
+		elseif not requestedTab then
+			SocialUIControl.Toggle();
+		end
+		if requestedTab == FRIEND_TAB_WHO then
+			-- Special case we want to drop down to the old Frame handling
+		else
+			return;
+		end
+	end
+
+	if ( not requestedTab ) then
+		if ( FriendsFrame:IsShown() ) then
+			HideUIPanel(FriendsFrame);
+		else
+			ShowUIPanel(FriendsFrame);
+		end
+	else
+		if ( requestedTab == PanelTemplates_GetSelectedTab(FriendsFrame) and FriendsFrame:IsShown() ) then
+			HideUIPanel(FriendsFrame);
+			return;
+		end
+		PanelTemplates_SetTab(FriendsFrame, requestedTab);
+		if ( FriendsFrame:IsShown() ) then
+			FriendsFrame_OnShow(FriendsFrame);
+		else
+			ShowUIPanel(FriendsFrame);
+		end
+	end
+end
+
+function ToggleRaidFrame()
+	local factionGroup = UnitFactionGroup("player");
+	if (factionGroup == "Neutral") then
+		return;
+	end
+
+	ToggleFriendsFrame(FRIEND_TAB_RAID);
+end
+
+function FriendsFrame_CheckQuickJoinHelpTip()
+	-- We want at least two groups to show the tutorial.  This avoids more cases where all groups delist.
+	local hasEnoughGroups = #C_SocialQueue.GetAllGroups(false) > 1;
+	local hasClosedTutorial = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN);
+	if ( not hasClosedTutorial and hasEnoughGroups ) then
+		local helpTipInfo = {
+			text = SOCIAL_QUICK_JOIN_TAB_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -13,
+			system = "quickJoinIntroduction",
+		};
+		HelpTip:Show(FriendsFrame, helpTipInfo, FriendsFrameTab4);
+	end
+end
+
+function OpenFriendsFrame(tab)
+	if IsSocialUIReplacingFriendsFrame() then
+		local requestedTab = tab and FRIEND_TAB_TO_SOCIAL_TAB[tab] or nil;
+		SocialUIControl.OpenToTab(requestedTab or SocialUITabType.Friends);
+		return;
+	end
+
+	if ( not tab ) then
+		ShowUIPanel(FriendsFrame);
+	else
+		PanelTemplates_SetTab(FriendsFrame, tab);
+		if ( FriendsFrame:IsShown() ) then
+			FriendsFrame_OnShow(FriendsFrame);
+		else
+			ShowUIPanel(FriendsFrame);
+		end
+	end
+end
+
+WhoFrameEditBoxMixin = {};
+
+function WhoFrameEditBoxMixin:OnLoad()
+	-- Hiding this art so we can show the backdrop instead
+	self.Left:Hide();
+	self.Middle:Hide();
+	self.Right:Hide();
+
+	self.searchIcon:SetAtlas("glues-characterSelect-icon-search", TextureKitConstants.IgnoreAtlasSize);
+
+	self.Instructions:SetFontObject(self.instructionsFontObject);
+	-- This text can be scaled so we try to fit all (or least most) of the text and then truncate + tooltip where necessary
+	self.Instructions:SetMaxLines(2);
+end
+
+function WhoFrameEditBoxMixin:OnShow()
+	EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
+		self:AdjustHeightToFitInstructions();
+	end, self);
+
+	self:AdjustHeightToFitInstructions();
+	EditBox_ClearFocus(self);
+end
+
+function WhoFrameEditBoxMixin:AdjustHeightToFitInstructions()
+	local linesShown = math.min(self.Instructions:GetNumLines(), self.Instructions:GetMaxLines());
+	local totalInstructionHeight = linesShown * self.Instructions:GetLineHeight();
+	local padding = 20;
+	self:SetHeight(totalInstructionHeight + padding);
+end
+
+function WhoFrameEditBoxMixin:OnHide()
+	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
+end
+
+function WhoFrameEditBoxMixin:OnEnter()
+	local isTruncated = self.Instructions:IsShown() and self.Instructions:IsTruncated();
+	if not isTruncated then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddHighlightLine(GameTooltip, self.instructionText);
+	GameTooltip:Show();
+end
+
+function WhoFrameEditBoxMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function WhoFrameEditBoxMixin:OnEnterPressed()
+	C_FriendList.SendWho(self:GetText(), Enum.SocialWhoOrigin.Social);
+	self:ClearFocus();
+end
+
+function ShowWhoPanel()
+	PanelTemplates_SetTab(FriendsFrame, 2);
+	if ( FriendsFrame:IsShown() ) then
+		FriendsFrame_OnShow(FriendsFrame);
+	else
+		ShowUIPanel(FriendsFrame);
+	end
+end
+
+function ToggleFriendsSubPanel(panelIndex)
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	local panelShown =
+		FriendsFrame:IsShown() and
+		PanelTemplates_GetSelectedTab(FriendsFrame) == FRIEND_TAB_FRIENDS and
+		FriendsTabHeader:GetTab() == panelIndex;
+
+	if ( panelShown ) then
+		HideUIPanel(FriendsFrame);
+	else
+		PanelTemplates_SetTab(FriendsFrame, FRIEND_TAB_FRIENDS);
+		FriendsTabHeader:SelectTab(panelIndex);
+		FriendsFrame_Update();
+		ShowUIPanel(FriendsFrame);
+	end
+end
+
+function ToggleFriendsPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.Friends);
+		return;
+	end
+
+	ToggleFriendsSubPanel(FriendsTabHeader.friendsTabID);
+end
+
+function ToggleRecentAlliesPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.RecentAllies);
+		return;
+	end
+
+	ToggleFriendsSubPanel(FriendsTabHeader.recentAlliesTabID);
+end
+
+function ToggleRAFPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.RecruitAFriend);
+		return;
+	end
+
+	ToggleFriendsSubPanel(FriendsTabHeader.recruitAFriendTabID);
+end
+
+function ToggleQuickJoinPanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTab(SocialUITabType.QuickJoin);
+		return;
+	end
+
+	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
+end
+
+function ToggleIgnorePanel()
+	if IsSocialUIReplacingFriendsFrame() then
+		SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.Friends, SocialUISideWindowType.IgnoreListFrame);
+		return;
+	end
+
+	-- The ignore window is a child frame of the FriendsFrame so we either want to show them both or hide them both
+	local alreadyShowingFriendsFrame = FriendsFrame:IsShown();
+	if alreadyShowingFriendsFrame and not FriendsFrame.IgnoreListWindow:IsShown() then
+		-- If we're already showing the friends frame we just need to show the ignore list
+		FriendsFrame.IgnoreListWindow:Show();
+		return;
+	end
+
+	-- Otherwise show them both or hide them both
+	SetUIPanelShown(FriendsFrame, not alreadyShowingFriendsFrame);
+	FriendsFrame.IgnoreListWindow:SetShown(FriendsFrame:IsShown());
+end
+
+function WhoFrame_GetDefaultWhoCommand()
+	local level = UnitLevel("player");
+	local minLevel = level-3;
+	if ( minLevel <= 0 ) then
+		minLevel = 1;
+	end
+	local maxLevel = min(level + 3, GetMaxPlayerLevel());
+	local command = WHO_TAG_ZONE.."\""..GetAreaText().."\" "..minLevel.."-"..maxLevel;
+	return command;
+end
+
+function FriendsFrame_GetLastOnline(timeDifference, isAbsolute)
+	if ( not isAbsolute ) then
+		timeDifference = time() - timeDifference;
+	end
+	local year, month, day, hour, minute;
+
+	if ( timeDifference < SECONDS_PER_MIN ) then
+		return LASTONLINE_SECS;
+	elseif ( timeDifference >= SECONDS_PER_MIN and timeDifference < SECONDS_PER_HOUR ) then
+		return format(LASTONLINE_MINUTES, floor(timeDifference / SECONDS_PER_MIN));
+	elseif ( timeDifference >= SECONDS_PER_HOUR and timeDifference < SECONDS_PER_DAY ) then
+		return format(LASTONLINE_HOURS, floor(timeDifference / SECONDS_PER_HOUR));
+	elseif ( timeDifference >= SECONDS_PER_DAY and timeDifference < SECONDS_PER_MONTH ) then
+		return format(LASTONLINE_DAYS, floor(timeDifference / SECONDS_PER_DAY));
+	elseif ( timeDifference >= SECONDS_PER_MONTH and timeDifference < SECONDS_PER_YEAR ) then
+		return format(LASTONLINE_MONTHS, floor(timeDifference / SECONDS_PER_MONTH));
+	else
+		return format(LASTONLINE_YEARS, floor(timeDifference / SECONDS_PER_YEAR));
+	end
+end
+
+-- Battle.net stuff starts here
+
+function FriendsFrame_CheckBattlenetStatus()
+	local frame = FriendsFrameBattlenetFrame;
+	frame.ContactsMenuButton:Refresh();
+
+	if ( BNFeaturesEnabled() ) then
+		if ( BNConnected() ) then
+			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
+			local _, battleTag = BNGetInfo();
+			if ( battleTag ) then
+				local symbol = string.find(battleTag, "#");
+				if ( symbol ) then
+					local suffix = string.sub(battleTag, symbol);
+					battleTag = string.sub(battleTag, 1, symbol - 1).."|cff416380"..suffix.."|r";
+				end
+				frame.Tag:SetText(battleTag);
+				frame.Tag:Show();
+				frame:Show();
+			else
+				frame:Hide();
+			end
+			frame.UnavailableLabel:Hide();
+			frame.UnavailableInfoButton:Hide();
+			frame.UnavailableInfoFrame:Hide();
+		else
+			frame:Show();
+			FriendsFrameBattlenetFrame_HideSubFrames();
+			frame.Tag:Hide();
+			frame.UnavailableLabel:Show();
+			frame.UnavailableInfoButton:Show();
+		end
+		if ( FriendsFrame.IgnoreListWindow:IsShown() ) then
+			IgnoreList_Update();
+		end
+		-- has its own check if it is being shown, after it updates the count on the QuickJoinToastButton
+		FriendsList_Update();
+	end
+end
+
+function FriendsFrame_GetFormattedCharacterName(characterName, battleTag, client, timerunningSeasonID)
+	characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client);
+
+	if timerunningSeasonID then
+		characterName = TimerunningUtil.AddSmallIcon(characterName);
+	end
+
+	return characterName;
+end
+
+function FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName)
+	if not accountInfo then
+		return;
+	end
+
+	local nameText, nameColor, statusTexture;
+
+	nameText = BNet_GetBNetAccountName(accountInfo);
+
+	if not noCharacterName then
+		local characterName = FriendsFrame_GetFormattedCharacterName(accountInfo.gameAccountInfo.characterName, nil, accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.timerunningSeasonID);
+		if characterName ~= "" then
+			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
+				nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
+			else
+				if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
+					characterName = accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL;
+				end
+				nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
+			end
+		end
+	end
+
+	if accountInfo.gameAccountInfo.isOnline then
+		if accountInfo.isAFK or accountInfo.gameAccountInfo.isGameAFK then
+			statusTexture = FRIENDS_TEXTURE_AFK;
+		elseif accountInfo.isDND or accountInfo.gameAccountInfo.isGameBusy then
+			statusTexture = FRIENDS_TEXTURE_DND;
+		else
+			statusTexture = FRIENDS_TEXTURE_ONLINE;
+		end
+		nameColor = FRIENDS_BNET_NAME_COLOR;
+	else
+		statusTexture = FRIENDS_TEXTURE_OFFLINE;
+		nameColor = FRIENDS_GRAY_COLOR;
+	end
+
+	return nameText, nameColor, statusTexture;
+end
+
+function FriendsFrame_GetLastOnlineText(accountInfo)
+	if not accountInfo or (accountInfo.lastOnlineTime == 0) or HasTimePassed(accountInfo.lastOnlineTime, SECONDS_PER_YEAR) then
+		return FRIENDS_LIST_OFFLINE;
+	else
+		return string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(accountInfo.lastOnlineTime));
+	end
+end
+
+local CLASS_ID_TO_GAME_MODE = {
+	[14] = Enum.GameMode.Plunderstorm,
+	[15] = Enum.GameMode.WoWHack,
+};
+
+local function CanInviteByGameMode(gameAccountInfo)
+	-- This lookup should be replaced with a separate field instead of relying on classID.
+	local otherGameMode = CLASS_ID_TO_GAME_MODE[gameAccountInfo.classID];
+	local activeGameMode = C_GameRules.GetActiveGameMode();
+
+	if otherGameMode then
+		-- If we're both in the same game mode, we can invite them.
+		return otherGameMode == activeGameMode;
+	else
+		-- If we're both in standard we can invite them.
+		return activeGameMode == Enum.GameMode.Standard;
+	end
+end
+
+local function ShouldGameModeShowRichPresence(gameAccountInfo)
+	-- This lookup should be replaced with a separate field instead of relying on classID.
+	local otherGameMode = CLASS_ID_TO_GAME_MODE[gameAccountInfo.classID];
+	if otherGameMode then
+		-- We show rich presence for game mode logins.
+		return true;
+	end
+
+	return false;
+end
+
+local function ShowRichPresenceOnly(gameAccountInfo)
+	if (gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW) or (gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID) then
+		-- If they are not in wow or in a different version of wow, always show rich presence only
+		return true;
+	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((gameAccountInfo.factionName ~= playerFactionGroup) or (gameAccountInfo.realmID ~= playerRealmID)) then
+		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
+		return true;
+	elseif (ShouldGameModeShowRichPresence(gameAccountInfo)) then
+		return true;
+	else
+		return not gameAccountInfo.areaName;
+	end;
+end
+
+local function GetOnlineInfoText(client, rafLinkType, locationText)
+	if not locationText then
+		return UNKNOWN;
+	end
+	if (client == BNET_CLIENT_WOW) and (rafLinkType ~= Enum.RafLinkType.None) then
+		if rafLinkType == Enum.RafLinkType.Recruit then
+			return RAF_RECRUIT_FRIEND:format(locationText);
+		else
+			return RAF_RECRUITER_FRIEND:format(locationText);
+		end
+	end
+
+	return locationText;
+end
+
+function FriendsFrame_UpdateFriendInviteHeaderButton(button, elementData)
+	button:SetFormattedText(FRIEND_REQUESTS, BNGetNumFriendInvites());
+	local collapsed = GetCVarBool("friendInvitesCollapsed");
+
+	button.DownArrow:SetShown(not collapsed);
+	button.RightArrow:SetShown(collapsed);
+end
+
+local function CollapsingHeaderButton(button, cvar)
+	button.toggleCvar = cvar;
+	local collapsed = GetCVarBool(cvar);
+
+	button.DownArrow:SetShown(not collapsed);
+	button.RightArrow:SetShown(collapsed);
+end
+
+function FriendsFrame_UpdatePartyInviteButton(button, elementData)
+	local id = elementData.id;
+	button.buttonType = elementData.buttonType;
+	button.id = id;
+
+	local playerName, inviterGUID = C_WoWLabsMatchmaking.GetPartyInviteByIndex(id-1)
+	button.Name:SetText(playerName);
+	button.inviteID = inviterGUID;
+	button.inviteIndex = button.id;
+	end
+
+function FriendsFrame_UpdatePartyInviteHeaderButton(button, elementData)
+	button.buttonType = FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER;
+	button:SetText(GROUP_INVITE);
+	CollapsingHeaderButton(button, "partyInvitesCollapsed_Glue");
+end
+
+function FriendsFrame_UpdateFriendInviteButton(button, elementData)
+	local id = elementData.id;
+	button.buttonType = elementData.buttonType;
+	button.id = id;
+
+	local inviteInfo = C_BattleNet.GetFriendInviteInfo(id);
+	local inviteID = inviteInfo and inviteInfo.inviteID or nil;
+	local accountName = inviteInfo and inviteInfo.accountName or nil;
+	button.Name:SetText(accountName);
+	button.inviteID = inviteID;
+	button.inviteIndex = button.id;
+end
+
+function FriendsFrame_FriendButtonSetSelection(button, selected)
+	if selected then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
+	end
+end
+
+function FriendsFrame_UpdateFriendButton(button, elementData)
+	local id = elementData.id;
+	local buttonType = elementData.buttonType;
+	button.buttonType = buttonType;
+	button.id = id;
+
+	local nameText, nameColor, infoText, isFavoriteFriend, statusTexture;
+	local hasTravelPassButton = false;
+	local isCrossFactionInvite = false;
+	local inviteFaction = nil;
+	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
+		local info = C_FriendList.GetFriendInfoByIndex(id);
+		if ( info.connected ) then
+			button.background:SetColorTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
+			if ( info.afk ) then
+				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+			elseif ( info.dnd ) then
+				button.status:SetTexture(FRIENDS_TEXTURE_DND);
+			else
+				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+			end
+			nameText = info.name..", "..format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className);
+			nameColor = FRIENDS_WOW_NAME_COLOR;
+			infoText = GetOnlineInfoText(BNET_CLIENT_WOW, info.rafLinkType, info.area);
+		else
+			button.background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
+			nameText = info.name;
+			nameColor = FRIENDS_GRAY_COLOR;
+			infoText = FRIENDS_LIST_OFFLINE;
+		end
+		button.gameIcon:Hide();
+		button.summonButton:ClearAllPoints();
+		button.summonButton:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, -1);
+		FriendsFrame_SummonButton_Update(button.summonButton);
+	elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET then
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(id);
+		if accountInfo then
+			nameText, nameColor, statusTexture = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
+			isFavoriteFriend = accountInfo.isFavorite;
+
+			button.status:SetTexture(statusTexture);
+
+			isCrossFactionInvite = accountInfo.gameAccountInfo.factionName ~= playerFactionGroup;
+			inviteFaction = accountInfo.gameAccountInfo.factionName;
+
+			if accountInfo.gameAccountInfo.isOnline then
+				button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
+
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo) then
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.richPresence);
+				else
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
+				end
+
+					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
+
+				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
+				if fadeIcon then
+					button.gameIcon:SetAlpha(0.6);
+				else
+					button.gameIcon:SetAlpha(1);
+				end
+
+				--Note - this logic should match the logic in FriendsFrame_ShouldShowSummonButton
+
+				local shouldShowSummonButton = FriendsFrame_ShouldShowSummonButton(button.summonButton);
+				button.gameIcon:SetShown(not shouldShowSummonButton);
+
+				-- travel pass
+				hasTravelPassButton = true;
+				local restriction = FriendsFrame_GetInviteRestriction(button.id);
+				if restriction == INVITE_RESTRICTION_NONE then
+					button.travelPassButton:Enable();
+				else
+					button.travelPassButton:Disable();
+				end
+			else
+				button.background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+				button.gameIcon:Hide();
+				infoText = FriendsFrame_GetLastOnlineText(accountInfo);
+			end
+			button.summonButton:ClearAllPoints();
+			button.summonButton:SetPoint("CENTER", button.gameIcon, "CENTER", 1, 0);
+			FriendsFrame_SummonButton_Update(button.summonButton);
+		end
+	end
+
+	if hasTravelPassButton then
+		button.travelPassButton:Show();
+	else
+		button.travelPassButton:Hide();
+	end
+
+	local selected = (FriendsFrame.selectedFriendType == buttonType) and (FriendsFrame.selectedFriend == id);
+	FriendsFrame_FriendButtonSetSelection(button, selected);
+
+	-- finish setting up button if it's not a header
+	if nameText then
+		button.name:SetText(nameText);
+		button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
+		button.info:SetText(infoText);
+		button:Show();
+
+		if isFavoriteFriend then
+			button.Favorite:Show();
+			button.Favorite:ClearAllPoints()
+			button.Favorite:SetPoint("TOPLEFT", button.name, "TOPLEFT", button.name:GetStringWidth(), 0);
+		else
+			button.Favorite:Hide();
+		end
+	else
+		button:Hide();
+	end
+	-- update the tooltip if hovering over a button
+	if (FriendsTooltip.button == button) or (button:IsMouseMotionFocus()) then
+		button:OnEnter();
+	end
+
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
+		-- show cross faction helptip on first online cross faction friend
+		if hasTravelPassButton and isCrossFactionInvite and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE) then
+			local helpTipInfo = {
+				text = CROSS_FACTION_INVITE_HELPTIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				alignment = HelpTip.Alignment.Left,
+			};
+			HelpTip:Show(FriendsFrame, helpTipInfo, button.travelPassButton);
+		end
+	end
+	-- update invite button atlas to show faction for cross faction players, or reset to default for same faction players
+	if hasTravelPassButton then
+		if isCrossFactionInvite and inviteFaction == "Horde" then
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-horde-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-horde-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-horde-disabled");
+		elseif isCrossFactionInvite and inviteFaction == "Alliance" then
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-alliance-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-alliance-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-alliance-disabled");
+		else
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-default-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-default-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-default-disabled");
+		end
+	end
+	return height;
+end
+
+FriendsBroadcastFrameMixin = {};
+
+function FriendsBroadcastFrameMixin:ShowFrame()
+	self:UpdateBroadcast();
+	self:Show();
+	self.EditBox:SetFocus();
+end
+
+function FriendsBroadcastFrameMixin:HideFrame()
+	self:Hide();
+end
+
+function FriendsBroadcastFrameMixin:ToggleFrame()
+	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+	if self:IsShown() then
+		self:HideFrame();
+	else
+		self:ShowFrame();
+	end
+end
+
+function FriendsBroadcastFrameMixin:UpdateBroadcast()
+	local _, _, _, broadcastText = BNGetInfo();
+	broadcastText = broadcastText or "";
+	self.EditBox:SetText(broadcastText);
+end
+
+function FriendsBroadcastFrameMixin:SetBroadcast()
+	local newBroadcastText = self.EditBox:GetText();
+	local _, _, _, broadcastText = BNGetInfo();
+	if newBroadcastText ~= broadcastText then
+		C_BattleNet.SetCustomMessage(newBroadcastText);
+	end
+	self:HideFrame();
+end
+
+function FriendsFrameBattlenetFrame_HideSubFrames()
+	FriendsFrameBattlenetFrame.BroadcastFrame:HideFrame();
+	FriendsFrameBattlenetFrame.UnavailableInfoFrame:Hide();
+end
+
+function FriendsFrameTooltip_SetLine(line, anchor, text, yOffset)
+	local tooltip = FriendsTooltip;
+	local top = 0;
+	local left = FRIENDS_TOOLTIP_MAX_WIDTH - FRIENDS_TOOLTIP_MARGIN_WIDTH - line:GetWidth();
+
+	if ( text ) then
+		line:SetText(text);
+	else
+		line:SetText("");
+	end
+	if ( anchor ) then
+		top = yOffset or 0;
+		line:SetPoint("TOP", anchor, "BOTTOM", 0, top);
+	else
+		local point, _, _, _, y = line:GetPoint(1);
+		if ( point == "TOP" or point == "TOPLEFT" ) then
+			top = y;
+		end
+	end
+	line:Show();
+	tooltip.height = tooltip.height + line:GetHeight() - top;
+	tooltip.maxWidth = max(tooltip.maxWidth, line:GetStringWidth() + left);
+	return line;
+end
+
+IgnoreListButtonMixin = {};
+
+function IgnoreListButtonMixin:OnClick()
+	FriendsFrame_SelectSquelched(self.type, self.index);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+WhoListButtonMixin = {};
+
+function WhoListButtonMixin:OnClick(button)
+	if button == "LeftButton" then
+		WhoList_SetSelectedButton(self);
+	else
+		local name = self.OriginalName or self.Name:GetText();
+		FriendsFrame_ShowDropdown(name, 1);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function WhoListButtonMixin:OnEnter()
+	if self.tooltip1 and self.tooltip2 and self.tooltip3 then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetText(self.tooltip1);
+		GameTooltip:AddLine(self.tooltip2, 1, 1, 1);
+		GameTooltip:AddLine(self.tooltip3, 1, 1, 1);
+		GameTooltip:Show();
+	end
+end
+
+FriendsListButtonMixin = {};
+
+function FriendsListButtonMixin:OnLoad()
+	self.highlight:SetVertexColor(HIGHLIGHT_LIGHT_BLUE:GetRGB());
+end
+
+local regionNames = {
+	[1] = NORTH_AMERICA,
+	[2] = KOREA,
+	[3] = EUROPE,
+	[4] = TAIWAN,
+	[5] = CHINA,
+};
+
+function FriendsListButtonMixin:OnEnter()
+	local anchor, text;
+	local numGameAccounts = 0;
+	local tooltip = FriendsTooltip;
+	local battleTag = "";
+	tooltip.height = 0;
+	tooltip.maxWidth = 0;
+
+	if self.buttonType == FRIENDS_BUTTON_TYPE_BNET then
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
+		if accountInfo then
+			local noCharacterName = true;
+			local nameText, nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName);
+
+			battleTag = accountInfo.battleTag;
+
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
+			FriendsTooltipHeader:SetTextColor(nameColor:GetRGB());
+
+			if accountInfo.gameAccountInfo.gameAccountID then
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo) then
+					local characterName = FriendsFrame_GetFormattedCharacterName(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.timerunningSeasonID);
+					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, characterName);
+					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, accountInfo.gameAccountInfo.richPresence, -4);
+				else
+					local raceName = accountInfo.gameAccountInfo.raceName or UNKNOWN;
+					local className = accountInfo.gameAccountInfo.className or UNKNOWN;
+					if CanCooperateWithGameAccount(accountInfo) then
+						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.characterLevel, raceName, className);
+					else
+						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, accountInfo.gameAccountInfo.characterLevel, raceName, className);
+					end
+					if accountInfo.gameAccountInfo.timerunningSeasonID then
+						text = TimerunningUtil.AddSmallIcon(text);
+					end
+					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
+					local areaName = accountInfo.gameAccountInfo.areaName or UNKNOWN;
+					if accountInfo.gameAccountInfo.isInCurrentRegion then
+						local realmName = accountInfo.gameAccountInfo.realmDisplayName or UNKNOWN;
+						anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, BNET_FRIEND_TOOLTIP_ZONE_AND_REALM:format(areaName, realmName), -4);
+					else
+						local regionNameString = regionNames[accountInfo.gameAccountInfo.regionID] or UNKNOWN;
+						anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, BNET_FRIEND_TOOLTIP_ZONE_AND_REGION:format(areaName, regionNameString), -4);
+					end
+				end
+			else
+				FriendsTooltipGameAccount1Info:Hide();
+				FriendsTooltipGameAccount1Name:Hide();
+			end
+
+			-- note
+			if accountInfo.note ~= "" then
+				FriendsTooltipNoteIcon:Show();
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, anchor, accountInfo.note, -8);
+			else
+				FriendsTooltipNoteIcon:Hide();
+				FriendsTooltipNoteText:Hide();
+			end
+			-- broadcast
+			if accountInfo.customMessage ~= "" then
+				FriendsTooltipBroadcastIcon:Show();
+				if not HasTimePassed(accountInfo.customMessageTime, SECONDS_PER_YEAR) then
+					accountInfo.customMessage = accountInfo.customMessage.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(accountInfo.customMessageTime)..FONT_COLOR_CODE_CLOSE);
+				end
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, accountInfo.customMessage, -8);
+				FriendsTooltip.hasBroadcast = true;
+			else
+				FriendsTooltipBroadcastIcon:Hide();
+				FriendsTooltipBroadcastText:Hide();
+				FriendsTooltip.hasBroadcast = nil;
+			end
+
+			if accountInfo.gameAccountInfo.isOnline then
+				FriendsTooltipLastOnline:Hide();
+				numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(self.id);
+			else
+				text = FriendsFrame_GetLastOnlineText(accountInfo);
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipLastOnline, anchor, text, -4);
+			end
+		end
+	elseif self.buttonType == FRIENDS_BUTTON_TYPE_WOW then
+		local info = C_FriendList.GetFriendInfoByIndex(self.id);
+		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, info.name);
+		if info.connected then
+			FriendsTooltipHeader:SetTextColor(FRIENDS_WOW_NAME_COLOR.r, FRIENDS_WOW_NAME_COLOR.g, FRIENDS_WOW_NAME_COLOR.b);
+			FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, string.format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className));
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, info.area);
+		else
+			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
+			FriendsTooltipGameAccount1Name:Hide();
+			FriendsTooltipGameAccount1Info:Hide();
+		end
+		if ( info.notes ) then
+			FriendsTooltipNoteIcon:Show();
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, anchor, info.notes, -8);
+		else
+			FriendsTooltipNoteIcon:Hide();
+			FriendsTooltipNoteText:Hide();
+		end
+		FriendsTooltipBroadcastIcon:Hide();
+		FriendsTooltipBroadcastText:Hide();
+		FriendsTooltipLastOnline:Hide();
+	end
+
+	-- other game accounts
+	local gameAccountIndex = 1;
+	local characterNameString;
+	local gameAccountInfoString;
+	if numGameAccounts > 1 then
+		local headerSet = false;
+		for i = 1, numGameAccounts do
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, i);
+
+			-- the focused game account is already at the top of the tooltip
+			if not gameAccountInfo.hasFocus and (gameAccountInfo.clientProgram ~= BNET_CLIENT_APP) and (gameAccountInfo.clientProgram ~= BNET_CLIENT_CLNT) then
+				local areaName = gameAccountInfo.areaName or UNKNOWN;
+				local raceName = gameAccountInfo.raceName or UNKNOWN;
+				local className = gameAccountInfo.className or UNKNOWN;
+				local gameText = gameAccountInfo.richPresence or "";
+
+				if not headerSet then
+					FriendsFrameTooltip_SetLine(FriendsTooltipOtherGameAccounts, anchor, nil, -8);
+					headerSet = true;
+				end
+				gameAccountIndex = gameAccountIndex + 1;
+				if ( gameAccountIndex > FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS ) then
+					break;
+				end
+				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
+				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
+				text = "";
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 0).." ";
+						end
+					end);
+				end
+				if (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == WOW_PROJECT_ID) then
+					if (gameAccountInfo.realmName == playerRealmName) and (gameAccountInfo.factionName == playerFactionGroup) then
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, raceName, className);
+					else
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, raceName, className);
+					end
+					gameText = areaName;
+				else
+					local characterName = "";
+					if gameAccountInfo.isOnline then
+						characterName = FriendsFrame_GetFormattedCharacterName(gameAccountInfo.characterName, battleTag, gameAccountInfo.clientProgram, gameAccountInfo.timerunningSeasonID);
+					end
+					text = text..characterName;
+				end
+				FriendsFrameTooltip_SetLine(characterNameString, nil, text);
+				FriendsFrameTooltip_SetLine(gameAccountInfoString, nil, gameText);
+			end
+		end
+		if ( not headerSet ) then
+			FriendsTooltipOtherGameAccounts:Hide();
+		end
+	else
+		FriendsTooltipOtherGameAccounts:Hide();
+	end
+	for i = gameAccountIndex + 1, FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS do
+		characterNameString = _G["FriendsTooltipGameAccount"..i.."Name"];
+		gameAccountInfoString = _G["FriendsTooltipGameAccount"..i.."Info"];
+		characterNameString:Hide();
+		gameAccountInfoString:Hide();
+	end
+	if ( numGameAccounts > FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS ) then
+		FriendsFrameTooltip_SetLine(FriendsTooltipGameAccountMany, nil, string.format(FRIENDS_TOOLTIP_TOO_MANY_CHARACTERS, numGameAccounts - FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS), 0);
+	else
+		FriendsTooltipGameAccountMany:Hide();
+	end
+
+	tooltip.button = self;
+	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 36, 0);
+	tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH);
+	tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH));
+	tooltip:Show();
+end
+
+function FriendsListButtonMixin:OnLeave()
+	FriendsTooltip.button = nil;
+	FriendsTooltip:Hide();
+end
+
+function FriendsListButtonMixin:OnClick(button)
+	if ( button == "LeftButton" ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		FriendsFrame_SelectFriend(self.buttonType, self.id);
+		-- if friends of friends frame is being shown, switch list if new selection is another battlenet friend
+		if ( FriendsFriendsFrame:IsShown() and self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
+			if accountInfo and (accountInfo.bnetAccountID ~= FriendsFriendsFrame.bnetIDAccount) then
+				FriendsFriendsFrame_Show(accountInfo.bnetAccountID);
+			end
+		end
+	elseif ( button == "RightButton" ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+			-- bnet friend
+			local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
+			if accountInfo then
+				FriendsFrame_ShowBNDropdown(accountInfo.accountName, accountInfo.gameAccountInfo.isOnline, nil, nil, nil, 1, accountInfo.bnetAccountID, nil, nil, nil, nil, accountInfo.battleTag);
+			end
+		else
+			-- wow friend
+			local info = C_FriendList.GetFriendInfoByIndex(self.id);
+			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil, info.guid);
+		end
+	end
+end
+
+function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
+	local inviteType = GetDisplayedInviteType(guid);
+	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
+		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
+			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			return;
+		end
+
+		C_BattleNet.InviteFriend(gameAccountID);
+	elseif ( inviteType == "REQUEST_INVITE" ) then
+		BNRequestInviteFriend(gameAccountID);
+	end
+
+	HelpTip:Acknowledge(FriendsFrame, CROSS_FACTION_INVITE_HELPTIP);
+end
+
+function FriendsFrame_BattlenetInviteByIndex(friendIndex)
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(friendIndex);
+	if numGameAccounts > 1 then
+		-- see if there is exactly one game account we could invite
+		local numValidGameAccounts = 0;
+		local lastGameAccountID;
+		local lastGameAccountGUID;
+		for i = 1, numGameAccounts do
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, i);
+			if gameAccountInfo.playerGuid and (gameAccountInfo.factionName == playerFactionGroup) and (gameAccountInfo.realmID ~= 0) then
+				numValidGameAccounts = numValidGameAccounts + 1;
+				lastGameAccountID = gameAccountInfo.gameAccountID;
+				lastGameAccountGUID = gameAccountInfo.playerGuid;
+			end
+		end
+
+		if ( numValidGameAccounts == 1 ) then
+			FriendsFrame_InviteOrRequestToJoin(lastGameAccountGUID, lastGameAccountID);
+			return;
+		end
+
+		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return elementData.id == friendIndex and elementData.buttonType == FRIENDS_BUTTON_TYPE_BNET;
+		end);
+
+		-- show dropdown at the button if one was passed in or we found it
+		FriendsFrame_SetupTravelPassDropdown(friendIndex, button and button.travelPassButton or nil);
+	else
+		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
+		if accountInfo and accountInfo.gameAccountInfo.playerGuid then
+			FriendsFrame_InviteOrRequestToJoin(accountInfo.gameAccountInfo.playerGuid, accountInfo.gameAccountInfo.gameAccountID);
+		end
+	end
+end
+
+function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
+	MenuUtil.CreateContextMenu(attachedTo, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_TRAVEL_PASS");
+
+		rootDescription:CreateTitle(TRAVEL_PASS_INVITE);
+
+		local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(friendIndex);
+		for i = 1, numGameAccounts do
+			local text = "";
+			local restriction = INVITE_RESTRICTION_NONE;
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, i);
+
+			if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+				if (not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup then
+					if C_QuestSession.Exists() then
+						restriction = INVITE_RESTRICTION_QUEST_SESSION;
+					elseif not C_PartyInfo.CanFormCrossFactionParties() then
+						restriction = INVITE_RESTRICTION_FACTION;
+					end
+				elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
+					restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
+				elseif gameAccountInfo.realmID == 0 then
+					restriction = INVITE_RESTRICTION_INFO;
+				elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
+					restriction = INVITE_RESTRICTION_REALM;
+				elseif (not CanInviteByGameMode(gameAccountInfo)) then
+					restriction = INVITE_RESTRICTION_GAME_MODE;
+				end
+				if restriction == INVITE_RESTRICTION_NONE then
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
+				else
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
+				end
+			else
+				restriction = INVITE_RESTRICTION_CLIENT;
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 18);
+						end
+					end);
+				end
+			end
+
+			if ( restriction == INVITE_RESTRICTION_NONE ) then
+				rootDescription:CreateButton(text, function()
+					local gameAccountID = gameAccountInfo.gameAccountID;
+					local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gameAccountID);
+					local playerGuid = gameAccountInfo.playerGuid;
+					if playerGuid then
+						FriendsFrame_InviteOrRequestToJoin(playerGuid, gameAccountID);
+					end
+				end);
+			else
+				local button = rootDescription:CreateButton(text);
+				button:SetEnabled(false);
+			end
+		end
+	end);
+end
+
+function CanCooperateWithGameAccount(accountInfo)
+	if not accountInfo then
+		return false;
+	end
+	return accountInfo.gameAccountInfo.realmID and accountInfo.gameAccountInfo.realmID > 0 and accountInfo.gameAccountInfo.factionName == playerFactionGroup;
+end
+
+--
+-- travel pass
+--
+
+function CanGroupWithAccount(bnetIDAccount)
+	if (not bnetIDAccount) then
+		return false;
+	end
+	local index = BNGetFriendIndex(bnetIDAccount);
+	if (not index) then
+		return false;
+	end
+	local restriction = FriendsFrame_GetInviteRestriction(index);
+	return (restriction == INVITE_RESTRICTION_NONE);
+end
+
+--Note that a single friend can have multiple GUIDs (if they're dual-boxing). This just gets one if there is one.
+function FriendsFrame_GetPlayerGUIDFromIndex(index)
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
+	for i = 1, numGameAccounts do
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.playerGuid then
+			return gameAccountInfo.playerGuid;
+		end
+	end
+
+	return nil;
+end
+
+function FriendsFrame_GetDisplayedInviteTypeAndGuid(index)
+	local inviteType = nil;
+	local guid = nil;
+	local factionName = nil;
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
+	for i = 1, numGameAccounts do
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.playerGuid then
+			guid = gameAccountInfo.playerGuid;
+			factionName = gameAccountInfo.factionName;
+
+			if (factionName == playerFactionGroup) then
+				break;
+			end
+		end
+	end
+
+	inviteType = GetDisplayedInviteType(guid);
+
+	if (factionName and factionName ~= playerFactionGroup) then
+		inviteType = inviteType .. "_CROSS_FACTION";
+	end
+
+	return inviteType, guid, factionName;
+end
+
+function FriendsFrame_GetInviteRestriction(index)
+	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
+	for i = 1, numGameAccounts do
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+			if gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
+				if gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
+				elseif gameAccountInfo.wowProjectID == WOW_PROJECT_MAINLINE then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
+				else
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_ID, restriction);
+				end
+
+			-- Party info isn't available in the front end yet.
+			elseif C_PartyInfo and ((not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup) then
+				if C_QuestSession.Exists() then
+					restriction = max(INVITE_RESTRICTION_QUEST_SESSION, restriction);
+				elseif not C_PartyInfo.CanFormCrossFactionParties() then
+					restriction = max(INVITE_RESTRICTION_FACTION, restriction);
+				end
+			elseif gameAccountInfo.realmID == 0 then
+				restriction = max(INVITE_RESTRICTION_INFO, restriction);
+			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
+				restriction = max(INVITE_RESTRICTION_REALM, restriction);
+			elseif not gameAccountInfo.isInCurrentRegion then
+				restriction = INVITE_RESTRICTION_REGION;
+			elseif not CanInviteByGameMode(gameAccountInfo) then
+				restriction = INVITE_RESTRICTION_GAME_MODE;
+			else
+				-- there is at lease 1 game account that can be invited
+				return INVITE_RESTRICTION_NONE;
+			end
+		else
+			restriction = max(INVITE_RESTRICTION_CLIENT, restriction);
+		end
+	end
+	return restriction;
+end
+
+function FriendsFrame_GetInviteRestrictionText(restriction)
+	if ( restriction == INVITE_RESTRICTION_LEADER ) then
+		return ERR_TRAVEL_PASS_NOT_LEADER;
+	elseif ( restriction == INVITE_RESTRICTION_FACTION ) then
+		return ERR_TRAVEL_PASS_NOT_ALLIED;
+	elseif ( restriction == INVITE_RESTRICTION_REALM ) then
+		return ERR_TRAVEL_PASS_DIFFERENT_REALM;
+	elseif ( restriction == INVITE_RESTRICTION_INFO ) then
+		return ERR_TRAVEL_PASS_NO_INFO;
+	elseif ( restriction == INVITE_RESTRICTION_CLIENT ) then
+		return ERR_TRAVEL_PASS_NOT_WOW;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_ID ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_MAINLINE ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_MOBILE ) then
+		return ERR_TRAVEL_PASS_MOBILE;
+	elseif ( restriction == INVITE_RESTRICTION_REGION ) then
+		return ERR_TRAVEL_PASS_DIFFERENT_REGION;
+	elseif ( restriction == INVITE_RESTRICTION_QUEST_SESSION ) then
+		return ERR_TRAVEL_PASS_QUEST_SESSION;
+	elseif ( restriction == INVITE_RESTRICTION_GAME_MODE ) then
+		return ERR_TRAVEL_PASS_GAME_MODE;
+	else
+		return "";
+	end
+end
+
+local inviteTypeToButtonText =
+{
+	["INVITE"] = TRAVEL_PASS_INVITE,
+	["SUGGEST_INVITE"] = SUGGEST_INVITE,
+	["REQUEST_INVITE"] = REQUEST_INVITE,
+	["INVITE_CROSS_FACTION"] = TRAVEL_PASS_INVITE_CROSS_FACTION,
+	["SUGGEST_INVITE_CROSS_FACTION"] = SUGGEST_INVITE_CROSS_FACTION,
+	["REQUEST_INVITE_CROSS_FACTION"] = REQUEST_INVITE_CROSS_FACTION,
+};
+
+local inviteTypeIsCrossFaction =
+{
+	["INVITE_CROSS_FACTION"] = true,
+	["SUGGEST_INVITE_CROSS_FACTION"] = true,
+	["REQUEST_INVITE_CROSS_FACTION"] = true,
+};
+
+function TravelPassButton_OnEnter(self)
+	if C_Glue.IsOnGlueScreen() then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local restriction = FriendsFrame_GetInviteRestriction(self:GetParent().id);
+
+	local inviteType, guid, factionName = FriendsFrame_GetDisplayedInviteTypeAndGuid(self:GetParent().id);
+	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+
+	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
+		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName] or FACTION_NEUTRAL), nil, nil, nil, true);
+	end
+
+	if ( restriction == INVITE_RESTRICTION_NONE ) then
+		if ( inviteType == "REQUEST_INVITE" or inviteType == "REQUEST_INVITE_CROSS_FACTION" ) then
+			--For REQUEST_INVITE, we'll display other members in the group if there are any.
+			local group = C_SocialQueue.GetGroupForPlayer(guid);
+			local members = C_SocialQueue.GetGroupMembers(group);
+			local numDisplayed = 0;
+			for i=1, #members do
+				if ( members[i].guid ~= guid ) then
+					if ( numDisplayed == 0 ) then
+						GameTooltip:AddLine(SOCIAL_QUEUE_ALSO_IN_GROUP);
+					elseif ( numDisplayed >= 7 ) then
+						GameTooltip:AddLine(SOCIAL_QUEUE_AND_MORE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+						break;
+					end
+					local name, color = SocialQueueUtil_GetRelationshipInfo(members[i].guid, nil, members[i].clubId);
+					GameTooltip:AddLine(color..name..FONT_COLOR_CODE_CLOSE);
+
+					numDisplayed = numDisplayed + 1;
+				end
+			end
+		end
+	else
+		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+	GameTooltip:Show();
+end
+
+WhoFrameColumnHeaderMixin = {};
+
+function WhoFrameColumnHeaderMixin:OnClick()
+	if self.sortType then
+		C_FriendList.SortWho(self.sortType);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function WhoFrameColumnHeaderMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip_AddHighlightLine(GameTooltip, self.Text:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function WhoFrameColumnHeaderMixin:OnLeave()
+	GameTooltip:Hide();
+end
+FriendsIgnoreListMixin = {};
+
+function FriendsIgnoreListMixin:OnLoad()
+	self:InitializeFrameVisuals();
+end
+
+function FriendsIgnoreListMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", true);
+	IgnoreList_Update();
+end
+
+function FriendsIgnoreListMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", false);
+end
+
+function FriendsIgnoreListMixin:InitializeFrameVisuals()
+	ButtonFrameTemplate_HidePortrait(self);
+	self:SetTitle(IGNORE_LIST);
+
+	self.TopTileStreaks:Hide();
+	self.Inset:ClearAllPoints();
+	self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", 11, -28);
+	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 36);
+
+	self.ScrollBox:ClearAllPoints();
+	self.ScrollBox:SetPoint("TOPLEFT", self.Inset, 5, -5);
+	self.ScrollBox:SetPoint("BOTTOMRIGHT", self.Inset, -22, 2);
+end
+
+function FriendsIgnoreListMixin:ToggleFrame()
+	self:SetShown(not self:IsShown());
+	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+end
+
+ContactsMenuMixin = {};
+
+function ContactsMenuMixin:OnShow()
+	self:Refresh();
+end
+
+function ContactsMenuMixin:Refresh()
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("CONTACTS_MENU");
+
+		local canUseBroadCastFrame = BNFeaturesEnabled() and BNConnected();
+		if canUseBroadCastFrame then
+			rootDescription:CreateButton(CONTACTS_MENU_BROADCAST_BUTTON_NAME, function()
+				self:GetParent().BroadcastFrame:ToggleFrame();
+			end);
+		end
+
+		rootDescription:CreateButton(CONTACTS_MENU_IGNORE_BUTTON_NAME, function()
+			FriendsFrame.IgnoreListWindow:ToggleFrame();
+		end);
+	end);
+end
+
+function ContactsMenuMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, CONTACTS_MENU_NAME);
+	GameTooltip:Show();
+end
+
+function ContactsMenuMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+FriendsFrameAddFriendButtonMixin = {};
+
+function FriendsFrameAddFriendButtonMixin:OnClick()
+	AddFriendFrame_Show();
+end
+
+function FriendsFrameAddFriendButtonMixin:OnEnter()
+	if self.disableTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 6, 0);
+		GameTooltip_AddErrorLine(GameTooltip, self.disableTooltip);
+		GameTooltip:Show();
+	end
+end
+
+function FriendsFrameAddFriendButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end

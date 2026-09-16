@@ -1,0 +1,11 @@
+## Title: Blizzard Generic Shopping Cart UI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: standard
+## AllowLoad: Game
+## LoadOnDemand: 1
+
+Blizzard_GenericShoppingCartServicesBase.lua
+Blizzard_GenericShoppingCartDataManager.lua
+Blizzard_GenericShoppingCartTemplates.lua
+Blizzard_GenericShoppingCartTemplates.xml

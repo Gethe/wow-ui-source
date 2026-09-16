@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GameTimeFrame" parent="MinimapCluster">
+		<Size x="19" y="18"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.BorderTop" relativePoint="TOPRIGHT" x="1" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!--
+				GameTimeTexture is the old day/night icon and is currently ALWAYS hidden, it is still here in case we want it back at some point
+				-->
+				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
+				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
+					<Size x="28" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
+				<Texture name="GameTimeCalendarInvitesGlow" file="Interface\Calendar\EventNotificationGlow" hidden="true" alphaMode="ADD">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="GameTimeCalendarEventAlarmTexture" file="Interface\Calendar\UI-Calendar-Button-Glow" alphaMode="ADD" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="GameTimeFrame_OnLoad"/>
+			<OnShow>
+				if (Kiosk.IsEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
+			<OnEnter function="GameTimeFrame_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnEvent function="GameTimeFrame_OnEvent"/>
+			<OnUpdate function="GameTimeFrame_OnUpdate"/>
+			<OnClick function="GameTimeFrame_OnClick"/>
+		</Scripts>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<NormalTexture atlas="ui-hud-calendar-1-up"/>
+		<PushedTexture atlas="ui-hud-calendar-1-down"/>
+		<HighlightTexture atlas="ui-hud-calendar-1-mouseover"/>
+	</Button>
+</Ui>

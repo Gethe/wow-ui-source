@@ -1,0 +1,5 @@
+## Title: Blizzard Auth Challenge UI
+## RequiredDep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
+## AllowLoad: Both
+Blizzard_AuthChallengeUI.xml

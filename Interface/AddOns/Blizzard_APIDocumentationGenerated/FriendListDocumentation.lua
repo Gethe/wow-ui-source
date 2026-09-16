@@ -1,0 +1,681 @@
+local FriendList =
+{
+	Name = "FriendList",
+	Type = "System",
+	Namespace = "C_FriendList",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "AddFriend",
+			Type = "Function",
+			HasRestrictions = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "AddIgnore",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "added", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AddOrDelIgnore",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "AddOrRemoveFriend",
+			Type = "Function",
+			HasRestrictions = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "DelIgnore",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "removed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DelIgnoreByIndex",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFriendInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "FriendInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFriendInfoByIndex",
+			Type = "Function",
+			MayReturnNothing = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "FriendInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIgnoreName",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNumFriends",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "numFriends", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumIgnores",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "numIgnores", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumOnlineFriends",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "numOnline", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumWhoResults",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "numWhos", Type = "number", Nilable = false },
+				{ Name = "totalNumWhos", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSelectedFriend",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSelectedIgnore",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "GetWhoInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "WhoInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFriend",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFriend", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsIgnored",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsIgnoredByGuid",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLegacyFriendSystemEnabled",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "isLegacyFriendSystemEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsOnIgnoredList",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFriend",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "removed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFriendByIndex",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "SendWho",
+			Type = "Function",
+			HasRestrictions = true,
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "filter", Type = "cstring", Nilable = false },
+				{ Name = "origin", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "SetFriendNotes",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "found", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFriendNotesByIndex",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSelectedFriend",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSelectedIgnore",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "SetWhoToUi",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "whoToUi", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowFriends",
+			Type = "Function",
+			RequiresFriendList = true,
+		},
+		{
+			Name = "SortWho",
+			Type = "Function",
+			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "sorting", Type = "cstring", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "BattleNetFriendTagEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "BATTLE_NET_FRIEND_TAG_ENABLED_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BattleNetTitleFriendCustomNameEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "BATTLE_NET_TITLE_FRIEND_CUSTOM_NAME_ENABLED_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BnBlockFailedTooMany",
+			Type = "Event",
+			LiteralName = "BN_BLOCK_FAILED_TOO_MANY",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "blockType", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "BnBlockListUpdated",
+			Type = "Event",
+			LiteralName = "BN_BLOCK_LIST_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BnChatWhisperUndeliverable",
+			Type = "Event",
+			LiteralName = "BN_CHAT_WHISPER_UNDELIVERABLE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "senderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BnConnected",
+			Type = "Event",
+			LiteralName = "BN_CONNECTED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "BnCustomMessageChanged",
+			Type = "Event",
+			LiteralName = "BN_CUSTOM_MESSAGE_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "id", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "BnCustomMessageLoaded",
+			Type = "Event",
+			LiteralName = "BN_CUSTOM_MESSAGE_LOADED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BnDisconnected",
+			Type = "Event",
+			LiteralName = "BN_DISCONNECTED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "BnFriendAccountOffline",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_ACCOUNT_OFFLINE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "BnFriendAccountOnline",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_ACCOUNT_ONLINE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "BnFriendInfoChanged",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_INFO_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "friendIndex", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "BnFriendInviteAdded",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_INVITE_ADDED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "accountID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BnFriendInviteListInitialized",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_INVITE_LIST_INITIALIZED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "listSize", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BnFriendInviteRemoved",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_INVITE_REMOVED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BnFriendListSizeChanged",
+			Type = "Event",
+			LiteralName = "BN_FRIEND_LIST_SIZE_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "accountID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "BnInfoChanged",
+			Type = "Event",
+			LiteralName = "BN_INFO_CHANGED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BnRequestFofSucceeded",
+			Type = "Event",
+			LiteralName = "BN_REQUEST_FOF_SUCCEEDED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ConfirmBattleNetFriendInviteShow",
+			Type = "Event",
+			LiteralName = "CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "FriendlistUpdate",
+			Type = "Event",
+			LiteralName = "FRIENDLIST_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "IgnorelistUpdate",
+			Type = "Event",
+			LiteralName = "IGNORELIST_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "LegacyFriendSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "LEGACY_FRIEND_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "MutelistUpdate",
+			Type = "Event",
+			LiteralName = "MUTELIST_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "NewMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "NEW_MATCHMAKING_PARTY_INVITE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "RejectedMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "REJECTED_MATCHMAKING_PARTY_INVITE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SocialUIFriendsListSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "SOCIAL_UI_FRIENDS_LIST_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "WhoListUpdate",
+			Type = "Event",
+			LiteralName = "WHO_LIST_UPDATE",
+			SynchronousEvent = true,
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "FriendInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "connected", Type = "bool", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "className", Type = "string", Nilable = true },
+				{ Name = "area", Type = "string", Nilable = true },
+				{ Name = "notes", Type = "string", Nilable = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "dnd", Type = "bool", Nilable = false },
+				{ Name = "afk", Type = "bool", Nilable = false },
+				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
+			},
+		},
+		{
+			Name = "WhoInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "fullName", Type = "string", Nilable = false },
+				{ Name = "fullGuildName", Type = "string", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "raceStr", Type = "string", Nilable = false },
+				{ Name = "classStr", Type = "string", Nilable = false },
+				{ Name = "area", Type = "string", Nilable = false },
+				{ Name = "filename", Type = "string", Nilable = true },
+				{ Name = "gender", Type = "number", Nilable = false },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
+			},
+		},
+	},
+
+	Predicates =
+	{
+		{
+			Name = "RequiresFriendList",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
+};
+
+APIDocumentation:AddDocumentationTable(FriendList);

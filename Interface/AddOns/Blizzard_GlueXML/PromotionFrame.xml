@@ -1,0 +1,107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PromotionFrame" setAllPoints="true" toplevel="true" enableKeyboard="true" enableMouse="true" parent="GlueParent" frameStrata="DIALOG" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Artwork" setAllPoints="true">
+					<Size x="1024" y="512"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Logo">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="TOP" x="0" y="-58"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="UpgradeButton">
+				<Size x="256" y="64"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMLEFT" x="350" y="95"/>
+				</Anchors>
+				<NormalTexture>
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture>
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-1"/>
+					</Anchors>
+				</PushedTexture>
+				<Scripts>
+					<OnClick>
+						PromotionFrame_LaunchUpgradeURL();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="PlayButton">
+				<Size x="256" y="64"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMRIGHT" x="-320" y="95"/>
+				</Anchors>
+				<NormalTexture>
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture>
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-1"/>
+					</Anchors>
+				</PushedTexture>
+				<Scripts>
+					<OnClick>
+						PromotionFrame_Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PromotionFrame_OnLoad"/>
+			<OnEvent function="PromotionFrame_OnEvent"/>
+			<OnKeyDown>
+				local key = key;--Used to catch key input
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+	<Frame name="PromotionAwaitingFrame" setAllPoints="true" toplevel="true" enableKeyboard="true" enableMouse="true" parent="GlueParent" frameStrata="DIALOG" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow function="PromotionAwaitingFrame_OnShow"/>
+			<OnUpdate function="PromotionAwaitingFrame_OnUpdate"/>
+			<OnKeyDown>
+				local key = key;--Used to catch key input
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,5 @@
+## Title: Blizzard WoW Token UI
+## RequiredDep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
+Blizzard_WowTokenUI.xml
+Blizzard_WowTokenUIInsecure.xml

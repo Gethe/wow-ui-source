@@ -1,0 +1,33 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" parent="GlueParent" enableKeyboard="true" frameLevel="100">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- This quad is needed to prevent stutter in movie playback in the Mac version.  -->
+				<!-- Please do not delete it from here.  It will be hidden on Windows in MovieFrame_OnLoad(). -->
+				<Texture name="MovieFrameSubtitleArea">
+					<Size x="800" y="138"/>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-630"/>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="MovieFrame_OnLoad"/>
+			<OnShow function="MovieFrame_OnShow"/>
+			<OnHide function="MovieFrame_OnHide"/>
+			<OnUpdate function="MovieFrame_OnUpdate"/>
+			<OnKeyUp function="MovieFrame_OnKeyUp"/>
+			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
+		</Scripts>
+	</MovieFrame>
+</Ui>

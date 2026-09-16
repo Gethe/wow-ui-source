@@ -1,0 +1,258 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="WorldMapBountyBoardTabTemplate" virtual="true">
+		<Size x="44" y="44" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon" mask="Interface\CharacterFrame\TempPortraitAlphaMask">
+					<Size x="30" y="30" />
+					<Anchors>
+						<Anchor point="CENTER" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EmptyIcon" atlas="worldquest-tracker-bg-noemissary" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CheckMark" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Texture" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonDown");
+			</OnLoad>
+			<OnEnter>
+				self:GetParent():OnTabEnter(self);
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnTabLeave(self);
+			</OnLeave>
+			<OnClick>
+				self:GetParent():OnTabClick(self);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="WorldMapBountyBoardObjectiveTemplate" virtual="true">
+		<Size x="35" y="35" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="MarkerTexture">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="CheckMarkTexture" atlas="worldquest-tracker-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="WorldMapBountyBoardTemplate" frameStrata="HIGH" mixin="WorldMapBountyBoardMixin" enableMouse="true" virtual="true">
+		<Size x="244" y="103" />
+		<HitRectInsets left="35" right="35" top="40" bottom="5" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TrackerBackground" atlas="worldquest-tracker" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="DesaturatedTrackerBackground" atlas="worldquest-tracker" useAtlasSize="true" desaturated="true" alpha=".7">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BountyName" inherits="Game13Font_o1" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="11" type="number"/>
+					</KeyValues>
+					<Size x="170" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" y="17" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Locked" atlas="worldquest-tracker-lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="-25" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnEvent method="OnEvent" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Frame>
+
+	<Button name="WorldMapActivityTrackerTemplate" frameStrata="HIGH" mixin="WorldMapActivityTrackerMixin" enableMouse="true" virtual="true">
+		<Size x="82" y="82" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="generic-majorfactions-emissary-empty" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+					<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
+					<Size x="72" y="72"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Background"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="73" y="73"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
+					<Size x="73" y="73"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" atlas="map_faction_ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="BountyDropdown" hidden="true">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="BOTTOMLEFT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOPRIGHT"/>
+				</KeyValues>
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-26" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<HighlightTexture parentKey="Highlight" atlas="map_faction_ring" useAtlasSize="true" alphaMode="ADD" alpha="0.5">
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="WorldMapActionButtonTemplate" frameStrata="HIGH" secureMixin="WorldMapActionButtonMixin" virtual="true">
+		<Size x="101" y="86" />
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="ActionFrameTexture" atlas="worldquest-followerabilityframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SpellButton" useParentLevel="true" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
+				<Size x="55" y="55" />
+				<Anchors>
+					<Anchor point="CENTER" y="8" />
+				</Anchors>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnClick();
+					</OnClick>
+
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture />
+				<PushedTexture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1" />
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1" />
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-2" />
+						<Anchor point="BOTTOMRIGHT" x="0" y="-2" />
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+</Ui>

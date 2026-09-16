@@ -1,0 +1,355 @@
+
+local ROOM_PIN_FRAME_LEVEL = 500;
+local DOOR_PIN_FRAME_LEVEL = 1000;
+
+local HouseEditorLayoutModeLifetimeEvents =
+{
+	"HOUSING_LAYOUT_PIN_FRAME_ADDED",
+	"HOUSING_LAYOUT_PIN_FRAME_RELEASED",
+	"HOUSING_LAYOUT_PIN_FRAMES_RELEASED",
+};
+
+local HouseEditorLayoutModeShownEvents =
+{
+	"HOUSING_LAYOUT_DOOR_SELECTION_CHANGED",
+	"HOUSING_LAYOUT_ROOM_SELECTION_CHANGED",
+	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
+	"HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
+	"GLOBAL_MOUSE_UP",
+	"GLOBAL_MOUSE_DOWN",
+	"UPDATE_BINDINGS",
+	"HOUSING_LAYOUT_ROOM_RECEIVED",
+	"HOUSING_LAYOUT_ROOM_MOVED",
+	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
+	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
+	"HOUSING_LAYOUT_ROOM_SNAPPED",
+	"HOUSING_LAYOUT_ROOM_MOVE_INVALID",
+};
+
+HouseEditorLayoutModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
+
+function HouseEditorLayoutModeMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, HouseEditorLayoutModeLifetimeEvents);
+
+	self.roomPinPool = CreateFramePool("BUTTON", self, "HousingLayoutRoomPinTemplate", HousingLayoutBasePinMixin.Reset);
+	self.doorPinPool = CreateFramePool("BUTTON", self, "HousingLayoutDoorPinTemplate", HousingLayoutBasePinMixin.Reset);
+
+	self.LayoutDragUnderlay:SetScript("OnMouseUp", function()
+		C_HousingLayout.StopDrag()
+	end);
+
+	self.LayoutDragUnderlay:SetScript("OnMouseDown", function()
+		C_HousingLayout.StartDrag()
+	end);
+end
+
+function HouseEditorLayoutModeMixin:OnEvent(event, ...)
+	if event == "HOUSING_LAYOUT_PIN_FRAME_ADDED" then
+		local pinFrame = ...;
+		self:AddPin(pinFrame);
+	elseif event == "HOUSING_LAYOUT_PIN_FRAME_RELEASED" then
+		local pinFrame = ...;
+		self:ReleasePin(pinFrame);
+	elseif event == "HOUSING_LAYOUT_PIN_FRAMES_RELEASED" then
+		self:ReleasePins();
+	elseif event == "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED" then
+		local hasSelection = ...;
+		if hasSelection then
+			self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
+		end
+		self:UpdateShownInstructions();
+	elseif event == "GLOBAL_MOUSE_UP" or event == "GLOBAL_MOUSE_DOWN" then
+		--should be able to drag rooms between floors
+		if self.FloorSelect:IsMouseOver() then
+			return;
+		end
+
+		local button = ...;
+		local isDragging, isAccessible = C_HousingLayout.IsDraggingRoom();
+		if not isDragging then
+			return;
+		end
+
+		if event == "GLOBAL_MOUSE_UP" and not isAccessible and button == "LeftButton" then
+			C_HousingLayout.StopDraggingRoom();
+		elseif event == "GLOBAL_MOUSE_DOWN" and isAccessible and button == "LeftButton" then
+			C_HousingLayout.StopDraggingRoom();
+		end
+	elseif event == "UPDATE_BINDINGS" then
+		self:UpdateKeybinds();
+	elseif event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
+		local anySelected, roomID, blueprintCode = ...;
+		if anySelected then
+			-- On selecting a floorplan, ensure the Storage UI is open to the proper tab
+			local tabEnum = blueprintCode and HousingFramesUtil.HouseChestTabs.Blueprints or HousingFramesUtil.HouseChestTabs.Storage;
+			self:GetParent():TryShowHouseStorageTab(tabEnum);
+		end
+		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" then
+		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+		self:UpdateShownInstructions();
+		self:UpdateFloorInstructions();
+	elseif event == "HOUSING_LAYOUT_ROOM_RECEIVED" then
+		local playAddedSound = ...;
+		-- Check that we haven't temporarily paused room add sounds, or that we're past the pause end time
+		if playAddedSound and ((not self.roomAddSoundPauseEnd) or (GetTime() > self.roomAddSoundPauseEnd)) then
+			self.roomAddSoundPauseEnd = nil;
+			PlaySound(SOUNDKIT.HOUSING_ROOM_ADDED);
+		end
+	elseif event == "HOUSING_LAYOUT_ROOM_MOVED" then
+		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVED);
+	elseif event == "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED" then
+		local lowestFloor, highestFloor = ...;
+		if (self.previousHighestFloor and self.previousHighestFloor < highestFloor)
+			or (self.previousLowestFloor and self.previousLowestFloor > lowestFloor) then
+			PlaySound(SOUNDKIT.HOUSING_FLOOR_ADDED);
+			self:UpdateFloorInstructions();
+		end
+		self.previousHighestFloor = highestFloor;
+		self.previousLowestFloor = lowestFloor;
+	elseif event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" then
+		self:UpdateFloorInstructions();
+	elseif event == "HOUSING_LAYOUT_ROOM_SNAPPED" then
+		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVE_SNAP);
+	elseif event == "HOUSING_LAYOUT_ROOM_MOVE_INVALID" then
+		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
+	end
+end
+
+function HouseEditorLayoutModeMixin:OnShow()
+	self.previousLowestFloor = C_HousingLayout.GetLowestOccupiedFloorIndex();
+	self.previousHighestFloor = C_HousingLayout.GetHighestOccupiedFloorIndex();
+	self:UpdateShownInstructions();
+	self:UpdateFloorInstructions();
+	self:UpdateKeybinds();
+	FrameUtil.RegisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
+	self:GetParent():ShowHouseStorage();
+	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorLayoutMode);
+	PlaySound(SOUNDKIT.HOUSING_ENTER_LAYOUT_MODE);
+
+	if C_HousingLayout.HasSelectedBlueprintFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Blueprints);
+	elseif C_HousingLayout.HasSelectedDoor() or C_HousingLayout.HasSelectedFloorplan() then
+		self:GetParent():TryShowHouseStorageTab(HousingFramesUtil.HouseChestTabs.Storage);
+	end
+end
+
+function HouseEditorLayoutModeMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
+	self.roomAddSoundPauseEnd = nil;
+
+	local referenceKey = self;
+	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+		StaticPopup_Hide("GENERIC_CONFIRMATION");
+	end
+
+	C_HousingLayout.CancelActiveLayoutEditing();
+	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorLayoutMode);
+	PlaySound(SOUNDKIT.HOUSING_EXIT_LAYOUT_MODE);
+end
+
+function HouseEditorLayoutModeMixin:TryHandleEscape()
+	if C_HousingLayout.HasAnySelections() then
+		C_HousingLayout.CancelActiveLayoutEditing();
+		PlaySound(SOUNDKIT.HOUSING_CANCEL_ROOM_SELECTION);
+		return true;
+	end
+	return false;
+end
+
+function HouseEditorLayoutModeMixin:StartRoomAddSoundPause()
+	-- Refrain from playing any room add sounds for the next 30 seconds
+	-- Useful in cases like Blueprint importing where room add sounds would overlap with any Blueprint import sounds
+	self.roomAddSoundPauseEnd = GetTime() + 30;
+end
+
+function HouseEditorLayoutModeMixin:UpdateShownInstructions()
+	local isAnythingSelected = C_HousingLayout.HasAnySelections();
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isAnythingSelected);
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, isAnythingSelected);
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorLayoutModeMixin:SetInstructionShown(instructionSet, shouldShow)
+	for _, instruction in ipairs(instructionSet) do
+		instruction:SetShown(shouldShow);
+	end
+end
+
+function HouseEditorLayoutModeMixin:UpdateFloorInstructions()
+	local currentFloor = C_HousingLayout.GetViewedFloor();
+	local canGoUp = C_HousingLayout.CanSetViewedFloor(currentFloor + 1);
+	local canGoDown = C_HousingLayout.CanSetViewedFloor(currentFloor - 1);
+
+	if (not canGoUp) and (not canGoDown) then
+		-- If can't go up OR down, then there's likely only one floor, so don't show these at all
+		self.Instructions.FloorUpInstruction:Hide();
+		self.Instructions.FloorDownInstruction:Hide();
+	else
+		self.Instructions.FloorUpInstruction:SetEnabled(canGoUp);
+		self.Instructions.FloorUpInstruction:Show();
+		self.Instructions.FloorDownInstruction:SetEnabled(canGoDown);
+		self.Instructions.FloorDownInstruction:Show();
+	end
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorLayoutModeMixin:UpdateKeybinds()
+	self.Instructions:UpdateAllControls();
+end
+
+function HouseEditorLayoutModeMixin:AddPin(pinFrame)
+	pinFrame:SetParent(self);
+
+	local pinPool = nil;
+	local pinType = pinFrame:GetPinType();
+
+	if pinType == Enum.HousingLayoutPinType.Room then
+		pinPool = self.roomPinPool;
+		-- Must set FrameStratas here as they get reset on reparenting in & out of Pools
+		pinFrame:SetFrameLevel(ROOM_PIN_FRAME_LEVEL);
+	elseif pinType == Enum.HousingLayoutPinType.Door then
+		pinPool = self.doorPinPool;
+		-- Set Door pins higher than Rooms so they aren't potentially blocked by lengthy room names
+		pinFrame:SetFrameLevel(DOOR_PIN_FRAME_LEVEL);
+	end
+
+	if pinPool then
+		local newPin = pinPool:Acquire();
+		newPin:SetPin(pinFrame);
+		pinFrame.boundPin = newPin;
+	end
+end
+
+function HouseEditorLayoutModeMixin:ReleasePin(pinFrame)
+	local pinPool = nil;
+
+	local pinType = pinFrame:GetPinType();
+	if pinType == Enum.HousingLayoutPinType.Room then
+		pinPool = self.roomPinPool;
+	elseif pinType == Enum.HousingLayoutPinType.Door then
+		pinPool = self.doorPinPool;
+	end
+		
+	pinPool:Release(pinFrame.boundPin);
+	pinFrame.boundPin = nil;
+end
+
+function HouseEditorLayoutModeMixin:ReleasePins()
+	self.roomPinPool:ReleaseAll();
+	self.doorPinPool:ReleaseAll();
+end
+
+HouseEditorLayoutFloorLineMixin = {};
+
+function HouseEditorLayoutFloorLineMixin:OnEnter()
+	self.FloorText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
+end
+
+function HouseEditorLayoutFloorLineMixin:OnLeave()
+	local isActive = self.floorIndex == C_HousingLayout.GetViewedFloor();
+	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
+	self.FloorText:SetTextColor(color:GetRGBA());
+end
+
+function HouseEditorLayoutFloorLineMixin:OnClick()
+	local soundKit = (self.floorIndex < C_HousingLayout.GetViewedFloor()) and SOUNDKIT.HOUSING_VIEW_FLOOR_DOWN or SOUNDKIT.HOUSING_VIEW_FLOOR_UP;
+	PlaySound(soundKit);
+	C_HousingLayout.SetViewedFloor(self.floorIndex);
+end
+
+function HouseEditorLayoutFloorLineMixin:Init(floorIndex)
+	self.floorIndex = floorIndex;
+	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(floorIndex + 1));
+
+	local isTopFloor = floorIndex == C_HousingLayout.GetHighestOccupiedFloorIndex();
+	self.TopDivider:SetShown(isTopFloor);
+
+	local isBaseRoomFloor = floorIndex == C_HousingLayout.GetBaseRoomFloor();
+	self.DoorIcon:SetShown(isBaseRoomFloor);
+
+	local isActive = self:IsActive();
+	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
+	self.FloorText:SetTextColor(color:GetRGBA());
+	self.DoorIcon:SetAtlas(isActive and "housing-floor-door" or "housing-floor-door-inactive");
+	self.BottomDivider:SetAtlas(isActive and "housing-floor-list-divider-active" or "housing-floor-list-divider-default");
+end
+
+function HouseEditorLayoutFloorLineMixin:IsActive()
+	return self.floorIndex == C_HousingLayout.GetViewedFloor();
+end
+
+local HouseEditorLayoutFloorSelectShownEvents =
+{
+	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
+	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
+	"HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
+};
+
+HouseEditorLayoutFloorSelectMixin = {};
+
+function HouseEditorLayoutFloorSelectMixin:OnLoad()
+	self.UpButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_VIEW_FLOOR_UP);
+		C_HousingLayout.SetViewedFloor(self.currentFloor + 1);
+	end);
+	self.DownButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_VIEW_FLOOR_DOWN);
+		C_HousingLayout.SetViewedFloor(self.currentFloor - 1);
+	end);
+
+	self:InitScrollBox();
+end
+
+function HouseEditorLayoutFloorSelectMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, HouseEditorLayoutFloorSelectShownEvents);
+	self:UpdateFloorInfo();
+end
+
+function HouseEditorLayoutFloorSelectMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, HouseEditorLayoutFloorSelectShownEvents);
+end
+
+function HouseEditorLayoutFloorSelectMixin:OnEvent(event, ...)
+	if event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" or event == "HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+		self:UpdateFloorInfo();
+	end
+end
+
+function HouseEditorLayoutFloorSelectMixin:InitScrollBox()
+	-- Scroll wheel should move up or down one floor at a time
+	self.ScrollBox:SetScript("OnMouseWheel", function(_, delta)
+		if delta > 0 then
+			self.UpButton:Click();
+		else
+			self.DownButton:Click();
+		end
+	end);
+
+	local top, bottom, left, right, horizontalSpacing, verticalSpacing = 60, 60, 0, 0, 0, 0;
+	local view = CreateScrollBoxListSequenceView(top, bottom, left, right, horizontalSpacing, verticalSpacing);
+	self.ScrollBox:SetEdgeFadeLength(60);
+	local function Initializer(button, elementData)
+		button:Init(elementData);
+	end
+
+	view:SetElementInitializer("HouseEditorLayoutFloorLineTemplate", Initializer);
+	self.ScrollBox:Init(view);
+end
+
+function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
+	self.currentFloor = C_HousingLayout.GetViewedFloor();
+	self.UpButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor + 1));
+	self.DownButton:SetEnabled(C_HousingLayout.CanSetViewedFloor(self.currentFloor - 1));
+
+	local dataProvider = CreateDataProvider();
+
+	-- Floor indices are 0-based.
+	for floorIndex = C_HousingLayout.GetHighestOccupiedFloorIndex(), C_HousingLayout.GetLowestOccupiedFloorIndex(), -1 do
+		dataProvider:Insert(floorIndex);
+	end
+
+	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:ScrollToElementData(self.currentFloor);
+end

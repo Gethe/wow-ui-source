@@ -1,0 +1,10 @@
+## Title: Blizzard Remix Artifact Tutorial UI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## DefaultState: enabled
+## AllowLoadGameType: standard
+## AllowLoad: Game
+
+Blizzard_RemixArtifactTutorialUI_Bootstrap.lua [Bootstrap]
+Blizzard_RemixArtifactTutorialUI.lua
+Blizzard_RemixArtifactTutorialUI.xml

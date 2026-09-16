@@ -1,0 +1,14 @@
+## Title: Blizzard_MoneyFrame
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: Both
+## AllowLoadGameType: mainline
+Shared\MoneyFrame.lua
+Shared\MoneyFrame.xml
+Mainline\MoneyFrame.lua
+Mainline\MoneyFrame.xml
+Shared\MoneyInputFrame.lua
+Shared\MoneyInputFrame.xml
+Mainline\MoneyInputFrame.lua
+Mainline\MoneyInputFrame.xml
+Mainline\Localization.lua

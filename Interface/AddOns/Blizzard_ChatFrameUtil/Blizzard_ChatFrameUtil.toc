@@ -1,0 +1,3 @@
+## Title: Blizzard Chat Frame Util
+## LoadOnDemand: 0
+Blizzard_ChatFrameUtil.lua

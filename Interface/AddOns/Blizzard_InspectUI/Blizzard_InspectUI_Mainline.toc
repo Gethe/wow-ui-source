@@ -1,0 +1,13 @@
+## Title: Blizzard Inspect UI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\Blizzard_InspectUI_Bootstrap.lua [Bootstrap]
+Mainline\Blizzard_InspectUI.xml
+Mainline\InspectPaperDollFrame.lua
+Mainline\InspectPaperDollFrame.xml
+Mainline\InspectPVPFrame.lua
+Mainline\InspectPVPFrame.xml
+Mainline\InspectGuildFrame.lua
+Mainline\InspectGuildFrame.xml
+Mainline\Localization.lua

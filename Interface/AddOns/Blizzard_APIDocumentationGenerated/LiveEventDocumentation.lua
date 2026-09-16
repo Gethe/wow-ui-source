@@ -1,0 +1,47 @@
+local LiveEvent =
+{
+	Name = "LiveEvent",
+	Type = "System",
+	Namespace = "C_LiveEvent",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "OnLiveEventBannerClicked",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "OnLiveEventPopupClicked",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(LiveEvent);

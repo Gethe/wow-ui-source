@@ -1,0 +1,1023 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_AzeriteEssenceUI.lua"/>
+
+	<Frame name="AzeriteMilestoneBaseTemplate" virtual="true" mixin="AzeriteMilestoneBaseMixin">
+		<KeyValues>
+			<KeyValue key="isDraggable" type="boolean" value="false"/>
+			<KeyValue key="swirlScale" type="number" value="1"/>
+			<KeyValue key="isMajorSlot" type="boolean" value="false"/>
+		</KeyValues>
+		<Frames>
+			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
+				<Size x="700" y="700" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="SwirlContainer" inherits="PowerSwirlAnimationTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RevealAnim">
+				<Alpha parentKey="Start" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha duration="0.75" order="2" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AzeriteMilestoneMinorSlotTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneSlotMixin" virtual="true">
+		<Size x="66" y="66"/>
+		<Frames>
+			<Frame parentKey="UnlockedState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon">
+							<Size x="58" y="58"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="EmptyIcon" atlas="heartofazeroth-slot-minor-background" setAllPoints="true"/>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlassCover" atlas="heartofazeroth-slot-minor-glass" setAllPoints="true" alphaMode="ADD"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Ring" atlas="heartofazeroth-slot-minor-ring" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="HighlightRing" atlas="heartofazeroth-slot-minor-ring" alpha="0.2" setAllPoints="true" hidden="true" alphaMode="ADD"/>
+						<Texture parentKey="EmptyGlow" atlas="heartofazeroth-slot-yellowglow" alphaMode="ADD">
+							<Size x="76" y="76"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Alpha fromAlpha="0" toAlpha="0.8" duration="0.8" smoothing="IN_OUT" order="1"/>
+									<Alpha fromAlpha="0.8" toAlpha="0" duration="0.8" smoothing="IN_OUT" order="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ModelScene parentKey="PurpleGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="3" y="11"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+			</Frame>
+			<Frame parentKey="AvailableState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Background" atlas="heartofazeroth-slot-minor-unactivated" alphaMode="ADD">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Rune" atlas="heartofazeroth-slot-minor-unactivated-rune" alphaMode="ADD">
+							<Size x="46" y="49"/>
+							<Anchors>
+								<Anchor point="CENTER" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Rune" smoothing="IN_OUT" duration="0.8" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Rune" smoothing="IN_OUT" duration="0.8" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ForgeGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Rune" smoothing="IN_OUT" duration="0.6" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Rune" smoothing="IN_OUT" duration="0.6" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="LockedState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="UnlockLevelText" inherits="Game16Font" outline="NORMAL">
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+							<Color r="0.051" g="0.251" b="0.373"/>
+						</FontString>
+						<Texture parentKey="Rune" alphaMode="ADD">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AzeriteMilestoneRankedTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneRankedMixin" virtual="true">
+		<Size x="66" y="66"/>
+		<Frames>
+			<ModelScene parentKey="EffectsModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="800" y="800"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="AvailableState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="54" y="54"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="DiamondMask" file="Interface\Common\common-mask-diamond" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="heartofazeroth-infinite">
+							<Size x="72" y="72"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="RankBorder" atlas="heartofazeroth-infinite-numberbox" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<FontString parentKey="RankText" inherits="ChatFontNormal">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RankBorder" x="1" y="-1"/>
+							</Anchors>
+							<Color color="GREEN_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="heartofazeroth-node-glow" alphaMode="ADD" alpha="0">
+							<Size x="98" y="94"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ForgeGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="1" fromAlpha="0.2" toAlpha="1"/>
+						<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="2" fromAlpha="1" toAlpha="0.2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="LockedState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="UnlockLevelText" inherits="Game16Font" outline="NORMAL">
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+							<Color r="0.2" g="0.1647" b="0"/>
+						</FontString>
+						<Texture parentKey="Rune" alphaMode="ADD" atlas="heartofazeroth-infinite-unlearned">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AzeriteMilestoneMajorSlotTemplate" parentArray="Slots" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneSlotMixin" virtual="true">
+		<Size x="110" y="82"/>
+		<KeyValues>
+			<KeyValue key="isDraggable" type="boolean" value="true"/>
+			<KeyValue key="isMajorSlot" type="boolean" value="true"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="UnlockedState" parentArray="StateFrames" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="GlowRings" atlas="heartofazeroth-slot-major-glowrings" alphaMode="ADD" alpha="0.6">
+							<Size x="107" y="107"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Glow" atlas="heartofazeroth-slot-major-glow" useAtlasSize="true" alphaMode="ADD" alpha="0.8">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Shadow" atlas="heartofazeroth-slot-major-shadow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="EmptyIcon" atlas="heartofazeroth-slot-major-background" setAllPoints="true"/>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlassCover" atlas="heartofazeroth-slot-major-glass" setAllPoints="true" alphaMode="ADD"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="DragHighlight" atlas="common-roundhighlight" alphaMode="ADD" hidden="true">
+							<Size x="59" y="59"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Ring" atlas="heartofazeroth-slot-major-ring" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="HighlightRing" atlas="heartofazeroth-slot-major-ring" setAllPoints="true" hidden="true" alpha="0.2" alphaMode="ADD"/>
+						<Texture parentKey="EmptyGlow" atlas="heartofazeroth-slot-yellowglow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Alpha fromAlpha="0" toAlpha="0.8" duration="0.8" smoothing="IN_OUT" order="1"/>
+									<Alpha fromAlpha="0.8" toAlpha="0" duration="0.8" smoothing="IN_OUT" order="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ModelScene parentKey="BlueGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="TOP" x="3" y="-5"/>
+						</Anchors>
+					</ModelScene>
+					<ModelScene parentKey="PurpleGemModelScene" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate" hidden="true" alpha="0.75">
+						<Size x="400" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="3" y="11"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AzeriteMilestoneStaminaTemplate" inherits="AzeriteMilestoneBaseTemplate" mixin="AzeriteMilestoneStaminaMixin" virtual="true">
+		<Size x="19" y="24"/>
+		<KeyValues>
+			<KeyValue key="swirlScale" type="number" value="0.5"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow" atlas="heartofazeroth-node-shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="heartofazeroth-node-on" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Glow" atlas="heartofazeroth-node-glow" alphaMode="ADD" alpha="0">
+					<Size x="49" y="47"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="1" fromAlpha="0.2" toAlpha="1"/>
+				<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.8" order="2" fromAlpha="1" toAlpha="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ForgeGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="1" fromAlpha="0.2" toAlpha="1"/>
+				<Alpha childKey="Glow" smoothing="IN_OUT" duration="0.6" order="2" fromAlpha="1" toAlpha="0.2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="AzeriteEssenceDependencyLineTemplate" frameLevel="1200" parentArray="DependencyLines" mixin="AzeriteEssenceDependencyLineMixin" inherits="PowerDependencyLineTemplate" virtual="true"/>
+
+	<Button name="AzeriteEssenceButtonTemplate" virtual="true" mixin="AzeriteEssenceButtonMixin" registerForClicks="LeftButtonUp, RightButtonUp">
+		<Size x="178" y="41"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="PendingGlow" atlas="heartofazeroth-list-item-selected" alphaMode="ADD" hidden="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="2">
+					<Anchors>
+						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconCover">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.4"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Glow" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
+					<Size x="206" y="68"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+							<Alpha fromAlpha="1" toAlpha="0" duration="2.1" order="1" startDelay="0.869" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Glow2" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
+					<Size x="206" y="68"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+							<Alpha fromAlpha="1" toAlpha="0" duration="2.1" order="1" startDelay="0.869" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Glow3" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
+					<Size x="206" y="68"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+							<Alpha fromAlpha=".5" toAlpha="0" duration="2.1" order="1" startDelay="0.869" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ActivatedMarkerMain" parentArray="ActivatedMarkers">
+				<Size x="14" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="heartofazeroth-list-selected-major" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ActivatedMarkerPassive" parentArray="ActivatedMarkers">
+				<Size x="12" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="heartofazeroth-list-selected-minor" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<NormalTexture parentKey="Background" atlas="heartofazeroth-list-item"/>
+		<HighlightTexture atlas="heartofazeroth-list-item-highlight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="AzeriteEssenceHeaderButtonTemplate" mixin="AzeriteEssenceHeaderButtonMixin" virtual="true">
+		<Size x="180" y="22"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Middle" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="0" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Left" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="76" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="76" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT" x="20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ExpandedIcon" inherits="Char-Stat-Minus">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CollapsedIcon" inherits="Char-Stat-Plus">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" text="OTHER_ROLES">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpandedIcon" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.Middle:SetPoint("LEFT", 21, -1);
+				self.Middle:SetPoint("RIGHT", -19, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Middle:SetPoint("LEFT", 20, 0);
+				self.Middle:SetPoint("RIGHT", -20, 0);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	
+	<Frame name="AzeriteEssenceStarsAnimationFrameTemplate" parentArray="StarsAnimations" useParentLevel="true" virtual="true">
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="Stars" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-stars" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Alpha parentKey="Start" childKey="Stars" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
+				<Rotation parentKey="Rotation" childKey="Stars" smoothing="NONE" duration="0" order="1" degrees="0"/>
+				<Scale childKey="Stars" smoothing="NONE" duration="9" order="2" fromScaleX=".5" fromScaleY=".5" toScaleX=".83" toScaleY=".83"/>
+				<Alpha childKey="Stars" startDelay="0" smoothing="OUT" duration="3" order="2" fromAlpha="0" toAlpha=".15"/>
+				<Alpha childKey="Stars" startDelay="3" smoothing="OUT" duration="6" order="2" fromAlpha=".15" toAlpha="0"/>
+				<Scripts>
+					<OnLoop>
+						self.Start:SetStartDelay(0);
+					</OnLoop>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self.Anim.Start:SetStartDelay(self.startDelay);
+				self.Anim.Rotation:SetDegrees(self.baseRotation);
+				self.Anim:Play();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AzeriteEssenceUI" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" mixin="AzeriteEssenceUIMixin">
+		<Size x="707" y="510"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="PowerLevelBadgeFrame" frameStrata="HIGH">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="25" y="-26"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="SystemFont_Shadow_Med2">
+							<Anchors>
+								<Anchor point="CENTER" x="1" y="-1"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BackgroundBlack" alpha="0.7">
+							<Size x="22" y="22"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnterPowerLevelBadgeFrame();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeavePowerLevelBadgeFrame();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="485"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-24"/>
+					<Anchor point="BOTTOMLEFT" x="4" y="6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="216"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="-24"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="heartofazeroth-list-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ModelScene parentKey="ItemModelScene" inherits="NonInteractableModelSceneMixinTemplate" useParentLevel="true" drawLayer="BORDER">
+				<Size x="473" y="469"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="6" y="-6"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="AlphaAnim" looping="BOUNCE">
+						<Alpha parentKey="AlphaAnim" fromAlpha="0.45" toAlpha="0.55" duration="14"/>
+					</AnimationGroup>
+				</Animations>
+			</ModelScene>
+			<Frame parentKey="StarsAnimationFrame1" inherits="AzeriteEssenceStarsAnimationFrameTemplate">
+				<KeyValues>
+					<KeyValue key="startDelay" type="number" value="0"/>
+					<KeyValue key="baseRotation" type="number" value="0"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemModelScene"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="StarsAnimationFrame2" inherits="AzeriteEssenceStarsAnimationFrameTemplate">
+				<KeyValues>
+					<KeyValue key="startDelay" type="number" value="3"/>
+					<KeyValue key="baseRotation" type="number" value="90"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemModelScene"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="StarsAnimationFrame3" inherits="AzeriteEssenceStarsAnimationFrameTemplate">
+				<KeyValues>
+					<KeyValue key="startDelay" type="number" value="6"/>
+					<KeyValue key="baseRotation" type="number" value="180"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemModelScene"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="EssenceList" mixin="AzeriteEssenceListMixin">
+				<Size x="185" y="250"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="2" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-26" y="2"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
+						<Size x="185" y="250"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
+						</Anchors>
+					</EventFrame>
+					<ModelScene parentKey="LearnEssenceModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
+						<Size x="650" y="650"/>
+					</ModelScene>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="DisabledFrame" frameLevel="2000">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EssenceList" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture setAllPoints="true" alpha="0.1">
+							<Color r="0.902" g="0.8" b="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true" alpha="0.2">
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture atlas="Artifacts-Retiring-Gradient" useAtlasSize="true">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString inherits="Fancy22Font" text="UI_AZERITE_ITEM_DISABLED">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="20" y="36"/>
+								<Anchor point="BOTTOMRIGHT" x="-20" y="36"/>
+							</Anchors>
+							<Color r="0.902" g="0.8" b="0.5" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-2">
+				<Texture parentKey="OrbBackground">
+					<Size x="475" y="471"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemModelScene" x="0" y="1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="OrbGlass" atlas="heartofazeroth-orb-glass" alphaMode="ADD" alpha="0.35">
+					<Size x="438" y="438"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="AlphaAnim" looping="BOUNCE">
+							<Alpha parentKey="AlphaAnim" fromAlpha="0.25" toAlpha="0.6" duration="10"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="OrbShadow" atlas="heartofazeroth-orb-shadow">
+					<Size x="438" y="438"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="ActivationGlow" atlas="heartofazeroth-orb-activated" alpha="0" alphaMode="ADD">
+					<Size x="438" y="438"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="OrbRing" atlas="heartofazeroth-orb-ring">
+					<Size x="477" y="473"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbBackground"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AzeriteEssenceLearnAnimFrame" parent="UIParent" frameStrata="HIGH" frameLevel="10000" hidden="true" mixin="AzeriteEssenceLearnAnimFrameMixin">
+		<Size x="100" y="100"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackCover" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+				<Texture parentKey="BlackCover2" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Titans" parentArray="Textures" atlas="heartofazeroth-animation-titans" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="100" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Titans2" parentArray="Textures" atlas="heartofazeroth-animation-titans" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Titans"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Rune" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="isRune" type="boolean" value="true"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneFlipped" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="isRune" type="boolean" value="true"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Rune2"  parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="isRune" type="boolean" value="true"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneFlipped2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="isRune" type="boolean" value="true"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="RingLargeFlip" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune" x="10" y="-18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingLargeFlip2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune" x="10" y="-18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneStatic" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="isRune" type="boolean" value="true"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Sunburst" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-Sunburst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune" x="3" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingLarge" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Rune" x="10" y="-18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingSmall" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RingLarge"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingConstellation" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-ring-constellation" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RingLarge"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OrbActivated" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
+					<Size x="430" y="430"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OrbActivated2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
+					<Size x="430" y="430"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Starfield" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-stars" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Glowies" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Glowies2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LensflareLine" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
+					<Size x="5000" y="387"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LensflareLine3" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
+					<Size x="5000" y="387"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="LensflareLine2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
+					<Size x="5000" y="187"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LensflareLine"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="BlackCover" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="BlackCover2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="Titans" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Alpha childKey="Titans2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Scale childKey="Titans" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="Titans2" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="RuneStatic" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Scale childKey="RingLargeFlip" smoothing="IN" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
+				<Scale childKey="RingLargeFlip2" smoothing="NONE" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
+				<Alpha childKey="RuneFlipped" duration="0.802" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RuneFlipped" smoothing="IN" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="0.01" toScaleY="1.643"/>
+				<Alpha childKey="RuneFlipped2" duration="0.802" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RuneFlipped2" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="0.01" toScaleY="1.643"/>
+				<Scale childKey="RuneStatic" smoothing="IN" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="1.25" toScaleY="1.25"/>
+				<Alpha childKey="RingLargeFlip" smoothing="NONE" duration="0.867" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingLargeFlip2" smoothing="NONE" duration="0.867" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RingConstellation" smoothing="IN" duration="0.869" order="1" fromScaleX="6" fromScaleY="6" toScaleX="1.15" toScaleY="1.15"/>
+				<Scale childKey="RingLarge" smoothing="IN" duration="0.869" order="1" fromScaleX="5.68" fromScaleY="5.68" toScaleX="1.104" toScaleY="1.104"/>
+				<Scale childKey="RingSmall" duration="0.869" order="1" fromScaleX="4.729" fromScaleY="4.729" toScaleX="0.91" toScaleY="0.91"/>
+				<Alpha childKey="RingConstellation" duration="0.874" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Alpha childKey="RingLarge" duration="0.874" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Alpha childKey="Starfield" duration="0.9" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Alpha childKey="RingSmall" duration="0.974" order="1" fromAlpha="0.203" toAlpha="0"/>
+				<Scale childKey="Starfield" smoothing="IN" duration="1.1" order="1" fromScaleX="8" fromScaleY="8" toScaleX="0" toScaleY="0"/>
+				<Alpha childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromScaleX="3.5" fromScaleY="3.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="LensflareLine" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="LensflareLine3" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="LensflareLine2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="Rune" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Rune2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Scale childKey="RingLargeFlip" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
+				<Scale childKey="RingLargeFlip2" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
+				<Alpha childKey="Glowies" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glowies2" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Rune" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
+				<Scale childKey="Rune2" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
+				<Scale childKey="RuneStatic" startDelay="0.802" duration="1.772" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Scale childKey="Glowies" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
+				<Scale childKey="Glowies2" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
+				<Scale childKey="RingSmall" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.94" toScaleY="0.94"/>
+				<Scale childKey="RingLarge" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
+				<Alpha childKey="Sunburst" startDelay="0.869" duration="0.505" order="1" fromAlpha="1" toAlpha="0.6"/>
+				<Scale childKey="RingConstellation" startDelay="0.869" duration="1.005" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
+				<Scale childKey="Sunburst" startDelay="0.869" duration="1.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Scale childKey="Rune" startDelay="0.869" smoothing="NONE" duration="1.705" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Scale childKey="Rune2" startDelay="0.869" smoothing="NONE" duration="1.705" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="OrbActivated" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="OrbActivated2" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LensflareLine" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
+				<Alpha childKey="LensflareLine3" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
+				<Alpha childKey="LensflareLine2" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
+				<Alpha childKey="Rune" startDelay="1.374" duration="1.47" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Rune2" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Alpha childKey="Sunburst" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.6" toAlpha="0"/>
+				<Alpha childKey="RuneStatic" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.5" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

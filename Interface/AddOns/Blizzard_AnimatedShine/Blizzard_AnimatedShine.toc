@@ -1,0 +1,4 @@
+## Title: Blizzard_AnimatedShine
+## Dep: Blizzard_SharedXMLGame
+Shared\AnimatedShine.lua
+Shared\AnimatedShine.xml

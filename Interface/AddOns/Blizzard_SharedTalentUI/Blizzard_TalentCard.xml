@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="TalentCardTemplate" mixin="TalentCardMixin" virtual="true"/>
+
+	<Frame name="TalentDescriptionCardTemplate" mixin="TalentDescriptionCardMixin" inherits="TalentCardTemplate" virtual="true">
+		<Size x="400" y="44"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" setAllPoints="true">
+					<Color r="0.1" g="0.1" b="0.1" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="TalentNameCardTemplate" mixin="TalentNameCardMixin" inherits="TalentCardTemplate" virtual="true">
+		<Size x="200" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" setAllPoints="true">
+					<Color r="0.1" g="0.1" b="0.1" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

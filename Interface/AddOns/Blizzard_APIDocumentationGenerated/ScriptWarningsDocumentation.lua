@@ -1,0 +1,35 @@
+local ScriptWarnings =
+{
+	Name = "ScriptWarnings",
+	Type = "System",
+	Namespace = "C_ScriptWarnings",
+	Environment = "All",
+
+	Functions =
+	{
+	},
+
+	Events =
+	{
+		{
+			Name = "LuaWarning",
+			Type = "Event",
+			LiteralName = "LUA_WARNING",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "warningText", Type = "cstring", Nilable = false },
+			},
+		},
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(ScriptWarnings);

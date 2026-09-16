@@ -1,0 +1,8 @@
+## Title: Blizzard_LFGUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Shared\LFGUtilShared.lua
+Mainline\LFGUtil.lua

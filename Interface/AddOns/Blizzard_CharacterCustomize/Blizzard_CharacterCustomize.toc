@@ -1,0 +1,7 @@
+## Title: Blizzard_CharacterCustomize
+## AllowLoad: Both
+## LoadOnDemand: 1
+## Dependencies: Blizzard_CustomizationUI
+
+Blizzard_CharacterCustomize.lua [AllowLoadGameType mainline]
+Blizzard_CharacterCustomize.xml [AllowLoadGameType mainline]

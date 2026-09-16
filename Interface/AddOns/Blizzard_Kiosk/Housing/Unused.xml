@@ -1,0 +1,60 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!--All unused but retained for ease of reference by the next developer working on Kiosk.-->
+
+	<Frame name="KioskSessionDialogTemplate" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" setAllPoints="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture setAllPoints="true">
+					<Color color="BLACK_FONT_COLOR" a="0.80"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GameKioskSessionFinishedDialog" inherits="KioskSessionDialogTemplate" mixin="GameKioskSessionFinishedDialogMixin">
+		<Frames>
+			<Frame parentKey="Content">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="KioskDialogHeaderFont">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-92.0" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="SubTitle" inherits="SystemFont_WTF2">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Body" inherits="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="18"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="90.0"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-90.0"/>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

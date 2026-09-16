@@ -1,0 +1,9 @@
+## Title: Blizzard Housing Cornerstone
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates, Blizzard_MoneyFrame
+## AllowLoadGameType: standard
+
+Blizzard_HousingCornerstone.lua
+Blizzard_HousingCornerstone.xml
+Blizzard_HousingCornerstoneRegistration.lua

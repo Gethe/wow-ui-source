@@ -1,0 +1,9 @@
+## Title: Blizzard_BNet
+## AllowLoad: both [AllowLoadGameType mainline]
+## AllowLoad: game [AllowLoadGameType classic]
+## Dep: Blizzard_SocialToast
+## Dep: Blizzard_ChatFrame [AllowLoad game]
+## Dep: Blizzard_SocialUIShared [AllowLoadGameType mainline]
+[Family]\BNet.lua
+BNetShared.lua
+BNet.xml

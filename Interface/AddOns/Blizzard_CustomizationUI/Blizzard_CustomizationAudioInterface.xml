@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CustomizationAudioInterfacePlayButtonTemplate" inherits="AlphaHighlightButtonTemplate" mixin="CustomizationAudioInterfacePlayButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="32" y="32"/>
+		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-playbutton"/>
+		<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-playbutton-down"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="CustomizationAudioInterfaceMuteButtonTemplate" inherits="AlphaHighlightButtonTemplate" mixin="CustomizationAudioInterfaceMuteButtonMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="UnmuteGlow" alpha="0" alphaMode="ADD" atlas="charactercreate-customize-button-redglow">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="2" y="2" />
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2" />
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-speakeroffbutton"/>
+		<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-speakeroffbutton-down"/>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+				<Alpha childKey="UnmuteGlow" fromAlpha="0" toAlpha="1" duration="1" smoothing="IN"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="CustomizationAudioInterfaceMuteButton_OnLoad" inherit="append"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CustomizationAudioInterface" hidden="true" mixin="CustomizationAudioInterfaceMixin" virtual="true">
+		<Size x="144" y="38" />
+		<Frames>
+			<Frame parentKey="PlayWaveform" inherits="TooltipBorderBackdropTemplate">
+				<Size x="144" y="28"/>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value=".9" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Frames>
+					<StatusBar parentKey="Waveform" minValue="0" maxValue="1" defaultValue="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="6" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+						</Anchors>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0.0" g="1" b="0.0" />
+					</StatusBar>
+				</Frames>
+			</Frame>
+			<Button parentKey="PlayButton" inherits="CustomizationAudioInterfacePlayButtonTemplate">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PlayWaveform" relativePoint="LEFT" x="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="MuteButton" inherits="CustomizationAudioInterfaceMuteButtonTemplate" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PlayButton" relativePoint="LEFT" x="-5" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

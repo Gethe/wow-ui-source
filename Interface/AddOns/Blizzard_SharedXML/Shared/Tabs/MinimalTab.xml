@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Button name="MinimalTabTemplate" inherits="SelectableButtonTemplate" mixin="MinimalTabMixin" virtual="true">
+		<Size x="100" y="37"/>
+		<KeyValues>
+			<KeyValue key="upLeftTexture" value="Options_Tab_Left" type="string"/>
+			<KeyValue key="upMiddleTexture" value="Options_Tab_Middle" type="string"/>
+			<KeyValue key="upRightTexture" value="Options_Tab_Right" type="string"/>
+			<KeyValue key="overLeftTexture" value="Options_Tab_Left" type="string"/>
+			<KeyValue key="overMiddleTexture" value="Options_Tab_Middle" type="string"/>
+			<KeyValue key="overRightTexture" value="Options_Tab_Right" type="string"/>
+			<KeyValue key="selectedLeftTexture" value="Options_Tab_Active_Left" type="string"/>
+			<KeyValue key="selectedMiddleTexture" value="Options_Tab_Active_Middle" type="string"/>
+			<KeyValue key="selectedRightTexture" value="Options_Tab_Active_Right" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Left">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer>
+				<FontString parentKey="Text" inherits="GameFontNormal"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Button>
+</Ui>

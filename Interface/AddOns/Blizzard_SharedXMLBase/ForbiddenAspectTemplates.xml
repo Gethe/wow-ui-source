@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<!--
+		These templates are exposed for user addons that need to opt their
+		own Lua-created frames into disallowing script execution via forbidden
+		aspects, as we don't allow implicit inheritance of forbidden aspects
+		through SetParent / SetPoint calls at this time, nor tainted calls to
+		AddForbiddenAspects on frames created by tainted code.
+	-->
+
+	<Frame name="DisableUntrustedScriptsTemplate" virtual="true">
+		<ForbiddenAspects>
+			<ForbiddenAspect aspect="UntrustedScriptExecution"/>
+		</ForbiddenAspects>
+	</Frame>
+
+	<Frame name="DisableUntrustedLayoutScriptsTemplate" virtual="true">
+		<ForbiddenAspects>
+			<ForbiddenAspect aspect="UntrustedLayoutScriptExecution"/>
+		</ForbiddenAspects>
+	</Frame>
+</Ui>

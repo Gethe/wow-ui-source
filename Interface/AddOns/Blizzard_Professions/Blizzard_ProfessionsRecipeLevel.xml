@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeLevel.lua"/>
+	
+	<StatusBar name="ProfessionsRecipeLevelBar" mixin="ProfessionsRecipeLevelBarMixin" inherits="ProfessionsStatusBarArtTemplate" virtual="true">
+		<Size x="80" y="14"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</StatusBar>
+
+	<DropdownButton name="ProfessionsRecipeLevelDropdownTemplate" mixin="ProfessionsRecipeLevelDropdownMixin" inherits="WowStyle1DropdownTemplate" virtual="true">
+		<Size x="110" y="22"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</DropdownButton>
+</Ui>

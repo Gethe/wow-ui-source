@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="SuperTrackedFrame.lua"/>
+
+	<Frame name="SuperTrackedFrame" parent="UIParent" frameStrata="BACKGROUND" mixin="SuperTrackedFrameMixin">
+		<Size x="100" y="100"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="Navigation-Tracked-Icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Arrow" atlas="Navigation-Tracked-Arrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="DistanceText" inherits="GameFontNormal" justifyV="TOP">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="-12" y="12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="12" y="-12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SharedTalentSelectionTemplates.lua"/>
+	
+	<Frame name="TalentSelectionChoiceFrameTemplate" mixin="TalentSelectionChoiceFrameMixin" inherits="GridLayoutFrame" virtual="true">
+		<!-- 
+		dialogStyle: by default, the selection frame will be hidden when the talent is selected or the player clicks anywhere else.
+		-->
+		<KeyValues>
+			<KeyValue key="dialogStyle" value="true" type="boolean"/>
+			<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+
+			<KeyValue key="childXPadding" value="5" type="number"/>
+			<KeyValue key="childYPadding" value="0" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="stride" value="5" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

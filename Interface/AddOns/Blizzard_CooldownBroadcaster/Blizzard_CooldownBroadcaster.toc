@@ -1,0 +1,8 @@
+## Title: Blizzard_CooldownBroadcaster
+## Notes: This addon is maintained by esports and is used for broadcasting cooldown data to commentator clients for use during MDI
+## LoadOnDemand: 1
+
+Blizzard_CooldownBroadcaster_Bootstrap.lua [Bootstrap]
+TrackedCooldowns.lua
+MessageQueue.lua
+Blizzard_CooldownBroadcaster.lua

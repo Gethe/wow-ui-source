@@ -1,0 +1,576 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!-- Calendar Day Templates -->
+	<Button name="CalendarDayButtonTemplate" virtual="true">
+		<Size x="91" y="91"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentEventTexture" hidden="true">
+					<Size x="91" y="91"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.7109375" top="0.0" bottom="0.7109375"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentEventBackgroundTexture" file="Interface\Calendar\CalendarEventBackground" hidden="true">
+					<Size x="91" y="86"/>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.671875" top="0.0" bottom="0.671875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentPendingInviteTexture" file="Interface\Calendar\EventNotification" hidden="true">
+					<Size x="71" y="91"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentOverlayFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTexture" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentDateFrame">
+				<Size x="23" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="5" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentBackground" file="Interface\Calendar\DateBackgrounds" setAllPoints="true" hidden="true">
+							<TexCoords left="0.0" right="0.359375" top="0.625" bottom="0.921875"/>
+							<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentDate" inherits="GameFontHighlight" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentMoreEventsButton" hidden="true">
+				<Size x="15" y="11"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-5" y="-7"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarDayButtonMoreEventsButton_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						CalendarDayButtonMoreEventsButton_OnEnter(self, motion);
+					</OnEnter>
+					<OnLeave>
+						CalendarDayButtonMoreEventsButton_OnLeave(self, motion);
+					</OnLeave>
+					<OnClick>
+						CalendarDayButtonMoreEventsButton_OnClick(self, button, down);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Calendar\MoreArrow">
+					<TexCoords left="0.0" right="0.9375" top="0.0" bottom="0.6875"/>
+				</NormalTexture>
+			</Button>
+			<Frame name="$parentDarkFrame" hidden="true">
+				<Size x="91" y="91"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentTop" file="Interface\Calendar\CalendarShadows">
+							<Size x="91" y="45"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Calendar\CalendarShadows">
+							<Size x="91" y="46"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						RaiseFrameLevel(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CalendarDayButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				CalendarDayButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				CalendarDayButton_OnLeave(self, motion);
+			</OnLeave>
+			<OnClick>
+				CalendarDayButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Calendar\CalendarBackground"/>
+		<HighlightTexture file="Interface\Calendar\Highlights" alphaMode="ADD">
+			<Size x="88" y="88"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+			<TexCoords left="0.0" right="0.34375" top="0.0" bottom="0.6875"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="CalendarDayEventButtonTemplate" virtual="true" hidden="true">
+		<Size x="83" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBlack" file="Interface\Calendar\EventHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="1"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="0" y="-2"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText1" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="83" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText2" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CalendarDayEventButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				CalendarDayEventButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				CalendarDayEventButton_OnLeave(self, motion);
+			</OnLeave>
+			<OnClick>
+				CalendarDayEventButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\Calendar\EventHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="-2" y="1"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="2" y="-2"/>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+		</HighlightTexture>
+	</Button>
+
+	<!-- Calendar Misc Templates -->
+	<Button name="CalendarCloseButtonTemplate" inherits="UIPanelCloseButton" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-7" y="-7"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<!-- Calendar Event Templates -->
+	<Button name="CalendarEventButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size x="95" y="22"/>
+	</Button>
+	<Button name="CalendarEventCloseButtonTemplate" inherits="CalendarCloseButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CalendarEventCloseButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="CalendarEventInviteSortButtonTemplate" virtual="true">
+		<Size x="45" y="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentDirection" file="Interface\Calendar\MoreArrow" hidden="true">
+					<Size x="15" y="11"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.9375" top="0.0" bottom="0.6875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CalendarEventInviteSortButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				CalendarEventInviteSortButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightFont style="GameFontNormalSmall"/>
+	</Button>
+	<Frame name="CalendarEventInviteListTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<Size x="294" y="250"/>
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+				</Anchors>
+			</EventFrame>
+
+			<Button name="$parentNameSortButton" inherits="CalendarEventInviteSortButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP">
+						<Offset x="3" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self.criterion = "name";
+						CalendarEventInviteSortButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+				<ButtonText text="NAME" justifyH="LEFT"/>
+			</Button>
+			<Button name="$parentClassSortButton" inherits="CalendarEventInviteSortButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP">
+						<Offset x="3" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarEventInviteSortButton_OnLoad(self);
+						self.criterion = "class";
+					</OnLoad>
+				</Scripts>
+				<ButtonText text="CLASS" justifyH="LEFT"/>
+			</Button>
+			<Button name="$parentStatusSortButton" inherits="CalendarEventInviteSortButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP">
+						<Offset x="-3" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarEventInviteSortButton_OnLoad(self);
+						self.criterion = "status";
+					</OnLoad>
+				</Scripts>
+				<ButtonText text="STATUS" justifyH="LEFT"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="CalendarEventInviteListButtonTemplate" virtual="true">
+		<Size x="260" y="14"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="ModIcon" hidden="true">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PartyIcon" file="Interface\RaidFrame\ReadyCheck-Ready" hidden="true">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="110" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PartyIcon" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size x="77" y="14"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Class" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="80" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="20" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				CalendarEventInviteListButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>
+
+	<!-- Calendar View Event Templates -->
+	<Button name="CalendarViewEventRSVPButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
+		<Size x="128" y="22"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentFlashTexture" parentKey="flashTexture" alphaMode="ADD" file="Interface\Buttons\UI-Panel-Button-Glow">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-11" y="7"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="11" y="-7"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate function="CalendarViewEventRSVPButton_OnUpdate"/>
+		</Scripts>
+	</Button>
+	<Button name="CalendarViewEventInviteListButtonTemplate" inherits="CalendarEventInviteListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CalendarViewEventInviteListButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- Calendar Create Event Templates -->
+	<Button name="CalendarCreateEventInviteListButtonTemplate" inherits="CalendarEventInviteListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CalendarCreateEventInviteListButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="CalendarMassInviteArenaButtonTemplate" inherits="CalendarEventButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				CalendarMassInviteArenaButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				CalendarMassInviteArenaButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				CalendarMassInviteArenaButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<!-- Calendar Modal Dialog Templates -->
+	<Frame name="CalendarModalDialogTemplate" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" virtual="true">
+		<Scripts>
+			<OnShow>
+				CalendarFrame_PushModal(self);
+			</OnShow>
+			<OnHide>
+				CalendarFrame_PopModal(self);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="CalendarModalEventOverlayTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="10" y="-10"/>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset x="-10" y="10"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 5);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<!-- Calendar Event Picker Templates -->
+	<Button name="CalendarEventPickerButtonTemplate" virtual="true">
+		<Size x="235" y="16"/>
+		<Anchors>
+			<Anchor point="RIGHT">
+				<Offset x="-4" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Time" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CalendarEventPickerButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				CalendarEventPickerButton_OnClick(self, button, down);
+			</OnClick>
+			<OnDoubleClick>
+				CalendarEventPickerCloseButton_OnClick(self, button);
+			</OnDoubleClick>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>
+
+	<!-- Calendar Texture Picker Templates -->
+	<Button name="CalendarTexturePickerButtonTemplate" virtual="true">
+		<Size x="240" y="16"/>
+		<Anchors>
+			<Anchor point="RIGHT">
+				<Offset x="-4" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.796875" top="0.0" bottom="0.71875"/>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="224" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CalendarTexturePickerButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				CalendarTexturePickerButton_OnClick(self, button, down);
+			</OnClick>
+			<OnDoubleClick>
+				CalendarTexturePickerButton_OnDoubleClick(self, button);
+			</OnDoubleClick>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>
+
+	<!-- Calendar Class Templates -->
+	<Button name="CalendarClassButtonTemplate" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="-2" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0" right="0.875" top="0.0" bottom="0.875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="2" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CalendarClassButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				CalendarClassButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
+    </Button>
+</Ui>

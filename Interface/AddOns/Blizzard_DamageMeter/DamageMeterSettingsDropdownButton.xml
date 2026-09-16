@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<DropdownButton name="DamageMeterSettingsDropdownButtonTemplate" mixin="DamageMeterSettingsDropdownButton" virtual="true">
+		<KeyValues>
+			<KeyValue key="disabled" value="common-dropdown-a-button-settings-disabled-shadowless" type="string"/>
+			<KeyValue key="normal" value="common-dropdown-a-button-settings-shadowless" type="string"/>
+			<KeyValue key="pressed" value="common-dropdown-a-button-settings-pressed-shadowless" type="string"/>
+			<KeyValue key="hover" value="common-dropdown-a-button-settings-hover-shadowless" type="string"/>
+			<KeyValue key="hoverPressed" value="common-dropdown-a-button-settings-pressedhover-shadowless" type="string"/>
+			<KeyValue key="open" value="common-dropdown-a-button-settings-open-shadowless" type="string"/>
+		</KeyValues>
+		<Size x="27" y="27"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</DropdownButton>
+</Ui>

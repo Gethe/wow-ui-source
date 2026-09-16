@@ -1,0 +1,4 @@
+## Title: Blizzard_GameMenuEsc
+## Author: Blizzard Entertainment
+## AllowLoad: Both
+Blizzard_GameMenuEsc.lua

@@ -1,0 +1,1405 @@
+local _, addonTable = ...; -- Used to store secure functions (and associated data) that need to be called by other addons (to prevent hooking)
+
+do
+	addonTable.SpeakText = C_CombatAudioAlert.SpeakText;
+	addonTable.IsEnabled = C_CombatAudioAlert.IsEnabled;
+	addonTable.GetSpecSetting = C_CombatAudioAlert.GetSpecSetting;
+	addonTable.AddToKnownTargetingList = C_CombatAudioAlert.AddToKnownTargetingList;
+	addonTable.RemoveFromKnownTargetingList = C_CombatAudioAlert.RemoveFromKnownTargetingList;
+	addonTable.GetCAACVarValueNumber = CombatAudioAlertUtil.GetCAACVarValueNumber;
+	addonTable.GetCAACVarValueBool = CombatAudioAlertUtil.GetCAACVarValueBool;
+	addonTable.GetPlayerDebuffFormattedString = CombatAudioAlertUtil.GetPlayerDebuffFormattedString;
+end
+
+CombatAudioAlertManagerMixin = {};
+
+function CombatAudioAlertManagerMixin:OnLoad()
+	self.lastUnitHealthPercent = {};
+	self.lastUnitHealthAnnouncePercent = {};
+	self.lastPlayerPowerPercent = {};
+	self.lastPlayerPowerAnnouncePercent = {};
+	self.partyHealthInfo = { unitCount = 0, unitInfo = {} };
+	self.queuedSounds = {};
+
+	local function CheckRefreshEvents()
+		if not SettingsPanel:CheckIsSettingDefaults() then
+			self:RefreshEvents();
+		end
+	end
+
+	-- Sliders write their cvar on every step of a drag, so wait for it to settle and preview only the value that was landed on.
+	local function CreateSettledCVarCallback(onSettled)
+		local settleTimer;
+		return function(_owner, value)
+			if SettingsPanel:CheckIsSettingDefaults() then
+				return;
+			end
+
+			if settleTimer then
+				settleTimer:Cancel();
+			end
+
+			settleTimer = C_Timer.NewTimer(CombatAudioAlertConstants.SAMPLE_SETTLE_SECONDS, function()
+				settleTimer = nil;
+				onSettled(value);
+			end);
+		end;
+	end
+
+	local CheckPlaySample = CreateSettledCVarCallback(function(categoryType)
+		self:PlaySample(categoryType);
+	end);
+
+	local CheckRefreshPulseVolume = CreateSettledCVarCallback(function()
+		self:RefreshHealthPulseVolume();
+	end);
+
+	local function CheckRefreshThrottles()
+		if not SettingsPanel:CheckIsSettingDefaults() then
+			self:RefreshThrottles();
+		end
+	end
+
+	local function OnSettingsDefaulted(_owner, category)
+		if not category or (category.name == ACCESSIBILITY_AUDIO_LABEL) then
+			self:RefreshEvents();
+			self:RefreshThrottles();
+		end
+	end
+
+	for _, cvarInfo in pairs(CombatAudioAlertConstants.CVars) do
+		CVarCallbackRegistry:SetCVarCachable(cvarInfo.name);
+
+		if cvarInfo.refreshEvents then
+			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckRefreshEvents);
+		end
+
+		if cvarInfo.playSample then
+			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckPlaySample, nil, cvarInfo.categoryType);
+		end
+
+		if cvarInfo.refreshThrottles then
+			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckRefreshThrottles);
+		end
+
+		if cvarInfo.refreshPulseVolume then
+			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckRefreshPulseVolume);
+		end
+	end
+
+	EventRegistry:RegisterCallback("Settings.Defaulted", OnSettingsDefaulted);
+	EventRegistry:RegisterCallback("Settings.CategoryDefaulted", OnSettingsDefaulted);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FINISHED");
+	self:RegisterEvent("PLAYER_LOGOUT");
+end
+
+function CombatAudioAlertManagerMixin:OnEvent(event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:Init();
+
+		-- Init only does this on the first entry, but health can have changed across a loading screen.
+		self:UpdateHealthPulse();
+	elseif event == "PLAYER_LEAVING_WORLD" or event == "PLAYER_LOGOUT" then
+		-- The pulse sound kits loop and outlive both a loading screen and a UI reload, so the handle has to be stopped here.
+		self:StopHealthPulse();
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+		self:UpdateSpecSpecificSettings();
+	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
+		local inCombat = ...;
+		self:ProcessCombatStateChanged(inCombat);
+	elseif event == "UNIT_HEALTH" then
+		local unit = ...;
+		self:ProcessUnitHealthChange(unit);
+	elseif event == "PLAYER_TARGET_CHANGED" then
+		self:ProcessTargetChange();
+	elseif event == "PLAYER_TARGET_DIED" then
+		self:ProcessTargetDied();
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		self:RefreshAllPartyHealthUnits();
+		self:RefreshEvents();
+	elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_MAXPOWER" then
+		local _, powerToken = ...;
+		self:ProcessPlayerPowerUpdate(powerToken);
+	elseif event == "UNIT_DISPLAYPOWER" then
+		self:UpdateWatchedPowerTokens();
+	elseif event == "UNIT_SPELLCAST_START" then
+		local unit, _, spellID = ...;
+		local isChanneledNo = false;
+		self:ProcessCastState(unit, spellID, isChanneledNo, Enum.CombatAudioAlertCastState.OnCastStart);
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local unit, _, spellID = ...;
+		local isChanneledNo = false;
+		self:ProcessCastState(unit, spellID, isChanneledNo, Enum.CombatAudioAlertCastState.OnCastEnd);
+	elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event ==  "UNIT_SPELLCAST_EMPOWER_START" then
+		local unit, _, spellID = ...;
+		local isChanneledYes = true;
+		self:ProcessCastState(unit, spellID, isChanneledYes, Enum.CombatAudioAlertCastState.OnCastStart);
+	elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+		local unit, _, spellID = ...;
+		local isChanneledYes = true;
+		self:ProcessCastState(unit, spellID, isChanneledYes, Enum.CombatAudioAlertCastState.OnCastEnd);
+	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+		local _, castGUID = ...;
+		self:ProcessTargetCastInterrupted(castGUID);
+	elseif event == "UNIT_TARGET" then
+		local unit = ...;
+		self:ProcessUnitTargetChanged(unit);
+	elseif event == "UNIT_AURA" then
+		local unit, updateInfo = ...;
+		self:ProcessPlayerAuraUpdate(unit, updateInfo);
+	elseif event == "VOICE_CHAT_TTS_PLAYBACK_FINISHED" then
+		local utteranceID = ...;
+		local soundEnum = self.queuedSounds[utteranceID];
+		if soundEnum then
+			CombatAudioAlertManager:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+			self.queuedSounds[utteranceID] = nil;
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:Init(force)
+	if force or not self.initDone then
+		local isInitYes = true;
+		self:RefreshThrottles(isInitYes);
+		self:RefreshEvents(isInitYes);
+		self.initDone = true;
+	end
+end
+
+function CombatAudioAlertManagerMixin:RefreshThrottles(isInit)
+	if not isInit and not self.initDone then
+		return;
+	end
+
+	if isInit then
+		addonTable.throttles = {
+			[Enum.CombatAudioAlertThrottle.Sample] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.Sample), constant = true },
+			[Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.TargetHealthSamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetHealthSamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent), constant = true },
+			[Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent), constant = true },
+		};
+	else
+		for _, throttleInfo in pairs(addonTable.throttles) do
+			if not throttleInfo.constant and throttleInfo.timer then
+				throttleInfo.timer:Cancel();
+				throttleInfo.timer = nil;
+			end
+		end
+	end
+
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.PlayerHealth] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealth), queueLastThrottledMessage = true};
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.TargetHealth] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetHealth), queueLastThrottledMessage = true};
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.PlayerCast] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerCast)};
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.TargetCast] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetCast)};
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.PlayerResource1] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1), queueLastThrottledMessage = true};
+	addonTable.throttles[Enum.CombatAudioAlertThrottle.PlayerResource2] = { duration = C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2), queueLastThrottledMessage = true};
+end
+
+function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
+	if not isInit and not self.initDone then
+		return;
+	end
+
+	if not isInit then
+		self:UnregisterEvent("PLAYER_IN_COMBAT_CHANGED");
+		self:UnregisterEvent("UNIT_HEALTH");
+		self:UnregisterEvent("PLAYER_TARGET_DIED");
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+		self:UnregisterEvent("GROUP_ROSTER_UPDATE");
+		self:UnregisterEvent("UNIT_SPELLCAST_START");
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START");
+		self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP");
+		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+		self:UnregisterEvent("UNIT_AURA");
+	end
+
+	if addonTable.IsEnabled() then
+		if self:IsSayCombatStartEnabled() or self:IsSayCombatEndEnabled() then
+			self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
+		end
+
+		self:RegisterForUnitHealth();
+
+		local targetHealthNeeded = self:IsSayTargetHealthEnabled();
+		if targetHealthNeeded then
+			self:RegisterEvent("PLAYER_TARGET_DIED");
+		end
+
+		if targetHealthNeeded or self:IsSayTargetNameEnabled() then
+			self:RegisterEvent("PLAYER_TARGET_CHANGED");
+		end
+
+		if self:IsSayPartyHealthEnabled() then
+			self:RegisterEvent("GROUP_ROSTER_UPDATE");
+		else
+			self:ClearAllPartyHealthUnits();
+		end
+
+		local unitCastStartUnits = {};
+		local unitCastEndUnits = {};
+
+		if self:IsCastModeSet("player", Enum.CombatAudioAlertCastState.OnCastStart) then
+			table.insert(unitCastStartUnits, "player");
+		end
+
+		if self:IsCastModeSet("player", Enum.CombatAudioAlertCastState.OnCastEnd) then
+			table.insert(unitCastEndUnits, "player");
+		end
+
+		if self:IsCastModeSet("target", Enum.CombatAudioAlertCastState.OnCastStart) or self:IsInterruptCastEnabled() then
+			table.insert(unitCastStartUnits, "target");
+		end
+
+		if self:IsCastModeSet("target", Enum.CombatAudioAlertCastState.OnCastEnd) then
+			table.insert(unitCastEndUnits, "target");
+		end
+
+		if #unitCastStartUnits > 0 then
+			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", unitCastStartUnits);
+		end
+
+		if #unitCastEndUnits > 0 then
+			self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unitCastEndUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", unitCastStartUnits);
+		end
+
+		self.unitCastStartUnitsLookup = CopyValuesAsKeys(unitCastStartUnits);
+		self.unitCastEndUnitsLookup = CopyValuesAsKeys(unitCastEndUnits);
+
+		if self:IsInterruptCastSuccessEnabled() then
+			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "target");
+		end
+
+		if self:IsSayYourDebuffsEnabled() or self:IsDebuffSelfAlertEnabled() then
+			self:RegisterUnitEvent("UNIT_AURA", "player");
+		end
+	else
+		self.unitHealthUnitsLookup = {};
+		self.watchedPowerTokens = {};
+		self.unitCastStartUnitsLookup = {};
+		self.unitCastEndUnitsLookup = {};
+		self:ClearAllPartyHealthUnits();
+	end
+
+	self:UpdateSpecSpecificSettings(isInit);
+
+	self:UpdateHealthPulse();
+
+	if isInit and addonTable.IsEnabled() then
+		if self:IsInPartyHealthMode() then
+			self:RefreshAllPartyHealthUnits();
+		else
+			self:ProcessUnitHealthChange("player");
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetCategoryVoice(categoryType, newVoiceID)
+	newVoiceID = tonumber(newVoiceID);
+	local currentVoiceID = C_CombatAudioAlert.GetCategoryVoice(categoryType);
+	if newVoiceID ~= currentVoiceID then
+		C_CombatAudioAlert.SetCategoryVoice(categoryType, newVoiceID);
+	else
+		self:PlaySample(categoryType);
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetSpeakerSpeed(newSpeed)
+	newSpeed = tonumber(newSpeed);
+	local currentSpeed = C_CombatAudioAlert.GetSpeakerSpeed();
+	if newSpeed ~= currentSpeed then
+		C_CombatAudioAlert.SetSpeakerSpeed(newSpeed);
+	else
+		self:PlaySample();
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetCategoryVolume(categoryType, newVolume)
+	newVolume = tonumber(newVolume);
+	local currentVolume = C_CombatAudioAlert.GetCategoryVolume(categoryType);
+	if newVolume ~= currentVolume then
+		C_CombatAudioAlert.SetCategoryVolume(categoryType, newVolume);
+	elseif categoryType == Enum.CombatAudioAlertCategory.PlayerHealthPulse then
+		-- The pulse has no spoken sample, so preview it the same way a volume change does.
+		self:RefreshHealthPulseVolume();
+	else
+		self:PlaySample(categoryType);
+	end
+end
+
+function CombatAudioAlertManagerMixin:IsSayCombatStartEnabled()
+	return addonTable.GetCAACVarValueBool("SAY_COMBAT_START_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:IsSayCombatEndEnabled()
+	return addonTable.GetCAACVarValueBool("SAY_COMBAT_END_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:IsSayPlayerHealthEnabled()
+	return (addonTable.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsPulsePlayerHealthEnabled()
+	return (addonTable.GetCAACVarValueNumber("PULSE_PLAYER_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:GetPulsePlayerHealthPercent()
+	-- The cvar can hold an out of range value, in which case there is no threshold to pulse at.
+	local percentInfo = CombatAudioAlertUtil.GetCurrentPulseHealthPercentInfo();
+	return percentInfo and percentInfo.percentVal or 0;
+end
+
+function CombatAudioAlertManagerMixin:IsSayTargetNameEnabled()
+	return addonTable.GetCAACVarValueBool("SAY_TARGET_NAME_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:IsSayTargetHealthEnabled()
+	return (addonTable.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:ShouldSayTargetHealthOnTargetUpdate()
+	if self:IsSayTargetHealthEnabled() then
+		if UnitIsFriend("player", "target") and not UnitInParty("target") and not UnitIsUnit("player", "target") then
+			return (self:GetUnitHealthPercent("target") < 100);
+		else
+			return true;
+		end
+	else
+		return false;
+	end
+end
+
+function CombatAudioAlertManagerMixin:ShouldReplaceTargetDeath()
+	return (addonTable.GetCAACVarValueNumber("TARGET_DEATH_BEHAVIOR_CVAR") ~= Enum.CombatAudioAlertTargetDeathBehavior.Default);
+end
+
+function CombatAudioAlertManagerMixin:IsSayPartyHealthEnabled()
+	return (addonTable.GetCAACVarValueNumber("PARTY_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:GetSayPartyHealthPercent()
+	return CombatAudioAlertUtil.GetCurrentPartyHealthPercentInfo().percentVal;
+end
+
+function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencySetting()
+	return addonTable.GetCAACVarValueNumber("PARTY_HEALTH_FREQ_CVAR");
+end
+
+-- Calculate relative frequency scale value (from 0.5 to 1.5)
+function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencyScalingValue()
+	-- Get the party health frequency setting (-10 to 10)
+	local relativeFrequency = self:GetPartyHealthRelativeFrequencySetting();
+
+	-- Normalize it (0.0 to 1.0)
+	local normalizedRelativeFrequency = PercentageBetween(relativeFrequency, Constants.CAAConstants.CAAFrequencyMin, Constants.CAAConstants.CAAFrequencyMax);
+
+	-- Reverse it and scale up (1.5 to 0.5)
+	return 1.5 - normalizedRelativeFrequency;
+end
+
+function CombatAudioAlertManagerMixin:IsSayPlayerResource1Enabled()
+	return (addonTable.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent) > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsSayPlayerResource2Enabled()
+	return (addonTable.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent) > 0);
+end
+
+function CombatAudioAlertManagerMixin:GetSayUnitCastMode(unit)
+	if unit == "player" then
+		return addonTable.GetCAACVarValueNumber("SAY_PLAYER_CAST_CVAR");
+	elseif unit == "target" then
+		return addonTable.GetCAACVarValueNumber("SAY_TARGET_CAST_CVAR");
+	else
+		error("Invalid unit passed to GetSayUnitCastMode")
+	end
+end
+
+function CombatAudioAlertManagerMixin:IsCastModeSet(unit, mode)
+	return (self:GetSayUnitCastMode(unit) == mode);
+end
+
+function CombatAudioAlertManagerMixin:IsInterruptCastEnabled()
+	return (addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsInterruptCastSuccessEnabled()
+	return (addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_SUCCESS_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsSayYourDebuffsEnabled()
+	return addonTable.GetCAACVarValueBool("SAY_YOUR_DEBUFFS_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:GetDebuffSelfAlertMode()
+	return addonTable.GetCAACVarValueNumber("DEBUFF_SELF_ALERT_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:IsDebuffSelfAlertEnabled()
+	return (self:GetDebuffSelfAlertMode() > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsWatchingUnitHealth(unit)
+	return self.unitHealthUnitsLookup[unit] ~= nil;
+end
+
+local partyUnits = { "player", "party1", "party2", "party3", "party4" };
+local partyUnitLookup = tInvert(partyUnits);
+
+function CombatAudioAlertManagerMixin:GetPartyUnitIndex(unit)
+	return partyUnitLookup[unit];
+end
+
+function CombatAudioAlertManagerMixin:IsPartyUnit(unit)
+	return self:GetPartyUnitIndex(unit) ~= nil;
+end
+
+function CombatAudioAlertManagerMixin:IsInPartyHealthMode()
+	return self:IsSayPartyHealthEnabled() and UnitInParty("player");
+end
+
+function CombatAudioAlertManagerMixin:RegisterForUnitHealth()
+	local unitHealthUnits = {};
+
+	if self:IsInPartyHealthMode() then
+		for _, unit in ipairs(partyUnits) do
+			if UnitExists(unit) then
+				table.insert(unitHealthUnits, unit);
+			end
+		end
+	elseif self:IsSayPlayerHealthEnabled() or self:IsPulsePlayerHealthEnabled() then
+		table.insert(unitHealthUnits, "player");
+	end
+
+	if self:IsSayTargetHealthEnabled() then
+		table.insert(unitHealthUnits, "target");
+	end
+
+	local numWatchedUnits = #unitHealthUnits;
+	if numWatchedUnits > 0 then
+		if numWatchedUnits <= Constants.UnitEventConstants.MAX_UNIT_TOKENS_IN_EVENT then
+			self:RegisterUnitEvent("UNIT_HEALTH", unitHealthUnits);
+		else
+			self:RegisterEvent("UNIT_HEALTH");
+		end
+
+		self.unitHealthUnitsLookup = CopyValuesAsKeys(unitHealthUnits);
+	else
+		self.unitHealthUnitsLookup = {};
+	end
+end
+
+function CombatAudioAlertManagerMixin:UpdateSpecSpecificSettings(isInit)
+	if not isInit and not self.initDone then
+		return;
+	end
+
+	if not isInit then
+		self:UnregisterEvent("UNIT_TARGET");
+		self:UnregisterEvent("UNIT_POWER_UPDATE");
+		self:UnregisterEvent("UNIT_MAXPOWER");
+		self:UnregisterEvent("UNIT_DISPLAYPOWER");
+	end
+
+	if addonTable.IsEnabled() then
+		if addonTable:IsSayIfTargetedEnabled() then
+			self:RegisterEvent("UNIT_TARGET");
+		end
+
+		local playerPowerNeeded = self:IsSayPlayerResource1Enabled() or self:IsSayPlayerResource2Enabled();
+		if playerPowerNeeded then
+			self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player");
+			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
+		end
+		self:UpdateWatchedPowerTokens();
+	end
+end
+
+function CombatAudioAlertManagerMixin:UpdateWatchedPowerTokens()
+	self.watchedPowerTokens = {};
+
+	if self:IsSayPlayerResource1Enabled() then
+		local powerType, powerToken = UnitPowerType("player");
+		if powerToken then
+			self.watchedPowerTokens[powerToken] = powerType;
+		end
+	end
+
+	if GetUnitSecondaryPowerInfo and self:IsSayPlayerResource2Enabled() then
+		local powerType, powerToken = GetUnitSecondaryPowerInfo("player");
+		if powerToken then
+			self.watchedPowerTokens[powerToken] = powerType;
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:IsWatchingPowerToken(powerToken)
+	return self.watchedPowerTokens[powerToken] ~= nil;
+end
+
+function CombatAudioAlertManagerMixin:IsWatchingUnitCastState(unit, castState)
+	if castState == Enum.CombatAudioAlertCastState.OnCastStart then
+		return self.unitCastStartUnitsLookup[unit] ~= nil;
+	else
+		return self.unitCastEndUnitsLookup[unit] ~= nil;
+	end
+end
+
+local sampleTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.Sample, text = CAA_SAMPLE_TEXT};
+local playerHealthSamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerHealthSamePercent};
+local targetHealthSamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.TargetHealthSamePercent};
+local playerResource1SamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerResource1SamePercent};
+local playerResource2SamePercentTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.PlayerResource2SamePercent};
+
+function CombatAudioAlertManagerMixin:PlaySample(categoryType)
+	sampleTextInfo.categoryType = categoryType or Enum.CombatAudioAlertCategory.General;
+	addonTable:TrySpeakText(sampleTextInfo, CombatAudioAlertConstants.ALLOW_OVERLAP_NO);
+end
+
+function CombatAudioAlertManagerMixin:GetUnitHeathSamePercentTextInfo(unit)
+	if unit == "player" then
+		return playerHealthSamePercentTextInfo;
+	elseif unit == "target" then
+		return targetHealthSamePercentTextInfo;
+	else
+		error("Invalid unit passed to GetUnitHeathSamePercentTextInfo")
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetPlayerPowerSamePercentTextInfo(powerType)
+	local isPercentYes = true;
+	local settingEnum = CombatAudioAlertUtil.ConvertToResourceSettingEnum(powerType, isPercentYes);
+
+	if settingEnum == Enum.CombatAudioAlertSpecSetting.Resource1Percent then
+		return playerResource1SamePercentTextInfo;
+	elseif settingEnum == Enum.CombatAudioAlertSpecSetting.Resource1Percent then
+		return playerResource2SamePercentTextInfo;
+	else
+		error("Invalid powerType passed to GetPlayerPowerSamePercentTextInfo")
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetPercentageBand(percent, threshold)
+	if not percent or not threshold then
+		return nil;
+	end
+
+	if threshold == 0 then
+		return 0;
+	end
+
+	-- Bands should go down from 100, not up from 0 (e.g. 40% threshold results in 100/60/20 not 40/80/100)
+	local percentFrom100 = 100 - percent;
+	local bandFrom100 = math.floor(percentFrom100 / threshold) * threshold;
+	return 100 - bandFrom100;
+end
+
+function CombatAudioAlertManagerMixin:GetAnnouncePercentage(percent, currentBand, lastBand, threshold)
+	--print("GetAnnouncePercentage percent = "..percent.." currentBand = "..(currentBand or "none").." lastBand = "..(lastBand or "none"));
+
+	if currentBand ~= lastBand then
+		if not lastBand or not currentBand then
+			-- Initial call, announce the actual percent
+			return percent;
+		end
+
+		if currentBand < lastBand then
+			-- Percent went down, announce the current band (75% -> 65%, announce 70%)
+			return currentBand;
+		else
+			-- Percent went up, as long as percent isn't 100 announce the band below current (43% -> 57%, announce 50%)
+			if percent < 100 then
+				return currentBand - threshold;
+			else
+				-- But if percent is 100 then announce 100
+				return 100;
+			end
+		end
+	end
+
+	return nil; -- Announce nothing
+end
+
+function CombatAudioAlertManagerMixin:GetUnitHealthThreshold(unit)
+	if unit == "player" then
+		return addonTable.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") * 10;
+	elseif unit == "target" then
+		return addonTable.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") * 10;
+	else
+		error("Invalid unit passed to GetUnitHealthThreshold")
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetUnitHealthPercent(unit)
+	local health = UnitHealth(unit);
+	local healthMax = UnitHealthMax(unit);
+	if healthMax == 0 then
+		return 0;
+	end
+	return math.ceil((health / healthMax) * 100);
+end
+
+function CombatAudioAlertManagerMixin:GetUnitHealthInfo(unit, healthPercent)
+	local healthInfo = {
+		throttleType = CombatAudioAlertUtil.GetUnitThrottleType(unit, Enum.CombatAudioAlertType.Health),
+		categoryType = CombatAudioAlertUtil.GetUnitCategoryType(unit, Enum.CombatAudioAlertType.Health)
+	};
+
+	-- Unit formatted health could be either text, or a soundKit.
+	local cvarTargetDeathBehavior = addonTable.GetCAACVarValueNumber("TARGET_DEATH_BEHAVIOR_CVAR");
+	if unit == "target" and self:ShouldConsiderUnitDead("target") and cvarTargetDeathBehavior ~= Enum.CombatAudioAlertTargetDeathBehavior.Default then
+		if cvarTargetDeathBehavior == Enum.CombatAudioAlertTargetDeathBehavior.SayTargetDead then
+			healthInfo.text = CAA_TARGET_DEAD;
+		else
+			-- DeathBehavior is a soundKit.
+			healthInfo.soundEnum = self:CAAValueToCooldownViewerSound(cvarTargetDeathBehavior);
+		end
+	else
+		healthInfo.text = CombatAudioAlertUtil.GetUnitFormattedString(unit, Enum.CombatAudioAlertType.Health, nil, healthPercent);
+	end
+
+	return healthInfo;
+end
+
+function CombatAudioAlertManagerMixin:ShouldConsiderUnitHealth(unit)
+	return UnitExists(unit) and UnitIsConnected(unit);
+end
+
+function CombatAudioAlertManagerMixin:ShouldConsiderUnitDead(unit)
+	return UnitIsDead(unit) or UnitIsGhost(unit);
+end
+
+function CombatAudioAlertManagerMixin:CheckShouldAnnouncePercent(unitOrPowerType, announcePercentage)
+	local samePercentTextInfo;
+	local lastAnnouncePercent;
+	local isUnit = (type(unitOrPowerType) == "string");
+	if isUnit then
+		-- This is a unit
+		lastAnnouncePercent = self.lastUnitHealthAnnouncePercent[unitOrPowerType];
+		samePercentTextInfo = self:GetUnitHeathSamePercentTextInfo(unitOrPowerType);
+	else
+		-- This is a powerType
+		lastAnnouncePercent = self.lastPlayerPowerAnnouncePercent[unitOrPowerType];
+		samePercentTextInfo = self:GetPlayerPowerSamePercentTextInfo(unitOrPowerType);
+	end
+
+	--print("CheckShouldAnnouncePercent announcePercentage = "..announcePercentage.." lastAnnouncePercent = "..(lastAnnouncePercent or "none"));
+
+	local shouldAnnounce = false;
+	if announcePercentage ~= lastAnnouncePercent then
+		-- announcePercentage is not the same, always announce and start the throttle timer
+		addonTable:StartThrottleTimer(samePercentTextInfo.throttleType);
+		shouldAnnounce = true;
+		--print("Different percent, always announce");
+	elseif addonTable:CheckThrottle(samePercentTextInfo) then
+		-- announcePercentage is the same, but it's been enough time so we want to announce
+		shouldAnnounce = true;
+		--print("Same percent, but throttle is finished");
+	else
+		--print("Same percent and throttled");
+	end
+
+	if shouldAnnounce then
+		if isUnit then
+			self.lastUnitHealthAnnouncePercent[unitOrPowerType] = announcePercentage;
+		else
+			self.lastPlayerPowerAnnouncePercent[unitOrPowerType] = announcePercentage;
+		end
+	end
+
+	return shouldAnnounce;
+end
+
+function CombatAudioAlertManagerMixin:ResetLastHealthAnnouncePercent(unitOrPowerType, announcePercentage)
+	self.lastUnitHealthAnnouncePercent[unitOrPowerType] = nil;
+	self:CheckShouldAnnouncePercent(unitOrPowerType, announcePercentage);	-- Ignoring the return because we just wanted to reset
+end
+
+function CombatAudioAlertManagerMixin:ProcessUnitHealthChange(unit)
+	if not self:IsWatchingUnitHealth(unit) or not self:ShouldConsiderUnitHealth(unit) then
+		return;
+	end
+
+	if unit == "player" then
+		self:UpdateHealthPulse();
+	end
+
+	if self:IsInPartyHealthMode() and self:IsPartyUnit(unit) then
+		self:ProcessPartyUnitHealthChange(unit);
+		return;
+	end
+
+	local healthPercent = self:GetUnitHealthPercent(unit);
+
+	--print("ProcessUnitHealthChange healthPercent = "..healthPercent);
+
+	local threshold = self:GetUnitHealthThreshold(unit);
+
+	-- The unit may only be watched because of the health pulse, in which case there is nothing to announce.
+	if threshold > 0 then
+		local currentBand = self:GetPercentageBand(healthPercent, threshold);
+		local lastBand = self:GetPercentageBand(self.lastUnitHealthPercent[unit], threshold);
+
+		local announcePercentage = self:GetAnnouncePercentage(healthPercent, currentBand, lastBand, threshold);
+		if announcePercentage then
+			local shouldAnnounce = self:CheckShouldAnnouncePercent(unit, announcePercentage);
+			if shouldAnnounce then
+				--print("ANNOUNCING healthPercent = "..healthPercent.." accouncing = "..announcePercentage);
+				local healthInfo = self:GetUnitHealthInfo(unit, announcePercentage);
+				if healthInfo.soundEnum then
+					self:PlayCombatStateSound(healthInfo.soundEnum, Enum.CombatAudioAlertCategory.TargetHealth);
+				else
+					addonTable:TrySpeakText(healthInfo);
+				end
+			end
+		end
+	end
+
+	self.lastUnitHealthPercent[unit] = healthPercent;
+end
+
+function CombatAudioAlertManagerMixin:UpdateHealthPulse()
+	local pulseEnabled = addonTable.IsEnabled() and self:IsPulsePlayerHealthEnabled();
+	local soundKitID;
+
+	if pulseEnabled and not self:ShouldConsiderUnitDead("player") then
+		local healthPercent = self:GetUnitHealthPercent("player");
+		if healthPercent < self:GetPulsePlayerHealthPercent() then
+			soundKitID = CombatAudioAlertUtil.GetPulseHealthSoundKit(healthPercent);
+		end
+	end
+
+	-- A running volume sample is left to finish out on its own unless a real pulse needs to take over.
+	if not soundKitID and pulseEnabled and self.healthPulseSampleTimer then
+		return;
+	end
+
+	self:CancelHealthPulseSampleTimer();
+	self:SetHealthPulseSoundKit(soundKitID);
+end
+
+function CombatAudioAlertManagerMixin:SetHealthPulseSoundKit(soundKitID)
+	if soundKitID == self.healthPulseSoundKitID then
+		return;
+	end
+
+	self:StopHealthPulse();
+
+	if soundKitID then
+		local playSoundParams = {
+			soundKitID = soundKitID,
+			uiSoundSubType = "Voice",
+			volumeOverride = C_CombatAudioAlert.GetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse) * .01
+		};
+
+		local success, soundHandle = C_Sound.PlaySoundWithOptions(playSoundParams);
+		if success then
+			self.healthPulseSoundKitID = soundKitID;
+			self.healthPulseSoundHandle = soundHandle;
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:StopHealthPulse()
+	self:CancelHealthPulseSampleTimer();
+
+	if self.healthPulseSoundHandle then
+		StopSound(self.healthPulseSoundHandle);
+	end
+
+	self.healthPulseSoundKitID = nil;
+	self.healthPulseSoundHandle = nil;
+end
+
+function CombatAudioAlertManagerMixin:StartHealthPulseSampleTimer()
+	self:CancelHealthPulseSampleTimer();
+
+	self.healthPulseSampleTimer = C_Timer.NewTimer(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_SECONDS, function()
+		self.healthPulseSampleTimer = nil;
+		self:StopHealthPulse();
+	end);
+end
+
+function CombatAudioAlertManagerMixin:CancelHealthPulseSampleTimer()
+	if self.healthPulseSampleTimer then
+		self.healthPulseSampleTimer:Cancel();
+		self.healthPulseSampleTimer = nil;
+	end
+end
+
+-- The sound kits loop, so the only way to apply a new volume is to restart whatever is playing. If nothing is pulsing, play a short sample so the new volume can still be heard.
+function CombatAudioAlertManagerMixin:RefreshHealthPulseVolume()
+	if not addonTable.IsEnabled() then
+		return;
+	end
+
+	local isSample = (self.healthPulseSoundKitID == nil) or (self.healthPulseSampleTimer ~= nil);
+	local soundKitID = self.healthPulseSoundKitID or CombatAudioAlertUtil.GetPulseHealthSoundKit(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_PERCENT);
+
+	self:StopHealthPulse();
+	self:SetHealthPulseSoundKit(soundKitID);
+
+	if isSample and self.healthPulseSoundHandle then
+		self:StartHealthPulseSampleTimer();
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessTargetChange()
+	if not UnitExists("target") then
+		return;
+	end
+
+	--print("ProcessTargetChange");
+
+	-- Target just changed, so cancel the existing target health throttle timer (if one exists)
+	addonTable:CancelThrottleTimer(Enum.CombatAudioAlertThrottle.TargetHealth);
+
+	local finalText, categoryType;
+
+	if self:IsSayTargetNameEnabled() then
+		finalText = UnitName("target");
+		categoryType = Enum.CombatAudioAlertCategory.General;
+	end
+
+	if self:ShouldSayTargetHealthOnTargetUpdate() then
+		-- Target just changed and we are about to announce their health, so reset last health announce percent (this also starts the same-percent throttle timer)
+		self:ResetLastHealthAnnouncePercent("target", self:GetUnitHealthPercent("target"));
+		categoryType = Enum.CombatAudioAlertCategory.TargetHealth;
+
+		local healthPercent = self:GetUnitHealthPercent("target");
+		local healthInfo = self:GetUnitHealthInfo("target", healthPercent);
+		if healthInfo.soundEnum then
+			-- Note this still could try to speak text if the player has set say target name above, both would just play at the same time.
+			self:PlayCombatStateSound(healthInfo.soundEnum, categoryType);
+		else
+			finalText = (finalText or "")..healthInfo.text;
+		end
+
+		addonTable:StartThrottleTimer(Enum.CombatAudioAlertThrottle.TargetHealth); -- We are announcing target health, so start the throttle timer
+	end
+
+	if finalText then
+		addonTable.SpeakText(finalText, categoryType);
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessTargetDied()
+	if self:ShouldSayTargetHealthOnTargetUpdate() then
+		local healthPercent = self:GetUnitHealthPercent("target");
+		local healthInfo = self:GetUnitHealthInfo("target", healthPercent);
+		if healthInfo.soundEnum then
+			self:PlayCombatStateSound(healthInfo.soundEnum, Enum.CombatAudioAlertCategory.TargetHealth);
+		else
+			addonTable.SpeakText(healthInfo.text, Enum.CombatAudioAlertCategory.TargetHealth);
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessCombatStateChanged(isInCombat)
+	if isInCombat then
+		if self:IsSayCombatStartEnabled() then
+			local cvarCombatStart = addonTable.GetCAACVarValueNumber("SAY_COMBAT_START_CVAR");
+			if cvarCombatStart == 1 then
+				addonTable.SpeakText(CAA_COMBAT_START_TEXT, Enum.CombatAudioAlertCategory.General);
+			else
+				-- CombatStart is a soundKit, find and play it.
+				local soundEnum = self:CAAValueToCooldownViewerSound(cvarCombatStart);
+				self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+			end
+		end
+	else
+		if self:IsSayCombatEndEnabled() then
+			local cvarCombatEnd = addonTable.GetCAACVarValueNumber("SAY_COMBAT_END_CVAR");
+			if cvarCombatEnd == 1 then
+				addonTable.SpeakText(CAA_COMBAT_END_TEXT, Enum.CombatAudioAlertCategory.General);
+			else
+				-- CombatEnd is a soundKit, find and play it.
+				local soundEnum = self:CAAValueToCooldownViewerSound(cvarCombatEnd);
+				self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+			end
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetPartyHealthFrequencyMinAndMax()
+	-- Get scaling value, based off the player's current relative frequency setting (0.5 to 1.5)
+	local scaleValue = self:GetPartyHealthRelativeFrequencyScalingValue();
+
+	-- Apply scaling to both min and max values
+	local scaledMinSeconds = CombatAudioAlertConstants.PARTY_HEALTH_UPDATE_MIN_SECONDS * scaleValue;
+	local scaledMaxSeconds = CombatAudioAlertConstants.PARTY_HEALTH_UPDATE_MAX_SECONDS * scaleValue;
+
+	return scaledMinSeconds, scaledMaxSeconds;
+end
+
+function CombatAudioAlertManagerMixin:GetPartyHealthUpdateFrequency(healthPercent)
+	local unscaledHealthPercent = healthPercent / 100;
+
+	-- Get the min and max frequency
+	local minFrequency, maxFrequency = self:GetPartyHealthFrequencyMinAndMax();
+
+	-- Return a value between those 2 values, scaled by unscaledHealthPercent
+	return Lerp(minFrequency, maxFrequency, unscaledHealthPercent);
+end
+
+function CombatAudioAlertManagerMixin:ProcessPartyUnitHealthChange(unit)
+	local healthPercent = self:GetUnitHealthPercent(unit);
+
+	--print("Processing "..unit.." health: "..healthPercent.." dead: "..(UnitIsDead(unit) and "true" or "false").." ghost: "..(UnitIsGhost(unit) and "true" or "false"));
+
+	if not self:ShouldConsiderUnitDead(unit) and healthPercent < self:GetSayPartyHealthPercent() then
+		self:UpdatePartyHealthUnit(unit, healthPercent);
+	else
+		self:RemovePartyHealthUnitIfNeeded(unit);
+	end
+
+	if self.partyHealthInfo.unitCount > 0 then
+		self:SetScript("OnUpdate", self.OnUpdate);
+	else
+		self:SetScript("OnUpdate", nil);
+	end
+
+	self.lastUnitHealthPercent[unit] = healthPercent;
+end
+
+function CombatAudioAlertManagerMixin:OnUpdate(elapsed)
+	for unit, unitInfo in pairs(self.partyHealthInfo.unitInfo) do
+		unitInfo.updateAfter = unitInfo.updateAfter - elapsed;
+		if unitInfo.updateAfter <= 0 then
+			addonTable.SpeakText(unitInfo.partyIndex, Enum.CombatAudioAlertCategory.PartyHealth);
+			unitInfo.updateAfter = unitInfo.updateAfter + unitInfo.frequency;
+			--print("Announcing "..unit.." with unit index "..unitInfo.partyIndex);
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:UpdatePartyHealthUnit(unit, healthPercent)
+	local frequency = self:GetPartyHealthUpdateFrequency(healthPercent);
+
+	if not self.partyHealthInfo.unitInfo[unit] then
+		-- First update for this unit, increment unitCount and initialize unitInfo table
+		self.partyHealthInfo.unitCount = self.partyHealthInfo.unitCount + 1;
+		self.partyHealthInfo.unitInfo[unit] = { partyIndex = self:GetPartyUnitIndex(unit), updateAfter = frequency, frequency = frequency };
+		--print("Setting update for "..unit.." to announce every "..frequency.." secs");
+	else
+		-- This unit was already getting updates, adjust updateAfter and frequency
+		local frequencyDelta = frequency - self.partyHealthInfo.unitInfo[unit].frequency;
+		self.partyHealthInfo.unitInfo[unit].updateAfter = self.partyHealthInfo.unitInfo[unit].updateAfter + frequencyDelta;
+		self.partyHealthInfo.unitInfo[unit].frequency = frequency;
+		--print("Adjusted update for "..unit.." to announce every "..frequency.." secs");
+	end
+end
+
+function CombatAudioAlertManagerMixin:RemovePartyHealthUnitIfNeeded(unit)
+	if self.partyHealthInfo.unitInfo[unit] then
+		self.partyHealthInfo.unitCount = self.partyHealthInfo.unitCount - 1;
+		self.partyHealthInfo.unitInfo[unit] = nil;
+	end
+end
+
+function CombatAudioAlertManagerMixin:ClearAllPartyHealthUnits()
+	self:SetScript("OnUpdate", nil);
+	self.partyHealthInfo.unitCount = 0;
+	self.partyHealthInfo.unitInfo = {};
+end
+
+function CombatAudioAlertManagerMixin:RefreshAllPartyHealthUnits()
+	--print("RefreshAllPartyHealthUnits");
+	self:ClearAllPartyHealthUnits();
+	if UnitInParty("player") then
+		for _, unit in ipairs(partyUnits) do
+			if self:ShouldConsiderUnitHealth(unit) then
+				--print("Considering "..unit);
+				self:ProcessPartyUnitHealthChange(unit);
+			end
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:GetPlayerPowerThreshold(powerType)
+	return CombatAudioAlertUtil.GetResourcePercentCVarVal(powerType) * 10;
+end
+
+function CombatAudioAlertManagerMixin:GetFormattedResourceString(powerToken, powerPercent)
+	return CombatAudioAlertUtil.GetPlayerResourceFormattedString(powerToken, _G[powerToken], powerPercent);
+end
+
+function CombatAudioAlertManagerMixin:GetPlayerPowerPercent(powerType)
+	local power = UnitPower("player", powerType);
+	local powerMax = UnitPowerMax("player", powerType);
+	if powerMax == 0 then
+		return 0;
+	end
+	return math.ceil((power / powerMax) * 100);
+end
+
+function CombatAudioAlertManagerMixin:GetPlayerResourceTextInfo(powerToken, powerPercent)
+	return {throttleType = CombatAudioAlertUtil.GetResourceThrottleType(powerToken),
+			text = self:GetFormattedResourceString(powerToken, powerPercent),
+			categoryType = CombatAudioAlertUtil.GetResourceCategoryType(powerToken)};
+end
+
+function CombatAudioAlertManagerMixin:ProcessPlayerPowerUpdate(powerToken)
+	if not self:IsWatchingPowerToken(powerToken) then
+		return;
+	end
+
+	local powerType = self.watchedPowerTokens[powerToken];
+	local powerPercent = self:GetPlayerPowerPercent(powerType);
+
+	--print("ProcessPlayerPowerUpdate powerPercent = "..powerPercent);
+
+	local threshold = self:GetPlayerPowerThreshold(powerType);
+
+	local currentBand = self:GetPercentageBand(powerPercent, threshold);
+	local lastBand = self:GetPercentageBand(self.lastPlayerPowerPercent[powerType], threshold);
+
+	local announcePercentage = self:GetAnnouncePercentage(powerPercent, currentBand, lastBand, threshold);
+	if announcePercentage then
+		local shouldAnnounce = self:CheckShouldAnnouncePercent(powerType, announcePercentage);
+		if shouldAnnounce then
+			--print("ANNOUNCING powerPercent = "..powerPercent.." accouncing = "..announcePercentage);
+			addonTable:TrySpeakText(self:GetPlayerResourceTextInfo(powerToken, announcePercentage));
+		end
+	end
+
+	self.lastPlayerPowerPercent[powerType] = powerPercent;
+end
+
+function CombatAudioAlertManagerMixin:GetUnitFormattedCastString(unit, spellName)
+	return CombatAudioAlertUtil.GetUnitFormattedString(unit, Enum.CombatAudioAlertType.Cast, spellName);
+end
+
+function CombatAudioAlertManagerMixin:GetUnitCastTextInfo(unit, spellName)
+	return {throttleType = CombatAudioAlertUtil.GetUnitThrottleType(unit, Enum.CombatAudioAlertType.Cast),
+			text = self:GetUnitFormattedCastString(unit, spellName),
+			categoryType = CombatAudioAlertUtil.GetUnitCategoryType(unit, Enum.CombatAudioAlertType.Cast)};
+end
+
+function CombatAudioAlertManagerMixin:GetUnitMinCastTime(unit)
+	if unit == "player" then
+		return addonTable.GetCAACVarValueNumber("SAY_PLAYER_CAST_MIN_TIME_CVAR");
+	elseif unit == "target" then
+		return addonTable.GetCAACVarValueNumber("SAY_TARGET_CAST_MIN_TIME_CVAR");
+	else
+		error("Invalid unit passed to GetUnitMinCastTime")
+	end
+end
+
+function CombatAudioAlertManagerMixin:CheckUnitCastTime(unit, castTimeMs)
+	if castTimeMs > 0 then
+		local castTimeSeconds = castTimeMs / 1000;
+		return castTimeSeconds >= self:GetUnitMinCastTime(unit);
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessCastState(unit, spellID, isChanneled, castState)
+	if not self:IsWatchingUnitCastState(unit, castState) then
+		return;
+	end
+
+	local spellName, castTimeMs;
+
+	if castState == Enum.CombatAudioAlertCastState.OnCastStart then
+		local startTimeMs, endTimeMs, notInterruptible, _;
+		if isChanneled then
+			spellName, _, _, startTimeMs, endTimeMs, _, notInterruptible = UnitChannelInfo(unit);
+		else
+			spellName, _, _, startTimeMs, endTimeMs, _, _, notInterruptible = UnitCastingInfo(unit);
+		end
+
+		if startTimeMs and endTimeMs then
+			castTimeMs = endTimeMs - startTimeMs;
+		end
+
+		local shouldCheckInterrupt = (unit == "target") and self:IsInterruptCastEnabled();
+		if shouldCheckInterrupt then
+			local isInterruptible = (notInterruptible == false);
+			if isInterruptible then
+				local cvarInterruptCast = addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_CVAR");
+				if cvarInterruptCast == 1 then
+					addonTable.SpeakText(CAA_INTERRUPTIBLE_CAST_TEXT, Enum.CombatAudioAlertCategory.General);
+				else
+					-- InterruptCast is a soundKit, find and play it.
+					local soundEnum = self:CAAValueToCooldownViewerSound(cvarInterruptCast);
+					self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+				end
+				return;
+			end
+		end
+	end
+
+	if not spellName or not castTimeMs then
+		local spellInfo = C_Spell.GetSpellInfo(spellID);
+		if not spellInfo then
+			return;
+		end
+
+		spellName = spellInfo.name;
+		castTimeMs = isChanneled and 10 or spellInfo.castTime;	-- If this is a channeled spell, just use 10 as the castTime to force it to announce
+	end
+
+	if not self:IsCastModeSet(unit, castState) then
+		return;
+	end
+
+	if self:CheckUnitCastTime(unit, castTimeMs) then
+		addonTable:TrySpeakText(self:GetUnitCastTextInfo(unit, spellName));
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessTargetCastInterrupted(castGUID)
+	-- sometimes 2 interrupt events come down for the same cast
+	if castGUID ~= self.lastInterruptedCast then
+		local cvarInterruptCastSuccess = addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_SUCCESS_CVAR");
+		if cvarInterruptCastSuccess == 1 then
+			addonTable.SpeakText(CAA_INTERRUPTED_CAST_TEXT, Enum.CombatAudioAlertCategory.General);
+		else
+			-- InterruptCastSuccess is a soundKit, find and play it.
+			local soundEnum = self:CAAValueToCooldownViewerSound(cvarInterruptCastSuccess);
+			self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+		end
+
+		self.lastInterruptedCast = castGUID;
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessPlayerAuraUpdate(unit, updateInfo)
+	if not updateInfo or not updateInfo.addedAuras then
+		return;
+	end
+
+	local sayYourDebuffsEnabled = self:IsSayYourDebuffsEnabled();
+	local debuffSelfAlertEnabled = self:IsDebuffSelfAlertEnabled();
+
+	if not sayYourDebuffsEnabled and not debuffSelfAlertEnabled then
+		return;
+	end
+
+	for _, auraData in ipairs(updateInfo.addedAuras) do
+		if auraData.isHarmful then
+			local text;
+			local dispelType = auraData.dispelName;
+
+			-- Check if Debuff Self Alert should override (player can dispel this debuff type on themselves)
+			if debuffSelfAlertEnabled and dispelType and auraData.canActivePlayerDispel then
+				local cvarDebuffSelf = addonTable.GetCAACVarValueNumber("DEBUFF_SELF_ALERT_CVAR");
+				if cvarDebuffSelf == 1 then
+					-- Use the special self-alert format for dispellable debuffs
+					text = CAA_DEBUFF_SELF_ALERT_FORMAT:format(dispelType);
+				else
+					-- DebuffSelf is a soundKit, find and play it.
+					local soundEnum = self:CAAValueToCooldownViewerSound(cvarDebuffSelf);
+					self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+				end
+			elseif sayYourDebuffsEnabled and addonTable:ShouldAnnounceDebuff(auraData) then
+				-- Use the regular debuff announcement format
+				text = addonTable.GetPlayerDebuffFormattedString(auraData.name);
+			end
+
+			if text then
+				addonTable.SpeakText(text, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+			end
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:ProcessUnitTargetChanged(unit)
+	if not addonTable:IsSayIfTargetedEnabled() then
+		return;
+	end
+
+	if not UnitCanAttack("player", unit) then
+		-- If they aren't an attackable ignore them
+		return;
+	end
+
+	local unitTarget = unit.."target";
+	if UnitIsUnit(unitTarget, "player") then
+		-- This unit is targeting the player. Check if they are already on the known targeting list
+		if addonTable.AddToKnownTargetingList(unit) then
+			-- Nope they just started targeting the player, announce it
+			local sayIfTargetedMode = addonTable:GetSayIfTargetedMode();
+			if sayIfTargetedMode <= Enum.CombatAudioAlertSayIfTargetedType.TargetedBy then
+				addonTable.SpeakText(addonTable:GetUnitFormattedTargetingString(unit), Enum.CombatAudioAlertCategory.General);
+			else
+				-- Say If Targeted is a soundKit, find and play it.
+				local soundEnum = self:CAAValueToCooldownViewerSound(sayIfTargetedMode);
+				self:PlayCombatStateSound(soundEnum, Enum.CombatAudioAlertCategory.General);
+			end
+		end
+	else
+		-- This unit is not targeting the player. Check if they are on the known targeting list
+		addonTable.RemoveFromKnownTargetingList(unit);
+	end
+end
+
+-- Functions below here are added to addonTable to prevent hooking
+
+function addonTable:GetSayIfTargetedMode()
+	return self.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
+end
+
+function addonTable:IsSayIfTargetedEnabled()
+	return (self:GetSayIfTargetedMode() > 0);
+end
+
+function addonTable:GetUnitFormattedTargetingString(unit)
+	local sayIfTargetedMode = self:GetSayIfTargetedMode();
+
+	local text;
+	if sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.Aggro then
+		text = CAA_AGGRO_TEXT;
+	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.Targeted then
+		text = CAA_YOURE_TARGETED_TEXT;
+	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.TargetedBy then
+		local unitName = UnitName(unit);
+		if unitName then
+			text = CAA_TARGETED_BY_TEXT:format(unitName);
+		else
+			-- Fallback if we can't get the name
+			text = CAA_YOURE_TARGETED_TEXT;
+		end
+	else
+		error("Invalid SayIfTargetedMode set");
+	end
+
+	return text;
+end
+
+function addonTable:GetSayYourDebuffsMinDuration()
+	return addonTable.GetCAACVarValueNumber("SAY_YOUR_DEBUFFS_MIN_DURATION_CVAR");
+end
+
+function addonTable:ShouldAnnounceDebuff(auraData)
+	-- Check minimum duration requirement
+	local minDuration = self:GetSayYourDebuffsMinDuration();
+	if minDuration > 0 then
+		local duration = auraData.duration;
+		-- Duration of 0 means permanent/infinite, which we always announce
+		if duration and duration > 0 and duration < minDuration then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function addonTable:OnThrottleTimerComplete(throttleType)
+	local throttleInfo = self.throttles[throttleType];
+	if throttleInfo and throttleInfo.timer then
+		--print("throttle "..throttleType.." complete");
+		throttleInfo.timer:Cancel();
+		throttleInfo.timer = nil;
+		if throttleInfo.throttleDoneTextInfo then
+			--print("speaking text "..throttleInfo.throttleDoneTextInfo.text);
+			self.SpeakText(throttleInfo.throttleDoneTextInfo.text, throttleInfo.throttleDoneTextInfo.categoryType);
+
+			-- We just called SpeakText so start a new throttle timer right away (with no throttleDoneTextInfo)
+			throttleInfo.throttleDoneTextInfo = nil;
+			self:StartThrottleTimer(throttleType);
+		end
+		--print("----------");
+	end
+end
+
+function addonTable:CheckThrottle(textInfo)
+	--print("check throttle "..textInfo.throttleType.." text = "..(textInfo.text or ""));
+	local throttleInfo = self.throttles[textInfo.throttleType];
+	if throttleInfo then
+		if throttleInfo.timer then
+			--print("throttled "..(throttleInfo.queueLastThrottledMessage and " throttleDoneTextInfo set" or ""));
+			if throttleInfo.queueLastThrottledMessage then
+				throttleInfo.throttleDoneTextInfo = textInfo;
+			end
+			--print("----------");
+			return false;
+		else
+			--print("no throttle");
+			self:StartThrottleTimer(textInfo.throttleType);
+			--print("----------");
+			return true;
+		end
+	else
+		error("Invalid throttleType passed to CheckThrottle")
+	end
+end
+
+function addonTable:StartThrottleTimer(throttleType)
+	--print("start throttle timer "..throttleType);
+	self:CancelThrottleTimer(throttleType);
+
+	local throttleInfo = self.throttles[throttleType];
+	if throttleInfo then
+		if throttleInfo.duration > 0 then
+			--print("throttle created duration = "..throttleInfo.duration);
+			throttleInfo.timer = C_Timer.NewTimer(throttleInfo.duration, function() self:OnThrottleTimerComplete(throttleType) end);
+		end
+	else
+		error("Invalid throttleType passed to StartThrottleTimer")
+	end
+end
+
+function addonTable:CancelThrottleTimer(throttleType)
+	--print("cancel throttle timer "..throttleType);
+	local throttleInfo = self.throttles[throttleType];
+	if throttleInfo and throttleInfo.timer then
+		throttleInfo.timer:Cancel();
+		throttleInfo.timer = nil;
+	end
+end
+
+function addonTable:TrySpeakText(textInfo, allowOverlap)
+	if not self.IsEnabled() then
+		return;
+	end
+
+	--print("TrySpeakText textInfo.text = "..textInfo.text.." textInfo.categoryType = "..textInfo.categoryType.." allowOverlap = "..(allowOverlap and "1" or "0"));
+	if self:CheckThrottle(textInfo) then
+		--print("SpeakText called");
+		self.SpeakText(textInfo.text, textInfo.categoryType, allowOverlap);
+	end
+end
+
+function CombatAudioAlertManagerMixin:PlayCombatStateSound(soundEnum, alertCategory)
+	local soundKit = CooldownViewerUtil.GetSoundTypeSoundKit(soundEnum);
+	if soundKit then
+		local volumeOverride = C_CombatAudioAlert.GetCategoryVolume(alertCategory) * .01;
+		local playSoundParams = {
+			soundKitID = soundKit,
+			uiSoundSubType = "Voice",
+			volumeOverride = volumeOverride
+		};
+		C_Sound.PlaySoundWithOptions(playSoundParams);
+	end
+end
+
+-- CooldownViewerSound enum elements have fixed values. In order to not have any overlap between those values and non-sound dropdown elements, a fixed offset is added when using them with the cvar system.
+-- This offset should be removed in order to correctly look up the associated sound info.
+function CombatAudioAlertManagerMixin:CAAValueToCooldownViewerSound(value)
+	return value - CombatAudioAlertConstants.COOLDOWN_VIEWER_SOUND_OFFSET;
+end
+
+-- Triggered via the playsound slash command. Speak the name of the sound, and then play the sound once that finishes.
+function CombatAudioAlertManagerMixin:PlayTTSCombatStateSound(soundEnum)
+	local text = CooldownViewerUtil.GetSoundTypeText(soundEnum);
+	if text then
+		local utteranceID = addonTable.SpeakText(text, Enum.CombatAudioAlertCategory.General);
+		if utteranceID then
+			self.queuedSounds[utteranceID] = soundEnum;
+		end
+
+		TextToSpeechFrame_DisplaySilentSystemMessage(CAA_PLAY_SOUND:format(soundEnum, text));
+	end
+end

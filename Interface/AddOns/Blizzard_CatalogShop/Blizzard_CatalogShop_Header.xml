@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CatalogShopHeaderFrameTemplate" mixin="CatalogShopHeaderFrameMixin" virtual="true">
+		<Size x="1612" y="40"/>
+		<Frames>
+				<Frame parentKey="CatalogShopNavBar" inherits="NavigationBarTemplate">
+					<Size x="1200" y="40"/>
+					<Anchors>
+							<Anchor point="BOTTOMLEFT" x="60" y="0"/>
+					</Anchors>
+				</Frame>
+				<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40" autoFocus="false" frameLevel="5">
+					<KeyValues>
+						<KeyValue key="instructionText" value="SEARCH" type="global"/>
+					</KeyValues>
+					<Size x="300" y="30"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+				</EditBox>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Background" atlas="shop-header-menu-bg-middle" setAllPoints="false" >
+					<Size y="51"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-3"/>
+					</Anchors>					
+				</Texture>
+				<Texture parentKey="DisabledBackground" atlas="shop-header-menu-bg-middle-dis" setAllPoints="false" hidden="true" >
+					<Size y="51"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

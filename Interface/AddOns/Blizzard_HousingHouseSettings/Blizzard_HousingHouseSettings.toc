@@ -1,0 +1,9 @@
+## Title: Blizzard Housing House Settings
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+Blizzard_HousingHouseSettings.lua
+Blizzard_HousingHouseSettings.xml
+Blizzard_HousingHouseSettingsRegistration.lua

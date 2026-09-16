@@ -1,0 +1,8 @@
+## Title: Blizzard Saved Sets
+## For saving data persistently on a per-account basis.
+## SavedVariables: GlobalBlizzardSavedSets
+## LoadOnDemand: 0
+## AllowLoad: Both
+## Dependencies: Blizzard_SharedXML
+
+Blizzard_SavedSets.lua

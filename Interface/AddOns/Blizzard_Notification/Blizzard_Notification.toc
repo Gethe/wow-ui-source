@@ -1,0 +1,7 @@
+## Title: Blizzard Saved Sets
+## Utility for showing notifications icons.
+## LoadOnDemand: 0
+## AllowLoad: Both
+
+Blizzard_Notification.xml
+Blizzard_NotificationUtil.lua

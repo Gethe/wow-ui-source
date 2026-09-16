@@ -1,0 +1,34 @@
+local UIColor =
+{
+	Name = "UIColor",
+	Type = "System",
+	Namespace = "C_UIColor",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "GetColors",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "colors", Type = "table", InnerType = "DBColorExport", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(UIColor);

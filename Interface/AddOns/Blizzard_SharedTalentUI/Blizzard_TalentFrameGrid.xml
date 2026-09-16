@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">	
+	<Frame name="TalentFrameGridTemplate" mixin="TalentFrameGridMixin" inherits="TalentFrameBaseTemplate, TalentFrameFixedPositionsTemplate" virtual="true">
+		<KeyValues>
+			<!--
+				stride: stride for the grid, how many columns to display before wrapping to the next row.
+				paddingX: horizontal padding between each button in the grid.
+				paddingY: vertical padding between each button in the grid.
+				<KeyValue key="stride" value="5" type="number"/>
+				<KeyValue key="paddingX" value="0" type="number"/>
+				<KeyValue key="paddingY" value="0" type="number"/>
+
+				buttonsMethod: specify a method for returning buttons in the order they should be displayed.
+			-->
+				<KeyValue key="buttonsMethod" value="TalentFrameBaseMixin.GetButtonsInDefaultOrder" type="global"/>
+			</KeyValues>
+	</Frame>
+</Ui>

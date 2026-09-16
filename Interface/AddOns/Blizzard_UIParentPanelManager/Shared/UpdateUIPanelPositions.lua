@@ -1,0 +1,1 @@
+UIParent:SetScript("OnAttributeChanged", UpdateUIPanelPositions);

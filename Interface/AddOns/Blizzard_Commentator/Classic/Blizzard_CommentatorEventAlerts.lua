@@ -1,0 +1,3 @@
+-- CommentatorEventAlertsMixin has been removed.
+-- CommentatorEventAlertsFrame now inherits RaidWarningFrameTemplate and is
+-- fully configured via XML KeyValues. This file is kept for history.

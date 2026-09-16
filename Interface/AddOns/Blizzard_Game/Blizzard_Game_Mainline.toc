@@ -1,0 +1,16 @@
+## Title: Blizzard_Game
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameMenuEsc, Blizzard_UIParentUtil
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+
+Shared\GameEvent.lua
+Shared\EventImplementation.lua
+Shared\EventRouting.lua
+Shared\Game.lua
+Mainline\EventImplementation.lua
+Mainline\EventRouting.lua
+Mainline\Game.lua
+Startup.lua

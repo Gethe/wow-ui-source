@@ -1,0 +1,11 @@
+## Title: Blizzard_HUDInventoryTemplates
+## DefaultState: enabled
+## Dependencies: Blizzard_UIPanels_Game, Blizzard_ActionBar
+## AllowLoadGameType: plunderstorm, wowhack
+## AllowLoad: Game
+
+Blizzard_HUDInventoryUtil.lua
+Blizzard_HUDInventoryButton.lua
+Blizzard_HUDInventoryButton.xml
+Blizzard_HUDInventory.lua
+Blizzard_HUDInventory.xml

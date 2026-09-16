@@ -1,0 +1,136 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Button name="AutoCompletePopupListResultTemplate" mixin="AutoCompletePopupListResultMixin" virtual="true">
+		<Size x="176" y="27"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconFrame" atlas="talents-search-suggestion-itemborder">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" file="Interface\Icons\Ability_ThunderClap">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconFrame" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconFrame" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="1"/>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Subtext" inherits="GameFontHighlightSmall" maxLines="1" justifyH="LEFT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Name"/>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="_search-rowbg"/>
+		<PushedTexture atlas="_search-rowbg"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AutoCompletePopupListTemplate" mixin="AutoCompletePopupListMixin" virtual="true">
+		<Size x="176" y="27"/>
+		<KeyValues>
+			<KeyValue key="maximumEntries" value="5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="_search-rowbg">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture inherits="UI-Frame-BotCornerLeft" parentKey="BorderAnchor">
+					<Anchors>
+						<Anchor point="LEFT" x="-7" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BorderAnchor" x="0" y="0"/>
+						<Anchor point="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomBorder" inherits="_UI-Frame-Bot">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderAnchor" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderAnchor" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBorder" inherits="!UI-Frame-RightTile">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"  x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT"  x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="OverflowCount" hidden="true">
+				<Size x="176" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="5"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontDisableSmall" justifyH="LEFT">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="9" y="0"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

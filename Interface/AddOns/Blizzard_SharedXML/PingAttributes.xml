@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+
+	<Frame name="PingReceiverAttributeTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="ping-receiver" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+    <Frame name="PingTopLevelPassThroughAttributeTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="ping-top-level-pass-through" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
+	<!-- Convenience templates to opt a non top level frame into being a ping receiver. -->
+	<Frame name="PingableUnitFrameTemplate" mixin="PingableType_UnitFrameMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingableActionButtonTemplate" mixin="PingableType_ActionButtonMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingableCooldownViewerItemTemplate" mixin="PingableType_CooldownViewerItemMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
+</Ui>

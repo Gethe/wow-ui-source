@@ -1,0 +1,333 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<PlayerModel name="RemixArtifactsModelTemplate" mixin="RemixArtifactModelMixin" virtual="true">
+		<Size x="1613" y="883" />
+		<Anchors>
+			<Anchor point="BOTTOMLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnModelLoaded method="OnModelLoaded"/>
+		</Scripts>
+		<ViewInsets left="88" right="88" top="0" bottom="0"/>
+	</PlayerModel>
+
+	<Button name="TalentButtonLegionChoiceTemplate" inherits="TalentButtonChoiceTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionChoice" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Frame name="RemixArtifactButtonsParentOverlayTemplate" virtual="true" frameLevel="1500">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background"/>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-7">
+				<Texture parentKey="BackgroundVignetteTop" atlas="ui-frame-legionartifact-overlay-vignette" alpha="0.2">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="-3">
+				<Texture parentKey="BackgroundFrontTop" atlas="ui-frame-legionartifact-overlay-middle" alpha="0.8">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="BackgroundFrontSides" atlas="ui-frame-legionartifact-overlay-sides">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="RemixArtifactFrame" mixin="RemixArtifactFrameMixin" inherits="TalentFrameBaseTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="getTemplateType" value="RemixArtifactUtil.GetTemplateForTalentType" type="global"/>
+			<KeyValue key="getEdgeTemplateType" value="RemixArtifactUtil.GetEdgeTemplateType" type="global"/>
+			<KeyValue key="basePanOffsetX" value="0" type="number"/>
+			<KeyValue key="basePanOffsetY" value="0" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="defaultSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT" type="global"/>
+			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
+		</KeyValues>
+		<Size x="1618" y="883"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+
+					<Color r="0.66" g="0.66" b="0.66" a="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BorderContainer" frameLevel="2000">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BorderOverlay" atlas="ui-frame-legionartifact-border">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="6"/>
+								<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<PlayerModel parentKey="AltModel" inherits="RemixArtifactsModelTemplate" frameLevel="500"/>
+			<PlayerModel parentKey="Model" inherits="RemixArtifactsModelTemplate" frameLevel="500">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="-7">
+						<Texture parentKey="BackgroundVignette" atlas="ui-frame-legionartifact-overlay-vignette" alpha="0.8">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+
+					<Layer level="OVERLAY" textureSubLevel="-3">
+						<Texture parentKey="BackgroundFront" atlas="ui-frame-legionartifact-overlay-middle" alpha="0.15">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="0">
+						<Texture parentKey="BackgroundFrontSides" atlas="ui-frame-legionartifact-overlay-sides" alpha="0.2">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</PlayerModel>
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-10"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="Header" frameLevel="2000">
+				<Size x="500" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="48" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="Fancy27Font" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-10"/>
+								<Anchor point="TOPRIGHT" x="0" y="-10"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Button parentKey="Currency" frameStrata="HIGH" enableMouse="true" mixin="RemixArtifactCurrencyFrameMixin">
+				<Size x="100" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-50" y="-32"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="CurrencyBackground" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-2" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="UnspentPointsCount" inherits="GameFontNormalLarge" justifyV="MIDDLE" justifyH="RIGHT">
+							<Size x="150" y="24"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
+
+			<Frame parentKey="CommitConfigControls" inherits="TraitsCommitControlsContainerTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="36"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="BronzeIncreasedNodeAnim" inherits="TalentButtonAnimationTemplate" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FX_swirlB" atlas="lemixArtifact-node-FX-2" useAtlasSize="true" scale="1.2" hidden="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FX_swirlA" atlas="lemixArtifact-node-FX" useAtlasSize="true" scale="1.2" hidden="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FX_swirlA2" atlas="lemixArtifact-node-FX" useAtlasSize="true" scale="1.2" hidden="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Rotation childKey="FX_swirlB" duration="3" order="1" degrees="-13">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlB" duration="0.43" order="1" startDelay="3" degrees="-39">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlB" duration="1.24" order="1" startDelay="3.43" degrees="-60">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlB" duration="3" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="FX_swirlB" duration="0.43" order="1" startDelay="3" fromAlpha="0" toAlpha="0.7"/>
+				<Alpha childKey="FX_swirlB" duration="1.24" order="1" startDelay="3.43" fromAlpha="0.7" toAlpha="0"/>
+				<Alpha childKey="FX_swirlA" duration="1.67" order="1" fromAlpha="0.7" toAlpha="0.7"/>
+				<Rotation childKey="FX_swirlA" duration="1.67" order="1" degrees="-80">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA" duration="1.33" order="1" startDelay="1.67" degrees="-60">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA" duration="1.33" order="1" startDelay="1.67" fromAlpha="0.7" toAlpha="0.82"/>
+				<Alpha childKey="FX_swirlA" duration="1.17" order="1" startDelay="3" fromAlpha="0.82" toAlpha="0"/>
+				<Rotation childKey="FX_swirlA" duration="1.17" order="1" startDelay="3" degrees="-10">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA" duration="0.1" order="1" startDelay="4.2" degrees="150">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" degrees="-140">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="FX_swirlA2" duration="1.67" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+				<Rotation childKey="FX_swirlA2" duration="1.67" order="1" startDelay="1" degrees="-37">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" startDelay="2.67" degrees="-90">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" startDelay="3.67" degrees="-93">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" startDelay="2.67" fromAlpha="0.4" toAlpha="0.45"/>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" startDelay="3.67" fromAlpha="0.45" toAlpha="0.7"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="BronzeInfiniteIncreasedNodeAnim" inherits="TalentButtonAnimationTemplate" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FX_swirlB" atlas="lemixArtifact-node-FX-2" useAtlasSize="true" scale="1.7">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FX_swirlA" atlas="lemixArtifact-node-inifinite-FX" useAtlasSize="true" scale="1.2">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FX_swirlA2" atlas="lemixArtifact-node-inifinite-FX" useAtlasSize="true" scale="1.2">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Rotation childKey="FX_swirlB" duration="3" order="1" degrees="-13">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlB" duration="0.43" order="1" startDelay="3" degrees="-39">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlB" duration="1.24" order="1" startDelay="3.43" degrees="-60">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlB" duration="3" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="FX_swirlB" duration="0.43" order="1" startDelay="3" fromAlpha="0" toAlpha="0.7"/>
+				<Alpha childKey="FX_swirlB" duration="1.24" order="1" startDelay="3.43" fromAlpha="0.7" toAlpha="0"/>
+				<Alpha childKey="FX_swirlA" duration="1.67" order="1" fromAlpha="0.5" toAlpha="0.33"/>
+				<Rotation childKey="FX_swirlA" duration="1.67" order="1" degrees="-80">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA" duration="1.33" order="1" startDelay="1.67" degrees="-60">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA" duration="1.33" order="1" startDelay="1.67" fromAlpha="0.33" toAlpha="0.82"/>
+				<Alpha childKey="FX_swirlA" duration="1.17" order="1" startDelay="3" fromAlpha="0.82" toAlpha="0"/>
+				<Rotation childKey="FX_swirlA" duration="1.17" order="1" startDelay="3" degrees="-10">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA" duration="0.1" order="1" startDelay="4.2" degrees="150">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" degrees="-140">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="FX_swirlA2" duration="1.67" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+				<Rotation childKey="FX_swirlA2" duration="1.67" order="1" startDelay="1" degrees="-37">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" startDelay="2.67" degrees="-90">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="FX_swirlA2" duration="1" order="1" startDelay="3.67" degrees="-93">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" startDelay="2.67" fromAlpha="0.4" toAlpha="0.45"/>
+				<Alpha childKey="FX_swirlA2" duration="1" order="1" startDelay="3.67" fromAlpha="0.45" toAlpha="0.5"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

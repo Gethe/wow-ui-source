@@ -1,0 +1,305 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HousingCreateNeighborhoodTemplate" mixin="HousingCreateNeighborhoodMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="CreateNeighborhoodBaseOnLoad"/>
+			<OnEvent method="CreateNeighborhoodBaseOnEvent"/>
+			<OnShow method="CreateNeighborhoodBaseOnShow"/>
+		</Scripts>
+		<Size x="600" y="400"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="house-drawing-stone-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-20" y="20"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="20" y="-60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DetailsBackground" atlas="housing-basic-horizontal-gradient-black">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOP" x="-230" y="-80"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOP" x="230" y="-170"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DetailsDivider" atlas="housing-basic-vertical-divider">
+					<Size x="6"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" x="-2" y="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DetailsBackground" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PlantDecoLeft" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" y="2" x="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="Game21Font" text="">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LocationLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_LOCATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" x="20" y="-10"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="LocationText" inherits="Game15Font_Shadow" text="location name here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodNameLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_NEIGHBORHOODNAME">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodNameError" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_ERROR_BADNAME" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.DetailsBackground" y="-24"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodInfoLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_NEIGHBORHOODINFO">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="LEFT" x="60" y="-10"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodInfoText" inherits="Game15Font_Shadow" justifyH="LEFT" text="">
+					<Size x="450"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodInfoLabel" relativePoint="BOTTOMLEFT" y="-8" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="NeighborhoodNameEditBox" autoFocus="false" inherits="InputBoxInstructionsTemplate">
+				<Size x="241" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodNameLabel" relativePoint="TOPRIGHT" x="10" y="3"/>
+				</Anchors>
+			</EditBox>
+			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="HOUSING_CREATENEIGHBORHOOD_CONFIRMBUTTON">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="HOUSING_CREATENEIGHBORHOOD_CANCELBUTTON">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCreateNeighborhoodConfirmationTemplate" mixin="HousingCreateNeighborhoodConfirmationMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="CreateNeighborhoodConfirmationBaseOnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="house-drawing-stone-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-20" y="20"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="20" y="-60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DetailsBackground" atlas="housing-basic-horizontal-gradient-black">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOP" x="-180" y="-125"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOP" x="260" y="-205"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DetailsDivider" atlas="housing-basic-vertical-divider">
+					<Size x="6"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" x="-2" y="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DetailsBackground" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PlantDecoLeft" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" y="2" x="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="Game21Font" text="">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_CONFIRMATION">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-85"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LocationLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_LOCATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DetailsBackground" x="20" y="-10"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="LocationText" inherits="Game15Font_Shadow" justifyH="LEFT" text="location name here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodNameLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_NEIGHBORHOODNAME">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodNameLabel" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCreateCharterNeighborhoodConfirmationFrame" inherits="HousingCreateNeighborhoodConfirmationTemplate" mixin="HousingCreateCharterNeighborhoodConfirmationMixin" parent="UIParent" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+		<Scripts>
+			<OnLoad inherit="append" method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<Size x="600" y="350"/>
+	</Frame>
+
+	<Frame name="HousingCreateGuildNeighborhoodFrame" inherits="HousingCreateNeighborhoodTemplate" mixin="HousingCreateGuildNeighborhoodMixin" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad inherit="append" method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent inherit="append" method="OnEvent"/>
+			<OnShow inherit="append" method="OnShow"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="GuildLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_GUILD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="GuildText" inherits="Game15Font_Shadow" text="guild name here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodRequirementsError" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_ERROR_BADNAME" hidden="false">
+					<Anchors>
+						<Anchor point="BOTTOM" y="57"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ConfirmationFrame" inherits="HousingCreateNeighborhoodConfirmationTemplate" mixin="HousingCreateGuildNeighborhoodConfirmationMixin" setAllPoints="true" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+				<Scripts>
+					<OnLoad inherit="append" method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="GuildLabel" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_GUILD">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="GuildText" inherits="Game15Font_Shadow" justifyH="LEFT" text="guild name here">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCreateNeighborhoodCharterFrame" inherits="HousingCreateNeighborhoodTemplate" mixin="HousingCreateNeighborhoodCharterMixin" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad inherit="append" method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent inherit="append" method="OnEvent"/>
+			<OnShow inherit="append" method="OnShow"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="CharterSettingsWarning" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_SETTINGS_WARNING" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="65"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

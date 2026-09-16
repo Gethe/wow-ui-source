@@ -1,0 +1,4 @@
+## Title: Blizzard_HelpPlate
+## AllowLoad: Both
+Blizzard_HelpPlate.lua
+Blizzard_HelpPlate.xml

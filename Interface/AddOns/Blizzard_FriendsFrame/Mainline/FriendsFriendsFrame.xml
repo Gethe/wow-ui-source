@@ -1,0 +1,129 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="FriendsFriendsButtonTemplate" virtual="true" mixin="FriendsFriendsButtonMixin">
+		<KeyValues>
+			<KeyValue key="baseHeight" value="18" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="UserScaledFontGameNormal, TruncatedTooltipFontStringTemplate" justifyH="LEFT" justifyV="MIDDLE" maxLines="1" wordwrap="false" propagateMouseInput="Both">
+					<Anchors>
+						<Anchor point="LEFT" x="6"/>
+						<Anchor point="RIGHT" x="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="FriendsFriendsFrame" parent="UIParent" inherits="UserScaledFrameTemplate" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="314" type="number"/>
+			<KeyValue key="baseHeight" value="345" type="number"/>
+			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" y="50"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, TruncatedTooltipFontStringTemplate" justifyH="LEFT" maxLines="1" wordwrap="false" enableMouseMotion="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-20"/>
+						<Anchor point="TOPRIGHT" x="-26" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+
+			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropdown" inherits="WowStyle1DropdownTemplate, UserScaledFrameTemplate">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="160" type="number"/>
+					<KeyValue key="baseHeight" value="25" type="number"/>
+					<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+					<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
+					<KeyValue key="scaleWeight" value="0.8" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-1" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Button parentKey="SendRequestButton" inherits="UIPanelButtonUserScaledTemplate" text="SEND_REQUEST">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="118" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="24"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CloseButton" inherits="UIPanelButtonUserScaledTemplate" text="CLOSE">
+				<KeyValues>
+					<KeyValue key="baseWidth" value="118" type="number"/>
+					<KeyValue key="baseHeight" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="24"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="ScrollFrameBorder" inherits="TooltipBackdropTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.FriendsDropdown" relativePoint="BOTTOM" y="-8"/>
+					<Anchor point="LEFT" x="24"/>
+					<Anchor point="RIGHT" x="-24"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.SendRequestButton" relativePoint="TOP" y="8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrameBorder" x="0" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrameBorder" x="-24" y="4"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame parentKey="WaitFrame" mixin="FriendsFriendsWaitFrameMixin">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ScrollBox"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="UserScaledFontGameHighlight" text="FRIENDS_FRIENDS_WAITING">
+							<Anchors>
+								<Anchor point="CENTER" x="12" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

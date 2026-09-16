@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<AnimationGroup name="EncounterWarningsSwingAnimationGroupTemplate" mixin="EncounterWarningsSwingAnimationGroupMixin" setToFinalAlpha="true" virtual="true">
+		<Alpha parentKey="Fade" fromAlpha="0" toAlpha="1" duration="0.2" smoothing="OUT"/>
+		<Animation parentKey="Translation" inherits="PointsOffsetAnimationTemplate" duration="0.35">
+			<KeyValues>
+				<KeyValue key="customEasingFunction" value="EasingUtil.OutBack" type="global"/>
+				<KeyValue key="offsetFromY" value="40" type="number"/>
+			</KeyValues>
+		</Animation>
+		<Scale parentKey="Scale" fromScaleX="1.1" toScaleX="1.0" fromScaleY="1.1" toScaleY="1.0" duration="0.2" startDelay="0.1" smoothing="OUT"/>
+		<Animation parentKey="LeftIconTranslation" inherits="PointsOffsetAnimationTemplate" duration="0.2" startDelay="0.1" childKey="LeftIcon" smoothing="OUT">
+			<KeyValues>
+				<KeyValue key="offsetFromX" value="-30" type="number"/>
+				<KeyValue key="offsetToX" value="-20" type="number"/>
+			</KeyValues>
+		</Animation>
+		<Animation parentKey="RightIconTranslation" inherits="PointsOffsetAnimationTemplate" duration="0.2" startDelay="0.1" childKey="RightIcon" smoothing="OUT">
+			<KeyValues>
+				<KeyValue key="offsetFromX" value="30" type="number"/>
+				<KeyValue key="offsetToX" value="20" type="number"/>
+			</KeyValues>
+		</Animation>
+	</AnimationGroup>
+
+	<Frame name="EncounterWarningsIconElementTemplate" mixin="EncounterWarningsIconElementMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" texelSnappingBias="0.0" snapToPixelGrid="false" setAllPoints="true"/>
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="NormalOverlay" atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DeadlyOverlay" atlas="combattimeline-fx-deadlyglow-base" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DeadlyOverlayGlow" atlas="combattimeline-fx-deadlyglow-overlay" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<FontString name="EncounterWarningsTextElementTemplate" mixin="EncounterWarningsTextElementMixin" justifyH="CENTER" justifyV="MIDDLE" nonspacewrap="true" wordwrap="true" scaleAnimationMode="Vertex" virtual="true"/>
+</Ui>

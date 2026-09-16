@@ -1,0 +1,68 @@
+local ClientScene =
+{
+	Name = "ClientScene",
+	Type = "System",
+	Namespace = "C_ClientScene",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "IsSceneTypeActive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "desiredSceneType", Type = "ClientSceneType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isPlaying", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "ClientSceneClosed",
+			Type = "Event",
+			LiteralName = "CLIENT_SCENE_CLOSED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ClientSceneOpened",
+			Type = "Event",
+			LiteralName = "CLIENT_SCENE_OPENED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "sceneType", Type = "ClientSceneType", Nilable = false },
+			},
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "ClientSceneType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "DefaultSceneType", Type = "ClientSceneType", EnumValue = 0 },
+				{ Name = "MinigameSceneType", Type = "ClientSceneType", EnumValue = 1 },
+			},
+		},
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(ClientScene);

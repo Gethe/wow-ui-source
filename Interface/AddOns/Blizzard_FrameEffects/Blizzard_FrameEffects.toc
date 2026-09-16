@@ -1,0 +1,5 @@
+## Title: Blizzard_FrameEffects
+## AllowLoad: Both
+EffectFactory.lua
+GlowEmitter.xml
+PowerSwirl.xml

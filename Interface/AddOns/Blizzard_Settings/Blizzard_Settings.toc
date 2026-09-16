@@ -1,0 +1,5 @@
+## Title: Blizzard Settings
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+
+Blizzard_Settings.lua

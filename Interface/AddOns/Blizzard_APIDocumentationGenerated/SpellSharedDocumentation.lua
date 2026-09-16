@@ -1,0 +1,72 @@
+local SpellShared =
+{
+	Tables =
+	{
+		{
+			Name = "SpellChargeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentCharges", Type = "number", Nilable = false, Documentation = { "Number of charges currently available" } },
+				{ Name = "maxCharges", Type = "number", Nilable = false, NeverSecret = true, Documentation = { "Max number of charges that can be accumulated" } },
+				{ Name = "cooldownStartTime", Type = "number", Nilable = false, Documentation = { "If charge cooldown is active, time at which the most recent charge cooldown began; 0 if cooldown is not active" } },
+				{ Name = "cooldownDuration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds required to generate a charge" } },
+				{ Name = "chargeModRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
+				{ Name = "isActive", Type = "bool", Nilable = false, NeverSecret = true, Documentation = { "False if recharging is not active (ex: at maximum available charges, start time or duration are zero); True otherwise" } },
+			},
+		},
+		{
+			Name = "SpellCooldownInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false, Documentation = { "If cooldown is active, time started; 0 if no cooldown; Current time if isEnabled is false" } },
+				{ Name = "duration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds if active; 0 if cooldown is inactive" } },
+				{ Name = "isEnabled", Type = "bool", Nilable = false, NeverSecret = true, Documentation = { "False if cooldown is on hold (ex: some cooldowns only start after an active spell is cancelled); True otherwise" } },
+				{ Name = "isActive", Type = "bool", Nilable = false, NeverSecret = true, Documentation = { "False if cooldown is not active (ex: not enabled, or startTime or duration are 0); True otherwise" } },
+				{ Name = "modRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
+				{ Name = "activeCategory", Type = "number", Nilable = true, Documentation = { "Indicates which category is responsible for determining the duration. A nil value indicates the duration was determined through some other logic, e.g. the spell is on hold." } },
+				{ Name = "timeUntilEndOfStartRecovery", Type = "number", Nilable = true, Documentation = { "When this is set it indicates that the spell is in recovery and this is how long it will be until that recovery period is finished" } },
+				{ Name = "isOnGCD", Type = "bool", Nilable = true, NeverSecret = true, Documentation = { "Whether or not this spell is considered to be on the global cooldown, do not trust this field unless responding to a SPELL_UPDATE_COOLDOWN event" } },
+			},
+		},
+		{
+			Name = "SpellLossOfControlInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false, Documentation = { "If cooldown is active, time started; 0 if no cooldown" } },
+				{ Name = "duration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds if active; 0 if cooldown is inactive" } },
+				{ Name = "modRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
+				{ Name = "isActive", Type = "bool", Nilable = false, NeverSecret = true, Documentation = { "False if cooldown is not active (startTime or duration are 0); True otherwise" } },
+				{ Name = "shouldReplaceNormalCooldown", Type = "bool", Nilable = false, NeverSecret = true, Documentation = { "True if this cooldown should be displayed in-place of the normal action cooldown (ex: the LoC cooldown expires later than the normal cooldown); False otherwise" } },
+			},
+		},
+		{
+			Name = "SpellPowerCostInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "PowerType", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false, Documentation = { "The name or 'power token' for this power type (ex: MANA, FOCUS, etc)" } },
+				{ Name = "cost", Type = "number", Nilable = false, Documentation = { "Full cost including optional cost; Optional cost is cost the spell will use but isn't required (ex: Rogue spell might cost 1CP but have optional cost of up to 5 more)" } },
+				{ Name = "minCost", Type = "number", Nilable = false, Documentation = { "Cost excluding optional cost; This is min required to cast the spell" } },
+				{ Name = "costPercent", Type = "number", Nilable = false, Documentation = { "Cost as a percentage of base maximum resource; May be 0 if the cost is simply a flat cost" } },
+				{ Name = "costPerSec", Type = "number", Nilable = false, Documentation = { "Cost as a percentage of base maximum resource consumed per second, used by channel spells; May be 0 if cost is simply a flat cost" } },
+				{ Name = "requiredAuraID", Type = "number", Nilable = false, Documentation = { "An aura the caster must have for the cost to apply; Usually based on things like active spec or shapeshift form" } },
+				{ Name = "hasRequiredAura", Type = "bool", Nilable = false, Documentation = { "True if there is a requiredAuraID and the caster currently has that aura; Caster is either the current player or their pet, depending on spell type" } },
+			},
+		},
+	},
+
+	Predicates =
+	{
+		{
+			Name = "RequiresValidSpellIdentifier",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SpellShared);

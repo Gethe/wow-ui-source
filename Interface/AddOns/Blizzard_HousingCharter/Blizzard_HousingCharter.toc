@@ -1,0 +1,9 @@
+## Title: Blizzard Housing Charter
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+Blizzard_HousingCharter.lua
+Blizzard_HousingCharter.xml
+Blizzard_HousingCharterRegistration.lua

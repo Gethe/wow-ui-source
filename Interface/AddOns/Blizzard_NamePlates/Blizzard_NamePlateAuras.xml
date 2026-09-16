@@ -1,0 +1,64 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="NameplateAuraItemTemplate" virtual="true" enableMouse="true" hidden="true" mixin="NamePlateAuraItemMixin">
+		<!-- Size handled dynamically in lua.-->
+		<KeyValues>
+			<KeyValue key="useAuraDisplayTime" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="5"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" setAllPoints="true" reverse="true">
+				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
+			</Cooldown>
+			<Frame parentKey="CountFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="NamePlateAuraListTemplate" inherits="GridLayoutFrame" virtual="true">
+		<Size x="300" y="25"/>
+		<KeyValues>
+			<KeyValue key="childXPadding" value="0" type="number"/>
+			<KeyValue key="childYPadding" value="0" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="stride" value="10" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+</Ui>

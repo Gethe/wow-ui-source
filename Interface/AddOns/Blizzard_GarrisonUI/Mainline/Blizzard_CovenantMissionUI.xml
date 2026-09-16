@@ -1,0 +1,592 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CovenantMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="CovenantMissionPageEnemyMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="MechanicEffect" hidden="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantMissionPageStageTemplate" virtual="true">
+		<Size x="556" y="230"/>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Header">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".35"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<FontString parentKey="Level" inherits="Game24Font" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="Title" inherits="QuestFont_Huge" justifyH="LEFT" maxLines="2">
+					<Size x="340" y="0"/>
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="90" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="EnemyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="50" y="0"/>
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-34" y="-18"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="EnemyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="50" y="0"/>
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.EnemyHealthValue" relativePoint="BOTTOMLEFT" y="-15"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<Texture parentKey="EnemyPowerIcon" atlas="ui_adv_atk" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.EnemyPowerValue" relativePoint="LEFT" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EnemyHealthIcon" atlas="ui_adv_health" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.EnemyHealthValue" relativePoint="LEFT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Location" inherits="QuestFont_Huge" hidden="true">
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT" hidden ="true">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="-15" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MouseOverTitleFrame" mixin="ConvenantMissionPageMouseOverTitleMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-100" y="-66"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MissionInfo" inherits="VerticalLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="3" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="XP" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+							<Color r="1" g="0.573" b="0.075"/>
+						</FontString>
+						<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
+							<Size x="300" y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="EnvironmentEffectFrame"  mixin="CovenantMissionEnvironmentEffectMixin">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="19" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="Icon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" setAllPoints="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MissionInfo.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="true" alpha="1" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="EnvironmentHighlight" setToFinalAlpha="true" looping="REPEAT">
+						<Scale childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromScaleX="0.39" fromScaleY="0.39" toScaleX=".6" toScaleY=".6"/>
+						<Alpha childKey="Highlight" startDelay="0.1" endDelay="2.9" smoothing="NONE" duration="1.0" order="1" fromAlpha=".6" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="CovenantMissionPageTemplate" virtual="true">
+		<Size x="556" y="580"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-55" y="-34"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-255"/>
+					</Anchors>
+					<Color r="0.910" g="0.835" b="0.706"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG">
+					<Size x="90" y="65"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.55"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" y="10"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"  y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Median" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="1000">
+				<KeyValues>
+					<KeyValue key="layoutType" value="AdventuresMissionComplete" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="CloseButton" frameLevel="1500" inherits="GarrisonMissionPageCloseButtonTemplate">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="2" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder" atlas="UI-Frame-Oribos-ExitButtonBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="EncounterIcon" inherits="SmallCovenantMissionEncounterIconTemplate" frameLevel="900">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="28" y="-16"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>
+			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
+				</Anchors>
+			</Frame>
+			<!-- A frame is used here for layering. -->
+			<Frame parentKey="StartMissionFrame" inherits="ResizeLayoutFrame" frameLevel="1500">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ButtonFrame" atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="StartMissionButton" inherits="StartMissionButtonTemplate" text="COVENANT_MISSIONS_START_ADVENTURE" frameLevel="1600">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" x="-50" y="1"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate" frameLevel="1600">
+				<KeyValues>
+					<KeyValue key="leftAnchor" value="60" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.StartMissionFrame" x="55"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" relativePoint="CENTER" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Board" inherits="AdventuresBoardTemplate">
+				<KeyValues>
+					<KeyValue key="followerTemplate" type="string" value="AdventuresMissionPageFollowerPuckTemplate"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-86"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="AllyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
+							<Size x="50" y="0"/>
+							<Shadow x="1" y="-1"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-34" y="40"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="AllyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
+							<Size x="50" y="0"/>
+							<Shadow x="1" y="-1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AllyHealthValue" relativePoint="BOTTOMLEFT" y="-15"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<Texture parentKey="AllyPowerIcon" atlas="ui_adv_atk" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.AllyPowerValue" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="AllyHealthIcon" atlas="ui_adv_health" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.AllyHealthValue" relativePoint="LEFT" x="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonMissionPage_OnLoad"/>
+			<OnEvent function="GarrisonMissionPage_OnEvent"/>
+			<OnShow function="CovenantMissionPage_OnShow"/>
+			<OnHide function="CovenantMissionPage_OnHide"/>
+			<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+			<OnClick function="GarrisonMissionPage_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, CovenantMission" frameLevel="1" parent="UIParent" toplevel="true">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoadMainFrame"/>
+			<OnShow method="OnShowMainFrame"/>
+			<OnHide method="OnHideMainFrame"/>
+			<OnEvent method="OnEventMainFrame"/>
+		</Scripts>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="OverlayElements" frameLevel="3010" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RaisedBorder" inherits="NineSlicePanelTemplate" frameLevel="3000">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="COVENANT_MISSIONS_TITLE"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="COVENANT_MISSION_FOLLOWER_CATEGORY"/>
+			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE"/>
+			<Frame parentKey="FollowerList" inherits="CovenantFollowerListTemplate" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList, CovenantFollowerListMixin" frameStrata="HIGH">
+				<Size x="305" y="505"/>
+				<KeyValues>
+					<KeyValue key ="followerTemplate" value="CovenantMissionFollowerOrCategoryListButtonTemplate" type="string"/>
+					<KeyValue key="showUncollected" value="true" type="boolean"/>
+					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="AdventurersLabel" inherits="GameFontHighlightLarge" text="COVENANT_MISSION_FOLLOWER_CATEGORY">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+					</Frame>
+					<Button parentKey="HealAllButton" frameLevel="10" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_ALL">
+						<Size x="200" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.MaterialFrame" relativePoint="BOTTOM" y="-6"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter function="CovenantMissionHealAllButton_OnEnter" />
+							<OnLeave function="CovenantMissionHealAllButton_OnLeave" />
+							<OnClick function="CovenantMissionHealAllButton_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="MapTab" mixin="MapCanvasMixin, AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnHide method="OnHide"/>
+					<OnMouseWheel function="nop" />
+				</Scripts>
+				<Frames>
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin" useParentLevel="true">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT" x="-6" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT" x="6" y="0"/>
+							<Anchor point="TOP" relativeKey="$parent.$parent.Top" relativePoint="BOTTOM" x="0" y="6"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" relativePoint="TOP" x="0" y="-7"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame parentKey="Child" useParentLevel="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-8">
+										<Texture parentKey="TiledBackground" atlas="AdventureMap_TileBg" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
+				<Frames>
+					<Frame parentKey="MissionList" inherits="CovenantMissionListTemplate" mixin="CovenantMissionListMixin" name="$parentMissions">
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self.CompleteDialog.Background:ClearAllPoints();
+								self.CompleteDialog.Background:SetPoint("TOPLEFT", -1, 20);
+								self.CompleteDialog.Background:SetPoint("BOTTOMRIGHT", 4, -3);
+								self.CompleteDialog.Background:SetSize(961, 660);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="ZoneSupportMissionPageBackground" hidden="true" frameLevel="1">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.$parent" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent" x="0" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="MissionPage" inherits="CovenantMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,CovenantFollowerMissionPageMixin"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="FollowerTab" inherits="CovenantFollowerTabTemplate" frameStrata="HIGH" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-38" y="-61"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" hidden="true"/>
+			<Frame parentKey="MissionComplete" inherits="AdventuresCompleteScreenTemplate"  hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="170" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

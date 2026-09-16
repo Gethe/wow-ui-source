@@ -1,0 +1,9 @@
+## Title: Blizzard House List
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+Blizzard_HouseList.lua
+Blizzard_HouseList.xml
+Blizzard_HouseListRegistration.lua

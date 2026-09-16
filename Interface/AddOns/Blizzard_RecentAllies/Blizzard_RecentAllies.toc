@@ -1,0 +1,9 @@
+## Title: Blizzard_RecentAllies
+## AllowLoad: both
+## AllowLoadGameType: mainline
+## OptionalDeps: Blizzard_UnitPopupShared
+## Dependencies: Blizzard_SocialUIShared
+
+Blizzard_RecentAlliesUtil.lua
+Blizzard_RecentAlliesTemplates.lua
+Blizzard_RecentAlliesTemplates.xml

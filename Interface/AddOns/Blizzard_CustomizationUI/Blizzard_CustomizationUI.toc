@@ -1,0 +1,13 @@
+## Title: Blizzard_CustomizationUI
+## AllowLoad: Both
+## LoadOnDemand: 1
+
+Blizzard_CustomizationUtil.lua [AllowLoadGameType mainline]
+Blizzard_CustomizationTemplates.lua [AllowLoadGameType mainline]
+Blizzard_CustomizationTemplates.xml [AllowLoadGameType mainline]
+Blizzard_CustomizationOptionTemplates.lua [AllowLoadGameType mainline]
+Blizzard_CustomizationOptionTemplates.xml [AllowLoadGameType mainline]
+Blizzard_CustomizationAudioInterface.lua [AllowLoadGameType mainline]
+Blizzard_CustomizationAudioInterface.xml [AllowLoadGameType mainline]
+Blizzard_CustomizationUI.lua [AllowLoadGameType mainline]
+Blizzard_CustomizationUI.xml [AllowLoadGameType mainline]

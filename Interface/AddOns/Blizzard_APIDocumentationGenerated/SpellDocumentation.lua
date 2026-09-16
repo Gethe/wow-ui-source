@@ -1,0 +1,1129 @@
+local Spell =
+{
+	Name = "Spell",
+	Type = "System",
+	Namespace = "C_Spell",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "CancelSpellByID",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesSpellExist",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the spell exists, regardless of whether the player has learned it" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell" } },
+			},
+
+			Returns =
+			{
+				{ Name = "spellExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "EnableSpellRangeCheck",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Used in conjunction with SpellRangeCheckUpdate to inform the UI when a spell goes in or out of range with the current target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the spell should dispatch SpellRangeCheckUpdate. False if the spell no longer needs the event." } },
+			},
+		},
+		{
+			Name = "GetAuraStatChanges",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "healthChange", Type = "number", Nilable = false },
+				{ Name = "powerTypeChanges", Type = "table", InnerType = "PowerTypeChange", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBaseSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "spec", Type = "number", Nilable = false, NeverSecret = true, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
+			},
+
+			Returns =
+			{
+				{ Name = "baseSpellID", Type = "number", Nilable = false, Documentation = { "Returns the spellID passed in if there is no override" } },
+			},
+		},
+		{
+			Name = "GetDeadlyDebuffInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "deadlyDebuffInfo", Type = "DeadlyDebuffInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemModifiedAppearancesApplied",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemModifiedAppearanceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLastCategoryCooldownSource",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Searches for the most recent spellID and itemID that started a cooldown in this category" },
+
+			Arguments =
+			{
+				{ Name = "spellCategory", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "The most recent spell associated with the category" } },
+				{ Name = "itemID", Type = "number", Nilable = true, Documentation = { "The item used to trigger this spell" } },
+			},
+		},
+		{
+			Name = "GetMawPowerLinkBySpellID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMawPowerRarityInfoBySpellID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rarityID", Type = "number", Nilable = false },
+				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "spec", Type = "number", Nilable = false, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
+				{ Name = "onlyKnown", Type = "bool", Nilable = false, Default = true },
+				{ Name = "ignoreOverrideSpellID", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "overrideSpellID", Type = "number", Nilable = false, Documentation = { "Returns the spellID passed in if there is no override" } },
+			},
+		},
+		{
+			Name = "GetSchoolString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "schoolMask", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellAutoCast",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoCastAllowed", Type = "bool", Nilable = false },
+				{ Name = "autoCastEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCastCount",
+			Type = "Function",
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns number of times a spell can be cast, typically based on availability of things like required reagent items; Returns 0 if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "castCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellChargeDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active recharge time for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCharges",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a table of info about the charges of a charge-accumulating spell; May return nil if spell is not found or is not charge-based" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "chargeInfo", Type = "SpellChargeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCooldown",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "ignoreGCD", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellDescription",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellDescriptionForItemLocation",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellDisplayCount",
+			Type = "Function",
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Depending on the spell, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = false, Default = 9999 },
+				{ Name = "replacementString", Type = "cstring", Nilable = false, Default = "*" },
+			},
+
+			Returns =
+			{
+				{ Name = "displayCount", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellIDForSpellIdentifier",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Meant primarily for getting a spell id from a spell name or link; Returns nothing if spell does not exist" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell; If passed a spell ID, will return same id as was passed" } },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell" } },
+			},
+
+			Returns =
+			{
+				{ Name = "spellInfo", Type = "SpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLevelLearned",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelLearned", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLink",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "glyphID", Type = "number", Nilable = true, NeverSecret = true },
+			},
+
+			Returns =
+			{
+				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLossOfControlCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLossOfControlCooldownInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenCooldownsRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lossOfControlInfo", Type = "SpellLossOfControlInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellMaxCumulativeAuraApplications",
+			Type = "Function",
+			SecretWhenUnitAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cumulativeAura", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellName",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellPowerCost",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type this spell costs; May return nil if spell is not found or has no resource costs" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "powerCosts", Type = "table", InnerType = "SpellPowerCostInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellQueueWindow",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellSkillLineAbilityRank",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the rank of a spell that corresponds to an ability within a ranked SkillLine (ex: a crafting Recipe); Returns nil if spell is not found, or isn't part of a ranked SkillLine" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rank", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellSubtext",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "subtext", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellTexture",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nothing if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "originalIconID", Type = "fileID", Nilable = false },
+				{ Name = "conditionalIconID", Type = "fileID", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSpellTradeSkillLink",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if spell is not associated with a trade skill" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetVisibilityInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "visibilityType", Type = "SpellAuraVisibilityType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasCustom", Type = "bool", Nilable = false },
+				{ Name = "alwaysShowMine", Type = "bool", Nilable = false },
+				{ Name = "showForMySpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAutoAttackSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is the player's melee Auto Attack spell" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAutoRepeatSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is an auto repeat player spell" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoRepeat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsClassTalentSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell comes from a Class Talent" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoRepeat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsConsumableSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "consumable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrentSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is currently being cast or is queued to be cast" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCurrentSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsExternalDefensive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura is considered an external defensive." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isExternalDefensive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPressHoldReleaseSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is an 'empower' type spell that is cast by pressing and holding, with the on-release cast typically being affected by time held" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPressHoldRelease", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPriorityAura",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura is considered high priority and should be ordered ahead of other auras in the UI." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHighPriority", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPvPTalentSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell comes from a PvP Talent" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoRepeat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRangedAutoAttackSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRangedAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSelfBuff",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura only applies effects to the player, and no other units." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSelfEffectsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellCrowdControl",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell causes a crowd control effect when cast on a valid target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrowdControl", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellDataCached",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if data for the spell has already been loaded and cached this session" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCached", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellDisabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellHarmful",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell can be cast on hostile targets" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHarmful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellHelpful",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell can be cast on the player or other friendly targets" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHelpful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellImportant",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is considered important. For example a spell that's lethal if not interrupted would be considered important." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isImportant", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellInRange",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the current target is within range of the spell; False if out of range; Nil if range check was invalid" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "targetUnit", Type = "UnitToken", Nilable = true, Documentation = { "Optional specific target; If not supplied, player's current target (if any) will be used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to unknown/invalid spell, missing/invalid target, etc" } },
+			},
+		},
+		{
+			Name = "IsSpellPassive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPassive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellUsable",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns whether the spell is currently castable; Typically based on things like learned status, required resources, etc" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "insufficientPower", Type = "bool", Nilable = false, Documentation = { "True if spell is specifically unusable due to insufficient power (ie MANA, RAGE, etc)" } },
+			},
+		},
+		{
+			Name = "PickupSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestLoadSpellData",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Requests data for the spell be loaded; Listen for SPELL_DATA_LOAD_RESULT to be notified when load is finished" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSpellAutoCastEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellHasRange",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell has a min and/or max range greater than 0" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasRange", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellChecksItemCondition",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellIsEnchanting",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnchanting", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellJumpsUpgradeTrack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "jumpsUpgradeTrack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellReplacesBonusTree",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ToggleSpellAutoCast",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Toggles whether spell's autoCast is enabled" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "EnchantSpellCompleted",
+			Type = "Event",
+			LiteralName = "ENCHANT_SPELL_COMPLETED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "successful", Type = "bool", Nilable = false },
+				{ Name = "enchantedItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "EnchantSpellSelected",
+			Type = "Event",
+			LiteralName = "ENCHANT_SPELL_SELECTED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "SpellDataLoadResult",
+			Type = "Event",
+			LiteralName = "SPELL_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
+			Payload =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the spell. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
+			},
+		},
+		{
+			Name = "SpellTextUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_TEXT_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UpdateSpellTargetItemContext",
+			Type = "Event",
+			LiteralName = "UPDATE_SPELL_TARGET_ITEM_CONTEXT",
+			SynchronousEvent = true,
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "DeadlyDebuffInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "criticalTimeRemainingMs", Type = "number", Nilable = true },
+				{ Name = "criticalStacks", Type = "number", Nilable = true },
+				{ Name = "priority", Type = "number", Nilable = false },
+				{ Name = "warningText", Type = "string", Nilable = false },
+				{ Name = "soundKitID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PowerTypeChange",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false, Documentation = { "Icon for this spell; If spell has been overriden, this may be the icon for the overriding spell; See originalIconID for spell's non-overriden icon" } },
+				{ Name = "originalIconID", Type = "fileID", Nilable = false },
+				{ Name = "castTime", Type = "number", Nilable = false },
+				{ Name = "minRange", Type = "number", Nilable = false },
+				{ Name = "maxRange", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(Spell);

@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+    <!-- Ability Template -->
+    <Frame name="DelvesCompanionAbilityTemplate" mixin="DelvesCompanionAbilityMixin" virtual="true">
+        <Size x="175" y="55"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Icon">
+                    <Size x="40" y="40"/>
+                    <Anchors>
+                        <Anchor point="LEFT"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Name" inherits="GameFontNormalMed1" wordwrap="true" justifyH="LEFT">
+                    <Size x="130" y="30"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="UnlockCondition" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size x="130" y="10"/>
+                    <Color color="GRAY_FONT_COLOR"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="Rank" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size x="130" y="10"/>
+                    <Color color="WHITE_FONT_COLOR"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture parentKey="NewGlow" atlas="bags-newitem" useAtlasSize="false" hidden="true">
+                    <Size x="52" y="52"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <!-- Ability List Frame -->
+    <Frame name="DelvesCompanionAbilityListFrame" inherits="PortraitFrameTemplate, TalentFrameBaseTemplate" mixin="DelvesCompanionAbilityListFrameMixin" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+        <KeyValues>
+            <KeyValue key="getTemplateType" value="DelvesCompanionAbilityListFrameMixin.GetTemplateForTalentType" type="global"/>
+            <KeyValue key="enableZoomAndPan" value="false" type="boolean"/>
+        </KeyValues>
+        <Size x="430" y="520"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="CompanionAbilityListBackground" atlas="character-panel-background" useAtlasSize="false">
+                    <Size x="420" y="457"/>
+                    <Anchors>
+                        <Anchor point="BOTTOM" y="7"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- Role Dropdown -->
+            <DropdownButton parentKey="DelvesCompanionRoleDropdown" mixin="DelvesCompanionRoleDropdownMixin" inherits="WowStyle1DropdownTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.CompanionAbilityListBackground" relativePoint="TOPRIGHT" y="4"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad method="OnLoad"/>
+                </Scripts>
+            </DropdownButton>
+
+            <!-- Ability list page controls -->
+            <Frame parentKey="DelvesCompanionAbilityListPagingControls" inherits="PagingControlsHorizontalTemplate" mixin="DelvesCompanionAbilityListPagingControlsMixin">
+                <Size x="33" y="32"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" y="10"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnMouseWheel method="OnMouseWheel"/>
+        </Scripts>
+    </Frame>
+</Ui>

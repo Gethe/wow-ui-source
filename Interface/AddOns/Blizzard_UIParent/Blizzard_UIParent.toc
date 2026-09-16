@@ -1,0 +1,3 @@
+## Title: Blizzard_UIParent
+## Dep: Blizzard_SharedXMLBase
+UIParent.lua

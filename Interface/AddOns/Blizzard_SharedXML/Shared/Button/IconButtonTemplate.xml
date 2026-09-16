@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
+		<!--
+		icon: texture file to be displayed on the button.
+		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
+		iconWidth: specified with iconHeight.
+		iconHeight: specified with iconWidth.
+		iconAtlas: atlas to be displayed on the button.
+		useAtlasSize: used with iconAtlas.
+		useIconAsHighlight: use the same icon for the highlight texture.
+		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconSize" value="16" type="number"/>
+			<KeyValue key="iconWidth" value="16" type="number"/>
+			<KeyValue key="iconHeight" value="16" type="number"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+			<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<!-- Note: This isn't using the InitButton pattern from UIButtonTemplate because there are load order issues if we do. -->
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="IconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="16" type="number"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="CommonSquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="24" type="number"/>
+		</KeyValues>
+		<Size x="48" y="48"/>
+		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<DisabledTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+	</Button>
+	
+</Ui>

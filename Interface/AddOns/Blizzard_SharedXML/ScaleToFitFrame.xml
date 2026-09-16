@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<!--Allows automatic scaling of a frame to fit a max width or height.-->
+	<!--Make sure you set a RefreshCallback and call Refresh when MaxWidth or MaxHeight needs to be re-evaluated-->
+	<Frame name="ScaleToFitFrame" mixin="ScaleToFitFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnScaleToFitFrameLoad" inherit="prepend" />
+			<OnEvent method="OnScaleToFitFrameEvent" inherit="prepend" />
+		</Scripts>
+	</Frame>
+
+	<!--Use these instead of ScaleToFitFrame for LayoutFrames because it allows for automatic calling of Refresh when the frame is cleaned-->
+	<Frame name="ScaleToFitHorizontalLayoutFrame" inherits="HorizontalLayoutFrame, ScaleToFitFrame" mixin="ScaleToFitLayoutFrameMixin" virtual="true"/>
+	<Frame name="ScaleToFitVeriticalLayoutFrame" inherits="VerticalLayoutFrame, ScaleToFitFrame" mixin="ScaleToFitLayoutFrameMixin" virtual="true"/>
+</Ui>

@@ -1,0 +1,262 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_TorghastLevelPicker.lua"/>
+	<Frame name="TorghastPagingContainerTemplate" mixin="TorghastPagingContainerMixin" virtual="true">
+		<Size x="150" y="34"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="CurrentPage" justifyH="RIGHT" inherits="GameFontHighlight">
+					<Size x="100" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PreviousPage">
+				<Size x="34" y="34"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():PagePrevious();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="NextPage">
+				<Size x="34" y="34"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PreviousPage" relativePoint="RIGHT" x="30" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					self:GetParent():PageNext();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="TorghastLevelPickerRewardCircleTemplate" frameStrata="HIGH" motionScriptsWhileDisabled="true" mixin="TorghastLevelPickerRewardCircleMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="RewardBorder" atlas="jailerstower-wayfinder-rewardcircle" useAtlasSize="true"/>
+				<Texture parentKey="QuestComplete" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardBorder" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-2">
+					<Texture parentKey="HighlightGlow" atlas="jailerstower-wayfinder-rewardglow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="7" y="-7"/>
+						</Anchors>
+					</Texture>
+				<Texture parentKey="HighlightGlow2" atlas="jailerstower-wayfinder-rewardglow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="-7" y="7"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="LockedIcon" atlas="jailerstower-wayfinder-rewardpadlock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="HighlightGlow" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="HighlightGlow" startDelay=".75" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
+				<Alpha childKey="HighlightGlow2" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="HighlightGlow2" startDelay=".75" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="TorghastLevelPickerRewardBannerTemplate" frameStrata="HIGH" virtual="true">
+		<Size x="146" y="69"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Banner" atlas="jailerstower-wayfinder-rewardbackground" useAtlasSize="true"/>
+				<Texture parentKey="BannerDisabled" atlas="jailerstower-wayfinder-rewardbackground-disable" hidden="true" useAtlasSize="true"/>
+				<Texture parentKey="BannerSelected" atlas="jailerstower-wayfinder-rewardbackground-selected" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EarnedCheck" hidden="true" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Reward" hidden="true" inherits="TorghastLevelPickerRewardCircleTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Banner"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	<CheckButton name="TorghastLevelPickerOptionButtonTemplate" motionScriptsWhileDisabled="true" inherits="CustomGossipOptionButtonBaseTemplate" mixin="TorghastLevelPickerOptionButtonMixin" frameStrata="HIGH" virtual="true">
+		<Size x="91" y="91"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="jailerstower-wayfinder-tierbackground-skoldushall" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" atlas="islands-queue-difficultyselector-1">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="SelectedBorder" atlas="jailerstower-wayfinder-tierbackground-selected" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardBanner" inherits="TorghastLevelPickerRewardBannerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-35"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<HighlightTexture parentKey="HighlightBorder" atlas="jailerstower-wayfinder-tierbackground-mouseover" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="4"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</CheckButton>
+	<Frame name="TorghastLevelPickerFrame" hidden="true" inherits="CustomGossipFrameBaseGridTemplate" mixin="TorghastLevelPickerFrameMixin">
+		<Size x="807" y="569"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="jailerstower-wayfinder-background" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" justifyV="BOTTOM" justifyH="CENTER" inherits="Game32Font">
+					<Size x="350" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="140" y="-70"/>
+					</Anchors>
+					<Color color="BATTLENET_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontHighlightMedium" text="JAILERSTOWER_LEVEL_PICKER_SELECT_DIFFICULTY">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="110" y="-110"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Pager" inherits="TorghastPagingContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.GridLayoutContainer" relativePoint="BOTTOM" x="-70" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="OpenPortalButton" inherits="UIPanelButtonTemplate" mixin="TorghastLevelPickerOpenPortalButtonMixin" motionScriptsWhileDisabled="true" frameLevel="510" text="TORGHAST_WAYFINDER_OPEN_PORTAL">
+				<Size x="185" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Pager" relativePoint="BOTTOM" x="30" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-60" y="-60" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder" atlas="jailerstower-wayfinder-exitborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_CLOSE_UI);
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

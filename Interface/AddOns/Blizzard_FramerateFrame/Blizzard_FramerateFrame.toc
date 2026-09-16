@@ -1,0 +1,4 @@
+## Title: Blizzard_FramerateFrame
+## Dep: Blizzard_ActionBar
+[Family]\FramerateFrame.lua
+[Family]\FramerateFrame.xml

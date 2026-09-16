@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="RaidWarningFrameTemplate" mixin="RaidWarningFrameMixin" hidden="true" virtual="true">
+		<Size x="800" y="100"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RaidWarningFrame" mixin="GlobalRaidWarningFrameMixin" inherits="RaidWarningFrameTemplate, EditModeRaidWarningSystemTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<KeyValues>
+			<KeyValue key="maxMessageSlots" value="4" type="number"/>
+			<KeyValue key="minReservedSlots" value="2" type="number"/>
+			<KeyValue key="maxTotalLines" value="5" type="number"/>
+			<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.Standard" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-182"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" inherits="PingTopLevelPassThroughAttributeTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size x="800" y="80"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="TOP"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

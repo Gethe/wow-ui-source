@@ -1,0 +1,15 @@
+## Title: Blizzard_MainMenuBarBagButtons
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_CharacterFrame
+## AllowLoadGameType: classic
+
+Shared\MainMenuBarBagManager.lua
+Classic\MainMenuBarBagButtonsConsts.lua
+Wrath\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType wrath, cata]
+Mists\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType mists]
+Classic\MainMenuBarBagButtons.lua
+Shared\BagsBar.lua
+Classic\BagsBarOverrides.lua
+Classic\Keyring.lua
+Classic\MainMenuBarBagButtons.xml

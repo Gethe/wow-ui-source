@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="EncounterTimelineTimerViewTemplate" mixin="EncounterTimelineTimerViewMixin" flattenRenderLayers="true" virtual="true">
+		<Size x="300" y="300"/>
+		<KeyValues>
+			<!-- Template to use for timer frames. At present, only one template is supported. -->
+			<KeyValue key="timerTemplate" value="EncounterTimelineTimerEventTemplate" type="string"/>
+			<!-- Maximum number of timers to show. -->
+			<KeyValue key="maxTimerCount" value="10" type="number"/>
+			<!-- Padding values inset timer frames from the background art. -->
+			<KeyValue key="paddingHorizontal" value="20" type="number"/>
+			<KeyValue key="paddingTop" value="10" type="number"/>
+			<KeyValue key="paddingBottom" value="5" type="number"/>
+			<!-- Height of the divider texture placed between short and long timers. -->
+			<KeyValue key="trackDividerHeight" value="14" type="number"/>
+			<!-- Rate at which timers will be re-sorted if there's a mixture of paused and active events. -->
+			<KeyValue key="timerResortPeriod" value="0.2" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" atlas="damagemeters-background" alpha="0"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Line parentKey="TrackDivider" mixin="EncounterTimelineTimerViewTrackDividerMixin" thickness="2" hidden="true">
+					<!-- Anchors dynamically managed. -->
+					<Color r="0.5" g="0.5" b="0.5"/>
+					<Animations>
+						<AnimationGroup parentKey="ShowAnimation" setToFinalAlpha="true">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.25" smoothing="OUT"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="HideAnimation" inherits="TargetsHiddenOnFinishedAnimGroupTemplate">
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.25" smoothing="OUT"/>
+						</AnimationGroup>
+					</Animations>
+				</Line>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

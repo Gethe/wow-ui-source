@@ -1,0 +1,243 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HouseEditorExpertDecorModeTemplate" mixin="HouseEditorExpertDecorModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
+			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+				<Frames>
+					<!-- General (top) -->
+					<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="housing-hotkey-icon-leftclick" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_SELECT_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<!-- Translate Submode -->
+					<Frame parentKey="MoveForwardInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_FORWARD" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_FORWARD"/>
+							<KeyValue key="layoutIndex" value="10" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveBackInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_BACK" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_BACK"/>
+							<KeyValue key="layoutIndex" value="11" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_LEFT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_LEFT"/>
+							<KeyValue key="layoutIndex" value="12" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_RIGHT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_RIGHT"/>
+							<KeyValue key="layoutIndex" value="13" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveUpInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_UP" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_UP"/>
+							<KeyValue key="layoutIndex" value="14" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveDownInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_DOWN" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_DOWN"/>
+							<KeyValue key="layoutIndex" value="15" type="number"/>
+						</KeyValues>
+					</Frame>
+					<!-- Rotate Submode -->
+					<Frame parentKey="RotateLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_LEFT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_ROTATELEFT"/>
+							<KeyValue key="layoutIndex" value="20" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_RIGHT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_ROTATERIGHT"/>
+							<KeyValue key="layoutIndex" value="21" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateChangeSelectedAxisInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="instructionText" value="HOUSING_EXPERT_DECOR_ROTATION_NEXTAXIS_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORROTATION_NEXTAXIS"/>
+							<KeyValue key="layoutIndex" value="22" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateSnapInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="instructionText" value="HOUSING_EXPERT_DECOR_ROTATE_SNAP_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="SHIFT_KEY_TEXT" type="global"/>
+							<KeyValue key="layoutIndex" value="23" type="number"/>
+						</KeyValues>
+					</Frame>
+					<!-- Scale Submode -->
+					<Frame parentKey="ScaleUpInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Scale"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_SCALEUP" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_SCALEUP"/>
+							<KeyValue key="layoutIndex" value="30" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ScaleDownInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Scale"/>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_SCALEDOWN" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_SCALEDOWN"/>
+							<KeyValue key="layoutIndex" value="31" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ScaleSnapInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Scale"/>
+							<KeyValue key="instructionText" value="HOUSING_EXPERT_DECOR_SCALE_SNAP_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="SHIFT_KEY_TEXT" type="global"/>
+							<KeyValue key="layoutIndex" value="32" type="number"/>
+						</KeyValues>
+					</Frame>
+					<!-- General (bottom) -->
+					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_REMOVEDECOR"/>
+							<KeyValue key="layoutIndex" value="41" type="number"/>
+						</KeyValues>
+					</Frame>
+					<!--<Frame parentKey="ResetInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="" type="global"/>
+							<KeyValue key="keybindName" type="string" value=""/>
+							<KeyValue key="layoutIndex" value="42" type="number"/>
+						</KeyValues>
+					</Frame>-->
+					<!--<Frame parentKey="ResetAllInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">						<KeyValues>
+							<KeyValue key="instructionText" value="" type="global"/>
+							<KeyValue key="keybindName" type="string" value=""/>
+							<KeyValue key="layoutIndex" value="43" type="number"/>
+						</KeyValues>
+					</Frame>-->
+					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
+							<KeyValue key="layoutIndex" value="44" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+							<KeyValue key="layoutIndex" value="45" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="SubmodeBar" inherits="HouseEditorSubmodesBarTemplate">
+				<KeyValues>
+					<KeyValue key="spacing" value="-12" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.$parent.ModeBar.ExpertDecorModeButton" x="0" y="18"/>
+				</Anchors>
+				<Frames>
+					<!-- TODO: Replace with real submode button template once we have the proper icon -->
+					<Button parentKey="ResetButton" mixin="ExpertDecorResetButtonMixin" inherits="HouseEditorOLDSubmodeButtonTemplate">
+						<Size x="42" y="42"/>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							<KeyValue key="enabledTooltip" type="global" value="HOUSING_EXPERT_DECOR_RESET"/>
+							<KeyValue key="iconAtlas" type="string" value="GM-raidMarker-remove"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="TranslateSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-horzmove-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-horzmove-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-horzmove-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_TRANSLATE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_TRANSLATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORTRANSLATESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-horzmove"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-rotate-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-rotate-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-rotate-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_ROTATE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_ROTATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORROTATESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-rotate"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ScaleSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Scale"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-scale-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-scale-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-scale-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_SCALE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_SCALE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORSCALESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-scale"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button parentKey="PlacedDecorListButton" inherits="HouseEditorPlacedDecorListButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DecorCount" relativePoint="LEFT" x="-20" y="0"/>
+				</Anchors>
+			</Button>
+			
+			<Frame parentKey="PlacedDecorList" inherits="HouseEditorPlacedDecorListTemplate" frameLevel="50" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-50" y="-150"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
+			<OnHide method="OnHide" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

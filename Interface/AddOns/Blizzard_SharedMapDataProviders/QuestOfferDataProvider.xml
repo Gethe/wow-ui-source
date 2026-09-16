@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HeightIndicatorMapPinTemplate" mixin="IconWithHeightIndicatorMapPinMixin" enableMouse="true" hidden="true" virtual="true">
+		<Size x="22" y="22" />
+		<HitRectInsets left="4" right="4" top="0" bottom="0"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HeightIndicator" hidden="true">
+					<Size x="32" y="32"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="QuestOfferPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, HeightIndicatorMapPinTemplate, SuperTrackableMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" atlas="QuestNormal"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="SuppressedPinTooltipTemplate" inherits="ResizeLayoutFrame" mixin="SuppressedPinTooltipMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Container">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Container" relativePoint="TOPRIGHT" x="5" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Container" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="SuppressedPinTooltipContainerTemplate" inherits="ResizeLayoutFrame" mixin="SuppressedPinTooltipContainerMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">		
+				<FontString parentKey="AdditionalItems" inherits="GameTooltipText" justifyH="LEFT">
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>		
+	</Frame>
+
+	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true"/>
+</Ui>

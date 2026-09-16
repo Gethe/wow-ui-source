@@ -1,0 +1,7 @@
+## Title: Blizzard_VoiceToggleButton
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: game
+VoiceToggleButton.lua
+VoiceToggleButton.xml

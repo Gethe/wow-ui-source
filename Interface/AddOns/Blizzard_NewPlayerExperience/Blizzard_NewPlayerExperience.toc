@@ -1,0 +1,14 @@
+## Title: Blizzard_NewPlayerExperience
+## LoadOnDemand: 1
+## RequiredDep: middleclass, Blizzard_TutorialManager, Blizzard_LFGUtil
+
+Blizzard_NewPlayerExperience_Bootstrap.lua [Bootstrap]
+Blizzard_TutorialKeyboardMouseFrame.xml
+
+Blizzard_TutorialData.lua
+Blizzard_TutorialWatchers.lua
+Blizzard_TutorialServices.lua
+Blizzard_TutorialTutorials.lua
+Blizzard_TutorialLogic.lua
+
+Blizzard_Tutorial.lua

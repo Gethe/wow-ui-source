@@ -1,0 +1,13 @@
+## Title: Blizzard Housing Market Cart UI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: standard
+## AllowLoad: Game
+## LoadOnDemand: 1
+## Dependencies: Blizzard_GenericShoppingCart
+
+Blizzard_HousingMarketCartServices.lua
+Blizzard_HousingMarketCartTemplates.lua
+Blizzard_HousingMarketCartTemplates.xml
+Blizzard_HousingMarketCartItemTemplates.lua
+Blizzard_HousingMarketCartItemTemplates.xml

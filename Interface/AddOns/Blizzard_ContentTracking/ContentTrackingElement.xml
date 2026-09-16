@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="ContentTrackingElement.lua"/>
+
+	<Texture name="ContentTrackingCheckmarkTemplate" mixin="ContentTrackingCheckmarkMixin" atlas="checkmark-minimal" virtual="true">
+		<Size x="20" y="19"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Texture>
+
+	<Frame name="ContentTrackingElementTemplate" mixin="ContentTrackingElementMixin" virtual="true">
+		<!--
+		checkMarkAnchor: anchor point for the checkmark.
+		checkMarkAnchorX: x offset for the checkmark anchor.
+		checkMarkAnchorY: y offset for the checkmark anchor.
+		-->
+		<KeyValues>
+			<KeyValue key="checkMarkAnchor" type="string" value="BOTTOMRIGHT"/>
+			<KeyValue key="checkMarkAnchorX" type="number" value="-3"/>
+			<KeyValue key="checkMarkAnchorY" type="number" value="0"/>
+		</KeyValues>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

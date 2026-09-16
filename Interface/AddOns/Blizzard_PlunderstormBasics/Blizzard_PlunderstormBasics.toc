@@ -1,0 +1,7 @@
+## Title: Blizzard Plunderstorm Basics
+## AllowLoad: Both
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+
+Blizzard_PlunderstormBasics.lua
+Blizzard_PlunderstormBasics.xml

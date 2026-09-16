@@ -1,0 +1,136 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Frame name="OribosScrollBarButtonScripts" mixin="OribosScrollBarButtonScriptsMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Frame>
+
+	<EventFrame name="OribosScrollBar" inherits="VerticalScrollBarTemplate" virtual="true">
+		<Size x="10" y="560"/>
+		<KeyValues>
+			<KeyValue key="thumbAnchor" value="TOP" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Track" enableMouse="true">
+				<Size x="10"/>
+				<Anchors>
+					<Anchor point="TOP" y="-15"/>
+					<Anchor point="BOTTOM" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EventButton parentKey="Thumb" inherits="OribosScrollBarButtonScripts" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+						</KeyValues>
+						<Size x="16" y="100"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="7" y="-4"/>
+										<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="7" y="-4"/>
+										<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="7" y="-4"/>
+										<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</EventButton>
+				</Frames>
+			</Frame>
+			<EventButton parentKey="Back" inherits="OribosScrollBarButtonScripts">
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
+				</KeyValues>
+				<Size x="20" y="15"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EventButton>
+			<EventButton parentKey="Forward" inherits="OribosScrollBarButtonScripts">
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
+				</KeyValues>
+				<Size x="20" y="15"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+							<Anchors>
+								<Anchor point="CENTER" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+							<Anchors>
+								<Anchor point="CENTER" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EventButton>
+		</Frames>
+	</EventFrame>
+
+</Ui>

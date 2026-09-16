@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_CovenantSanctum.lua"/>
+	
+	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true" toplevel="true">
+		<Size x="980" y="637"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="1" g="1" b="0" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="LevelFrame" frameLevel="510">
+				<Size x="176" y="76"/>
+				<Anchors>
+					<Anchor point="TOP" y="23"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Level" inherits="GameFontNormal" text="COVENANT_SANCTUM_TAB_UPGRADES">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,9 @@
+## Title: Blizzard Order Hall UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## Dependencies: Blizzard_GameMenuEsc
+
+Blizzard_OrderHallUI_Bootstrap.lua [Bootstrap]
+Blizzard_OrderHallTalents.xml
+Localization.lua

@@ -1,0 +1,98 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier forbidden="true" hideFromGlobalEnv="true">
+
+		<Frame name="PrivateAuraUnitWatcherTemplate" hidden="true" virtual="true"/>
+
+		<Frame name="PrivateAuraTemplate" inherits="AuraButtonArtTemplate" mixin="PrivateAuraMixin" hidden="true" virtual="true">
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnLoad method="OnLoad"/>
+				<OnUpdate method="OnUpdate"/>
+				<OnHide method="OnHide"/>
+			</Scripts>
+			<Frames>
+				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" reverse="true" inherits="CooldownFrameTemplate" useParentLevel="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Cooldown>
+			</Frames>
+		</Frame>
+
+		<Texture name="CompactDispelDebuffTemplate" parentArray="dispelDebuffFrames" mixin="CompactDispelDebuffMixin" virtual="true">
+			<Size x="14" y="14"/>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+			</Scripts>
+		</Texture>
+
+		<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" useParentLevel="true" frameLevel="200" virtual="true">
+			<Layers>
+				<Layer level="ARTWORK" textureSubLevel="-6">
+					<Texture parentKey="Background" parentArray="OverlayColorElements" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="-5">
+					<Texture parentKey="Gradient" parentArray="OverlayColorElements" setAllPoints="true"/>
+					<Texture parentKey="Border" parentArray="OverlayColorElements" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+					<Texture inherits="CompactDispelDebuffTemplate"/>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup looping="BOUNCE" parentKey="PulseAnim">
+					<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" />
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+
+		<Frame name="CompactUnitFrameAnimatedDispelBorderTemplate" inherits="MarchingAntsTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="verticalAsset" value="UI-RaidFrames-SingleAnt-Vertical" type="string"/>
+				<KeyValue key="horizontalAsset" value="UI-RaidFrames-SingleAnt-Horiz" type="string"/>
+
+				<KeyValue key="leftOffsetP1X" value="-3" type="number"/>
+				<KeyValue key="leftOffsetP1Y" value="0" type="number"/>
+				<KeyValue key="leftOffsetP2X" value="-3" type="number"/>
+				<KeyValue key="leftOffsetP2Y" value="0" type="number"/>
+
+				<KeyValue key="rightOffsetP1X" value="3" type="number"/>
+				<KeyValue key="rightOffsetP1Y" value="0" type="number"/>
+				<KeyValue key="rightOffsetP2X" value="3" type="number"/>
+				<KeyValue key="rightOffsetP2Y" value="0" type="number"/>
+
+				<KeyValue key="topOffsetP1X" value="0" type="number"/>
+				<KeyValue key="topOffsetP1Y" value="3" type="number"/>
+				<KeyValue key="topOffsetP2X" value="0" type="number"/>
+				<KeyValue key="topOffsetP2Y" value="3" type="number"/>
+
+				<KeyValue key="bottomOffsetP1X" value="0" type="number"/>
+				<KeyValue key="bottomOffsetP1Y" value="-3" type="number"/>
+				<KeyValue key="bottomOffsetP2X" value="0" type="number"/>
+				<KeyValue key="bottomOffsetP2Y" value="-3" type="number"/>
+			</KeyValues>
+		</Frame>
+
+		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidWarningFrameTemplate" mixin="PrivateRaidBossEmoteFrameMixin" frameStrata="HIGH">
+			<KeyValues>
+				<KeyValue key="maxMessageSlots" value="2" type="number"/>
+				<KeyValue key="maxTotalLines" value="4" type="number"/>
+				<KeyValue key="messageTypes" value="RaidWarningUtil.MessageTypes.BossEmote" type="global"/>
+			</KeyValues>
+		</Frame>
+
+		<Frame name="PrivateVisualAlertsManager" inherits="VisualAlertsManagerTemplate"/>
+
+		<Frame name="PrivateGroupBuffsManager" mixin="GroupBuffMixin">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+</Ui>

@@ -1,0 +1,5 @@
+## Title: Blizzard_ShakeUtil
+## AllowLoad: game
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase
+Blizzard_ShakeUtil.lua

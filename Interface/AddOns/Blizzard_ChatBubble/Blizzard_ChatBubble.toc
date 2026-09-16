@@ -1,0 +1,5 @@
+## Title: Blizzard Chat Bubble
+## Author: Blizzard Entertainment
+## LoadOnDemand: 0
+
+ChatBubbleTemplates.xml

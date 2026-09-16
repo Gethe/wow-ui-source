@@ -1,0 +1,470 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ReforgingUI.lua"/>
+
+
+	<!--	size=512,256
+		<Texture name="Reforging-GreenBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.00390625" bottom="0.12500000"/>	
+		</Texture>
+		<Texture name="Reforging-RedBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.13281250" bottom="0.25390625"/>	
+		</Texture>
+		<Texture name="Reforging-Item-TitleBg.png" >
+			<Size x="320" y="50"/>
+			<TexCoords left="0.28515625" right="0.91015625" top="0.00390625" bottom="0.19921875"/>	
+		</Texture>
+		<Texture name="Reforging-CompleteBg.png" >
+			<Size x="330" y="53"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.20703125" bottom="0.41406250"/>	
+		</Texture>
+		<Texture name="Reforge-Glow.png" >
+			<Size x="330" y="72"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.42187500" bottom="0.70312500"/>	
+		</Texture>
+			
+		size=512,128
+		<Texture name="tran-frame-glow" file="\" virtual="true" >
+			<Size x="65" y="65"/>	
+			<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>	
+		</Texture>
+		<Texture name="tran-radio-disabled" file="\" virtual="true" >
+			<Size x="12" y="12"/>	
+			<TexCoords left="0.00195313" right="0.02539063" top="0.53125000" bottom="0.62500000"/>	
+		</Texture>
+		<Texture name="tran-radio-off" file="\" virtual="true" >
+			<Size x="12" y="12"/>	
+			<TexCoords left="0.00195313" right="0.02539063" top="0.64062500" bottom="0.73437500"/>	
+		</Texture>
+		<Texture name="tran-radio-hover" file="\" virtual="true" >
+			<Size x="15" y="15"/>	
+			<TexCoords left="0.02929688" right="0.05859375" top="0.53125000" bottom="0.64843750"/>	
+		</Texture>
+		<Texture name="tran-radio-on" file="\" virtual="true" >
+			<Size x="17" y="17"/>	
+			<TexCoords left="0.02929688" right="0.06250000" top="0.66406250" bottom="0.79687500"/>	
+		</Texture>
+		<Texture name="tran-item-bigframe" file="\" virtual="true" >
+			<Size x="348" y="73"/>	
+			<TexCoords left="0.13281250" right="0.81250000" top="0.00781250" bottom="0.57812500"/>	
+		</Texture>
+		<Texture name="tran-item-frame copy" file="\" virtual="true" >
+			<Size x="78" y="77"/>	
+			<TexCoords left="0.81640625" right="0.96875000" top="0.00781250" bottom="0.60937500"/>	
+		</Texture>
+
+	-->
+
+	<CheckButton name="ReforgingStatTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="178" y="15"/> 
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text" >
+					<Size x="150" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture  name="$parentBG" parentKey="Bg" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="button">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Reforging\Reforge-Texture" parentKey="normalTex">
+							<Size x="12" y="12"/>	
+							<TexCoords left="0.00195313" right="0.02539063" top="0.64062500" bottom="0.73437500"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture file="Interface\Reforging\Reforge-Texture"  parentKey="checkedTex" hidden="true">
+							<Size x="17" y="17"/>	
+							<TexCoords left="0.02929688" right="0.06250000" top="0.66406250" bottom="0.79687500"/>
+						</Texture>
+						<Texture file="Interface\Reforging\Reforge-Texture" parentKey="disableTex" hidden="true">
+							<Size x="12" y="12"/>	
+							<TexCoords left="0.00195313" right="0.02539063" top="0.53125000" bottom="0.62500000"/>
+						</Texture>
+						<Texture file="Interface\Reforging\Reforge-Texture" alphaMode="ADD" parentKey="highlightTex" hidden="true">
+							<Size x="15" y="15"/>	
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-3"/>
+							</Anchors>
+							<TexCoords left="0.02929688" right="0.05859375" top="0.53125000" bottom="0.64843750"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				if ( self.text:IsTruncated() ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.text:GetText());
+					GameTooltip:Show();
+				end
+				if ( not self.button.disableTex:IsShown() ) then
+					self.button.highlightTex:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( GameTooltip:GetOwner() == self ) then
+					GameTooltip:Hide();
+				end
+				self.button.highlightTex:Hide();
+			</OnLeave>
+			<OnClick>
+				Stat_OnClick(self);
+				Stat_SetButtonChecked(self, self:GetChecked());
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				--PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+			<OnShow>
+				if ( self:IsMouseOver() ) then
+					self.button.highlightTex:Show();
+				else
+					self.button.highlightTex:Hide();
+				end
+			</OnShow>
+			<OnHide>
+				Stat_SetButtonChecked(self, false);
+			</OnHide>
+			<OnEnable>
+				self.button.disableTex:Hide();
+				self.button.normalTex:Show();
+				self.button.checkedTex:Hide();
+			</OnEnable>
+			<OnDisable>
+				self.button.disableTex:Show();
+				self.button.normalTex:Hide();
+				self.button.checkedTex:Hide();
+			</OnDisable>
+		</Scripts>
+	</CheckButton>
+	
+	
+
+	<Frame name="ReforgingFrame" inherits="EtherealFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="428" y="430"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentMarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture setAllPoints="true">
+					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture name="$parentLines" file="Interface\Transmogrify\EtherealLines.png" horizTile="true" vertTile="true" alpha="0.1" setAllPoints="true"/>
+				<Texture name="$parentMissingFadeOut" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+				<Texture name="$parentReceiptBG" file="Interface\Reforging\Reforge-Partchment" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-30"/>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="36"/>
+					</Anchors>
+					<TexCoords left="0" right="0.732421875" top="0" bottom="0.705078125"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentRestoreMessage" inherits="GameFontNormal" justifyH="LEFT" text="REFORGE_RESTORE_MESSAGE" hidden="true">
+					<Size x="375" y="40"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentReceiptBG" x="15" y="30"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" />
+				</FontString>
+				<Texture  name="$parentHorzBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="23" y="-150"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-25" y="-151"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+				<FontString inherits="SystemFont_Shadow_Med3" justifyH="CENTER" parentKey="missingDescription" text="REFORGE_DESCRIPTION">
+					<Size x="250" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
+					<Size x="130" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-135"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE">
+					<Size x="130" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="215" y="-135"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentLeftStat1" inherits="ReforgingStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parentHorzBar" x="4" y="-10" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRightStat1" inherits="ReforgingStatTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"  relativeTo="$parentHorzBar" x="-10" y="-10" />
+				</Anchors>
+			</CheckButton>
+			<Frame name="$parentFinishedGlow" setAllPoints="true" parentKey="glow" >
+				<Animations>
+					<AnimationGroup parentKey="reforgeAnim">
+						<Alpha duration="0.1" order="1" />
+						<Alpha startDelay="0.1" duration="0.5" order="2" />
+						<Scripts>
+							<OnFinished>
+								ReforgingFrame_OnFinishedAnim(ReforgingFrame);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentFinishedFlare" file="Interface\Reforging\Reforge-Flare" alphaMode="ADD">
+							<Size x="256" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ReforgingFrame" y="-23"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="ReforgingFrame" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetAlpha(0);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="ReforgingFrameItemButton">
+				<Size x="58" y="58"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"  x="20" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentIconTexture"/>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="name">
+							<Size x="240" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="10"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentBoundStatus" inherits="GameFontNormal" justifyH="LEFT" parentKey="boundStatus">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" y="-5"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString name="$parentMissingText" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="missingText" text="REFORGE_MISSING_ITEM">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT"  relativePoint="RIGHT" x="50" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentFrame" file="Interface\Reforging\Reforge-Texture">
+							<Size x="78" y="77"/>	
+							<TexCoords left="0.81640625" right="0.96875000" top="0.00781250" bottom="0.60937500"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentGrabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentFrame" relativePoint="LEFT" x="11" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.16406250" top="0.58203125" bottom="0.67773438"/>
+						</Texture>
+						<Texture name="$parentTextFrame" file="Interface\Reforging\Reforge-Texture" >
+							<Size x="348" y="73"/>	
+							<TexCoords left="0.13281250" right="0.81250000" top="0.00781250" bottom="0.57812500"/>
+							<Anchors>
+								<Anchor point="LEFT"  relativePoint="RIGHT" x="-10" />
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTextGrabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentTextFrame" relativePoint="RIGHT" x="-11" y="0"/>
+							</Anchors>
+							<TexCoords right="0.00781250" left="0.16406250" top="0.58203125" bottom="0.67773438"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetReforgeItem();
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ReforgingFrame_AddItemClick(self, button);
+					</OnClick>
+					<OnDragStart>
+						ReforgingFrame_AddItemClick(self, button);
+					</OnDragStart>
+					<OnReceiveDrag>
+						ReforgingFrame_AddItemClick(self, button);
+					</OnReceiveDrag>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Reforging\Reforge-Texture" alphaMode="ADD">
+					<Size x="67" y="67"/>	
+					<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>	
+				</HighlightTexture>
+			</Button>
+			<Button name="$parentInvisibleButton" parentKey="invisButton" >
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-120"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp");
+					</OnLoad>
+					<OnClick>
+						ReforgingFrame_AddItemClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentButtonFrame">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame name="ReforgingFrameMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="200" y="7"/>
+						</Anchors>
+					</Frame>
+					<Button name="ReforgingFrameRestoreButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="REFORGE_RESTORE">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="ReforgingFrameMoneyFrame" relativePoint="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ReforgingFrame_RestoreClick"/>
+						</Scripts>
+					</Button>
+					<Button name="ReforgingFrameReforgeButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="REFORGE">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="ReforgingFrameRestoreButton" relativePoint="RIGHT"/>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ReforgingFrame_ReforgeClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture>
+							<Size x="334" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture name="$parentButtonBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="25"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="25"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentMoneyLeft" file="Interface\Common\MoneyFrame.png">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="4"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1" top="0" bottom="0.3125"/>
+						</Texture>
+						<Texture name="$parentMoneyRight" file="Interface\Common\MoneyFrame.png">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentMoneyLeft"/>
+								<Anchor point="RIGHT" relativeTo="ReforgingFrameRestoreButton" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.3125"/>
+						</Texture>
+						<Texture name="$parentMoneyMiddle" file="Interface\Common\MoneyFrame.png">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentMoneyLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentMoneyRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.3125" bottom="0.6250"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ReforgingFrame_OnLoad"/>
+			<OnShow function="ReforgingFrame_OnShow"/>
+			<OnHide function="ReforgingFrame_OnHide"/>
+			<OnEvent function="ReforgingFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

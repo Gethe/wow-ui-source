@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="BaseHousingActionButtonTemplate" mixin="BaseHousingActionButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<!-- 
+		Required Frames/Regions
+			parentKey="Icon"
+		
+		Optional Frames/Regions
+			parentKey="Background"
+			parentKey="ControlText"
+			parentKey="HoverIcon"
+			parentArray="HoverRegions"
+			
+		 -->
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="false"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_BOTTOM"/>
+			<KeyValue key="tooltipAnchorX" type="number" value="0"/>
+			<KeyValue key="tooltipAnchorY" type="number" value="0"/>
+		<!--Optional KVPs
+
+			Can be replaced with GetDefaultTexture / GetIconForState functions
+			<KeyValue key="iconAtlas" type="string" value=""/>
+			OR <KeyValue key="iconTexture" type="string" value=""/>
+
+			Can be replaced with a GetEnabledTooltipText function
+			<KeyValue key="enabledTootlip" type="string" value=""/>
+
+			Name of primary keybind
+			<KeyValue key="keybindName" type="string" value=""/>
+
+			Optional name of an alternate keybind (ie toggle vs hold keybinds)
+			<KeyValue key="altKeybindName" type="string" value=""/>
+
+			Optional name of sounds to play on hover. Should be a key into SOUNDKIT
+			<KeyValue key="onHoverSound" type="string" value=""/>
+			-->
+
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="BaseHousingModeButtonTemplate" mixin="BaseHousingModeButtonMixin" inherits="BaseHousingActionButtonTemplate" virtual="true">
+		<!-- 
+			Same required frames, regions, and KVPs as BaseHousingActionButtonTemplate
+		-->
+		<!--<KeyValues>
+			Optional KVPs
+				Tooltip for entering mode that does not include keybind text
+				<KeyValue key="enterTooltip" type="global" value=""/>
+
+				Tooltip for entering mode that includes token for injecting primary keybind text
+				<KeyValue key="enterTooltipKeybind" type="global" value=""/>
+
+				Tooltip for entering mode that includes token for injecting alternate keybind text
+				This is displayed below either enterTooltip or enterTooltipKeybind depending on state
+				<KeyValue key="enterAltBindingTooltip" type="global" value=""/>
+
+
+				Tooltip for exiting mode that does not include keybind text
+				<KeyValue key="exitTooltip" type="global" value=""/>
+
+				Tooltip for exiting mode that includes token for injecting primary keybind text
+				<KeyValue key="exitTooltipKeybind" type="global" value=""/>
+
+				Tooltip for exiting mode that includes token for injecting alternate keybind text
+				This is displayed below either exitTooltip or exitTooltipKeybind depending on state
+				<KeyValue key="exitAltBindingTooltip" type="global" value=""/>
+		</KeyValues>-->
+	</Button>
+</Ui>

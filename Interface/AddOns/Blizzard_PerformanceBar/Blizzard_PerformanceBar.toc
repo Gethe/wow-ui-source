@@ -1,0 +1,7 @@
+## Title: Blizzard_PerformanceBar
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Game
+
+PerformanceBar.lua
+Classic\PerformanceBarOverrides.lua [AllowLoadGameType classic]

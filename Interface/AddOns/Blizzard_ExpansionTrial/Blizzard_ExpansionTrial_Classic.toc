@@ -1,0 +1,6 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Expansion Trial
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\Blizzard_ExpansionTrial_Bootstrap.lua [Bootstrap]

@@ -1,0 +1,1290 @@
+
+local SCROLL_BOX_EDGE_FADE_LENGTH = 50;
+
+local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeRemainingFormatter:Init(
+	SecondsFormatterConstants.ZeroApproximationThreshold,
+	SecondsFormatter.Abbreviation.OneLetter,
+	SecondsFormatterConstants.DontRoundUpLastUnit,
+	SecondsFormatterConstants.ConvertToLower,
+	SecondsFormatterConstants.RoundUpIntervals);
+timeRemainingFormatter:SetDesiredUnitCount(2);
+timeRemainingFormatter:SetMinInterval(SecondsFormatter.Interval.Minutes);
+timeRemainingFormatter:SetStripIntervalWhitespace(true);
+
+-----------------------------------------------------------------------------------
+--- NavigationBarButtonMixin
+-----------------------------------------------------------------------------------
+NavigationBarButtonMixin = {};
+function NavigationBarButtonMixin:Init(sectionInfo, isSelected)
+	self:UpdateVisuals();
+	self.Label:SetText(sectionInfo.label);
+	self.sectionInfo = sectionInfo;
+	self:SetSelected(isSelected);
+end
+
+function NavigationBarButtonMixin:UpdateVisuals()
+	local highlightTexture = "shop-header-menu-selected-middle";
+	local pushedTexture = "shop-header-menu-selected-middle";
+	local selectedTexture = "shop-header-menu-selected-middle";
+	local selectedBottomTexture = "shop-header-menu-selected-line-middle";
+	local flipDivider = false;
+	local xOffset, yOffset = 1, 0;
+	local elementData = self:GetElementData();
+
+	if elementData.isFirstButton then
+		highlightTexture = "shop-header-menu-selected-left";
+		pushedTexture = "shop-header-menu-selected-left";
+		selectedTexture = "shop-header-menu-selected-left";
+		selectedBottomTexture = "shop-header-menu-selected-line-left";
+		xOffset = 1;
+	elseif elementData.isLastButton then
+		highlightTexture = "shop-header-menu-selected-right";
+		pushedTexture = "shop-header-menu-selected-right";
+		selectedTexture = "shop-header-menu-selected-right";
+		selectedBottomTexture = "shop-header-menu-selected-line-right";
+		flipDivider = true;
+		xOffset = -1;
+	end
+
+	self.HighlightTexture:SetAtlas(highlightTexture);
+	self.PushedTexture:SetAtlas(pushedTexture);
+	self.Selected:SetAtlas(selectedTexture);
+	self.SelectedBottom:SetAtlas(selectedBottomTexture);
+	local anchor = flipDivider and "LEFT" or "RIGHT";
+	self.NormalTexture:ClearAllPoints();
+	self.NormalTexture:SetPoint(anchor, xOffset, yOffset);
+end
+
+function NavigationBarButtonMixin:SetSelected(newSelected)
+	if (newSelected) then
+		PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_NAV_MENU);
+	end
+	self.Selected:SetShown(newSelected);
+	self.SelectedBottom:SetShown(newSelected);
+end
+
+function NavigationBarButtonMixin:OnEnter()
+	--tooltips
+end
+
+function NavigationBarButtonMixin:OnLeave()
+	--tooltips
+end
+
+-----------------------------------------------------------------------------------
+--- NavigationBarNavigationButtonMixin
+-----------------------------------------------------------------------------------
+NavigationBarNavigationButtonMixin = {};
+function NavigationBarNavigationButtonMixin:OnLoad()
+	if self.atlas then
+		self.Arrow:SetAtlas(self.atlas, true);
+		local uvLeft, uvRight, uvBottom, uvTop = 0, 1, 1, 0;
+		if self.direction then
+			uvLeft = self.direction == "backwards" and 0 or 1;
+			uvRight = self.direction == "backwards" and 1 or 0;
+		end
+		self.Arrow:SetTexCoord(uvLeft, uvRight, uvBottom, uvTop);
+	end
+end
+
+function NavigationBarNavigationButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_NAV_MENU);
+	if self.OnClickNavigate then
+		self:GetParent()[self.OnClickNavigate](self:GetParent());
+	end
+end
+
+function NavigationBarNavigationButtonMixin:OnEnter()
+	--tooltips
+end
+
+function NavigationBarNavigationButtonMixin:OnLeave()
+	--tooltips
+end
+
+
+-----------------------------------------------------------------------------------
+--- NavigationBarMixin
+-----------------------------------------------------------------------------------
+local function IsElementDataSectionInfo(elementData)
+	return true;
+end
+
+NavigationBarMixin = {
+	NavBarButtonWidthBuffer = 70,
+};
+
+function NavigationBarMixin:UpdateNotifications()
+	local function CheckNotifications(button, data)
+		
+		local prodInCat = C_CatalogShop.GetProductIDsForCategory(button.sectionInfo.ID);
+		local foundNew = false;
+		for _, prod in ipairs(prodInCat) do
+			if CatalogShopOutbound.SavedSet_IsLoaded() and not CatalogShopOutbound.SavedSet_Check(prod) then
+				if not button.notificationFrame then
+					button.notificationFrame = CatalogShopOutbound.NotificationUtil_AcquireLargeNotification("CENTER", button, "BOTTOM", 0, 3);
+				end
+				foundNew = true;
+				break;
+			end
+		end
+		if not foundNew and button.notificationFrame then
+			CatalogShopOutbound.NotificationUtil_ReleaseNotification(button.notificationFrame);
+			button.notificationFrame = nil;
+		end
+	end
+	self.NavButtonScrollBox:ForEachFrame(CheckNotifications)
+end
+
+function NavigationBarMixin:SetupNavigationScrollView()
+	local DefaultPad = 0;
+	local DefaultSpacing = 0;
+
+	local function InitializeButton(button, sectionInfo)
+		local isSelected = self.selectionBehavior:IsElementDataSelected(sectionInfo);
+		button:Init(sectionInfo, isSelected);
+		button:SetScript("OnClick", function(button, buttonName)
+			self.selectionBehavior:ToggleSelect(button);
+		end);
+		button:SetScript("OnHide", function(button, buttonName)
+			if button.notificationFrame then
+				CatalogShopOutbound.NotificationUtil_ReleaseNotification(button.notificationFrame);
+				button.notificationFrame = nil
+			end
+		end);
+	end
+
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, -0.05);
+	view:SetVirtualized(false);
+	view:SetHorizontal(true);	
+	view:SetElementInitializer("NavigationBarButtonTemplate", InitializeButton);
+	view:SetElementExtentCalculator(function(dataIndex, sectionInfo)
+		return (#sectionInfo.label * 10) + 50;
+	end);
+	self.NavButtonScrollBox:Init(view);
+
+	local function OnSelectionChanged(o, elementData, selected)
+		if not selected  then
+			local prodInCat = C_CatalogShop.GetProductIDsForCategory(elementData.ID);
+			for _, prod in ipairs(prodInCat) do
+				if CatalogShopOutbound.SavedSet_IsLoaded() and not CatalogShopOutbound.SavedSet_Check(prod) then
+					CatalogShopOutbound.SavedSet_Set(prod)
+				end
+			end
+		end
+		if selected then
+			self:OnCategorySelected(elementData);
+		end
+
+		local button = self.NavButtonScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end;
+
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.NavButtonScrollBox);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
+end
+
+function NavigationBarMixin:SelectNextNavButton()
+	local selectedElementData, index = self.selectionBehavior:SelectNextElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.NavButtonScrollBox:ScrollToNearest(index);
+	end
+end
+
+function NavigationBarMixin:SelectPreviousNavButton()
+	local selectedElementData, index = self.selectionBehavior:SelectPreviousElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.NavButtonScrollBox:ScrollToNearest(index);
+	end
+end
+
+local function SectionSortComparator(lhs, rhs)
+	-- Category ID is orderInPage (see CGCatalogShop_C::GetCategoryInfo)
+	return lhs.ID < rhs.ID;
+end
+
+function NavigationBarMixin:SetupNavigationData(buttonInfos)
+	local dataProvider = CreateDataProvider();
+
+	for i, buttonInfo in ipairs(buttonInfos) do
+		dataProvider:Insert(buttonInfo);
+	end
+
+	dataProvider:SetSortComparator(SectionSortComparator);
+	self.NavButtonScrollBox:SetDataProvider(dataProvider);
+
+	local leftmostElement = dataProvider:Find(1);
+	if leftmostElement then
+		leftmostElement.isFirstButton = true;
+		local leftmostButton = self.NavButtonScrollBox:FindFrame(leftmostElement);
+		if leftmostButton then
+			leftmostButton:UpdateVisuals();
+		end
+	end
+
+	local numButtons = dataProvider:GetSize();
+	local rightmostElement = dataProvider:Find(numButtons);
+	if rightmostElement then
+		rightmostElement.isLastButton = true;
+		local rightmostButton = self.NavButtonScrollBox:FindFrame(rightmostElement);
+		if rightmostButton then
+			rightmostButton:UpdateVisuals();
+		end
+	end
+end
+
+function NavigationBarMixin:OnUpdate()
+	local backEnabled = not self.selectionBehavior:IsFirstElementDataSelected();
+	local forwardEnabled = not self.selectionBehavior:IsLastElementDataSelected();
+	self.ScrollBackwards:SetEnabled(backEnabled);
+	self.ScrollForwards:SetEnabled(forwardEnabled);
+end
+
+function NavigationBarMixin:SetupScrolling()
+	local hasScrollableExtent = self.NavButtonScrollBox:HasScrollableExtent();
+	if hasScrollableExtent then
+		self:SetScript("OnUpdate", GenerateClosure(self.OnUpdate, self));
+
+		self.ScrollBackwards:ClearAllPoints();
+		self.ScrollBackwards:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -2);
+		self.ScrollBackwards:SetShown(true);
+
+		self.ScrollForwards:ClearAllPoints();
+		self.ScrollForwards:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, -2);
+		self.ScrollForwards:SetShown(true);
+
+		self.NavButtonScrollBox:ClearAllPoints();
+		self.NavButtonScrollBox:SetPoint("TOPLEFT", self.ScrollBackwards, "TOPRIGHT", 0, 0);
+		self.NavButtonScrollBox:SetPoint("BOTTOMRIGHT", self.ScrollForwards, "BOTTOMLEFT", 0, 0);
+
+	else
+		self:SetScript("OnUpdate", nil);
+		self.ScrollBackwards:SetShown(false);
+		self.ScrollForwards:SetShown(false);
+
+		self.NavButtonScrollBox:ClearAllPoints();
+		self.NavButtonScrollBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.NavButtonScrollBox:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	end
+end
+
+function NavigationBarMixin:SelectCategoryByLinkTag(linkTag)
+	if not linkTag then
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+
+	local dataProvider = self.NavButtonScrollBox:GetDataProvider();
+	if not dataProvider then
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+
+	local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
+		return elementData.linkTag and elementData.linkTag == linkTag;
+	end);
+
+	if not elementData then
+		--assertsafe(false, "ASSERT - Category Link Tag was specified but not found: "..linkTag);
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+	self.selectionBehavior:SelectElementData(elementData);
+end
+
+function NavigationBarMixin:Init(buttonInfos)
+	self:SetupNavigationScrollView();
+	self:SetupNavigationData(buttonInfos);
+	local linkProductID = CatalogShopFrame:GetCatalogShopLinkProductID();
+	if linkProductID then
+		CatalogShopFrame:SetCatalogShopLinkTagForLinkProduct();
+	end
+	local linkTag = CatalogShopFrame:GetCatalogShopLinkTag(); -- ok for this to be nil
+	self:SelectCategoryByLinkTag(linkTag)
+	self:SetupScrolling();
+end
+
+function NavigationBarMixin:OnCategorySelected(sectionInfo)
+	local categoryID = sectionInfo.ID;
+	EventRegistry:TriggerEvent("CatalogShop.OnCategorySelected", categoryID);
+	self:UpdateNotifications();
+end
+
+
+----------------------------------------------------------------------------------
+-- CatalogShopButtonMixin
+----------------------------------------------------------------------------------
+CatalogShopButtonMixin = {};
+function CatalogShopButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
+	if self.catalogShopOnClickMethod then
+		CatalogShopFrame[self.catalogShopOnClickMethod](CatalogShopFrame);
+	end
+end
+
+function CatalogShopButtonMixin:OnEnter()
+	-- Inheriting mixins should add a ShowTooltip method for showing their appropriate tooltip
+end
+
+function CatalogShopButtonMixin:OnLeave()
+end
+
+
+----------------------------------------------------------------------------------
+-- CatalogShopPurchaseButtonMixin
+----------------------------------------------------------------------------------
+CatalogShopPurchaseButtonMixin = {};
+function CatalogShopPurchaseButtonMixin:OnLoad()
+end
+
+function CatalogShopPurchaseButtonMixin:UpdateState()
+	local selectedProductInfo  = CatalogShopFrame:GetSelectedProductInfo();
+	-- update state based on product info
+end
+
+
+----------------------------------------------------------------------------------
+-- CatalogShopDetailsButtonMixin
+----------------------------------------------------------------------------------
+CatalogShopDetailsButtonMixin = {};
+function CatalogShopDetailsButtonMixin:OnLoad()
+end
+
+function CatalogShopDetailsButtonMixin:UpdateState()
+	local selectedProductInfo  = CatalogShopFrame:GetSelectedProductInfo();
+	-- update state based on product info
+end
+
+----------------------------------------------------------------------------------
+-- CatalogShopErrorFrameMixin
+----------------------------------------------------------------------------------
+CatalogShopErrorFrameMixin = {};
+function CatalogShopErrorFrameMixin:OnShow()
+	-- TODO update whatever states are required
+	self.ActiveURLIndex = nil;
+end
+
+function CatalogShopErrorFrameMixin:OnHide()
+	-- TODO update whatever states are required
+end
+
+function CatalogShopErrorFrameMixin:ErrorNeedsAck()
+	return self.ErrorNeedsAck;
+end
+
+function CatalogShopErrorFrameMixin:ShowError(title, desc, urlIndex, needsAck)
+	local height = 180;
+	self.Title:SetText(title);
+	self.Title:Show();
+	self.Description:SetText(desc);
+	self.AcceptButton:SetText(OKAY);
+	height = height + self.Description:GetHeight() + self.Title:GetHeight();
+
+	if ( urlIndex ) then
+		self.AcceptButton:ClearAllPoints();
+		self.AcceptButton:SetPoint("BOTTOMRIGHT", self, "BOTTOM", -10, 20);
+		self.WebsiteButton:ClearAllPoints();
+		self.WebsiteButton:SetPoint("BOTTOMLEFT", self, "BOTTOM", 10, 20);
+		self.WebsiteButton:Show();
+		self.WebsiteButton:SetText(BLIZZARD_STORE_VISIT_WEBSITE);
+		self.WebsiteWarning:Show();
+		self.WebsiteWarning:SetText(BLIZZARD_STORE_VISIT_WEBSITE_WARNING);
+		height = height + self.WebsiteWarning:GetHeight() + 8;
+		self.ActiveURLIndex = urlIndex;
+	else
+		self.AcceptButton:ClearAllPoints();
+		self.AcceptButton:SetPoint("BOTTOM", self, "BOTTOM", 0, 20);
+		self.WebsiteButton:Hide();
+		self.WebsiteWarning:Hide();
+		self.ActiveURLIndex = nil;
+	end
+	self.ErrorNeedsAck = needsAck;
+
+	self:Show();
+	self:SetHeight(height);
+end
+
+
+----------------------------------------------------------------------------------
+-- WoWTokenContainerFrameMixin
+----------------------------------------------------------------------------------
+WoWTokenContainerFrameMixin = {};
+function WoWTokenContainerFrameMixin:OnLoad()
+end
+
+function WoWTokenContainerFrameMixin:OnShow()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(true);
+end
+
+function WoWTokenContainerFrameMixin:OnHide()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(false);
+end
+
+
+----------------------------------------------------------------------------------
+-- ToyContainerFrameMixin
+----------------------------------------------------------------------------------
+ToyContainerFrameMixin = {};
+function ToyContainerFrameMixin:OnLoad()
+end
+
+function ToyContainerFrameMixin:OnShow()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(true);
+end
+
+function ToyContainerFrameMixin:OnHide()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(false);
+end
+
+
+----------------------------------------------------------------------------------
+-- ServicesContainerFrameMixin
+----------------------------------------------------------------------------------
+ServicesContainerFrameMixin = {};
+function ServicesContainerFrameMixin:OnLoad()
+end
+
+function ServicesContainerFrameMixin:OnShow()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(true);
+end
+
+function ServicesContainerFrameMixin:OnHide()
+	local animContainer = self.AnimContainer;
+	animContainer:SetShown(false);
+end
+
+----------------------------------------------------------------------------------
+-- PMTImageContainerFrameMixin
+----------------------------------------------------------------------------------
+PMTImageContainerFrameMixin = {};
+function PMTImageContainerFrameMixin:OnLoad()
+	EventRegistry:RegisterCallback("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.OnCarouselSelectionSet, self);
+	self:RegisterEvent("URL_TEXTURE_REQUEST_RESULT");
+	self.carouselImageURLs = {};
+end
+
+function PMTImageContainerFrameMixin:OnShow()
+	self.currentCarouselImageIndex = 1;
+	self.ImageCarousel.LeftButton:SetEnabled(false);
+end
+
+function PMTImageContainerFrameMixin:OnHide()
+end
+
+function PMTImageContainerFrameMixin:OnEvent(event, ...)
+	if event == "URL_TEXTURE_REQUEST_RESULT" then
+		local texture, result = ...;
+		if texture == self.PMTImageForNoModel then
+			if result == Enum.UrlTextureResult.Requested then
+				self.Spinner:Show();
+			else
+				self.Spinner:Hide();
+			end
+		end
+	end
+end
+
+local function SetMissingModelProductURLImage(productPMTURL)
+	local texture = CatalogShopFrame.PMTImageContainerFrame.PMTImageForNoModel;
+
+	if productPMTURL then
+		C_Texture.SetURLTexture(texture, productPMTURL);
+	end
+end
+
+local function SetMissingLicenseCaptionText(displayInfo)
+	local text = CatalogShopFrame.PMTImageContainerFrame.OtherProductWarningText;
+
+	if not displayInfo then
+		text:SetText("");
+		return;
+	end
+
+	local secureEnv = GetCurrentEnvironment();
+
+	if displayInfo.otherProductGameTitleBaseTag then
+		local gameNameStr = nil;
+		if displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Classic then
+			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Classic;
+		elseif displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Modern then
+			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Modern;
+		end
+		-- At this point gameNameStr should be nil (no special name format), "%s Classic", or "World of Warcraft: %s"
+
+		if gameNameStr then
+			local gameTitleStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
+			gameNameStr = gameNameStr:format(gameTitleStr);
+		else
+			gameNameStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
+		end
+		-- At this point gameNameStr is a fully described game title "Mists of Pandaria Classic" or "World of Warcraft: The War Within"
+
+		gameNameStr = CatalogShopConstants.ShopGlobalStringTag.MissingLicenseCaptionText:format(gameNameStr);
+		-- At this point the text is complete and holds something like "This product is available in Mists of Pandaria Classic"
+
+		text:SetText(gameNameStr);
+	else
+		text:SetText("");
+	end
+end
+
+function PMTImageContainerFrameMixin:OnCarouselSelectionSet(newSelectionInfo)
+	if not newSelectionInfo or not newSelectionInfo.url then
+		return;
+	end
+	SetMissingModelProductURLImage(newSelectionInfo.url);
+	self.ImageCarousel.ScrollBox:ScrollToElementData(newSelectionInfo, ScrollBoxConstants.AlignCenter);
+
+	local isFirstButtonSelected = newSelectionInfo.isFirstButton or false;
+	local isLastButtonSelected = newSelectionInfo.isLastButton or false;
+	self.ImageCarousel.LeftButton:SetEnabled(not isFirstButtonSelected);
+	self.ImageCarousel.RightButton:SetEnabled(not isLastButtonSelected);
+end
+
+function PMTImageContainerFrameMixin:SetDetailsShown(detailsShown)
+	if detailsShown then
+		self.ImageCarousel:SetImages(self.carouselImageURLs);
+		self.ImageCarousel:SetShown(#self.carouselImageURLs > 1);
+	else
+		self:ResetCarouselSelection();
+		self.ImageCarousel:Hide();
+	end
+end
+
+function PMTImageContainerFrameMixin:ResetCarouselSelection()
+	self:SetCarouselSelection(1);
+end
+
+function PMTImageContainerFrameMixin:SetCarouselSelection(index)
+	if not self.carouselImageURLs then
+		return;
+	end
+	local numURLs = #self.carouselImageURLs;
+	if numURLs > 0 and index <= numURLs then
+		self.currentCarouselImageIndex = index;
+		SetMissingModelProductURLImage(self.carouselImageURLs[self.currentCarouselImageIndex]);
+	end
+end
+
+function PMTImageContainerFrameMixin:SetupCarouselImages(displayInfo)
+	if not displayInfo then
+		return
+	end
+
+	-- Build list of images
+	self.carouselImageURLs = {};
+
+	-- RNM : Leaving the below commented, rather than deleted.
+	-- Shop team asked to not use the Checkout image (aka productPMTURL) for
+	-- PMTImageContainerFrame, they will always supply at least 1 AdditionAsset in Catalog
+	--if displayInfo.productPMTURL then
+	--	table.insert(self.carouselImageURLs, displayInfo.productPMTURL);
+	--end
+
+	for _, url in ipairs(displayInfo.additionalProductPMTURLs) do
+		table.insert(self.carouselImageURLs, url);
+	end
+
+	local numURLs = #self.carouselImageURLs;
+	if numURLs > 0 then
+		SetMissingModelProductURLImage(self.carouselImageURLs[1]);
+	end
+	-- Show the carousel if there are enough images to need it
+	--self.ImageCarousel:SetShown(numURLs > 1);
+end
+
+
+function PMTImageContainerFrameMixin:SetupCarouselImagesAndHide(displayInfo)
+	self.WatermarkLogoTexture:Hide();
+	self:SetupCarouselImages(displayInfo);
+	self.ImageCarousel:SetShown(false);	-- Always hide the carousel when displaying the room preview (not details)
+end
+
+function PMTImageContainerFrameMixin:SetForFailedModelScene(displayInfo)
+	self.WatermarkLogoTexture:Hide();
+	SetMissingModelProductURLImage(displayInfo.fallbackPMTImageURL);
+	SetMissingLicenseCaptionText(nil);
+end
+
+function PMTImageContainerFrameMixin:SetDisplayInfo(displayInfo, showWatermarkLogo)
+	CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
+	self.WatermarkLogoTexture:SetShown(showWatermarkLogo or false);
+
+	self:SetupCarouselImages(displayInfo)
+	-- SetDisplayInfo is used for child products, and they will want the carousel only if they have enough images.
+	local numURLs = #self.carouselImageURLs;
+	self.ImageCarousel:SetShown(numURLs > 1);
+
+	self:SetDetailsShown(CatalogShopFrame.showDetails);
+
+	SetMissingLicenseCaptionText(displayInfo);
+end
+
+
+----------------------------------------------------------------------------------
+-- CatalogShopDetailsRaceButtonMixin
+----------------------------------------------------------------------------------
+CatalogShopDetailsRaceButtonMixin = {};
+
+
+----------------------------------------------------------------------------------
+-- RaceChoiceMixin
+----------------------------------------------------------------------------------
+CatalogShopRaceChoiceMixin = {};
+
+function CatalogShopRaceChoiceMixin:OnLoad()
+end
+
+function CatalogShopRaceChoiceMixin:OnShow()
+end
+
+function CatalogShopRaceChoiceMixin:OnHide()
+end
+
+function CatalogShopRaceChoiceMixin:OnEvent()
+end
+
+----------------------------------------------------------------------------------
+-- GlowPulseAnimContainerMixin
+----------------------------------------------------------------------------------
+GlowPulseAnimContainerMixin = {};
+function GlowPulseAnimContainerMixin:OnLoad()
+	if self.playLoopingSoundFX == true then
+		self.loopingSoundEmitter = self:CreateLoopingSoundFX();
+	else
+		self.loopingSoundEmitter = nil;
+	end
+end
+
+function GlowPulseAnimContainerMixin:CreateLoopingSoundFX()
+	local startingSound = SOUNDKIT.CATALOG_SHOP_GOLD_SHIMMER_START;
+	local loopingSound = SOUNDKIT.CATALOG_SHOP_GOLD_SHIMMER_LOOP;
+	local endingSound = SOUNDKIT.CATALOG_SHOP_GOLD_SHIMMER_END;
+
+	local loopStartDelay = 0.3; -- Delay before the looping sound starts
+	local loopEndDelay = 0.3; -- Delay before the looping sound ends
+	local loopFadeTime = 0.3; -- Time to fade out the looping sound
+
+	return CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
+
+function GlowPulseAnimContainerMixin:OnShow()
+	self.ShopRays.RayAnim:Play();
+	if self.loopingSoundEmitter then
+		self.loopingSoundEmitter:StartLoopingSound();
+	end
+end
+
+function GlowPulseAnimContainerMixin:OnHide()
+	self.ShopRays.RayAnim:Stop();
+	if self.loopingSoundEmitter then
+		self.loopingSoundEmitter:CancelLoopingSound();
+	end
+end
+
+----------------------------------------------------------------------------------
+-- CatalogShopLoadingScreenMixin
+----------------------------------------------------------------------------------
+CatalogShopLoadingScreenMixin = {};
+function CatalogShopLoadingScreenMixin:OnLoad()
+	local startingSound = SOUNDKIT.CATALOG_SHOP_OPEN_LOADING_SCREEN;
+	local loopingSound = SOUNDKIT.CATALOG_SHOP_LOADING_SCREEN_LOOP;
+	local endingSound = SOUNDKIT.CATALOG_SHOP_OPEN_SHOP_AFTER_LOAD;
+
+	local loopStartDelay = 0.3; -- Delay before the looping sound starts
+	local loopEndDelay = 0.3; -- Delay before the looping sound ends
+	local loopFadeTime = 0.3; -- Time to fade out the looping sound
+
+	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
+
+function CatalogShopLoadingScreenMixin:OnShow()
+	self.loopingSoundEmitter:StartLoopingSound();
+end
+
+function CatalogShopLoadingScreenMixin:StopLoopingSound()
+	self.loopingSoundEmitter:CancelLoopingSound();
+end
+
+function CatalogShopLoadingScreenMixin:OnHide()
+	self:StopLoopingSound();
+end
+
+
+----------------------------------------------------------------------------------
+-- CatalogShopUnavailableScreenMixin
+----------------------------------------------------------------------------------
+CatalogShopUnavailableScreenMixin = {};
+function CatalogShopUnavailableScreenMixin:OnLoad()
+end
+
+function CatalogShopUnavailableScreenMixin:OnShow()
+end
+
+function CatalogShopUnavailableScreenMixin:OnHide()
+end
+
+
+----------------------------------------------------------------------------------
+-- CarouselControlMixin
+----------------------------------------------------------------------------------
+CarouselControlMixin = {};
+function CarouselControlMixin:OnLoad()
+	EventRegistry:RegisterCallback("CatalogShopModel.TransmogLoaded.CheckCarousel", self.CheckCarousel, self);
+	EventRegistry:RegisterCallback("CatalogShopModel.TransmogLoaded.HideCarousel", self.HideCarousel, self);
+
+	local function OnCarouselButtonClick(button, buttonName, down)
+		PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
+		self.carouselIndex = self.carouselIndex + button.incrementAmount;
+		self.carouselIndex = Clamp(self.carouselIndex, 1, #self.items);
+		self:UpdateCarousel();
+
+		self.currentItem = self.items[self.carouselIndex];
+
+		if self.actor then
+			CatalogShopUtil.CatalogShopTryOn(self.actor, self.currentItem);
+			-- TODO do we need to notify any other UI elements of what happened here
+			--EventRegistry:TriggerEvent("CatalogShop.Carousel.TransmogChanged", self.currentItem);
+		end
+	end
+
+	local leftButton = self.CarouselLeftButton;
+	leftButton.incrementAmount = -1;
+	leftButton:SetScript("OnClick", OnCarouselButtonClick );
+
+	local rightButton = self.CarouselRightButton;
+	rightButton.incrementAmount = 1;
+	rightButton:SetScript("OnClick", OnCarouselButtonClick );
+end
+
+function CarouselControlMixin:HideCarousel()
+	self:Hide();
+end
+
+function CarouselControlMixin:CheckCarousel(modelScene, actor, playerData)
+	if not playerData or C_Glue.IsOnGlueScreen() then
+		self:Hide();
+		return;
+	end
+	local itemModifiedAppearanceIDs = playerData.itemModifiedAppearanceIDs;
+	self:SetCarouselItems(modelScene, actor, itemModifiedAppearanceIDs);
+end
+
+function CarouselControlMixin:UpdateCarouselText()
+	local carouselText = format(CATALOG_SHOP_CAROUSEL_INDEX, self.carouselIndex, #self.items);
+	self.CarouselLabelContainer.Label:SetText(carouselText);
+end
+
+function CarouselControlMixin:UpdateCarouselButtons()
+	local count = #self.items;
+	local enablePreviousButton = self.carouselIndex > 1;
+	local enableNextButton = self.carouselIndex < count;
+	self.CarouselLeftButton:SetEnabled(enablePreviousButton);
+	self.CarouselRightButton:SetEnabled(enableNextButton);
+end
+
+function CarouselControlMixin:UpdateCarousel()
+	self:UpdateCarouselText();
+	self:UpdateCarouselButtons();
+end
+
+function CarouselControlMixin:SetCarouselItems(modelScene, actor, itemModifiedAppearanceIDs)
+	self.carouselIndex = 1;
+	self.actor = actor;
+	self.modelScene = modelScene;
+	self.items = itemModifiedAppearanceIDs;
+	local count = self.items and #self.items or 0;
+	local allSameType = CatalogShopUtil.ItemAppearancesHaveSameCategory(self.items);
+	local showCarousel = count > 1 and allSameType;
+	if showCarousel then
+		self:UpdateCarousel();
+	end
+	self:SetShown(showCarousel);	
+end
+
+----------------------------------------------------------------------------------
+-- ImageCarouselElementTemplateMixin
+----------------------------------------------------------------------------------
+ImageCarouselElementTemplateMixin={}
+function ImageCarouselElementTemplateMixin:Init(data, isSelected)
+
+	local function SetPMTURLImage(url)
+		local texture = self.Image;
+		if url then
+			self:RegisterEvent("URL_TEXTURE_REQUEST_RESULT");
+			C_Texture.SetURLTexture(texture, url);
+		end
+	end
+
+	self.data = data;
+	self:SetSelected(isSelected);
+	self:SetScript("OnClick", function(button, buttonName)
+		print("ImageCarouselElementTemplateMixin:OnClick");
+	end);
+	SetPMTURLImage(data.url);
+end
+
+function ImageCarouselElementTemplateMixin:OnEvent(event, ...)
+	if event == "URL_TEXTURE_REQUEST_RESULT" then
+		local texture, result = ...;
+		if texture == self.Image then
+			if result == Enum.UrlTextureResult.Requested then
+				self.Spinner:Show();
+			else
+				self.Spinner:Hide();
+				self:UnregisterEvent("URL_TEXTURE_REQUEST_RESULT");
+			end
+		end
+	end
+end
+
+function ImageCarouselElementTemplateMixin:UpdateVisuals()
+end
+
+function ImageCarouselElementTemplateMixin:SetSelected(isSelected)
+	self.Selected:SetShown(isSelected);
+	if isSelected then
+		EventRegistry:TriggerEvent("CatalogShop.PMTImageFrame.OnCarouselSelectionSet", self.data);
+	end
+end
+
+----------------------------------------------------------------------------------
+-- ImageCarouselControlMixin
+----------------------------------------------------------------------------------
+local PMT_IMAGE_CAROUSEL_BUTTON_WIDTH = 138;
+
+ImageCarouselControlMixin={}
+function ImageCarouselControlMixin:OnLoad()
+	self.LeftButton:SetScript("OnClick", function(button, buttonName)
+		self:SelectPreviousImage();
+	end);
+	self.RightButton:SetScript("OnClick", function(button, buttonName)
+		self:SelectNextImage();
+	end);
+end
+
+function ImageCarouselControlMixin:OnClick()
+	print("ImageCarouselControlMixin:OnClick");
+end
+
+function ImageCarouselControlMixin:OnShow()
+	self.ScrollBox:Show();
+	self.LeftButton:Show();
+	self.RightButton:Show();
+end
+
+function ImageCarouselControlMixin:OnHide()
+	self.ScrollBox:Hide();
+	self.LeftButton:Hide();
+	self.RightButton:Hide();
+end
+
+function ImageCarouselControlMixin:SetupScrollView()
+
+	local function InitializeButton(button, sectionInfo)
+		local isSelected = self.selectionBehavior:IsElementDataSelected(sectionInfo);
+		button:Init(sectionInfo, isSelected);
+		button:SetScript("OnClick", function(button, buttonName)
+			self.selectionBehavior:ToggleSelect(button);
+		end);
+	end
+
+	local DefaultPad = 9;
+	local DefaultSpacing = 9;
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
+	view:SetHorizontal(true);	
+	view:SetElementInitializer("ImageCarouselElementTemplate", InitializeButton);
+	view:SetElementExtent(PMT_IMAGE_CAROUSEL_BUTTON_WIDTH);
+	self.ScrollBox:Init(view);
+
+	local function OnSelectionChanged(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end;
+
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
+end
+
+function ImageCarouselControlMixin:SelectNextImage()
+	local selectedElementData, index = self.selectionBehavior:SelectNextElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.ScrollBox:ScrollToNearest(index);
+	end
+end
+
+function ImageCarouselControlMixin:SelectPreviousImage()
+	local selectedElementData, index = self.selectionBehavior:SelectPreviousElementData(IsElementDataSectionInfo);
+	if selectedElementData then
+		self.ScrollBox:ScrollToNearest(index);
+	end
+end
+
+local function CarouselElementComparator(lhs, rhs)
+	return lhs.index < rhs.index;
+end
+
+function ImageCarouselControlMixin:SetupScrollData(buttonInfos)
+	local dataProvider = CreateDataProvider();
+
+	for i, buttonInfo in ipairs(buttonInfos) do
+		dataProvider:Insert(buttonInfo);
+	end
+
+	dataProvider:SetSortComparator(CarouselElementComparator);
+	self.ScrollBox:SetDataProvider(dataProvider);
+
+	local leftmostElement = dataProvider:Find(1);
+	if leftmostElement then
+		leftmostElement.isFirstButton = true;
+		local leftmostButton = self.ScrollBox:FindFrame(leftmostElement);
+		if leftmostButton then
+			leftmostButton:UpdateVisuals();
+		end
+	end
+
+	local numButtons = dataProvider:GetSize();
+	local rightmostElement = dataProvider:Find(numButtons);
+	if rightmostElement then
+		rightmostElement.isLastButton = true;
+		local rightmostButton = self.ScrollBox:FindFrame(rightmostElement);
+		if rightmostButton then
+			rightmostButton:UpdateVisuals();
+		end
+	end
+
+	-- Shrink the scrollbox if there are 3 or less buttons.
+	local newWidth = 555;	-- Shorter than what 4 would be calculated at so the fade shows correctly.
+	local sameHeight = 80;
+	local fadeAmount = SCROLL_BOX_EDGE_FADE_LENGTH;
+	if numButtons < 4 then
+		local buttonWidth = PMT_IMAGE_CAROUSEL_BUTTON_WIDTH;	-- BUTTON
+		local padding = 9;	-- p
+		-- [pBUTTONpBUTTONpBUTTONp]
+		newWidth = (numButtons * buttonWidth) + ((numButtons + 1) * padding);
+		fadeAmount = 0;
+	end
+	self:SetSize(newWidth, sameHeight);
+	self.ScrollBox:SetEdgeFadeLength(fadeAmount);
+end
+
+function ImageCarouselControlMixin:OnUpdate()
+	local leftEnabled = not self.selectionBehavior:IsFirstElementDataSelected();
+	local rightEnabled = not self.selectionBehavior:IsLastElementDataSelected();
+	self.LeftButton:SetEnabled(leftEnabled);
+	self.RightButton:SetEnabled(rightEnabled);
+end
+
+function ImageCarouselControlMixin:SetupScrolling()
+	local hasScrollableExtent = self.ScrollBox:HasScrollableExtent();
+	if hasScrollableExtent then
+		self:SetScript("OnUpdate", GenerateClosure(self.OnUpdate, self));
+
+		self.LeftButton:ClearAllPoints();
+		self.LeftButton:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -2);
+		self.LeftButton:SetShown(true);
+
+		self.RightButton:ClearAllPoints();
+		self.RightButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, -2);
+		self.RightButton:SetShown(true);
+
+		self.ScrollBox:ClearAllPoints();
+		self.ScrollBox:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 0, 20);
+		self.ScrollBox:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", 0, -20);
+
+	else
+		self:SetScript("OnUpdate", nil);
+		self.LeftButton:SetShown(false);
+		self.RightButton:SetShown(false);
+
+		self.ScrollBox:ClearAllPoints();
+		self.ScrollBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.ScrollBox:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	end
+end
+
+local function IsElementDataPMTCarouselImage(elementData)
+	return true;
+end
+
+function ImageCarouselControlMixin:Init(buttonInfos)
+	self:SetupScrollView();
+	self:SetupScrollData(buttonInfos);
+	self.selectionBehavior:SelectFirstElementData(IsElementDataPMTCarouselImage);
+	self:SetupScrolling();
+end
+
+function ImageCarouselControlMixin:SetImages(images)
+	-- Hide the carousel if there is 1 or less images
+	if not images or (#images < 2) then
+		self:Hide();
+		return;
+	end
+
+	local scrollElementInfos = {};
+	for index, url in ipairs(images) do
+		local newElement = {};
+		newElement.index = index;
+		newElement.url = url;
+		table.insert(scrollElementInfos, newElement);
+	end
+	self:Init(scrollElementInfos);
+end
+
+----------------------------------------------------------------------------------
+-- CatalogShopPersistentRefundContainerFrameMixin
+----------------------------------------------------------------------------------
+CatalogShopPersistentRefundContainerFrameMixin = {};
+function CatalogShopPersistentRefundContainerFrameMixin:OnHide()
+	if self.UpdateTimer then
+		self.UpdateTimer:Cancel();
+		self.UpdateTimer = nil;
+	end
+end
+
+function CatalogShopPersistentRefundContainerFrameMixin:OnCategorySelected(categoryID)
+	self.categoryID = categoryID;
+	self:UpdateState();
+end
+
+function CatalogShopPersistentRefundContainerFrameMixin:UpdateState()
+	self:Hide();
+
+	if not self.categoryID then
+		return;
+	end
+
+	if (CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
+		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()) then
+		return;
+	end
+
+	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
+	if (not categoryInfo.showPersistentRefundButton) then
+		return;
+	end
+
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors();
+	if #refundableDecorInfos <= 0 then
+		return;
+	end
+
+	self:Show();
+
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
+	self.RefundTextFrame.RefundText:SetText(timeLeftFormatted);
+	self.RefundCountFrame.RefundCountText:SetText(tostring(#refundableDecorInfos));
+
+	self.UpdateTimer = C_Timer.NewTimer(60, function() self:UpdateState(); end);
+end
+
+
+----------------------------------------------------------------------------------
+-- ProductRefundContainerMixin
+----------------------------------------------------------------------------------
+ProductRefundContainerMixin = {};
+function ProductRefundContainerMixin:OnHide()
+	if self.UpdateTimer then
+		self.UpdateTimer:Cancel();
+		self.UpdateTimer = nil;
+	end
+end
+
+function ProductRefundContainerMixin:SetProductID(productID)
+	self.productID = productID;
+	self:UpdateState();
+end
+
+function ProductRefundContainerMixin:UpdateState()
+	self:Hide();
+
+	if not self.productID then
+		return;
+	end
+
+	local refundableDecorInfos, minTimeRemainingSeconds = C_CatalogShop.GetRefundableDecors(self.productID);
+	if #refundableDecorInfos <= 0 then
+		return;
+	end
+
+	self:Show();
+
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(minTimeRemainingSeconds, timeRemainingFormatter);
+	local refundTimeLeft = CATALOG_SHOP_REFUND_TIME_LEFT:format(timeLeftFormatted);
+	self.RefundTextFrame.RefundText:SetText(refundTimeLeft);
+
+	self.UpdateTimer = C_Timer.NewTimer(60, function() self:UpdateState(); end);
+end
+
+
+----------------------------------------------------------------------------------
+-- ProductsHeaderMixin
+----------------------------------------------------------------------------------
+ProductsHeaderMixin = {};
+function ProductsHeaderMixin:Init(headerData)
+	self.headerData = headerData;
+	-- Set up ProductsHeader
+	if headerData.Name then
+		self.ProductName:Show();
+		self.ProductName:SetText(headerData.Name);
+	else
+		self.ProductName:Hide();
+	end
+	if headerData.Type then
+		self.ProductType:Show();
+		self.ProductType:SetText(headerData.Type);
+	else
+		self.ProductType:Hide();
+	end
+	if headerData.Description and headerData.Description ~= "" then
+		self.ProductDescription:Show();
+		self.ProductDescription:SetText(headerData.Description);
+	else
+		self.ProductDescription:Hide();
+	end
+	self.LegalDisclaimerText:SetShown(headerData.showLegal or false);
+end
+
+
+----------------------------------------------------------------------------------
+-- ProductDescriptionMixin
+----------------------------------------------------------------------------------
+ProductDescriptionMixin = {};
+function ProductDescriptionMixin:OnEnter()
+	local parent = self:GetParent();
+	if parent.headerData and self:IsShown() then
+		CatalogShopFrame:ShowTooltip(self, parent.headerData.Name, parent.headerData.Description);
+	end
+end
+
+function ProductDescriptionMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
+end
+
+----------------------------------------------------------------------------------
+-- IconTrainMixin
+----------------------------------------------------------------------------------
+IconTrainMixin = {};
+
+function IconTrainMixin:SetupIconTrainScrollView()
+	local DefaultPad = 0;
+	local DefaultSpacing = 0;
+
+	local function InitializeFrame(frame, info)
+		frame:Init(info);
+	end
+
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, -0.05);
+	view:SetVirtualized(false);
+	view:SetHorizontal(true);
+
+	view:SetElementInitializer("IconTrainFrameChildTemplate", InitializeFrame);
+	view:SetElementExtentCalculator(function(dataIndex, sectionInfo)
+		return 110;
+	end);
+	self.IconTrainScrollBox:Init(view);
+end
+
+function IconTrainMixin:SetupIconTrainData(infos)
+	local dataProvider = CreateDataProvider();
+
+	for i, info in ipairs(infos) do
+		dataProvider:Insert(info);
+	end
+	self.IconTrainScrollBox:SetDataProvider(dataProvider);
+end
+
+function IconTrainMixin:GetIconTrainChildren(bundleChildInfos)
+	local iconChildren = {};
+	for _, childInfo in ipairs(bundleChildInfos) do
+		local productInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
+		if productInfo and (not productInfo.isHidden) then
+			productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
+			productInfo.isBundleChild = true;
+			productInfo.displayOrder = childInfo.displayOrder;
+			productInfo.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childInfo.childProductID);
+			productInfo.quantityInBundle = childInfo.quantityInBundle;
+
+			local displayInfo = productInfo.displayInfo;
+			local productType = displayInfo.productType;			
+			if productType == CatalogShopConstants.ProductType.Subscription or productType == CatalogShopConstants.ProductType.GameTime then
+				-- Both sub time and game time have the same display type, but their Atlases are distinct
+				local timeTexture = CatalogShopUtil.GetTimeTexture(productInfo, productType);
+				if timeTexture then
+					table.insert(iconChildren, {atlas = timeTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.TradersTenders then
+				local quantity = displayInfo and displayInfo.quantity or nil;
+				if quantity then
+					local subTexture;
+					subTexture = "tender-"..quantity;
+					table.insert(iconChildren, {atlas = subTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.Access then
+				if productInfo.previewIconTexture then
+					table.insert(iconChildren, {atlas = productInfo.previewIconTexture, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productType == CatalogShopConstants.ProductType.Services then
+				if displayInfo.iconTextureKit then
+					local formattedIcon = ("%s-large"):format(displayInfo.iconTextureKit);
+					table.insert(iconChildren, {atlas = formattedIcon, productType = productType, name = productInfo.name, description = productInfo.description});
+				elseif displayInfo.iconFileDataID then
+					table.insert(iconChildren, {texture = displayInfo.iconFileDataID, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			elseif productInfo.isMystery then
+				if productType == CatalogShopConstants.ProductType.Mount then
+					table.insert(iconChildren, {atlas = CatalogShopConstants.MysteryTypes.Mount, productType = productType, name = productInfo.name, description = productInfo.description});
+				elseif productType == CatalogShopConstants.ProductType.Pet then
+					table.insert(iconChildren, {atlas = CatalogShopConstants.MysteryTypes.Pet, productType = productType, name = productInfo.name, description = productInfo.description});
+				end
+			end
+		end
+	end
+	return iconChildren;
+end
+
+function IconTrainMixin:Init(childInfos)
+	local iconChildren = self:GetIconTrainChildren(childInfos);
+	if #iconChildren < 1 then
+		self:Hide();
+		return;
+	end
+	
+	self:SetupIconTrainScrollView();
+	self:SetupIconTrainData(iconChildren);
+	self:Show();
+end
+
+----------------------------------------------------------------------------------
+-- IconTrainFrameChildMixin
+----------------------------------------------------------------------------------
+IconTrainFrameChildMixin = {};
+function IconTrainFrameChildMixin:Init(info)
+	if info.atlas then
+		self.Icon:SetAtlas(info.atlas);
+	elseif info.texture then
+		self.Icon:SetTexture(info.texture);
+	end
+
+	self.name = info.name;
+	self.description = info.description;
+	self.Icon:SetSize(120, 120);
+end
+
+function IconTrainFrameChildMixin:OnEnter()
+	CatalogShopFrame:ShowTooltip(self, CATALOG_SHOP_ALSO_INCLUDES, self.name);
+end
+
+function IconTrainFrameChildMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
+end

@@ -1,0 +1,129 @@
+local DelvesConstants =
+{
+	Tables =
+	{
+		{
+			Name = "CompanionConfigSlotTypes",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Role", Type = "CompanionConfigSlotTypes", EnumValue = 0 },
+				{ Name = "Utility", Type = "CompanionConfigSlotTypes", EnumValue = 1 },
+				{ Name = "Combat", Type = "CompanionConfigSlotTypes", EnumValue = 2 },
+				{ Name = "Flavor", Type = "CompanionConfigSlotTypes", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "CurioRarity",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 1,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Common", Type = "CurioRarity", EnumValue = 1 },
+				{ Name = "Uncommon", Type = "CurioRarity", EnumValue = 2 },
+				{ Name = "Rare", Type = "CurioRarity", EnumValue = 3 },
+				{ Name = "Epic", Type = "CurioRarity", EnumValue = 4 },
+				{ Name = "EpicTier2", Type = "CurioRarity", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "PlayerCompanionInfoFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IgnoreSeasonInScenarios", Type = "PlayerCompanionInfoFlags", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TieredEntranceTierFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IsLFG", Type = "TieredEntranceTierFlag", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TieredEntranceType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
+				{ Name = "Delve", Type = "TieredEntranceType", EnumValue = 1 },
+				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
+				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
+				{ Name = "Lairs", Type = "TieredEntranceType", EnumValue = 4 },
+				{ Name = "Placeholder_5", Type = "TieredEntranceType", EnumValue = 5 },
+				{ Name = "Placeholder_6", Type = "TieredEntranceType", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "WorldTierDifficulty",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Normal", Type = "WorldTierDifficulty", EnumValue = 1 },
+				{ Name = "Heroic", Type = "WorldTierDifficulty", EnumValue = 2 },
+				{ Name = "Mythic", Type = "WorldTierDifficulty", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "DelveAssistActionData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "assistedPlayer", Type = "string", Nilable = false },
+				{ Name = "mapName", Type = "cstring", Nilable = true },
+				{ Name = "creatureName", Type = "cstring", Nilable = true },
+				{ Name = "receivedSpellID", Type = "number", Nilable = true },
+				{ Name = "assistAction", Type = "AssistActionType", Nilable = false },
+			},
+		},
+		{
+			Name = "DelvesConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "DELVES_MIN_PLAYER_LEVEL_CONTENT_TUNING_ID", Type = "number", Value = 2677 },
+				{ Name = "DELVES_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
+				{ Name = "DELVES_COMPANION_INFO_SELECTION_CHARACTER_DATA_ELEMENT_ID", Type = "number", Value = 13 },
+				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
+				{ Name = "DELVES_COMPANION_BRANN_CREATURE_ID", Type = "number", Value = 210759 },
+				{ Name = "DELVES_COMPANION_VALEERA_CREATURE_ID", Type = "number", Value = 248567 },
+			},
+		},
+		{
+			Name = "TieredEntranceConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_TIER_LEVEL", Type = "number", Value = 1 },
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_MAP_ID", Type = "number", Value = 3 },
+				{ Name = "TIERED_ENTRANCE_TIER_SCORE_VALUE_PLAYER_CONDITION_ID", Type = "number", Value = 6 },
+				{ Name = "TIERED_ENTRANCE_INFO_WORLD_TIER_DIFFICULTY_CHARACTER_ELEMENT_ID", Type = "number", Value = 522 },
+			},
+		},
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(DelvesConstants);

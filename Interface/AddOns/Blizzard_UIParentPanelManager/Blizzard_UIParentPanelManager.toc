@@ -1,0 +1,8 @@
+## Title: Blizzard_UIParentPanelManager
+## Dep: Blizzard_ManagedFrameSystem
+## Dep: Blizzard_GameMenuEsc
+[Family]\UIPanelWindows.lua
+Shared\UIPanelLayoutFrame.lua [AllowLoadEnvironment Global]
+Shared\UIParentPanelManager.lua [AllowLoadEnvironment Global]
+[Family]\UIParentPanelManagerOverrides.lua [AllowLoadEnvironment Global]
+Shared\UpdateUIPanelPositions.lua [AllowLoadEnvironment Global]

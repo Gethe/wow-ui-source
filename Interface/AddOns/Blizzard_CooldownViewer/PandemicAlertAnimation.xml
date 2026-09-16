@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CooldownPandemicFXTemplate" inherits="AnimateWhileShownTemplate" hidden="true" frameStrata="MEDIUM" virtual="true">
+		<Frames>
+			<Frame parentKey="Border" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="UI-CooldownManager-PandemicBorder" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="FX" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="01" alphaMode="BLEND" atlas="UI-CooldownManager-PandemicFX-Icon01" setAllPoints="true"/>
+						<Texture parentKey="02" alphaMode="BLEND" atlas="UI-CooldownManager-PandemicFX-Icon02" setAllPoints="true"/>
+						<Texture parentKey="03" alphaMode="BLEND" atlas="UI-CooldownManager-PandemicFX-Icon03" setAllPoints="true"/>
+						<MaskTexture parentKey="Mask" atlas="UI-CooldownManager-PandemicBorder-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="01"/>
+								<MaskedTexture childKey="02"/>
+								<MaskedTexture childKey="03"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Scale childKey="01" duration="2" order="1" smoothing="IN_OUT" fromScaleX="0.25" fromScaleY="0.25" toScaleX="1.5" toScaleY="1.5"/>
+						<Alpha childKey="01" duration="0.5" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="01" duration="1" order="1" startDelay="0.5" smoothing="IN_OUT" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="01" duration="0.5" order="1" startDelay="1.5" smoothing="IN_OUT" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="02" duration="2" order="1" startDelay="1.5" smoothing="IN_OUT" fromScaleX="0.25" fromScaleY="0.25" toScaleX="1.5" toScaleY="1.5"/>
+						<Alpha childKey="02" duration="0.5" order="1" startDelay="1.5" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="02" duration="1" order="1" startDelay="2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="02" duration="0.5" order="1" startDelay="3" smoothing="IN_OUT" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="03" duration="2" order="1" startDelay="3" smoothing="IN_OUT" fromScaleX="0.25" fromScaleY="0.25" toScaleX="1.5" toScaleY="1.5"/>
+						<Alpha childKey="03" duration="0.5" order="1" startDelay="3" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="03" duration="1" order="1" startDelay="3.5" smoothing="IN_OUT" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="03" duration="0.5" order="1" startDelay="4.5" smoothing="IN_OUT" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CooldownPandemicBarFXTemplate" inherits="AnimateWhileShownTemplate" hidden="true" frameStrata="MEDIUM" virtual="true">
+		<Frames>
+			<Frame parentKey="Border" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="UI-CooldownManager-PandemicBorderBar" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Texture" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" atlas="UI-CooldownManager-PandemicFX-Bar">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-256" y="95"/>
+								<Anchor point="BOTTOMRIGHT" x="251" y="-199"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Mask" atlas="UI-CooldownManager-PandemicBorderBar-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="Texture"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="Texture" duration="5" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

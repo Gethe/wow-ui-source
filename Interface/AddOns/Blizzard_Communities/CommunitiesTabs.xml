@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="CommunitiesTabs.lua"/>
+
+	<CheckButton name="CommunitiesFrameTabTemplate" mixin="CommunitiesFrameTabMixin" frameLevel="510" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+      <Layer level="ARTWORK" textureSubLevel="1">
+        <Texture parentKey="Icon" file="INTERFACE\HELPFRAME\REPORTLAGICON-CHAT">
+          <Size x="30" y="30"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <TexCoords left="0.03125" right="0.96875" top="0.03125" bottom="0.96875"/>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK" textureSubLevel="2">
+        <Texture parentKey="IconOverlay" hidden="true">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+          </Anchors>
+          <Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+        </Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+</Ui>

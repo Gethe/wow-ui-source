@@ -1,0 +1,26 @@
+<Bindings>
+	<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
+	<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.TogglePingListener(keystate == "down");
+	</Binding>
+
+	<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
+		PingUtil.SendMacroPing(Enum.PingSubjectType.Attack);
+	</Binding>
+
+	<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
+		PingUtil.SendMacroPing(Enum.PingSubjectType.Warning);
+	</Binding>
+
+	<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
+		PingUtil.SendMacroPing(Enum.PingSubjectType.OnMyWay);
+	</Binding>
+
+	<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
+		PingUtil.SendMacroPing(Enum.PingSubjectType.Assist);
+	</Binding>
+
+	<Binding name="TOGGLEPINGTARGET" category="BINDING_HEADER_PING_SYSTEM">
+		PingUtil.TogglePingTarget();
+	</Binding>
+</Bindings>

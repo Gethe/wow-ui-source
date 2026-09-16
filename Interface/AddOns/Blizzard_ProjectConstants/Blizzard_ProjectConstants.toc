@@ -1,0 +1,6 @@
+## Title: Blizzard Project Constants
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Both
+ProjectConstants.lua
+WoWLabs\ProjectConstants.lua [AllowLoadGameType plunderstorm]

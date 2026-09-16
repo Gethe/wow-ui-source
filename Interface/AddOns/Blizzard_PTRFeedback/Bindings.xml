@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="Open Issue Report" category="PTR" default="F6">
+        PTR_IssueReporter.HandleTooltipKeypress()
+    </Binding>
+</Bindings>

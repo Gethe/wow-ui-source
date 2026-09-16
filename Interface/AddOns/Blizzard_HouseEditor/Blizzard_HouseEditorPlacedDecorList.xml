@@ -1,0 +1,146 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="HouseEditorPlacedDecorListButtonTemplate" mixin="HouseEditorPlacedDecorListButtonMixin" inherits="BaseHousingModeButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="false"/>
+			<KeyValue key="useStateTextures" type="boolean" value="true"/>
+			<KeyValue key="iconAtlas" type="string" value="decor-placement-list-default"/>
+			<KeyValue key="iconDefault" type="string" value="decor-placement-list-default"/>
+			<KeyValue key="iconActive" type="string" value="decor-placement-list-active"/>
+			<KeyValue key="iconPressed" type="string" value="decor-placement-list-pressed"/>
+			<KeyValue key="enabledTooltip" value="HOUSE_EDITOR_PLACED_DECOR_LIST_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Size x="36" y="36"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="HoverIcon" texelSnappingBias="0.0" snapToPixelGrid="false" alphaMode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="HouseEditorPlacedDecorEntryTemplate" mixin="HouseEditorPlacedDecorEntryMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Size y="20" />
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HighlightBGTex" atlas="common-dropdown-customize-mouseover" alpha="0" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DecorNameText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HouseEditorPlacedDecorListTemplate" mixin="HouseEditorPlacedDecorListMixin" movable="true" clampedToScreen="true" flattenRenderLayers="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="horizontalSpacing" value="5" type="number"/>
+			<KeyValue key="verticalSpacing" value="10" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
+		</KeyValues>
+		<Size x="400" y="400"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" atlas="housing-basic-container-woodheader">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlight" text="HOUSE_EDITOR_PLACED_DECOR_LIST_HEADER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="DecorativeFoliage" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the frame -->
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="DragBar" inherits="PanelDragBarTemplate">
+				<KeyValues>
+					<KeyValue key="showCursorOnHover" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<KeyValues>
+					<!-- How many rows are scrolled past at once via scroll wheel -->
+					<KeyValue key="wheelPanScalar" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="10"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

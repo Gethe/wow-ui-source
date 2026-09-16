@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ScrollingMessageFrame name="ChatFrameTemplate" mixin="ChatFrameMixin" frameStrata="LOW" toplevel="true" hidden="true" virtual="true">
+		<Frames>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+			<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+			<OnHyperlinkLeave method="OnHyperlinkLeave"/>
+		</Scripts>
+	</ScrollingMessageFrame>
+</Ui>

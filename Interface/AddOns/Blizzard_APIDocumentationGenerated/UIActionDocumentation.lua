@@ -1,0 +1,35 @@
+local UIAction =
+{
+	Name = "UIActionHandlerSystem",
+	Type = "System",
+	Namespace = "C_UIActionHandler",
+	Environment = "All",
+
+	Functions =
+	{
+	},
+
+	Events =
+	{
+		{
+			Name = "HandleUIAction",
+			Type = "Event",
+			LiteralName = "HANDLE_UI_ACTION",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "actionType", Type = "UIActionType", Nilable = false },
+			},
+		},
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(UIAction);

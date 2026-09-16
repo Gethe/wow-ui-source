@@ -1,0 +1,56 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="AccountStoreItemDisplayTemplate" mixin="AccountStoreItemDisplayMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Footer" frameLevel="1000" setAllPoints="true">
+				<Frames>
+					<Button parentKey="NextPageButton">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-12" y="12" />
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up" />
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down" />
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled" />
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+					</Button>
+					<Button parentKey="PrevPageButton">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.NextPageButton" relativePoint="LEFT" x="-6" y="0" />
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up" />
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down" />
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled" />
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+					</Button>		
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrencyAvailable" inherits="GameFontHighlightLarge">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="22" y="22" />
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PageText" inherits="GameFontHighlightLarge">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.PrevPageButton" relativePoint="LEFT" x="-10" y="1" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+			<OnMouseWheel method="OnMouseWheel" />
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,61 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PlayerChoicePowerChoiceTemplate" inherits="PlayerChoiceBaseOptionTemplate, VerticalLayoutFrame" mixin="PlayerChoicePowerChoiceTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="240" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CircleBorder" inherits="PlayerChoiceBaseCenteredFrame">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="topPadding" value="-30" type="number"/>
+						<KeyValue key="bottomPadding" value="-41" type="number"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Artwork">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CircleBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<MaskTexture parentKey="ArtworkCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork" x="5" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork" x="-5" y="6"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Artwork"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeoutSelected" setToFinalAlpha="true">
+				<Alpha startDelay="1.25" duration=".25" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+						PlayerChoiceFrame:OnSelectionMade();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeoutUnselected" setToFinalAlpha="true">
+				<Alpha duration=".25" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

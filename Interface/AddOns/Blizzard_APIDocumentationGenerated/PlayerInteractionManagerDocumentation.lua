@@ -1,0 +1,127 @@
+local PlayerInteractionManager =
+{
+	Name = "PlayerInteractionManager",
+	Type = "System",
+	Namespace = "C_PlayerInteractionManager",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "ClearInteraction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = true },
+			},
+		},
+		{
+			Name = "ConfirmationInteraction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = true },
+			},
+		},
+		{
+			Name = "InteractUnit",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
+				{ Name = "looseTargeting", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInteractingWithNpcOfType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "interacting", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsReplacingUnit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "replacing", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidNPCInteraction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValidInteraction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ReopenInteraction",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "PlayerInteractionManagerFrameHide",
+			Type = "Event",
+			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_HIDE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerInteractionManagerFrameShow",
+			Type = "Event",
+			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
+			},
+		},
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(PlayerInteractionManager);

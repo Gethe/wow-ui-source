@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="services-icon-bonus-large" file="Interface\Store\Services" virtual="true" >
+		<Size x="34" y="34"/>	
+		<TexCoords left="0.00097656" right="0.03417969" top="0.04589844" bottom="0.07910156"/>	
+	</Texture>
+	<Texture name="services-icon-bonus-red" file="Interface\Store\Services" virtual="true" >
+		<Size x="19" y="19"/>	
+		<TexCoords left="0.00097656" right="0.01953125" top="0.08105469" bottom="0.09960938"/>	
+	</Texture>
+	<Texture name="services-icon-bonus" file="Interface\Store\Services" virtual="true" >
+		<Size x="19" y="19"/>	
+		<TexCoords left="0.02148438" right="0.04003906" top="0.08105469" bottom="0.09960938"/>	
+	</Texture>
+	<Texture name="services-ring-large-glowpulse" file="Interface\Store\Services" virtual="true" >
+		<Size x="145" y="138"/>	
+		<TexCoords left="0.23828125" right="0.37988281" top="0.85253906" bottom="0.98730469"/>	
+	</Texture>
+	<Texture name="services-ring" file="Interface\Store\Services" virtual="true" >
+		<Size x="59" y="60"/>	
+		<TexCoords left="0.38183594" right="0.43945313" top="0.92089844" bottom="0.97949219"/>	
+	</Texture>
+	<Texture name="services-ring-large-glow" file="Interface\Store\Services" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.45605469" right="0.70312500" top="0.08300781" bottom="0.33300781"/>	
+	</Texture>
+	<Texture name="services-ring-large-glowspin" file="Interface\Store\Services" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.70507813" right="0.95214844" top="0.08300781" bottom="0.33300781"/>	
+	</Texture>
+</Ui>

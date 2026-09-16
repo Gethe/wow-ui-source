@@ -1,0 +1,10 @@
+## Title: Blizzard CombatText
+## LoadOnDemand: 1
+
+Blizzard_CombatText_Bootstrap.lua [Bootstrap]
+Shared\CombatTextConstants.lua
+[Family]\CombatTextConstantsOverrides.lua
+Shared\CombatTextUtil.lua
+[Family]\CombatTextUtilOverrides.lua
+Shared\CombatText.lua
+Shared\CombatText.xml

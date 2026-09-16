@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="ChannelFrame.lua"/>
+
+	<Frame name="ChannelFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="ChannelFrameMixin" inherits="ButtonFrameTemplate">
+		<Size x="402" y="423"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Icon" file="Interface\FriendsFrame\Battlenet-Portrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="NewButton" inherits="UIPanelButtonTemplate" text="ADD">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="1.0" y="4.0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleCreateChannel();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="SettingsButton" inherits="UIPanelButtonTemplate" text="SETTINGS">
+				<Size x="136" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleVoiceSettings();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="ChannelList" inherits="ChannelListTemplate" enableMouseMotion="true">
+				<Size x="178" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-67" />
+					<Anchor point="BOTTOMLEFT" x="7" y="28" />
+				</Anchors>
+			</ScrollFrame>
+			<Frame parentKey="LeftInset" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelList" x="-5" y="7" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelList" x="20" y="-2" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ChannelRoster" inherits="ChannelRosterTemplate" enableMouseMotion="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" x="-26" y="28" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightInset" inherits="InsetFrameTemplate">
+				<Size x="191"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelRoster"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

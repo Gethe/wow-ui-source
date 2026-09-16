@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ActionStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="ActionStatusText" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="ActionStatus_OnLoad"/>
+			<OnEvent function="ActionStatus_OnEvent"/>
+			<OnUpdate function="ActionStatus_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

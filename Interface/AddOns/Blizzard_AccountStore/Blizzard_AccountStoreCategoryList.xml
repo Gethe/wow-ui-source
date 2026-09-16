@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="AccountStoreCategoryTemplate" mixin="AccountStoreCategoryMixin" virtual="true">
+		<Size x="174" y="38" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Category" file="Interface\Store\Store-Main" setAllPoints="true">
+					<TexCoords left="0.56542969" right="0.73730469" top="0.41992188" bottom="0.45703125"/>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="true" justifyH="LEFT">
+					<Size x="120" y="38" />
+					<Anchors>
+						<Anchor point="LEFT" x="36" y="4" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconFrame" atlas="category-icon-ring">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\Store\Store-Main" alphaMode="ADD">
+			<Size x="162" y="34" />
+			<Anchors>
+				<Anchor point="CENTER" relativePoint="CENTER" x="0" y="2" />
+			</Anchors>
+			<TexCoords left="0.00097656" right="0.16894531" top="0.93847656" bottom="0.97167969" />
+		</HighlightTexture>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AccountStoreCategoryListTemplate" mixin="AccountStoreCategoryListMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="SelectionHighlight" frameLevel="1000" hidden="true">
+						<Size x="162" y="34" />
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Highlight" file="Interface\Store\Store-Main" alphaMode="ADD">
+									<TexCoords left="0.73535156" right="0.90332031" top="0.46289063" bottom="0.49609375"/>	
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>		
+				</Frames>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

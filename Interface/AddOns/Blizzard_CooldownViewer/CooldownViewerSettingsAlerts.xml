@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CooldownViewerSettingsEditAlert" mixin="CooldownViewerSettingsEditAlertMixin" inherits="CooldownViewerEditAlertBaseTemplate" toplevel="true" hidden="true">
+		<Size x="310" y="385"/>
+		<Frames>
+			<DropdownButton parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="EventLabel" inherits="GameFontNormalHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_EVENT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TypeDropdown" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="EventDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EventLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="PayloadLabel" inherits="GameFontNormalHuge" justifyH="LEFT" text="COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_SOUND_TYPE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.EventDropdown" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="PayloadDropdown" inherits="WowStyle1DropdownTemplate">
+				<Size x="268" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PayloadLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

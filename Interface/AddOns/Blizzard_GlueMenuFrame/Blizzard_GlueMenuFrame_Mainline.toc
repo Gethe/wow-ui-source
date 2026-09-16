@@ -1,0 +1,10 @@
+## Title: Blizzard_GlueMenuFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXMLBase, Blizzard_GlueParent
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+GlueMenuFrameUtil.lua
+Mainline\GlueMenuFrame.lua
+Mainline\GlueMenuFrame.xml

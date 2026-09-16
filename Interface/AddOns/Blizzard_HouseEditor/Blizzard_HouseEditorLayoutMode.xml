@@ -1,0 +1,157 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier forbidden="true">
+		<Button name="HouseEditorLayoutFloorLineTemplate" mixin="HouseEditorLayoutFloorLineMixin" virtual="true">
+			<Size x="256" y="40"/>
+			<Layers>
+				<Layer level="BORDER">
+					<Texture parentKey="TopDivider" atlas="housing-floor-list-divider-default" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="BottomDivider" atlas="housing-floor-list-divider-default" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="DoorIcon" atlas="housing-floor-door-inactive" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="LEFT" x="4" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="FloorText" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Color color="HOUSING_STORAGE_HEADER_COLOR"/>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<Frame name="HouseEditorLayoutFloorSelectTemplate" mixin="HouseEditorLayoutFloorSelectMixin" virtual="true">
+			<Size x="280" y="128"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" x="-40" y="50" />
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" atlas="housing-floor-container-bg" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER" x="-12" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+					<KeyValues>
+						<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Frame>
+				<Button parentKey="UpButton">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="5"/>
+					</Anchors>
+					<NormalTexture atlas="housing-floor-arrow-up-default" setAllPoints="true"/>
+					<PushedTexture atlas="housing-floor-arrow-up-pressed" setAllPoints="true"/>
+					<DisabledTexture atlas="housing-floor-arrow-up-disabled" setAllPoints="true"/>
+					<HighlightTexture atlas="housing-floor-arrow-up-default" setAllPoints="true" alphaMode="ADD"/>
+				</Button>
+				<Button parentKey="DownButton">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="-5"/>
+					</Anchors>
+					<NormalTexture atlas="housing-floor-arrow-down-default" setAllPoints="true"/>
+					<PushedTexture atlas="housing-floor-arrow-down-pressed" setAllPoints="true"/>
+					<DisabledTexture atlas="housing-floor-arrow-down-disabled" setAllPoints="true"/>
+					<HighlightTexture atlas="housing-floor-arrow-down-default" setAllPoints="true" alphaMode="ADD"/>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+				<OnShow method="OnShow"/>
+				<OnHide method="OnHide"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="HouseEditorLayoutModeTemplate" mixin="HouseEditorLayoutModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
+			<Frames>
+				<Frame parentKey="RoomCount" inherits="HouseEditorRoomCountTemplate" frameLevel="1000"/>
+				<Frame parentKey="FloorSelect" inherits="HouseEditorLayoutFloorSelectTemplate" frameLevel="1000"/>
+				<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate" frameLevel="1000">
+					<Frames>
+						<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="housing-hotkey-icon-leftclick" type="string"/>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_SELECT_INSTRUCTION" type="global"/>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="DeselectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_CANCEL_INSTRUCTION" type="global"/>
+								<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="ZoomInInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_ZOOM_IN_INSTRUCTION" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTCAMERA_ZOOM_IN" type="string"/>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="ZoomOutInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_ZOOM_OUT_INSTRUCTION" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTCAMERA_ZOOM_OUT" type="string"/>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="FloorUpInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_LAYOUTFLOOR_UP" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTFLOOR_UP" type="string"/>
+								<KeyValue key="layoutIndex" value="5" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="FloorDownInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_LAYOUTFLOOR_DOWN" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTFLOOR_DOWN" type="string"/>
+								<KeyValue key="layoutIndex" value="6" type="number"/>
+							</KeyValues>
+						</Frame>
+					</Frames>
+				</Frame>
+				<Button parentKey="LayoutDragUnderlay" frameStrata="LOW" registerForClicks="LeftButtonUp" setAllPoints="true">
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent" inherit="prepend"/>
+				<OnShow method="OnShow" inherit="prepend"/>
+				<OnHide method="OnHide" inherit="prepend"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+</Ui>

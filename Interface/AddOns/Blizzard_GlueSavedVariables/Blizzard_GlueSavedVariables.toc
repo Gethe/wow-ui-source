@@ -1,0 +1,4 @@
+## Title: Blizzard_GlueSavedVariables
+## LoadOnDemand: 0
+## AllowLoad: Glue
+## SavedVariablesMachine: g_collapsedServerAlert, g_characterSelectToolTrayCollapsed, g_newGameModeAvailableAcknowledged

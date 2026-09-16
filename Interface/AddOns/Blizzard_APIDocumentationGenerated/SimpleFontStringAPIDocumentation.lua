@@ -1,0 +1,744 @@
+local SimpleFontStringAPI =
+{
+	Name = "SimpleFontStringAPI",
+	Type = "ScriptObject",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "CalculateScreenAreaFromCharacterSpan",
+			Type = "Function",
+			RequiresFontStringTextAccess = true,
+			SecretWhenAnchoringSecret = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "leftIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "rightIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areas", Type = "table", InnerType = "uiBoundsRect", Nilable = true },
+			},
+		},
+		{
+			Name = "CanNonSpaceWrap",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanWordWrap",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ClearText",
+			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.RemoveSecretAspects } },
+			Documentation = { "Sets text to an empty string and removes the Text secret aspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "FindCharacterIndexAtCoordinate",
+			Type = "Function",
+			MayReturnNothing = true,
+			RequiresFontStringTextAccess = true,
+			SecretWhenAnchoringSecret = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "characterIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "inside", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "start", Type = "number", Nilable = false },
+				{ Name = "length", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFieldSize",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "fieldSize", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFont",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "fontFile", Type = "FontAsset", Nilable = true },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFontHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "calculated", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFontObject",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIndentedWordWrap",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetJustifyH",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
+			},
+		},
+		{
+			Name = "GetJustifyV",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLineHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "lineHeight", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxLines",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maxLines", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumLines",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "numLines", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRotation",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "radians", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetScaleAnimationMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
+			},
+		},
+		{
+			Name = "GetShadowColor",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetShadowOffset",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "offsetX", Type = "number", Nilable = false },
+				{ Name = "offsetY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSmoothScaling",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpacing",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetStringHeight",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetStringWidth",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetText",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTextColor",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTextScale",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "textScale", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnboundedStringWidth",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnboundedStringWidthForText",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWrappedWidth",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTruncated",
+			Type = "Function",
+			SecretWhenAnchoringSecret = true,
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isTruncated", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "OnColorsUpdated",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "SetAlphaGradient",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "start", Type = "number", Nilable = false },
+				{ Name = "length", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isWithinText", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDesaturateEmbeddedTextures",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "desaturate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFixedColor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "fixedColor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFont",
+			Type = "Function",
+			RequiresValidFontAsset = true,
+			RequiresValidFontHeight = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "fontFile", Type = "FontAsset", Nilable = false },
+				{ Name = "fontHeight", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFontHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFontObject",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFormattedText",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIndentedWordWrap",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetJustifyH",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
+			},
+		},
+		{
+			Name = "SetJustifyV",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMaxLines",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "maxLines", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetNonSpaceWrap",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRotation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "radians", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetScaleAnimationMode",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
+			},
+		},
+		{
+			Name = "SetShadowColor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+			},
+		},
+		{
+			Name = "SetShadowOffset",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "offsetX", Type = "number", Nilable = false },
+				{ Name = "offsetY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSmoothScaling",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "smoothScaling", Type = "bool", Nilable = false, Documentation = { "If true, text height will not snap to nearest whole numbers for scaled font strings." } },
+			},
+		},
+		{
+			Name = "SetSpacing",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SetText",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
+			},
+		},
+		{
+			Name = "SetTextColor",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+			},
+		},
+		{
+			Name = "SetTextHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextScale",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "textScale", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextToFit",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
+			},
+		},
+		{
+			Name = "SetWordWrap",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "wrap", Type = "bool", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(SimpleFontStringAPI);

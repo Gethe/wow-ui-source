@@ -1,0 +1,1936 @@
+local Item =
+{
+	Name = "Item",
+	Type = "System",
+	Namespace = "C_Item",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "ActionBindsItem",
+			Type = "Function",
+		},
+		{
+			Name = "BindEnchant",
+			Type = "Function",
+		},
+		{
+			Name = "CanBeRefunded",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeRefunded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanItemTransmogAppearance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "errorCode", Type = "TransmogOutfitSlotError", Nilable = false },
+			},
+		},
+		{
+			Name = "CanScrapItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeScrapped", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanViewItemPowers",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemViewable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmBindOnUse",
+			Type = "Function",
+		},
+		{
+			Name = "ConfirmNoRefundOnUse",
+			Type = "Function",
+		},
+		{
+			Name = "ConfirmOnUse",
+			Type = "Function",
+		},
+		{
+			Name = "DoesItemContainSpec",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemExist",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "emptiableItemLocation", Type = "EmptiableItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemExistByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemMatchBonusTreeReplacement",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesBonusTree", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemMatchSpellItemCondition",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matches", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemMatchTargetEnchantingSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTargetEnchantingSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesItemMatchTrackJump",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTrackJump", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DropItemOnUnit",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "EndBoundTradeable",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "EndRefund",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "EquipItemByName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "dstSlot", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "GetAppliedItemTransmogInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBaseItemTransmogInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCurrentItemLevel",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currentItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCurrentItemTransmogInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelvePreviewItemLink",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDelvePreviewItemQuality",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDetailedItemLevelInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "actualItemLevel", Type = "number", Nilable = false },
+				{ Name = "previewLevel", Type = "bool", Nilable = false },
+				{ Name = "sparseItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFirstTriggeredSpellForItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemQuality", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemChildInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemClassInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemClassID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemConversionOutputIcon",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "fileID", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemCooldown",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTimeSeconds", Type = "number", Nilable = false },
+				{ Name = "durationSeconds", Type = "number", Nilable = false },
+				{ Name = "enableCooldownTimer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemCount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemCreationContext",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "creationContext", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemFamily",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemGem",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemName", Type = "string", Nilable = false },
+				{ Name = "gemLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemGemID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemIDByGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemIDForItemInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemIcon",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "fileID", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemIconByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "fileID", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemName", Type = "cstring", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false },
+				{ Name = "itemMinLevel", Type = "number", Nilable = false },
+				{ Name = "itemType", Type = "cstring", Nilable = false },
+				{ Name = "itemSubType", Type = "cstring", Nilable = false },
+				{ Name = "itemStackCount", Type = "number", Nilable = false },
+				{ Name = "itemEquipLoc", Type = "cstring", Nilable = false },
+				{ Name = "itemTexture", Type = "fileID", Nilable = false },
+				{ Name = "sellPrice", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "subclassID", Type = "number", Nilable = false },
+				{ Name = "bindType", Type = "number", Nilable = false },
+				{ Name = "expansionID", Type = "number", Nilable = false },
+				{ Name = "setID", Type = "number", Nilable = true },
+				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+				{ Name = "itemDescription", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInfoInstant",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemType", Type = "cstring", Nilable = false },
+				{ Name = "itemSubType", Type = "cstring", Nilable = false },
+				{ Name = "itemEquipLoc", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "subClassID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInventorySlotInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInventorySlotKey",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInventoryType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemInventoryTypeByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLearnTransmogSet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "setID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLink",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLinkByGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLocation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemMaxStackSize",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackSize", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemMaxStackSizeByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackSize", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemNameByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemNumAddedSockets",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemNumSockets",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemQuality",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemQualityByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemQualityColor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "colorRGBR", Type = "number", Nilable = false },
+				{ Name = "colorRGBG", Type = "number", Nilable = false },
+				{ Name = "colorRGBB", Type = "number", Nilable = false },
+				{ Name = "qualityString", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemSetInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemSpecInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specTable", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemSpell",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellName", Type = "cstring", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemStatDelta",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLink1", Type = "cstring", Nilable = false },
+				{ Name = "itemLink2", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "statTable", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemStats",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "statTable", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemSubClassInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemClassID", Type = "number", Nilable = false },
+				{ Name = "itemSubClassID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "subClassName", Type = "cstring", Nilable = false },
+				{ Name = "subClassUsesInvType", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUniqueness",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "limitCategory", Type = "number", Nilable = false },
+				{ Name = "limitMax", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUniquenessByID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "limitCategoryName", Type = "cstring", Nilable = true },
+				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
+				{ Name = "limitCategoryID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemUpgradeInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemUpgradeInfo", Type = "ItemUpgradeInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetLimitedCurrencyItemInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "maxQuantity", Type = "number", Nilable = false },
+				{ Name = "totalEarned", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSetBonusesForSpecializationByItemID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemSetSpellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetStackCount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAnimaItemByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAnimaItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsArtifactPowerItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBound",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBound", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBoundToAccountUntilEquip",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "You can use IsItemBindToAccountUntilEquip instead if the item is not in your inventory" },
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBoundToAccountUntilEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsConsumableItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCorruptedItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsCosmeticItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsCurioItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the item is a consumable curio that can be applied to a delves companion." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsCurrentItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDecorItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the item is a consumable decor item." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDecor", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsDressableItemByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDressableItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEquippableItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEquippedItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEquippedItemType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHarmfulItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHelpfulItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemBindToAccount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemBindToAccount", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemBindToAccountUntilEquip",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "You can use IsBoundToAccountUntilEquip instead if the item exists in your inventory" },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemBindToAccountUntilEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemConduit",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isConduit", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemConvertibleAndValidForPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemConvertibleAndValidForPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemCorrupted",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorrupted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemCorruptionRelated",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorruptionRelated", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemCorruptionResistant",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCorruptionResistant", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemDataCached",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCached", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemDataCachedByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCached", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemGUIDInInventory",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemInRange",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "targetToken", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsItemKeystoneByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isKeystone", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemSpecificToPlayerClass",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemSpecificToPlayerClass", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLocked",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRelicItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the item is a consumable relic  that can be applied to an artifact weapon." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsUsableItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "usable", Type = "bool", Nilable = false },
+				{ Name = "noMana", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemHasRange",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "LockItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "LockItemByGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "PickupItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ReplaceEnchant",
+			Type = "Function",
+		},
+		{
+			Name = "ReplaceTradeEnchant",
+			Type = "Function",
+		},
+		{
+			Name = "ReplaceTradeskillEnchant",
+			Type = "Function",
+		},
+		{
+			Name = "RequestLoadItemData",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestLoadItemDataByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "UnlockItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "UnlockItemByGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "UseItemByName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = true },
+			},
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "ActionWillBindItem",
+			Type = "Event",
+			LiteralName = "ACTION_WILL_BIND_ITEM",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "BindEnchant",
+			Type = "Event",
+			LiteralName = "BIND_ENCHANT",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "CharacterItemFixupNotification",
+			Type = "Event",
+			LiteralName = "CHARACTER_ITEM_FIXUP_NOTIFICATION",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "fixupVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmBeforeUse",
+			Type = "Event",
+			LiteralName = "CONFIRM_BEFORE_USE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ConvertToBindToAccountConfirm",
+			Type = "Event",
+			LiteralName = "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "DeleteItemConfirm",
+			Type = "Event",
+			LiteralName = "DELETE_ITEM_CONFIRM",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "itemName", Type = "cstring", Nilable = false },
+				{ Name = "qualityID", Type = "number", Nilable = false },
+				{ Name = "bonding", Type = "number", Nilable = false },
+				{ Name = "questWarn", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "EndBoundTradeable",
+			Type = "Event",
+			LiteralName = "END_BOUND_TRADEABLE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "reason", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInfoReceived",
+			Type = "Event",
+			LiteralName = "GET_ITEM_INFO_RECEIVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemChanged",
+			Type = "Event",
+			LiteralName = "ITEM_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "previousHyperlink", Type = "string", Nilable = false },
+				{ Name = "newHyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemConversionDataReady",
+			Type = "Event",
+			LiteralName = "ITEM_CONVERSION_DATA_READY",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemCountChanged",
+			Type = "Event",
+			LiteralName = "ITEM_COUNT_CHANGED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemDataLoadResult",
+			Type = "Event",
+			LiteralName = "ITEM_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MerchantConfirmTradeTimerRemoval",
+			Type = "Event",
+			LiteralName = "MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ReplaceEnchant",
+			Type = "Event",
+			LiteralName = "REPLACE_ENCHANT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "existingStr", Type = "cstring", Nilable = false },
+				{ Name = "replacementStr", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ReplaceTradeskillEnchant",
+			Type = "Event",
+			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "existing", Type = "cstring", Nilable = false },
+				{ Name = "replacement", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "TradeReplaceEnchant",
+			Type = "Event",
+			LiteralName = "TRADE_REPLACE_ENCHANT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "existing", Type = "cstring", Nilable = false },
+				{ Name = "replacement", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UseBindConfirm",
+			Type = "Event",
+			LiteralName = "USE_BIND_CONFIRM",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "UseNoRefundConfirm",
+			Type = "Event",
+			LiteralName = "USE_NO_REFUND_CONFIRM",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "WeaponEnchantChanged",
+			Type = "Event",
+			LiteralName = "WEAPON_ENCHANT_CHANGED",
+			UniqueEvent = true,
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "ItemInfoResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemName", Type = "cstring", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false },
+				{ Name = "itemMinLevel", Type = "number", Nilable = false },
+				{ Name = "itemType", Type = "cstring", Nilable = false },
+				{ Name = "itemSubType", Type = "cstring", Nilable = false },
+				{ Name = "itemStackCount", Type = "number", Nilable = false },
+				{ Name = "itemEquipLoc", Type = "cstring", Nilable = false },
+				{ Name = "itemTexture", Type = "fileID", Nilable = false },
+				{ Name = "sellPrice", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "subclassID", Type = "number", Nilable = false },
+				{ Name = "bindType", Type = "number", Nilable = false },
+				{ Name = "expansionID", Type = "number", Nilable = false },
+				{ Name = "setID", Type = "number", Nilable = true },
+				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+				{ Name = "itemDescription", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemUpgradeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxItemLevel", Type = "number", Nilable = false },
+				{ Name = "trackString", Type = "cstring", Nilable = true },
+				{ Name = "trackStringID", Type = "number", Nilable = true },
+			},
+		},
+	},
+
+	Predicates =
+	{
+	},
+};
+
+APIDocumentation:AddDocumentationTable(Item);

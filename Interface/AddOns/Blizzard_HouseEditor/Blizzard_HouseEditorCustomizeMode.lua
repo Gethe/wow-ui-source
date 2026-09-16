@@ -1,0 +1,342 @@
+DecorCustomizationsPaneMixin = {};
+
+function DecorCustomizationsPaneMixin:OnLoad()
+	local function CloseDecorCustomizationsPane()
+		-- This will clear the preview dyes and close this pane by deselecting the decor
+		C_HousingCustomizeMode.CancelActiveEditing();
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_CANCEL);
+	end
+
+	self.CustomizeComponentContainer.DyePane:SetCustomizePane(self);
+	self.CustomizeComponentContainer.PetPane:SetCustomizePane(self);
+
+	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
+		self.CustomizeComponentContainer.DyePane:OnApply();
+		self.CustomizeComponentContainer.PetPane:OnApply();
+		C_HousingCustomizeMode.CancelActiveEditing();
+	end);
+
+	self.ButtonFrame.CancelButton:SetScript("OnClick", CloseDecorCustomizationsPane);
+	self.CloseButton:SetScript("OnClick", CloseDecorCustomizationsPane);
+end
+
+function DecorCustomizationsPaneMixin:RefreshApplyButtonState()
+	local canAffordChanges = true;
+	local hasAnyChanges = false;
+	local applyButton = self.ButtonFrame.ApplyButton;
+	if self.CustomizeComponentContainer.DyePane:IsShown() then
+		if self.CustomizeComponentContainer.DyePane:HasAnyChanges() then
+			hasAnyChanges = true;
+		end
+		if not self.CustomizeComponentContainer.DyePane:CanAffordDyes() then
+			canAffordChanges = false;
+			applyButton.disabledTooltip = HOUSING_DECOR_DYE_NOT_ENOUGH_DYE;
+		else
+			applyButton.disabledTooltip = nil;
+		end
+	end
+
+	if self.CustomizeComponentContainer.PetPane:IsShown() then
+		if self.CustomizeComponentContainer.PetPane:HasAnyChanges() then
+			hasAnyChanges = true;
+		end
+	end
+
+	applyButton:SetEnabled(canAffordChanges and hasAnyChanges);
+end
+
+function DecorCustomizationsPaneMixin:GetPetPane()
+	return self.CustomizeComponentContainer.PetPane;
+end
+
+function DecorCustomizationsPaneMixin:OnShow()
+
+end
+
+function DecorCustomizationsPaneMixin:OnHide()
+
+end
+
+function DecorCustomizationsPaneMixin:SetDecorInfo(decorInstanceInfo)
+	self.decorGUID = decorInstanceInfo.decorGUID;
+
+	self.DecorName:SetText(decorInstanceInfo.name);
+	
+	self.CustomizeComponentContainer.DyePane:SetDecorInfo(decorInstanceInfo);
+	self.CustomizeComponentContainer.DyePane:SetShown(#decorInstanceInfo.dyeSlots > 0);
+	self.CustomizeComponentContainer.PetPane:SetShown(decorInstanceInfo.canAttachPet);
+
+	self.CustomizeComponentContainer:Layout();
+	self:Layout();
+	self:RefreshApplyButtonState();
+end
+
+function DecorCustomizationsPaneMixin:UpdateDecorInfo(decorInstanceInfo)
+	self.CustomizeComponentContainer.DyePane:UpdateDecorInfo(decorInstanceInfo);
+end
+
+function DecorCustomizationsPaneMixin:ClearDecorInfo()
+	self.CustomizeComponentContainer.DyePane:ClearDecorInfo();
+end
+
+local CustomizeModeShownEvents = {
+	"HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED",
+	"HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED",
+	"HOUSING_DECOR_CUSTOMIZATION_CHANGED",
+	"HOUSING_DECOR_DYE_FAILURE",
+	"DYE_COLOR_UPDATED",
+	"DYE_COLOR_CATEGORY_UPDATED",
+	"HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED",
+	"UPDATE_BINDINGS",
+};
+
+HouseEditorCustomizeModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
+
+function HouseEditorCustomizeModeMixin:OnLoad()
+	self.PetCustomizationsPane:SetCustomizationPetPane(self.DecorCustomizationsPane:GetPetPane());
+	self.PetCustomizationsPane:SetExpandButton(self.PetCustomizationsPaneExpandButton);
+end
+
+function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
+	if event == "HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED" then
+		local hasTarget, targetType = ...;
+		if hasTarget  then
+			self:OnTargetSelected();
+			if targetType == Enum.HousingCustomizeModeTargetType.Decor then
+				self:ShowSelectedDecorInfo();
+			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then
+				self:ShowSelectedRoomComponentInfo();
+			end
+
+			PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_SELECT);
+		else
+			self:OnTargetUnselected();
+			self:HideSelectedDecorInfo();
+			self:HideSelectedRoomComponentInfo();
+		end
+	elseif event == "HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED" then
+		local isHovering, targetType = ...;
+		if isHovering then
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
+			if targetType == Enum.HousingCustomizeModeTargetType.Decor then
+				self:OnDecorHovered();
+			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then
+				self:OnRoomComponentHovered();
+			elseif targetType == Enum.HousingCustomizeModeTargetType.ExteriorHouse then
+				self:ShowHouseTooltip();
+			end
+		else
+			GameTooltip:Hide();
+		end
+	elseif event == "HOUSING_DECOR_CUSTOMIZATION_CHANGED" then
+		local changedGUID = ...;
+		if self.DecorCustomizationsPane.decorGUID == changedGUID then
+			self:UpdateSelectedDecorInfo();
+		end
+	elseif event == "DYE_COLOR_UPDATED" or event == "DYE_COLOR_CATEGORY_UPDATED" then
+		if C_HousingCustomizeMode.IsDecorSelected() then
+			self:ShowSelectedDecorInfo();
+		end
+	elseif event == "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED" then
+		local roomGUID, componentID = ...;
+		local componentPane = self.RoomComponentCustomizationsPane;
+		if componentPane.roomGUID == roomGUID and componentPane.componentID == componentID then
+			local info = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
+			componentPane:SetRoomComponentInfo(info);
+		end
+	elseif event == "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGE_FAILED" then
+		local roomGUID, componentID, result = ...;
+		local componentPane = self.RoomComponentCustomizationsPane;
+		if componentPane.roomGUID == roomGUID and componentPane.componentID == componentID then
+			local errStr = HousingResultToErrorText[result];
+			if errStr then
+				UIErrorsFrame:AddExternalErrorMessage(errStr);
+			end
+		end
+	elseif event == "HOUSING_DECOR_DYE_FAILURE" then
+		UIErrorsFrame:AddExternalErrorMessage(HOUSING_DECOR_MISSING_DYE_ERROR_TEXT);
+	elseif event == "UPDATE_BINDINGS" then
+		self.Instructions:UpdateAllControls();
+	end
+end
+
+function HouseEditorCustomizeModeMixin:OnTargetSelected()
+	local isSelected = true;
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isSelected);
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorCustomizeModeMixin:OnTargetUnselected()
+	local isSelected = false;
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isSelected);
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorCustomizeModeMixin:UpdateSelectedDecorInfo()
+	local info = C_HousingCustomizeMode.GetSelectedDecorInfo();
+	if info and info.canBeCustomized then
+		self.DecorCustomizationsPane:UpdateDecorInfo(info);
+	else
+		self:HideSelectedDecorInfo();
+	end
+end
+
+function HouseEditorCustomizeModeMixin:ShowSelectedDecorInfo()
+	local info = C_HousingCustomizeMode.GetSelectedDecorInfo();
+	if info and info.canBeCustomized then
+		self:HideSelectedRoomComponentInfo();
+
+		if self.DecorCustomizationsPane:IsShown() then
+			self.DecorCustomizationsPane:ClearDecorInfo();
+		end
+
+		self.DecorCustomizationsPane:SetDecorInfo(info);
+		self.DecorCustomizationsPane:Show();
+
+		if info.canAttachPet then
+			if self.PetCustomizationsPane:IsCollapsed() then
+				self.PetCustomizationsPaneExpandButton:Show();
+			else
+				self.PetCustomizationsPane:Show();
+			end
+		end
+	else
+		self:HideSelectedDecorInfo();
+	end
+end
+
+function HouseEditorCustomizeModeMixin:HideSelectedDecorInfo()
+	self.PetCustomizationsPane:Hide();
+	self.PetCustomizationsPaneExpandButton:Hide();
+	if self.DecorCustomizationsPane:IsShown() then
+		self.DecorCustomizationsPane:ClearDecorInfo();
+		self.DecorCustomizationsPane:Hide();
+	end
+end
+
+function HouseEditorCustomizeModeMixin:SetInstructionShown(instructionSet, shouldShow)
+	for _, instruction in ipairs(instructionSet) do
+		instruction:SetShown(shouldShow);
+	end
+end
+
+function HouseEditorCustomizeModeMixin:OnShow()
+	self.Instructions:UpdateAllVisuals();
+	local hasSelection = C_HousingCustomizeMode.IsDecorSelected() or C_HousingCustomizeMode.IsRoomComponentSelected();
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not hasSelection);
+	self.Instructions:UpdateLayout();
+
+	FrameUtil.RegisterFrameForEvents(self, CustomizeModeShownEvents);
+	EventRegistry:TriggerEvent("HouseEditor.HouseStorageSetShown", false);
+	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorCustomizeMode);
+
+	if C_HousingCustomizeMode.IsDecorSelected() then
+		self:ShowSelectedDecorInfo();
+	elseif C_HousingCustomizeMode.IsRoomComponentSelected() then
+		self:ShowSelectedRoomComponentInfo();
+	end
+
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorCustomizeModeMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, CustomizeModeShownEvents);
+	self:HideSelectedDecorInfo();
+	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorCustomizeMode);
+end
+
+function HouseEditorCustomizeModeMixin:TryHandleEscape()
+	if C_HousingCustomizeMode.IsDecorSelected() or C_HousingCustomizeMode.IsRoomComponentSelected() then
+		C_HousingCustomizeMode.CancelActiveEditing();
+		return true;
+	end
+	return false;
+end
+
+function HouseEditorCustomizeModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+
+	if decorInstanceInfo.canAttachPet then
+		local petName = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(DECOR_INSTANCE_TOOLTIP_PET_BED_UNASSIGNED);
+		local assignedPetName = C_HousingDecor.GetDecorAssignedPetName(decorInstanceInfo.decorGUID);
+		if assignedPetName then
+			petName = assignedPetName;
+		end
+		GameTooltip_AddNormalLine(GameTooltip, string.format(DECOR_INSTANCE_TOOLTIP_PET_BED, petName));
+	end
+
+	if decorInstanceInfo.isLocked then
+		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
+ 	elseif decorInstanceInfo.canBeCustomized then	
+		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_HOVER_TOOLTIP);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_UNAVAILABLE_HOVER_TOOLTIP);
+	end
+	GameTooltip:Show();
+	return GameTooltip;
+end
+
+function HouseEditorCustomizeModeMixin:ShowHouseTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CUSTOMIZATION_HOUSE_EXTERIOR_TOOLTIP);
+	GameTooltip:Show();
+	return GameTooltip;
+end
+
+function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)
+	local supportedComponentName = self.RoomComponentCustomizationsPane:TryGetRoomComponentTooltipLabel(componentInfo);
+	if not supportedComponentName then
+		return;
+	end
+
+	local selectedComponentInfo = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, supportedComponentName);
+	if selectedComponentInfo
+		and selectedComponentInfo.componentID == componentInfo.componentID
+		and selectedComponentInfo.roomGUID == componentInfo.roomGUID
+	then
+		GameTooltip_AddNormalLine(GameTooltip,  HOUSING_CUSTOMIZE_DECOR_SELECTED_TOOLTIP);
+	elseif componentInfo.canBeCustomized then
+		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_HOVER_TOOLTIP);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_CUSTOMIZE_UNAVAILABLE_HOVER_TOOLTIP);
+	end
+	GameTooltip:Show();
+	return GameTooltip;
+end
+
+function HouseEditorCustomizeModeMixin:ShowSelectedRoomComponentInfo()
+	local info = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
+	if info and info.canBeCustomized and self.RoomComponentCustomizationsPane:SupportsRoomComponent(info) then
+		self:HideSelectedDecorInfo();
+
+		if self.RoomComponentCustomizationsPane:IsShown() then
+			self.RoomComponentCustomizationsPane:ClearRoomComponentInfo();
+		end
+
+		self.RoomComponentCustomizationsPane:SetRoomComponentInfo(info);
+		self.RoomComponentCustomizationsPane:Show();
+	else
+		self:HideSelectedRoomComponentInfo();
+	end
+end
+
+function HouseEditorCustomizeModeMixin:HideSelectedRoomComponentInfo()
+	if self.RoomComponentCustomizationsPane:IsShown() then
+		self.RoomComponentCustomizationsPane:ClearRoomComponentInfo();
+		self.RoomComponentCustomizationsPane:Hide();
+	end
+end 
+
+PetCustomizationsPaneExpandButtonMixin = {}
+
+function PetCustomizationsPaneExpandButtonMixin:OnEnter()
+	self.OverlayIcon:Show();
+end
+
+function PetCustomizationsPaneExpandButtonMixin:OnLeave()
+	self.OverlayIcon:Hide();
+end

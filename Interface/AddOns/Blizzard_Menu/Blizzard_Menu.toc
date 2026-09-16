@@ -1,0 +1,21 @@
+## Title: Blizzard_Menu
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXMLBase
+## LoadFirst: 1
+## AllowLoad: Both
+MenuConstants.lua
+[Family]\MenuConstants.lua
+MenuVariants.lua
+Cata\MenuVariants.lua         [AllowLoadGameType cata, mists]
+Vanilla\MenuVariants.lua      [AllowLoadGameType vanilla, tbc, wrath]
+[Family]\MenuVariants.lua     [AllowLoadGameType mainline]
+Compositor.lua
+Menu.lua
+Menu.xml
+DropdownButton.lua
+DropdownButton.xml
+MenuTemplates.lua
+MenuTemplates.xml
+[Family]\MenuTemplates.lua
+[Family]\MenuTemplates.xml
+MenuUtil.lua

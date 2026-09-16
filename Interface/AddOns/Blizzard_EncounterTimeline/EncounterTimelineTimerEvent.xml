@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EncounterTimelineTimerEventTemplate" inherits="EncounterTimelineEventFrameTemplate" mixin="EncounterTimelineTimerEventMixin" virtual="true">
+		<Size x="300" y="34"/>
+		<KeyValues>
+			<!--
+				Cancel animation tweakables; the fade duration is intentionally
+				lower to have the animation visually finish and give some dead
+				time before the parent list collapses its layout.
+			-->
+			<KeyValue key="cancelAnimationDuration" type="number" value="0.35"/>
+			<KeyValue key="cancelAnimationFadeDuration" type="number" value="0.30"/>
+
+			<!--
+				Finish animation tweakables; same as Cancel but we artifically
+				extend the move duration to increase the initial strength of
+				the InBack easing so it travels further in the opposite direction
+				when starting.
+			-->
+			<KeyValue key="finishAnimationDuration" type="number" value="0.35"/>
+			<KeyValue key="finishAnimationFadeDuration" type="number" value="0.30"/>
+			<KeyValue key="finishAnimationMoveDuration" type="number" value="0.40"/>
+			<KeyValue key="finishAnimationMoveDistance" type="number" value="-80"/>
+
+			<!-- Movement animation speed is the 'amount' parameter to FrameDeltaLerp. -->
+			<KeyValue key="movementAnimationSpeed" type="number" value="0.30"/>
+			<KeyValue key="showAnimationDuration" type="number" value="0.3"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="IndicatorContainer" collapsesLayout="true" inherits="EncounterTimelineIndicatorIconGridTemplate">
+				<!-- Anchors managed dynamically. -->
+				<Size x="34" y="34"/>
+			</Frame>
+			<Frame parentKey="IconContainer" collapsesLayout="true" inherits="EncounterTimelineEventIconTemplate">
+				<!-- Anchors managed dynamically. -->
+				<Size x="34" y="34"/>
+			</Frame>
+			<StatusBar parentKey="Bar">
+				<!-- Anchors managed dynamically. -->
+				<Size y="26"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BarBG" atlas="UI-HUD-CoolDownManager-Bar-BG">
+							<Size y="36"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="-2"/>
+								<Anchor point="RIGHT" x="6" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Spark" atlas="UI-HUD-CoolDownManager-Bar-Pip" useAtlasSize="true" alphaMode="ADD"/>
+						<FontString parentKey="Duration" inherits="NumberFontNormal" collapsesLayout="true" justifyH="LEFT" wordwrap="false">
+							<!-- Anchors managed dynamically. -->
+						</FontString>
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" justifyV="MIDDLE" wordwrap="false">
+							<Anchors>
+								<!-- Anchors managed dynamically for LEFT/RIGHT. -->
+								<Anchor point="TOP"/>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
+					<Color color="ENCOUNTER_TIMELINE_TIMER_COLOR"/>
+				</BarTexture>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

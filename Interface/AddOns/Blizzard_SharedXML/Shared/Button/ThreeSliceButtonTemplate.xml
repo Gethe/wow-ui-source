@@ -1,0 +1,133 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<Button name="ThreeSliceButtonTemplate" mixin="ThreeSliceButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<!--
+		atlasName: The art kit to use for the 3 sections of the button.
+						* The left textures will be "atlasName-Left", "atlasName-Left-Disabled" and "atlasName-Left-Pressed"
+						* The right textures will be "atlasName-Right", "atlasName-Right-Disabled" and "atlasName-Right-Pressed"
+						* The center textures will be "_atlasName-Center", "_atlasName-Disabled" and "_atlasName-Pressed"
+						* The highlight texture will be "atlasName-Highlight"
+		tooltip: This can be either a string or a function which returns a string
+
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
+			<KeyValue key="tooltip" value="MyTooltipFunction" type="global"/>
+				or
+			<KeyValue key="tooltip" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+		</KeyValues>
+		-->
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Center" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Controller" mixin="ButtonControllerMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnShow method="UpdateButton"/>
+			<OnDisable method="UpdateButton"/>
+			<OnEnable method="UpdateButton"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnSizeChanged method="UpdateScale"/>
+		</Scripts>
+	</Button>
+
+	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
+		<Size x="441" y="128"/>
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
+		</KeyValues>
+		<PushedTextOffset x="-2" y="-1"/>
+	</Button>
+
+	<Button name="SharedButtonTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedButtonLargeTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+		<DisabledFont style="GameFontDisableMed3"/>
+	</Button>
+
+	<Button name="SharedButtonSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="138" y="28"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedButtonExtraSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="50" y="20"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+	</Button>
+
+	<Button name="BigGoldRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
+		<Size x="441" y="128"/>
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-GoldRedButton" type="string"/>
+		</KeyValues>
+		<PushedTextOffset x="-2" y="-1"/>
+	</Button>
+
+	<Button name="SharedGoldRedButtonTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedGoldRedButtonLargeTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+		<DisabledFont style="GameFontDisableMed3"/>
+	</Button>
+
+	<Button name="SharedGoldRedButtonSmallTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="138" y="28"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedGoldRedButtonExtraLargeTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="36"/>
+		<NormalFont style="GameFontHighlightLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+	</Button>
+	
+</Ui>

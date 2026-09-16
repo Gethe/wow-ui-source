@@ -1,0 +1,11 @@
+## Title: Blizzard_RecruitAFriend
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## OptionalDeps: Blizzard_BNet, Blizzard_FriendsFrame, Blizzard_FrameXMLUtil, Blizzard_SocialUIShared, Blizzard_TransmogShared, Blizzard_UnitPopup
+## SuppressLocalTableRef: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+RecruitAFriendFrame.xml
+
+RecruitAFriendSocialView.lua
+RecruitAFriendSocialView.xml

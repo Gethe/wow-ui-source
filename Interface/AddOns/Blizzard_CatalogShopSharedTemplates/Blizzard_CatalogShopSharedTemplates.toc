@@ -1,0 +1,7 @@
+## Title: Blizzard_CatalogShopSharedTemplates
+## AllowLoad: Both
+## LoadFirst: 1
+## RequiredDep: Blizzard_CatalogShopSharedUtil
+
+Blizzard_CatalogShop_SharedProductCards.lua
+Blizzard_CatalogShop_SharedProductCards.xml

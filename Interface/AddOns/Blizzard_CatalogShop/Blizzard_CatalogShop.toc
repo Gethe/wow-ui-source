@@ -1,0 +1,30 @@
+## Title: Blizzard_CatalogShop
+## AllowLoad: Both
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_CatalogShopSharedUtil
+## Dep: Blizzard_CatalogShopSharedTemplates
+## Dep: Blizzard_GlueParent [AllowLoad glue]
+## Dep: Blizzard_StaticPopup_Glue [AllowLoad glue]
+## UseSecureEnvironment: 1
+
+DialogPopup.xml
+DialogPopup.lua
+
+Blizzard_CatalogShop_Elements.lua
+Blizzard_CatalogShop_ProductCards.lua
+Blizzard_CatalogShop_Header.lua
+Blizzard_CatalogShop_Products.lua
+Blizzard_CatalogShop_Details.lua
+Blizzard_CatalogShop_Model.lua
+Blizzard_CatalogShop.lua
+
+Blizzard_CatalogShop_Elements.xml
+Blizzard_CatalogShop_ProductCards.xml
+Blizzard_CatalogShop_Header.xml
+Blizzard_CatalogShop_Inbound.lua
+Blizzard_CatalogShop_Outbound.lua
+Blizzard_CatalogShop_Unsecure.lua
+Blizzard_CatalogShop_ErrorLookup.lua
+
+
+Blizzard_CatalogShop.xml

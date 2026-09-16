@@ -1,0 +1,327 @@
+local RecentAllies =
+{
+	Name = "RecentAllies",
+	Type = "System",
+	Namespace = "C_RecentAllies",
+	Environment = "All",
+
+	Functions =
+	{
+		{
+			Name = "CanSetRecentAllyNote",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canSetNote", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRecentAllies",
+			Type = "Function",
+			RequiresRecentAllies = true,
+
+			Returns =
+			{
+				{ Name = "recentAlliesData", Type = "table", InnerType = "RecentAllyData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRecentAllyByFullName",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "fullCharacterName", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recentAllyData", Type = "RecentAllyData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRecentAllyByGUID",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recentAllyData", Type = "RecentAllyData", Nilable = true },
+			},
+		},
+		{
+			Name = "IsRecentAllyByFullName",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "fullCharacterName", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRecentAlly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecentAllyByGUID",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRecentAlly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecentAllyDataReady",
+			Type = "Function",
+			RequiresRecentAllies = true,
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecentAllyPinned",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPinned", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRecentAllySystemEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSystemSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRecentAllySystemSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SearchRecentAllies",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "searchInfo", Type = "RecentAlliesSearchInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recentAlliesData", Type = "table", InnerType = "RecentAllyData", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRecentAllyNote",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "note", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRecentAllyPinned",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "isPinned", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TryRequestRecentAlliesData",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			HasRestrictions = true,
+		},
+	},
+
+	Events =
+	{
+		{
+			Name = "LetRecentAlliesSeeLocationSettingUpdated",
+			Type = "Event",
+			LiteralName = "LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "RecentAlliesCacheUpdate",
+			Type = "Event",
+			LiteralName = "RECENT_ALLIES_CACHE_UPDATE",
+			UniqueEvent = true,
+		},
+		{
+			Name = "RecentAlliesDataReady",
+			Type = "Event",
+			LiteralName = "RECENT_ALLIES_DATA_READY",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "RecentAlliesSystemStatusUpdated",
+			Type = "Event",
+			LiteralName = "RECENT_ALLIES_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "RecentAllyDataUpdated",
+			Type = "Event",
+			LiteralName = "RECENT_ALLY_DATA_UPDATED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+	},
+
+	Tables =
+	{
+		{
+			Name = "RecentAlliesSearchInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "searchText", Type = "string", Nilable = false },
+				{ Name = "isOnline", Type = "bool", Nilable = false },
+				{ Name = "isDND", Type = "bool", Nilable = false },
+				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isOffline", Type = "bool", Nilable = false },
+				{ Name = "interests", Type = "table", InnerType = "RecentAlliesFriendTag", Nilable = false },
+			},
+		},
+		{
+			Name = "RecentAllyCharacterData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "fullName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "UnitSex", Nilable = false },
+			},
+		},
+		{
+			Name = "RecentAllyData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "stateData", Type = "RecentAllyStateData", Nilable = false },
+				{ Name = "characterData", Type = "RecentAllyCharacterData", Nilable = false },
+				{ Name = "interactionData", Type = "RecentAllyInteractionData", Nilable = false },
+			},
+		},
+		{
+			Name = "RecentAllyInteraction",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "RolodexType", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "timestamp", Type = "time_t", Nilable = false },
+				{ Name = "contextData", Type = "RecentAllyInteractionContextData", Nilable = false },
+			},
+		},
+		{
+			Name = "RecentAllyInteractionContextData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = true },
+				{ Name = "locationName", Type = "cstring", Nilable = true },
+				{ Name = "activityDifficultyID", Type = "number", Nilable = true },
+				{ Name = "activityDifficultyLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RecentAllyInteractionData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "interactions", Type = "table", InnerType = "RecentAllyInteraction", Nilable = false },
+				{ Name = "note", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "RecentAllyStateData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isOnline", Type = "bool", Nilable = false },
+				{ Name = "isDND", Type = "bool", Nilable = false },
+				{ Name = "isAFK", Type = "bool", Nilable = false },
+				{ Name = "isConvertedLegacyFriend", Type = "bool", Nilable = false },
+				{ Name = "pinExpirationDate", Type = "time_t", Nilable = true },
+				{ Name = "friendRequestSentThisSession", Type = "bool", Nilable = false },
+				{ Name = "currentLocation", Type = "string", Nilable = true },
+			},
+		},
+	},
+
+	Predicates =
+	{
+		{
+			Name = "RequiresRecentAllies",
+			Type = "Precondition",
+			FailureMode = "ReturnNothing",
+		},
+	},
+};
+
+APIDocumentation:AddDocumentationTable(RecentAllies);

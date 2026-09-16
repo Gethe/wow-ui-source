@@ -1,0 +1,18 @@
+## Title: Blizzard_ObjectAPI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+## Dependencies: Blizzard_Colors
+Mainline\ContinuableContainer.lua
+Mainline\ItemLocation.lua
+Mainline\AsyncCallbackSystem.lua
+Mainline\ObjectCache.lua
+Mainline\Item.lua
+Mainline\Spell.lua
+Mainline\PlayerLocation.lua
+Mainline\CampaignChapter.lua
+Mainline\Campaign.lua
+Mainline\Quest.lua
+Mainline\UiMapPoint.lua
+Mainline\CovenantCalling.lua

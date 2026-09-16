@@ -1,0 +1,8 @@
+## Title: Blizzard_FullscreenBrowser
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: both
+## LoadOnDemand: 0
+
+[AllowLoadTextLocale: zhCN] Blizzard_FullscreenBrowserSpinner.lua
+[AllowLoadTextLocale: zhCN] Blizzard_FullscreenBrowserSpinner.xml
