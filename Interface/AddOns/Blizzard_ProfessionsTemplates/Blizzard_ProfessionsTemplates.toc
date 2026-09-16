@@ -4,9 +4,13 @@
 ## LoadWith: Blizzard_ProfessionsCrafting, Blizzard_ProfessionsCustomerOrders
 ## Dependencies: Blizzard_Colors
 Blizzard_Professions.lua
+[Game]\Blizzard_Professions.lua		[AllowLoadGameType camelot]
 Blizzard_ProfessionsRecipeLoader.lua
 Blizzard_ProfessionsTransaction.lua
+Blizzard_ProfessionsTemplates.lua
+[Game]\Blizzard_ProfessionsTemplates.lua	[AllowLoadGameType camelot]
 Blizzard_ProfessionsTemplates.xml
+Blizzard_ProfessionsRecipeList.lua
 Blizzard_ProfessionsRecipeList.xml
 Blizzard_ProfessionsRecipeCrafterDetails.xml
 Blizzard_ProfessionsRecipeSlotBase.lua
@@ -18,4 +22,9 @@ Blizzard_ProfessionsRecipeRecraftSlot.xml
 Blizzard_ProfessionsRecipeFlyout.xml
 Blizzard_ProfessionsRecipeFlyoutInstance.lua
 Blizzard_ProfessionsQualityDialog.xml
+Blizzard_ProfessionsRecipeSchematicForm.lua
+[Game]\Blizzard_ProfessionsRecipeSchematicFormOverride.lua	 [AllowLoadGameType camelot]
+[Family]\Blizzard_ProfessionsRecipeSchematicForm.xml	[ExcludeLoadGameType camelot]
+[Game]\Blizzard_ProfessionsRecipeSchematicForm.xml	[AllowLoadGameType camelot]
 Blizzard_ProfessionsRecipeSchematicForm.xml
+Blizzard_ProfessionsRankBar.xml

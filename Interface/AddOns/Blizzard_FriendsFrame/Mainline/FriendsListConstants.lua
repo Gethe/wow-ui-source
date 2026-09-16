@@ -27,9 +27,12 @@ BattleNetFriendPartyInviteRestrictionPriority =
 	[BattleNetFriendPartyInviteRestrictionType.DifferentWowProject] = 6,
 	[BattleNetFriendPartyInviteRestrictionType.WowProjectMainline] = 7,
 	[BattleNetFriendPartyInviteRestrictionType.WowProjectClassic] = 8,
-	[BattleNetFriendPartyInviteRestrictionType.None] = 9,
-	[BattleNetFriendPartyInviteRestrictionType.Mobile] = 10,
-	[BattleNetFriendPartyInviteRestrictionType.DifferentRegion] = 11,
-	[BattleNetFriendPartyInviteRestrictionType.QuestSession] = 12,
-	[BattleNetFriendPartyInviteRestrictionType.IncompatibleGameMode] = 13,
+	[BattleNetFriendPartyInviteRestrictionType.Mobile] = 9,
+	[BattleNetFriendPartyInviteRestrictionType.DifferentRegion] = 10,
+	[BattleNetFriendPartyInviteRestrictionType.QuestSession] = 11,
+	[BattleNetFriendPartyInviteRestrictionType.IncompatibleGameMode] = 12,
+	-- If we can invite even one of their game accounts, that beats every reason the others can't be invited
+	[BattleNetFriendPartyInviteRestrictionType.None] = 13,
 };
+
+assertsafe(table.count(BattleNetFriendPartyInviteRestrictionType) == table.count(BattleNetFriendPartyInviteRestrictionPriority), "Not all BattleNetFriendPartyInviteRestrictionTypes have a priority defined in BattleNetFriendPartyInviteRestrictionPriority!");

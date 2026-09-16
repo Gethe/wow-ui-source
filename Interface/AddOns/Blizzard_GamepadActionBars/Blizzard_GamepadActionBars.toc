@@ -1,0 +1,32 @@
+## Title: Blizzard_GamepadActionBars
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_GamepadSharedUtility, Blizzard_Gamepad
+## DefaultState: enabled
+## AllowLoadGameType: camelot
+
+ActionBarButton.lua
+ActionBarButton.xml
+ActionBarFocusFX.lua
+ActionBarStyles.lua
+ActionBindingUtil.lua
+ActionBar.lua
+GamepadOverrideBarMixin.lua
+IconIntro.lua
+IconIntro.xml
+
+TargetActionBars/Shared.lua
+TargetActionBars/StaticOverrideActionBar.lua
+TargetActionBars/FriendlyTargetingActionBar.lua
+TargetActionBars/HostileTargetingActionBar.lua
+TargetActionBars/ShortcutsActionBar.lua
+
+PageUnit.lua
+PossessBar.lua
+StanceBar.lua
+ActionBarTemplates.xml
+MainActionBarFrame.lua
+MainActionBarFrame.xml
+ActionBarEditFrame.lua
+ActionBarEditFrame.xml
+FlyoutRadial.lua
+FlyoutRadial.xml

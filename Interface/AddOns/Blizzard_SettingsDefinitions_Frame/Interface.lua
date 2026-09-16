@@ -20,7 +20,7 @@ local function Register()
 	InterfaceOverrides.RunSettingsCallback(function()
 		if C_CVar.GetCVar("showInGameNavigation") then
 			-- In Game Navigation
-			Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+			InterfaceOverrides.AdjustInGameNavigationSettings(category);
 		end
 	end);
 
@@ -41,18 +41,7 @@ local function Register()
 	end);
 
 	-- Outline
-	if C_CVar.GetCVar("Outline") then
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
-			container:Add(1, OBJECT_NPC_OUTLINE_MODE_ONE);
-			container:Add(2, OBJECT_NPC_OUTLINE_MODE_TWO);
-			container:Add(3, OBJECT_NPC_OUTLINE_MODE_THREE);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
-	end
+	InterfaceOverrides.RegisterOutlineSettings(category);
 
 	-- Status text 
 	do
@@ -137,6 +126,13 @@ local function Register()
 	do
 		InterfaceOverrides.CreateQuestSettings(category, layout);
 	end
+	
+	-- Toasts
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL));
+
+	Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
+	Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
+	Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 

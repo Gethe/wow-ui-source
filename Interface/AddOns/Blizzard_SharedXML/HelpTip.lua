@@ -159,7 +159,7 @@ function HelpTip:AreHelpTipsEnabled()
 		return false;
 	end
 
-	if GetCVarBool("hideHelptips") then
+	if GetCVarBool("hideHelptips") or InputUtil.IsGamepadUIEnabled() then
 		return false;
 	end
 

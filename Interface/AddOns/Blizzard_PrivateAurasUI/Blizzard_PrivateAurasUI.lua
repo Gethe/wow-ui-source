@@ -1344,6 +1344,7 @@ function PrivateRaidBossEmoteFrameMixin:OnLoad()
 			end
 		end
 	end);
+
 	C_UnitAurasPrivate.SetPrivateRaidBossMessageCallback(self.privateRaidBossMessageCallback);
 end
 

@@ -1,6 +1,8 @@
 
 local LIST_SCROLL_BOX_DEFAULT_X_OFFSET = -32;
 local LIST_SCROLL_BOX_DEFAULT_Y_OFFSET = 83;
+CHARACTER_LIST_X_OFFSET = 10;
+CHARACTER_LIST_Y_OFFSET = -2;
 
 CharacterSelectListMixin = {};
 
@@ -30,6 +32,12 @@ function CharacterSelectListMixin:OnLoad()
 	RunNextFrame(function ()
 		self:AddDynamicEventMethod(CharacterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectListMixin.OnExpansionTrialStateUpdated);
 	end);
+
+	self:AdjustElements();
+end
+
+function CharacterSelectListMixin:AdjustElements()
+	-- overridden elsewhere
 end
 
 function CharacterSelectListMixin:OnShow()
@@ -479,7 +487,7 @@ function CharacterSelectCreateCharacterButtonMixin:OnClick()
 		end
 	end;
 
-	if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
+	if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" and not C_Login.IsInRealmlessMode() then
 		local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
 		local text2 = nil;
 		StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
@@ -551,15 +559,15 @@ function CharacterSelectListMixin:UpdateConfigElements()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
 	local config = CharacterSelectUtil.GetConfig();
 	self.SearchBox:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListSearch]);
-	self.AddGroupButton:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup]);
+	self.AddGroupButton:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup] and InputUtil.IsMKBUIEnabled());
 end
 
 function CharacterSelectListMixin:UpdateUndeleteState()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
 
-	self.CreateCharacterButton:SetShown(not isUndeleting);
-	self.DeleteCharacterButton:SetShown(not isUndeleting);
-	self.UndeleteButton:SetShown(not isUndeleting);
+	self.CreateCharacterButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
+	self.DeleteCharacterButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
+	self.UndeleteButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
 	self.UndeleteLabel:SetShown(isUndeleting);
 	self.UndeleteRealmLabel:SetShown(isUndeleting);
 	self.UndeleteRealmBackdrop:SetShown(isUndeleting);

@@ -7,6 +7,7 @@ if EDIT_MODE_MODERN_SYSTEM_MAP then
 		layoutIndex = Enum.EditModePresetLayouts.Modern;
 		layoutName = LAYOUT_STYLE_MODERN, -- TODO:: We should use a different name than "modern" for WoWHack
 		layoutType = Enum.EditModeLayoutType.Preset,
+		interfaceStyle = Enum.InputDeviceInterfaceType.Mkb,
 		systems = EditModeSystemUtil.GetSystems(EDIT_MODE_MODERN_SYSTEM_MAP),
 	});
 end
@@ -16,7 +17,18 @@ if EDIT_MODE_CLASSIC_SYSTEM_MAP then
 		layoutIndex = Enum.EditModePresetLayouts.Classic;
 		layoutName = LAYOUT_STYLE_CLASSIC,
 		layoutType = Enum.EditModeLayoutType.Preset,
+		interfaceStyle = Enum.InputDeviceInterfaceType.Mkb,
 		systems = EditModeSystemUtil.GetSystems(EDIT_MODE_CLASSIC_SYSTEM_MAP),
+	});
+end
+
+if EDIT_MODE_GAMEPAD_SYSTEM_MAP then
+	table.insert(EditModePresetLayoutManager.presetLayoutInfo, {
+		layoutIndex = Enum.EditModePresetLayouts.Gamepad;
+		layoutName = LAYOUT_STYLE_GAMEPAD,
+		layoutType = Enum.EditModeLayoutType.Preset,
+		interfaceStyle = Enum.InputDeviceInterfaceType.Gamepad,
+		systems = EditModeSystemUtil.GetSystems(EDIT_MODE_GAMEPAD_SYSTEM_MAP),
 	});
 end
 
@@ -26,6 +38,7 @@ local presetLayoutMapByLayoutIndex = {
 
 	[Enum.EditModePresetLayouts.Modern] = EDIT_MODE_MODERN_SYSTEM_MAP,
 	[Enum.EditModePresetLayouts.Classic] = EDIT_MODE_CLASSIC_SYSTEM_MAP,
+	[Enum.EditModePresetLayouts.Gamepad] = EDIT_MODE_GAMEPAD_SYSTEM_MAP,
 }
 
 local overrideLayoutMapByLayoutIndex = EDIT_MODE_OVERRIDE_LAYOUT_MAP or { };
@@ -47,20 +60,20 @@ function EditModePresetLayoutManager:GetModernSystems()
 end
 
 function EditModePresetLayoutManager:GetDefaultSystemAnchorInfo(system, systemIndex)
-	local defaultLayoutMap = presetLayoutMapByLayoutIndex[Constants.EditModeLayoutConsts.EditModeDefaultLayout];
+	local defaultLayoutMap = presetLayoutMapByLayoutIndex[C_EditMode.GetEditModeDefaultLayout()];
 	local defaultSystemInfo = systemIndex and defaultLayoutMap[system][systemIndex] or defaultLayoutMap[system];
 	return CopyTable(defaultSystemInfo.anchorInfo);
 end
 
 function EditModePresetLayoutManager:GetAllDefaultSettingsForSystem(system, systemIndex)
-	local defaultLayoutMap = presetLayoutMapByLayoutIndex[Constants.EditModeLayoutConsts.EditModeDefaultLayout];
+	local defaultLayoutMap = presetLayoutMapByLayoutIndex[C_EditMode.GetEditModeDefaultLayout()];
 	local defaultSystemInfo = systemIndex and defaultLayoutMap[system][systemIndex] or defaultLayoutMap[system];
 	return CopyTable(defaultSystemInfo.settings);
 end
 
 function EditModePresetLayoutManager:GetDefaultSettingForSystem(system, systemIndex, setting)
 	-- For singular settings.
-	local defaultLayoutMap = presetLayoutMapByLayoutIndex[Constants.EditModeLayoutConsts.EditModeDefaultLayout];
+	local defaultLayoutMap = presetLayoutMapByLayoutIndex[C_EditMode.GetEditModeDefaultLayout()];
 	local defaultSystemInfo = systemIndex and defaultLayoutMap[system][systemIndex] or defaultLayoutMap[system];
 	return defaultSystemInfo.settings[setting];
 end

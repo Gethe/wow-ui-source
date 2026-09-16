@@ -27,26 +27,7 @@ function ShowReadyCheck(initiator, timeLeft)
 		if ( UnitIsUnit("player", initiator) ) then
 			ReadyCheckListenerFrame:Hide();
 		else
-			SetPortraitTexture(ReadyCheckPortrait, initiator);
-			local _, _, difficultyID = GetInstanceInfo();
-			if ( not difficultyID or difficultyID == 0 ) then
-				-- not in an instance, go by current difficulty setting
-				if (UnitInRaid("player")) then
-					difficultyID = GetRaidDifficultyID();
-				else
-					difficultyID = GetDungeonDifficultyID();
-				end
-			end
-			local readyCheckTxt = READY_CHECK_MESSAGE;
-			if difficultyID then
-				local difficultyName, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(difficultyID);
-				if ( toggleDifficultyID and toggleDifficultyID > 0 ) then
-					-- the current difficulty might change while inside an instance so show the difficulty on the ready check
-					readyCheckTxt = READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": "..difficultyName;
-				end
-			end
-			ReadyCheckFrameText:SetFormattedText(readyCheckTxt, initiator);
-			ReadyCheckListenerFrame:Show();
+			ReadyCheckListenerFrame:Display(initiator);
 		end
 	end
 end
@@ -79,6 +60,99 @@ function ReadyCheckFrame_OnHide(self)
 	self.initiator = nil;
 end
 
+ReadyCheckListenerFrameMixin = {};
+
+function ReadyCheckListenerFrameMixin:OnLoad()
+	self:RegisterForTransitions();
+	NineSliceUtil.UpdateCornerCropping(self, self:GetHeight());
+end
+
+function ReadyCheckListenerFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.READY_CHECK);
+	FlashClientIcon();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
+end
+
+function ReadyCheckListenerFrameMixin:OnHide()
+	if self.binding then
+		self:DeactivateBinding();
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+	end
+end
+
+function ReadyCheckListenerFrameMixin:Display(initiator)
+	SetPortraitTexture(self.PortraitContainer.Portrait, initiator);
+	local _, _, difficultyID = GetInstanceInfo();
+	if ( not difficultyID or difficultyID == 0 ) then
+		-- Not in an instance, go by current difficulty setting.
+		if (UnitInRaid("player")) then
+			difficultyID = GetRaidDifficultyID();
+		else
+			difficultyID = GetDungeonDifficultyID();
+		end
+	end
+	local readyCheckTxt = READY_CHECK_MESSAGE;
+	if difficultyID then
+		local difficultyName, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(difficultyID);
+		if ( toggleDifficultyID and toggleDifficultyID > 0 ) then
+			-- The current difficulty might change while inside an instance so show the difficulty on the ready check
+			readyCheckTxt = READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": "..difficultyName;
+		end
+	end
+	self.Text:SetFormattedText(readyCheckTxt, initiator);
+	self:Show();
+end
+
+function ReadyCheckListenerFrameMixin:FocusGamepad()
+	self:ActivateBinding();
+end
+
+function ReadyCheckListenerFrameMixin:UnfocusGamepad()
+	self:DeactivateBinding();
+end
+
+function ReadyCheckListenerFrameMixin:ActivateBinding()
+	GamepadMode.SetGamepadIconShown(self.yesIcon, true);
+	GamepadMode.SetGamepadIconShown(self.noIcon, true);
+	GamepadMode.ActivateBindingGroup(self.binding);
+end
+
+function ReadyCheckListenerFrameMixin:DeactivateBinding()
+	GamepadMode.DeactivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.yesIcon, false);
+	GamepadMode.SetGamepadIconShown(self.noIcon, false);
+end
+
+function ReadyCheckListenerFrameMixin:SetupGamepad()
+	self.useCustomNavigation = true;
+	self.skipGamepadAutoFocus = true;
+	self.binding = GamepadMode.CreateBindingGroup("ReadyCheckBindings");
+	self.binding:BlockEverything();
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function() self.YesButton:Click() end, GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_RIGHT, function() self.NoButton:Click() end, GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+
+	self.yesIcon = GamepadMode.AddGamepadIconToButton(self.YesButton, GAMEPAD_FACE_BOTTOM);
+	self.noIcon = GamepadMode.AddGamepadIconToButton(self.NoButton, GAMEPAD_FACE_RIGHT);
+
+	GamepadMode.SetGamepadIconShown(self.yesIcon, false);
+	GamepadMode.SetGamepadIconShown(self.noIcon, false);
+
+	-- Changing the FrameGlow's anchors since the ReadyCheckFrame has slightly different proportions than other PortraitFrameTemplate layout types.
+	self.FrameGlow:ClearAllPoints();
+	self.FrameGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 24);
+	self.FrameGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 16, -18);
+end
+
+function ReadyCheckListenerFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
 
 --
 -- ReadyCheck unit frame functions

@@ -235,6 +235,35 @@ function GetScaledCenter(frame)
 	return x * effectiveScale, y * effectiveScale;
 end
 
+FrameUtilQuadrantEnum = {
+	BottomLeft = 1;
+	BottomRight = 2;
+	TopLeft = 3;
+	TopRight = 4;
+};
+
+function FrameUtil.GetScreenQuadrant(frame)
+	local centerX, centerY = frame:GetCenter();
+	centerX = centerX * frame:GetScale();
+	centerY = centerY * frame:GetScale();
+	local halfScreenWidth = UIParent:GetWidth() / 2;
+	local halfScreenHeight = UIParent:GetHeight() / 2;
+
+	if centerY < halfScreenHeight then
+		if centerX < halfScreenWidth then
+			return FrameUtilQuadrantEnum.BottomLeft;
+		else
+			return FrameUtilQuadrantEnum.BottomRight;
+		end
+	else
+		if centerX < halfScreenWidth then
+			return FrameUtilQuadrantEnum.TopLeft;
+		else
+			return FrameUtilQuadrantEnum.TopRight;
+		end
+	end
+end
+
 function ApplyDefaultScale(frame, minScale, maxScale)
 	local scale = GetDefaultScale();
 

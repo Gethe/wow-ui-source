@@ -11,7 +11,7 @@ local Intl =
 			Name = "CompareStrings",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Compares two UTF-8 strings using the options specified on a collator." },
 
 			Arguments =
@@ -46,7 +46,7 @@ local Intl =
 			Name = "FindBreaks",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Opens a break iterator for locating text boundaries in a specified locale." },
 
 			Arguments =
@@ -57,14 +57,14 @@ local Intl =
 
 			Returns =
 			{
-				{ Name = "byteOffsets", Type = "table", InnerType = "luaIndex", Nilable = false, Documentation = { "The native UTF-8 string indices for the text boundaries (returned with 1-based indexes for lua convenience)." } },
+				{ Name = "byteOffsets", Type = "table", InnerType = "number", Nilable = false, Documentation = { "The native UTF-8 string indices for the text boundaries." } },
 			},
 		},
 		{
 			Name = "FindStringMatches",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Creates a string search iterator using a collator and returns every match position." },
 
 			Arguments =
@@ -76,14 +76,14 @@ local Intl =
 
 			Returns =
 			{
-				{ Name = "byteOffsets", Type = "table", InnerType = "luaIndex", Nilable = false, Documentation = { "The UTF-8 byte offsets of matches in the text (returned with 1-based indexes for lua convenience)." } },
+				{ Name = "byteOffsets", Type = "table", InnerType = "number", Nilable = false, Documentation = { "The UTF-8 byte offsets of matches in the text." } },
 			},
 		},
 		{
 			Name = "FoldCase",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Case-folds the characters in a string; case-folding is locale-independent and not context-sensitive." },
 
 			Arguments =
@@ -100,7 +100,7 @@ local Intl =
 			Name = "FormatCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a double as a localized currency value using the provided ISO 4217 currency code." },
 
 			Arguments =
@@ -118,7 +118,7 @@ local Intl =
 			Name = "FormatDate",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized date text using locale date patterns, symbols, style, and optional time zone." },
 
 			Arguments =
@@ -137,7 +137,7 @@ local Intl =
 			Name = "FormatDateTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized date and time text using locale patterns, symbols, styles, and optional time zone." },
 
 			Arguments =
@@ -157,7 +157,7 @@ local Intl =
 			Name = "FormatNumber",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a double with locale number formatting using locale symbols, grouping, and the selected non-currency style." },
 
 			Arguments =
@@ -175,7 +175,7 @@ local Intl =
 			Name = "FormatTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized time text using locale time patterns, symbols, style, and optional time zone." },
 
 			Arguments =
@@ -194,7 +194,7 @@ local Intl =
 			Name = "GetCharacterProperties",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns Unicode property values for the first code point in a string." },
 
 			Arguments =
@@ -211,7 +211,7 @@ local Intl =
 			Name = "GetCurrencyFractionDigits",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of fraction digits that should be displayed for the given currency." },
 
 			Arguments =
@@ -228,7 +228,7 @@ local Intl =
 			Name = "GetCurrencyName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the display name for a currency in the given locale." },
 
 			Arguments =
@@ -256,7 +256,7 @@ local Intl =
 			Name = "GetDisplayName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets a display name suitable for the specified locale." },
 
 			Arguments =
@@ -273,7 +273,7 @@ local Intl =
 			Name = "GetSortKey",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Transforms a string into a collation sort key." },
 
 			Arguments =
@@ -290,7 +290,7 @@ local Intl =
 		{
 			Name = "IsNormalized",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Tests if the string is normalized according to the specified normalization form." },
 
 			Arguments =
@@ -308,7 +308,7 @@ local Intl =
 			Name = "Length",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Counts character break boundaries in UTF-8 text." },
 
 			Arguments =
@@ -325,7 +325,7 @@ local Intl =
 			Name = "Normalize",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Writes the normalized form of the source string to the destination string." },
 
 			Arguments =
@@ -343,7 +343,7 @@ local Intl =
 			Name = "ParseCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Parses an entire localized currency string into a double amount and ISO 4217 currency code." },
 
 			Arguments =
@@ -360,7 +360,7 @@ local Intl =
 			Name = "ParseNumber",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Parses an entire localized number string into a double using the selected non-currency number formatter." },
 
 			Arguments =
@@ -378,7 +378,7 @@ local Intl =
 			Name = "SelectPlural",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the keyword of the first plural rule that applies to a number." },
 
 			Arguments =
@@ -396,7 +396,7 @@ local Intl =
 			Name = "ToLower",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Lowercases the characters in a string; casing is locale-dependent and context-sensitive." },
 
 			Arguments =
@@ -413,7 +413,7 @@ local Intl =
 			Name = "ToTitle",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Titlecases a string using titlecase positions determined by the default Unicode algorithm." },
 
 			Arguments =
@@ -430,7 +430,7 @@ local Intl =
 			Name = "ToUpper",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Uppercases the characters in a string; casing is locale-dependent and context-sensitive." },
 
 			Arguments =
@@ -447,7 +447,7 @@ local Intl =
 			Name = "TransformLocale",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Applies a locale transform to the current locale and returns the transformed locale string." },
 
 			Arguments =
@@ -464,8 +464,7 @@ local Intl =
 			Name = "Transliterate",
 			Type = "Function",
 			MayReturnNothing = true,
-			TransliteratorAllowed = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Opens a system transliterator by ID and transliterates the text in place." },
 
 			Arguments =
@@ -491,12 +490,6 @@ local Intl =
 
 	Predicates =
 	{
-		{
-			Name = "TransliteratorAllowed",
-			Type = "Precondition",
-			FailureMode = "ReturnNothing",
-			Documentation = { "Prevents Remove and Null transliterators when used with secret text arguments." },
-		},
 	},
 };
 

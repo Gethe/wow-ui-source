@@ -8,14 +8,6 @@ local MOUNT_FACTION_TEXTURES = {
 	[1] = "MountJournalIcons-Alliance"
 };
 
-local mountFilterTypeStrings = {
-	[Enum.MountType.Ground] = MOUNT_JOURNAL_FILTER_GROUND,
-	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
-	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
-	[Enum.MountType.Dragonriding] = MOUNT_JOURNAL_FILTER_DRAGONRIDING,
-	[Enum.MountType.RideAlong] = MOUNT_JOURNAL_FILTER_RIDEALONG,
-};
-
 StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
 	text = DIALOG_INSTRUCTION_REPLACE_MOUNT_EQUIPMENT,
 	button1 = YES,
@@ -156,107 +148,44 @@ function MountJournal_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	MountJournal_InitFilterButton(self);
+	-- If there is only one filter setting available, hide filter
+	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		self.FilterDropdown:Hide();
+	else
+		MountJournal_InitFilterButton(self);
+	end
 
 	MountJournal.MountDisplay.ModelScene:SetResetCallback(MountJournal_ModelScene_OnReset);
 	MountJournal.MountDisplay.ModelScene.ControlFrame:SetModelScene(MountJournal.MountDisplay.ModelScene);
 
-	local bottomLeftInset = self.BottomLeftInset;
-	self.BackgroundOverlay = bottomLeftInset.BackgroundOverlay;
-	self.SlotLabel = bottomLeftInset.SlotLabel;
-	self.SlotButton = bottomLeftInset.SlotButton;
+	if C_MountJournal.MountEquipmentAvailable() then
+		local bottomLeftInset = self.BottomLeftInset;
+		self.BackgroundOverlay = bottomLeftInset.BackgroundOverlay;
+		self.SlotLabel = bottomLeftInset.SlotLabel;
+		self.SlotButton = bottomLeftInset.SlotButton;
 	
-	local unlockLevel = C_MountJournal.GetMountEquipmentUnlockLevel();
-	local levelRequiredText = MOUNT_EQUIPMENT_UNLOCK_REQUIREMENT:format(unlockLevel); 
-	self.SlotRequirementLabel = bottomLeftInset.SlotRequirementLabel;
-	self.SlotRequirementLabel:SetText(levelRequiredText);
-	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
+		local unlockLevel = C_MountJournal.GetMountEquipmentUnlockLevel();
+		local levelRequiredText = MOUNT_EQUIPMENT_UNLOCK_REQUIREMENT:format(unlockLevel); 
+		self.SlotRequirementLabel = bottomLeftInset.SlotRequirementLabel;
+		self.SlotRequirementLabel:SetText(levelRequiredText);
+		self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
+
+		self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
+		MountJournal_UpdateEquipment(self);
+	else
+		self.BottomLeftInset:Hide();
+
+		-- Adjust inset anchors if we are hiding bottom left inset
+		local _, _, _, _, bottomOffsetY = self.BottomLeftInset:GetPointByName("BOTTOMLEFT");
+		local _, _, _, offsetX, _ = self.LeftInset:GetPointByName("BOTTOMLEFT");
+		self.LeftInset:SetPoint("BOTTOMLEFT", offsetX, bottomOffsetY);
+
+		local _, relativeTo, relativePoint, rightOffsetX, _ = self.RightInset:GetPointByName("BOTTOMLEFT");
+		self.RightInset:SetPoint("BOTTOMLEFT", relativeTo, relativePoint, rightOffsetX, 0);		
+	end
 	
 	MountJournal_SetPendingMountChanges(false);
-
-	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
-
 	self.ToggleDynamicFlightFlyoutButton:SetPopup(self.DynamicFlightFlyoutPopup);
-
-	MountJournal_UpdateEquipment(self);
-end
-
-function MountJournal_InitFilterButton(self)
-	self.FilterDropdown:SetWidth(90);
-
-	self.FilterDropdown:SetIsDefaultCallback(function()
-		return C_MountJournal.IsUsingDefaultFilters();
-	end);
-	
-	self.FilterDropdown:SetDefaultCallback(function()
-		C_MountJournal.SetDefaultFilters();
-	end);
-
-	local mountSourceOrderPriorities = {
-		[Enum.BattlePetSources.Drop] = 5,
-		[Enum.BattlePetSources.Quest] = 5,
-		[Enum.BattlePetSources.Vendor] = 5,
-		[Enum.BattlePetSources.Profession] = 5,
-		[Enum.BattlePetSources.WildPet] = 5,
-		[Enum.BattlePetSources.Achievement] = 5,
-		[Enum.BattlePetSources.WorldEvent] = 5,
-		[Enum.BattlePetSources.Discovery] = 5,
-		[Enum.BattlePetSources.TradingPost] = 4,
-		[Enum.BattlePetSources.Promotion] = 3,
-		[Enum.BattlePetSources.PetStore] = 2,
-		[Enum.BattlePetSources.Tcg] = 1,
-	};
-	
-	local function IsSourceChecked(filterIndex) 
-		return C_MountJournal.IsSourceChecked(filterIndex)
-	end
-
-	local function SetSourceChecked(filterIndex) 
-		C_MountJournal.SetSourceFilter(filterIndex, not IsSourceChecked(filterIndex));
-	end
-
-	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_MOUNT_COLLECTION_FILTER");
-
-		rootDescription:CreateCheckbox(COLLECTED, MountJournal_GetCollectedFilter, function()
-			MountJournal_SetCollectedFilter(not MountJournal_GetCollectedFilter());
-		end);
-
-		rootDescription:CreateCheckbox(NOT_COLLECTED, MountJournal_GetNotCollectedFilter, function()
-			MountJournal_SetNotCollectedFilter(not MountJournal_GetNotCollectedFilter());
-		end);
-		
-		rootDescription:CreateCheckbox(MOUNT_JOURNAL_FILTER_UNUSABLE, MountJournal_GetUnusableFilter, function()
-			MountJournal_SetUnusableFilter(not MountJournal_GetUnusableFilter());
-		end);
-		
-		rootDescription:CreateSpacer();
-		rootDescription:CreateTitle(MOUNT_JOURNAL_FILTER_TYPE);
-		
-		local function IsTypeChecked(filterIndex)
-			return C_MountJournal.IsTypeChecked(filterIndex);
-		end
-
-		local function SetTypeChecked(filterIndex)
-			C_MountJournal.SetTypeFilter(filterIndex, not IsTypeChecked(filterIndex));
-		end
-
-		for filterIndex = 1, Enum.MountTypeMeta.NumValues do
-			if C_MountJournal.IsValidTypeFilter(filterIndex) then
-				rootDescription:CreateCheckbox(mountFilterTypeStrings[filterIndex - 1], IsTypeChecked, SetTypeChecked, filterIndex);
-			end
-		end
-
-		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
-		sourceSubmenu:CreateButton(CHECK_ALL, MountJournal_SetAllSourceFilters, true);
-		sourceSubmenu:CreateButton(UNCHECK_ALL, MountJournal_SetAllSourceFilters, false);
-
-		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
-			if C_MountJournal.IsValidSourceFilter(filterIndex) then
-				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
-			end
-		end
-	end);
 end
 
 local function CreateContextMenu(owner, rootDescription, index)
@@ -490,6 +419,10 @@ function MountJournal_ModelScene_OnReset()
 end
 
 function MountJournal_UpdateEquipmentPalette(self)
+	if not C_MountJournal.MountEquipmentAvailable() then
+		return;
+	end
+
 	local effectsSuppressed = C_MountJournal.AreMountEquipmentEffectsSuppressed();
 	local locked = not C_PlayerInfo.CanPlayerUseMountEquipment();
 	if locked or effectsSuppressed then
@@ -579,12 +512,20 @@ function MountJournal_InitializeEquipmentTooltip(self)
 end
 
 function MountJournal_ValidateCursorDragSourceCompatible(self)
+	if not C_MountJournal.MountEquipmentAvailable() then
+		return;
+	end
+
 	local itemLocation = C_Cursor.GetCursorItem();
 	local canApply = MountJournal_CanApplyMountEquipment(itemLocation);
 	self.SlotButton:SetDragTargetAnimationPlaying(canApply);
 end
 
-function MountJournal_InitializeEquipmentSlot(self, item)	
+function MountJournal_InitializeEquipmentSlot(self, item)
+	if not C_MountJournal.MountEquipmentAvailable() then
+		return;
+	end
+
 	self.SlotButton:Initialize(item);
 
 	if item then
@@ -603,6 +544,10 @@ function MountJournal_InitializeEquipmentSlot(self, item)
 end
 
 function MountJournal_UpdateEquipment(self)
+	if not C_MountJournal.MountEquipmentAvailable() then
+		return;
+	end
+
 	local isUnlocked = C_PlayerInfo.CanPlayerUseMountEquipment();
 	self.SlotButton:SetShown(isUnlocked);
 	self.SlotLabel:SetShown(isUnlocked);
@@ -647,13 +592,18 @@ function MountJournal_OnShow(self)
 	MountJournal_FullUpdate(self);
 
 	self.ToggleDynamicFlightFlyoutButton:UpdateVisibility();
+	self.SummonRandomFavoriteSpellFrame:UpdateVisibility();
+	self.MountCount:UpdateDisplayStyle(BLIZZARD_COLLECTIONS_MOUNT_COUNT_DISPLAY_STYLE);
 
 	MountJournal_UpdateEquipment(self);
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
 
-	local hasPendingItem = MountJournal_HasPendingMountEquipment(self);
-	self.SlotButton:SetPendingApply(hasPendingItem);
-	self.SlotButton.NewAlert:ValidateIsShown();
+	if C_MountJournal.MountEquipmentAvailable() then
+		local hasPendingItem = MountJournal_HasPendingMountEquipment(self);
+		self.SlotButton:SetPendingApply(hasPendingItem);
+		self.SlotButton.NewAlert:ValidateIsShown();
+	end
+	
 	EventRegistry:TriggerEvent("MountJournal.OnShow");
 end
 
@@ -952,6 +902,17 @@ function MountListItem_OnClick(self, button)
 	end
 end
 
+function MountJournal_OnSearchLoad(self)
+	self:ClearAllPoints();
+	if not C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+	else
+		-- If the FilterDropdown is hidden, take up the whole leftInset space
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+		self:SetPoint("TOPRIGHT", self:GetParent().LeftInset, -10, -9);
+	end
+end
+
 function MountJournal_OnSearchTextChanged(self)
 	SearchBoxTemplate_OnTextChanged(self);
 	C_MountJournal.SetSearch(self:GetText());
@@ -990,6 +951,77 @@ function MountJournal_SetAllSourceFilters(value)
 	return MenuResponse.Refresh;
 end
 
+local mountFilterTypeStrings = {
+	[Enum.MountType.Ground] = MOUNT_JOURNAL_FILTER_GROUND,
+	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
+	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
+	[Enum.MountType.Dragonriding] = MOUNT_JOURNAL_FILTER_DRAGONRIDING,
+	[Enum.MountType.RideAlong] = MOUNT_JOURNAL_FILTER_RIDEALONG,
+};
+
+function MountJournal_InitFilterButton(self)
+	self.FilterDropdown:SetWidth(90);
+
+	self.FilterDropdown:SetIsDefaultCallback(function()
+		return C_MountJournal.IsUsingDefaultFilters();
+	end);
+	
+	self.FilterDropdown:SetDefaultCallback(function()
+		C_MountJournal.SetDefaultFilters();
+	end);
+
+	local function IsSourceChecked(filterIndex) 
+		return C_MountJournal.IsSourceChecked(filterIndex)
+	end
+
+	local function SetSourceChecked(filterIndex) 
+		C_MountJournal.SetSourceFilter(filterIndex, not IsSourceChecked(filterIndex));
+	end
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MOUNT_COLLECTION_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, MountJournal_GetCollectedFilter, function()
+			MountJournal_SetCollectedFilter(not MountJournal_GetCollectedFilter());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, MountJournal_GetNotCollectedFilter, function()
+			MountJournal_SetNotCollectedFilter(not MountJournal_GetNotCollectedFilter());
+		end);
+		
+		rootDescription:CreateCheckbox(MOUNT_JOURNAL_FILTER_UNUSABLE, MountJournal_GetUnusableFilter, function()
+			MountJournal_SetUnusableFilter(not MountJournal_GetUnusableFilter());
+		end);
+		
+		rootDescription:CreateSpacer();
+		rootDescription:CreateTitle(MOUNT_JOURNAL_FILTER_TYPE);
+		
+		local function IsTypeChecked(filterIndex)
+			return C_MountJournal.IsTypeChecked(filterIndex);
+		end
+
+		local function SetTypeChecked(filterIndex)
+			C_MountJournal.SetTypeFilter(filterIndex, not IsTypeChecked(filterIndex));
+		end
+
+		for filterIndex = 1, Enum.MountTypeMeta.NumValues do
+			if C_MountJournal.IsValidTypeFilter(filterIndex) then
+				rootDescription:CreateCheckbox(mountFilterTypeStrings[filterIndex - 1], IsTypeChecked, SetTypeChecked, filterIndex);
+			end
+		end
+
+		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
+		sourceSubmenu:CreateButton(CHECK_ALL, MountJournal_SetAllSourceFilters, true);
+		sourceSubmenu:CreateButton(UNCHECK_ALL, MountJournal_SetAllSourceFilters, false);
+
+		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
+			if C_MountJournal.IsValidSourceFilter(filterIndex) then
+				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
+			end
+		end
+	end);
+end
+
 --------------------------------------------------
 -- Random Favorite Mount Spell Mixin
 MountJournalSummonRandomFavoriteSpellFrameMixin = {};
@@ -1005,6 +1037,10 @@ end
 function MountJournalSummonRandomFavoriteSpellFrameMixin:OnIconEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMountBySpellID(self.spellID);
+end
+
+function MountJournalSummonRandomFavoriteSpellFrameMixin:UpdateVisibility()
+	self:SetShown(BLIZZARD_COLLECTIONS_MOUNT_JOURNAL_SHOW_FAVORITES);
 end
 
 --------------------------------------------------

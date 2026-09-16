@@ -1,12 +1,5 @@
-local GAMETIME_DAWN = ( 5 * 60) + 30;		-- 5:30 AM
-local GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
-
-
-local date = date;
 local format = format;
-local GetCVarBool = GetCVarBool;
 local max = max;
-local tonumber = tonumber;
 
 local PI = PI;
 local TWOPI = PI * 2.0;
@@ -69,24 +62,6 @@ function GameTimeFrame_OnEvent(self, event, ...)
 end
 
 function GameTimeFrame_OnUpdate(self, elapsed)
-	local hour, minute = GetGameTime();
-	local time = (hour * 60) + minute;
-	if ( time ~= self.timeOfDay ) then
-		self.timeOfDay = time;
-		local minx = 0;
-		local maxx = 50/128;
-		local miny = 0;
-		local maxy = 50/64;
-		if(time < GAMETIME_DAWN or time >= GAMETIME_DUSK) then
-			minx = minx + 0.5;
-			maxx = maxx + 0.5;
-		end
-		if ( hour ~= self.hour ) then
-			self.hour = hour;
-			GameTimeFrame_SetDate();
-		end
-		GameTimeTexture:SetTexCoord(minx, maxx, miny, maxy);
-	end
 	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:ClearLines();
 		if ( GameTimeCalendarInvitesTexture:IsShown() ) then
@@ -120,6 +95,9 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 end
 
 function GameTimeFrame_OnClick(self)
+	if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+		GamepadHudMode:Hide();
+	end
 	if ( GameTimeCalendarInvitesTexture:IsShown() ) then
 		Calendar_LoadUI();
 		if ( Calendar_Show ) then

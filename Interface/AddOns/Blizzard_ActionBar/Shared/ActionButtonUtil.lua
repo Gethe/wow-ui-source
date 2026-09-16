@@ -67,11 +67,11 @@ function ActionButtonUtil.GetPageForSlot(slot)
 end
 
 -- Returns true if spell is currently slotted into any active Action Bar
--- See GetActionBarsForSpell for what constitutes active vs inactive
+-- See GetMkbActionBarsForSpell for what constitutes active vs inactive
 -- excludeNonPlayerBars = [BOOLEAN] -- Skips bars whose spells are not owned by the player (ex Pet, Possess, Vehicle, etc) (Default: false)
 -- excludeSpecialPlayerBars = [BOOLEAN] -- Skips bars whose spells are owned by the player but not set by them (ie Stance) (Default: false)
-function ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars)
-	local barsWithSpell = ActionButtonUtil.GetActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
+function ActionButtonUtil.IsSpellOnAnyActiveMkbActionBar(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars)
+	local barsWithSpell = ActionButtonUtil.GetMkbActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
 	if not barsWithSpell then
 		return false;
 	end
@@ -86,7 +86,7 @@ function ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerB
 end
 
 --[[
---	Returns all action bars the spell is slotted into, their bar type, and their active status
+--	Returns all Mkb action bars the spell is slotted into, their bar type, and their active status
 --	excludeNonPlayerBars = [BOOLEAN] -- Skips bars whose spells are not owned by the player (ex Pet, Possess, Vehicle, etc) (Default: false)
 --  excludeSpecialPlayerBars = [BOOLEAN] -- Skips bars whose spells are owned by the player but not set by them (ie Stance) (Default: false)
 --	Bar types:
@@ -100,11 +100,11 @@ end
 --		TempShapeshiftBar: Active if loaded and currently shown as overriding first page of MainActionBar
 --		OverrideBar = Active if loaded and currently shown, either through OverrideBar or overriding first page of MainActionBar
 --]]
-function ActionButtonUtil.GetActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars)
+function ActionButtonUtil.GetMkbActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars)
 	local bars = {};
 
 	-- First, get all action bar slots this spell is in, then we can determine which bars those slots are part of
-	local playerActionBarSlots = C_ActionBar.FindSpellActionButtons(spellID);
+	local playerActionBarSlots = C_ActionBar.FindSpellActionButtons(spellID, Enum.ActionBarSet.Mkb);
 	if playerActionBarSlots ~= nil then
 		ActionButtonUtil.AddPlayerActionBarsContainingSlots(playerActionBarSlots, bars, excludeNonPlayerBars);
 	end
@@ -143,24 +143,24 @@ function ActionButtonUtil.GetActionBarsForSpell(spellID, excludeNonPlayerBars, e
 			end
 		end
 	end
-	
+
 	return not TableIsEmpty(bars) and bars or nil;
 end
 
 --[[
---	Returns all action bars the PetAction is slotted into, their bar type, and their active status
---  See ActionButtonUtil.GetActionBarsForSpell for a breakdown of how active status is determined per bar type
+--	Returns all Mkb action bars the PetAction is slotted into, their bar type, and their active status
+--  See ActionButtonUtil.GetMkbActionBarsForSpell for a breakdown of how active status is determined per bar type
 -- ]]
-function ActionButtonUtil.GetActionBarsForPetAction(actionID)
+function ActionButtonUtil.GetMkbActionBarsForPetAction(actionID)
 	local bars = {};
 
-	local playerActionBarSlots = C_ActionBar.FindPetActionButtons(actionID);
+	local playerActionBarSlots = C_ActionBar.FindPetActionButtons(actionID, Enum.ActionBarSet.Mkb);
 	if playerActionBarSlots ~= nil then
 		local excludeNonPlayerBars = false;
 		ActionButtonUtil.AddPlayerActionBarsContainingSlots(playerActionBarSlots, bars, excludeNonPlayerBars);
 	end
 
-	local petActionBarSlots = C_ActionBar.GetPetActionPetBarIndices(actionID);
+	local petActionBarSlots = C_ActionBar.GetPetActionPetBarIndices(actionID, Enum.ActionBarSet.Mkb);
 	if petActionBarSlots then
 		bars["pet"] = {barFrame = PetActionBar:GetName(), barType = ActionButtonUtil.ActionBarType.PetBar, isActive = PetActionBar:IsShown()};
 	end
@@ -169,13 +169,13 @@ function ActionButtonUtil.GetActionBarsForPetAction(actionID)
 end
 
 --[[
---	Returns all action bars the Flyout is slotted into, their bar type, and their active status
---  See ActionButtonUtil.GetActionBarsForSpell for a breakdown of how active status is determined per bar type
+--	Returns all Mkb action bars the Flyout is slotted into, their bar type, and their active status
+--  See ActionButtonUtil.GetMkbActionBarsForSpell for a breakdown of how active status is determined per bar type
 -- ]]
-function ActionButtonUtil.GetActionBarsForFlyout(actionID)
+function ActionButtonUtil.GetMkbActionBarsForFlyout(actionID)
 	local bars = {};
 
-	local playerActionBarSlots = C_ActionBar.FindFlyoutActionButtons(actionID);
+	local playerActionBarSlots = C_ActionBar.FindFlyoutActionButtons(actionID, Enum.ActionBarSet.Mkb);
 	if playerActionBarSlots ~= nil then
 		local excludeNonPlayerBars = false;
 		ActionButtonUtil.AddPlayerActionBarsContainingSlots(playerActionBarSlots, bars, excludeNonPlayerBars);
@@ -253,7 +253,7 @@ end
 -- excludeNonPlayerBars = [BOOLEAN] -- Skips bars whose spells are not owned by the player (ex Pet, Possess, Vehicle, etc) (Default: false)
 -- excludeSpecialPlayerBars = [BOOLEAN] -- Skips bars whose spells are owned by the player but not set by them (ie Stance) (Default: false)
 function ActionButtonUtil.GetActionButtonBySpellID(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars)
-	if type(spellID) ~= "number" then 
+	if type(spellID) ~= "number" then
 		return nil;
 	end
 
@@ -288,7 +288,7 @@ function ActionButtonUtil.GetActionButtonBySpellID(spellID, excludeNonPlayerBars
 				return petBtn;
 			end
 		end
-	
+
 		if PossessActionBar then
 			for i = 1, NUM_POSSESS_SLOTS do
 				local possessButton = PossessActionBar.actionButtons[i];
@@ -309,9 +309,14 @@ function ActionButtonUtil.GetActionBarStatusForSpell(spellID, excludeNonPlayerBa
 		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	end
 
-	local barsWithSpell = ActionButtonUtil.GetActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
+	if (InputUtil.IsMKBUIEnabled()) then
+		local barsWithSpell = ActionButtonUtil.GetMkbActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
+		return ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithSpell);
+	elseif (InputUtil.IsGamepadUIEnabled()) then
+		return ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars);
+	end
 
-	return ActionButtonUtil.GetActionBarStatusFromBars(barsWithSpell);
+	return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 end
 
 -- Determine a standard action bar "status" based on the status of bars a spell is on, if any
@@ -320,9 +325,14 @@ function ActionButtonUtil.GetActionBarStatusForPetAction(petActionID)
 		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	end
 
-	local barsWithPetAction = ActionButtonUtil.GetActionBarsForPetAction(petActionID);
+	if (InputUtil.IsMKBUIEnabled()) then
+		local barsWithPetAction = ActionButtonUtil.GetMkbActionBarsForPetAction(petActionID);
+		return ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithPetAction);
+	elseif (InputUtil.IsGamepadUIEnabled()) then
+		return ActionButtonUtil.GetActionBarStatusForPetActionFromGamepadBars(petActionID);
+	end
 
-	return ActionButtonUtil.GetActionBarStatusFromBars(barsWithPetAction);
+	return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 end
 
 -- Determine a standard action bar "status" based on the status of bars a spell is on, if any
@@ -331,12 +341,17 @@ function ActionButtonUtil.GetActionBarStatusForFlyout(flyoutActionID)
 		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	end
 
-	local barsWithFlyout = ActionButtonUtil.GetActionBarsForFlyout(flyoutActionID);
+	if (InputUtil.IsMKBUIEnabled()) then
+		local barsWithFlyout = ActionButtonUtil.GetMkbActionBarsForFlyout(flyoutActionID);
+		return ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithFlyout);
+	elseif (InputUtil.IsGamepadUIEnabled()) then
+		return ActionButtonUtil.GetActionBarStatusForFlyoutFromGamepadBars(flyoutActionID);
+	end
 
-	return ActionButtonUtil.GetActionBarStatusFromBars(barsWithFlyout);
+	return ActionButtonUtil.ActionBarActionStatus.NotMissing;
 end
 
-function ActionButtonUtil.GetActionBarStatusFromBars(barsWithAction)
+function ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithAction)
 	if not barsWithAction then
 		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
 	end
@@ -365,4 +380,90 @@ function ActionButtonUtil.GetActionBarStatusFromBars(barsWithAction)
 	else
 		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
 	end
+end
+local function IsSlotOnGamepadNormalBar(slot)
+	local firstGamepadNormalBarsSlotIndex = C_GamepadUI.GetFirstGamepadActionStorageSlotIndex();
+	local reservedSlotCount = Constants.GamepadActionBarConstants.NUM_RESERVED_SLOTS_PER_GAMEPAD_ACTION_BAR_PAGE_UNIT
+		* Constants.GamepadActionBarConstants.NUM_STANDARD_PAGES_PER_GAMEPAD_ACTION_BAR_PAGE_UNIT;
+	local endGamepadNormalBarsSlotIndex = firstGamepadNormalBarsSlotIndex
+		+ Constants.GamepadActionBarConstants.NUM_PAGEABLE_SLOTS_PER_GAMEPAD_ACTION_BAR_PAGE_UNIT
+		- reservedSlotCount;
+	return slot >= firstGamepadNormalBarsSlotIndex and slot < endGamepadNormalBarsSlotIndex;
+end
+
+local function HasAnySlotOnGamepadActiveStanceBar(slots)
+	if (not C_ActionBar.HasBonusActionBar()) then
+		return false;
+	end
+
+	local firstGamepadActiveStanceSlotIndex = C_GamepadUI.GetFirstGamepadActionBarStorageSlotIndexForActiveStance();
+	assert(firstGamepadActiveStanceSlotIndex, "A MKB bonus action bar is active which doesn't have a gamepad equivalent. Extend the gamepad action bar storage (ActionBarConstants.tag) to add additional slots for this bar.");
+	local lastGamepadActiveStanceSlotIndex = firstGamepadActiveStanceSlotIndex + Constants.GamepadActionBarConstants.NUM_SLOTS_PER_GAMEPAD_ACTION_BAR - 1;
+
+	for _, slot in ipairs(slots) do
+		if (slot >= firstGamepadActiveStanceSlotIndex and slot <= lastGamepadActiveStanceSlotIndex) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars)
+	-- Get the slots this spell is in across both normal and stance gamepad bars.
+	local gamepadButtonsWithSpell = C_ActionBar.FindSpellActionButtons(spellID, Enum.ActionBarSet.Gamepad);
+	if (not gamepadButtonsWithSpell) then
+		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
+	end
+
+	if (IsSlotOnGamepadNormalBar(gamepadButtonsWithSpell[1])) then
+		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	--[[
+		If the first occurence of the slot was not on a normal gamepad bar then it must be on a stance bar, but
+		those are being excluded from evaluation.
+	]]
+	if (excludeSpecialPlayerBars) then
+		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
+	end
+
+	if (HasAnySlotOnGamepadActiveStanceBar(gamepadButtonsWithSpell)) then
+		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	return ActionButtonUtil.ActionBarActionStatus.OnInactiveBonusBar;
+end
+
+function ActionButtonUtil.GetActionBarStatusForPetActionFromGamepadBars(petActionID)
+	-- Is the pet action on the gamepad posseess bar?
+	local gamepadPossessBarPetActionSlots = C_ActionBar.GetPetActionPetBarIndices(petActionID, Enum.ActionBarSet.Gamepad);
+	if (gamepadPossessBarPetActionSlots) then
+		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	local normalGamepadActionBarPetActionSlots = C_ActionBar.FindPetActionButtons(petActionID, Enum.ActionBarSet.Gamepad);
+	if (not normalGamepadActionBarPetActionSlots) then
+		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
+	end
+
+	-- Is the pet action on a normal or active stance gamepad bar?
+	if (IsSlotOnGamepadNormalBar(normalGamepadActionBarPetActionSlots[1]) or HasAnySlotOnGamepadActiveStanceBar(normalGamepadActionBarPetActionSlots)) then
+		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	return ActionButtonUtil.ActionBarActionStatus.OnInactiveBonusBar;
+end
+
+function ActionButtonUtil.GetActionBarStatusForFlyoutFromGamepadBars(flyoutActionID)
+	local gamepadActionBarSlots = C_ActionBar.FindFlyoutActionButtons(flyoutActionID, Enum.ActionBarSet.Gamepad);
+	if (not gamepadActionBarSlots) then
+		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
+	end
+
+	if (IsSlotOnGamepadNormalBar(gamepadActionBarSlots[1]) or HasAnySlotOnGamepadActiveStanceBar(gamepadActionBarSlots)) then
+		return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	return ActionButtonUtil.ActionBarActionStatus.OnInactiveBonusBar;
 end

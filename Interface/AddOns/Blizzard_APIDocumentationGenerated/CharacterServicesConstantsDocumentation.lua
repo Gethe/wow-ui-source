@@ -17,9 +17,9 @@ local CharacterServicesConstants =
 		{
 			Name = "NoRPEReason",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "HasRPE", Type = "NoRPEReason", EnumValue = 0 },
@@ -32,6 +32,7 @@ local CharacterServicesConstants =
 				{ Name = "FactionOrRaceChange", Type = "NoRPEReason", EnumValue = 7 },
 				{ Name = "BNetToken", Type = "NoRPEReason", EnumValue = 8 },
 				{ Name = "PlayerLocked", Type = "NoRPEReason", EnumValue = 9 },
+				{ Name = "RPEDisabled", Type = "NoRPEReason", EnumValue = 10 },
 			},
 		},
 	},

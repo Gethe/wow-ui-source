@@ -209,6 +209,11 @@
 					</Anchors>
 					<Color r="0.75" g="0.61" b="0"/>
 				</FontString>
+				<FontString parentKey="TagText" inherits="GameFontNormalLeft" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.StorylineTexture" relativePoint="LEFT" x="-4"/>
+					</Anchors>
+				</FontString>
 				<Texture parentKey="TaskIcon" atlas="TaskPOI-Icon" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="TOPLEFT" x="-5" y="4"/>
@@ -300,7 +305,7 @@
 
 	<Frame name="QuestLogTabButtonTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
 
-	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate">
+	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate" mixin="QuestLogPopupDetailMixin">
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -313,7 +318,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="ScrollFrameTemplate">
+			<EventScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="6" type="number"/>
 					<KeyValue key="scrollBarTopY" value="-4" type="number"/>
@@ -328,7 +333,7 @@
 						<Size x="298" y="403"/>
 					</Frame>
 				</ScrollChild>
-			</ScrollFrame>
+			</EventScrollFrame>
 			<Button parentKey="ShowMapButton">
 				<Size x="48" y="32"/>
 				<Anchors>
@@ -410,7 +415,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnHide function="QuestLogPopupDetailFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -434,10 +440,9 @@
 					<KeyValue key="activeAtlas" value="questlog-tab-icon-quest" type="string"/>
 					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-quest-inactive" type="string"/>
 					<KeyValue key="tooltipText" value="QUESTS_LABEL" type="global"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-28"/>
-				</Anchors>
+				<!--Anchoring handled dynamically due to art differences between game modes.-->
 			</Frame>
 			<Frame parentKey="EventsTab" inherits="QuestLogTabButtonTemplate">
 				<KeyValues>
@@ -445,6 +450,7 @@
 					<KeyValue key="activeAtlas" value="questlog-tab-icon-event" type="string"/>
 					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-event-inactive" type="string"/>
 					<KeyValue key="tooltipText" value="EVENT_SCHEDULER_FRAME_LABEL" type="global"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.QuestsTab" relativePoint="BOTTOM" x="0" y="-3"/>
@@ -456,6 +462,7 @@
 					<KeyValue key="activeAtlas" value="questlog-tab-icon-maplegend" type="string"/>
 					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-maplegend-inactive" type="string"/>
 					<KeyValue key="tooltipText" value="MAP_LEGEND_FRAME_LABEL" type="global"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.EventsTab" relativePoint="BOTTOM" x="0" y="-3"/>
@@ -614,6 +621,21 @@
 												<Anchor point="BOTTOM" y="4"/>
 											</Anchors>
 										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="QuestLogCount" inherits="InputBoxVisualTemplate" hidden="true">
+								<Size x="100" y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="TOPRIGHT" x="3" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="QuestLogQuestCount" inherits="GameFontNormalSmall">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPRIGHT" x="-5" y="-5"/>
+											</Anchors>
+										</FontString>
 									</Layer>
 								</Layers>
 							</Frame>

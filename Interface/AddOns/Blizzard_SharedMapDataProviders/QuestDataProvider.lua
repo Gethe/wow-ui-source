@@ -236,6 +236,9 @@ function QuestPinMixin:OnMouseEnter()
 	local questID = self:GetQuestID();
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 	local title = C_QuestLog.GetTitleForQuestID(questID);
+
+	title = SetQuestTitleLevelAndDifficultyColor(questID, title);
+
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	GameTooltip:SetText(title);
 	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);

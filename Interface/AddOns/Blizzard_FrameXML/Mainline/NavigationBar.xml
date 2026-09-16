@@ -120,7 +120,10 @@
 	</Texture-->
 
 
-	<Button name="NavButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="NavButtonTemplate" mixin="NavButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_NavButton" type="string"/>
+		</KeyValues>
 		<Size x="80" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -149,6 +152,9 @@
 		</Layers>
 		<Frames>
 			<DropdownButton parentKey="MenuArrowButton" hidden="true">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="27" y="31"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-2" y="-15"/>
@@ -202,6 +208,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow function="NavButtonTemplate_OnShow"/>
+			<OnLoad method="OnLoad"/>
 			<OnMouseDown>
 				if self:IsEnabled() then
 					self.arrowUp:Hide();

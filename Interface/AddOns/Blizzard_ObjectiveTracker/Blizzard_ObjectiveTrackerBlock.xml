@@ -14,6 +14,10 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="HeaderButton" mixin="ObjectiveTrackerBlockHeaderMixin">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+					<KeyValue key="buttonContext" value="ButtonContext_QuestHeaderButton" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderText"/>
@@ -27,5 +31,5 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
+
 </Ui>

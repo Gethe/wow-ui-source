@@ -1,3 +1,3 @@
 ## Title: Blizzard UI Money Receipt
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 Blizzard_MoneyReceipt.lua

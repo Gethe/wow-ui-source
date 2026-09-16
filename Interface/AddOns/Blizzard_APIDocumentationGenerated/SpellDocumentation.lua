@@ -8,6 +8,30 @@ local Spell =
 	Functions =
 	{
 		{
+			Name = "CancelAutoRepeatSpell",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Cancels the player's active auto repeat spell, if any" },
+
+			Returns =
+			{
+				{ Name = "wasCancelled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CancelItemTempEnchantment",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Cancel a temporary enchantment on an item" },
+
+			Arguments =
+			{
+				{ Name = "weaponSlot", Type = "WeaponSlot", Nilable = false },
+				{ Name = "enchantmentType", Type = "ItemEnchantType", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelSpellByID",
 			Type = "Function",
 			HasRestrictions = true,
@@ -587,6 +611,15 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetTargetSpellID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVisibilityInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -603,6 +636,25 @@ local Spell =
 				{ Name = "hasCustom", Type = "bool", Nilable = false },
 				{ Name = "alwaysShowMine", Type = "bool", Nilable = false },
 				{ Name = "showForMySpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActiveSpell",
+			Type = "Function",
+			SecretWhenUnitAuraRestricted = true,
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is a currently active toggled spell" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "targetUnit", Type = "UnitToken", Nilable = true, Documentation = { "Optional specific target; If not supplied, the player will be used, or their pet if the spell is a pet spell" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isActiveSpell", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -933,6 +985,11 @@ local Spell =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
 			},
+		},
+		{
+			Name = "PlaceTargetingSpellAtCursor",
+			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "RequestLoadSpellData",

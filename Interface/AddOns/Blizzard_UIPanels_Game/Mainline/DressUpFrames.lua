@@ -1,4 +1,7 @@
 
+function DressUpFrames_UsesClassBackgrounds()
+	return true;
+end
 
 function DressUpLink(link, forcedFrame)
 	return link and (DressUpItemLink(link, forcedFrame) or DressUpBattlePetLink(link, forcedFrame) or DressUpMountLink(link, forcedFrame));
@@ -301,23 +304,32 @@ function DressUpTexturePath(raceFileName)
 end
 
 function SetDressUpBackground(frame, raceFilename, classFilename)
-	local texture = DressUpTexturePath(raceFilename);
-	
-	if ( frame.BGTopLeft ) then
-		frame.BGTopLeft:SetTexture(texture..1);
-	end
-	if ( frame.BGTopRight ) then
-		frame.BGTopRight:SetTexture(texture..2);
-	end
-	if ( frame.BGBottomLeft ) then
-		frame.BGBottomLeft:SetTexture(texture..3);
-	end
-	if ( frame.BGBottomRight ) then
-		frame.BGBottomRight:SetTexture(texture..4);
-	end
-	
-	if ( frame.ModelBackground and classFilename ) then
-		frame.ModelBackground:SetAtlas("dressingroom-background-"..classFilename);
+	local texture = DressUpTexturePath(raceFilename or select(2, UnitRace("player")));
+
+	local backgroundHost = frame.ModelScene;
+
+	if DressUpFrames_UsesClassBackgrounds() then
+		if ( frame.ModelBackground and classFilename ) then
+			frame.ModelBackground:SetAtlas("dressingroom-background-"..classFilename);
+		end
+	else
+		frame.ModelBackground:SetShown(false);
+		if ( backgroundHost.BGTopLeft ) then
+			backgroundHost.BGTopLeft:SetTexture(texture..1);
+			backgroundHost.BGTopLeft:SetShown(true);
+		end
+		if ( backgroundHost.BGTopRight ) then
+			backgroundHost.BGTopRight:SetTexture(texture..2);
+			backgroundHost.BGTopRight:SetShown(true);
+		end
+		if ( backgroundHost.BGBottomLeft ) then
+			backgroundHost.BGBottomLeft:SetTexture(texture..3);
+			backgroundHost.BGBottomLeft:SetShown(true);
+		end
+		if ( backgroundHost.BGBottomRight ) then
+			backgroundHost.BGBottomRight:SetTexture(texture..4);
+			backgroundHost.BGBottomRight:SetShown(true);
+		end
 	end
 end
 
@@ -474,11 +486,20 @@ local CLASS_BACKGROUND_SETTINGS = {
 
 function DressUpCustomSetDetailsPanelMixin:OnLoad()
 	self.slotPool = CreateFramePool("FRAME", self, "DressUpCustomSetSlotFrameTemplate");
-	local classFilename = select(2, UnitClass("player"));
-	self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
-	local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
-	self.ClassBackground:SetDesaturation(settings.desaturation);
-	self.ClassBackground:SetAlpha(settings.alpha);
+
+	if DressUpFrames_UsesClassBackgrounds() then
+		local classFilename = select(2, UnitClass("player"));
+		self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
+		local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
+		self.ClassBackground:SetDesaturation(settings.desaturation);
+		self.ClassBackground:SetAlpha(settings.alpha);
+	else
+		local raceName, fileName  = UnitRace("player");
+		self.ClassBackground:SetTexture(DressUpTexturePath(fileName)..1);
+		self.ClassBackground:SetDesaturation(0.5);
+		self.ClassBackground:SetAlpha(0.25);
+	end
+
 	local frameLevel = self:GetParent().NineSlice:GetFrameLevel();
 	self:SetFrameLevel(frameLevel + 1);
 end

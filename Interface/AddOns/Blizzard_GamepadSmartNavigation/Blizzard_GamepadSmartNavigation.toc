@@ -1,0 +1,11 @@
+## Title: Blizzard_GamepadSmartNavigation
+## Dep: Blizzard_SharedXML
+## SavedVariables: SmartNavigation_Mod_Options
+## AllowLoad: Both
+
+Utility.lua
+
+SmartNavigation.lua
+SmartNavigation.xml
+
+Debug.lua

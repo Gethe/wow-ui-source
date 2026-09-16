@@ -69,8 +69,9 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			end
 		end
 	else
-		MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+		local menu = MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
 			rootDescription:SetTag("MENU_QUEST_OBJECTIVE_TRACKER");
+			self.restoreGamepadFocusOnMenuClose = true;
 
 			local questID = block.id;
 			rootDescription:CreateTitle(C_QuestLog.GetTitleForQuestID(questID));
@@ -88,11 +89,19 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			local toggleDetailsText = QuestUtil.IsShowingQuestDetails(questID) and OBJECTIVES_HIDE_VIEW_IN_QUESTLOG or OBJECTIVES_VIEW_IN_QUESTLOG;
 
 			rootDescription:CreateButton(toggleDetailsText, function()
+				if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+					GamepadHudMode:Hide();
+				end
 				QuestUtil.OpenQuestDetails(questID);
+				self.restoreGamepadFocusOnMenuClose = false;
 			end);
 
 			rootDescription:CreateButton(OBJECTIVES_SHOW_QUEST_MAP, function()
+				if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+					GamepadHudMode:Hide();
+				end
 				QuestMapFrame_OpenToQuestDetails(questID);
+				self.restoreGamepadFocusOnMenuClose = false;
 			end);
 
 			if QuestUtil.CanRemoveQuestWatch() then
@@ -106,10 +115,27 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 					QuestUtil.ShareQuest(questID);
 				end);
 			end
+
+			rootDescription:CreateButton(SHARE_IN_CHAT, function()
+				local chatLink = GetQuestLink(questID);
+				if not ChatFrameUtil.InsertLink(chatLink) then
+					ChatFrameUtil.OpenChat(chatLink);
+				end
+				self.restoreGamepadFocusOnMenuClose = false;
+			end);
+
 			rootDescription:CreateButton(ABANDON_QUEST_ABBREV, function()
 				QuestMapQuestOptions_AbandonQuest(questID);
 			end);
 		end);
+		if InputUtil.IsGamepadUIEnabled() then
+			menu:SetClosedCallback(function()
+				local owner = self:GetContextMenuParent();
+				if owner ~= nil and not self.restoreGamepadFocusOnMenuClose then
+					GamepadMode.FrameControlsManager:FrameHidden(owner);
+				end;
+			end);
+		end
 	end
 end
 
@@ -269,6 +295,7 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 	local isSequenced = IsQuestSequenced(questID);
 	local questLogIndex = quest:GetQuestLogIndex();
 	local block, isExistingBlock = self:GetBlock(questID);
+	local title = SetQuestTitleLevelAndDifficultyColor(questID, quest.title);
 
 	if QuestUtil.CanCreateQuestGroup(questID) then
 		block:AddRightEdgeFrame(self.findGroupButtonSettings, questID);
@@ -277,7 +304,7 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 		block.ItemButton = block:AddRightEdgeFrame(self.questItemButtonSettings, questLogIndex);
 	end
 
-	block:SetHeader(quest.title);
+	block:SetHeader(title);
 
 	-- completion state
 	local questFailed = C_QuestLog.IsFailed(questID);
@@ -335,13 +362,17 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 
 		-- timer bar
 		local timeTotal, timeElapsed = C_QuestLog.GetTimeAllowed(questID);
-		if timeTotal and timeElapsed and timeElapsed < timeTotal then
+		if self:CanShowTimerBar() and timeTotal and timeElapsed and timeElapsed < timeTotal then
 			block:AddTimerBar(timeTotal, GetTime() - timeElapsed);
 		end
 	end
 
 	block:SetPOIInfo(questID, isComplete, isSuperTracked);
 	return self:LayoutBlock(block);
+end
+
+function QuestObjectiveTrackerMixin:CanShowTimerBar()
+	return true;
 end
 
 function QuestObjectiveTrackerMixin:WatchMoney(watch)

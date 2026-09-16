@@ -3,6 +3,10 @@ GlueMenuFrameUtil = {};
 GlueMenuFrameUtil.GlueMenuContextKey = "GlueMenuFrame";
 
 function GlueMenuFrameUtil.ShowMenu()
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
 	GlueMenuFrame:Show();
 end
 

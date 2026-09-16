@@ -8,6 +8,10 @@ function GlueParent_AddModalFrame(frame)
 
 	table.insert(modalFrames, frame);
 
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(frame);
+	end
+
 	if #modalFrames == 1 then
 		GlueParent.BlockingFrame:Show();
 	end
@@ -17,6 +21,10 @@ function GlueParent_RemoveModalFrame(frame)
 	local index = tIndexOf(modalFrames, frame);
 	if not index then
 		return;
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(frame);
 	end
 
 	table.remove(modalFrames, index);

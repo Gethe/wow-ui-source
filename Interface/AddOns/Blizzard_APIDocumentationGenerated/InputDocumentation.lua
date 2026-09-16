@@ -318,6 +318,17 @@ local Input =
 
 	Events =
 	{
+		{
+			Name = "InputDeviceInterfaceTransition",
+			Type = "Event",
+			LiteralName = "INPUT_DEVICE_INTERFACE_TRANSITION",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "newMode", Type = "InputDeviceInterfaceType", Nilable = false },
+				{ Name = "oldMode", Type = "InputDeviceInterfaceType", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

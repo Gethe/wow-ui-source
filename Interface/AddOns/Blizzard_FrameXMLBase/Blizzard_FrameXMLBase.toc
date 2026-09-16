@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXMLBase
 ## Dep: Blizzard_SharedXML
 ## Dep: Blizzard_SharedXMLGame
-## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+## OptionalDep: Blizzard_Plunderstorm
 IconDataProvider.lua
 [Family]\IconDataProviderOverrides.lua
 AnimatedStatusBar.lua
@@ -12,7 +12,8 @@ PowerDependencyLine.lua [AllowLoadGameType mainline]
 PowerDependencyLine.xml [AllowLoadGameType mainline]
 FlowContainer.lua
 PlayerMovementFrameFader.lua
-[Family]\Constants.lua [AllowLoadGameType classic]
+[Family]\Constants.lua [ExcludeLoadGameType camelot]
+[Game]\Constants.lua [AllowLoadGameType camelot]
 Shared\Constants.lua
 Constants.lua [AllowLoadGameType mainline]
 Vanilla\Constants.lua [AllowLoadGameType vanilla]

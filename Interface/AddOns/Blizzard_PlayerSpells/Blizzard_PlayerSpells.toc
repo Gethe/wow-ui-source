@@ -3,7 +3,10 @@
 ## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent, Blizzard_HelpPlate
 
 Blizzard_PlayerSpells_Bootstrap.lua [Bootstrap]
-ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml
+[Family]/ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml [ExcludeLoadGameType camelot]
+[Game]/ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml [AllowLoadGameType camelot]
+[Family]/ClassTalents/Blizzard_ClassTalentUtil.lua	[ExcludeLoadGameType camelot]
+[Game]/ClassTalents/Blizzard_ClassTalentUtil.lua	[AllowLoadGameType camelot]
 ClassTalents/Blizzard_ClassTalentUtil.lua
 ClassTalents/Blizzard_ClassTalentLoadoutDialogTemplates.xml
 ClassTalents/Blizzard_ClassTalentImportExport.lua
@@ -17,16 +20,30 @@ ClassTalents/Blizzard_HeroTalentsSelectionDialog.lua
 ClassTalents/Blizzard_HeroTalentsSelectionDialog.xml
 ClassTalents/Blizzard_HeroTalentsContainer.lua
 ClassTalents/Blizzard_HeroTalentsContainer.xml
-ClassTalents/Blizzard_ClassTalentSearch.lua
-ClassTalents/Blizzard_ClassTalentsFrame.xml
+ClassTalents/Blizzard_ClassTalentsFrame.lua
+[Family]/ClassTalents/Blizzard_ClassTalentsFrame.lua		[ExcludeLoadGameType camelot]
+[Game]/ClassTalents/Blizzard_ClassTalentsFrame.lua		[AllowLoadGameType camelot]
+[Family]/ClassTalents/Blizzard_ClassTalentsFrame.xml	[ExcludeLoadGameType camelot]
+[Game]/ClassTalents/Blizzard_ClassTalentsFrame.xml		[AllowLoadGameType camelot]
 PvPTalents/Blizzard_PvPTalentListTemplates.xml
 PvPTalents/Blizzard_PvPTalentSlotTemplates.xml
 PvPTalents/Blizzard_WarmodeButtonTemplate.xml
+[Family]/SpellBook/Blizzard_SpellBookTemplates.xml	[ExcludeLoadGameType camelot]
+[Game]/SpellBook/Blizzard_SpellBookTemplates.xml	[AllowLoadGameType camelot]
 SpellBook/Blizzard_SpellBookTemplates.xml
 SpellBook/Blizzard_SpellBookItem.xml
 SpellBook/Blizzard_SpellBookSearch.lua
 SpellBook/Blizzard_SpellBookFrame.xml
-Blizzard_PlayerSpellsFrame.xml
+SpellBook/Blizzard_SpellBookCategory.lua
+SpellBook/Blizzard_SpellBookFrameTutorials.lua
+SpellBook/Blizzard_SpellBookFrame.lua
+[Family]/SpellBook/Blizzard_SpellBookFrame.lua	[AllowLoadGameType standard]
+[Game]/SpellBook/Blizzard_SpellBookFrame.lua	[AllowLoadGameType camelot]
+
+Blizzard_PlayerSpellsFrame.lua
+[Game]/Blizzard_PlayerSpellsFrame.lua			[AllowLoadGameType camelot]
+[Family]/Blizzard_PlayerSpellsFrame.xml			[ExcludeLoadGameType camelot]
+[Game]/Blizzard_PlayerSpellsFrame.xml			[AllowLoadGameType camelot]
 
 Blizzard_PlayerSpellsRegistration.lua
 

@@ -68,6 +68,13 @@ end
 
 function CollapsibleServerAlertMixin:OnShow()
 	self:UpdateCollapsedState();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self:UpdateGamepadScrolling();
+		self.ExpandBar.ToggleIcon:Show();
+	else
+		self.ExpandBar.ToggleIcon:Hide();
+	end
 end
 
 function CollapsibleServerAlertMixin:OnToggled(expanded, isUserInput)
@@ -79,6 +86,10 @@ function CollapsibleServerAlertMixin:OnToggled(expanded, isUserInput)
 		end
 	end
 	self:UpdateHeight();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self:UpdateGamepadScrolling();
+	end
 end
 
 function CollapsibleServerAlertMixin:ShouldBeCollapsed()
@@ -114,6 +125,18 @@ end
 
 function CollapsibleServerAlertMixin:SetExpanded(expanded, isUserInput)
 	return self.ExpandBar:SetExpanded(expanded, isUserInput);
+end
+
+function CollapsibleServerAlertMixin:UpdateGamepadScrolling()
+	local scrollFrame = nil;
+	if (self.ExpandBar:IsExpanded() and self.Box.ScrollFrame.ScrollBar.allowScroll) then
+		scrollFrame = self.Box.ScrollFrame;
+	end
+	SmartNavigation:SetScrollFrameForFrame(SmartNavigation:GetActiveFrame(), scrollFrame);
+	if scrollFrame then
+		GamepadScrollBarHint:SetOwner(scrollFrame.ScrollBar.Track.Thumb, "CENTER");
+		GamepadScrollBarHint:Show();
+	end
 end
 
 function CollapsibleServerAlertMixin:NarrationGetName()

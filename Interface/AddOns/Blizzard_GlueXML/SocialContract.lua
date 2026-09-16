@@ -67,6 +67,16 @@ function SocialContractFrameMixin:OnHide()
 	GlueParent_RemoveModalFrame(self);
 end
 
+function SocialContractFrameMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+end
+
+function SocialContractFrameMixin:UnfocusGamepad()
+	GamepadScrollBarHint:Hide();
+end
+
 SocialContractAcceptButtonMixin = {};
 
 function SocialContractAcceptButtonMixin:OnClick()

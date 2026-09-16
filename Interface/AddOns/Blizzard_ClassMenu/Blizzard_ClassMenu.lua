@@ -96,13 +96,8 @@ function ClassMenu.InitClassSpecDropdown(dropdown, getClassFilter, getSpecFilter
 
 		classMenu:CreateRadio(ALL_CLASSES, IsClassSelected, SetSelected, CreateData(UNSPECIFIED_CLASS_FILTER, UNSPECIFIED_SPEC_FILTER));
 
-		for index = 1, GetNumClasses() do
-			if (index == 10) and (GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM) then
-				-- We have an annoying gap between warlock and druid
-				index = 11;
-			end
-
-			local classDisplayName, classTag, classID = GetClassInfo(index);
+		for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
+			local classDisplayName, classTag = GetClassInfo(classID);
 			classMenu:CreateRadio(classDisplayName, IsClassSelected, SetSelected, CreateData(classID, UNSPECIFIED_SPEC_FILTER));
 		end
 

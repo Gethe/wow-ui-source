@@ -64,6 +64,9 @@
 			</Frame>
 
 			<Frame parentKey="ButtonsParent" mixin="TalentFrameBaseButtonsParentMixin" clipChildren="true" frameLevel="1000">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnoredDontPropagate" value="true" type="boolean"/>
+				</KeyValues>
 				<Scripts>
 					<OnUpdate method="OnUpdate"/>
 					<OnMouseDown method="OnMouseDown"/>

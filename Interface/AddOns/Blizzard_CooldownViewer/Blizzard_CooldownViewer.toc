@@ -1,5 +1,5 @@
 ## Title: Blizzard_CooldownViewer
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 ## Dep: Blizzard_EditMode
 ## Dep: Blizzard_ChatFrameBase
 ## Dep: Blizzard_VisualAlerts

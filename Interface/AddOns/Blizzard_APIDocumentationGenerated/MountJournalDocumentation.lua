@@ -382,6 +382,15 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "HasDisplayableMount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasMount", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDragonridingUnlocked",
 			Type = "Function",
 			Documentation = { "Returns whether the player has unlocked the ability to switch between Skyriding and steady flight styles for flying mounts ." },
@@ -483,6 +492,15 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MountEquipmentAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMountEquipmentAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

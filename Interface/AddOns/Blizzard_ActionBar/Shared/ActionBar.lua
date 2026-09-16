@@ -146,6 +146,10 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
 		return; -- Don't hide grid if we are in QuickKeybindMode
 	end
 
+	if showGrid and InputUtil.IsGamepadUIEnabled() then
+		return; -- The standard action bars should never be shown with gamepad UI.
+	end
+
 	-- SetShowGrid overrides "Always Show Buttons" being false, showAllButtons overrides "Bar Visible" setting
 	-- When dragging spells or going through spell collection, we want to override both
 	if reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT or reason == ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION then
@@ -261,6 +265,7 @@ function EditModeActionBarMixin:EditModeActionBar_OnLoad()
 
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	InputUtil.RegisterInterfaceTransitionCallback(GenerateClosure(self.UpdateVisibility, self));
 end
 
 function EditModeActionBarMixin:SetupVisibilityFunctionOverrides()
@@ -332,7 +337,11 @@ function EditModeActionBarMixin:HideOverride()
 end
 
 function EditModeActionBarMixin:UpdateVisibility()
-	if not self.visibility then
+	if (self.customGamepadModeVisibilityHandling and InputUtil.IsGamepadUIEnabled()) then
+		if (self.GamepadModeVisibilityHandler) then
+			self:GamepadModeVisibilityHandler(self.isShownExternal);
+		end
+	elseif not self.visibility then
 		-- If we don't have visiblity settings, then just follow whatever we are told to do externally
 		self:SetShownBase(self.isShownExternal or self.editModeForceShow);
 	elseif not self.isShownExternal then

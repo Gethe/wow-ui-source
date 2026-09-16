@@ -1,0 +1,33 @@
+## Title: Blizzard_Minimap
+## Dep: Blizzard_ActionBar [AllowLoadGameType mainline]
+## Dep: Blizzard_EditMode [AllowLoadGameType mainline]
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_GameTooltip
+## Dep: Blizzard_QueueStatusFrame [AllowLoadGameType classic]
+
+Shared\MinimapButtonTemplate.lua				[AllowLoadGameType classic, camelot]
+Shared\MinimapButtonTemplate.xml				[AllowLoadGameType classic, camelot]
+
+[Family]\Minimap_Overrides.lua			[AllowLoadGameType vanilla, tbc]
+[Game]\Minimap_Overrides.lua			[AllowLoadGameType wrath, cata, mists]
+[Family]\MinimapConstants.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapConstants.lua				[AllowLoadGameType camelot]
+[Family]\Minimap.lua
+[Family]\Minimap.xml
+[Game]\Diel.lua									[AllowLoadGameType camelot]
+[Game]\Skin.lua									[AllowLoadGameType camelot]
+
+[Family]\MinimapTracking_Simple.lua		[AllowLoadGameType vanilla]
+[Family]\MinimapTracking_Simple.xml		[AllowLoadGameType vanilla]
+[Family]\MinimapTracking_Dropdown.lua	[AllowLoadGameType tbc, wrath, cata, mists]
+[Family]\MinimapTracking_Dropdown.xml	[AllowLoadGameType tbc, wrath, cata, mists]
+
+[Family]\GameTime_NoCalendar.lua		[AllowLoadGameType vanilla, tbc]
+[Family]\GameTime_NoCalendar.xml		[AllowLoadGameType vanilla, tbc]
+Wrath\GameTime.lua						[AllowLoadGameType wrath, cata, mists]
+Wrath\GameTime.xml						[AllowLoadGameType wrath, cata, mists]
+[Family]\GameTime.lua					[AllowLoadGameType mainline]
+[Family]\GameTime.xml					[AllowLoadGameType mainline]
+
+[Family]\AddonCompartment.lua			[AllowLoadGameType mainline]
+[Family]\AddonCompartment.xml			[AllowLoadGameType mainline]

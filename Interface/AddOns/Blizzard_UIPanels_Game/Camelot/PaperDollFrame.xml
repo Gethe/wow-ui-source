@@ -1,0 +1,948 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="SmallRedThreeSliceButtonTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="99" y="27"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontNormal"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Frame name="PetExpColoredProgressBarTemplate" mixin="PetExpColoredProgressBarMixin" inherits="ColoredProgressBarTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="PaperDollTertiaryButtonTemplate" mixin="PaperDollTertiaryButtonMixin" virtual="true">
+		<Size x="136" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="StateTexture" setAllPoints="true" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString text="PAPERDOLL_NEWEQUIPMENTSET" setAllPoints="true" justifyH="LEFT" inherits="GameFontGreen">
+					<Size x="80" y="34"/>
+					<Anchors>
+						<Anchor point="LEFT" x="35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+		<NormalTexture/>
+		<PushedTexture/>
+		<HighlightTexture/>
+	</Button>
+	
+	<ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate, EnchantingItemButtonAnimTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
+			<Frame parentKey="BorderFrame">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-Character-Info-GearSlot" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PaperDollItemSlotButton_OnLoad"/>
+			<OnEvent function="PaperDollItemSlotButton_OnEvent"/>
+			<OnShow function="PaperDollItemSlotButton_OnShow"/>
+			<OnHide function="PaperDollItemSlotButton_OnHide"/>
+			<OnClick function="PaperDollItemSlotButton_OnModifableClick"/>
+			<OnDragStart function="PaperDollItemSlotButton_OnDragStart"/>
+			<OnReceiveDrag function="PaperDollItemSlotButton_OnReceiveDrag"/>
+			<OnEnter function="PaperDollItemSlotButton_OnEnter"/>
+			<OnLeave function="PaperDollItemSlotButton_OnLeave"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollItemSlotButton" type="string"/>
+		</KeyValues>
+	</ItemButton>
+	<Frame name="PaperDollItemSocketSlotTemplate" parentArray="Slots" virtual="true">
+		<Size x="11" y="11"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Slot" atlas="character-emptysocket" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Gem" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="PaperDollItemSocketDisplayTemplate" mixin="PaperDollItemSocketDisplayMixin" hidden="true" virtual="true">
+		<Frames>
+			<Frame parentKey="Slot1" inherits="PaperDollItemSocketSlotTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Slot2" inherits="PaperDollItemSocketSlotTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Slot3" inherits="PaperDollItemSocketSlotTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="PaperDollItemSocketDisplayVerticalTemplate" inherits="VerticalLayoutFrame, PaperDollItemSocketDisplayTemplate" virtual="true"/>
+	<Frame name="PaperDollItemSocketDisplayHorizontalTemplate" inherits="HorizontalLayoutFrame, PaperDollItemSocketDisplayTemplate" virtual="true"/>
+	<ItemButton name="PaperDollItemSlotButtonLeftTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayVerticalTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<KeyValue type="boolean" key="IsLeftSide" value="true"/>
+			<KeyValue type="string" key="flyoutDirection" value="RIGHT"/>
+		</KeyValues>
+	</ItemButton>
+	<ItemButton name="PaperDollItemSlotButtonRightTemplate" parentArray="EquipmentSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayVerticalTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<KeyValue type="boolean" key="IsLeftSide" value="false"/>
+			<KeyValue type="string" key="flyoutDirection" value="LEFT"/>
+		</KeyValues>
+	</ItemButton>
+	<ItemButton name="PaperDollItemSlotButtonBottomTemplate" parentArray="WeaponSlots" inherits="PaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayHorizontalTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<KeyValue type="string" key="flyoutDirection" value="UP"/>
+		</KeyValues>
+	</ItemButton>
+	<Button name="PlayerTitleButtonTemplate" virtual="true">
+		<Size x="169" y="22"/>
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset x="2" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBgTop" inherits="Char-Stat-Top" parentKey="BgTop">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBgBottom" inherits="Char-Stat-Top" parentKey="BgBottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
+					<Size x="169" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" x="1"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentStripe" parentKey="Stripe">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" parentKey="Check" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="8" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelectedBar" parentKey="SelectedBar" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alpha="0.4" alphaMode="ADD" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				SetClampedTextureRotation(self.BgBottom, 180);
+			</OnLoad>
+			<OnClick>
+				PlayerTitleButton_OnClick(self);
+			</OnClick>
+		</Scripts>
+		<ButtonText name="$parentTitleText" inherits="GameFontNormalSmallLeft" justifyH="LEFT" parentKey="text">
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.Check" relativePoint="RIGHT" x="3" y="0"/>
+				<Anchor point="RIGHT" x="-3" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="GearSetButtonTemplate" mixin="GearSetButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_GearSetButton" type="string"/>
+		</KeyValues>
+		<Size x="169" y="44"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="UI-Character-Info-OutfitCard">
+					<Size x="152" y="49"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentHighlightBar" parentKey="HighlightBar" atlas="UI-Character-Info-OutfitCard-Hover" hidden="true">
+					<Size x="152" y="49"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSelectedBar" parentKey="SelectedBar" atlas="UI-Character-Info-OutfitCard-Selected" hidden="true">
+					<Size x="152" y="49"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="UI-Character-Info-Icon-Tick" parentKey="Check" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-23" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalLeft" parentKey="text">
+					<Size x="98" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="55"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture name="$parentIconBorder" atlas="UI-Character-Info-OutfitIcon-Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-2">
+				<Texture parentKey="SpecRing" atlas="equipmentmanager-spec-border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="18" y="-18"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-3">
+				<Texture parentKey="SpecIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecRing" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="$parentDeleteButton" parentKey="DeleteButton" hidden="true">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-21" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(DELETE);
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.5);
+						GameTooltip_Hide();
+					</OnLeave>
+					<OnMouseDown>
+						self.texture:SetPoint("TOPLEFT", 1, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick>
+						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText(), nil, self:GetParent().setID);
+						if ( not dialog ) then
+						UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentEditButton" parentKey="EditButton" hidden="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DeleteButton" relativePoint="LEFT" x="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(EQUIPMENT_SET_SETTINGS);
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.5);
+						GameTooltip_Hide();
+					</OnLeave>
+					<OnMouseDown function="GearSetEditButton_OnMouseDown"/>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick function="GearSetButton_OnClick"/>
+			<OnDoubleClick function="GearSetButton_OnDoubleClick"/>
+			<OnEnter function="GearSetButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnDragStart function="GearSetButton_OnDrag"/>
+		</Scripts>
+	</Button>
+
+	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				GearSetPopupButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentIcon" nonBlocking="true" parentKey="Icon">
+			<Size x="36" y="36"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-1"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+
+	<CheckButton name="PaperDollSidebarTabTemplate" parentArray="Tabs" mixin="PaperDollSidebarTabMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="42" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="UI-Character-Info-StatTab" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<CheckedTexture atlas="UI-Character-Info-StatTab-Selected" useAtlasSize="true"/>
+	</CheckButton>
+
+	<Frame name="PaperDollFrame" mixin="PaperDollFrameMixin" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
+		<Frames>
+			<Frame name="PaperDollSidebarTabs" parent="CharacterFrame" hidden="true">
+				<Size x="233" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CharacterFrameRightPaneHost" y="-4"/>
+				</Anchors>
+				<Frames>
+					<CheckButton name="PaperDollSidebarTab2" inherits="PaperDollSidebarTabTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-5"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="PaperDollSidebarTab3" inherits="PaperDollSidebarTabTemplate" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="PaperDollSidebarTab2" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="PaperDollSidebarTab1" inherits="PaperDollSidebarTabTemplate" id="1">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="PaperDollSidebarTab2" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Frame name="PaperDollLevelInfo" frameLevel="5">
+				<Size x="220" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="PaperDollSidebarTabs" y="-50"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="CharacterLevelTextBackground" atlas="UI-Character-Info-ItemLevel-Bounce" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="CharacterLevelText" inherits="GameFontNormalLarge" justifyV="MIDDLE" justifyH="CENTER">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PetLoyaltyText" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="CENTER">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="CharacterTrialLevelErrorText" inherits="GameFontNormalSmall" text="TRIAL_LEVEL_CAPPED" hidden="true">
+							<Size y="24"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM" x="0" y="0"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<Color r="1" g="0.1" b="0.1" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="PaperDollTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true" />
+
+			<Frame parentKey="TitleManagerPane" hidden="true">
+				<Size x="172" y="354"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHost" x="4" y="-4"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnShow function="PaperDollTitlesPane_Update"/>
+						</Scripts>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-5"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="PaperDollTitlesPane_OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="EquipmentManagerPane" mixin="PaperDollEquipmentManagerPaneMixin" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHostStoneBg" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameRightPaneHost"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-8"/>
+							<Anchor point="BOTTOMRIGHT" x="-20" y="105"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-5" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</EventFrame>
+
+					<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" parentKey="EquipSet" inherits="SharedButtonSmallTemplate">
+						<Size x="99" y="28"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-50" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>
+						</Scripts>
+					</Button>
+					
+					<Button name="$parentSaveSet" text="SAVE" parentKey="SaveSet" inherits="SharedButtonSmallTemplate">
+						<Size x="99" y="28"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="50" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="PaperDollEquipmentManagerPaneSaveSet_OnClick"/>
+						</Scripts>
+					</Button>
+
+					<Button name="$parentNewSet" parentKey="NewSet" inherits="PaperDollTertiaryButtonTemplate">
+						<Size x="180" y="34"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="50"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture atlas="UI-Character-Info-Icon-Add" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="LEFT" x="13"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick function="PaperDollEquipmentManagerPaneNewSet_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="common-insideframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+							</Anchors>
+						</Texture>
+						
+						<Texture atlas="UI-Character-Info-ScrollLine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="PaperDollEquipmentManagerPane_OnLoad"/>
+					<OnShow function="PaperDollEquipmentManagerPane_OnShow"/>
+					<OnHide function="PaperDollEquipmentManagerPane_OnHide"/>
+					<OnEvent function="PaperDollEquipmentManagerPane_OnEvent"/>
+					<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
+				</Scripts>
+			</Frame>
+			<ModelScene parentKey="CharacterModelScene" name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameLeftPaneHost"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="CharacterModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-79" y="129"/>
+							</Anchors>
+							<TexCoords left="0.171875" right="1" top="0.0392156862745098" bottom="1"/>
+						</Texture>
+						<Texture name="CharacterModelFrameBackgroundTopRight" parentKey="BackgroundTopRight">
+							<Size x="80"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" y="129"/>
+							</Anchors>
+							<TexCoords left="0" right="0.296875" top="0.0392156862745098" bottom="1"/>
+						</Texture>
+						<Texture name="CharacterModelFrameBackgroundBotLeft" parentKey="BackgroundBotLeft">
+							<Size y="130"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-79"/>
+							</Anchors>
+							<TexCoords left="0.171875" right="1" top="0" bottom="0.62"/>
+						</Texture>
+						<Texture name="CharacterModelFrameBackgroundBotRight" parentKey="BackgroundBotRight">
+							<Size x="80" y="130"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.296875" top="0" bottom="0.62"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture atlas="UI-Character-Info-RaceBG-Overlay" parentKey="BackgroundOverlay"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
+						<Anchors>
+							<Anchor point="TOP" y="-10"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="GearEnchantAnimation" hidden="true" mixin="GearEnchantAnimationMixin">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Size x="128" y="128"/>
+						<Frames>
+							<Frame parentKey="FrameFX">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="PurpleGlow" atlas="GearEnchantFX_CharUI_DarkGold" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="BlueGlow" atlas="GearEnchantFX_CharUI_Gold" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Sparkles" hidden="true" alphaMode="ADD" atlas="GearEnchantFX_CharUI_Sparkles" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<MaskTexture parentKey="Mask" atlas="GearEnchantFX_CharUI_Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="PurpleGlow"/>
+												<MaskedTexture childKey="BlueGlow"/>
+												<MaskedTexture childKey="Sparkles"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="FrameFXAnimGroup" setToFinalAlpha="false">
+										<Rotation childKey="PurpleGlow" duration="1" order="1" smoothing="OUT" degrees="-180">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="PurpleGlow" duration="0.33" order="1" startDelay="0.66" fromAlpha="1" toAlpha="0"/>
+										<Rotation childKey="BlueGlow" duration="1" order="1" smoothing="IN_OUT" degrees="120">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="BlueGlow" duration="0.33" order="1" startDelay="0.66" fromAlpha="1" toAlpha="0"/>
+										<Rotation childKey="Sparkles" duration="1.3" order="1" smoothing="IN_OUT" degrees="-120">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="Sparkles" duration="0.5" order="1" startDelay="0.8" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+							<Frame parentKey="TopFrame">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Frame" alphaMode="BLEND" atlas="GearEnchantFX_CharUI_Frame" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="TopFrameAnimGroup" setToFinalAlpha="false">
+										<Alpha childKey="Frame" duration="0.5" order="1" startDelay="0.8" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="PetPaperDollPetHappinessInfo" enableMouse="true" hidden="true" inherits="PetFrameHappinessTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost" x="22" y="-60"/>
+						</Anchors>
+					</Frame>
+					<Frame name="PetPaperDollFrameExpBar" inherits="PetExpColoredProgressBarTemplate">
+						<Size x="257" y="29"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="CharacterFrameLeftPaneHost" y="20"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="GamepadFocusIndicator" hidden="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="helptip-arrow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent" relativePoint="TOP" y="-20"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+
+				<Scripts>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+				</Scripts>
+			</ModelScene>
+
+			<Frame name="PaperDollItemsFrame" parentKey="ItemsFrame" setAllPoints="true" frameLevel="100">
+				<Frames>
+					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost" x="24" y="-60"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterHeadSlot" relativePoint="BOTTOMLEFT"  x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterShoulderSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterBackSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterChestSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterShirtSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterTabardSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterWristSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+
+					<ItemButton name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameLeftPaneHost" x="-20" y="-60"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterLegsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterFeetSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterFinger0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterFinger1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterTrinket0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterTrinket1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</ItemButton>
+
+					<ItemButton name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate"/>
+					<ItemButton name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="6" y="0"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot" relativePoint="TOPRIGHT" x="6" y="0"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterAmmoSlot">
+						<Size x="27" y="27"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CharacterRangedSlot" relativePoint="RIGHT" x="19" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="UI-Character-Info-GearSlotSmall" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture name="$parentIconTexture"/>
+								<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-1" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+							<Frame>
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="LEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture atlas="UI-Character-Info-GearSlot-Arrow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="RIGHT" x="6"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="PaperDollAmmoSlotButton_OnLoad"/>
+							<OnEvent function="PaperDollItemSlotButton_OnEvent"/>
+							<OnShow function="PaperDollAmmoSlotButton_OnShow"/>
+							<OnHide function="PaperDollItemSlotButton_OnHide"/>
+							<OnClick function="PaperDollItemSlotButton_OnModifableClick"/>
+							<OnDragStart function="PaperDollItemSlotButton_OnDragStart"/>
+							<OnReceiveDrag function="PaperDollItemSlotButton_OnReceiveDrag"/>
+							<OnEnter function="PaperDollItemSlotButton_OnEnter"/>
+							<OnLeave function="PaperDollItemSlotButton_OnLeave"/>
+						</Scripts>
+						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Size x="47" y="47"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-1"/>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+					</ItemButton>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PaperDollFrame_OnLoad"/>
+			<OnEvent function="PaperDollFrame_OnEvent"/>
+			<OnShow function="PaperDollFrame_OnShow"/>
+			<OnHide function="PaperDollFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GearManagerPopupFrame" mixin="GearManagerPopupFrameMixin" inherits="IconSelectorPopupFrameTemplate" parent="PaperDollFrame" enableMouse="true" hidden="true" frameLevel="50">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="editBoxHeaderText" value="GEARSETS_POPUP_TEXT" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

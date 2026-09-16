@@ -53,6 +53,21 @@ local MajorFactions =
 			},
 		},
 		{
+			Name = "GetMajorFactionProgressionInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "MajorFactionProgressionInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMajorFactionRenownInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -105,6 +120,22 @@ local MajorFactions =
 			Returns =
 			{
 				{ Name = "rewards", Type = "table", InnerType = "MajorFactionRenownRewardInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalReputationForRenownLevel",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+				{ Name = "renownLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "totalReputation", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -237,6 +268,7 @@ local MajorFactions =
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
 				{ Name = "useJourneyUnlockToast", Type = "bool", Nilable = false },
+				{ Name = "hideRenownLevelUpToast", Type = "bool", Nilable = false },
 				{ Name = "unlockDescription", Type = "cstring", Nilable = true },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
@@ -249,6 +281,20 @@ local MajorFactions =
 				{ Name = "factionFontColor", Type = "DBColorExport", Nilable = true },
 				{ Name = "renownTrackLevelEffectID", Type = "number", Nilable = true },
 				{ Name = "playerCompanionID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "MajorFactionProgressionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "renownLevel", Type = "number", Nilable = false },
+				{ Name = "previousWeekProgressiveMaxLevel", Type = "number", Nilable = false },
+				{ Name = "currentWeekProgressiveMaxLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
+				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
+				{ Name = "weekNumber", Type = "number", Nilable = false },
 			},
 		},
 		{

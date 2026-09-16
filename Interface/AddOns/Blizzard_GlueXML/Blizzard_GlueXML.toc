@@ -1,0 +1,165 @@
+## Title: Blizzard_GlueXML
+## Dep: Blizzard_StaticPopup_Glue
+## Dep: Blizzard_LoginWarningDialogs
+## Dep: Blizzard_TimerunningUtil [AllowLoadGameType mainline]
+## Dep: Blizzard_Menu [AllowLoadGameType mainline]
+## Dep: Blizzard_MoneyFrame [AllowLoadGameType mainline]
+## Dep: Blizzard_MatchmakingQueueDisplay [AllowLoadGameType mainline]
+## Dep: Blizzard_GlueCollections [AllowLoadGameType mainline]
+## Dep: Blizzard_HelpPlate
+## Dep: Blizzard_GlueMenuFrame
+## Dep: Blizzard_CharacterSelectNavBar [AllowLoadGameType vanilla, mainline]
+## Dep: Blizzard_Narration
+## Dep: Blizzard_GamepadSharedUtility
+## LoadFirst: 1
+## AllowLoad: Glue
+
+[Family]\Localization.lua
+[Game]\Localization.lua [AllowLoadGameType vanilla, tbc, wrath]
+Cata\Localization.lua [AllowLoadGameType cata, mists]
+
+[Family]\GlueTooltip.lua [AllowLoadGameType classic]
+[Family]\GlueTooltip.xml
+
+ServerAlert.lua
+[Family]\ServerAlert.xml
+ServerAlert.xml
+
+[Family]\GlueGameLogo.lua [AllowLoadGameType classic]
+[Family]\GlueGameLogo.xml [AllowLoadGameType classic]
+
+[Family]\AccountLogin.lua
+[Game]\AccountLoginOverrides.lua [AllowLoadGameType camelot]
+[Family]\AccountLogin.xml
+
+[Game]\RealmList.lua [AllowLoadGameType vanilla]
+[Game]\RealmList.xml [AllowLoadGameType vanilla]
+TBC\RealmList.lua [AllowLoadGameType tbc, wrath, cata, mists]
+TBC\RealmList.xml [AllowLoadGameType tbc, wrath]
+Cata\RealmList.xml [AllowLoadGameType cata, mists]
+[Family]\RealmList.lua [AllowLoadGameType mainline]
+[Family]\RealmList.xml [AllowLoadGameType mainline]
+[Family]\ExperiencePreset.lua [AllowLoadGameType camelot]
+[Family]\ExperiencePreset.xml [AllowLoadGameType camelot]
+[Family]\SuperDistrict.lua [AllowLoadGameType camelot]
+[Family]\SuperDistrict.xml [AllowLoadGameType camelot]
+
+Vanilla\CharacterSelectConstants.lua [AllowLoadGameType vanilla, tbc, wrath]
+[Game]\CharacterSelectConstants.lua [AllowLoadGameType mists]
+[Family]\CharacterServicesPatchwerk.xml
+[Family]\CharacterLoginUtil.lua [AllowLoadGameType mainline]
+Shared\CharacterSelect\CharacterSelectUtil.lua
+Vanilla\CharacterSelectConstants.lua [AllowLoadGameType cata]
+
+[Family]\CharacterSelect\CharacterSelectUtil.lua [AllowLoadGameType mainline]
+[Game]\CharacterSelect\CharacterSelectUtil.lua [AllowLoadGameType camelot]
+[Family]\CharacterSelect\CharacterSelectListUtil.lua [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectListButtonTemplates.lua [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectListButtonTemplates.xml [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectListElements.lua [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectListElements.xml [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharSelectSearch.lua [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectListBackground.xml [ExcludeLoadGameType classic, camelot]
+[Game]\CharacterSelect\CharacterSelectListBackground.xml [AllowLoadGameType camelot]
+[Family]\CharacterSelect\CharacterSelectList.lua [AllowLoadGameType mainline]
+[Game]\CharacterSelect\CharacterSelectList.lua [AllowLoadGameType camelot]
+[Family]\CharacterSelect\CharacterSelectList.xml [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectTemplates.lua [AllowLoadGameType mainline]
+[Game]\CharacterSelect\CharacterSelectTemplates.lua [AllowLoadGameType camelot]
+[Family]\CharacterSelect\CharacterSelectTemplates.xml [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectUI.lua
+[Family]\CharacterSelect\CharacterSelectUI.xml
+Shared\GameLogoDarkBackdrop.lua
+Shared\GameLogoDarkBackdrop.xml
+[Family]\CharacterSelect.lua
+[Family]\CharacterSelect.xml
+[Family]\CharacterSelect\CharacterSelectRPE.lua [AllowLoadGameType mainline]
+[Family]\CharacterSelect\CharacterSelectRPE.xml [AllowLoadGameType mainline]
+
+WoWLabs\GluePartyPoseUI.lua [AllowLoadGameType mainline]
+WoWLabs\GluePartyPoseUI.xml [AllowLoadGameType mainline]
+WoWLabs\PlunderstormLobby.lua [AllowLoadGameType mainline]
+WoWLabs\PlunderstormLobby.xml [AllowLoadGameType mainline]
+
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
+
+[Family]\CharacterServicesShared.lua
+[Family]\CharacterServicesTemplatesUtil.lua
+Shared\CharacterServicesTemplates.lua
+[Family]\CharacterServicesTemplates.xml
+[Family]\CharacterServicesCharacterSelector.lua [AllowLoadGameType mainline]
+[Family]\CharacterServicesCharacterSelector.xml [AllowLoadGameType mainline]
+[Family]\CharacterServicesSuperDistrictSelector.lua [AllowLoadGameType mainline]
+[Family]\CharacterServicesSuperDistrictSelector.xml [AllowLoadGameType mainline]
+[Family]\CharacterServicesFlowMixin.lua
+[Family]\CharacterServices.lua
+[Family]\CharacterServices.xml
+[Family]\CharacterServicesAccountSelector.lua [AllowLoadGameType mainline]
+[Family]\CharacterServicesAccountSelector.xml [AllowLoadGameType mainline]
+
+Shared\CharacterServicesPaidNameChange.lua [AllowLoadGameType wrath, cata, mists]
+[Family]\CharacterServicesPaidNameChange.lua [AllowLoadGameType wrath, cata, mists]
+[Family]\CharacterServicesPaidNameChange.xml [AllowLoadGameType wrath, cata, mists]
+
+[Family]\CharacterServicesPaidCharacterTransfer.lua
+[Family]\CharacterServicesPaidCharacterTransfer.xml
+[Family]\CharacterServicesFreeCharacterTransfer.lua
+Shared\CharacterServicesFreeCharacterTransfer.lua
+[Family]\CharacterServicesFreeCharacterTransfer.xml
+[Game]\CharacterServicesHardcoreCharacterTransfer.lua [AllowLoadGameType camelot]
+[Game]\CharacterServicesHardcoreCharacterTransfer.xml [AllowLoadGameType camelot]
+[Family]\CharacterServicesPaidFactionChange.lua
+[Family]\CharacterServicesPaidFactionChange.xml
+[Family]\CharacterServicesPaidRaceChange.lua
+[Family]\CharacterServicesPaidRaceChange.xml
+
+Shared\CharacterServicesPaidNameChange.lua [AllowLoadGameType vanilla, tbc, mainline]
+[Family]\CharacterServicesPaidNameChange.lua [AllowLoadGameType vanilla, tbc, mainline]
+[Family]\CharacterServicesPaidNameChange.xml [AllowLoadGameType vanilla, tbc, mainline]
+
+[Family]\CharacterServicesCharacterSelector.lua [AllowLoadGameType classic]
+[Family]\CharacterServicesCharacterSelector.xml [AllowLoadGameType classic]
+
+[Game]\CharacterCreate.lua [AllowLoadGameType classic]
+[Family]\CharacterCreate_Shared.lua [AllowLoadGameType classic]
+[Game]\CharacterCreate.xml [AllowLoadGameType classic]
+
+SocialContract.lua [AllowLoadGameType mainline]
+SocialContract.xml [AllowLoadGameType mainline]
+
+PromotionFrame.lua
+PromotionFrame.xml
+StarterEditionPopUp.xml
+
+[Family]\CinematicsMenu.lua [AllowLoadGameType mainline]
+[Family]\CinematicsMenu.xml [AllowLoadGameType mainline]
+
+MovieFrame.lua
+MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
+
+[Family]\CinematicsFrame.lua [AllowLoadGameType classic]
+[Family]\CinematicsFrame.xml [AllowLoadGameType classic]
+
+[Game]\CreditsFrame.lua [AllowLoadGameType vanilla]
+[Game]\CreditsFrame.xml [AllowLoadGameType vanilla]
+TBC\CreditsFrame.lua [AllowLoadGameType tbc, wrath, cata, mists]
+TBC\CreditsFrame.xml [AllowLoadGameType tbc, wrath, cata, mists]
+[Family]\CreditsFrame.lua [AllowLoadGameType mainline]
+[Family]\CreditsFrame.xml [AllowLoadGameType mainline]
+
+SocialContract.lua [AllowLoadGameType classic]
+SocialContract.xml [AllowLoadGameType classic]
+
+Shared\HardcoreFrames.lua [AllowLoadGameType vanilla, mainline]
+[Family]\HardcoreFrames_Classic.lua [AllowLoadGameType vanilla]
+[Family]\HardcoreFrames_Mainline.lua [AllowLoadGameType mainline]
+Shared\HardcoreFrames.xml [AllowLoadGameType vanilla, mainline]
+
+[Family]\RealmWarning.lua [AllowLoadGameType classic]
+[Family]\RealmWarning.xml [AllowLoadGameType classic]
+
+ForceRenameFullNameDialog.lua [AllowLoadGameType mainline]
+ForceRenameFullNameDialog.xml [AllowLoadGameType mainline]

@@ -25,18 +25,20 @@ AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
 AuraContainerUtilDocumentation.lua
 AutoCompleteDocumentation.lua
+AutoLootDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BNetOutageDocumentation.lua
 BagIndexConstantsDocumentation.lua
 BankDocumentation.lua
-BarberShopDocumentation.lua
 BarberShopInternalDocumentation.lua
+BarberShopDocumentation.lua
 BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
+BlizzCon2026Documentation.lua
 BrowserDocumentation.lua
 BuildDocumentation.lua
 CVarDocumentation.lua
@@ -139,6 +141,8 @@ GameErrorDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
 GameUIDocumentation.lua
+GamepadTargetingDocumentation.lua
+GamepadUIDocumentation.lua
 GarrisonInfoDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
 GlueDocumentation.lua
@@ -167,6 +171,7 @@ ImmersiveInteractionManagerDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
 InputDocumentation.lua
+InputInterfaceStyleDocumentation.lua
 InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
 InstanceLeaverInfoDocumentation.lua
@@ -183,6 +188,7 @@ ItemUpgradeDocumentation.lua
 KeyBindingsDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
+LFGListRolesDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
@@ -194,6 +200,7 @@ LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LogDocumentation.lua
 LootDocumentation.lua
+LootFrameDocumentation.lua
 LootHistoryDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
@@ -231,6 +238,7 @@ OsDocumentation.lua
 PaperDollInfoDocumentation.lua
 ParentalControlsDocumentation.lua
 PartyInfoDocumentation.lua
+PartyInfoSystemStatusDocumentation.lua
 PartyPoseUIDocumentation.lua
 PerformanceDocumentation.lua
 PerksActivitiesDocumentation.lua
@@ -345,6 +353,7 @@ StreamingDocumentation.lua
 StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 SuperTrackManagerDocumentation.lua
+SwingTimerDocumentation.lua
 SystemDocumentation.lua
 SystemTimeDocumentation.lua
 TTSSettingsDocumentation.lua
@@ -406,6 +415,7 @@ ZoneScriptDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 ActionBarSharedDocumentation.lua
+AddOnConstantsDocumentation.lua
 AddOnProfilerConstantsDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
@@ -463,7 +473,6 @@ DungeonEncounterConstantsDocumentation.lua
 DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
-EditModeManagerConstants_MainlineDocumentation.lua
 EncodingUtilConstantsDocumentation.lua
 EncounterEventsSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
@@ -500,12 +509,14 @@ ItemConstants_SharedDocumentation.lua
 ItemQualitiesDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
+LegacyConstantsDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
 LevelConstantsDocumentation.lua
 LocalizationSharedDocumentation.lua
 LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+LootConstants_MainlineDocumentation.lua
 LossOfControlConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
 LuaDurationObjectSharedDocumentation.lua
@@ -519,6 +530,7 @@ ModelAnimationSharedDocumentation.lua
 MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
 MythicPlusInfoSharedDocumentation.lua
+NameGenConstantsDocumentation.lua
 NamePlateConstantsDocumentation.lua
 NeighborhoodInitiativesConstantsDocumentation.lua
 NumericRuleFormatterSharedDocumentation.lua
@@ -528,6 +540,7 @@ PartyPoseUIConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetConstantsDocumentation.lua
+PetConstants_SharedDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PingManagerSharedDocumentation.lua
@@ -550,6 +563,7 @@ QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+RaidMarkerConstantsDocumentation.lua
 RecentAlliesConstantsDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 RenownConstantsDocumentation.lua
@@ -572,6 +586,7 @@ SimpleStatusBarConstantsDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SoulbindsConstantsDocumentation.lua
+SpecializationConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
 SpellConstantsDocumentation.lua
 SpellDiminishConstantsDocumentation.lua
@@ -590,6 +605,7 @@ TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
+TrainerConstantsDocumentation.lua
 TraitConstantsDocumentation.lua
 TransformManipulatorConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua

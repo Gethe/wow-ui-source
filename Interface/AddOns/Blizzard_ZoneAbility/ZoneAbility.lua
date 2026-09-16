@@ -117,7 +117,7 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 		local spellID = zoneAbilityInfo.spellID;
 		local excludeNonPlayerBars = true;
 		local excludeSpecialPlayerBars = true;
-		local hasZoneAbilityOnBar = ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
+		local hasZoneAbilityOnBar = ActionButtonUtil.IsSpellOnAnyActiveMkbActionBar(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
 		activeAbilityIsDisplayedOnBar[spellID] = hasZoneAbilityOnBar;
 		if not hasZoneAbilityOnBar then
 			if #displayedZoneAbilities == 0 then

@@ -3,6 +3,8 @@
 ## Dep: Blizzard_SharedXML
 ## Dep: Blizzard_StaticPopup
 ## Dep: Blizzard_UIParentPanelManager [AllowLoad game]
+## LoadOnDemand: 1
+## AllowLoadGameType: standard, wowlabs
 
 Blizzard_AccountStoreUtil.lua
 Blizzard_AccountStoreCategoryList.lua

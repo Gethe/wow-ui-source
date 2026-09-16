@@ -16,6 +16,7 @@
 ## Dep: Blizzard_LFGUtil
 ## Dep: Blizzard_ManagedFrameSystem
 ## Dep: Blizzard_MirrorTimer [AllowLoadGameType classic]
+## Dep: Blizzard_GamepadSoftCursor [AllowLoadGameType mainline]
 ## LoadFirst: 1
 Shared\Localization.lua
 AchievementDisplayFrame.lua [AllowLoadGameType mainline]
@@ -48,11 +49,13 @@ Cata\CharacterFrameTemplates.xml [AllowLoadGameType cata, mists]
 [Family]\AlertFrames.lua
 [Family]\AlertFrames.xml
 [Family]\AlertFrameSystems.lua
+[Game]\AlertFrameSystemsOverride.lua	[AllowLoadGameType camelot]
 [Family]\AlertFrameSystems.xml
 [Family]\CoinPickupFrame.lua
 [Family]\CoinPickupFrame.xml
 [Family]\StackSplitFrame.lua
-[Family]\StackSplitFrame.xml
+[Family]\StackSplitFrame.xml [ExcludeLoadGameType camelot]
+[Game]\StackSplitFrame.xml	[AllowLoadGameType camelot]
 [Family]\ZoneText.lua
 [Family]\ZoneText.xml
 PVPUITemplates.lua [AllowLoadGameType mainline]
@@ -61,9 +64,12 @@ PVPHonorSystem.lua [AllowLoadGameType mainline]
 PVPHonorSystem.xml [AllowLoadGameType mainline]
 GuildUtil.lua
 InstanceDifficulty.lua [AllowLoadGameType mainline]
+Camelot\InstanceDifficultyOverrides.lua [AllowLoadGameType camelot]
 InstanceDifficulty.xml [AllowLoadGameType mainline]
-EquipmentFlyout.lua [AllowLoadGameType cata, mists, mainline]
-EquipmentFlyout.xml [AllowLoadGameType cata, mists, mainline]
+EquipmentFlyout.lua [AllowLoadGameType cata, mists, standard, wowlabs, wowhack, plunderstorm]
+EquipmentFlyout.xml [AllowLoadGameType cata, mists, standard, wowlabs, wowhack, plunderstorm]
+Camelot\EquipmentFlyout.lua [AllowLoadGameType camelot]
+Camelot\EquipmentFlyout.xml [AllowLoadGameType camelot]
 Shared\LowHealthFrame.lua
 [Family]\LowHealthFrame.xml
 [Family]\CombatFeedback.lua
@@ -117,6 +123,7 @@ DestinyFrame.xml [AllowLoadGameType mists, mainline]
 SharedPetBattleTemplates.lua [AllowLoadGameType mists, mainline]
 SharedPetBattleTemplates.xml [AllowLoadGameType mists, mainline]
 [Family]\LootHistory.lua
+[Game]\LootHistory.lua [AllowLoadGameType camelot]
 [Family]\LootHistory.xml
 [Family]\ClassTrainerFrameTemplates.xml [AllowLoadGameType classic]
 FloatingPetBattleTooltip.lua [AllowLoadGameType mists, mainline]
@@ -142,3 +149,5 @@ MotionSickness.xml [AllowLoadGameType mainline]
 ArchaeologyProgressBar.lua [AllowLoadGameType mainline]
 ArchaeologyProgressBar.xml [AllowLoadGameType mainline]
 [Family]\Localization.lua [AllowLoadGameType mainline]
+PetHappiness.lua [AllowLoadGameType mainline]
+PetHappiness.xml [AllowLoadGameType mainline]

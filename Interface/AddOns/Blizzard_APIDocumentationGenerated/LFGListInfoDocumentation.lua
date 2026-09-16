@@ -813,6 +813,16 @@ local LFGListInfo =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "LfgListShowSearch",
+			Type = "Event",
+			LiteralName = "LFG_LIST_SHOW_SEARCH",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "activityIDsFilter", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "LfgListUpdateSearchResults",
 			Type = "Event",
 			LiteralName = "LFG_LIST_UPDATE_SEARCH_RESULTS",

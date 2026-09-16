@@ -167,6 +167,19 @@ function TreeNodeMixin:SetChildrenCollapsed(collapsed, affectChildren, skipInval
 	end
 end
 
+function TreeNodeMixin:SetParentsCollapsed(collapsed, skipInvalidate)
+	local node = self;
+	while node do
+		node:SetCollapsed(collapsed, false, skipInvalidate);
+		node = node:GetParent();
+	end
+end
+
+function TreeNodeMixin:SetBranchCollapsed(collapsed, affectChildren, skipInvalidate)
+	self:SetCollapsed(collapsed, affectChildren, skipInvalidate);
+	self:SetParentsCollapsed(collapsed, skipInvalidate);
+end
+
 function TreeNodeMixin:SetCollapsed(collapsed, affectChildren, skipInvalidate)
 	self.collapsed = collapsed;
 	if affectChildren then

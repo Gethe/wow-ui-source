@@ -167,11 +167,21 @@ local function ButtonInitializer(button, description, menu)
 	button.OnLeave = OnButtonLeave;
 
 	--[[
-	The button will not re-highlight if it is reinitialized while the cursor
-	is already over the button.
+	Setup the button for gamepad interactions.
 	]]--
-	if button:IsMouseMotionFocus() then
-		ShowHighlight(button, description);
+	if (InputUtil.IsGamepadUIEnabled()) then
+		--The button will not re-highlight if it is reinitialized while the cursor is already over the button.
+		local smartNavButton = SmartNavigation:GetCurrentButton();
+		if (smartNavButton and smartNavButton.highlight) then
+			ShowHighlight(smartNavButton, description);
+		end
+
+		-- Set custom cursor offsets for menu buttons
+		button.customSmartNavOffsetX = 0;
+	else
+		if button:IsMouseMotionFocus() then
+			ShowHighlight(button, description);
+		end
 	end
 
 	if description:ShouldPollEnabled() then
@@ -286,6 +296,7 @@ function MenuTemplates.CreateTitle(text)
 		local fontString = MenuVariants.CreateFontString(frame);
 		frame.fontString = fontString;
 		fontString:SetTextToFit(text);
+		SmartNavigation_MarkFrameIgnored(frame);
 	end
 
 	return MenuTemplates.CreateFrame(Initializer);
@@ -520,6 +531,7 @@ end
 function MenuTemplates.CreateSpacer(extent)
 	local function Initializer(frame, description, menu)
 		frame:SetHeight(extent or 10);
+		SmartNavigation_MarkFrameIgnored(frame);
 	end
 
 	return MenuTemplates.CreateFrame(Initializer);
@@ -528,6 +540,7 @@ end
 function MenuTemplates.CreateDivider()
 	local function Initializer(frame, description, menu)
 		frame.divider = MenuVariants.CreateDivider(frame);
+		SmartNavigation_MarkFrameIgnored(frame);
 	end
 
 	return MenuTemplates.CreateFrame(Initializer);
@@ -547,6 +560,18 @@ function MenuTemplates.CreateColorSwatch(text, callback, colorInfo)
 	end
 
 	local elementDescription = CreateButtonDescription(colorInfo);
+	elementDescription:SetSoundKit(GetButtonSoundKit);
+	elementDescription:AddInitializer(Initializer);
+	elementDescription:SetResponder(callback);
+	return elementDescription;
+end
+
+function MenuTemplates.CreateSearchEntry(text, callback, data)
+	local function Initializer(button, description, menu)
+		MenuVariants.CreateSearchEntry(text, button, data);
+	end
+
+	local elementDescription = CreateButtonDescription(data);
 	elementDescription:SetSoundKit(GetButtonSoundKit);
 	elementDescription:AddInitializer(Initializer);
 	elementDescription:SetResponder(callback);

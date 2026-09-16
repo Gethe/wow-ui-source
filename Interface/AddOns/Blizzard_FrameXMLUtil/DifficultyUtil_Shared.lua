@@ -94,6 +94,10 @@ function DifficultyUtil.IsDungeonDifficultyEnabled(difficultyID)
 	return not UnitPopupSharedUtil.HasLFGRestrictions();
 end
 
+function DifficultyUtil.HasAnyUserSelectableDifficulties()
+	return true;
+end
+
 local difficultyToMaxPlayersMap = { };
 function DifficultyUtil.GetMaxPlayers(difficultyID)
 	local maxPlayers = difficultyToMaxPlayersMap[difficultyID];

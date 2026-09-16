@@ -417,6 +417,9 @@ local CALENDAR_CALENDARTYPE_TOOLTIP_NAMEFORMAT = {
 	["RAID_LOCKOUT"] = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
 	},
+	["RAID_RESET"] = {
+		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
+	},
 };
 local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 	["PLAYER"] = {
@@ -443,6 +446,9 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 	["RAID_LOCKOUT"] = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
 	},
+	["RAID_RESET"] = {
+		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
+	},
 };
 local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["PLAYER"] = {
@@ -468,6 +474,9 @@ local CALENDAR_CALENDARTYPE_TEXTURES = {
 --		[""]				= "",
 	},
 	["RAID_LOCKOUT"] = {
+--		[""]				= "",
+	},
+	["RAID_RESET"] = {
 --		[""]				= "",
 	},
 };
@@ -514,6 +523,12 @@ local CALENDAR_CALENDARTYPE_TCOORDS = {
 		top		= 0.0,
 		bottom	= 1.0,
 	},
+	["RAID_RESET"] = {
+		left	= 0.0,
+		right	= 1.0,
+		top		= 0.0,
+		bottom	= 1.0,
+	},
 };
 local CALENDAR_CALENDARTYPE_COLORS = {
 --	["PLAYER"]				= ,
@@ -522,6 +537,7 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 	["SYSTEM"]				= YELLOW_FONT_COLOR,
 	["HOLIDAY"]				= HIGHLIGHT_FONT_COLOR,
 	["RAID_LOCKOUT"]		= HIGHLIGHT_FONT_COLOR,
+	["RAID_RESET"]			= HIGHLIGHT_FONT_COLOR,
 };
 
 local CALENDAR_CALENDARTYPE_COLORS_TOOLTIP = {
@@ -580,14 +596,6 @@ do
 	end
 end
 
-local CALENDAR_FILTER_CVARS = {
-	{text = CALENDAR_FILTER_HOLIDAYS,			cvar = "calendarShowHolidays"		},
-	{text = CALENDAR_FILTER_DARKMOON,			cvar = "calendarShowDarkmoon"		},
-	{text = CALENDAR_FILTER_RAID_LOCKOUTS,		cvar = "calendarShowLockouts"		},
-	{text = CALENDAR_FILTER_WEEKLY_HOLIDAYS,	cvar = "calendarShowWeeklyHolidays"	},
-	{text = CALENDAR_FILTER_BATTLEGROUND,		cvar = "calendarShowBattlegrounds"	},
-};
-
 -- local data
 
 -- CalendarDayButtons is just a table of all the Calendar day buttons...the size of this table should
@@ -640,9 +648,6 @@ local function safeselect(index, ...)
 end
 
 local function _CalendarFrame_SafeGetName(name)
-	if ( not name or name == "" ) then
-		return UNKNOWN;
-	end
 	return name;
 end
 
@@ -1103,7 +1108,7 @@ function CalendarFrame_OnEvent(self, event, ...)
 		local calendarType = ...;
 		if ( calendarType == "HOLIDAY" ) then
 			CalendarFrame_ShowEventFrame(CalendarViewHolidayFrame);
-		elseif ( calendarType == "RAID_LOCKOUT" ) then
+		elseif ( calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
 			CalendarFrame_ShowEventFrame(CalendarViewRaidFrame);
 		else
 			-- for now, it could only be a player-created type
@@ -1567,7 +1572,7 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetAllPoints(eventButton);
 				eventButtonText1:Show();
-			elseif ( event.calendarType == "RAID_LOCKOUT" ) then
+			elseif ( event.calendarType == "RAID_LOCKOUT" or  event.calendarType == "RAID_RESET" ) then
 				eventButtonText2:Hide();
 				-- Lockouts pass in a title string; resets pass in a string key
 				local title = GetDungeonNameWithDifficulty(eventTitle, event.difficultyName);
@@ -2137,7 +2142,7 @@ function CalendarDayButton_OnEnter(self)
 			eventTime = GameTime_GetFormattedTime(event.startTime.hour, event.startTime.minute, true);
 		end
 		eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus, true);
-		if ( event.calendarType == "RAID_LOCKOUT" ) then
+		if ( event.calendarType == "RAID_LOCKOUT" or event.calendarType == "RAID_RESET") then
 			title = GetDungeonNameWithDifficulty(title, event.difficultyName);
 		end
 		GameTooltip:AddDoubleLine(
@@ -2512,11 +2517,15 @@ end
 function CalendarViewRaidFrame_Update()
 	local indexInfo = C_Calendar.GetEventIndex();
 	local raidInfo = indexInfo and C_Calendar.GetRaidInfo(indexInfo.offsetMonths, indexInfo.monthDay, indexInfo.eventIndex);
+	local name = GetDungeonNameWithDifficulty(raidInfo.name, raidInfo.difficultyName);
 	if raidInfo and raidInfo.calendarType == "RAID_LOCKOUT" then
-		local name = GetDungeonNameWithDifficulty(raidInfo.name, raidInfo.difficultyName);
 		CalendarViewRaidFrame.Header:Setup(name);
 
 		CalendarViewRaidFrame.ScrollingFont:SetText(string.format(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name,
+			GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true)));
+	elseif raidInfo and raidInfo.calendarType == "RAID_RESET" then
+		CalendarViewRaidFrame.Header:Setup(name);
+		CalendarViewRaidFrame.ScrollingFont:SetText(string.format(CALENDAR_RAID_RESET_DESCRIPTION, name, 
 			GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true)));
 	end
 end
@@ -4329,7 +4338,7 @@ function CalendarEventPickerFrame_InitButton(button, elementData)
 		buttonTime:Hide();
 		buttonTitle:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
 	else
-		if ( event.calendarType == "RAID_LOCKOUT" ) then
+		if ( event.calendarType == "RAID_LOCKOUT" or event.calendarType == "RAID_RESET") then
 			title = GetDungeonNameWithDifficulty(title, event.difficultyName);
 		end
 		local date = (event.sequenceType == "END") and event.endTime or event.startTime;

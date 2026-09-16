@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterCustomizeOptions" inherits="SpaceToFitVerticalLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="baseSpacing" value="48" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<!-- Adjusted in Lua as well -->
+			<Anchor point="TOPRIGHT" x="-33" y="-297"/>
+		</Anchors>
+	</Frame>
+</Ui>

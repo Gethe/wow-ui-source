@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="ItemTextFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
+	<Frame name="ItemTextFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="ItemTextFrameMixin">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture file="Interface\Spellbook\Spellbook-Icon">
@@ -117,8 +117,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ItemTextPrevPage();
+						ItemTextFrame_PrevPageOnClick();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -142,8 +141,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ItemTextNextPage();
+						ItemTextFrame_NextPageOnClick();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -151,11 +149,21 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
+			<Button name="GamepadItemTextPrevPageButton" inherits="GamepadPrevPageButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="75" y="-41"/>
+				</Anchors>
+			</Button>
+			<Button name="GamepadItemTextNextPageButton" inherits="GamepadNextPageButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-23" y="-41"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ItemTextFrame_OnLoad"/>
-			<OnEvent function="ItemTextFrame_OnEvent"/>
-			<OnUpdate function="ItemTextFrame_OnUpdate"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>

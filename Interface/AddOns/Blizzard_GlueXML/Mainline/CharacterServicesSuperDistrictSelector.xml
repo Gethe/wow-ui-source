@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SuperDistrictSelectorTemplate" mixin="SuperDistrictSelectorMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<!--
+			labelText: text for the SuperDistrictLabel.
+			dropdownFunction: function used to populate the SuperDistrictDropdown. () -> Array(SuperDistrictInfo)
+			isDropdownOptional: whether a value must be chosen from the SuperDistrictDropdown.
+
+			<KeyValue key="labelText" value="PCT_FLOW_DESTINATION_SUPER_DISTRICT_LABEL_DROPDOWN" type="global"/>
+			<KeyValue key="dropdownFunction" value="C_CharacterServices.GetPaidCharacterTransferSuperDistrictDestinations" type="global"/>
+			<KeyValue key="isDropdownOptional" value="true" type="boolean"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SuperDistrictLabel" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="SuperDistrictDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SuperDistrictLabel" relativePoint="BOTTOMLEFT" x="2" y="-2"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SuperDistrictSelectorPCTTemplate" inherits="SuperDistrictSelectorTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="PCT_FLOW_DESTINATION_SUPER_DISTRICT_LABEL_DROPDOWN" type="global"/>
+			<KeyValue key="dropdownFunction" value="C_CharacterServices.GetPaidCharacterTransferSuperDistrictDestinations" type="global"/>
+			<KeyValue key="isDropdownOptional" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SuperDistrictSelectorHCTTemplate" inherits="SuperDistrictSelectorTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="HCT_FLOW_DESTINATION_SUPER_DISTRICT_LABEL_DROPDOWN" type="global"/>
+			<KeyValue key="dropdownFunction" value="C_CharacterServices.GetHardcoreTransferSuperDistrictDestinations" type="global"/>
+			<KeyValue key="isDropdownOptional" value="false" type="boolean"/>
+		</KeyValues>
+	</Frame>
+</Ui>

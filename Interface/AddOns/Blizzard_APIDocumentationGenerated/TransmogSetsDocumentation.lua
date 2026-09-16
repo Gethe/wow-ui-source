@@ -337,6 +337,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "HasAnyValidSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAnyValidSets", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAvailableSets",
 			Type = "Function",
 

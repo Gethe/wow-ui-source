@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SmartNavigationIgnoredTemplate" virtual="true" >
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SmartNavigationFocusableTemplate" virtual="true" >
+		<KeyValues>
+			<KeyValue key="smartNavigationCanFocus" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SmartNavigationPointerTemplate" virtual="true">
+		<Size x="10" y="10" />
+		<Animations>
+			<AnimationGroup looping="REPEAT">
+				<Translation childKey="Icon" duration="1" order="1" smoothing="IN_OUT" offsetX="4" offsetY="0"/>
+				<Translation childKey="Icon" duration="1" order="2" smoothing="IN_OUT" offsetX="-4" offsetY="0"/>
+				<Scripts>
+					<OnLoad>
+						self:Play();
+					</OnLoad>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="IntroAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration="0.25" smoothing="IN"/>
+				<Scale childKey="Icon" duration="0.25" smoothing="IN" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Icon" setAllPoints="true" frameStrata="HIGH">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Cursor" atlas="gamepad-largecursor-white" useAtlasSize="true" scale="0.8">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<Color color="GAMEPAD_SMARTNAV_CURSOR_COLOR"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<!--
+		Marks a frame to be ignored, but any child frames it has will be still be
+		evaluated by the smart nav system.
+	-->
+	<Frame name="SmartNavigationIgnoredContainerFrameTemplate" virtual="true" >
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnoredContainerFrame" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+	<!-- Marks a frame to not generate any context actions when focused. -->
+	<Frame name="SmartNavigationNoContextActions" virtual="true" >
+		<KeyValues>
+			<KeyValue key="noContextActions" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SmartNavigation" parent="UIParent" hidden="true" mixin="SmartNavigationMixin">
+		<Size x="32" y="32" />
+		<KeyValues>
+			<KeyValue key="cursorOffsetX" value="10" type="number" />
+			<KeyValue key="cursorOffsetY" value="0" type="number" />
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+			<KeyValue key="smartNavigationCanFocus" value="false" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Pointer" inherits="SmartNavigationPointerTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -320,16 +320,23 @@ function CommunitiesGuildNewsFilter_OnClick(self)
 end
 
 function CommunitiesGuildNewsFiltersFrame_HideInvalidFilters(self)
-	if not C_AchievementInfo.AreGuildAchievementsEnabled() then
-		self.GuildAchievement:Hide();
+	local visibleFilterCount = 0;
+	for _, filterButton in ipairs(self.GuildNewsFilterButtons) do
+		local shouldShow = true;
+		if filterButton == self.GuildAchievement then
+			shouldShow = C_AchievementInfo.AreGuildAchievementsEnabled();
+		elseif filterButton == self.Achievement then
+			shouldShow = CanShowAchievementUI();
+		elseif filterButton == self.DungeonEncounter then
+			shouldShow = C_GuildInfo.IsEncounterGuildNewsEnabled();
+		end
+
+		filterButton:SetShown(shouldShow);
+		if filterButton:IsShown() then
+			visibleFilterCount = visibleFilterCount + 1;
+		end
 	end
 
-	if not CanShowAchievementUI() then
-		self.Achievement:Hide();
-	end
-
-	if not C_GuildInfo.IsEncounterGuildNewsEnabled() then
-		self.DungeonEncounter:Hide();
-	end
-
+	local filterHeight = self.GuildNewsFilterButtons[1]:GetHeight();
+	self:SetHeight(62 + visibleFilterCount * filterHeight);
 end

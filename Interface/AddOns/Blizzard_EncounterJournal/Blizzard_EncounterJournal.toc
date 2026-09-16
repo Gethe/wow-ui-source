@@ -1,0 +1,22 @@
+## Title: Blizzard_EncounterJournal
+## LoadOnDemand: 1
+## Dep: Blizzard_ClassMenu [AllowLoadGameType cata, mists, mainline]
+## Dep: Blizzard_HelpPlate [AllowLoadGameType cata, mists, mainline]
+## Dep: Blizzard_Colors [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_Plunderstorm
+## AllowLoadGameType: standard, classic
+[Family]\Blizzard_EncounterJournal_Bootstrap.lua [Bootstrap] [AllowLoadGameType vanilla, tbc, wrath]
+Blizzard_EncounterJournal_Bootstrap.lua [Bootstrap] [AllowLoadGameType cata, mists, mainline]
+Cata\Blizzard_EncounterJournal.lua [AllowLoadGameType cata, mists]
+Cata\Blizzard_EncounterJournal.xml [AllowLoadGameType cata, mists]
+[Family]\Blizzard_MonthlyActivities.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_MonthlyActivities.xml [AllowLoadGameType mainline]
+[Family]\Blizzard_Journeys.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_Journeys.xml [AllowLoadGameType mainline]
+[Family]\Blizzard_EncounterJournal.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_EncounterJournal.xml [AllowLoadGameType mainline]
+[Family]\Blizzard_LootJournal.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_LootJournal.xml [AllowLoadGameType mainline]
+[Family]\Blizzard_LootJournalItems.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_LootJournalItems.xml [AllowLoadGameType mainline]
+Localization.lua [AllowLoadGameType cata, mists, mainline]

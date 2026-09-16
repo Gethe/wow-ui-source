@@ -7,21 +7,23 @@ local FriendsListStatusFilterOptions = {
 	{ label = SOCIAL_UI_FRIENDS_LIST_AVAILABLE_FOR_QUEUE_FILTER_LABEL,  searchInfo = { isAvailableForQueue = true } },
 };
 
-local FriendsListTagInterestFilterOptions = {
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PROFESSIONS, searchInfo = { tags = { Enum.BattleNetFriendTag.Professions } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PVP,         searchInfo = { tags = { Enum.BattleNetFriendTag.PvP } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_RAIDING,     searchInfo = { tags = { Enum.BattleNetFriendTag.Raiding } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,    searchInfo = { tags = { Enum.BattleNetFriendTag.Dungeons } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,       searchInfo = { tags = { Enum.BattleNetFriendTag.Delves } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,    searchInfo = { tags = { Enum.BattleNetFriendTag.Questing } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_ROLEPLAYING, searchInfo = { tags = { Enum.BattleNetFriendTag.Roleplaying } } },
-};
+local function CreateFriendsListTagFilterOptions(battleNetFriendTags)
+	local filterOptions = {};
+	for _index, battleNetFriendTag in ipairs(battleNetFriendTags) do
+		local filterOption =
+		{
+			label = SocialUIUtil.GetLabelForBattleNetFriendTag(battleNetFriendTag),
+			searchInfo = { tags = { battleNetFriendTag } },
+		};
 
-local FriendsListTagRoleFilterOptions = {
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DPS,         searchInfo = { tags = { Enum.BattleNetFriendTag.DamagerRole } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_HEALER,      searchInfo = { tags = { Enum.BattleNetFriendTag.HealerRole } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_TANK,        searchInfo = { tags = { Enum.BattleNetFriendTag.TankRole } } },
-};
+		table.insert(filterOptions, filterOption);
+	end
+
+	return filterOptions;
+end
+
+local FriendsListTagInterestFilterOptions = CreateFriendsListTagFilterOptions(SocialUIUtil.GetSupportedBattleNetFriendTagInterestsForCurrentGameType());
+local FriendsListTagRoleFilterOptions = CreateFriendsListTagFilterOptions(SocialUIUtil.GetSupportedBattleNetFriendTagRolesForCurrentGameType());
 
 local function AddFriendsSearchFilterOptionsToDescription(socialView, description, filterOptions)
 	socialView.selectedSearchFilterOptions = socialView.selectedSearchFilterOptions or {};
@@ -539,7 +541,7 @@ function FriendsListSocialCardMixin:InitializeGameIcon()
 	end
 
 	local gameAccountInfo = self.elementData.accountInfo.gameAccountInfo;
-	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
+	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small);
 
 	local friendIsPlayingDifferentWowProject = FriendsListUtil.IsPlayingDifferentWoWProject(gameAccountInfo);
 	gameIconHolder.Icon:SetAlpha(friendIsPlayingDifferentWowProject and 0.6 or 1);
@@ -665,7 +667,7 @@ function FriendsListSocialCardMixin:LayoutFriendNameTextLine()
 	-- FriendName is a kstring so using GetStringWidth and GetUnboundedStringWidth won't work
 	-- We reset the width so it resize to hold the text and then we clamp it to the max available width for this line
 	self.FriendName:SetWidth(0);
-	local nameWidth = math.min(self.FriendName:GetWidth(), maxNameWidth);
+	local nameWidth = math.min(self.FriendName:GetWidth(), math.max(maxNameWidth, 0));
 	self.FriendName:SetWidth(nameWidth);
 
 	stateDisplay:ClearAllPoints();
@@ -693,8 +695,8 @@ function FriendsListSocialCardMixin:LayoutCardDisplayTextCompact()
 		return;
 	end
 
-	-- We start with the entire width of the text holder available to us
-	local totalAvailableRowWidth = self.TextHolder:GetWidth();
+	-- Next we look at the character row. It's indented under FriendName, so we have that much less room.
+	local totalAvailableRowWidth = self.TextHolder:GetWidth() - self.secondaryTextIndent;
 	local remainingUsableRowWidth = totalAvailableRowWidth;
 
 	-- We know we have 3 strings (name, level, class) which means we need to reserve the space for the two spaces between them
@@ -706,18 +708,30 @@ function FriendsListSocialCardMixin:LayoutCardDisplayTextCompact()
 	self.Level:SetWidth(levelWidth);
 	remainingUsableRowWidth = remainingUsableRowWidth - levelWidth;
 
-	-- Next we look at the name.
-	-- The name can get up to 50% of the row...
+	-- Next we look at the name. We start with up to 50% of the row...
 	local maxNameWidthByRatio = totalAvailableRowWidth * 0.5;
-	-- ... but we need to show at least part of the class name so it might get less than 50% if the level text is very long.
-	local minClassWidth = 30;
+	-- ... but we still need to leave at least minClassWidth for the class. (Need to show at least a few letters of it)
+	local classWidthNeeded = self.Class:GetUnboundedStringWidth();
+	local minClassWidth = math.min(classWidthNeeded, 30);
 	local maxNameWidthByRemainingSpace = remainingUsableRowWidth - minClassWidth;
-	-- We pick whichever limit is smaller...
-	local bestMaxNameWidth = math.min(maxNameWidthByRatio, maxNameWidthByRemainingSpace);
-	-- ... and clamp it to 0 in case the untruncated level text ate all the space (shouldn't happen, but just to be safe)
-	bestMaxNameWidth = math.max(bestMaxNameWidth, 0);
+	local maxNameWidth = math.min(maxNameWidthByRatio, maxNameWidthByRemainingSpace);
 
-	local finalNameWidth = math.min(self.Name:GetUnboundedStringWidth(), bestMaxNameWidth);
+	-- If the class is short, the name can take the space it doesn't need.
+	local spaceLeftAfterClass = remainingUsableRowWidth - classWidthNeeded;
+	maxNameWidth = math.max(maxNameWidth, spaceLeftAfterClass);
+
+	-- If the whole name fits while leaving minClassWidth for the class, let's show it all.
+	-- We'd rather truncate just the class than truncate both.
+	local nameWidthNeeded = self.Name:GetUnboundedStringWidth();
+	local wholeNameFits = nameWidthNeeded <= maxNameWidthByRemainingSpace;
+	if wholeNameFits then
+		maxNameWidth = nameWidthNeeded;
+	end
+
+	-- The level shouldn't use up all the space, but clamp to 0 just to be safe.
+	maxNameWidth = math.max(maxNameWidth, 0);
+
+	local finalNameWidth = math.min(nameWidthNeeded, maxNameWidth);
 	self.Name:SetWidth(finalNameWidth);
 
 	-- With all the calculations done we can now anchor the text elements on this row (Name is anchored below FriendName)
@@ -753,7 +767,8 @@ function FriendsListSocialCardMixin:LayoutCardDisplayTextExpanded()
 		return;
 	end
 
-	local availableWidth = self.TextHolder:GetWidth();
+	-- These rows are indented under the friend name, so they have that much less room than the text holder itself
+	local availableWidth = self.TextHolder:GetWidth() - self.secondaryTextIndent;
 	local lineSpacing = TextSizeManager:GetScaledValue(self.lineSpacing);
 
 	-- Row 2: Character Name gets the full width of the text holder
@@ -762,7 +777,7 @@ function FriendsListSocialCardMixin:LayoutCardDisplayTextExpanded()
 	self.Name:SetPoint("RIGHT", self.TextHolder);
 
 	-- Row 3: Level and Class share the row
-	-- We start with the entire width of the text holder available to us
+	-- We start with the full width of this row available to us
 	local remainingRowUsableWidth = availableWidth;
 
 	-- We know we're displaying the level and class name, so we need to reserve space for the one space between the two strings
@@ -770,7 +785,7 @@ function FriendsListSocialCardMixin:LayoutCardDisplayTextExpanded()
 
 	-- We need to show at least part of the class name, so we reserve some space for that before giving level its width
 	local minClassWidth = 30;
-	local levelWidth = math.min(self.Level:GetUnboundedStringWidth(), remainingRowUsableWidth - minClassWidth);
+	local levelWidth = math.min(self.Level:GetUnboundedStringWidth(), math.max(remainingRowUsableWidth - minClassWidth, 0));
 	self.Level:SetWidth(levelWidth);
 
 	-- With all the calculations done we can now anchor the Level/Class row below the Name row
@@ -813,6 +828,7 @@ function FriendsListSocialCardMixin:OpenMenu()
 		menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 		menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
 		hasMainTitleDivider = true,
+		ownerFrame = self,
 	};
 
 	if self:IsOnline() then
@@ -930,8 +946,8 @@ local function TryAddFriendTagsToTooltip(tooltip, accountInfo)
 	end
 
 	local tagLabels = {};
-	for _index, tag in ipairs(accountInfo.friendTags) do
-		local label = SocialUIUtil.GetLabelForBattleNetFriendTag(tag);
+	for _index, battleNetFriendTag in ipairs(accountInfo.friendTags) do
+		local label = SocialUIUtil.GetLabelForBattleNetFriendTag(battleNetFriendTag);
 		if label ~= "" then
 			table.insert(tagLabels, label);
 		end

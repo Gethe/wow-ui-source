@@ -8,6 +8,15 @@ local WowTokenUI =
 	Functions =
 	{
 		{
+			Name = "ShouldDisplayInAuctionHouse",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displayInAH", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "StartTokenSell",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

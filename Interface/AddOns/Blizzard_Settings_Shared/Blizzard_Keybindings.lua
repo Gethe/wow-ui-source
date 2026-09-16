@@ -312,7 +312,7 @@ end
 function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 	local bindingIndex = self.initializer.data.bindingIndex;
 	local action = GetBinding(bindingIndex);
-	
+
 	local actionButton = string.match(action, "^ACTIONBUTTON(%d+)");
 	if actionButton then
 		return GetActionButtonForID(actionButton);
@@ -321,13 +321,13 @@ function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 	local multiActionBar, multiActionButton = string.match(action, "^MULTIACTIONBAR(%d+)BUTTON(%d+)");
 	if multiActionBar and multiActionButton then
 		local bars = {
-			MultiBarBottomLeft, 
+			MultiBarBottomLeft,
 			MultiBarBottomRight,
-			MultiBarRight, 		
-			MultiBarLeft, 		
-			MultiBar5, 			
-			MultiBar6, 			
-			MultiBar7, 			
+			MultiBarRight,
+			MultiBarLeft,
+			MultiBar5,
+			MultiBar6,
+			MultiBar7,
 		};
 		local bar = bars[tonumber(multiActionBar)];
 		if bar.actionButtons then
@@ -419,7 +419,7 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 			Settings.InitTooltip(KEY_BINDING_NAME_AND_KEY:format(bindingName, GetBindingText(key)), KEY_BINDING_TOOLTIP);
 		end
 	end
-	
+
 	for index, button in ipairs(self.Buttons) do
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
@@ -458,6 +458,24 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 		self.highlightHandle:Unregister();
 	end
 	self.highlightHandle = ActionButtonBindingHighlightCallbackRegistry:RegisterCallbackWithHandle(action, self.OnHighlightBinding, self);
+
+	local function SetNavigateCallback(button, direction)
+		SmartNavigation_AddJumpNavigationOverride(button, direction, function()
+			local next = SmartNavigation:GetButtonInfoInDirection(self, direction);
+			return next and next.button;
+		end);
+	end
+
+	local cursorAnchor = CreateAnchor("RIGHT", self, "LEFT", 30);
+	SmartNavigation_MarkFrameFocusable(self);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, cursorAnchor);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button1);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.Button1, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button2);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button2, SMART_NAV_INPUT_DIRECTION.RIGHT);
+	SetNavigateCallback(self.Button1, SMART_NAV_INPUT_DIRECTION.UP);
+	SetNavigateCallback(self.Button1, SMART_NAV_INPUT_DIRECTION.DOWN);
+	SetNavigateCallback(self.Button2, SMART_NAV_INPUT_DIRECTION.UP);
+	SetNavigateCallback(self.Button2, SMART_NAV_INPUT_DIRECTION.DOWN);
 end
 
 function KeyBindingFrameBindingTemplateMixin:ReparentBindingsToInputBlocker(inputBlocker)
@@ -530,7 +548,7 @@ function CreateKeybindingEntryInitializer(bindingIndex, search)
 		if result then
 			return result;
 		end
-	
+
 		local bindingIndex = self.data.bindingIndex;
 		for actionIndex = 1, 2 do
 			local bindingText = self:GetBindingText(bindingIndex, actionIndex):upper();

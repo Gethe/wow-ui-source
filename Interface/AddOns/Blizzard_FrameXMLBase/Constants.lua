@@ -34,23 +34,6 @@ LOOT_SOURCE_TRADING_POST = 11;
 --
 -- Class
 --
-CLASS_SORT_ORDER = {
-	"WARRIOR",
-	"DEATHKNIGHT",
-	"PALADIN",
-	"MONK",
-	"PRIEST",
-	"SHAMAN",
-	"DRUID",
-	"ROGUE",
-	"MAGE",
-	"WARLOCK",
-	"HUNTER",
-	"DEMONHUNTER",
-	"EVOKER",
-};
-MAX_CLASSES = #CLASS_SORT_ORDER;
-
 LOCALIZED_CLASS_NAMES_MALE = LocalizedClassList(false);
 LOCALIZED_CLASS_NAMES_FEMALE = LocalizedClassList(true);
 
@@ -180,6 +163,7 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 
 -- Container constants
 BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
+KEYRING_CONTAINER = Enum.BagIndex.Keyring;
 
 NUM_BAG_SLOTS = Constants.InventoryConstants.NumBagSlots;
 NUM_REAGENTBAG_SLOTS = Constants.InventoryConstants.NumReagentBagSlots;
@@ -187,6 +171,7 @@ NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS;
 
 ITEM_INVENTORY_BANK_BAG_OFFSET = NUM_TOTAL_EQUIPPED_BAG_SLOTS; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag
+NUM_CHARACTER_BANK_SLOTS = Constants.InventoryConstants.NumCharacterBankSlots;
 
 -- Item IDs
 HEARTHSTONE_ITEM_ID = 6948;

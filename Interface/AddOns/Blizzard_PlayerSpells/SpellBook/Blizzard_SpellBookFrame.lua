@@ -7,6 +7,7 @@
 local Templates = {
 	["HEADER"] = { template = "SpellBookHeaderTemplate", initFunc = SpellBookHeaderMixin.Init },
 	["SPELL"] = { template = "SpellBookItemTemplate", initFunc = SpellBookItemMixin.Init, resetFunc = SpellBookItemMixin.Reset },
+	["OUTFIT"] = { template = "SpellBookOutfitItemTemplate", initFunc = SpellBookOutfitItemMixin.Init, resetFunc = SpellBookItemMixin.Reset },
 };
 
 -- Events that should always be listened to
@@ -20,6 +21,7 @@ local SpellBookInWorldEvents = {
 	"USE_GLYPH",
 	"ACTIVATE_GLYPH",
 	"CANCEL_GLYPH_CAST",
+	"TRANSMOG_OUTFITS_CHANGED"
 };
 -- Events that should only be listened to while already visible
 local SpellBookWhileVisibleEvents = {
@@ -38,15 +40,7 @@ function SpellBookFrameMixin:OnLoad()
 	self:SetTabSystem(self.CategoryTabSystem);
 	self.CategoryTabSystem:SetScript("OnSizeChanged", GenerateClosure(self.ResizeSearchBox, self));
 
-	self.categoryMixins = {
-		CreateAndInitFromMixin(SpellBookClassCategoryMixin, self);
-		CreateAndInitFromMixin(SpellBookGeneralCategoryMixin, self);
-		CreateAndInitFromMixin(SpellBookPetCategoryMixin, self);
-	};
-
-	for _, categoryMixin in ipairs(self.categoryMixins) do
-		categoryMixin:SetTabID(self:AddNamedTab(categoryMixin:GetName()));
-	end
+	self:CreateCategoryMixins();
 
 	self.PagedSpellsFrame:SetElementTemplateData(Templates);
 	self.PagedSpellsFrame:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, self.OnPagedSpellsUpdate, self);
@@ -79,12 +73,29 @@ function SpellBookFrameMixin:OnLoad()
 	self:InitializeSearch();
 end
 
+function SpellBookFrameMixin:CreateCategoryMixins()
+	self:RemoveAllTabs();
+	self.categoryMixins = {
+		CreateAndInitFromMixin(SpellBookClassCategoryMixin, self);
+		CreateAndInitFromMixin(SpellBookGeneralCategoryMixin, self);
+		CreateAndInitFromMixin(SpellBookPetCategoryMixin, self);
+	};
+
+	for _, categoryMixin in ipairs(self.categoryMixins) do
+		categoryMixin:SetTabID(self:AddNamedTab(categoryMixin:GetName()));
+	end
+end
+
 function SpellBookFrameMixin:OnPagedSpellsUpdate()
 	self:CheckShowHelpTips();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged");
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		self:ResetGamepadCursorLocation();
+	end
 end
 
-function SpellBookFrameMixin:OnShow()
+function SpellBookFrameMixin:OnShowBase()
 	self:UpdateAttic();
 	self:UpdateAllSpellData();
 
@@ -102,6 +113,11 @@ function SpellBookFrameMixin:OnShow()
 	end
 
 	SpellBookFrameTutorialsMixin.OnShow(self);
+end
+
+function SpellBookFrameMixin:OnShow()
+	-- overriden in other flavors
+	self:OnShowBase();
 end
 
 function SpellBookFrameMixin:OnHide()
@@ -122,8 +138,8 @@ function SpellBookFrameMixin:OnEvent(event, ...)
 		FrameUtil.RegisterFrameForEvents(self, SpellBookInWorldEvents);
 	elseif event =="PLAYER_LEAVING_WORLD" then
 		FrameUtil.UnregisterFrameForEvents(self, SpellBookInWorldEvents);
-	elseif event == "SPELLS_CHANGED" then
-		self:UpdateAllSpellData();
+	elseif event == "SPELLS_CHANGED" or event == "TRANSMOG_OUTFITS_CHANGED" then
+		self:HandleSpellsChanged();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		local resetCurrentPage = true;
 		self:UpdateAllSpellData(resetCurrentPage);
@@ -153,31 +169,88 @@ function SpellBookFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function SpellBookFrameMixin:SetupSettingsDropdown()
-	local function IsSelected()
+function SpellBookFrameMixin:HandleSpellsChanged()
+	self:UpdateAllSpellData();
+end
+
+function SpellBookFrameMixin:SetupHidePassivesCheckbox(rootDescription)
+	local function HidePassivesIsSelected()
 		return GetCVarBool("spellBookHidePassives");
 	end
 
-	local function SetSelected()
-		SetCVar("spellBookHidePassives", not IsSelected());
+	local function HidePassivesSetSelected()
+		SetCVar("spellBookHidePassives", not HidePassivesIsSelected());
 		local forceUpdateSpellGroups, resetCurrentPage = true, false;
 		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
 	end
 
-	local function IsEnabled()
+	local function HidePassivesIsEnabled()
 		return not self:IsInSearchResultsMode();
 	end
 
-	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_SPELL_BOOK_SETTINGS");
-		local checkbox = rootDescription:CreateCheckbox(SPELLBOOK_FILTER_PASSIVES, IsSelected, SetSelected);
-		checkbox:SetEnabled(IsEnabled);
-		checkbox:SetTooltip(function(tooltip, elementDescription)
-			if not IsEnabled() then
-				GameTooltip_AddHighlightLine(tooltip, SPELLBOOK_SEARCH_HIDE_PASSIVES_DISABLED);
-			end
-		end);
+	rootDescription:SetTag("MENU_SPELL_BOOK_SETTINGS");
+	local hidePassivesCheckbox = rootDescription:CreateCheckbox(SPELLBOOK_FILTER_PASSIVES, HidePassivesIsSelected, HidePassivesSetSelected);
+	hidePassivesCheckbox:SetEnabled(HidePassivesIsEnabled);
+	hidePassivesCheckbox:SetTooltip(function(tooltip, elementDescription)
+		if not HidePassivesIsEnabled() then
+			GameTooltip_AddHighlightLine(tooltip, SPELLBOOK_SEARCH_HIDE_PASSIVES_DISABLED);
+		end
 	end);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		hidePassivesCheckbox:SetResponse(MenuResponse.Close);
+	end
+end
+
+function SpellBookFrameMixin:SetupAllRanksCheckbox(rootDescription)
+	local function AllRanksIsSelected()
+		return GetCVarBool("ShowAllSpellRanks");
+	end
+
+	local function AllRanksSetSelected()
+		SetCVar("ShowAllSpellRanks", not AllRanksIsSelected());
+		local forceUpdateSpellGroups, resetCurrentPage = true, false;
+		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
+	end
+
+	local function AllRanksIsEnabled()
+		return not self:IsInSearchResultsMode();
+	end
+
+	local allRanksCheckbox = rootDescription:CreateCheckbox(SHOW_ALL_SPELL_RANKS, AllRanksIsSelected, AllRanksSetSelected);
+	allRanksCheckbox:SetEnabled(AllRanksIsEnabled);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		allRanksCheckbox:SetResponse(MenuResponse.Close);
+	end
+end
+
+function SpellBookFrameMixin:SetupUseFlyoutsCheckbox(rootDescription)
+	local function UseFlyoutsIsSelected()
+		return not self:IsHidingFlyouts();
+	end
+
+	local function UseFlyoutsSetSelected()
+		SetCVar("spellBookHideFlyouts", UseFlyoutsIsSelected());
+		local forceUpdateSpellGroups, resetCurrentPage = true, false;
+		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
+	end
+
+	local function UseFlyoutsIsEnabled()
+		return not self:IsInSearchResultsMode() and not InputUtil.IsGamepadUIEnabled();
+	end
+
+	local useFlyoutsCheckbox = rootDescription:CreateCheckbox(SPELLBOOK_USE_FLYOUTS, UseFlyoutsIsSelected, UseFlyoutsSetSelected);
+	useFlyoutsCheckbox:SetEnabled(UseFlyoutsIsEnabled);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		useFlyoutsCheckbox:SetResponse(MenuResponse.Close);
+	end
+end
+
+function SpellBookFrameMixin:SetupSettingsDropdown()
+	-- default is no dropdown, overrides add game-specific options
+	self.SettingsDropdown:Hide();
 end
 
 function SpellBookFrameMixin:UpdateAttic()
@@ -186,11 +259,11 @@ function SpellBookFrameMixin:UpdateAttic()
 		self.AssistedCombatRotationSpellFrame:Show();
 		local actionSpelID = AssistedCombatManager:GetActionSpellID();
 		self.AssistedCombatRotationSpellFrame:SetSpellID(actionSpelID);
-		self.SettingsDropdown:SetPoint("TOP", 0, -17);
+		self.SettingsDropdown:SetPoint("TOP", 0, self.SettingsDropdown.yOffset);
 		self.SettingsDropdown:SetPoint("RIGHT", self.AssistedCombatRotationSpellFrame, "LEFT", -11, 0);
 	else
 		self.AssistedCombatRotationSpellFrame:Hide();
-		self.SettingsDropdown:SetPoint("TOPRIGHT", -30, -17);
+		self.SettingsDropdown:SetPoint("TOPRIGHT", -30, self.SettingsDropdown.yOffset);
 	end
 	self:ResizeSearchBox();
 end
@@ -199,6 +272,14 @@ function SpellBookFrameMixin:SetTab(tabID)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
 	self:OnActiveCategoryChanged();
+end
+
+function SpellBookFrameMixin:SelectNextTab(forward)
+	local nextTab = self:GetNextCategoryMixin(forward);
+	if (nextTab) then
+		TabSystemOwnerMixin.SetTab(self, nextTab:GetTabID());
+		self:OnActiveCategoryChanged();
+	end
 end
 
 function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
@@ -404,8 +485,13 @@ function SpellBookFrameMixin:MarkSpellDataDirty()
 end
 
 function SpellBookFrameMixin:UpdateAllSpellData(resetCurrentPage)
-	self.isUpdatingAllSpellData = true;
+	-- Refresh spell Category data.
+	self:CreateCategoryMixins();
+
 	local activeTabID = self:GetTab();
+	self:SetTab(activeTabID);
+
+	self.isUpdatingAllSpellData = true;
 
 	local isActiveCategoryUnavailable = false;
 	local didActiveCategorySpellGroupsChange = false;
@@ -469,17 +555,27 @@ end
 function SpellBookFrameMixin:GetSpellBookItemFilterInstance()
 	local isKioskEnabled = Kiosk.IsEnabled();
 	local isHidingPassives = self:IsHidingPassives();
-	return GenerateClosure(self.ShouldDisplaySpellBookItem, self, isKioskEnabled, isHidingPassives);
+	local isHidingLowRank = self:IsHidingLowRank();
+	local isHidingFlyouts = self:IsHidingFlyouts();
+	return GenerateClosure(self.ShouldDisplaySpellBookItem, self, isKioskEnabled, isHidingPassives, isHidingLowRank, isHidingFlyouts);
 end
 
 function SpellBookFrameMixin:IsHidingPassives()
 	return not self:IsInSearchResultsMode() and GetCVarBool("spellBookHidePassives");
 end
 
-function SpellBookFrameMixin:ShouldDisplaySpellBookItem(isKioskEnabled, isHidingPassives, slotIndex, spellBank)
+function SpellBookFrameMixin:IsHidingLowRank()
+	return not self:IsInSearchResultsMode() and not GetCVarBool("ShowAllSpellRanks");
+end
+
+function SpellBookFrameMixin:IsHidingFlyouts()
+	return not InputUtil.IsGamepadUIEnabled() and GetCVarBool("spellBookHideFlyouts");
+end
+
+function SpellBookFrameMixin:ShouldDisplaySpellBookItem(isKioskEnabled, isHidingPassives, isHidingLowRank, isHidingFlyouts, slotIndex, spellBank)
+	local spellBookItemType = C_SpellBook.GetSpellBookItemType(slotIndex, spellBank);
 	if isKioskEnabled then
 		-- If in Kiosk mode, filter out any future spells
-		local spellBookItemType = C_SpellBook.GetSpellBookItemType(slotIndex, self.spellBank);
 		if not spellBookItemType or spellBookItemType == Enum.SpellBookItemType.FutureSpell then
 			return false;
 		end
@@ -489,6 +585,21 @@ function SpellBookFrameMixin:ShouldDisplaySpellBookItem(isKioskEnabled, isHiding
 		if isPassive then
 			return false;
 		end
+	end
+	if isHidingLowRank then
+		if C_SpellBook.IsSpellBookItemLowRank(slotIndex, spellBank) then
+			return false;
+		end
+	end
+	-- If we're using flyouts, show the flyout icons and hide loose spells contained in a flyout.
+	-- If we aren't, hide the flyout icons and show the loose spells.
+	local isFlyout = spellBookItemType == Enum.SpellBookItemType.Flyout;
+	local isFlyoutMember = C_SpellBook.IsSpellBookItemLooseFlyoutMember(slotIndex, spellBank);
+	if isHidingFlyouts and isFlyout then
+		return false;
+	end
+	if not isHidingFlyouts and isFlyoutMember then
+		return false;
 	end
 	
 	return true;
@@ -528,6 +639,25 @@ function SpellBookFrameMixin:GetActiveCategoryMixin()
 	return nil;
 end
 
+function SpellBookFrameMixin:GetNextCategoryMixin(forward)
+	local currentTabID = self:GetTab();
+	if not currentTabID then
+		return nil;
+	end
+
+	local step = forward and 1 or -1;
+	local lastIndex = forward and #self.categoryMixins or 1;
+
+	for index = currentTabID + step, lastIndex, step do
+		local categoryMixin = self.categoryMixins[index];
+		if categoryMixin:IsAvailable() then
+			return categoryMixin;
+		end
+	end
+
+	return nil;
+end
+
 function SpellBookFrameMixin:OnClickBindingUpdate()
 	self:ForEachDisplayedSpell(function(spellBookItemFrame)
 		spellBookItemFrame:UpdateClickBindState();
@@ -541,6 +671,180 @@ end
 function SpellBookFrameMixin:OnPagingButtonLeave()
 	local reverse = true;
 	self.BookCornerFlipbook.Anim:Play(reverse);
+end
+
+-- Resets the gamepad cursor to the first valid spell entry currently visible.
+-- Used when there is no previous cursor position to restore.
+function SpellBookFrameMixin:ResetGamepadCursorLocation()
+	SmartNavigation:RefreshButtonGroups(self:GetParent());
+
+	for _, frame in self.PagedSpellsFrame:EnumerateFrames() do
+		if frame.HasValidData and frame:HasValidData()  then
+			if (SmartNavigation:GetActiveFrame() == self:GetParent()) then
+				SmartNavigation:SelectButton(nil);
+				SmartNavigation:SelectButton(frame.Button);
+			end
+			break;
+		end
+	end
+end
+
+-- Restores cursor position after moving to a previous page.
+-- Prefers the rightmost item on the matching row so navigation feels continuous when paging backwards.
+-- Depending on our traversal type, we optionally preserve relative cursor position.
+function SpellBookFrameMixin:RestoreCursorPositionOnPreviousPage(prevX, prevY, preserveRelativePosition)
+	local preferRightmost = preserveRelativePosition and true;
+	self:RestoreCursorPositionOnPage(prevX, prevY, preferRightmost);
+end
+
+-- Restores cursor position after moving to the next page.
+-- Prefers the leftmost item on the matching row so navigation feels continuous when paging forwards.
+function SpellBookFrameMixin:RestoreCursorPositionOnNextPage(prevX, prevY)
+	local preferRightmost = false;
+	self:RestoreCursorPositionOnPage(prevX, prevY, preferRightmost);
+end
+
+-- Restores the gamepad cursor to the row closest to its previous position.
+-- If multiple candidates exist on that row, selects either the leftmost or rightmost item depending on paging direction.
+function SpellBookFrameMixin:RestoreCursorPositionOnPage(prevX, prevY, preferRightmost)
+	SmartNavigation:RefreshButtonGroups(self:GetParent());
+
+	local bestFrame;
+	local bestYDistance = math.huge;
+	local bestX = preferRightmost and -math.huge or math.huge;
+
+	for _, frame in self.PagedSpellsFrame:EnumerateFrames() do
+		if frame.HasValidData and frame:HasValidData() then
+			local frameX, frameY = frame:GetCenter();
+
+			local yDistance = math.abs(frameY - prevY);
+			local isBetterX = preferRightmost and frameX > bestX or frameX < bestX
+
+			if yDistance < bestYDistance or (yDistance == bestYDistance and isBetterX) then
+				bestFrame = frame;
+				bestYDistance = yDistance;
+				bestX = frameX;
+			end
+		end
+	end
+
+	if bestFrame and SmartNavigation:GetActiveFrame() == self:GetParent() then
+		SmartNavigation:SelectButton(nil);
+		SmartNavigation:SelectButton(bestFrame.Button);
+	end
+end
+
+function SpellBookFrameMixin:GamepadSpellBookPreviousPage(preserveRelativePosition)
+	-- Store position of current button before updating page
+	local prevX, prevY = SmartNavigation:GetCurrentButton():GetCenter();
+
+	local pageControls = self.PagedSpellsFrame.PagingControls;
+	local nextCategoryTab = self:GetNextCategoryMixin(false);
+
+	if (pageControls:GetCurrentPage() > 1) then
+		pageControls:PreviousPage();
+		self:RestoreCursorPositionOnPreviousPage(prevX, prevY, preserveRelativePosition);
+	elseif (nextCategoryTab) then
+		self:SelectNextTab(false);
+	end
+end
+
+function SpellBookFrameMixin:GamepadSpellBookNextPage()
+	-- Store position of current button before updating page
+	local prevX, prevY = SmartNavigation:GetCurrentButton():GetCenter();
+
+	local pageControls = self.PagedSpellsFrame.PagingControls;
+	local nextCategoryTab = self:GetNextCategoryMixin(true);
+
+	if (pageControls:GetCurrentPage() < pageControls:GetMaxPages()) then
+		pageControls:NextPage();
+		self:RestoreCursorPositionOnNextPage(prevX, prevY);
+	elseif (nextCategoryTab) then
+		self:SelectNextTab(true);
+	end
+end
+
+local function FindTopLeftFrameForView(viewFrame)
+	local bestFrame;
+	local bestRow = math.huge;
+	local bestColumn = math.huge;
+
+	for _, frame in ipairs(viewFrame:GetLayoutChildren()) do
+		if frame.HasValidData and frame:HasValidData() then
+			local row = frame.gridRow or math.huge;
+			local column = frame.gridColumn or math.huge;
+
+			if row < bestRow or row == bestRow and column < bestColumn then
+				bestFrame = frame;
+				bestRow = row;
+				bestColumn = column;
+			end
+		end
+	end
+
+	return bestFrame;
+end
+
+function SpellBookFrameMixin:GetViewIndexOfButton(button)
+	local elementFrame = button:GetParent();
+	for viewIndex, viewFrame in ipairs(self.PagedSpellsFrame.ViewFrames) do
+		if elementFrame:GetParent() == viewFrame then
+			return viewIndex;
+		end
+	end
+end
+
+function SpellBookFrameMixin:GamepadNavigateViewRight()
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return;
+	end
+
+	local viewsPerPage = self.PagedSpellsFrame.viewsPerPage or 1;
+	local currentViewIndex = self:GetViewIndexOfButton(currentButton);
+
+	if viewsPerPage > 1 and currentViewIndex < viewsPerPage then
+		local nextViewFrame = self.PagedSpellsFrame.ViewFrames[currentViewIndex + 1];
+
+		if nextViewFrame then
+			local firstFrame = FindTopLeftFrameForView(nextViewFrame);
+
+			if firstFrame and SmartNavigation:GetActiveFrame() == self:GetParent() then
+				SmartNavigation:SelectButton(nil);
+				SmartNavigation:SelectButton(firstFrame.Button);
+				return;
+			end
+		end
+	end
+
+	self:GamepadSpellBookNextPage();
+end
+
+function SpellBookFrameMixin:GamepadNavigateViewLeft()
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return;
+	end
+
+	local viewsPerPage = self.PagedSpellsFrame.viewsPerPage or 1;
+	local currentViewIndex = self:GetViewIndexOfButton(currentButton);
+
+	if viewsPerPage > 1 and currentViewIndex > 1 then
+		local previousViewFrame = self.PagedSpellsFrame.ViewFrames[currentViewIndex - 1];
+
+		if previousViewFrame then
+			local firstFrame = FindTopLeftFrameForView(previousViewFrame);
+
+			if firstFrame and SmartNavigation:GetActiveFrame() == self:GetParent() then
+				SmartNavigation:SelectButton(nil);
+				SmartNavigation:SelectButton(firstFrame.Button);
+				return;
+			end
+		end
+	end
+
+	local preserveRelativePosition = false;
+	self:GamepadSpellBookPreviousPage(preserveRelativePosition);
 end
 
 AssistedCombatRotationSpellFrameMixin = { };

@@ -49,6 +49,9 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentExpireTime">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="100" y="16"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
@@ -139,7 +142,7 @@
 					</OnLoad>
 					<OnEvent>
 						if (self:IsMouseMotionFocus()) then
-						InboxFrame_Update();
+						InboxFrame:Update();
 						InboxFrameItem_OnEnter(self);
 						end
 					</OnEvent>
@@ -271,7 +274,7 @@
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</ItemButton>
-	<Frame name="MailFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="MailFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="MailMixin">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentTrialError" inherits="GameFontNormal" text="TRIAL_RESTRICTED" parentKey="trialError" hidden="true">
@@ -285,10 +288,10 @@
 		</Layers>
 		<Frames>
 <!-- Inbox -->
-			<Frame name="InboxFrame">
-				<Size x="384" y="512"/>
+			<Frame name="InboxFrame" parentKey="InboxFrame" mixin="InboxMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -303,12 +306,22 @@
 						<FontString name="InboxCurrentPage" inherits="GameFontNormal">
 							<Size x="192" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="-14" y="96"/>
+								<Anchor point="BOTTOM" y="8"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="PageTurnIndicatorLeft" inherits="GamepadPrevPageButtonTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="16" y="14"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="PageTurnIndicatorRight" inherits="GamepadNextPageButtonTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-16" y="14"/>
+						</Anchors>
+					</Button>
 					<Frame name="InboxTooMuchMail" hidden="true" enableMouse="true">
 						<Size x="384" y="32"/>
 						<Anchors>
@@ -378,10 +391,10 @@
 							<Anchor point="TOPLEFT" relativeTo="MailItem6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Frame>
-					<Button name="InboxPrevPageButton">
+					<Button parentKey="PrevPageButton" mixin="InboxPrevPageMixin">
 						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="30" y="114"/>
+							<Anchor point="BOTTOMLEFT" x="14" y="10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -396,17 +409,17 @@
 							<OnLoad>
 								self:Disable();
 							</OnLoad>
-							<OnClick function="InboxPrevPage"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
 						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Button name="InboxNextPageButton">
+					<Button parentKey="NextPageButton" mixin="InboxNextPageMixin">
 						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="305" y="114"/>
+							<Anchor point="BOTTOMRIGHT" x="-14" y="10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -421,17 +434,17 @@
 							<OnLoad>
 								self:Disable();
 							</OnLoad>
-							<OnClick function="InboxNextPage"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Button name="OpenAllMail" text="OPEN_ALL_MAIL_BUTTON" inherits="UIPanelButtonTemplate" mixin="OpenAllMailMixin">
+					<Button name="OpenAllMail" parentKey="OpenAllMail" text="OPEN_ALL_MAIL_BUTTON" inherits="UIPanelButtonTemplate" mixin="OpenAllMailMixin">
 						<Size x="120" y="24"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="BOTTOM" x="-21" y="114"/>
+							<Anchor point="CENTER" relativePoint="BOTTOM" y="26"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
@@ -442,12 +455,15 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
 			</Frame>
 <!-- Send Mail -->
-			<Frame name="SendMailFrame" hidden="true">
-				<Size x="384" y="512"/>
+			<Frame name="SendMailFrame" parentKey="SendMail" hidden="true" mixin="SendMailMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -491,7 +507,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="SendMailScrollFrame" inherits="ScrollFrameTemplate">
+					<ScrollFrame name="SendMailScrollFrame" parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 						<KeyValues>
 							<KeyValue key="scrollBarX" value="10" type="number"/>
 							<KeyValue key="scrollBarTopY" value="-4" type="number"/>
@@ -517,8 +533,25 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="GamepadFocusArea" mixin="SendMailScrollFrameGamepadFocusAreaMixin" hidden="true">
+								<KeyValues>
+									<KeyValue key="smartNavigationCanFocus" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnMouseUp method="OnMouseUp"/>
+								</Scripts>
+							</Frame>
+						</Frames>
 						<ScrollChild>
-							<Frame name="SendMailScrollChildFrame" enableMouse="true">
+							<Frame name="SendMailScrollChildFrame" enableMouse="true" mixin="SendMailScrollChildMixin">
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
 								<Size x="300" y="255"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -549,17 +582,12 @@
 									</EditBox>
 								</Frames>
 								<Scripts>
-									<OnMouseUp>
-										SendMailBodyEditBox:SetFocus();
-										if ( CursorHasItem() ) then
-											SendMailAttachmentButton_OnDropAny();
-										end
-									</OnMouseUp>
+									<OnMouseUp method="OnMouseUp"/>
 								</Scripts>
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<EditBox name="SendMailNameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
+					<EditBox name="SendMailNameEditBox" parentKey="NameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
 						<Size x="109" y="25"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="90" y="-30"/>
@@ -628,7 +656,7 @@
 					</EditBox>
 					<Frame name="SendMailCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-50" y="-34"/>
+							<Anchor point="TOPRIGHT" x="-4" y="-34"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -647,7 +675,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<EditBox name="SendMailSubjectEditBox" letters="64" historyLines="0" autoFocus="false">
+					<EditBox name="SendMailSubjectEditBox" parentKey="SubjectEditBox" letters="64" historyLines="0" autoFocus="false">
 						<Size x="220" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="SendMailNameEditBox" relativePoint="BOTTOMLEFT"/>
@@ -713,7 +741,7 @@
 					<Frame name="SendMailMoneyButton">
 						<Size x="37" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="15" y="125"/>
+							<Anchor point="BOTTOMLEFT" x="15" y="37"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -762,26 +790,26 @@
 					</Frame>
 					<Frame name="SendMailMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="4" y="92"/>
-							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="170" y="115"/>
+							<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="170" y="27"/>
 						</Anchors>
 					</Frame>
 					<Frame name="SendMailMoneyBg" inherits="ThinGoldEdgeTemplate" >
 						<Size x="120" y="30"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="166" y="113"/>
-							<Anchor point="BOTTOMLEFT" x="7" y="94"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="166" y="25"/>
+							<Anchor point="BOTTOMLEFT" x="7" y="6"/>
 						</Anchors>
 					</Frame>
 					<Frame name="SendMailMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="175" y="96"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="175" y="8"/>
 						</Anchors>
 					</Frame>
-					<Button name="SendMailCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+					<Button name="SendMailCancelButton" parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-53" y="92"/>
+							<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -789,13 +817,13 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="SendMailMailButton" inherits="UIPanelButtonTemplate" text="SEND_LABEL">
+					<Button name="SendMailMailButton" parentKey="SendButton" inherits="UIPanelButtonTemplate" text="SEND_LABEL" mixin="SendMailButtonMixin">
 						<Size x="80" y="22"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="SendMailCancelButton" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="SendMailMailButton_OnClick"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="$parentLockSendMail" hidden="true" enableMouse="true">
@@ -818,10 +846,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
-						SendMailRadioButton_OnClick(self, 1);
-					</OnLoad>
+					<OnLoad method="OnLoad"/>
 					<OnShow>
 						if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR_COLORBLIND, MAX_COD_AMOUNT, GOLD_AMOUNT_SYMBOL);
@@ -857,26 +882,19 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true" />
 		</Frames>
 		<Scripts>
-			<OnLoad function="MailFrame_OnLoad"/>
-			<OnEvent function="MailFrame_OnEvent"/>
-			<OnHide>
-				CloseMail();
-				HideUIPanel(OpenMailFrame);
-				SendMailBodyEditBox:SetText("");
-				SendMailNameEditBox:SetText("");
-				SendMailSubjectEditBox:SetText("");
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-				SetSendMailShowing(false);
-			</OnHide>
-			<OnMouseWheel function="MailFrame_OnMouseWheel"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 <!-- Open Mail -->
-	<Frame name="OpenMailFrame" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate">
+	<Frame name="OpenMailFrame" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" mixin="OpenMailMixin">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="InboxFrame" relativePoint="TOPRIGHT"/>
+			<Anchor point="TOPLEFT" relativeTo="MailFrame" relativePoint="TOPRIGHT" x="46"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -918,13 +936,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="OpenMailReportSpamButton" inherits="UIPanelButtonTemplate" text="REPORT_SPAM">
+			<Button name="OpenMailReportSpamButton" parentKey="ReportSpamButton" inherits="UIPanelButtonTemplate" text="REPORT_SPAM" mixin="OpenMailReportSpamMixin">
 				<Size x="110" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="OpenMailFrame" x="-12" y="-32"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="OpenMail_ReportSpam"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="OpenMailSender">
@@ -953,7 +971,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<ScrollFrame name="OpenMailScrollFrame" inherits="ScrollFrameTemplate">
+			<ScrollFrame name="OpenMailScrollFrame" parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="10" type="number"/>
 					<KeyValue key="scrollBarTopY" value="-3" type="number"/>
@@ -1286,7 +1304,7 @@
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</ItemButton>
-			<Button name="OpenMailCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+			<Button name="OpenMailCancelButton" parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
@@ -1295,32 +1313,33 @@
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
-			<Button name="OpenMailDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
+			<Button name="OpenMailDeleteButton" parentKey="DeleteButton" inherits="UIPanelButtonTemplate" text="DELETE" mixin="OpenMailDeleteMixin">
 				<Size x="82" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="OpenMailCancelButton" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="OpenMail_Delete"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="OpenMailReplyButton" inherits="UIPanelButtonTemplate" text="REPLY_MESSAGE">
+			<Button name="OpenMailReplyButton" parentKey="ReplyButton" inherits="UIPanelButtonTemplate" text="REPLY_MESSAGE" mixin="OpenMailReplyMixin">
 				<Size x="82" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="OpenMailDeleteButton" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="OpenMail_Reply"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow>
 				HideUIPanel(GetUIPanel("center"));
 				HideUIPanel(GetUIPanel("right"));
 				self:SetTitle(OPENMAIL);
 			</OnShow>
-			<OnHide function="OpenMailFrame_OnHide"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

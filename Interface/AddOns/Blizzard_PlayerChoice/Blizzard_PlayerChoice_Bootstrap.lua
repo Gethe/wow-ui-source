@@ -47,3 +47,5 @@ function ShowPendingPlayerChoiceResponseUI()
 		PlayerChoiceTimeRemaining:TryShow();
 	end
 end
+
+-- When a PlayerChoice is flagged as requiresSelection we don't want ESC to close the frame.

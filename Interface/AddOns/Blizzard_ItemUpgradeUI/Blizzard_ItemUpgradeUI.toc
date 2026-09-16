@@ -1,0 +1,8 @@
+## Title: Blizzard_ItemUpgradeUI
+## LoadOnDemand: 1
+## Dep: Blizzard_Colors
+## AllowLoadGameType: mainline, mists
+
+Blizzard_ItemUpgradeUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_ItemUpgradeUI.lua
+[Family]\Blizzard_ItemUpgradeUI.xml

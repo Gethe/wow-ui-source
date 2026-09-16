@@ -1,5 +1,23 @@
 --[[ Mainline EditModeManagerOverrides ]]
 
+function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
+	-- As a default, do not hide any settings.
+	for _, checkButton in pairs(self.settingsCheckButtons) do
+		checkButton.shouldHide = false;
+	end
+
+	self:PrepareSettingCheckButtonVisibilityForCamelotFlavor();
+	self:PrepareSettingCheckButtonVisibilityForStandardFlavor();
+end
+
+function EditModeAccountSettingsMixin:PrepareSettingCheckButtonVisibilityForCamelotFlavor()
+	-- Overridden
+end
+
+function EditModeAccountSettingsMixin:PrepareSettingCheckButtonVisibilityForStandardFlavor()
+	-- Overridden
+end
+
 function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:SetupActionBar(StanceBar);
 	self:SetupActionBar(PetActionBar);
@@ -8,7 +26,6 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:SetupStatusTrackingBar2();
 	self:SetupDurabilityFrame();
 	self:SetupPetFrame();
-	self:SetupEncounterBar();
 	self:SetupTimerBars();
 	self:SetupVehicleSeatIndicator();
 	self:SetupArchaeologyBar();
@@ -35,10 +52,20 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshArchaeologyBar();
 	self:RefreshCooldownViewer();
 	self:RefreshPersonalResourceDisplay();
-	self:RefreshEncounterEvents();
 	self:RefreshDamageMeter();
-	self:RefreshRaidWarning();
+	self:RefreshGroupFinder();
 	self:RefreshLossOfControl();
+
+	self:EditModeFrameSetupForCamelotFlavor();
+	self:EditModeFrameSetupForStandardFlavor();
+end
+
+function EditModeAccountSettingsMixin:EditModeFrameSetupForCamelotFlavor()
+	-- Overridden
+end
+
+function EditModeAccountSettingsMixin:EditModeFrameSetupForStandardFlavor()
+	-- Overridden
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()
@@ -64,8 +91,4 @@ end
 
 function EditModeManagerFrameMixin:GetRightActionBarBottomLimit()
 	return MicroButtonAndBagsBar:GetTop() + 24;
-end
-
-function EditModeManagerFrameMixin:GetBottomActionBars()
-	return { MainActionBar, MultiBarBottomLeft, MultiBarBottomRight, StanceBar, PetActionBar, PossessActionBar, MainMenuBarVehicleLeaveButton };
 end

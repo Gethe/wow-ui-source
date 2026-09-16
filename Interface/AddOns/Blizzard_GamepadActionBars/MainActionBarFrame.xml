@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadMainActionBarFrame" parentKey="GamepadMainActionBarFrame" parent="UIParent" mixin="GamepadMainActionBarFrameMixin" hidden="true">
+		<Size x="656" y="202" />
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="25"/>
+		</Anchors>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<Frames>
+			<Frame name="$parentPageUnit" parentKey="PageUnit" inherits="GamepadActionBarPageUnitTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="LeftShoulderBackground" atlas="gamepad-targeting-left-shoulder-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopCenteredAnchor" relativePoint="CENTER" x="-108" y="42"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderBackground" atlas="gamepad-targeting-right-shoulder-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.TopCenteredAnchor" relativePoint="CENTER" x="108" y="42"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LeftShoulderIcon">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LeftShoulderBackground"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderIcon">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RightShoulderBackground"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeftShoulderHighlight" atlas="gamepad-targeting-left-shoulder-pressed" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LeftShoulderBackground"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderHighlight" atlas="gamepad-targeting-right-shoulder-pressed" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RightShoulderBackground"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentFriendlyTargetingActionBar" parentKey="FriendlyTargetingActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadFriendlyTargetingActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Friendly Target Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentHostileTargetingActionBar" parentKey="HostileTargetingActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadHostileTargetingActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Hostile Target Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentShortcutsActionBar" parentKey="ShortcutsActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadShortcutsActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Shortcuts Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

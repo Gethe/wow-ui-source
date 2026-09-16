@@ -10,6 +10,8 @@ end
 function PartyMemberFrameMixin:UpdateArt()
 	if UnitHasVehicleUI(self.unit) and UnitIsConnected(self:GetUnit()) then
 		self:ToVehicleArt();
+	elseif self.frameType == "CharacterFrameOn" then
+		self:ToCharacterStyleArt();
 	else
 		self:ToPlayerArt();
 	end
@@ -57,6 +59,57 @@ function PartyMemberFrameMixin:ToPlayerArt()
 
 	self.ManaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
 	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -26);
+
+	self.Name:SetWidth(57);
+	self:UpdateNameTextAnchors();
+
+	UnitFrame_SetUnit(self, self.unit, self.HealthBarContainer.HealthBar, self.ManaBar);
+	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
+	UnitFrame_Update(self, true);
+end
+
+function PartyMemberFrameMixin:ToCharacterStyleArt()
+	self.state = "player";
+	self.overrideUnit = nil;
+
+	self.VehicleTexture:Hide();
+	self.Texture:Show();
+
+	self.Flash:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+
+	self.PartyMemberOverlay.Status:SetAtlas("ui-hud-unitframe-party-portraiton-status", TextureKitConstants.UseAtlasSize);
+	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+
+	self.PortraitMask:SetAtlas("UI-HUD-UnitFrame-Player-Portrait-Mask");
+	self.Texture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn", TextureKitConstants.UseAtlasSize);
+
+	self.HealthBarContainer.HealthBar:SetHeight(10);
+	self.HealthBarContainer:SetWidth(70);
+	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+	self:UpdateHealthBarTextAnchors();
+
+	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer.HealthBar.MyHealPredictionBar.fillAtlas = "UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Status";
+	self.HealthBarContainer.HealthBar.OtherHealPredictionBar.fillAtlas = "UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Status";
+	self.HealthBarContainer.HealthBar.HealAbsorbBar.fillAtlas = "UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Status";
+	self.HealthBarContainer.HealthBar.TotalAbsorbBar.fillAtlas = "UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Status";
+
+	self.HealthBarContainer.TempMaxHealthLoss.Texture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-TempHPLoss");
+
+	self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+
+	self.ManaBar:SetWidth(69);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 46, -30);
+	self.ManaBar.Texture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
+	self:UpdateManaBarTextAnchors();
+
+	self.ManaBar.ManaBarMask:SetAtlas("ui-hud-unitframe-playerframeonparty-portraiton-bar-mana-mask");
+	self.ManaBar.ManaBarMask:SetSize(128, 9);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 17, -28);
+
+	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
 
 	self.Name:SetWidth(57);
 	self:UpdateNameTextAnchors();
@@ -116,7 +169,7 @@ function PartyMemberFrameMixin:UpdateHealthBarTextAnchors()
 		healthBarTextOffsetX = 2;
 		healthBarTextOffsetY = healthBarTextOffsetY + 3;
 	end
-	
+
 	self.HealthBarContainer.CenterText:SetPoint("CENTER", self.HealthBarContainer, "CENTER", 0, healthBarTextOffsetY);
 	self.HealthBarContainer.LeftText:SetPoint("LEFT", self.HealthBarContainer, "LEFT", healthBarTextOffsetX, healthBarTextOffsetY);
 	self.HealthBarContainer.RightText:SetPoint("RIGHT", self.HealthBarContainer, "RIGHT", -healthBarTextOffsetX, healthBarTextOffsetY);
@@ -158,14 +211,14 @@ local function PartyAuraFrameResetter(pool, frame)
 	Pool_HideAndClearAnchors(pool, frame);
 end
 
-function PartyMemberFrameMixin:Setup()
-	self.unitToken = "party"..self.layoutIndex;
-	self.petUnitToken = "partypet"..self.layoutIndex;
+function PartyMemberFrameMixin:Setup(optionalUnitToken, optionalPetUnitToken)
+	self.unitToken = optionalUnitToken or ("party"..self.layoutIndex);
+	self.petUnitToken = optionalPetUnitToken or ("partypet"..self.layoutIndex);
 
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
 
-	self.PetFrame:Setup();
+	self.PetFrame:Setup(optionalPetUnitToken);
 
 	local myHealthbar = self.HealthBarContainer.HealthBar;
 
@@ -234,6 +287,7 @@ function PartyMemberFrameMixin:Setup()
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		local contextData =
 		{
+			ownerFrame = frame,
 			unit = unit,
 		};
 		UnitPopup_OpenMenu("PARTY", contextData);
@@ -549,9 +603,9 @@ function PartyMemberFrameMixin:OnUpdate(elapsed)
 	if self.initialized then
 		self:UpdateMemberHealth(elapsed);
 	end
-	if not self:IsMouseOver() and PartyMemberBuffTooltip:IsShown() and not PartyMemberBuffTooltip:IsMouseOver() then
+	if PartyMemberBuffTooltip:GetID() == self.layoutIndex and not self:IsMouseOver() and PartyMemberBuffTooltip:IsShown() and not PartyMemberBuffTooltip:IsMouseOver() then
 		PartyMemberBuffTooltip:Hide()
-	end 
+	end
 end
 
 function PartyMemberFrameMixin:OnEnter()
@@ -565,6 +619,9 @@ end
 
 function PartyMemberFrameMixin:OnLeave()
 	UnitFrame_OnLeave(self);
+	if PartyMemberBuffTooltip:GetID() == self.layoutIndex and PartyMemberBuffTooltip:IsShown() and not PartyMemberBuffTooltip:IsMouseOver() then
+		PartyMemberBuffTooltip:Hide()
+	end
 end
 
 function PartyMemberFrameMixin:UpdateOnlineStatus()
@@ -627,8 +684,8 @@ function PartyMemberPetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PartyMemberPetFrameMixin:Setup()
-	self.unitToken = "partypet"..self:GetParent().layoutIndex;
+function PartyMemberPetFrameMixin:Setup(optionalPetUnitToken)
+	self.unitToken = optionalPetUnitToken or ("partypet"..self:GetParent().layoutIndex);
 	UnitFrame_Initialize(self, self.unitToken, self.Name, nil, self.Portrait, self.HealthBar, nil, nil, nil, self.Flash);
 	self.HealthBar:SetBarTextZeroText(DEAD);
 	self.Name:Hide();

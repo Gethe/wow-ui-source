@@ -1,0 +1,246 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+../../../Blizzard_SharedXML/UI.xsd">
+
+<Frame name="GamepadRadialSegmentTemplate" mixin="GamepadRadialSegmentMixin" virtual="true">
+	<Size x="60" y="60"/>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString parentKey="TextContainerLabel" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" hidden ="true">
+				<Size x="90" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Color color="WHITE_FONT_COLOR"/>
+			</FontString>
+			<FontString parentKey="IconLabel" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
+				<Size x="80" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER" y="-35"/>
+				</Anchors>
+				<Color color="NORMAL_FONT_COLOR"/>
+			</FontString>
+			<Texture parentKey="SegmentIcon" atlas="gamepad-radialgamemenu-icon-main-bags">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY" textureSubLevel="1">
+			<Texture parentKey="NotificationOverlay" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification" hidden="true">
+				<Size x="21" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SegmentIcon" relativePoint="CENTER" y="25"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY" textureSubLevel="-1">
+			<Texture parentKey="SegmentDisabled" atlas="gamepad-radial-menu-disabled" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+</Frame>
+
+<Frame name="CustomRadialIndicatorTemplate" virtual="true">
+	<Size x="20" y="20"/>
+	<Layers>
+		<Layer level="OVERLAY">
+			<Texture parentKey="Highlight" atlas="options_list_active" hidden="true">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="Label" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+				<Size x="150" y="75"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Color color="NORMAL_FONT_COLOR"/>
+			</FontString>
+		</Layer>
+	</Layers>
+</Frame>
+
+<Frame name="GamepadRadialContextMenu" mixin="GamepadRadialContextMenuMixin" virtual="true">
+	<Layers>
+		<Layer level="OVERLAY" textureSubLevel="-1">
+			<Texture parentKey="RadialSelectorBackground" atlas="gamepad-radial-menu-bottomtext" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture parentKey="ContextIcon">
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.RadialSelectorBackground" relativePoint="TOP"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame parentKey="IndicatorTop" inherits="CustomRadialIndicatorTemplate" parentArray="CustomIndicatorList">
+			<Anchors>
+				<Anchor point="CENTER" y="30"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="IndicatorRight" inherits="CustomRadialIndicatorTemplate" parentArray="CustomIndicatorList">
+			<Anchors>
+				<Anchor point="CENTER" x="100"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="IndicatorBottom" inherits="CustomRadialIndicatorTemplate" parentArray="CustomIndicatorList">
+			<Anchors>
+				<Anchor point="CENTER" y="-30"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="IndicatorLeft" inherits="CustomRadialIndicatorTemplate" parentArray="CustomIndicatorList">
+			<Anchors>
+				<Anchor point="CENTER" x="-100"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="InputIndicator" inherits="InputIconTextureFrameTemplate">
+			<Size x="30" y="30"/>
+			<KeyValues>
+				<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD" type="global"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Frame name="GamepadRadial" mixin="GamepadRadialMixin" hidden="true" parent="UIParent" frameStrata="DIALOG">
+	<Size x="400" y="590"/>
+	<Anchors>
+		<Anchor point="CENTER" x="312"/>
+	</Anchors>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString parentKey="HeaderText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="FRAME_LABEL_MAIN_MENU">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="25"/>
+				</Anchors>
+				<Color color="WHITE_FONT_COLOR"/>
+			</FontString>
+			<Texture parentKey="PageIndicatorCenter" atlas="gamepad-radialgamemenu-cursorbg-neutral">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-24" />
+				</Anchors>
+			</Texture>
+			<Texture parentKey="PageIndicatorLeft" atlas="gamepad-radialgamemenu-cursorbg-neutral">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-5" relativeKey="$parent.PageIndicatorCenter" relativePoint="LEFT"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="PageIndicatorRight" atlas="gamepad-radialgamemenu-cursorbg-inactive">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="LEFT" x="5" relativeKey="$parent.PageIndicatorCenter" relativePoint="RIGHT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY" textureSubLevel="-3">
+			<Texture parentKey="Background" atlas="gamepad-radial-menu-wheelbg" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER" y="10"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY" textureSubLevel="-2">
+			<Texture parentKey="SegmentHighlight" atlas="gamepad-radial-menu-selected" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="PageIndicatorBackground" atlas="gamepad-radial-menu-toptext" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="4"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame parentKey="ContextActionSelector" inherits="GamepadRadialContextMenu">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+				<Anchor point="BOTTOMRIGHT" y="-10"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="PageLeftInputPrompt" inherits="InputIconTextureFrameTemplate">
+			<Size x="26" y="26"/>
+			<KeyValues>
+				<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+				<KeyValue key="useDropShadow" value="true" type="boolean"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="RIGHT" x="-3" y="-2" relativeKey="$parent.PageIndicatorLeft" relativePoint="LEFT"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="PageRightInputPrompt" inherits="InputIconTextureFrameTemplate">
+			<Size x="26" y="26"/>
+			<KeyValues>
+				<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+				<KeyValue key="useDropShadow" value="true" type="boolean"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="-2" relativeKey="$parent.PageIndicatorRight" relativePoint="RIGHT"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment1" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="1">
+			<Anchors>
+				<Anchor point="CENTER" x="150" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment2" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="2">
+			<Anchors>
+				<Anchor point="CENTER" x="112" y="112" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment3" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="3">
+			<Anchors>
+				<Anchor point="CENTER" y="150" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment4" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="4">
+			<Anchors>
+				<Anchor point="CENTER" x="-112" y="112" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment5" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="5">
+			<Anchors>
+				<Anchor point="CENTER" x="-150" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment6" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="6">
+			<Anchors>
+				<Anchor point="CENTER" x="-112" y="-112" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment7" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="7">
+			<Anchors>
+				<Anchor point="CENTER" y="-150" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="Segment8" inherits="GamepadRadialSegmentTemplate" parentArray="SegmentList" id="8">
+			<Anchors>
+				<Anchor point="CENTER" x="112" y="-112" relativeKey="$parent.Background"/>
+			</Anchors>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
+	</Scripts>
+</Frame>
+
+</Ui>

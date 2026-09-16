@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterSelectNavBarCustomTemplate" inherits="CharacterSelectNavBarTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="campsButtonAvailable" value="false" type="boolean"/>
+			<KeyValue key="gameModeButtonAvailable" value="false" type="boolean"/>
+			<KeyValue key="realmsButtonAvailable" value="false" type="boolean"/>
+			<KeyValue key="superDistrictsButtonAvailable" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CharacterSelectNavBarButtonBaseTemplate" virtual="true">
+		<Size y="64"/>
+		<Frames>
+			<Frame parentKey="Highlight" hidden="true" useParentLevel="true">
+				<Size y="44"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" y ="7"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"  x="-7" y ="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-tophud-selected-middle">
+							<Size y="44"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -45,9 +45,9 @@
 	</Frame>
 
 	<Button name="AuraButtonCodeTemplate" inherits="AuraButtonArtTemplate" mixin="AuraButtonMixin" virtual="true">
-		<!-- <KeyValues>
-			<KeyValue key="isExample" value="false" type="boolean"/>
-		</KeyValues> -->
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_AuraButton" type="string"/>
+		</KeyValues>
 	</Button>
 
 	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->

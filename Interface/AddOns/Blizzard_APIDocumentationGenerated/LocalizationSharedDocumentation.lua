@@ -17,6 +17,18 @@ local LocalizationShared =
 			},
 		},
 		{
+			Name = "NamePartType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Firstname", Type = "NamePartType", EnumValue = 0 },
+				{ Name = "Surname", Type = "NamePartType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "NumberAbbreviationBreakpoint",
 			Type = "Structure",
 			Fields =

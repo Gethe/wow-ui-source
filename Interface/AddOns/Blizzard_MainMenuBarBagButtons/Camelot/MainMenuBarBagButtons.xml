@@ -1,0 +1,164 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ItemButton name="ShapedBagSlotButtonTemplate" inherits="SquareBagSlotButtonTemplate" virtual="true"/>
+
+	<ItemButton name="SquareBagSlotButtonTemplate" inherits="BaseBagSlotButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonShape" value="square" type="string"/>
+		</KeyValues>
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<MaskTexture parentKey="SquareMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</ItemButton>
+	
+	<ItemButton name="GamepadBagSlotButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_OpenBagDropdownSettings" type="string"/>
+		</KeyValues>
+		<Frames>
+			<DropdownButton parentKey="BagDropdownButton" enableMouse="false">
+				<Size x="50" y="40"/>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+	</ItemButton>
+	
+	<Frame name="BagsBar" inherits="EditModeBagsSystemTemplate" mixin="BagsBarMixin" parent="UIParent" frameLevel="52" roleset="microMenu">
+		<Size x="1" y="45"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MicroButtonAndBagsBar"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="direction" value="Enum.BagsDirection.Left" type="global"/>
+			<KeyValue key="useDividers" value="true" type="boolean"/>
+			<KeyValue key="bagPadding" value="2" type="number"/>
+			<KeyValue key="hideExpandToggle" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="BorderArt" atlas="UI-HUD-ActionBar-Frame">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ItemButton name="MainMenuBarBackpackButton" inherits="MainMenuBarBackpackButtonBase">
+				<KeyValues>
+					<KeyValue key="bagIcon" value="Interface\Icons\ui-hud-actionbar-bag" type="string"/>
+				</KeyValues>
+				<Size x="45" y="45"/>
+			</ItemButton>
+			<Frame name="BagSlotCluster" inherits="BagSlotClusterTemplate"/>
+			<ItemButton name="KeyRingButton" mixin="KeyRingMixin" inherits="ShapedBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="normalAndPushedTextureWidth" value="33" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CharacterReagentBag0Slot" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Size x="33" y="45"/>
+			</ItemButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadBagBar" parent="ContainerFrameCombinedBags" mixin="GamepadBagBarMixin">
+		<Size x="215" y="50"/>
+		<Frames>
+			<ItemButton name="GamepadBackpackButton" parentKey="BackpackButton" parentArray="BagButtonArray" mixin="GamepadBackpackButtonMixin" inherits="MainMenuBarBackpackButtonBase, GamepadBagSlotButtonTemplate">
+				<Size x="40" y="40"/>
+				<KeyValues>
+					<KeyValue key="bagIcon" value="Interface\Icons\ui-hud-actionbar-bag" type="string"/>
+				</KeyValues>
+			</ItemButton>
+			<ItemButton parentKey="Bag0SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="BAG0SLOT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BackpackButton" relativePoint="LEFT"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Bag1SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="BAG1SLOT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Bag0SlotButton" relativePoint="LEFT"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Bag2SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="BAG2SLOT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Bag1SlotButton" relativePoint="LEFT"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Bag3SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="BAG3SLOT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Bag2SlotButton" relativePoint="LEFT"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="ReagentBag0SlotButton" parentArray="BagButtonArray" mixin="GamepadCharacterReagentBagMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="REAGENTBAG0SLOT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Bag3SlotButton" relativePoint="LEFT"/>
+				</Anchors>
+			</ItemButton>
+			<CheckButton parentKey="KeyRingButton" mixin="GamepadKeyRingMixin">
+				<Size x="18" y="39"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ReagentBag0SlotButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+				</HighlightTexture>
+				<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+				</PushedTexture>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

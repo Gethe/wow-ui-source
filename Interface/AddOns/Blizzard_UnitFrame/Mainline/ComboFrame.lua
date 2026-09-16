@@ -107,6 +107,8 @@ function ComboFrame_Update(self)
 		self:Hide();
 	end
 	COMBO_FRAME_LAST_NUM_POINTS = comboPoints;
+
+	ComboFrame_ApplyOverrides(self);
 end
 
 function ComboPointShineFadeIn(frame)

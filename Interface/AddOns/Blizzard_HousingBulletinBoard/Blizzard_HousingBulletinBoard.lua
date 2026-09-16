@@ -26,7 +26,7 @@ function HousingBulletinBoardFrameMixin:OnHide()
 end
 
 function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
-	
+
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.neighborhoodOwnerType = neighborhoodInfo.neighborhoodOwnerType;
 	self.ResidentsTab:OnNeighborhoodInfoUpdated(neighborhoodInfo);
@@ -50,7 +50,7 @@ end
 
 function HousingBulletinBoardFrameMixin:ReportNeighborhood()
 	local reportInfo = ReportInfo:CreateNeighborhoodReportInfo(Enum.ReportType.Neighborhood);
-	ReportFrame:InitiateReport(reportInfo, self.neighborhoodName); 
+	ReportFrame:InitiateReport(reportInfo, self.neighborhoodName);
 end
 
 function HousingBulletinBoardFrameMixin:GetRosterFrame()
@@ -192,7 +192,7 @@ function NeighborhoodRosterMixin:SetAlphabeticalSortedMemberList(memberList)
 
 	self.alphabeticalMemberList = memberList;
 	self:CopyAlphabeticalMemberList();
-	
+
 	self:UpdateRoster(self.alphabeticalMemberList);
 end
 
@@ -260,7 +260,7 @@ function NeighborhoodRosterMixin:SortByColumnIndex(columnIndex)
 				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
 			end
 			local lhsSortScore = lhsMemberInfo.plotID;
-			local rhsSortScore = rhsMemberInfo.plotID; 
+			local rhsSortScore = rhsMemberInfo.plotID;
 			return lhsSortScore < rhsSortScore;
 		end);
         self:UpdateRoster(self.sortedMemberList);
@@ -270,7 +270,7 @@ function NeighborhoodRosterMixin:SortByColumnIndex(columnIndex)
 				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
 			end
 			local lhsSortScore = lhsMemberInfo.subdivision or 0;
-			local rhsSortScore = rhsMemberInfo.subdivision or 0; 
+			local rhsSortScore = rhsMemberInfo.subdivision or 0;
 			return lhsSortScore < rhsSortScore;
 		end);
         self:UpdateRoster(self.sortedMemberList);
@@ -416,6 +416,7 @@ function NeighborhoodRosterEntryMixin:OnClick(button)
 			playerIsOwner = C_HousingNeighborhood.IsNeighborhoodOwner(),
 			playerIsManager = C_HousingNeighborhood.IsNeighborhoodManager(),
 			canBeManaged = isPrivateCharterNeighborhood,
+			ownerFrame = self,
 		};
 		UnitPopup_OpenMenu("NEIGHBORHOOD_ROSTER", contextData);
 	end
@@ -555,7 +556,7 @@ function HousingInviteResidentFrameMixin:OnEvent(event, ...)
 		self.pendingInvite = false;
 		self.InviteButtonLoadingSpinner:Hide();
 		self:SetInviteEnabled(true);
-        
+
     elseif event == "CANCEL_NEIGHBORHOOD_INVITE_RESPONSE" then
 		local neighborhoodInviteResult, playerName = ...;
 		if neighborhoodInviteResult == Enum.NeighborhoodInviteResult.Success then

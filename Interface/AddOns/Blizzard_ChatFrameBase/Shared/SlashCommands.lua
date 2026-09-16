@@ -42,6 +42,7 @@ SLASH_COMMAND = {
 	MAINASSISTON = "MAINASSISTON",
 	MAINASSISTOFF = "MAINASSISTOFF",
 	DUEL = "DUEL",
+	MAKGORA = "MAKGORA",
 	DUEL_CANCEL = "DUEL_CANCEL",
 	PET_ATTACK = "PET_ATTACK",
 	PET_FOLLOW = "PET_FOLLOW",
@@ -1432,7 +1433,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAIDFINDER, SLASH_COMMAND_CATEGORY.RAID_FINDER, function(msg)
 	if C_LFGInfo.IsLFREnabled() then
-		PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+		ToggleGroupFinderFrame("GroupFinderFrame", RaidFinderFrame);
 	end
 end);
 
@@ -1673,6 +1674,12 @@ end);
 local isRaidInfoNotificationPending = false;
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CATEGORY.RAID, function(msg)
 	if SocialUIControl and SocialUIControl.IsEnabled() then
+		-- The raid list can be shut off by its kill switch, and in that case there is no raid list UI for us to open
+		if not C_PartyInfo.IsRaidListEnabled() then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_SYSTEM_DISABLED);
+			return;
+		end
+
 		local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
 		if hasRaidLockoutData then
 			SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.RaidList, SocialUISideWindowType.RaidInfoFrame);
@@ -1726,4 +1733,17 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMA
 			C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
 		end
 	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.MAKGORA, SLASH_COMMAND_CATEGORY.PVP, function(msg)
+	if(not msg or msg == "") then
+		msg = GetUnitName("target", true);
+	end
+	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
+		return;
+	end
+
+	local text2 = nil;
+	local data = {unit = "target"};
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg, text2, data);
 end);

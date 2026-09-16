@@ -23,7 +23,13 @@ local ActionBarFrame =
 			Name = "FindAssistedCombatActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the list of action bar slots that contain the Assisted Combat action spell." },
+
+			Arguments =
+			{
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
+			},
 
 			Returns =
 			{
@@ -39,6 +45,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -55,6 +62,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -72,6 +80,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -383,6 +392,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -473,6 +483,12 @@ local ActionBarFrame =
 		{
 			Name = "HasAssistedCombatActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
+			},
 
 			Returns =
 			{
@@ -505,6 +521,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -529,6 +546,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -544,6 +562,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -575,6 +594,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -847,6 +867,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -945,6 +966,15 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "showManaBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowKeyring",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isKeyringEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1097,6 +1127,20 @@ local ActionBarFrame =
 
 	Tables =
 	{
+		{
+			Name = "ActionBarSet",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "ActionBarSet", EnumValue = 0 },
+				{ Name = "Mkb", Type = "ActionBarSet", EnumValue = 1 },
+				{ Name = "Gamepad", Type = "ActionBarSet", EnumValue = 2 },
+				{ Name = "All", Type = "ActionBarSet", EnumValue = 3 },
+			},
+		},
 	},
 
 	Predicates =

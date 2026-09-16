@@ -49,8 +49,27 @@ function CombatOverrides.CreateRaidSelfHighlightSetting(category)
 end
 
 function CombatOverrides.CreateFloatingCombatTextSetting(category)
-	Settings.SetupCVarCheckbox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
+	local fctSetting, fctInitializer = Settings.SetupCVarCheckbox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
 	Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", CombatText_LoadUI);
+
+	if(GetCVar("classicStyleWorldText") == "0") then
+		local function IsModifiable()
+			return fctSetting:GetValue();
+		end
+
+		-- Combat Text Float Mode
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(1, COMBAT_TEXT_SCROLL_UP, OPTION_TOOLTIP_SCROLL_UP);
+			container:Add(2, COMBAT_TEXT_SCROLL_DOWN, OPTION_TOOLTIP_SCROLL_DOWN);
+			container:Add(3, COMBAT_TEXT_SCROLL_ARC, OPTION_TOOLTIP_SCROLL_ARC);
+			return container:GetData();
+		end
+
+		local _, floatModeInitializer = Settings.SetupCVarDropdown(category, "floatingCombatTextFloatMode_v2", Settings.VarType.Number, GetOptions, COMBAT_TEXT_FLOAT_MODE_LABEL, OPTION_TOOLTIP_COMBAT_TEXT_MODE);
+		floatModeInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextFloatMode_v2", UpdateFloatingCombatTextSafe);
+	end
 end
 
 function CombatOverrides.CreateOccludedSilhouettePlayerSetting(category)
@@ -63,6 +82,14 @@ end
 function CombatOverrides.RunSettingsCallback(callback)
 	if not C_GameRules.IsPlunderstorm() then
 		callback();
+	end
+end
+
+function UpdateFloatingCombatTextSafe()
+	-- Fix for bug 106938. CombatText_UpdateDisplayedMessages only exists if the Blizzard_CombatText AddOn is loaded.
+	-- We need CombatText options to have their setFunc actually _exist_, so this function is used instead of CombatText_UpdateDisplayedMessages.
+	if ( CombatText_UpdateDisplayedMessages ) then
+		CombatText_UpdateDisplayedMessages();
 	end
 end
 

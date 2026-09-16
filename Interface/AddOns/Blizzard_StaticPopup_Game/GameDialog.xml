@@ -48,7 +48,7 @@
 		<HighlightFont style="UserScaledFontGameHighlight"/>
 	</Button>
 
-	<Frame name="StaticPopupBaseTemplate" mixin="GameDialogBaseMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
+	<Frame name="StaticPopupBaseTemplate" inherits="DefaultDialogPanelTemplate" mixin="GameDialogBaseMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
 		<Size x="320" y="72"/>
 		<Frames>
 			<Frame parentKey="BG" useParentLevel="true" setAllPoints="true">
@@ -232,6 +232,11 @@
 				<FontString inherits="UserScaledChatFontNormal"/>
 				<TextInsets left="6" right="6" top="2" bottom="2" />
 			</EditBox>
+			<Frame parentKey="GamepadSequence" inherits="GamepadInputSequenceTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+			</Frame>
 			<DropdownButton parentKey="Dropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="45"/>

@@ -308,6 +308,11 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PING"); end;
 		disabled = ShouldDisplayDisabled;
 	},
+	[10] = {
+		type = "COLLECTED_APPEARANCE",
+		checked = function () return IsListeningForMessageType("COLLECTED_APPEARANCE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COLLECTED_APPEARANCE"); end;
+	},
 }
 
 -- Colors for chat that are not for a specific channel

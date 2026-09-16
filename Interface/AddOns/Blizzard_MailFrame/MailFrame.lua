@@ -17,7 +17,12 @@ SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 
 local MAX_INBOX_SIZE = 100;
 
-function MailFrame_OnLoad(self)
+local INBOX_FOCUS = "Inbox";
+local SEND_MAIL_FOCUS = "Send Mail";
+
+MailMixin = {};
+
+function MailMixin:OnLoad()
 	self:SetPortraitToAsset("Interface\\MailFrame\\Mail-Icon");
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
@@ -39,10 +44,61 @@ function MailFrame_OnLoad(self)
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
-	MailFrame_UpdateTrialState(self);
+	self:UpdateTrialState();
+
+	self:RegisterForTransitions();
 end
 
-function MailFrame_UpdateTrialState(self)
+function MailMixin:OnHide()
+	CloseMail();
+	HideUIPanel(OpenMailFrame);
+	SendMailBodyEditBox:SetText("");
+	SendMailNameEditBox:SetText("");
+	SendMailSubjectEditBox:SetText("");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	SetSendMailShowing(false);
+	self.hasDoneInitialFocus = false
+end
+
+function MailMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function MailMixin:SetupGamepad()
+	self.TabIndicators:SetUpTabs(self.Tabs);
+
+	SmartNavigation_MarkFrameSubSection(self.InboxFrame, INBOX_FOCUS);
+	SmartNavigation_MarkFrameSubSection(self.SendMail, SEND_MAIL_FOCUS);
+end
+
+function MailMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+end
+
+function MailMixin:UninitializeGamepad()
+	self.CloseButton:Show();
+end
+
+function MailMixin:FocusGamepad()
+	self.TabIndicators:Show();
+	if not self.activeSubFrame then
+		self.activeSubFrame = self.InboxFrame;
+	end
+	SmartNavigation:EnterFocusGroup(self.activeSubFrame.smartNavigationFocusKey);
+	self.activeSubFrame:FocusGamepad();
+end
+
+function MailMixin:UnfocusGamepad()
+	self.TabIndicators:Hide();
+	if self.activeSubFrame then
+		self.activeSubFrame:UnfocusGamepad();
+	end
+end
+
+function MailMixin:UpdateTrialState()
 	local isTrialOrVeteran = GameLimitedMode_IsActive();
 	MailFrameTab2:SetShown(not isTrialOrVeteran);
 	self.trialError:SetShown(isTrialOrVeteran);
@@ -63,7 +119,7 @@ function MailFrame_Show()
 	OpenAllBags(MailFrame);
 	SendMailFrame_Update();
 	MailFrameTab_OnClick(nil, 1);
-	MailFrame_RefreshInbox(MailFrame);
+	MailFrame:RefreshInbox();
 	C_ChatInfo.PerformEmote("READ", nil, true);
 end
 
@@ -86,10 +142,10 @@ end
 
 RegisterWithPlayerInteractionManager();
 
-function MailFrame_OnEvent(self, event, ...)
+function MailMixin:OnEvent(event, ...)
 	if ( event == "MAIL_INBOX_UPDATE" ) then
-		InboxFrame_Update();
-		OpenMail_Update();
+		self.InboxFrame:Update();
+		OpenMailFrame:Update();
 		self.inboxBeingChecked = false;
 	elseif ( event == "MAIL_SEND_INFO_UPDATE" ) then
 		SendMailFrame_Update();
@@ -104,12 +160,12 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailMailButton:Enable();
 	elseif ( event == "MAIL_SUCCESS" ) then
 		SendMailMailButton:Enable();
-		if ( InboxNextPageButton:IsEnabled() ) then
-			InboxGetMoreMail();
+		if ( self.InboxFrame.NextPageButton:IsEnabled() ) then
+			self.InboxFrame:GetMoreMail();
 		end
 	elseif ( event == "CLOSE_INBOX_ITEM" ) then
 		local mailID = ...;
-		if ( mailID == InboxFrame.openMailID ) then
+		if ( mailID == self.InboxFrame.openMailID ) then
 			HideUIPanel(OpenMailFrame);
 		end
 	elseif ( event == "MAIL_LOCK_SEND_ITEMS" ) then
@@ -122,18 +178,18 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailFrameLockSendMail:Hide();
 		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
-		MailFrame_UpdateTrialState(self);
+		self:UpdateTrialState();
 	end
 end
 
-function MailFrame_OnMouseWheel(self, value)
+function MailMixin:OnMouseWheel(value)
 	if ( value > 0 ) then
-		if ( InboxPrevPageButton:IsEnabled() ) then
-			InboxPrevPage();
+		if ( self.InboxFrame.PrevPageButton:IsEnabled() ) then
+			self.InboxFrame.PrevPageButton:PrevPage();
 		end
 	else
-		if ( InboxNextPageButton:IsEnabled() ) then
-			InboxNextPage();
+		if ( self.InboxFrame.NextPageButton:IsEnabled() ) then
+			self.InboxFrame.NextPageButton:NextPage();
 		end
 	end
 end
@@ -143,20 +199,27 @@ function MailFrameTab_OnClick(self, tabID)
 		tabID = self:GetID();
 	end
 	PanelTemplates_SetTab(MailFrame, tabID);
+
+	if MailFrame.activeSubFrame then
+		if InputUtil.IsGamepadUIEnabled() then
+			MailFrame.activeSubFrame:UnfocusGamepad();
+		end
+
+		MailFrame.activeSubFrame:Hide();
+	end
+
 	if ( tabID == 1 ) then
 		-- Inbox tab clicked
-		ButtonFrameTemplate_HideButtonBar(MailFrame)
+		MailFrame.activeSubFrame = InboxFrame;
+		ButtonFrameTemplate_HideButtonBar(MailFrame);
 		MailFrameInset:SetPoint("TOPLEFT", 4, -58);
-		InboxFrame:Show();
-		SendMailFrame:Hide();
 		SetSendMailShowing(false);
 		MailFrame:SetTitle(INBOX);
 	else
 		-- Sendmail tab clicked
-		ButtonFrameTemplate_ShowButtonBar(MailFrame)
+		MailFrame.activeSubFrame = SendMailFrame;
+		ButtonFrameTemplate_ShowButtonBar(MailFrame);
 		MailFrameInset:SetPoint("TOPLEFT", 4, -80);
-		InboxFrame:Hide();
-		SendMailFrame:Show();
 		SendMailFrame_Update();
 		SetSendMailShowing(true);
 		MailFrame:SetTitle(SENDMAIL);
@@ -164,12 +227,18 @@ function MailFrameTab_OnClick(self, tabID)
 		-- Set the send mode to dictate the flow after a mail is sent
 		SendMailFrame.sendMode = "send";
 	end
+	MailFrame.activeSubFrame:Show();
+
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+
+	if InputUtil.IsGamepadUIEnabled() and MailFrame.hasDoneInitialFocus then
+		GamepadMode.FrameControlsManager:FocusFrame(MailFrame);
+	end
 end
 
 -- Inbox functions
 
-function MailFrame_RefreshInbox(self)
+function MailMixin:RefreshInbox()
 	if self.refreshQueued or self.inboxBeingChecked then
 		return;
 	end
@@ -182,36 +251,93 @@ function MailFrame_RefreshInbox(self)
 		self.refreshQueued = true;
 		C_Timer.After(timeUntilAvailable, function()
 			self.refreshQueued = false;
-			MailFrame_RefreshInbox(self);
+			self:RefreshInbox();
 		end);
 	end
 end
 
-function InboxFrame_Update()
+InboxMixin = {};
+
+function InboxMixin:OnLoad()
+	self:RegisterForTransitions();
+end
+
+function InboxMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function InboxMixin:SetupGamepad()
+	local FOOTER_VERTICAL_OFFSET = -40;
+
+	local promptedBindingOpenAllMail = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.OpenAllMail.OnClick, self.OpenAllMail), OPEN_ALL_MAIL_BUTTON);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "InboxFooter");
+	self.gamepadFooter:SetAnchorOffsets(0, FOOTER_VERTICAL_OFFSET);
+	self.gamepadFooter:AddStandardSelectPrompt();
+	self.gamepadFooter:AddPromptedBinding(promptedBindingOpenAllMail);
+	self.gamepadFooter:AddStandardBackPrompt();
+	self.gamepadFooter:Finalize();
+end
+
+function InboxMixin:InitializeGamepad()
+	self.OpenAllMail:Hide();
+	self.PrevPageButton:Hide();
+	self.NextPageButton:Hide();
+	self.PageTurnIndicatorRight:Show();
+	self.PageTurnIndicatorLeft:Show();
+end
+
+function InboxMixin:UninitializeGamepad()
+	self.OpenAllMail:Show();
+	self.PrevPageButton:Show();
+	self.NextPageButton:Show();
+	self.PageTurnIndicatorRight:Hide();
+	self.PageTurnIndicatorLeft:Hide();
+end
+
+function InboxMixin:FocusGamepad()
+	self.PageTurnIndicatorLeft:SetOnClick(self.PrevPageButton.OnClick, self.PrevPageButton);
+	self.PageTurnIndicatorRight:SetOnClick(self.NextPageButton.OnClick, self.NextPageButton);
+
+	SmartNavigation:RegisterCallback("HitLeftEdge", self.PrevPageButton.OnClick, self.PrevPageButton);
+	SmartNavigation:RegisterCallback("HitRightEdge", self.NextPageButton.OnClick, self.NextPageButton);
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function InboxMixin:UnfocusGamepad()
+	SmartNavigation:UnregisterCallback("HitLeftEdge", self.PrevPageButton);
+	SmartNavigation:UnregisterCallback("HitRightEdge", self.NextPageButton);
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
+function InboxMixin:Update()
 	local numItems, totalItems = GetInboxNumItems();
 
 	if numItems ~= totalItems and numItems < MAX_INBOX_SIZE then
-		MailFrame_RefreshInbox(MailFrame)
+		MailFrame:RefreshInbox()
 	end
 
-	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
-	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink;
+	local index = ((self.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
+	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, canReply, isGM, firstItemQuantity, firstItemLink;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
 
 	if ( totalItems > numItems ) then
-		if ( not InboxFrame.maxShownMails ) then
-			InboxFrame.maxShownMails = numItems;
+		if ( not self.maxShownMails ) then
+			self.maxShownMails = numItems;
 		end
-		InboxFrame.overflowMails = totalItems - numItems;
-		InboxFrame.shownMails = numItems;
+		self.overflowMails = totalItems - numItems;
+		self.shownMails = numItems;
 	else
-		InboxFrame.overflowMails = nil;
+		self.overflowMails = nil;
 	end
 
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
-			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink = GetInboxHeaderInfo(index);
+			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, canReply, isGM, firstItemQuantity, firstItemLink = GetInboxHeaderInfo(index);
 
 			-- Set icon
 			if ( packageIcon ) and ( not isGM ) then
@@ -293,7 +419,7 @@ function InboxFrame_Update()
 				button.money = nil;
 			end
 			-- Set highlight
-			if ( InboxFrame.openMailID == index ) then
+			if ( self.openMailID == index ) then
 				button:SetChecked(true);
 				OpenMailFrame:SetPortraitToAsset(stationeryIcon);
 			else
@@ -310,20 +436,22 @@ function InboxFrame_Update()
 	end
 
 	-- Handle page arrows
-	if ( InboxFrame.pageNum == 1 ) then
-		InboxPrevPageButton:Disable();
-	else
-		InboxPrevPageButton:Enable();
-	end
-	if ( (InboxFrame.pageNum * INBOXITEMS_TO_DISPLAY) < numItems ) then
-		InboxNextPageButton:Enable();
-	else
-		InboxNextPageButton:Disable();
-	end
+	self.PrevPageButton:SetEnabled(self.pageNum > 1);
+	self.PageTurnIndicatorLeft:SetEnabled(self.pageNum > 1);
+
+	self.NextPageButton:SetEnabled((self.pageNum * INBOXITEMS_TO_DISPLAY) < numItems);
+	self.PageTurnIndicatorRight:SetEnabled((self.pageNum * INBOXITEMS_TO_DISPLAY) < numItems);
+
 	if ( totalItems > numItems) then
 		InboxTooMuchMail:Show();
 	else
 		InboxTooMuchMail:Hide();
+	end
+
+	if InputUtil.IsGamepadUIEnabled() and not MailFrame.hasDoneInitialFocus then
+		-- We can focus MailFrame now that the available options have loaded.
+		GamepadMode.FrameControlsManager:FocusFrame(MailFrame);
+		MailFrame.hasDoneInitialFocus = true;
 	end
 end
 
@@ -331,7 +459,7 @@ function InboxFrame_OnClick(self, index)
 	if ( self:GetChecked() ) then
 		InboxFrame.openMailID = index;
 		OpenMailFrame.updateButtonPositions = true;
-		OpenMail_Update();
+		OpenMailFrame:Update();
 		--OpenMailFrame:Show();
 		ShowUIPanel(OpenMailFrame);
 		OpenMailFrameInset:SetPoint("TOPLEFT", 4, -80);
@@ -340,7 +468,7 @@ function InboxFrame_OnClick(self, index)
 		InboxFrame.openMailID = 0;
 		HideUIPanel(OpenMailFrame);
 	end
-	InboxFrame_Update();
+	InboxFrame:Update();
 end
 
 function InboxFrame_OnModifiedClick(self, index)
@@ -349,6 +477,13 @@ function InboxFrame_OnModifiedClick(self, index)
 		AutoLootMailItem(index);
 	end
 	InboxFrame_OnClick(self, index);
+end
+
+function InboxMixin:GetMoreMail()
+	-- Get more mail if there is an overflow and less than max are being shown.
+	if ( InboxFrame.overflowMails and InboxFrame.shownMails < InboxFrame.maxShownMails ) then
+		CheckInbox();
+	end
 end
 
 function InboxFrameItem_OnEnter(self)
@@ -377,33 +512,58 @@ function InboxFrameItem_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function InboxNextPage()
+InboxNextPageMixin = {};
+
+function InboxNextPageMixin:OnClick()
+	if not self:IsEnabled() then
+		return;
+	end
+
+	self:NextPage();
+end
+
+function InboxNextPageMixin:NextPage()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum + 1;
-	InboxGetMoreMail();
-	InboxFrame_Update();
+	InboxFrame:GetMoreMail();
+	InboxFrame:Update();
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:SelectTopLeftButton();
+	end
 end
 
-function InboxPrevPage()
+InboxPrevPageMixin = {};
+
+function InboxPrevPageMixin:OnClick()
+	if not self:IsEnabled() then
+		return;
+	end
+
+	self:PrevPage();
+end
+
+function InboxPrevPageMixin:PrevPage()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum - 1;
-	InboxGetMoreMail();
-	InboxFrame_Update();
-end
-
-function InboxGetMoreMail()
-	-- get more mails if there is an overflow and less than max are being shown
-	if ( InboxFrame.overflowMails and InboxFrame.shownMails < InboxFrame.maxShownMails ) then
-		CheckInbox();
+	InboxFrame:GetMoreMail();
+	InboxFrame:Update();
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:SelectTopLeftButton();
 	end
 end
 
 -- Open Mail functions
 
-function OpenMailFrame_OnHide()
+OpenMailMixin = {};
+
+function OpenMailMixin:OnLoad()
+	self:RegisterForTransitions();
+end
+
+function OpenMailMixin:OnHide()
 	StaticPopup_Hide("DELETE_MAIL");
-	if ( not OpenMailFrame_IsValidMailID() ) then
-		InboxFrame_Update();
+	if ( not self:IsValidMailID() ) then
+		InboxFrame:Update();
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 		return;
 	end
@@ -424,15 +584,86 @@ function OpenMailFrame_OnHide()
 		DeleteInboxItem(InboxFrame.openMailID);
 	end
 	InboxFrame.openMailID = 0;
-	InboxFrame_Update();
+	InboxFrame:Update();
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
-function OpenMailFrame_IsValidMailID()
+function OpenMailMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function OpenMailMixin:SetupGamepad()
+	local promptedBindingReply = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.ReplyButton.Reply, self.ReplyButton), REPLY_MESSAGE);
+	local promptedBindingOptions = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.ShowOptions, self), CONTEXT_ACTION_LABEL_OPTIONS);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "OpenMailFooter");
+	self.gamepadFooter:AddStandardSelectPrompt();
+	self.gamepadFooter:AddPromptedBinding(promptedBindingReply);
+	self.gamepadFooter:AddPromptedBinding(promptedBindingOptions);
+	self.gamepadFooter:AddStandardBackPrompt();
+	self.gamepadFooter:Finalize();
+end
+
+function OpenMailMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+	self.ReplyButton:Hide();
+	self.DeleteButton:Hide();
+	self.ReportSpamButton:Hide();
+	self.CancelButton:Hide();
+end
+
+function OpenMailMixin:UninitializeGamepad()
+	self.CloseButton:Show();
+	self.ReplyButton:Show();
+	self.DeleteButton:Show();
+	self.ReportSpamButton:Show();
+	self.CancelButton:Show();
+end
+
+function OpenMailMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollFrame);
+	GamepadScrollBarHint:SetOwner(self.ScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function OpenMailMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
+function OpenMailMixin:ShowOptions()
+	local menu = MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_OPEN_MAIL_FRAME");
+
+		if InboxItemCanDelete(InboxFrame.openMailID) then
+			rootDescription:CreateButton(DELETE, function()
+				self.DeleteButton:Click();
+			end);
+		else
+			rootDescription:CreateButton(MAIL_RETURN, function()
+				self.DeleteButton:Click();
+			end);
+		end
+		
+		if CanComplainInboxItem(InboxFrame.openMailID) then
+			rootDescription:CreateButton(REPORT_SPAM, function()
+				self.ReportSpamButton:Click();
+			end);
+		end
+	end);
+
+	menu:SetPoint("TOPLEFT", self, "TOPRIGHT");
+end
+
+function OpenMailMixin:IsValidMailID()
 	return InboxFrame.openMailID and InboxFrame.openMailID > 0 and InboxFrame.openMailID <= GetInboxNumItems();
 end
 
-function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
+function OpenMailMixin:UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
 	if ( OpenMailFrame.activeAttachmentButtons ) then
 		while (#OpenMailFrame.activeAttachmentButtons > 0) do
 			tremove(OpenMailFrame.activeAttachmentButtons);
@@ -513,16 +744,16 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 	end
 end
 
-function OpenMail_Update()
-	if ( not OpenMailFrame_IsValidMailID()) then
+function OpenMailMixin:Update()
+	if ( not self:IsValidMailID()) then
 		return;
 	end
-	if ( CanComplainInboxItem(InboxFrame.openMailID) ) then
-		OpenMailReportSpamButton:Enable();
-		OpenMailReportSpamButton:Show();
-		OpenMailSender:SetPoint("BOTTOMRIGHT", OpenMailReportSpamButton, "BOTTOMLEFT" , -5, 0);
+	if ( (not InputUtil.IsGamepadUIEnabled()) and CanComplainInboxItem(InboxFrame.openMailID) ) then
+		self.ReportSpamButton:Enable();
+		self.ReportSpamButton:Show();
+		OpenMailSender:SetPoint("BOTTOMRIGHT", self.ReportSpamButton, "BOTTOMLEFT" , -5, 0);
 	else
-		OpenMailReportSpamButton:Hide();
+		self.ReportSpamButton:Hide();
 		OpenMailSender:SetPoint("BOTTOMRIGHT", OpenMailFrame, "TOPRIGHT" , -12, -54);
 	end
 
@@ -697,9 +928,9 @@ function OpenMail_Update()
 		ConsortiumMailFrame:Hide();
 	end
 
-	local itemButtonCount, itemRowCount = OpenMail_GetItemCounts(isTakeable, textCreated, money);
+	local itemButtonCount, itemRowCount = self:GetItemCounts(isTakeable, textCreated, money);
 	if ( OpenMailFrame.updateButtonPositions ) then
-		OpenMailFrame_UpdateButtonPositions(isTakeable, textCreated, stationeryIcon, money);
+		self:UpdateButtonPositions(isTakeable, textCreated, stationeryIcon, money);
 	end
 	if ( OpenMailFrame.activeAttachmentRowPositions ) then
 		itemRowCount = #OpenMailFrame.activeAttachmentRowPositions;
@@ -811,13 +1042,13 @@ function OpenMail_Update()
 	end
 	-- Set button to delete or return to sender
 	if ( InboxItemCanDelete(InboxFrame.openMailID) ) then
-		OpenMailDeleteButton:SetText(DELETE);
+		self.DeleteButton:SetText(DELETE);
 	else
-		OpenMailDeleteButton:SetText(MAIL_RETURN);
+		self.DeleteButton:SetText(MAIL_RETURN);
 	end
 end
 
-function OpenMail_GetItemCounts(letterIsTakeable, textCreated, money)
+function OpenMailMixin:GetItemCounts(letterIsTakeable, textCreated, money)
 	local itemButtonCount = 0;
 	local itemRowCount = 0;
 	local numRows = 0;
@@ -846,7 +1077,13 @@ function OpenMail_GetItemCounts(letterIsTakeable, textCreated, money)
 	return itemButtonCount, numRows;
 end
 
-function OpenMail_Reply()
+OpenMailReplyMixin = {};
+
+function OpenMailReplyMixin:OnClick()
+	self:Reply();
+end
+
+function OpenMailReplyMixin:Reply()
 	MailFrameTab_OnClick(nil, 2);
 	SendMailNameEditBox:SetText(OpenMailSender.Name:GetText())
 	local subject = OpenMailSubject:GetText();
@@ -862,7 +1099,13 @@ function OpenMail_Reply()
 	SendMailFrame.replyMailID = InboxFrame.openMailID;
 end
 
-function OpenMail_Delete()
+OpenMailDeleteMixin = {};
+
+function OpenMailDeleteMixin:OnClick()
+	self:Delete();
+end
+
+function OpenMailDeleteMixin:Delete()
 	if ( InboxItemCanDelete(InboxFrame.openMailID) ) then
 		if ( OpenMailFrame.itemName ) then
 			StaticPopup_Show("DELETE_MAIL", OpenMailFrame.itemName);
@@ -881,16 +1124,22 @@ function OpenMail_Delete()
 	HideUIPanel(OpenMailFrame);
 end
 
+OpenMailReportSpamMixin = {};
+
+function OpenMailReportSpamMixin:OnClick()
+	self:ReportSpam();
+end
+
 local function ReportMail()
 	local reportInfo = ReportInfo:CreateMailReportInfo(Enum.ReportType.Mail, InboxFrame.openMailID);
 	if (reportInfo) then
 		local reportTarget = ConsortiumMailFrame:IsShown() and C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID).crafterName or InboxFrame.openMailSender;
 		ReportFrame:InitiateReport(reportInfo, reportTarget);
 	end
-	OpenMailReportSpamButton:Disable();
+	OpenMailFrame.ReportSpamButton:Disable();
 end		
 
-function OpenMail_ReportSpam()
+function OpenMailReportSpamMixin:ReportSpam()
 	if (ConsortiumMailFrame:IsShown() and (OpenMailFrame.itemButtonCount > 0 or OpenMailFrame.money)) then 
 		local data = {text = PROFESSIONS_CRAFTING_ORDER_MAIL_REPORT_WARNING, callback = ReportMail, acceptText = ACCEPT, cancelText = CANCEL,  }
 		StaticPopup_ShowCustomGenericConfirmation(data);
@@ -926,7 +1175,80 @@ end
 
 -- SendMail functions
 
-function SendMailMailButton_OnClick(self)
+SendMailMixin = {};
+
+function SendMailMixin:OnLoad()
+	SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
+	SendMailRadioButton_OnClick(1);
+
+	self:RegisterForTransitions();
+end
+
+function SendMailMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function SendMailMixin:SetupGamepad()
+	local FOOTER_VERTICAL_OFFSET = -40;
+
+	SmartNavigation_AddJumpNavigationOverride(self.NameEditBox, SMART_NAV_INPUT_DIRECTION.DOWN, self.SubjectEditBox);
+	SmartNavigation_AddJumpNavigationOverride(self.SubjectEditBox, SMART_NAV_INPUT_DIRECTION.UP, self.NameEditBox);
+
+	local promptedBindingSend = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.SendButton.OnClick, self.SendButton), SEND_LABEL);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SendMailFooter");
+	self.gamepadFooter:SetAnchorOffsets(0, FOOTER_VERTICAL_OFFSET);
+	self.gamepadFooter:AddStandardSelectPrompt();
+	self.gamepadFooter:AddPromptedBinding(promptedBindingSend);
+	self.gamepadFooter:AddStandardBackPrompt();
+	self.gamepadFooter:Finalize();
+end
+
+function SendMailMixin:InitializeGamepad()
+	self.SendButton:Hide();
+	self.CancelButton:Hide();
+	self.ScrollFrame.GamepadFocusArea:Show();
+end
+
+function SendMailMixin:UninitializeGamepad()
+	self.SendButton:Show();
+	self.CancelButton:Show();
+	self.ScrollFrame.GamepadFocusArea:Hide();
+end
+
+function SendMailMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(MailFrame, self.ScrollFrame);
+	GamepadScrollBarHint:SetOwner(self.ScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function SendMailMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
+SendMailScrollChildMixin = {};
+
+function SendMailScrollChildMixin:OnMouseUp()
+	SendMailBodyEditBox:SetFocus();
+	if CursorHasItem() then
+		SendMailAttachmentButton_OnDropAny();
+	end
+end
+
+SendMailScrollFrameGamepadFocusAreaMixin = {};
+
+function SendMailScrollFrameGamepadFocusAreaMixin:OnMouseUp()
+	SendMailScrollChildFrame:OnMouseUp();
+end
+
+SendMailButtonMixin = {};
+
+function SendMailButtonMixin:OnClick()
 	self:Disable();
 	local copper = MoneyInputFrame_GetCopper(SendMailMoney);
 	SetSendMailCOD(0);
@@ -1043,7 +1365,7 @@ function SendMailFrame_Update()
 	local cursorx = 0;
 	local cursory = itemRowCount - 1;
 	local marginxl = 8 + 6;
-	local marginxr = 40 + 6;
+	local marginxr = -6 + 6;
 	local areax = SendMailFrame:GetWidth() - marginxl - marginxr;
 	local iconx = SendMailAttachment1:GetWidth() + 2;
 	local icony = SendMailAttachment1:GetHeight() + 2;
@@ -1053,7 +1375,7 @@ function SendMailFrame_Update()
 	local gapy2 = 6;
 	local areay = (gapy2 * 2) + (gapy1 * (itemRowCount - 1)) + (icony * itemRowCount);
 	local indentx = marginxl + gapx2;
-	local indenty = 170 + gapy2 + icony;
+	local indenty = 82 + gapy2 + icony;
 	local tabx = (iconx + gapx1) - 2; --this magic number changes the attachment spacing
 	local taby = (icony + gapy1);
 	local scrollHeight = 249 - areay;
@@ -1061,7 +1383,7 @@ function SendMailFrame_Update()
 	-- Resize the scroll frame
 	SendMailScrollFrame:SetHeight(scrollHeight);
 	SendMailScrollChildFrame:SetHeight(scrollHeight);
-	SendMailHorizontalBarLeft2:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", 2, 184 + areay);
+	SendMailHorizontalBarLeft2:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", 2, 96 + areay);
 	SendStationeryBackgroundLeft:SetHeight(min(scrollHeight, 256));
 	SendStationeryBackgroundLeft:SetTexCoord(0, 1.0, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundRight:SetHeight(min(scrollHeight, 256));

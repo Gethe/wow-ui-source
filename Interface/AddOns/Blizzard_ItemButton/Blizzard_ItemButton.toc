@@ -1,0 +1,8 @@
+## Title: Blizzard_ItemButton
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_Colors [AllowLoadGameType mainline]
+Shared\ItemButtonTemplate.lua
+[Family]\ItemButtonTemplate.lua [AllowLoadGameType classic]
+Shared\ItemButtonTemplate.xml
+[Family]\ItemButtonTemplate.lua [AllowLoadGameType mainline]
+[Family]\ItemButtonTemplate.xml

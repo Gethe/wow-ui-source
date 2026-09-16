@@ -354,6 +354,15 @@ local PlayerInfo =
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldDisplaySurname",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "display", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

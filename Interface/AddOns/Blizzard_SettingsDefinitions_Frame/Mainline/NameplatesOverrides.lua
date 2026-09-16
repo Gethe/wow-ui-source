@@ -2,11 +2,22 @@ NameplatesOverrides = {}
 
 NameplatesOverrides.NPCNamesDefaultValue = 3; -- This is the NPC_NAMES_DROPDOWN_INTERACTIVE setting.
 
-function NameplatesOverrides.ShowClassicStyleOption()
-	return false;
+function NameplatesOverrides.GetNameplateStyleOptions()
+	local container = Settings.CreateControlTextContainer();
+	container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
+	container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
+	container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
+	container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
+	container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
+	container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
+	return container:GetData();
 end
 
 function NameplatesOverrides.ShowHighlightImportantCastsOption()
+	return true;
+end
+
+function NameplatesOverrides.ShowRarityIconInfoDisplayOption()
 	return true;
 end
 

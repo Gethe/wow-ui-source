@@ -1,0 +1,619 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="Char-Stat-Bottom" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="46"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.00781250" bottom="0.36718750"/>
+	</Texture>
+	<Texture name="Char-Stat-Minimized" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="14"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.38281250" bottom="0.49218750"/>
+	</Texture>
+	<Texture name="Char-Stat-Top" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="9"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.50781250" bottom="0.57812500"/>
+	</Texture>
+	<Texture name="Char-RightSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="50" y="44"/>
+		<TexCoords left="0.00390625" right="0.19921875" top="0.59375000" bottom="0.93750000"/>
+	</Texture>
+	<Texture name="Char-Stat-Minus" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="3"/>
+		<TexCoords left="0.00390625" right="0.03125000" top="0.95312500" bottom="0.97656250"/>
+	</Texture>
+	<Texture name="Char-LeftSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="49" y="44"/>
+		<TexCoords left="0.20703125" right="0.39843750" top="0.59375000" bottom="0.93750000"/>
+	</Texture>
+	<Texture name="Char-Corner-LowerRight" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.59375000" bottom="0.64843750"/>
+	</Texture>
+	<Texture name="Char-Corner-LowerLeft" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.66406250" bottom="0.71875000"/>
+	</Texture>
+	<Texture name="Char-Corner-UpperRight" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.73437500" bottom="0.78906250"/>
+	</Texture>
+	<Texture name="Char-Corner-UpperLeft" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.80468750" bottom="0.85937500"/>
+	</Texture>
+	<Texture name="Char-Stat-Plus" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.87500000" bottom="0.92968750"/>
+	</Texture>
+	<Texture name="Char-BottomSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="42" y="53"/>
+		<TexCoords left="0.67187500" right="0.83593750" top="0.00781250" bottom="0.42187500"/>
+	</Texture>
+	<Texture name="Char-Slot-Bottom-Right" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="54"/>
+		<TexCoords left="0.67187500" right="0.69921875" top="0.43750000" bottom="0.85937500"/>
+	</Texture>
+	<Texture name="Char-Slot-Bottom-Left" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="6" y="54"/>
+		<TexCoords left="0.70703125" right="0.73046875" top="0.43750000" bottom="0.85937500"/>
+	</Texture>
+
+	<Texture name="Char-Inner-Bottom" file="Interface\CharacterFrame\Char-Paperdoll-Horizontal" horizTile="true" virtual="true">
+		<Size x="32" y="5"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.37500000"/>
+	</Texture>
+	<Texture name="Char-Inner-Top" file="Interface\CharacterFrame\Char-Paperdoll-Horizontal" horizTile="true" virtual="true">
+		<Size x="32" y="5"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.50000000" bottom="0.81250000"/>
+	</Texture>
+	<Texture name="Char-Inner-Left" file="Interface\CharacterFrame\Char-Paperdoll-Vertical" vertTile="true" virtual="true">
+		<Size x="5" y="32"/>
+		<TexCoords left="0.06250000" right="0.37500000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="Char-Inner-Right" file="Interface\CharacterFrame\Char-Paperdoll-Vertical" vertTile="true" virtual="true">
+		<Size x="5" y="32"/>
+		<TexCoords left="0.50000000" right="0.81250000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+
+	<Frame name="CharacterStatFrameCategoryTemplate" mixin="CharacterStatFrameCategoryMixin" virtual="true">
+		<Size x="197" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Title" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterStatFrameTemplate" mixin="CharacterStatFrameMixin" virtual="true">
+		<Size x="187" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" x="11" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Value" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterStatsPaneScrollBoxTemplate" mixin="CharacterStatsPaneScrollBoxBaseMixin" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="common-insideframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-12"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture atlas="UI-Character-Info-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterStatFrameCategoryScrollBoxElementTemplate" inherits="CharacterStatFrameCategoryTemplate" mixin="CharacterStatFrameCategoryScrollBoxElementMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="CharacterStatFrameScrollBoxBaseElementTemplate" mixin="CharacterStatFrameScrollBoxBaseElementMixin" virtual="true">
+		<Size x="187" y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Value" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterStatFrameScrollBoxIconElementTemplate" mixin="CharacterStatFrameScrollBoxIconElementMixin" inherits="CharacterStatFrameScrollBoxBaseElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="32" y="29"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterStatFrameScrollBoxLabelElementTemplate" inherits="CharacterStatFrameScrollBoxBaseElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" x="11" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterFrameSidePaneRowTemplate" virtual="true">
+		<Size x="195" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Value" inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterFrameSidePaneWrappedRowTemplate" virtual="true">
+		<Size x="195" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="205" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterFrameSidePaneIconRowTemplate" virtual="true">
+		<Size x="195" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="IconSlot" atlas="UI-Character-Info-GearSlot" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconSlot"/>
+					</Anchors>
+					<TexCoords left="0.07" right="0.93" top="0.07" bottom="0.93"/>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.IconSlot" relativePoint="RIGHT" x="8"/>
+						<Anchor point="RIGHT" x="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterFrameSidePaneCategoryTemplate" virtual="true">
+		<Size x="195" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Title">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterFrameSidePaneTemplate" mixin="CharacterFrameSidePaneMixin" frameStrata="HIGH" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHost" x="16" y="-14"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameRightPaneHost" x="-12" y="14"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="CENTER">
+					<Size x="195" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Subtitle" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="195" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="EmptyText" inherits="GameFontDisable" justifyH="CENTER" hidden="true">
+					<Size x="170" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Divider" atlas="UI-Character-Info-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Description" inherits="ScrollingFontTemplate">
+				<Size y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-6"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT" x="-14"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="fontName" value="GameFontNormal" type="string"/>
+				</KeyValues>
+			</Frame>
+			<EventFrame parentKey="DescriptionScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="TOPRIGHT" x="4" y="-1"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMRIGHT" x="4" y="1"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="Content" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+					<KeyValue key="fixedWidth" value="195" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Footer">
+				<Size y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterFrameModeSideTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="CharacterModeTabButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" mixin="CharacterFrameMixin" inherits="PortraitFrameBaseTemplate">
+		<Frames>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
+			<Frame name="$parentLeftPaneHost" parentKey="LeftPaneHost">
+				<Size x="398"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-20"/>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-Character-Info-General-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentRightPaneHost" parentKey="RightPaneHost">
+				<Size x="233"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftPaneHost" relativePoint="TOPRIGHT"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftPaneHost" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-Character-Info-Stat-BG" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentStoneBg" parentKey="StoneBg" atlas="UI-Character-Info-Stat-StoneBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame frameLevel="505">
+						<Size x="11"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-1"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="common-framedivider" useAtlasSize="true" setAllPoints="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-6"/>
+										<Anchor point="BOTTOMLEFT" x="-6"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="CharacterStatsPaneScrollBox" inherits="CharacterStatsPaneScrollBoxTemplate" hidden="true" mixin="CharacterStatsPaneScrollBoxMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHostStoneBg" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightPaneHost"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ClassBackground" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="CharacterStatsPanePetScrollBox" inherits="CharacterStatsPaneScrollBoxTemplate" hidden="true" mixin="CharacterStatsPanePetScrollBoxMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHostStoneBg" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightPaneHost"/>
+				</Anchors>
+			</Frame>
+
+			<Frame name="CharacterStatsPane" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHostStoneBg" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightPaneHost"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ItemLevelCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_AVERAGE_ITEM_LEVEL" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-2"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ItemLevelFrame">
+						<Size x="187" y="29"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ItemLevelCategory" relativePoint="BOTTOM" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Background" atlas="UI-Character-Info-ItemLevel-Bounce" useAtlasSize="true" >
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Value" inherits="Game15Font_o1">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								if ( self.onEnterFunc ) then
+								self:onEnterFunc();
+								else
+								PaperDollStatTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="AttributesCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_CATEGORY_ATTRIBUTES" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-81"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="EnhancementsCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_CATEGORY_ENHANCEMENTS" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.statsFramePool = CreateFramePool("FRAME", self, "CharacterStatFrameTemplate");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<Button name="$parentRightPaneToggleButton" parentKey="RightPaneToggleButton" mixin="CharacterFrameRightPaneToggleButtonMixin" frameLevel="510">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftPaneHost" x="-6" y="-6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+
+			<Frame name="CharacterFrameModeTabs" parentKey="ModeTabs">
+				<Size x="64" y="384"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-30"/>
+				</Anchors>
+				<Frames>
+					<Frame name="CharacterFrameModeTab1" parentArray="Tabs" parentKey="CharacterTab" inherits="CharacterFrameModeSideTabTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_CHARACTER" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="CharacterFrameModeTab2" parentArray="Tabs" parentKey="ReputationTab" inherits="CharacterFrameModeSideTabTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_REPUTATION" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="CharacterFrameModeTab3" parentArray="Tabs" parentKey="SkillsTab" inherits="CharacterFrameModeSideTabTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_SKILLS" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="CharacterFrameModeTab4" parentArray="Tabs" parentKey="PvPTab" inherits="CharacterFrameModeSideTabTemplate" id="4">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_PVP" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="CharacterFrameModeTab5" parentArray="Tabs" parentKey="CurrencyTab" inherits="CharacterFrameModeSideTabTemplate" id="5">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_CURRENCY" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="CharacterFrameModeTab6" parentArray="Tabs" parentKey="StatisticsTab" inherits="CharacterFrameModeSideTabTemplate" id="6">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_FRAME_TAB_STATISTICS" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="CharacterFrameTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="isVertical" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,5 +1,9 @@
 KeybindingsOverrides = {}
 
+function KeybindingsOverrides.HasHousingCategory()
+	return true;
+end
+
 function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	if C_GameRules.IsPlunderstorm() then
 		local requiredSettingName = nil;
@@ -24,7 +28,9 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	AddBindingCategory(BINDING_HEADER_VEHICLE);
 	AddBindingCategory(BINDING_HEADER_CAMERA);
 	AddBindingCategory(BINDING_HEADER_PING_SYSTEM);
-	AddBindingCategory(BINDING_HEADER_HOUSING_SYSTEM);
+	if KeybindingsOverrides.HasHousingCategory() then
+		AddBindingCategory(BINDING_HEADER_HOUSING_SYSTEM);
+	end
 	AddBindingCategory(BINDING_HEADER_MISC);
 	AddBindingCategory(BINDING_HEADER_OTHER);
 end

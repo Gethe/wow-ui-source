@@ -466,6 +466,21 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "SetModelByUnitCreatureDisplayID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetParticleOverrideScale",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

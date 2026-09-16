@@ -1,5 +1,5 @@
 <Bindings>
-	<Binding name="TOGGLEGAMEMENU" hidden="true">
+	<Binding name="TOGGLEGAMEMENU" ignoreInKioskMode="true" hidden="true">
 		GlueMenuFrameUtil.ShowMenu();
 	</Binding>
 	<Binding name="TOGGLEMUSIC" hidden="true">

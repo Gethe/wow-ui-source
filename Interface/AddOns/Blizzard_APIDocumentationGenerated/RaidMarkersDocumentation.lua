@@ -33,6 +33,24 @@ local RaidMarkers =
 			},
 		},
 		{
+			Name = "GetNextAvailableRaidTargetMarkerIndex",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "startIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "reverseSearch", Type = "bool", Nilable = false, Default = false },
+				{ Name = "wrapSearch", Type = "bool", Nilable = false, Default = false },
+				{ Name = "treatDeadNonFriendlyAsAvailable", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nextAvailableRaidTargetMarkerIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRaidTargetIndex",
 			Type = "Function",
 			SecretReturns = true,

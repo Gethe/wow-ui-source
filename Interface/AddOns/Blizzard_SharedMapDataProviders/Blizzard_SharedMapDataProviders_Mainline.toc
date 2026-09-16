@@ -26,7 +26,7 @@ BonusObjectiveDataProvider.xml
 VehicleDataProvider.xml
 QuestOfferDataProvider.lua
 QuestOfferDataProvider.xml
-EncounterJournalDataProvider.xml
+EncounterJournalDataProvider.xml	[ExcludeLoadGameType camelot]
 FogOfWarDataProvider.xml
 PlunderstormCircleDataProvider.xml
 DeathMapDataProvider.xml

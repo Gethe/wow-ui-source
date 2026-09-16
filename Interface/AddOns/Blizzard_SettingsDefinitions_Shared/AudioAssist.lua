@@ -61,15 +61,18 @@ local function InitScreenNarrationSettings(category, layout)
 		return CVarCallbackRegistry:GetCVarValueBool("accessibilityScreenNarrationEnabled");
 	end
 
-	local _enabledSetting, enabledInitializer = Settings.SetupCVarCheckbox(category, "accessibilityScreenNarrationEnabled", ENABLE_SCREEN_NARRATOR, OPTION_TOOLTIP_ENABLE_SCREEN_NARRATOR);
+	local enabledSetting, enabledInitializer = Settings.SetupCVarCheckbox(category, "accessibilityScreenNarrationEnabled", ENABLE_SCREEN_NARRATOR, OPTION_TOOLTIP_ENABLE_SCREEN_NARRATOR);
+	enabledSetting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 	do
-		local _setting, initializer = Settings.SetupCVarDropdown(category, "accessibilityScreenNarrationVoice", Settings.VarType.Number, GetVoiceOptions, SCREEN_NARRATOR_VOICE, OPTION_TOOLTIP_SCREEN_NARRATOR_VOICE);
+		local setting, initializer = Settings.SetupCVarDropdown(category, "accessibilityScreenNarrationVoice", Settings.VarType.Number, GetVoiceOptions, SCREEN_NARRATOR_VOICE, OPTION_TOOLTIP_SCREEN_NARRATOR_VOICE);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		initializer:SetParentInitializer(enabledInitializer, IsScreenNarrationEnabled);
 	end
 
 	do
 		local setting = Settings.RegisterCVarSetting(category, "accessibilityScreenNarrationSpeechRate", Settings.VarType.Number, SCREEN_NARRATOR_SPEECH_RATE);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		local minValue, maxValue, step = Constants.TTSConstants.TTSRateMin, Constants.TTSConstants.TTSRateMax, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
@@ -79,6 +82,7 @@ local function InitScreenNarrationSettings(category, layout)
 
 	do
 		local setting = Settings.RegisterCVarSetting(category, "accessibilityScreenNarrationSpeechVolume", Settings.VarType.Number, SCREEN_NARRATOR_SPEECH_VOLUME);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		local minValue, maxValue, step = Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);

@@ -134,6 +134,12 @@ function ButtonFrameTemplateMinimizable_ShowPortrait(self)
 	self:SetPortraitShown(true);
 end
 
+UIPanelCloseButtonDefaultAnchorsMixin = {};
+
+function UIPanelCloseButtonDefaultAnchorsMixin:OnLoad()
+	self:SetPoint("TOPRIGHT", 1, 0);
+end
+
 UIPanelCloseButtonNarrationMixin = {};
 
 function UIPanelCloseButtonNarrationMixin:NarrationGetName()
@@ -300,15 +306,60 @@ end
 
 SidePanelTabButtonMixin = { };
 
+function SidePanelTabButtonMixin.CalculateTabSizeBasedOnTabArt()
+	local tabArtInfo = C_Texture.GetAtlasInfo("common-sidetab");
+
+	-- This tab type is stacked vertically so it's important that the height matches the visible part of the tab art (no padding on the top or bottom)
+	local tabArtHeightWithoutTransparentSpace = tabArtInfo.height - 5;
+	-- On the other hand, the tab art only has padding on the right side so trimming width would cause issues when anchoring the left side to a frame
+	-- For now, we just take the width without modifications
+	local tabArtWidthWithTransparentSpaceOnRight = tabArtInfo.width;
+
+	return tabArtWidthWithTransparentSpaceOnRight, tabArtHeightWithoutTransparentSpace;
+end
+
+function SidePanelTabButtonMixin:OnLoad()
+	self:InitializeSizeForTabArt();
+	self:InitializeIconAnchoring();
+end
+
+function SidePanelTabButtonMixin:InitializeSizeForTabArt()
+	local width, height = SidePanelTabButtonMixin.CalculateTabSizeBasedOnTabArt();
+	self:SetSize(width, height);
+end
+
+function SidePanelTabButtonMixin:InitializeIconAnchoring()
+	local offsetX, offsetY = self:GetFinalIconAnchorOffsets();
+	self.Icon:ClearAllPoints();
+	self.Icon:SetPoint("CENTER", offsetX, offsetY);
+end
+
+function SidePanelTabButtonMixin:GetFinalIconAnchorOffsets()
+	-- Override if your UI needs to make further adjustments to the final icon position.
+	-- Ex. The Social UI further adjusts its icons to make room for a counter underneath.
+	return self:GetIconAnchorOffsetsForTabArt();
+end
+
+function SidePanelTabButtonMixin:GetIconAnchorOffsetsForTabArt()
+	return -3, 0;
+end
+
+function SidePanelTabButtonMixin:GetPressedIconAnchorOffsets()
+	local offsetX, offsetY = self:GetFinalIconAnchorOffsets();
+	return offsetX + 1, offsetY - 1;
+end
+
 function SidePanelTabButtonMixin:OnMouseDown(button)
 	if button == "LeftButton" then
-		self.Icon:SetPoint("CENTER", -1, -1);
+		local offsetX, offsetY = self:GetPressedIconAnchorOffsets();
+		self.Icon:SetPoint("CENTER", offsetX, offsetY);
 	end
 end
 
 function SidePanelTabButtonMixin:OnMouseUp(button, upInside)
 	if button == "LeftButton" then
-		self.Icon:SetPoint("CENTER", -2, 0);
+		local offsetX, offsetY = self:GetFinalIconAnchorOffsets();
+		self.Icon:SetPoint("CENTER", offsetX, offsetY);
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	end
 
@@ -321,15 +372,30 @@ function SidePanelTabButtonMixin:SetCustomOnMouseUpHandler(handler)
 	self.customMouseUpHandler = handler;
 end
 
+function SidePanelTabButtonMixin:SetFillToInterior(fillToInterior, extent)
+	self.fillToInterior = fillToInterior;
+	self.interiorExtent = extent;
+	self:UpdateIconInterior();
+end
+
+function SidePanelTabButtonMixin:UpdateIconInterior()
+	if self.fillToInterior then
+		local extent = self.interiorExtent or 50;
+		self.Icon:SetTexCoord(0.03125, 0.96875, 0.03125, 0.96875);
+		self.Icon:SetSize(extent, extent);
+	end
+end
+
 function SidePanelTabButtonMixin:SetChecked(checked)
-	if checked then
+	if checked and self.activeAtlas then
 		self.Icon:SetAtlas(self.activeAtlas, TextureKitConstants.UseAtlasSize);
-	else
+	elseif not checked and self.inactiveAtlas then
 		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize);
 	end
 	if self.SelectedTexture then
 		self.SelectedTexture:SetShown(checked);
 	end
+	self:UpdateIconInterior();
 end
 
 function SidePanelTabButtonMixin:GetTooltipTextSetupFunction()
@@ -338,6 +404,10 @@ function SidePanelTabButtonMixin:GetTooltipTextSetupFunction()
 end
 
 function SidePanelTabButtonMixin:OnEnter()
+	if not self.tooltipText then
+		return;
+	end
+
 	local tooltip = GetAppropriateTooltip();
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
 	
@@ -1166,6 +1236,32 @@ function SharedEditBoxMixin:OnLoad()
 	if self.justifyH then
 		self:SetJustifyH(self.justifyH);
 	end
+	if self.instructionsText then
+		self.Instructions:SetText(self.instructionsText);
+	end
+end
+
+function SharedEditBoxMixin:OnEnter()
+	if (not self.tooltipText) then
+		return;
+	end
+
+	local tooltip = GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_BOTTOM");
+	GameTooltip_AddNormalLine(tooltip, self.tooltipText);
+	tooltip:Show();
+end
+
+function SharedEditBoxMixin:OnLeave()
+	if (not self.tooltipText) then
+		return;
+	end
+
+	GetAppropriateTooltip():Hide();
+end
+
+function SharedEditBoxMixin:OnTextChanged()
+	self.Instructions:SetShown(self.instructionsText and self:GetText() == "");
 end
 
 SliderControlFrameMixin = {};
@@ -1253,9 +1349,11 @@ DropdownWithSteppersMixin = {};
 function DropdownWithSteppersMixin:OnLoad()
 	self.IncrementButton:SetPoint("LEFT", self.Dropdown, "RIGHT", (self.incrementOffsetX or 4), 0);
 	self.IncrementButton:SetScript("OnClick", GenerateClosure(self.OnIncrementClicked, self));
+	SmartNavigation_MarkFrameIgnored(self.IncrementButton);
 
 	self.DecrementButton:SetPoint("RIGHT", self.Dropdown, "LEFT", (self.decrementOffsetX or -5), 0);
 	self.DecrementButton:SetScript("OnClick", GenerateClosure(self.OnDecrementClicked, self));
+	SmartNavigation_MarkFrameIgnored(self.DecrementButton);
 
 	local function OnUpdate(o, previousRadio, nextRadio, selections)
 		local canDecrement = previousRadio ~= nil;
@@ -1264,6 +1362,12 @@ function DropdownWithSteppersMixin:OnLoad()
 	end
 
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnUpdate, OnUpdate);
+	SmartNavigation_MarkFrameIgnored(self.Dropdown);
+
+	-- Smart nav will land on the containing frame instead of the increment, decrement, or dropdown.
+	SmartNavigation_MarkFrameFocusable(self);
+	local smartNavDefaultCursorPosition = CreateAnchor("RIGHT", self.DecrementButton, "LEFT");
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, smartNavDefaultCursorPosition);
 end
 
 function DropdownWithSteppersMixin:SetEnabled(enabled)
@@ -1324,10 +1428,21 @@ function DropdownWithSteppersMixin:UpdateSteppers()
 		self:SetSteppersEnabled(canDecrement, canIncrement);
 	else
 		self:SetSteppersEnabled(false, false);
-end
+	end
 end
 
 DropdownWithSteppersAndLabelMixin = CreateFromMixins(DropdownWithSteppersMixin);
+
+function DropdownWithSteppersAndLabelMixin:OnLoad()
+	DropdownWithSteppersMixin.OnLoad(self);
+
+	-- If specified, the default dropdown with steppers anchor will be used instead.
+	if (not self.useDropdownWithSteppersDefaultSmartNavCursorAnchor) then
+		-- Update the default smart nav cursor position to be to the left of the label.
+		local defaultSmartNavCursorPosition = CreateAnchor("RIGHT", self.Label, "LEFT");
+		SmartNavigation_SetCustomCursorAnchorPointForFrame(self, defaultSmartNavCursorPosition);
+	end
+end
 
 function DropdownWithSteppersAndLabelMixin:SetText(text)
 	self.Label:SetText(text);
@@ -1707,6 +1822,8 @@ end
 
 local IconSelectorPopupFramesShown = 0;
 
+local ICON_SELECTOR_SUBSECTION = "IconSelectorSection";
+
 function IconSelectorPopupFrameTemplateMixin:OnLoad()
 	local function IconButtonInitializer(button, selectionIndex, icon)
 		button:SetIconTexture(icon);
@@ -1731,6 +1848,8 @@ function IconSelectorPopupFrameTemplateMixin:OnLoad()
 	self.BorderBox.IconTypeDropdown:SetWidth(150);
 
 	self:UpdateDropdown();
+
+	self:RegisterForTransitions();
 end
 
 -- Usually overridden by inheriting frame.
@@ -1751,6 +1870,15 @@ function IconSelectorPopupFrameTemplateMixin:OnHide()
 	IconSelectorPopupFramesShown = IconSelectorPopupFramesShown - 1;
 	self:UnregisterEvent("CURSOR_CHANGED");
 	self:UnregisterEvent("GLOBAL_MOUSE_UP");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.iconSelectorFooter:HideAndDeactivateBindings();
+		SmartNavigation:LeaveFocusGroup();
+		if self.oldButton then
+			SmartNavigation:SelectButton(self.oldButton);
+			self.oldButton = nil;
+		end
+	end
 end
 
 -- Usually overridden by inheriting frame.
@@ -1900,6 +2028,82 @@ function IconSelectorPopupFrameTemplateMixin:ReevaluateSelectedIcon()
 	local texture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
 	self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
 	self:SetSelectedIconText();
+end
+
+function IconSelectorPopupFrameTemplateMixin:ConfirmIcon()
+	self:OkayButton_OnClick();
+end
+
+function IconSelectorPopupFrameTemplateMixin:ExitIconSelector()
+	self:Hide();
+end
+
+--[[
+	Specifying a focus group owner frame will update the active frame to the focus group owner and then focus the group.
+	If not specified, the current SmartNav focused frame will be used.
+	
+	Specifying a return button will use the specified value as the button to return to. If not specified, the current 
+	SmartNav button will be used.
+]]
+function IconSelectorPopupFrameTemplateMixin:GiveGamepadFocus(optionalFocusGroupOwnerFrame, optionalReturnButton)
+	if (optionalReturnButton) then
+		self.oldButton = optionalReturnButton;
+	else
+		self.oldButton = SmartNavigation:GetCurrentButton();
+	end
+
+	SmartNavigation:EnterFocusGroup(ICON_SELECTOR_SUBSECTION, optionalFocusGroupOwnerFrame);
+	local currentIndex = self:GetSelectedIndex();
+
+	if currentIndex then
+		local firstButton = nil;
+		for button in self.IconSelector:EnumerateButtons() do
+			if button:GetSelectionIndex() == currentIndex then
+				firstButton = button;
+				break;
+			end
+		end
+
+		if firstButton then
+			SmartNavigation:SelectButton(firstButton);
+		end
+	end
+	self.iconSelectorFooter:ShowAndActivateBindings();
+end
+
+function IconSelectorPopupFrameTemplateMixin:SetupGamepad()
+	SmartNavigation_MarkFrameSubSection(self, ICON_SELECTOR_SUBSECTION);
+	
+	local selectIcon =  GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(SmartNavigation.Click, SmartNavigation), ACTION_LABEL_SELECT);
+	local confirmSelection = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.ConfirmIcon, self), FRAME_ACTION_CONFIRM);
+	local exitSelection = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ExitIconSelector, self), FRAME_ACTION_EXIT);
+
+	self.iconSelectorFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "IconSelectorFooter");
+	self.iconSelectorFooter:AddPromptedBinding(selectIcon);
+	self.iconSelectorFooter:AddPromptedBinding(confirmSelection);
+	self.iconSelectorFooter:AddPromptedBinding(exitSelection);
+	self.iconSelectorFooter:Finalize();
+end
+
+function IconSelectorPopupFrameTemplateMixin:InitializeGamepad()
+	self.BorderBox.CancelButton:Hide();
+	self.BorderBox.OkayButton:Hide();
+	self.BorderBox.BottomRightCorner:SetAtlas("macropopup-bottomleft", true);
+	self.BorderBox.BottomRightCorner:SetTexCoord(1,0,0,1);--Mirror the texture for the right side.
+end
+
+function IconSelectorPopupFrameTemplateMixin:UninitializeGamepad()
+	self.BorderBox.BottomRightCorner:SetAtlas("macropopup-bottomright", true);
+	self.BorderBox.BottomRightCorner:SetTexCoord(0,1,0,1);
+	self.BorderBox.CancelButton:Show();
+	self.BorderBox.OkayButton:Show();
+end
+
+function IconSelectorPopupFrameTemplateMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end
 
 function IsAnyIconSelectorPopupFrameShown()

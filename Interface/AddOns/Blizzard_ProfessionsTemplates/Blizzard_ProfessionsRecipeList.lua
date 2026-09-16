@@ -26,8 +26,10 @@ function ProfessionsRecipeListMixin:OnLoad()
 				button:Init(node);
 
 				button:SetScript("OnClick", function(button, buttonName)
+					ListHeaderMixin.OnClick(button, buttonName);
+
 					node:ToggleCollapsed();
-					button:SetCollapseState(node:IsCollapsed());
+					button:UpdateCollapsedState(node:IsCollapsed());
 				end);
 
 				button:SetScript("OnEnter", function()
@@ -173,10 +175,19 @@ function ProfessionsRecipeListMixin:ClearSelectedRecipe()
 	self.previousRecipeID = nil;
 end
 
-ProfessionsRecipeListCategoryMixin = {};
+ProfessionsRecipeListCategoryMixin = CreateFromMixins(ListHeaderMixin);
+
+function ProfessionsRecipeListCategoryMixin:OnLoad()
+	ListHeaderMixin.OnLoad(self);
+
+	self:SetTitleColor(false, NORMAL_FONT_COLOR);
+	
+	self.RankBar:SetPoint("RIGHT", self:GetCollapseButton(), "LEFT", -5, 0);
+end
 
 function ProfessionsRecipeListCategoryMixin:OnEnter()
-	self.Label:SetFontObject(GameFontHighlight_NoShadow);
+	ListHeaderMixin.OnEnter(self);
+
 	if self.RankBar.currentRank and self.RankBar.maxRank then
 		self.RankBar.Rank:Show();
 		self.RankBar.Rank:SetFormattedText("%d/%d", self.RankBar.currentRank, self.RankBar.maxRank);
@@ -184,7 +195,8 @@ function ProfessionsRecipeListCategoryMixin:OnEnter()
 end
 
 function ProfessionsRecipeListCategoryMixin:OnLeave()
-	self.Label:SetFontObject(GameFontNormal_NoShadow);
+	ListHeaderMixin.OnLeave(self);
+
 	self.RankBar.Rank:Hide();
 	self.RankBar.Rank:SetText("");
 end
@@ -192,12 +204,13 @@ end
 function ProfessionsRecipeListCategoryMixin:Init(node)
 	local elementData = node:GetData();
 	local categoryInfo = elementData.categoryInfo;
-	self.Label:SetText(categoryInfo.name);
+	self:SetHeaderText(categoryInfo.name);
 
 	local color = categoryInfo.unlearned and DISABLED_FONT_COLOR or NORMAL_FONT_COLOR;
-	self.Label:SetVertexColor(color:GetRGB());
+	self:SetTitleColor(false, color);
 
-	self:SetCollapseState(node:IsCollapsed());
+	self:UpdateCollapsedState(node:IsCollapsed());
+
 	if categoryInfo.hasProgressBar and not (C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember()) and not tContains({C_TradeSkillUI.GetCategories()}, categoryInfo.categoryID) then
 		self.RankBar:SetMinMaxValues(categoryInfo.skillLineStartingRank, categoryInfo.skillLineMaxLevel);
 		self.RankBar:SetValue(categoryInfo.skillLineCurrentLevel);
@@ -209,12 +222,6 @@ function ProfessionsRecipeListCategoryMixin:Init(node)
 		self.RankBar.maxRank = nil;
 		self.RankBar:Hide();
 	end
-end
-
-function ProfessionsRecipeListCategoryMixin:SetCollapseState(collapsed)
-	local atlas = collapsed and "Professions-recipe-header-expand" or "Professions-recipe-header-collapse";
-	self.CollapseIcon:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-	self.CollapseIconAlphaAdd:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
 ProfessionsRecipeListRecipeMixin = {};

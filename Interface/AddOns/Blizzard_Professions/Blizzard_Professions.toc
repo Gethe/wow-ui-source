@@ -3,19 +3,26 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_GameMenuEsc
+## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_ProfessionsBook, Blizzard_GameMenuEsc
 ## SavedVariablesPerCharacter: g_professionsSpecsSelectedTabs, g_professionsSpecsSelectedPaths
 Blizzard_Professions_Bootstrap.lua [Bootstrap]
-Blizzard_ProfessionsRankBar.xml
 Blizzard_ProfessionsGuildMemberList.xml
 Blizzard_ProfessionsCraftingOutputLog.xml
 Blizzard_ProfessionsRecipeLevel.xml
+Blizzard_ProfessionsCrafting.lua
+[Game]\Blizzard_ProfessionsCrafting.lua	[AllowLoadGameType camelot]
 Blizzard_ProfessionsCrafting.xml
 Blizzard_ProfessionsInspectRecipe.xml
 Blizzard_ProfessionsSpecializationsTemplates.xml
 Blizzard_ProfessionsSpecializations.xml
 Blizzard_ProfessionsCrafterOrderView.xml
 Blizzard_ProfessionsCrafterOrderPage.xml
-Blizzard_ProfessionsFrame.xml
+Blizzard_ProfessionsFrame.lua
+[Game]\Blizzard_ProfessionsFrame.lua [AllowLoadGameType camelot]
+Blizzard_ProfessionsCraftingOutputLog.lua
+[Game]\Blizzard_ProfessionsCraftingOutputLog.lua [AllowLoadGameType camelot]
+Blizzard_ProfessionsFrameBase.xml
+[Family]\Blizzard_ProfessionsFrame.xml [ExcludeLoadGameType camelot]
+[Game]\Blizzard_ProfessionsFrame.xml [AllowLoadGameType camelot]
 Blizzard_ProfessionsRegistration.lua
 Localization.lua

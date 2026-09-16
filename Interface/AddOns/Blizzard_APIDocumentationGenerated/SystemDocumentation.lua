@@ -150,6 +150,18 @@ local System =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "ShardTransfer",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ShardTransferImminent",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER_IMMINENT",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "StreamingIcon",
 			Type = "Event",
 			LiteralName = "STREAMING_ICON",

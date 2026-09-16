@@ -1,5 +1,14 @@
 local NUM_GROUP_LOOT_FRAMES = 4;
 
+local MAX_NUM_GAMEPAD_LOOT_ITEMS = 4;
+
+local groupLootFrameEvents =
+{
+	"CANCEL_LOOT_ROLL",
+	"CANCEL_ALL_LOOT_ROLLS",
+	"MAIN_SPEC_NEED_ROLL",
+}
+
 function GroupLootContainer_OnLoad(self)
 	self.rollFrames = {};
 	self.waitingRolls = {};
@@ -12,6 +21,30 @@ function GroupLootContainer_OnLoad(self)
 	EventRegistry:RegisterFrameEventAndCallback("CANCEL_ALL_LOOT_ROLLS", function()
 		self.waitingRolls = {};
 	end, self);
+
+	local function InitGamepad()
+		GroupLootContainer_InitGamepad(self);
+	end
+	local function UninitGamepad()
+		GroupLootContainer_UninitGamepad(self);
+	end
+
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(InitGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(UninitGamepad, self));
+end
+
+function GroupLootContainer_InitGamepad(self)
+	GroupLootContainer_RemoveAllRolls(self);
+
+	if self:IsVisible() then
+		self:Hide();
+	end
+end
+
+function GroupLootContainer_UninitGamepad(self)
+	GroupLootContainer_RemoveAllRolls(self);
+	GroupLootContainer_RefreshRolls(self);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)
@@ -79,6 +112,10 @@ function GroupLootContainer_ReplaceFrame(self, oldFrame, newFrame)
 end
 
 function GroupLootContainer_Update(self)
+	if InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
 	local lastIdx = nil;
 
 	for i=1, self.maxIndex do
@@ -96,6 +133,23 @@ function GroupLootContainer_Update(self)
 		self.layoutParent:Layout();
 	else
 		self:Hide();
+	end
+end
+
+function GroupLootContainer_RemoveAllRolls(self)
+	GroupLootContainer.waitingRolls = {};
+
+	if self.rollFrames then
+		for idx, curFrame in pairs(self.rollFrames) do
+			GroupLootFrame_Remove(curFrame, false);
+		end
+	end
+end
+
+function GroupLootContainer_RefreshRolls()
+	local pendingLootRollIDs = GetActiveLootRollIDs();
+	for i=1, #pendingLootRollIDs do
+		GroupLootContainer_AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
 	end
 end
 
@@ -131,39 +185,133 @@ function GroupLootFrame_DisableLootButton(button)
 	button:GetNormalTexture():SetDesaturated(true);
 end
 
-local groupLootFrameEvents =
-{
-	"CANCEL_LOOT_ROLL",
-	"CANCEL_ALL_LOOT_ROLLS",
-	"MAIN_SPEC_NEED_ROLL",
-}
+local function GroupLootFrame_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self);
+end
+
+local function SortPlayersByClassAndName(pInfo1, pInfo2)
+	if ( pInfo1.class == pInfo2.class ) then
+		return pInfo1.name < pInfo2.name;
+	else
+		return pInfo1.class < pInfo2.class;
+	end
+end
 
 function GroupLootFrame_OnLoad(self)
-	local function OpenMenu()
-		MenuUtil.CreateContextMenu(LootFrame.selectedLootFrame, function(owner, rootDescription)
-			rootDescription:SetTag("MENU_GROUP_LOOT");
+	local function GenerateAssignLootMenu(_owner, rootDescription, contextData)
+		rootDescription:SetTag("MENU_GROUP_LOOT");
+		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
+			if GameTooltip:IsShown() then
+				GameTooltip:ClearAllPoints();
+				GameTooltip:SetPoint("LEFT", menuFrame, "RIGHT");
+			end
+		end);
+		rootDescription:AddMenuReleasedCallback(function(menuFrame)
+			if GameTooltip:IsOwned(menuFrame) then
+				GameTooltip:Hide();
+				GameTooltip:ClearAllPoints();
+			end
+		end);
 
-			rootDescription:CreateTitle(MASTER_LOOTER);
+		rootDescription:CreateTitle(MASTER_LOOTER);
 
-			rootDescription:CreateButton(ASSIGN_LOOT, function()
-				MasterLooterFrame_Show();
+		local assignLootMenuButton = rootDescription:CreateButton(ASSIGN_LOOT);
+
+		local isRaid = IsInRaid();
+		local assignLootClassButton;
+		local currentClass;
+
+		-- group master loot is assign->name
+		-- raid master loot is assign->class->name
+		for _, curPlayer in ipairs(contextData.playerInfo) do
+			if isRaid and curPlayer.class ~= currentClass then
+				currentClass = curPlayer.class;
+				assignLootClassButton = assignLootMenuButton:CreateButton(curPlayer.class, function() end);
+				assignLootClassButton:AddInitializer(function(button)
+					local color = RAID_CLASS_COLORS[curPlayer.className];
+					if color then
+						button.fontString:SetTextColor(color.r, color.g, color.b);
+					end
+				end);
+			end
+
+			-- Attach group player list to Assign Loot, or raid players to their class.
+			local playerListFrame = assignLootMenuButton;
+			if isRaid and assignLootClassButton then
+				playerListFrame = assignLootClassButton;
+			end
+
+			local assignLootPlayerButton = playerListFrame:CreateButton(curPlayer.name, GenerateClosure(MasterLooterFrame_SelectLootRecipient, curPlayer.index, curPlayer.name));
+			assignLootPlayerButton:AddInitializer(function(button)
+				local color = RAID_CLASS_COLORS[curPlayer.className];
+				if color then
+					button.fontString:SetTextColor(color.r, color.g, color.b);
+				end
 			end);
+		end
 
-			rootDescription:CreateButton(REQUEST_ROLL, function()
-				DoMasterLootRoll(LootFrame.selectedSlot);
-			end);
+		rootDescription:CreateButton(REQUEST_ROLL, function()
+			DoMasterLootRoll(LootFrame.selectedSlot);
 		end);
 	end
 
-	-- Requires retest if/when this feature is renabled
-	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenMenu, self);
+	local function OpenAssignLootMenu()
+		local playerInfo = {};
+		-- fetch info on loot candidates as playerInfo and sort
+		for i = 1, MAX_RAID_MEMBERS do
+			local name, class, className = GetMasterLootCandidate(LootFrame.selectedSlot, i);
+			if name then
+				tinsert(playerInfo, { index = i, name = name, class = class, className = className });
+			end
+		end
+		table.sort(playerInfo, SortPlayersByClassAndName);
+
+		local contextData =
+		{
+			playerInfo = playerInfo,
+			selectedItemLink = LootFrame.selectedItemLink,
+		};
+
+		local menu = MenuUtil.CreateContextMenu(LootFrame.selectedLootFrame, GenerateAssignLootMenu, contextData);
+		LootFrame.contextMenu = menu;
+		LootFrame.contextMenuActive = true;
+		menu:HookScript("OnHide", function()
+			if LootFrame.contextMenu == menu then
+				LootFrame.contextMenu = nil;
+				local ownerFrame = LootFrame.selectedLootFrame;
+				if not ownerFrame or not ownerFrame:IsMouseOver() then
+					LootFrame.contextMenuActive = false;
+				end
+			end
+		end);
+
+		menu:ClearAllPoints();
+		menu:SetPoint("LEFT", LootFrame.selectedLootFrame, "RIGHT");
+
+		if contextData.selectedItemLink then
+			GameTooltip:SetOwner(menu, "ANCHOR_NONE");
+			GameTooltip:ClearAllPoints();
+			GameTooltip:SetPoint("LEFT", menu, "RIGHT");
+			GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
+			GameTooltip:SetHyperlink(contextData.selectedItemLink);
+			GameTooltip:Show();
+		end
+	end
+
+	-- Requires retest if/when this feature is reenabled
+	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenAssignLootMenu, self);
+
+	GroupLootFrame_RegisterForTransitions(self);
 end
 
-function GroupLootFrame_OnShow(self)
+function GroupLootFrame_SetupItemDisplay(self)
+	if not self.rollID then
+		return false;
+	end
+
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
 	if name == nil then
-		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
-		return;
+		return false;
 	end
 
 	self.IconFrame.Icon:SetTexture(texture);
@@ -184,35 +332,60 @@ function GroupLootFrame_OnShow(self)
 	end
 
 	if canNeed then
-		GroupLootFrame_EnableLootButton(self.NeedButton);
-		self.NeedButton.reason = nil;
+		GroupLootFrame_EnableLootButton(self.LootButtonContainer.NeedButton);
+		self.LootButtonContainer.NeedButton.reason = nil;
 	else
-		GroupLootFrame_DisableLootButton(self.NeedButton);
-		self.NeedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonNeed];
+		GroupLootFrame_DisableLootButton(self.LootButtonContainer.NeedButton);
+		self.LootButtonContainer.NeedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonNeed];
 	end
 
 	if canTransmog then
-		self.TransmogButton:Show();
-		self.GreedButton:Hide();
+		self.LootButtonContainer.TransmogButton:Show();
+		self.LootButtonContainer.GreedButton:Hide();
 	else
-		self.TransmogButton:Hide();
-		self.GreedButton:Show();
+		self.LootButtonContainer.TransmogButton:Hide();
+		self.LootButtonContainer.GreedButton:Show();
 		if canGreed then
-			GroupLootFrame_EnableLootButton(self.GreedButton);
-			self.GreedButton.reason = nil;
+			GroupLootFrame_EnableLootButton(self.LootButtonContainer.GreedButton);
+			self.LootButtonContainer.GreedButton.reason = nil;
 		else
-			GroupLootFrame_DisableLootButton(self.GreedButton);
-			self.GreedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed];
+			GroupLootFrame_DisableLootButton(self.LootButtonContainer.GreedButton);
+			self.LootButtonContainer.GreedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed];
 		end
 	end
 
 	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
+
+	self.canNeed = canNeed;
+	self.canGreed = canGreed;
+	self.canTransmog = canTransmog;
+
+	return true;
+end
+
+function GroupLootFrame_OnShow(self)
+	if not GroupLootFrame_SetupItemDisplay(self) then
+		if not InputUtil.IsGamepadUIEnabled() then
+			GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+		end
+
+		return;
+	end
 
 	FrameUtil.RegisterFrameForEvents(self, groupLootFrameEvents);
 end
 
 function GroupLootFrame_OnHide(self)
 	GroupLootFrame_StopNeedAnimation(self);
+
+	self.canNeed = nil;
+	self.canGreed = nil;
+	self.canTransmog = nil;
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
+
 	FrameUtil.UnregisterFrameForEvents(self, groupLootFrameEvents);
 end
 
@@ -241,6 +414,10 @@ function GroupLootFrame_OnEvent(self, event, ...)
 end
 
 function GroupLootFrame_OnUpdate(self, elapsed)
+	if not self.rollID then
+		return;
+	end
+
 	if self.NeedRollAnim.Animation:IsPlaying() then
 		return;
 	end
@@ -255,7 +432,7 @@ end
 
 function GroupLootFrame_StartNeedAnimation(self, roll, isWinning)
 	self.Timer:SetValue(0);
-	for _, button in ipairs(self.LootButtons) do
+	for _, button in ipairs(self.LootButtonContainer.LootButtons) do
 		button:Hide();
 	end
 
@@ -271,7 +448,7 @@ function GroupLootFrame_StartNeedAnimation(self, roll, isWinning)
 end
 
 function GroupLootFrame_StopNeedAnimation(self)
-	for _, button in ipairs(self.LootButtons) do
+	for _, button in ipairs(self.LootButtonContainer.LootButtons) do
 		button:Show();
 	end
 
@@ -281,6 +458,17 @@ function GroupLootFrame_StopNeedAnimation(self)
 		self.NeedRollAnimFinishedCallback:Cancel();
 		self.NeedRollAnimFinishedCallback = nil;
 	end
+end
+
+function GroupLootFrameIconFrame_OnEnter(self)
+	local tooltipOwner = self;
+	if InputUtil.IsGamepadUIEnabled() then
+		tooltipOwner = self:GetParent();
+	end
+
+	GameTooltip:SetOwner(tooltipOwner, "ANCHOR_RIGHT");
+	GameTooltip:SetLootRollItem(self:GetParent().rollID);
+	CursorUpdate(self);
 end
 
 function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel)
@@ -637,12 +825,27 @@ end
 
 local buttonsToHide = { };
 
-local function MasterLooterPlayerSort(pInfo1, pInfo2)
-	if ( pInfo1.class == pInfo2.class ) then
-		return pInfo1.name < pInfo2.name;
-	else
-		return pInfo1.class < pInfo2.class;
-	end
+local function MasterLooterFrame_SetupGamepad(self)
+	local giveAction = InputPromptLegends.CreateFrameAction("Give", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_BOTTOM }, FRAME_ACTION_GIVE );
+	self.InputLegend = InputPromptLegends.CreateInputLegend(self, "inputLegend");
+	self.InputLegend:SetLegendWidth(175);
+	self.InputLegend:SetPoint("TOPLEFT", MasterLooterFrame, "BOTTOMLEFT");
+	self.InputLegend:AddFrameAction(giveAction);
+	self.InputLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_CLOSE);
+	self.InputLegend:InitializePrompts();
+	self.InputLegend:Hide();
+end
+
+local function MasterLooterFrame_InitializeGamepad(self)
+	self.InputLegend:Show();
+	self.HighlightFrame:Show();
+	self.CloseButton:Hide();
+end
+
+local function MasterLooterFrame_UninitializeGamepad(self)
+	self.InputLegend:Hide();
+	self.HighlightFrame:Hide();
+	self.CloseButton:Show();
 end
 
 function MasterLooterFrame_OnLoad(self)
@@ -657,12 +860,17 @@ function MasterLooterFrame_OnLoad(self)
 	local function OnLootFrameHide()
 		MasterLooterFrame:Hide();
 	end
-	EventRegistry:RegisterCallback("LootFrame.Hide", OnLootFrameHide, MasterLooterFrame);
+	EventRegistry:RegisterCallback("LootFrame.Hide", OnLootFrameHide, self);
 
 	local function OnLootFrameItemLooted()
 		MasterLooterFrame:Hide();
 	end
-	EventRegistry:RegisterCallback("LootFrame.ItemLooted", OnLootFrameItemLooted, MasterLooterFrame);
+	EventRegistry:RegisterCallback("LootFrame.ItemLooted", OnLootFrameItemLooted, self);
+
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(MasterLooterFrame_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(MasterLooterFrame_InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(MasterLooterFrame_UninitializeGamepad, self));
 end
 
 function MasterLooterFrame_OnHide(self)
@@ -670,6 +878,14 @@ function MasterLooterFrame_OnHide(self)
 		playerFrame:Hide();
 	end
 	wipe(buttonsToHide);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local contextMenu = LootFrame.contextMenu;
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+		if contextMenu and contextMenu:IsShown() then
+			GamepadMode.FrameControlsManager:UnsuspendFrame();
+		end
+	end
 end
 
 function MasterLooterFrame_Show()
@@ -686,9 +902,20 @@ function MasterLooterFrame_Show()
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 
-	-- Requires retest if/when this feature is renabled
 	MasterLooterFrame:ClearAllPoints();
-	MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, 0, 0);
+	local contextMenu = LootFrame.contextMenu;
+	if contextMenu and contextMenu:IsShown() then
+		MasterLooterFrame:SetPoint("TOPLEFT", contextMenu, "TOPRIGHT");
+	else
+		MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, "TOPRIGHT");
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		-- This show event was triggered by a micro menu, which will attempt to close itself and return focus to the previous frame,
+		-- so we want to prevent the automatic re-focus event and then inform gamepad that the master loot frame should receive focus.
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:FrameShown(MasterLooterFrame, false);
+	end
 end
 
 function MasterLooterFrame_UpdatePlayers()
@@ -704,7 +931,7 @@ function MasterLooterFrame_UpdatePlayers()
 			tinsert(playerInfo, pInfo);
 		end
 	end
-	table.sort(playerInfo, MasterLooterPlayerSort);
+	table.sort(playerInfo, SortPlayersByClassAndName);
 
 	local numColumns = ceil(#playerInfo / 10);
 	numColumns = max(numColumns, 2);
@@ -761,9 +988,9 @@ function MasterLooterFrame_UpdatePlayers()
 	buttonsToHide = shownButtons;
 end
 
-function MasterLooterPlayerFrame_OnClick(self)
+function MasterLooterFrame_SelectLootRecipient(candidateId, candidateName)
 	MasterLooterFrame.slot = LootFrame.selectedSlot;
-	MasterLooterFrame.candidateId = self.id;
+	MasterLooterFrame.candidateId = candidateId;
 	if ( LootFrame.selectedQuality >= Constants.LootConsts.MasterLootQualityThreshold ) then
 		local textArg1 = LootFrame.selectedItemName;
 		local colorData = ColorManager.GetColorDataForItemQuality(LootFrame.selectedQuality);
@@ -771,13 +998,468 @@ function MasterLooterPlayerFrame_OnClick(self)
 			textArg1 = colorData.hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE;
 		end
 
-		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", textArg1, self.Name:GetText(), "LootWindow");
+		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", textArg1, candidateName, "LootWindow");
 	else
 		MasterLooterFrame_GiveMasterLoot();
 	end
 end
 
+function MasterLooterPlayerFrame_OnClick(self)
+	MasterLooterFrame_SelectLootRecipient(self.id, self.Name:GetText());
+end
+
 function MasterLooterFrame_GiveMasterLoot()
 	GiveMasterLoot(MasterLooterFrame.slot, MasterLooterFrame.candidateId);
 	MasterLooterFrame:Hide();
+end
+
+-------------------------------------------------------------------
+-- Gamepad Group Loot Roll Frame
+-------------------------------------------------------------------
+
+local SCROLL_BOX_PAD = 7;
+local SCROLL_BOX_SPACING = 8;
+local GAMEPAD_GROUP_LOOT_FRAME_BASE_HEIGHT = 45;
+local GAMEPAD_GROUP_LOOT_ITEM_HEIGHT = 67;
+
+-- Matches the need-roll animation length played on the roll card (GroupLootFrame_StartNeedAnimation).
+local GamepadGroupLootNeedRollAnimDuration = 5;
+
+local GameplayGroupLootEvents =
+{
+	"START_LOOT_ROLL",
+	"PLAYER_ENTERING_WORLD",
+	"CANCEL_LOOT_ROLL",
+	"CANCEL_ALL_LOOT_ROLLS",
+	"MAIN_SPEC_NEED_ROLL",
+};
+
+function ToggleLootRollFrame()
+	GamepadGroupLootRollFrame:SetShown(not GamepadGroupLootRollFrame:IsShown());
+end
+
+GamepadGroupLootRollFrameMixin = {};
+
+local function ClampSelectedRollIndex(self)
+	local numWaitingRolls = 0;
+
+	if self.waitingRolls then
+		numWaitingRolls = #self.waitingRolls;
+	end
+
+	if numWaitingRolls == 0 then
+		self.selectedRollIndex = nil;
+		return;
+	end
+
+	if not self.selectedRollIndex then
+		self.selectedRollIndex = 1;
+	elseif self.selectedRollIndex < 1 then
+		self.selectedRollIndex = 1;
+	elseif self.selectedRollIndex > numWaitingRolls then
+		self.selectedRollIndex = numWaitingRolls;
+	end
+end
+
+local function GetSelectedRollID(self)
+	ClampSelectedRollIndex(self);
+
+	local selectedIdx = self.selectedRollIndex;
+	if not selectedIdx then
+		return nil;
+	end
+
+	local ret = nil;
+	if #self.waitingRolls >= selectedIdx then
+		ret = self.waitingRolls[selectedIdx].rollID;
+	end
+
+	return ret;
+end
+
+function GamepadGroupLootRollFrameMixin:DoFullRefresh()
+	local dataProvider = CreateDataProvider();
+	local numDisplayedRolls = 0;
+
+	for i, data in ipairs(self.waitingRolls) do
+		if i > MAX_NUM_GAMEPAD_LOOT_ITEMS then
+			break;
+		end
+
+		dataProvider:Insert({rollID = data.rollID, rollTime = data.rollTime});
+		numDisplayedRolls = numDisplayedRolls + 1;
+	end
+
+	self:SetHeight(GAMEPAD_GROUP_LOOT_FRAME_BASE_HEIGHT + numDisplayedRolls * (GAMEPAD_GROUP_LOOT_ITEM_HEIGHT + SCROLL_BOX_SPACING));
+
+	local scrollPercentage = self.ScrollBox:GetScrollPercentage();
+	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetScrollPercentage(scrollPercentage);
+end
+
+function GamepadGroupLootRollFrameMixin:GetSelectedElement()
+	local selectedRollID = GetSelectedRollID(self);
+	if not selectedRollID then
+		return nil;
+	end
+
+	local dataProviderSize = self.ScrollBox:GetDataProviderSize();
+	for i = 1, dataProviderSize do
+		local elementData = self.ScrollBox:FindElementData(i);
+		if elementData and elementData.rollID == selectedRollID then
+			self.ScrollBox:ScrollToElementDataIndex(i, nil, nil, true);
+			return self.ScrollBox:FindFrame(elementData);
+		end
+	end
+
+	return nil;
+end
+
+function GamepadGroupLootRollFrameMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox);
+	SmartNavigation:SetTargetButtonForFrame(self, self:GetSelectedElement());
+end
+
+-- Smart nav creates the panel info while focusing this frame, so seed the selection before it picks a button itself.
+function GamepadGroupLootRollFrameMixin:OnSmartNavPanelInfoAdded(panelInfo)
+	SmartNavigation:SetTargetButtonForFrame(self, self:GetSelectedElement());
+end
+
+function GamepadGroupLootRollFrameMixin:CanSelectRelativeRoll(offset)
+	ClampSelectedRollIndex(self);
+
+	if not self.selectedRollIndex then
+		return false;
+	end
+
+	local nextIndex = self.selectedRollIndex + offset;
+	return nextIndex >= 1 and nextIndex <= #self.waitingRolls;
+end
+
+function GamepadGroupLootRollFrameMixin:SelectRelativeRoll(offset)
+	if not self:CanSelectRelativeRoll(offset) then
+		return;
+	end
+	
+	self:UnfocusGamepad();
+
+	self.selectedRollIndex = self.selectedRollIndex + offset;
+	self:FocusGamepad();
+end
+
+function GamepadGroupLootRollFrameMixin:InitRegions()
+	self.TitleContainer.TitleText:SetText(LOOT_ROLLS);
+end
+
+function GamepadGroupLootRollFrameMixin:InitScrollBox()
+	local view = CreateScrollBoxListLinearView(SCROLL_BOX_PAD, SCROLL_BOX_PAD, SCROLL_BOX_PAD, SCROLL_BOX_PAD, SCROLL_BOX_SPACING);
+
+	local function Initializer(frame, elementData)
+		frame.rollID = elementData.rollID;
+		frame.rollTime = elementData.rollTime;
+		frame.rollListFrame = self;
+		frame.Timer:SetMinMaxValues(0, elementData.rollTime);
+
+		if not frame.gamepadFooter then
+			GamepadGroupLootFrame_SetupGamepad(frame);
+		end
+
+		GroupLootFrame_SetupItemDisplay(frame);
+	end
+
+	view:SetElementFactory(function(factory, elementData)
+		factory("GamepadGroupLootRollFrameTemplate", Initializer);
+	end);
+
+	view:SetElementExtentCalculator(function(dataIndex, elementData)
+		return GAMEPAD_GROUP_LOOT_ITEM_HEIGHT;
+	end);
+
+	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function GamepadGroupLootRollFrameMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function GamepadGroupLootRollFrameMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
+
+function GamepadGroupLootRollFrameMixin:OnEvent(event, ...)
+	if event == "START_LOOT_ROLL" then
+		local rollID, rollTime = ...;
+		if rollID and rollTime then
+			self:AddRoll(rollID, rollTime);
+
+			if not self:IsShown() then
+				-- OnShow refreshes the list and restores focus.
+				self:Show();
+			else
+				self:UnfocusGamepad();
+				self:DoFullRefresh();
+				self:FocusGamepad();
+			end
+		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self.waitingRolls = {};
+		self.selectedRollIndex = nil;
+
+		self:RehydrateLootRolls();
+
+		if self:GetNumWaitingRolls() > 0 and not self:IsShown() then
+			self:Show();
+		end
+	elseif event == "CANCEL_LOOT_ROLL" then
+		local rollID = ...;
+		self:RemoveRoll(rollID);
+	elseif event == "CANCEL_ALL_LOOT_ROLLS" then
+		self:RemoveAllRolls();
+	elseif event == "MAIN_SPEC_NEED_ROLL" then
+		local rollID, roll, isWinning = ...;
+		-- Play the need animation on the matching card, then remove the roll once the animation has finished.
+		local card = self.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame.rollID == rollID;
+		end);
+		if card then
+			GroupLootFrame_StartNeedAnimation(card, roll, isWinning);
+		end
+		C_Timer.After(GamepadGroupLootNeedRollAnimDuration, function()
+			self:RemoveRoll(rollID);
+		end);
+	end
+end
+
+function GamepadGroupLootRollFrameMixin:OnHide()
+	GamepadMode.FrameControlsManager:FrameHidden(self);
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+
+	self.ScrollBox:RemoveDataProvider();
+end
+
+function GamepadGroupLootFrame_SetupGamepad(self)
+	SmartNavigation_MarkFrameFocusable(self);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, CreateAnchor("RIGHT", self, "LEFT", 14, 0));
+
+	local function CanNeed()
+		return self.canNeed;
+	end
+
+	local function CanGreed()
+		return self.canGreed;
+	end
+
+	local function CanTransmog()
+		return self.canTransmog;
+	end
+
+	local function SimulatePassClick()
+		RollOnLoot(self.rollID, 0);
+	end
+
+	local function SimulateNeedClick()
+		if self.canNeed then
+			RollOnLoot(self.rollID, 1);
+		end
+	end
+	
+	local function SimulateGreedOrTransmogClick(down)
+		if not down then
+			return;
+		end
+
+		if CanGreed() then
+			RollOnLoot(self.rollID, 2);
+		elseif CanTransmog() then
+			RollOnLoot(self.rollID, 4);
+		end
+	end
+
+	local function CanSelectPreviousRoll()
+		return self.rollListFrame and self.rollListFrame:CanSelectRelativeRoll(-1);
+	end
+
+	local function CanSelectNextRoll()
+		return self.rollListFrame and self.rollListFrame:CanSelectRelativeRoll(1);
+	end
+
+	local function SelectPreviousRoll()
+		if self.rollListFrame then
+			self.rollListFrame:SelectRelativeRoll(-1);
+		end
+	end
+
+	local function SelectNextRoll()
+		if self.rollListFrame then
+			self.rollListFrame:SelectRelativeRoll(1);
+		end
+	end
+
+	local passAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, SimulatePassClick, PASS);
+	local needAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, SimulateNeedClick, NEED);
+	needAction:AddCondition(CanNeed);
+
+	local greedAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, SimulateGreedOrTransmogClick, GREED);
+	greedAction:SetButtonEventsHandled(GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	greedAction:AddCondition(CanGreed);
+
+	local transmogAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, SimulateGreedOrTransmogClick, TRANSMOGRIFICATION);
+	transmogAction:SetButtonEventsHandled(GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	transmogAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	transmogAction:AddCondition(CanTransmog);
+
+	local previousRollAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_TOP, SelectPreviousRoll, nil);
+	previousRollAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
+	previousRollAction:AddCondition(CanSelectPreviousRoll);
+
+	local nextRollAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_BOTTOM, SelectNextRoll, nil);
+	nextRollAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
+	nextRollAction:AddCondition(CanSelectNextRoll);
+
+	local footerParent = self.rollListFrame;
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(footerParent, "GroupLootFrameFooter");
+	self.gamepadFooter:SetAnchorOffsets(3, 0);
+	self.gamepadFooter:AddPromptedBinding(passAction);
+	self.gamepadFooter:AddPromptedBinding(needAction);
+	self.gamepadFooter:AddPromptedBinding(greedAction);
+	self.gamepadFooter:AddPromptedBinding(transmogAction);
+	self.gamepadFooter:AddPromptedBinding(previousRollAction);
+	self.gamepadFooter:AddPromptedBinding(nextRollAction);
+	self.gamepadFooter:Finalize();
+
+	local function ShowSelectedRollTooltip()
+		if self.rollID then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetLootRollItem(self.rollID);
+			GameTooltip:Show();
+		end
+	end
+
+	local function FocusEnter()
+		ShowSelectedRollTooltip();
+		self.gamepadFooter:ShowAndActivateBindings();
+	end
+
+	local function FocusExit()
+		GameTooltip:Hide();
+		ResetCursor();
+		self.gamepadFooter:HideAndDeactivateBindings();
+	end
+
+	self.FocusEnter = FocusEnter;
+	self.FocusExit = FocusExit;
+end
+
+local function GamepadGroupLootFrame_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function GamepadGroupLootRollFrameMixin:OnLoad()
+	self.waitingRolls = {};
+	self.selectedRollIndex = 1;
+
+	self:InitRegions();
+	self:InitScrollBox();
+
+	SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, GenerateClosure(self.OnSmartNavPanelInfoAdded, self));
+
+	GamepadGroupLootFrame_RegisterForTransitions(self);
+
+	self.ScrollBar:Hide();
+end
+
+function GamepadGroupLootRollFrameMixin:OnShow()
+	GamepadMode.FrameControlsManager:AddToFrameGroup(self, "NeedGreed");
+	GamepadMode.FrameControlsManager:SkipGamepadAutoFocus(self);
+
+	-- Populate the list before the frame controls manager runs its focus pass, otherwise there are no roll cards to select.
+	self:DoFullRefresh();
+
+	GamepadMode.FrameControlsManager:FrameShown(self, true);
+
+	self:FocusGamepad();
+end
+
+function GamepadGroupLootRollFrameMixin:UnfocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+
+	if self.focusedRollFrame and self.focusedRollFrame.UnfocusGamepad then
+		self.focusedRollFrame:UnfocusGamepad();
+		self.focusedRollFrame = nil;
+	end
+
+	GameTooltip:Hide();
+	ResetCursor();
+end
+
+function GamepadGroupLootRollFrameMixin:InitializeGamepad()
+	self.waitingRolls = {};
+	self.selectedRollIndex = 1;
+
+	FrameUtil.RegisterFrameForEvents(self, GameplayGroupLootEvents);
+
+	self:RehydrateLootRolls();
+
+	if self:GetNumWaitingRolls() > 0 and not self:IsShown() then
+		self:Show();
+	end
+end
+
+function GamepadGroupLootRollFrameMixin:UninitializeGamepad()
+	FrameUtil.UnregisterFrameForEvents(self, GameplayGroupLootEvents);
+
+	self:RemoveAllRolls();
+
+	if self:IsVisible() then
+		self:Hide();
+	end
+end
+
+function GamepadGroupLootRollFrameMixin:AddRoll(rollID, rollTime)
+	table.insert(self.waitingRolls, { rollID = rollID, rollTime = rollTime });
+	ClampSelectedRollIndex(self);
+end
+
+function GamepadGroupLootRollFrameMixin:RemoveRoll(rollID)
+	for i, data in ipairs(self.waitingRolls) do
+		if data.rollID == rollID then
+			table.remove(self.waitingRolls, i);
+
+			-- select previous element.  ClampSelectedRollIndex handles underflow from 1
+			self.selectedRollIndex = i - 1;
+
+			break;
+		end
+	end
+	ClampSelectedRollIndex(self);
+
+	if self:GetNumWaitingRolls() == 0 then
+		self:Hide();
+		return;
+	end
+
+	if self:IsShown() then
+		self:UnfocusGamepad();
+		self:DoFullRefresh();
+		self:FocusGamepad();
+	end
+end
+
+function GamepadGroupLootRollFrameMixin:RemoveAllRolls()
+	self.waitingRolls = {};
+	self.selectedRollIndex = nil;
+	self:Hide();
+end
+
+function GamepadGroupLootRollFrameMixin:GetNumWaitingRolls()
+	return #self.waitingRolls;
+end
+
+function GamepadGroupLootRollFrameMixin:RehydrateLootRolls()
+	local pendingLootRollIDs = GetActiveLootRollIDs();
+	for i=1, #pendingLootRollIDs do
+		self:AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
+	end
 end

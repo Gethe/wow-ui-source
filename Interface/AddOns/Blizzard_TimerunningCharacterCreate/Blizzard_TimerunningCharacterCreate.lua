@@ -126,7 +126,7 @@ function TimerunningFirstTimeDialogMixin:UpdateState()
 	self:SetShown(canShow and shouldShow);
 	self.InfoPanel.CreateButton:SetEnabled(IsTimerunningEnabled());
 
-	local infoPanelDesc = TIMERUNNING_INFO_PANEL_DESC[activeTimerunningSeasonID];
+	local infoPanelDesc = TIMERUNNING_INFO_PANEL_DESC[activeTimerunningSeasonID] or TIMERUNNING_INFO_PANEL_DESC[Constants.TimerunningConsts.TIMERUNNING_SEASON_NONE];
 	local textureSuffix = infoPanelDesc.textureSuffix;
 	self.InfoPanel.Background:SetAtlas("timerunning-infographic-background"..textureSuffix);
 	self.InfoPanel.LogoFX:SetAtlas("timerunning-infographic-logo-fx"..textureSuffix);

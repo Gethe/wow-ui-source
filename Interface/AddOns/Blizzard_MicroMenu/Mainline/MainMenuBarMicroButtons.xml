@@ -12,13 +12,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="MicroButtonAndBagsBar" parent="UIParent" roleset="microMenu">
-		<Size x="232" y="80"/>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
-		</Anchors>
-	</Frame>
 
 	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="40"/>
@@ -39,7 +32,11 @@
 				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
+		</Frames>
 		<Scripts>
+			<OnLoad method="MainMenuBarMicroButton_OnLoad"/>
 			<OnEnter method="OnEnter" inherit="append"/>
 			<OnLeave method="OnLeave" inherit="append"/>
 			<OnShow method="OnShow" inherit="append"/>
@@ -90,7 +87,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnClick method="OnClick"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
@@ -106,12 +103,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
 
+	<!-- Combined Talent and SpellBook MicroButton-->
 	<Button name="PlayerSpellsMicroButton" inherits="MainMenuBarMicroButton" mixin="PlayerSpellsMicroButtonMixin">
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
@@ -122,7 +120,42 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
+
+	<!-- Separate Talent and Spellbook MicroButtons-->
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="PlayerSpellsMicroButtonMixin">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
+			<KeyValue key="talentsOnly" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpecTalents-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" mixin="PlayerSpellsMicroButtonMixin">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLESPELLBOOK" type="string"/>
+			<KeyValue key="spellbookOnly" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
@@ -138,7 +171,23 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
+
+	<Button name="LegacyMicroButton" inherits="MainMenuBarMicroButton" mixin="LegacyMicroButtonMixin">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLELEGACYSYSTEM" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Achievements-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
@@ -154,13 +203,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
 
-    <Button name="HousingMicroButton" inherits="MainMenuBarMicroButton" mixin="HousingMicroButtonMixin">
+	<Button name="HousingMicroButton" inherits="MainMenuBarMicroButton" mixin="HousingMicroButtonMixin">
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEHOUSINGDASHBOARD" type="string"/>
 		</KeyValues>
@@ -169,11 +218,8 @@
 				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Housing-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
-		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnShow method="OnShow" inherit="append"/>
@@ -205,11 +251,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
-		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
@@ -226,7 +269,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad" />
+			<OnLoad method="OnLoad" inherit="append" />
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
@@ -244,7 +287,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
@@ -259,11 +302,8 @@
 				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-AdventureGuide-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
-		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnShow method="OnShow" inherit="append"/>
 			<OnHide method="OnHide" inherit="append"/>
 			<OnEvent method="OnEvent"/>
@@ -281,7 +321,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 		</Scripts>
 	</Button>
 
@@ -295,13 +335,10 @@
 			<KeyValue key="buttonContext" value="StoreMicroButton" type="string"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
-		<Frames>
-			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
-		</Frames>
 	</Button>
 
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" mixin="MainMenuMicroButtonMixin">
@@ -320,11 +357,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="NotificationOverlay" inherits="MainMenuBarMicroButtonNotificationTemplate"/>
-		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnUpdate method="OnUpdate"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnEnter method="OnEnter"/>

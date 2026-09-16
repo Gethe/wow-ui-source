@@ -218,6 +218,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 			chatFrame = chatFrame,
 			bnetIDAccount = nil,
 			guid = guid,
+			ownerFrame = chatFrame,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
@@ -242,6 +243,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 			chatFrame = chatFrame,
 			bnetIDAccount = bnetIDAccount,
 			battleTag = battleTag,
+			ownerFrame = chatFrame,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
@@ -436,7 +438,7 @@ function FriendsFrame_OnShow(self)
 		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
 	end
 
-	if enableRaidTab then
+	if enableRaidTab or not ShouldDisplayStoryModeTooltipInSocialFrame() then
 		FriendsFrameTab3:SetScript("OnEnter", nil);
 	else
 		FriendsFrameTab3:SetScript("OnEnter", function()

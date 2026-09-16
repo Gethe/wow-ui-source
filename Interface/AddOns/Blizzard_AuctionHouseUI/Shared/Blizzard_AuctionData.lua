@@ -89,6 +89,9 @@ function AuctionCategoryMixin:CreateSubCategory(classID, subClassID, inventoryTy
 	elseif classID then
 		name = C_Item.GetItemClassInfo(classID);
 	end
+
+	assert(name and #name > 0, "Failed to create category. classID: " .. tostring(classID) .. ", subClassID: " .. tostring(subClassID) .. ", inventoryType: " .. tostring(inventoryType) .. ", implicitFilter: " .. tostring(implicitFilter));
+
 	return self:CreateNamedSubCategory(name);
 end
 

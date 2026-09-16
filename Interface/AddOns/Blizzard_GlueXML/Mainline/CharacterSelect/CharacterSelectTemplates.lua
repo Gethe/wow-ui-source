@@ -20,6 +20,12 @@ function CharacterSelectListExpandMixin:OnLoad()
 	expandButton.pushedCollapsedAtlas = "128-RedButton-ArrowUpGlow-Pressed";
 	expandButton.disabledExpandedAtlas = "128-RedButton-ArrowDown-Disabled";
 	expandButton.disabledCollapsedAtlas = "128-RedButton-ArrowUpGlow-Disabled";
+
+	self:AdjustElements();
+end
+
+function CharacterSelectListExpandMixin:AdjustElements()
+	-- overridden elsewhere
 end
 
 function CharacterSelectListExpandMixin:NarrationGetName()
@@ -104,6 +110,12 @@ function CharacterSelectToolTrayMixin:SetExpanded(isExpanded, isUserInput)
 end
 
 CharacterSelectBlockingFrameMixin = { };
+
+function CharacterSelectBlockingFrameMixin:OnLoad()
+	if self.transparentBackgroundTexture then
+		self.FullscreenDarken:SetAlpha(0);
+	end
+end
 
 function CharacterSelectBlockingFrameMixin:OnKeyDown(key)
 	if key == "ESCAPE" then

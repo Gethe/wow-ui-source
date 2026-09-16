@@ -1,0 +1,18 @@
+## Title: Blizzard_LFGUtil
+## Dep: Blizzard_SharedXMLGame
+Shared\LFGEye.lua
+Shared\LFGEye.xml
+Shared\Constants.lua
+Shared\LFGRole.lua
+Shared\LFGRole.xml
+Shared\LFGInvitePopup.lua
+Shared\LFGInvitePopup.xml
+Shared\LFGUtilShared.lua
+Classic\LFGUtil.lua [AllowLoadGameType classic]
+Vanilla\LFGUtil.lua [AllowLoadGameType vanilla, tbc]
+[Family]\LFGUtil.lua [AllowLoadGameType mainline]
+[Game]\LFGUtil.lua [AllowLoadGameType camelot]
+[Family]\PvpPopup.lua [AllowLoadGameType mainline]
+[Family]\PvpPopup.xml [AllowLoadGameType mainline]
+[Family]\PVPHelper.lua [AllowLoadGameType mainline]
+[Family]\PVPHelper.xml [AllowLoadGameType mainline]

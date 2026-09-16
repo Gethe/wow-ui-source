@@ -317,8 +317,7 @@ end
 
 	local whisperIsLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	if not whisperIsLocalPlayer then
-		local playerName, playerServer = UnitNameUnmodified("player");
-		whisperIsLocalPlayer = (contextData.name == playerName) and (contextData.server == playerServer);
+		whisperIsLocalPlayer = NameUtil.IsPlayerMe(contextData.name, contextData.surname);
 	end
 
 	if whisperIsLocalPlayer then

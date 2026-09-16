@@ -1,6 +1,6 @@
 REQUIRED_REST_HOURS = 5;
 
-function PlayerFrame_OnLoad(self)
+function PlayerFrame_OnLoadBase(self)
 	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
@@ -81,7 +81,8 @@ function PlayerFrame_OnLoad(self)
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		local which = nil;
 		local contextData = {
-			fromPlayerFrame = true;
+			fromPlayerFrame = true,
+			ownerFrame = frame,
 		};
 
 		if unit == "vehicle" then
@@ -91,6 +92,7 @@ function PlayerFrame_OnLoad(self)
 			which = "SELF";
 			contextData.unit = "player";
 		end
+
 		UnitPopup_OpenMenu(which, contextData);
 	end
 
@@ -101,6 +103,12 @@ function PlayerFrame_OnLoad(self)
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerFrameDisabled) then
 		self:Hide();
 	end
+
+	self:RegisterForInterfaceTransitions();
+end
+
+function PlayerFrame_OnLoad(self)
+	PlayerFrame_OnLoadBase(self);
 end
 
 function PlayerFrame_OnEvent(self, event, ...)
@@ -286,6 +294,10 @@ function PlayerFrame_Update()
 	end
 end
 
+function PlayerFrame_GetLevelRGBA()
+	return 1.0, 0.82, 0.0, 1.0;
+end
+
 function PlayerFrame_UpdateLevel()
 	if (UnitExists("player")) then
 		local level = UnitLevel(PlayerFrame.unit);
@@ -293,7 +305,7 @@ function PlayerFrame_UpdateLevel()
 		if (effectiveLevel ~= level) then
 			PlayerLevelText:SetVertexColor(0.1, 1.0, 0.1, 1.0);
 		else
-			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
+			PlayerLevelText:SetVertexColor(PlayerFrame_GetLevelRGBA());
 		end
 		PlayerLevelText:SetText(effectiveLevel);
 	end
@@ -349,13 +361,64 @@ function PlayerFrame_UpdatePvPStatus()
 	end
 end
 
+function PlayerFrame_ShowPrestigeWithAtlas(atlas, factionGroup, honorRewardInfo)
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+
+	prestigePortrait:SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
+	prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+	prestigePortrait:Show();
+	prestigeBadge:Show();
+	pvpIcon:Hide();
+	return prestigePortrait;
+end
+
+function PlayerFrame_ShowPvPIcon(factionGroup)
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+
+	prestigePortrait:Hide();
+	prestigeBadge:Hide();
+	if (factionGroup == "Horde") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "Alliance") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "FFA") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
+	end
+
+	pvpIcon:Show();
+	return pvpIcon;
+end
+
+function PlayerFrame_HidePvPFrames()
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+
+	prestigePortrait:Hide();
+	prestigeBadge:Hide();
+	pvpIcon:Hide();
+	PlayerPVPTimerText:Hide();
+	PlayerPVPTimerText.timeLeft = nil;
+end
+
+function PlayerFrame_ShowRoleIconInsideInstances()
+	return true;
+end
+
 function PlayerFrame_UpdateRolesAssigned()
 	local roleIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon;
 	local hasIcon = false;
 
 	-- Only show role icons when in instanced content areas (raids, dungeons, battleground, etc.)
 	local _, instanceType = GetInstanceInfo();
-	if instanceType ~= "none" then
+	if instanceType ~= "none" and PlayerFrame_ShowRoleIconInsideInstances() then
 		local role = UnitGroupRolesAssignedEnum("player");
 		if (role == Enum.LFGRole.Tank) then
 			roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
@@ -563,7 +626,9 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	elseif class == "DEATHKNIGHT" then
 		RuneFrame:Hide();
 	end
-	EssencePlayerFrame:Setup();
+	if (EssencePlayerFrame) then
+		EssencePlayerFrame:Setup();
+	end
 
 	-- Update other stuff
 	PlayerFrame_Update();
@@ -670,8 +735,9 @@ function PlayerFrame_ToPlayerArt(self)
 		TotemFrame:Update();
 	elseif (class == "DEATHKNIGHT") then
 		RuneFrame:Show();
+	elseif (class == "EVOKER") then
+		EssencePlayerFrame:Setup();
 	end
-	EssencePlayerFrame:Setup();
 
 	-- Update other stuff
 	PlayerFrame_Update();

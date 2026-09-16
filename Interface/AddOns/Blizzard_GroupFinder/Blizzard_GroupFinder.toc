@@ -1,0 +1,50 @@
+## Title: Blizzard_GroupFinder
+## Dep: Blizzard_GameTooltip
+## Dep: Blizzard_UIPanelTemplates
+## Dep: Blizzard_LFGUtil
+## Dep: Blizzard_FrameXMLUtil [AllowLoadGameType wrath, cata, mists, mainline]
+## Dep: Blizzard_EditMode [AllowLoadGameType mainline]
+## Dep: Blizzard_RaidWarning [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_Plunderstorm
+## SavedVariables: PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE [AllowLoadGameType mainline]
+## ExcludeLoadGameType: camelot
+[Family]\QueueUpdater.lua
+Classic\GroupFinderHelpers.lua [AllowLoadGameType tbc, wrath, cata]
+[Game]\GroupFinderHelpers.lua [AllowLoadGameType mists]
+
+[Family]\PVEFrame.lua [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\PVEFrame.xml [AllowLoadGameType wrath, cata, mists, mainline]
+Shared\LFGFrame.lua [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\LFGFrame.xml [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\LFDFrame.lua [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\LFDFrame.xml [AllowLoadGameType wrath, cata, mists, mainline]
+
+Shared\LFGReadyCheck.lua [AllowLoadGameType tbc]
+Shared\LFGReadyCheck.xml [AllowLoadGameType tbc]
+[Family]\PVPHelper.lua [AllowLoadGameType vanilla, tbc]
+[Family]\PVPHelper.xml [AllowLoadGameType vanilla, tbc]
+Classic\Localization.lua [AllowLoadGameType vanilla, tbc]
+
+Classic\LFGFrame_Minimap_Vanilla.lua [AllowLoadGameType vanilla, tbc]
+Classic\LFGFrame_Minimap.xml [AllowLoadGameType vanilla, tbc]
+
+Shared\LFGReadyCheck.lua [AllowLoadGameType wrath, cata, mists, mainline]
+Shared\LFGReadyCheck.xml [AllowLoadGameType wrath, cata, mists, mainline]
+Shared\RaidFinder.lua [AllowLoadGameType mainline]
+Shared\RaidFinder.xml [AllowLoadGameType mainline]
+[Family]\LFGList.lua [AllowLoadGameType wrath, cata, mists, mainline]
+[Family]\LFGList.xml [AllowLoadGameType wrath, cata, mists, mainline]
+Shared\ScenarioFinder_Shared.lua [AllowLoadGameType mainline]
+[Family]\ScenarioFinder.lua [AllowLoadGameType mainline]
+Shared\ScenarioFinder.xml [AllowLoadGameType mainline]
+
+[Family]\PVPHelper.lua [AllowLoadGameType wrath, cata, mists]
+[Family]\PVPHelper.xml [AllowLoadGameType wrath, cata, mists]
+Classic\Localization.lua [AllowLoadGameType wrath, cata, mists]
+Shared\RaidFinder.lua [AllowLoadGameType wrath, cata, mists]
+Shared\RaidFinder.xml [AllowLoadGameType wrath, cata, mists]
+Shared\ScenarioFinder_Shared.lua [AllowLoadGameType wrath, cata, mists]
+[Family]\ScenarioFinder.lua [AllowLoadGameType wrath, cata, mists]
+Shared\ScenarioFinder.xml [AllowLoadGameType wrath, cata, mists]
+Classic\LFGFrame_Minimap.lua [AllowLoadGameType wrath, cata, mists]
+Classic\LFGFrame_Minimap.xml [AllowLoadGameType wrath, cata, mists]

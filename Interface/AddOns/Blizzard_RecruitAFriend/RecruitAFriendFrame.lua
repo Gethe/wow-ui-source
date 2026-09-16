@@ -419,7 +419,7 @@ end
 
 function RecruitAFriendFrameMixin:OnRewardsListClosed()
 	self.RewardClaiming.ClaimOrViewRewardButton:UpdateUnclaimedRewardsAnim();
-end	
+end
 
 function RecruitAFriendFrameMixin:OnNewRewardTabSelected(tabRAFVersion)
 	self:SetSelectedRAFVersion(tabRAFVersion);
@@ -722,8 +722,9 @@ function RecruitListButtonMixin:OnClick(button)
 			menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
 			menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 			menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+			ownerFrame = self,
 		}
-		
+
 		local accountInfo = recruitInfo.accountInfo;
 		if accountInfo then
 			contextData.guid = accountInfo.gameAccountInfo.playerGuid;
@@ -919,9 +920,9 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	self.nextReward = selectedRAFVersionInfo.nextReward;
 	self.haveUnclaimedReward = self.nextReward and self.nextReward.canClaim;
 	self.numAffordableRewards = selectedRAFVersionInfo.numAffordableRewards;
-	
+
 	local isShown = self.haveUnclaimedReward;
-	
+
 	self:SetShown(isShown);
 	if self.autoClaimRewards and self.numAffordableRewards <= 0 then
 		self.autoClaimRewards = false;
@@ -937,8 +938,8 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	end
 
 	if self.autoClaimRewards and self.haveUnclaimedReward and not self:GetRecruitAFriendFrame().claimInProgress then
-		C_Timer.After(1.75, function() 
-			if self.autoClaimRewards then 
+		C_Timer.After(1.75, function()
+			if self.autoClaimRewards then
 				self:ClaimNextReward();
 			end
 		end);
@@ -967,7 +968,7 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:ClaimNextReward()
 	if self.nextReward.rewardType == Enum.RafRewardType.GameTime then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		WowTokenRedemptionFrame_ShowDialog("RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB", self.nextReward.rafVersion);
-	else 
+	else
 		self.autoClaimRewards = C_RecruitAFriend.ClaimNextReward(self.nextReward.rafVersion);
 	end
 end
@@ -1109,7 +1110,7 @@ function RecruitAFriendRewardsFrameMixin:SetUpTabs(rafInfo)
 		else
 			rewardTab:SetPoint("TOPLEFT", lastRewardTab, "BOTTOMLEFT", 0, -17);
 		end
-		
+
 		rewardTab:Setup(versionInfo.rafVersion);
 		lastRewardTab = rewardTab;
 	end
@@ -1123,7 +1124,7 @@ function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 	end
 
 	local lastRewardFrame;
-	for index, rewardInfo in ipairs(rewards) do	
+	for index, rewardInfo in ipairs(rewards) do
 		if index > 13 then
 			return;
 		end

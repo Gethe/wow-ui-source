@@ -88,6 +88,8 @@ function CharacterSelectFrameMixin:OnLoad()
 
 	-- If UI is reloaded while at character select, make sure timerunning addon gets loaded if necessary
 	CharacterSelect_UpdateTimerunning();
+
+	self:RegisterForTransitions();
 end
 
 function CharacterSelectFrameMixin:OnShow()
@@ -100,7 +102,9 @@ function CharacterSelectFrameMixin:OnShow()
     -- request account data times from the server (so we know if we should refresh keybindings, etc...)
     CheckCharacterUndeleteCooldown();
 
-    UpdateAddonButton();
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_AddOnList", function()
+		UpdateAddonButton();
+	end);
 
 	CharacterSelectUtil.SetAutoSwitchRealm(false);
 
@@ -182,10 +186,6 @@ function CharacterSelectFrameMixin:OnShow()
 	CharacterSelect_UpdateLogo();
 	CharSelectAccountUpgradePanel:EvaluateShownState();
 
-	if KioskFrame then
-		KioskFrame:HandleCharacterSelectShown();
-	end
-
     -- character templates
     CharacterTemplatesFrame_Update();
 
@@ -216,11 +216,18 @@ function CharacterSelectFrameMixin:OnShow()
 	end
 
 	self.CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetExpanded(not g_characterSelectToolTrayCollapsed);
-	GeneralDockManager:Hide();
-	ChatFrame1:Hide();
+
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_ChatFrameBase", function()
+		GeneralDockManager:Hide();
+		ChatFrame1:Hide();
+	end);
 
 	-- Show timerunning first time dialog if necessary
 	CharacterSelect_UpdateTimerunning();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function CharacterSelectFrameMixin:OnHide()
@@ -257,6 +264,10 @@ function CharacterSelectFrameMixin:OnHide()
 
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function CharacterSelect_UpdateState(fromLoginState)
@@ -267,11 +278,9 @@ function CharacterSelect_UpdateState(fromLoginState)
 	if (fromLoginState == CharacterSelectUtil.GetAutoSwitchRealm()) then
         if ( IsConnectedToServer() ) then
             if (fromLoginState) then
-				if not (KioskFrame and KioskFrame:HandleAutoLoginToRealm()) then
                     CharacterSelectUI:Hide();
                     CharacterSelectUI:Show();
 				end
-            end
 			CharacterSelectListUtil.GetCharacterListUpdate();
         else
             UpdateCharacterList();
@@ -285,7 +294,7 @@ function CharacterSelect_SetRetrievingCharacters(retrieving, success)
 
         if ( retrieving ) then
 			-- Do not stop showing the login queue dialog if currently showing.
-			if ( not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") ) then
+			if ( CharacterSelectUtil.ShouldShowRetrievingCharacterList() ) then
 				StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
 			end
         else
@@ -418,11 +427,10 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 				self.undeleteNoCharacters = true;
 				return;
 			elseif (not screenName and not self.backFromCharCreate and not self.autoRealmSwap) then
-				if KioskFrame and KioskFrame:HandleCharacterListUpdate() then
-					return;
+				local loginState = C_Login.GetState();
+				if(loginState.hasSelectedExperiencePreset and not IsKioskGlueEnabled()) then
+					GlueParent_SetScreen("charcreate");
 				end
-
-				GlueParent_SetScreen("charcreate");
 				CharacterSelect_ShowTimerunningChoiceWhenActive();
 				return;
 			end
@@ -453,7 +461,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		if characterGUID then
 			local basicInfo = GetBasicCharacterInfo(characterGUID);
 			local timerunningSeasonID = GetCharacterTimerunningSeasonID(characterGUID);
-            CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+			CharacterSelect_SetSelectedCharacterName(basicInfo.fullName, timerunningSeasonID);
 		else
 			CharacterSelect_SetSelectedCharacterName("");
 		end
@@ -461,7 +469,6 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		CharacterSelectCharacterFrame:ProcessPendingGroupActions();
 
         KioskMode_CheckAutoRealm();
-        KioskMode_CheckEnterWorld();
         CharacterServicesMaster_OnCharacterListUpdate();
     elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
 		local charID = ...;
@@ -481,7 +488,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			if guid then
 				local basicInfo = GetBasicCharacterInfo(guid);
 				local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
-				CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+				CharacterSelect_SetSelectedCharacterName(basicInfo.fullName, timerunningSeasonID);
 			end
 		end
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
@@ -498,9 +505,15 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignNearest);
 		end
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-		StaticPopup_HideAll();
 		local message = ...;
-		StaticPopup_Show("FORCE_RENAME_CHARACTER", CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]));
+		local instructions = CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]);
+		StaticPopup_HideAll();
+
+		if C_CharacterCreation.AreRegionalUniqueNamesEnabled() then
+			ForceRenameFullNameDialog:ShowWithInstructions(instructions);
+		else	
+			StaticPopup_Show("FORCE_RENAME_CHARACTER", instructions);
+		end
     elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
         StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
     elseif ( event == "STORE_STATUS_CHANGED" ) then
@@ -789,7 +802,7 @@ function UpdateCharacterList(skipSelect)
         CharacterSelect.createIndex = numChars + 1;
         if connected then
 			CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(true);
-            CharSelectUndeleteCharacterButton:Show();
+			CharSelectUndeleteCharacterButton:SetShown(InputUtil.IsMKBUIEnabled());
 			CharacterTemplatesFrame.CreateTemplateButton:Show();
         end
     end
@@ -984,6 +997,8 @@ function CharacterSelect_AllowedToEnterWorld()
     elseif (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return false;
 	elseif (Kiosk.IsEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
+		return false;
+	elseif (IsNameReservationOnly()) then
 		return false;
     end
 
@@ -1341,6 +1356,23 @@ function CharSelectEnterWorldButtonMixin:NarrationGetName()
 	return NarrationUtil.MakeNarrationString(self:GetText(), CharSelectCharacterName:GetText());
 end
 
+function CharSelectEnterWorldButtonMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
+	if ( not self:IsEnabled() and IsNameReservationOnly() ) then
+		local hours = GetLaunchETA();
+		local text;
+		if (hours > 0) then
+			text = LAUNCH_ETA:format(hours);
+		else
+			text = LAUNCH_ETA_SOON;
+		end
+
+		GlueTooltip:SetText(text);
+	else
+		GlueTooltip:Hide();
+	end
+end
+
 CharacterSelectRotateButtonMixin = {};
 
 function CharacterSelectRotateButtonMixin:OnLoad()
@@ -1433,6 +1465,14 @@ function CharacterSelect_UpdateButtonState()
 	local visibilityFramesContainer = CharacterSelectUI.VisibilityFramesContainer;
 	visibilityFramesContainer.InfoButton:SetShown(C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Standard);
 	visibilityFramesContainer.RewardsButton:SetShown(GameRulesUtil.GetActiveAccountStore() ~= nil);
+
+	if (CharSelectReincarnateCharacterButton) then
+		-- Disable reincarnation for now. Potentially turn it on in the future? CAM-6168
+		local disableReincarnation = true;
+		local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting and not disableReincarnation;
+		CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+		CharSelectReincarnateCharacterButton:Enable(); -- Disabled when we are restoring a deleted character
+	end
 end
 
 local KIOSK_AUTO_REALM_ADDRESS = nil
@@ -1482,12 +1522,6 @@ end
 
 function KioskMode_IsWaitingOnTrial()
     return KIOSK_MODE_WAITING_ON_TRIAL;
-end
-
-function KioskMode_CheckEnterWorld()
-	if KioskFrame then
-		KioskFrame:HandleCheckEnterWorld();
-	end
 end
 
 local function GetCharacterServiceDisplayOrder()
@@ -1625,6 +1659,8 @@ local function GetVASDistributions()
 						usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
 					elseif vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
 						usable = DoesClientThinkTheCharacterIsEligibleForFCM(charID);
+					elseif vasType == Enum.ValueAddedServiceType.HardcoreCharacterTransfer then
+						usable = DoesClientThinkTheCharacterIsEligibleForHCT(charID);
 					end
 					if usable then
 						break;
@@ -1905,6 +1941,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginCharacterServicesFlow(PaidNameChangeFlowMainline, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
 		BeginCharacterServicesFlow(FreeCharacterTransferFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.HardcoreCharacterTransfer then
+		BeginCharacterServicesFlow(HardcoreCharacterTransferFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
@@ -2063,7 +2101,6 @@ function CharacterServicesMaster_OnCharacterListUpdate()
         C_CharacterServices.ApplyLevelUp();
         CharacterServicesMaster.waitingForLevelUp = false;
         KioskMode_SetWaitingOnTrial(false);
-        KioskMode_CheckEnterWorld();
     elseif (CharacterUpgrade_IsCreatedCharacterUpgrade() or startAutomatically) then
 		if (C_CharacterServices.GetAutomaticBoostCharacter()) then
 			local automaticBoostCharacterGUID = C_CharacterServices.GetAutomaticBoostCharacter();
@@ -2427,18 +2464,34 @@ function CharacterSelect_StartCharacterUndelete()
 
     CharacterServicesMaster_UpdateServiceButton();
     StartCharacterUndelete();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CharacterSelect:EnterRestoreCharacterState();
+	end
 end
 
 function CharacterSelect_EndCharacterUndelete()
     CharacterSelect.undeleting = false;
     CharacterSelect.undeleteChanged = true;
 
-	CharacterSelectUI.VisibilityToggleButton:Show();
+	if InputUtil.IsMKBUIEnabled() then
+		CharacterSelectUI.VisibilityToggleButton:Show();
+	end
+
 	CharacterSelectCharacterFrame:UpdateUndeleteState();
 	CharacterTemplatesFrame.CreateTemplateButton:Show();
 
+	if (CharSelectReincarnateCharacterButton) then
+		local shouldShowReincarnate = C_GameRules.IsHardcoreActive();
+		CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+	end
+
     CharacterServicesMaster_UpdateServiceButton();
     EndCharacterUndelete();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CharacterSelect:ExitRestoreCharacterState();
+	end
 end
 
 function CharacterSelect_FinishUndelete(guid)
@@ -2999,4 +3052,412 @@ function CollapsableUpgradeFrameMixin:SetExpandedState(expanded, locked)
 	self.isExpanded = expanded;
 	self.ExpandBar:SetExpandedState(expanded, locked);
 	self:OnExpandedStateChanged();
+end
+
+function CharacterSelectFrameMixin:SelectElement()
+	local element = SmartNavigation:GetCurrentButton();
+	if element and element.Click then
+		element:Click();
+	end
+
+	if element and element.SetFocus then
+		element:SetFocus(); 
+	end
+end
+
+function CharacterSelectFrameMixin:IsSelectContextActionValid()
+	local element = SmartNavigation:GetCurrentButton();
+	return element and element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton"
+end
+
+function CharacterSelectFrameMixin:IsCreateCharacterContextActionValid()
+	return not self:IsInMoveCharacterMode()
+		and CanCreateCharacter()
+		and CharSelectCreateCharacterButton:IsEnabled();
+end
+
+function CharacterSelectFrameMixin:IsInMoveCharacterMode()
+	return self.isMovingCharacter or self.isPickingUpCharacter;
+end
+
+function CharacterSelectFrameMixin:IsRestoreCharacterContextActionValid()
+	return self.undeleting;
+end
+
+function CharacterSelectFrameMixin:IsPlaceCharacterContextActionValid()
+	return self.isMovingCharacter;
+end
+
+function CharacterSelectFrameMixin:IsEnterWorldContextActionValid()
+	return not self:IsInMoveCharacterMode() and CharacterSelect_AllowedToEnterWorld();
+end
+
+function CharacterSelectFrameMixin:IsPickupCharacterContextActionValid()
+	return self.isPickingUpCharacter;
+end
+
+function CharacterSelectFrameMixin:IsMoveCharacterContextActionValid() 
+	local isSorting = GetCVarBool("sortCharListByLastActive");
+	return not self.isMovingCharacter and not isSorting;
+end
+
+function CharacterSelectFrameMixin:IsInSelectCharacterMode()
+	return not self:IsInMoveCharacterMode() and not self.undeleting;
+end
+
+function CharacterSelectFrameMixin:EnterMoveCharacterState()
+	local focusedButton = self:GetSelectedCharacterButton();
+	self.isMovingCharacter = true;
+	self.isPickingUpCharacter = false;
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.ActivateBindingGroup(self.characterMoveBindings);
+
+	focusedButton.InnerContent:ShowMoveButtons();
+	self.frameFooter:Refresh();
+end
+
+function CharacterSelectFrameMixin:ExitMoveCharacterState(pickupNewMoveTarget)
+	local focusedButton = self:GetSelectedCharacterButton();
+	self.isMovingCharacter = false;
+	self.isPickingUpCharacter = pickupNewMoveTarget;
+	GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+
+	if not pickupNewMoveTarget then
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+	end
+
+	focusedButton.InnerContent.UpButton:Hide();
+	focusedButton.InnerContent.DownButton:Hide();
+	self.frameFooter:Refresh();
+end
+
+function CharacterSelectFrameMixin:EnterRestoreCharacterState()
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.ActivateBindingGroup(self.characterRestoreBindings);
+	CharacterSelectCharacterFrame.BackToActiveButton:Hide();
+end
+
+function CharacterSelectFrameMixin:ExitRestoreCharacterState()
+	CharacterSelectCharacterFrame.BackToActiveButton:Click();
+	GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+	GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+end
+
+function CharacterSelectFrameMixin:CancelCurrentMode()
+	if self:IsInMoveCharacterMode() then
+		self:ExitMoveCharacterState(false);
+	else
+		self:ExitRestoreCharacterState();
+	end
+end
+
+function CharacterSelectFrameMixin:IsMovingOrUndeleting()
+	return self:IsInMoveCharacterMode() or self.undeleting;
+end
+
+function CharacterSelectFrameMixin:MoveSelectedCharacter(moveDown)
+	local focusedButton = SmartNavigation:GetCurrentButton();
+
+	if moveDown then
+		focusedButton.InnerContent.DownButton:Click();
+	else
+		focusedButton.InnerContent.UpButton:Click();
+	end
+	SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
+end
+
+function CharacterSelectFrameMixin:OnGamepadCloseButton()
+	if self:IsMovingOrUndeleting() then
+		self:CancelCurrentMode();
+		return;
+	end
+
+	local element = SmartNavigation:GetCurrentButton();
+	if element and element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton" then
+		if element and element.ClearFocus then
+			element:ClearFocus(); 
+		end
+		SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
+		return;
+	end
+
+	CharacterSelect_Exit();
+end
+
+function CharacterSelectFrameMixin:ToggleVisibilityStateBindings()
+	CharacterSelectUI:ToggleVisibilityState();
+
+	if CharacterSelectUI:GetVisibilityState() then
+		GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+
+		SmartNavigation:RunCurrentButtonEnterScript();
+		SmartNavigation:ShowCursor(false);
+		self.frameFooter.inputLegend:Show();
+	else
+		GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+		GamepadMode.ActivateBindingGroup(self.characterToggleUIBindings);
+
+		SmartNavigation:RunCurrentButtonLeaveScript();
+		SmartNavigation:HideCursor(true);
+		self.frameFooter.inputLegend:Hide();
+	end
+end
+
+function CharacterSelectFrameMixin:RotateCharacter(inX, inY)
+	if inX > 0 then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
+	elseif inX < 0 then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() - CHARACTER_FACING_INCREMENT);
+	end
+end
+
+function CharacterSelectFrameMixin:ToggleUpgradeExpand()
+	CharSelectAccountUpgradePanel.ExpandBar.ExpandButton:Click();
+end
+
+function CharacterSelectFrameMixin:GetSelectedCharacterButton()
+	for _, frame in CharacterSelectCharacterFrame.ScrollBox:EnumerateFrames() do
+		if frame.IsSelected and frame:IsSelected() then
+			return frame;
+		end
+	end
+
+	return CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+end
+
+function CharacterSelectFrameMixin:RestoreSelectedCharacter()
+	local selectedCharacterButton = self:GetSelectedCharacterButton();
+	selectedCharacterButton.RestoreCharacterServiceFrame.Button:Click();
+end
+
+function CharacterSelectFrameMixin:FocusCharacterSearch()
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	if searchBox.FocusIcon:IsShown() then
+		SmartNavigation:SelectButton(searchBox);
+		searchBox:SetFocus();
+	end
+end
+
+function CharacterSelectFrameMixin:NavigateFromSearchBox(down)
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	local navBar = CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	local focusedButton = self:GetSelectedCharacterButton();
+
+	searchBox:ClearFocus();
+
+	if down then
+		if focusedButton.InnerContent ~= nil then
+		focusedButton.InnerContent.Selected:Show();
+		return self:GetSelectedCharacterButton();
+	else
+			return searchBox;
+		end
+	else
+		if focusedButton.InnerContent ~= nil then
+		focusedButton.InnerContent.Selected:Hide();
+		end
+		return navBar.rightmostButton;
+	end
+end
+
+function CharacterSelectFrameMixin:OpenGameMenu()
+	local navBar = CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	navBar.MenuButton:Click();
+end
+
+function CharacterSelectFrameMixin:SuppressSelectedHighlight()
+	local focusedButton = self:GetSelectedCharacterButton();
+	focusedButton.InnerContent.Selected:Hide();
+end
+
+function CharacterSelectFrameMixin:OnSmartNavButtonSelected(inButton)
+	-- Control navigation shortcut icon visibility.
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+
+	searchBox.FocusIcon:SetShown(inButton ~= searchBox);
+	CharSelectAccountUpgradePanel.FocusIcon:SetShown(inButton == CharSelectAccountUpgradePanel.UpgradeButton)
+end
+
+function CharacterSelectFrameMixin:OnSmartNavFocus()
+	self.frameFooter:ShowAndActivateBindings();
+	SmartNavigation:SelectButton(CharacterSelect:GetSelectedCharacterButton());
+
+	if self.undeleting then
+		GamepadMode.ActivateBindingGroup(self.characterRestoreBindings);
+	else
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+	end
+end
+
+function CharacterSelectFrameMixin:SetUpGamepad()
+	-- Set up input bindings.
+	self.characterSelectBindings = GamepadMode.CreateBindingGroup("CharacterSelectBindings");
+	self.characterSelectBindings:AddFunctionBinding(GAMEPAD_MENU_LEFT, GenerateClosure(self.FocusCharacterSearch, self));
+	self.characterSelectBindings:AddFunctionBinding(GAMEPAD_MENU_RIGHT, function() GlueMenuFrameUtil.ShowMenu(); end);
+	self.characterSelectBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterMoveBindings = GamepadMode.CreateBindingGroup("CharacterMoveBindings");
+	self.characterMoveBindings:BlockDpadAndFaceButtons();
+	self.characterMoveBindings:AddFunctionBinding(GAMEPAD_DPAD_BOTTOM, GenerateClosure(self.MoveSelectedCharacter, self, true));
+	self.characterMoveBindings:AddFunctionBinding(GAMEPAD_DPAD_TOP, GenerateClosure(self.MoveSelectedCharacter, self, false));
+	self.characterMoveBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterRestoreBindings = GamepadMode.CreateBindingGroup("CharacterRestoreBindings");
+	self.characterRestoreBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterToggleUIBindings = GamepadMode.CreateBindingGroup("CharacterToggleUIBindings");
+	self.characterToggleUIBindings:BlockDpadAndFaceButtons();
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_STICK_LEFT_PRESS, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	-- Set up footers
+	local selectElement = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.SelectElement, self), ACTION_LABEL_SELECT);
+	selectElement:AddCondition(GenerateClosure(self.IsSelectContextActionValid, self));
+	selectElement:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local enterWorldAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, CharacterSelect_EnterWorld, ENTER_WORLD);
+	enterWorldAction:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	enterWorldAction:AddCondition(GenerateClosure(self.IsEnterWorldContextActionValid, self));
+	enterWorldAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local backAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.OnGamepadCloseButton, self), CHARACTER_SELECT_BACK);
+
+	local createCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, function() CharSelectCreateCharacterButton:Click() end, CREATE_CHARACTER);
+	createCharacterAction:AddCondition(GenerateClosure(self.IsCreateCharacterContextActionValid, self));
+	createCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local charSelectMoreActions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	charSelectMoreActions:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	charSelectMoreActions:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	charSelectMoreActions:AddCondition(GenerateClosure(self.IsInSelectCharacterMode, self));
+	charSelectMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_MOVE_CHARACTERS, GenerateClosure(self.EnterMoveCharacterState, self), GenerateClosure(self.IsMoveCharacterContextActionValid, self));
+	charSelectMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_RESTORE_CHARACTERS, CharacterSelect_StartCharacterUndelete, function() return CharSelectUndeleteCharacterButton:IsEnabled(); end );
+	charSelectMoreActions:AddMoreActionsEntry(DELETE_CHARACTER, CharacterSelect_Delete, nil);
+
+	local placeCharacterFromMove = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.ExitMoveCharacterState, self, true), CONTEXT_ACTION_LABEL_PLACE);
+	placeCharacterFromMove:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	placeCharacterFromMove:AddCondition(GenerateClosure(self.IsPlaceCharacterContextActionValid, self));
+
+	local confirmCharacterMove = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.ExitMoveCharacterState, self, false), FRAME_ACTION_CONFIRM);
+	confirmCharacterMove:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	confirmCharacterMove:AddCondition(GenerateClosure(self.IsInMoveCharacterMode, self));
+
+	local pickupCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.EnterMoveCharacterState, self), CONTEXT_ACTION_LABEL_MOVE);
+	pickupCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	pickupCharacterAction:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	pickupCharacterAction:AddCondition(GenerateClosure(self.IsPickupCharacterContextActionValid, self));
+
+	local restoreCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.RestoreSelectedCharacter, self), CONTEXT_ACTION_LABEL_RESTORE);
+	restoreCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	restoreCharacterAction:AddCondition(GenerateClosure(self.IsRestoreCharacterContextActionValid, self));
+
+	local toggleUIAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT_PRESS, GenerateClosure(self.ToggleVisibilityStateBindings, self), ACTION_LABEL_TOGGLE_UI);
+	toggleUIAction:AddCondition(GenerateClosure(self.IsInSelectCharacterMode, self));
+	toggleUIAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterSelectFooter");
+	self.frameFooter:AddPromptedBinding(selectElement);
+	self.frameFooter:AddPromptedBinding(backAction);
+	self.frameFooter:AddPromptedBinding(enterWorldAction);
+	self.frameFooter:AddPromptedBinding(pickupCharacterAction);
+	self.frameFooter:AddPromptedBinding(toggleUIAction);
+	self.frameFooter:AddPromptedBinding(createCharacterAction);
+	self.frameFooter:AddPromptedBinding(charSelectMoreActions);
+	self.frameFooter:AddPromptedBinding(placeCharacterFromMove);
+	self.frameFooter:AddPromptedBinding(confirmCharacterMove);
+	self.frameFooter:AddPromptedBinding(restoreCharacterAction);
+	self.frameFooter:Finalize();
+	self.frameFooter.inputLegend:ClearAllPoints();
+	self.frameFooter.inputLegend:SetPoint("BOTTOM", 0, 15);
+
+	function CharacterSelect.UnfocusGamepad()
+		GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+		self.frameFooter:HideAndDeactivateBindings();
+		self.isMovingCharacter = false;
+		self.isPickingUpCharacter = false;
+	end
+
+	self.SmartNavigationOnSelect = self.OnSmartNavButtonSelected;
+end
+
+function CharacterSelectFrameMixin:InitializeGamepad()
+	--Set up navigation overrides.
+	local navBar = self.CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+
+	SmartNavigation_AddJumpNavigationOverride(searchBox, SMART_NAV_INPUT_DIRECTION.UP, GenerateClosure(self.NavigateFromSearchBox, self, false));
+	SmartNavigation_AddJumpNavigationOverride(searchBox, SMART_NAV_INPUT_DIRECTION.DOWN, GenerateClosure(self.NavigateFromSearchBox, self, true));
+	SmartNavigation_AddJumpNavigationOverride(navBar.rightmostButton, SMART_NAV_INPUT_DIRECTION.DOWN, GenerateClosure(self.GetSelectedCharacterButton, self));
+
+	CharacterSelectRotateLeft:Hide();
+	CharacterSelectRotateRight:Hide();
+	CharSelectEnterWorldButton:Hide();
+	CharacterSelectBackButton:Hide();
+	CharSelectCreateCharacterButton:Hide();
+	CharSelectUndeleteCharacterButton:Hide();
+	CharacterSelectUI.VisibilityToggleButton:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.ListToggle:Hide();
+	CharacterSelectCharacterFrame.DeleteCharacterButton:Hide();
+
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Show();
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -200, 0);
+	CharSelectCharacterName:SetPoint("BOTTOM", self.frameFooter.inputLegend, "TOP", 0, 15);
+
+	if self:IsShown() then
+		UpdateCharacterList();
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+
+	EventRegistry:RegisterCallback("CharacterSelectList.OnCharacterSelectionUpdated",
+	function()
+		if SmartNavigation:GetActiveFrame() ~= CharacterSelect then
+			return;
+		end
+
+		local button = CharacterSelect:GetSelectedCharacterButton();
+		if button then
+			SmartNavigation:SelectButton(button);
+		end
+	end);
+end
+
+function CharacterSelectFrameMixin:UninitializeGamepad()
+	CharacterSelectRotateLeft:Show();
+	CharacterSelectRotateRight:Show();
+	CharSelectEnterWorldButton:Show();
+	CharacterSelectBackButton:Show();
+	CharSelectCreateCharacterButton:Show();
+	CharSelectUndeleteCharacterButton:Show();
+	CharacterSelectUI.VisibilityToggleButton:Show();
+	CharacterSelectUI.VisibilityFramesContainer.ListToggle:Show();
+	CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:Show();
+	CharacterSelectCharacterFrame.DeleteCharacterButton:Show();
+
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 19, -25);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -40, 0);
+	CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:SetPoint("LEFT", CharSelectEnterWorldButton, "RIGHT", 10, 0);
+	CharSelectCharacterName:SetPoint("BOTTOM", 0, 114);
+
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+	self.frameFooter:HideAndDeactivateBindings();
+	self.isMovingCharacter = false;
+	self.isPickingUpCharacter = false;
+end
+
+function CharacterSelectFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end

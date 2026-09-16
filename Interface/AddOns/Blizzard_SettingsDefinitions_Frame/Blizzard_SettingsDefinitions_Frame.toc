@@ -3,20 +3,26 @@
 ## AllowLoad: Game
 [Family]\GameplaySettingsGroup.lua
 [Family]\InterfaceOverrides.lua
-[Family]\ControlsOverrides.lua
+[Family]\ControlsOverrides.lua [ExcludeLoadGameType camelot]
 [Family]\CombatOverrides.lua
 [Family]\SocialOverrides.lua
 [Family]\ColorblindOverrides.lua
 [Family]\KeybindingsOverrides.lua
-[Family]\AccessibilityOverrides.lua
-[Family]\NameplatesOverrides.lua
+[Family]\AccessibilityOverrides.lua [ExcludeLoadGameType classic]
+[Family]\NameplatesOverrides.lua [ExcludeLoadGameType classic]
+[Game]\NameplatesOverrides.lua [AllowLoadGameType camelot]
+[Game]\ControlsOverrides.lua [AllowLoadGameType camelot]
+[Game]\SocialOverrides.lua [AllowLoadGameType camelot]
+[Game]\KeybindingsOverrides.lua [AllowLoadGameType camelot]
+[Game]\AccessibilityOverrides.lua [AllowLoadGameType camelot]
+[Game]\InterfaceOverrides.lua [AllowLoadGameType camelot]
 Controls.xml
 Interface.lua
 Interface.xml
 Combat.lua
 ActionBars.lua
 Social.lua
-PingSystem.xml
+PingSystem.xml [AllowLoadGameType mainline]
 Keybindings.xml
 # NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of the lua file.
 Accessibility.lua
@@ -24,7 +30,7 @@ Accessibility.xml [AllowLoadGameType mainline]
 [Family]\Colorblind.xml
 CombatAudioAlertConstants.lua
 CombatAudioAlertUtil.lua
-Mounts.lua [AllowLoadGameType mainline]
+Mounts.lua [ExcludeLoadGameType camelot classic]
 AdvancedOptions.lua [AllowLoadGameType mainline]
 Nameplates.lua
 Nameplates.xml

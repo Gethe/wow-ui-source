@@ -8,5 +8,5 @@ BuffFrame.lua
 [Family]/BuffFrame.lua [AllowLoadGameType classic]
 BuffFrameTemplates.xml
 BuffFrame.xml
-ExternalDefensivesFrame.lua [AllowLoadGameType standard]
-ExternalDefensivesFrame.xml [AllowLoadGameType standard]
+ExternalDefensivesFrame.lua [AllowLoadGameType standard, camelot]
+ExternalDefensivesFrame.xml [AllowLoadGameType standard, camelot]

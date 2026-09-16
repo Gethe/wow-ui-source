@@ -95,7 +95,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 
 	self.RecraftingRequiredTools:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -4);
 
-	self.AllocateBestQualityCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckbox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
 	self.AllocateBestQualityCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		Professions.SetShouldAllocateBestQualityReagents(checked);
@@ -122,8 +122,8 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	end);
 	self.AllocateBestQualityCheckbox:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.TrackRecipeCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
-	self.TrackRecipeCheckbox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckbox.text:GetStringWidth() + 20), -16);
+	self.TrackRecipeCheckbox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
+	self.TrackRecipeCheckbox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckbox.Text:GetStringWidth() + 20), -16);
 	self.TrackRecipeCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local currentRecipeInfo = self:GetRecipeInfo();
 		local checked = button:GetChecked();
@@ -173,6 +173,11 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_FIRST_CRAFT_DESCRIPTION);
 		GameTooltip:Show();
 	end);
+
+	-- Ensure all frames are in a default state when no recipe is set so when the frame is shown
+	-- it doesn't look broken while waiting on the current recipe to be set.
+	local recipeInfo, isRecraftOverride = nil, nil;
+	self:Init(recipeInfo, isRecraftOverride);
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnShow()
@@ -393,7 +398,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	local hasRecipe = recipeInfo ~= nil;
 
-	for _, frame in ipairs(self.extraSlotFrames) do
+	local extraSlotFrames = self.extraSlotFrames or {};
+	for _, frame in ipairs(extraSlotFrames) do
 		frame:SetShown(false);
 	end
 
@@ -509,7 +515,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 	end
 
-	local shouldShowTrackRecipe = not (minimized or self.isInspection) and self.showTrackRecipe and self.transaction:HasReagentSlots() and Professions.CanTrackRecipe(recipeInfo);
+	local shouldShowTrackRecipe = InputUtil.IsMKBUIEnabled() and not (minimized or self.isInspection) and self.showTrackRecipe and self.transaction:HasReagentSlots() and Professions.CanTrackRecipe(recipeInfo);
 	self.TrackRecipeCheckbox:SetShown(shouldShowTrackRecipe);
 	self.TrackRecipeCheckbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
 
@@ -1464,13 +1470,7 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 		if description and description ~= "" then
 			self.Description:SetText(description);
 
-			-- Prevent Description overlap with Details panel if shown.
-			if self.Details:IsShown() then
-				self.Description:SetWidth(340);
-			else
-				self.Description:SetWidth(460);
-			end
-
+			self.Description:SetWidth(self:GetDescriptionWidth());
 			self.Description:SetHeight(600);
 			self.Description:SetHeight(self.Description:GetStringHeight() + 1);
 			self.Description:Show();
@@ -1479,6 +1479,15 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 	end
 
 	self:ClearRecipeDescription();
+end
+
+function ProfessionsRecipeSchematicFormMixin:GetDescriptionWidth()
+	local width = 460;
+	-- Prevent Description overlap with Details panel if shown.
+	if self.Details:IsShown() then
+		width = 340;
+	end
+	return width;
 end
 
 function ProfessionsRecipeSchematicFormMixin:SetSelectedRecipeLevel(recipeID, recipeLevel)

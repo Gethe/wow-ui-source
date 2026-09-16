@@ -23,7 +23,8 @@ end
 function StanceBarMixin:ShouldShow()
 	return self.numForms > 0
 		and not C_ActionBar.IsPossessBarVisible()
-		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE;
+		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE
+		and InputUtil.IsMKBUIEnabled();
 end
 
 function StanceBarMixin:Update()

@@ -349,7 +349,7 @@ function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 
 	if baseButton then
 		local nodeInfo = baseButton:GetNodeInfo();
-		if talentFrame:AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer) then
+		if talentFrame:AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer, nodeInfo.groupIDs) then
 			return;
 		end
 

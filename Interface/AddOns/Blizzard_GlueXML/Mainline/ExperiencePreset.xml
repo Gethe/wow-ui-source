@@ -1,0 +1,179 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="BulletPointAndStringTemplate" virtual="true">
+		<Size x="15" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BulletTexture" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size x="15" y="15"/>
+				</Texture>
+				<FontString parentKey="BulletText" inherits="GlueFontHighlightSmall" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="400" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BulletTexture" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<CheckButton name="ExperienceButtonTemplate" toplevel="true" mixin="ExperiencePresetButtonMixin" virtual="true">
+		<Size x="450" y="500"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Preset-Selection-Card-Regular" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" justifyV="MIDDLE" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-69"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GlueFontHighlight" justifyV="TOP" justifyH="CENTER">
+					<Size x="320" y="100"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="3" y="-40" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="StartingSettings" inherits="GlueFontHighlight" justifyV="MIDDLE" justifyH="LEFT" text="EXPERIENCE_PRESET_STARTING_SETTINGS">
+					<Size x="180" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BulletPoint1" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.StartingSettings" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BulletPoint2" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BulletPoint1" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BulletPoint3" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BulletPoint2" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BulletPoint4" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BulletPoint3" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BulletPoint5" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BulletPoint4" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BulletPoint6" inherits="BulletPointAndStringTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BulletPoint5" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+		<CheckedTexture atlas="Preset-Selection-Card-Regular-yellow-glow" useAtlasSize="true"/>
+	</CheckButton>
+
+	<ModelFFX name="ExperiencePreset" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08" mixin="ExperiencePresetMixin">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontHighlightHuge" justifyV="MIDDLE" justifyH="CENTER" text="CHOOSE_YOUR_EXPERIENCE_PRESET">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-130"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GlueFontNormalLarge" justifyV="MIDDLE" justifyH="CENTER" text="CHOOSE_YOUR_EXPERIENCE_PRESET_DESCRIPTION">
+					<Size x="600" y="100"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BlackBars" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Left">
+							<Size x="1024" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+						<Texture parentKey="Right">
+							<Size x="1024" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+						<Texture parentKey="Top">
+							<Size x="0" y="768"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Left"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.Right"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<CheckButton name="ClassicExperienceButton" inherits="ExperienceButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-225" y="-20"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="isClassicButton" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton name="ModernExperienceButton" inherits="ExperienceButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="225" y="-20"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="isClassicButton" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<Button name="SelectButton" inherits="GlueButtonBigTemplate" text="EXPERIENCE_PRESET_SELECT" mixin="ExperiencePresetSelectButtonMixin">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="9"/>
+				</Anchors>
+				<NormalFont style="GlueFontNormalLogin"/>
+				<HighlightFont style="GlueFontHighlightLogin"/>
+				<DisabledFont style="GlueFontDisableLogin"/>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="CancelButton" inherits="GlueButtonBigTemplate" text="CANCEL" mixin="ExperiencePresetCancelButtonMixin">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="7" y="9"/>
+				</Anchors>
+				<NormalFont style="GlueFontNormalLogin"/>
+				<HighlightFont style="GlueFontHighlightLogin"/>
+				<DisabledFont style="GlueFontDisableLogin"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</ModelFFX>
+</Ui>

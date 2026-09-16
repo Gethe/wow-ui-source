@@ -27,11 +27,12 @@ StaticPopupDialogs["OKAY_MUST_ACCEPT"] = {
 
 StaticPopupDialogs["CANCEL"] = {
 	text = "",
-	button1 = CANCEL,
-	button2 = nil,
-	OnAccept = function(dialog, data)
+	button1 = nil,
+	button2 = CANCEL,
+	OnCancel = function(dialog, data)
 		C_Login.DisconnectFromServer();
 	end,
+	noCancelOnReuse = 1,
 };
 
 StaticPopupDialogs["OKAY_HTML"] = {
@@ -109,11 +110,18 @@ StaticPopupDialogs["CHAR_DELETE_IN_PROGRESS"] = {
 StaticPopupDialogs["REALM_LIST_IN_PROGRESS"] = {
 	text = REALM_LIST_IN_PROGRESS,
 	ignoreKeys = true,
-	button1 = CANCEL,
-	button2 = nil,
-	OnAccept = function(dialog, data)
+	button1 = nil,
+	button2 = CANCEL,
+	OnCancel = function(dialog, data)
 		RealmList_OnCancel();
 	end,
+	noCancelOnReuse = 1,
+};
+
+StaticPopupDialogs["RULE_SETS_IN_PROGRESS"] = {
+	text = RULE_SETS_IN_PROGRESS,
+	ignoreKeys = true,
+	spinner = true,
 };
 
 StaticPopupDialogs["OKAY_LEGAL_REDIRECT"] = {

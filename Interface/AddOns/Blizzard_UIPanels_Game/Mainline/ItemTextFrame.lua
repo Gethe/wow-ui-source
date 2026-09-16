@@ -1,9 +1,12 @@
-function ItemTextFrame_OnLoad(self)
+ItemTextFrameMixin = {};
+
+function ItemTextFrameMixin:OnLoad()
 	self:RegisterEvent("ITEM_TEXT_BEGIN");
 	self:RegisterEvent("ITEM_TEXT_TRANSLATION");
 	self:RegisterEvent("ITEM_TEXT_READY");
 	self:RegisterEvent("ITEM_TEXT_CLOSED");
 	ButtonFrameTemplate_HideButtonBar(self);
+	self:RegisterForTransitions();
 end
 
 DEFAULT_ITEM_TEXT_FRAME_WIDTH = 338;
@@ -27,7 +30,7 @@ ITEM_TEXT_FONTS = {
 	}
 };
 
-function ItemTextFrame_OnEvent(self, event, ...)
+function ItemTextFrameMixin:OnEvent(event, ...)
 	if ( event == "ITEM_TEXT_BEGIN" ) then
 		self:SetTitle(ItemTextGetItem());
 		ItemTextScrollFrame:Hide();
@@ -130,8 +133,6 @@ function ItemTextFrame_OnEvent(self, event, ...)
 
 		ItemTextScrollFrame.ScrollBar:ScrollToBegin();
 		ItemTextScrollFrame:Show();
-		local page = ItemTextGetPage();
-		local hasNext = ItemTextHasNextPage();
 
 		if ( material == "Parchment" ) then
 			ItemTextMaterialTopLeft:Hide();
@@ -160,20 +161,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextMaterialBotLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
 			ItemTextMaterialBotRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
 		end
-		if ( (page > 1) or hasNext ) then
-			ItemTextCurrentPage:SetText(page);
-			ItemTextCurrentPage:Show();
-			if ( page > 1 ) then
-				ItemTextPrevPageButton:Show();
-			else
-				ItemTextPrevPageButton:Hide();
-			end
-			if ( hasNext ) then
-				ItemTextNextPageButton:Show();
-			else
-				ItemTextNextPageButton:Hide();
-			end
-		end
+		self:HandlePagingDisplay();
 		ItemTextStatusBar:Hide();
 		ShowUIPanel(self);
 		if ( not self:IsShown() ) then
@@ -186,7 +174,25 @@ function ItemTextFrame_OnEvent(self, event, ...)
 	end
 end
 
-function ItemTextFrame_OnUpdate(self, elapsed)
+function ItemTextFrameMixin:HandlePagingDisplay()
+	local page = ItemTextGetPage();
+	local hasNext = ItemTextHasNextPage();
+
+	ItemTextCurrentPage:SetText(page);
+	ItemTextCurrentPage:SetShown(hasNext or (page > 1))
+
+	-- Update Gamepad specific nav buttons
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadItemTextPrevPageButton:UpdateEnabledState();
+		GamepadItemTextNextPageButton:UpdateEnabledState();
+		return;
+	end
+
+	ItemTextPrevPageButton:SetShown(page > 1);
+	ItemTextNextPageButton:SetShown(hasNext);
+end
+
+function ItemTextFrameMixin:OnUpdate(elapsed)
 	if ( ItemTextStatusBar:IsShown() ) then
 		elapsed = self.translationElapsed + elapsed;
 		ItemTextStatusBar:SetValue(elapsed);
@@ -194,8 +200,89 @@ function ItemTextFrame_OnUpdate(self, elapsed)
 	end
 end
 
-EventRegistry:RegisterForOnUpdate({}, function(_, elapsed)
-	if ItemTextFrame:IsShown() and not ItemTextFrame:IsVisible() then
-		ItemTextFrame_OnUpdate(ItemTextFrame, elapsed);
+function ItemTextFrame_NextPageOnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	ItemTextNextPage();
+
+	ItemTextFrame:RefreshBindingVisibility();
+end
+
+function ItemTextFrame_PrevPageOnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	ItemTextPrevPage();
+
+	ItemTextFrame:RefreshBindingVisibility();
+end
+
+function ItemTextFrameMixin:RefreshBindingVisibility()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
 	end
-end);
+
+	-- Refresh binding visibility state if in gamepad mode
+	self.itemTextFrameFooter:Refresh();
+end
+
+function ItemTextFrameMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, ItemTextScrollFrame);
+	GamepadScrollBarHint:SetOwner(ItemTextScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	self.itemTextFrameFooter:ShowAndActivateBindings();
+end
+
+function ItemTextFrameMixin:UnfocusGamepad()
+	self.itemTextFrameFooter:HideAndDeactivateBindings();
+end
+
+function ItemTextFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateFlatClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateFlatClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateFlatClosure(self.UninitializeGamepad, self));
+end
+
+function ItemTextFrameMixin:SetupGamepad()
+	-- Condition visibility of dpad binding
+	local itemTextFramePrevious = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_LEFT, ItemTextFrame_PrevPageOnClick, PREV);
+	itemTextFramePrevious:AddCondition(function()
+		return ItemTextGetPage() > 1;
+	end);
+	itemTextFramePrevious:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	local itemTextFrameNext = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_RIGHT, ItemTextFrame_NextPageOnClick, NEXT);
+	itemTextFrameNext:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	itemTextFrameNext:AddCondition(ItemTextHasNextPage);
+
+	-- Mirror binding behavior to gamepad nav buttons
+	GamepadItemTextPrevPageButton:SetOnClick(ItemTextFrame_PrevPageOnClick);
+	GamepadItemTextNextPageButton:SetOnClick(ItemTextFrame_NextPageOnClick);
+	GamepadItemTextPrevPageButton:SetEnabledCondition(function()
+		return itemTextFramePrevious:AreConditionsMet();
+	end);
+	GamepadItemTextNextPageButton:SetEnabledCondition(function()
+		return itemTextFrameNext:AreConditionsMet();
+	end);
+
+	-- Create binding footer
+	self.itemTextFrameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ItemTextFrameFooter");
+	self.itemTextFrameFooter:AddPromptedBinding(itemTextFramePrevious);
+	self.itemTextFrameFooter:AddPromptedBinding(itemTextFrameNext);
+	self.itemTextFrameFooter:AddStandardBackPrompt();
+	self.itemTextFrameFooter:Finalize();
+end
+
+function ItemTextFrameMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+	ItemTextPrevPageButton:Hide();
+	ItemTextNextPageButton:Hide();
+	GamepadItemTextPrevPageButton:Show();
+	GamepadItemTextNextPageButton:Show();
+end
+
+function ItemTextFrameMixin:UninitializeGamepad()
+	self.CloseButton:Show();
+	ItemTextPrevPageButton:Show();
+	ItemTextNextPageButton:Show();
+	GamepadItemTextPrevPageButton:Hide();
+	GamepadItemTextNextPageButton:Hide();
+end

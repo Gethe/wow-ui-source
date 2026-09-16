@@ -144,7 +144,9 @@ local function Register()
 		return;
 	end
 
-	local category, layout = Settings.RegisterVerticalLayoutCategory(LANGUAGES_LABEL);
+	local category, layout = Settings.RegisterVerticalLayoutCategory(LANGUAGES_SETTINGS_LABEL);
+
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(LANGUAGES_LABEL));
 
 	-- Text
 	local textLocaleSetting = Settings.RegisterCVarSetting(category, "textLocale", Settings.VarType.String, LOCALE_TEXT_LABEL);
@@ -171,6 +173,9 @@ local function Register()
 		SetAudioLocaleSettingToDefault(audioLocaleSetting);
 	end
 	Settings.SetOnValueChangedCallback(textLocaleSetting:GetVariable(), OnTextLocaleChanged);
+
+	-- Social
+	LanguagesOverrides.CreateSocialSettings(category, layout);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end

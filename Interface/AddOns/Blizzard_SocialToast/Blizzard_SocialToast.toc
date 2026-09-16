@@ -1,8 +1,6 @@
 ## Title: Blizzard_SocialToast
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: both
-## AllowLoadGameType: mainline
-## Dependencies: Blizzard_SharedXML
+## AllowLoad: both [AllowLoadGameType mainline]
+## Dep: Blizzard_SharedXML
+
 SocialToast.lua
 SocialToast.xml

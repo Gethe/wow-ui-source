@@ -1,0 +1,47 @@
+## Title: Blizzard_GamepadSharedUtility
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_StaticPopup
+## Dep: Blizzard_GamepadSmartNavigation
+## AllowLoad: Both
+
+# Setup
+GamepadSharedUtility.lua
+
+# Input Prompts
+InputPrompts\InputPrompts.lua
+InputPrompts\InputPrompts.xml
+InputPrompts\InputLegendPromptGroup.lua
+InputPrompts\ScrollBarHint.lua
+InputPrompts\ScrollBarHint.xml
+
+# Prompted Bindings
+PromptedBindings\PromptedBinding.lua
+PromptedBindings\PromptedBindingFooter.lua
+
+# Input Binding Stack
+InputBindingStack\InputButtonBinding.lua
+InputBindingStack\InputActionBinding.lua
+InputBindingStack\InputFunctionBinding.lua
+InputBindingStack\InputAxisBinding.lua
+InputBindingStack\InputBindingSet.lua
+InputBindingStack\InputBindingManager.lua
+InputBindingStack\BindingSetFactory.lua
+
+# Tab Indicators
+Tab\TabIndicators.lua
+Tab\TabIndicators.xml
+
+# Page Indicators
+Page\PageIndicators.lua
+Page\PageIndicators.xml
+
+# Input Handlers
+InputHandlers\InputButtonUtility.lua
+
+# Input Sequence
+InputSequence\InputSequence.lua
+InputSequence\InputSequence.xml
+
+FrameReformUtility.lua
+
+FrameControlsManager.lua

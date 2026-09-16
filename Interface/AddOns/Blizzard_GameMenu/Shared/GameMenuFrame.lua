@@ -48,10 +48,14 @@ local GameMenuFrameEvents = {
 function GameMenuFrameMixin:OnLoad()
 	MainMenuFrameMixin.OnLoad(self);
 
+	self.buttons = {};
+
 	self:AddStaticEventMethod(EventRegistry, "UIPanel.FrameHidden", GameMenuFrameMixin.OnUIPanelHidden);
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GameMenuFrameMixin.OnStoreFrameClosed);
 	-- This event can occur without the frame being shown.
 	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_FAILED", GameMenuFrameMixin.OnExternalEventLaunchUrlFailed, self);
+
+	self:RegisterForTransitions();
 end
 
 function GameMenuFrameMixin:OnShow()
@@ -66,8 +70,13 @@ function GameMenuFrameMixin:OnShow()
 	end
 
 	self:InitButtons();
+	LayoutMixin.OnShow(self);
 
 	NarrationUtil.NarrateCurrentScreen(NARRATION_CONTEXT_GAME_MENU);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.gamepadFooter:ShowAndActivateBindings();
+	end
 
 	EventRegistry:TriggerEvent("GameMenuFrame.Shown");
 end
@@ -79,12 +88,21 @@ function GameMenuFrameMixin:OnHide()
 
 	UpdateMicroButtons();
 
+	if InputUtil.IsGamepadUIEnabled() then
+		self:ResetGamepadButtons();
+		self.gamepadFooter:HideAndDeactivateBindings();
+	end
+
 	if CanAutoSetGamePadCursorControl(false) then
 		SetGamePadCursorControl(false);
 	end
 end
 
 function GameMenuFrameMixin:OnEvent()
+	if InputUtil.IsGamepadUIEnabled() then
+		self:ResetGamepadButtons();
+	end
+
 	self:InitButtons();
 end
 
@@ -110,7 +128,42 @@ function GameMenuFrameMixin:OnExternalEventLaunchUrlFailed()
 	StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
 end
 
+function GameMenuFrameMixin:SetupGamepadButtons()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	if #self.buttons <= 1 then
+		return;
+	end
+
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.buttons[1], SMART_NAV_INPUT_DIRECTION.UP,
+														   self.buttons[#self.buttons], SMART_NAV_INPUT_DIRECTION.DOWN);
+end
+
+function GameMenuFrameMixin:ResetGamepadButtons()
+	for _,v in ipairs(self.buttons) do
+		SmartNavigation_ClearJumpNavigationOverrides(v);
+	end
+end
+
+function GameMenuFrameMixin:AddButton(...)
+	local button = MainMenuFrameMixin.AddButton(self, ...);
+	table.insert(self.buttons, button);
+	return button;
+end
+
+function GameMenuFrameMixin:AddCloseButton(...)
+	if InputUtil.IsGamepadUIEnabled() then
+		return nil;
+	end
+	return MainMenuFrameMixin.AddCloseButton(self, ...);
+end
+
 function GameMenuFrameMixin:InitButtons()
+	self.buttons = {};
+	self.closeButton = nil;
+
 	self:Reset();
 
 	local function GenerateMenuCallback(callback, customSoundEffect)
@@ -215,7 +268,9 @@ function GameMenuFrameMixin:InitButtons()
 	self:AddButton(GameMenuFrameMixin:GetLogoutText(), GenerateMenuCallback(Logout, SOUNDKIT.IG_MAINMENU_LOGOUT), exitDisabled);
 	self:AddButton(EXIT_GAME, GenerateMenuCallback(Quit, SOUNDKIT.IG_MAINMENU_QUIT), exitDisabled);
 
-	self:AddCloseButton(RETURN_TO_GAME);
+	self.closeButton = self:AddCloseButton(RETURN_TO_GAME);
+
+	self:SetupGamepadButtons();
 end
 
 function GameMenuFrameMixin:SetRatingsButtonShown(shown)
@@ -231,8 +286,35 @@ function GameMenuFrameMixin:GetLogoutText()
 	return LOG_OUT;
 end
 
-function MainMenuFrameMixin:CloseMenu()
+function GameMenuFrameMixin:CloseMenu()
 	-- Overrides MainMenuFrameMixin.
 
+	PlaySound(SOUNDKIT.IG_MAINMENU_CONTINUE);
 	HideUIPanel(self);
+end
+
+function GameMenuFrameMixin:SmartNavigationCloseHandler()
+	self:CloseMenu();
+	return true;
+end
+
+function GameMenuFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function GameMenuFrameMixin:SetupGamepad()
+	local selectPromptedBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, ACTION_LABEL_SELECT);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "GlueMenuFooter");
+	self.gamepadFooter:AddPromptedBinding(selectPromptedBinding);
+	self.gamepadFooter:AddStandardBackPrompt(RETURN_TO_GAME);
+	self.gamepadFooter:SetAnchorOffsets(6, 0);
+
+	self.gamepadFooter:Finalize();
+end
+
+function GameMenuFrameMixin:UninitializeGamepad()
+	self:ResetGamepadButtons();
 end

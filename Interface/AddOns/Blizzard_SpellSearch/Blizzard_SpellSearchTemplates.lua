@@ -72,6 +72,23 @@ end
 
 function SpellSearchPreviewContainerMixin:OnShow()
 	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:DismissOnUnfocus(self);
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+end
+
+function SpellSearchPreviewContainerMixin:OnHide()
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+		GamepadMode.FrameControlsManager:UnsuspendFrame();
+	end
+end
+
+function SpellSearchPreviewContainerMixin:HasGamepadFocus()
+	return GamepadMode.FrameControlsManager:GetActiveFrame() == self;
 end
 
 function SpellSearchPreviewContainerMixin:AddSuggestedResult(buttonText, clickCallback, canShowPredicate)
@@ -263,6 +280,13 @@ function SpellSearchPreviewContainerMixin:OnSuggestedResultButtonEnter(button)
 	self:HighlightPreviewResult(button.displayIndex);
 end
 
+function SpellSearchPreviewContainerMixin:FocusGamepad()
+	EventRegistry:TriggerEvent("SpellSearchPreview.FocusedGained", self);
+end
+
+function SpellSearchPreviewContainerMixin:UnfocusGamepad()
+	EventRegistry:TriggerEvent("SpellSearchPreview.FocusedLost", self);
+end
 
 -------------------------------- Search Box -------------------------------
 
@@ -325,11 +349,26 @@ end
 function SpellSearchBoxMixin:OnFocusLost()
 	SearchBoxTemplate_OnEditFocusLost(self);
 	self:HidePreviewResults();
+
+	-- Only release ownership if the preview doesn't own gamepad focus.
+	local previewContainer = self:GetSearchPreviewContainer();
+	if InputUtil.IsGamepadUIEnabled() and not previewContainer:HasGamepadFocus() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+		GamepadMode.FrameControlsManager:UnsuspendFrame();
+	end
 end
 
 function SpellSearchBoxMixin:OnFocusGained()
 	SearchBoxTemplate_OnEditFocusGained(self);
 	self:UpdatePreviewResults(self:EvaluateSearchText());
+
+	-- Only take ownership if the preview doesn't already own gamepad focus.
+	local previewContainer = self:GetSearchPreviewContainer();
+	if InputUtil.IsGamepadUIEnabled() and not previewContainer:HasGamepadFocus() then
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:DismissOnUnfocus(self);
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function SpellSearchBoxMixin:SetSearchText(searchText)
@@ -365,4 +404,12 @@ end
 function SpellSearchBoxMixin:GetSearchPreviewContainer()
 	local searchFrame = self:GetSearchFrame();
 	return searchFrame and searchFrame:GetSearchPreviewContainer() or nil;
+end
+
+function SpellSearchBoxMixin:FocusGamepad()
+	EventRegistry:TriggerEvent("SpellSearchBox.FocusedGained", self);
+end
+
+function SpellSearchBoxMixin:UnfocusGamepad()
+	EventRegistry:TriggerEvent("SpellSearchBox.FocusedLost", self);
 end

@@ -19,7 +19,6 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 	UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 	UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
-	UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,	width = 425 };
 	UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
 	UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0};
 	UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};
@@ -28,7 +27,6 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 	UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 	UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1 };
-	UIPanelWindows["SocialUIFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 460 };
 	UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
 	UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	yoffset = -116, whileDead = 1, allowOtherPanels = 1};
 	UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };

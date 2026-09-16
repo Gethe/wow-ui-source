@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="CollectionsJournalTab" inherits="LargeSideTabButtonTemplate" parentArray="Tabs" mixin="CollectionsJournalTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CollectionsJournalTabContainer" virtual="true">
+		<Size x="55" y="1"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentTab1" parentKey="MountsTab" inherits="CollectionsJournalTab" id="1">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="MOUNTS" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentTab2" parentKey="PetsTab" inherits="CollectionsJournalTab" id="2">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="PET_JOURNAL" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentTab3" parentKey="ToysTab" inherits="CollectionsJournalTab" id="3">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="TOY_BOX" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentTab4" parentKey="HeirloomsTab" inherits="CollectionsJournalTab" id="4">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="HEIRLOOMS" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentTab5" parentKey="WardrobeTab" inherits="CollectionsJournalTab" id="5">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="WARDROBE" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

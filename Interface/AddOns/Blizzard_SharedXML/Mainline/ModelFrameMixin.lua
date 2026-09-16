@@ -118,9 +118,13 @@ function ModelFrameMixin:UpdateRotation(leftButton, rightButton, elapsedTime, ro
 	end
 end
 
-function ModelFrameMixin:ApplyRotation(rotation)
+function ModelFrameMixin:ApplyRotation(rotation, animate)
+	local shouldAnimate = true;
+	if animate ~= nil then
+		shouldAnimate = animate;
+	end
 	self.rotation = rotation;
-	self:SetRotation(rotation);
+	self:SetRotation(rotation, shouldAnimate);
 end
 
 function ModelFrameMixin:OnUpdate(elapsedTime)
@@ -276,7 +280,9 @@ function ModelFrameMixin:OnMouseWheel(delta, maxZoom, minZoom)
 end
 
 function ModelFrameMixin:OnEnter()
-	self.controlFrame:Show();
+	if not InputUtil.IsGamepadUIEnabled() then
+		self.controlFrame:Show();
+	end
 end
 
 function ModelFrameMixin:OnLeave()

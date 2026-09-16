@@ -20,76 +20,85 @@ local function Register()
 		layout:AddMirroredInitializer(Settings.QuickKeybindInitializer);
 	end
 
-	-- Assisted Combat
-	InterfaceOverrides.RunSettingsCallback(function()
-		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ASSISTED_COMBAT_LABEL));
-	end);
 
-	-- Assisted Rotation
-	InterfaceOverrides.RunSettingsCallback(function()
-		local tooltipFn = function()
-			local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
-			if isAvailable then
-				return ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP;
-			else
-				return format("%s|n|n%s", ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP, failureReason);
-			end
-		end
+	if InterfaceOverrides.HasAssistedCombat() then
 
-		local function OnButtonClick()
-			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell, false);
-			local skipTransitionBackToOpeningPanel = true;
-			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
-			PlayerSpellsUtil.ToggleSpellBookFrame();
-		end
+		-- Assisted Combat
+		InterfaceOverrides.RunSettingsCallback(function()
+			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ASSISTED_COMBAT_LABEL));
+		end);
 
-		local subsectionInitializer;
-		local addSearchTags = false;
-		do
-			local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
-			initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
-			initializer:SetKioskProtected();
-			layout:AddInitializer(initializer);
-			subsectionInitializer = initializer;
-		end
-		do
-			local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatReduceHighlights", ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS, OPTION_TOOLTIP_ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS);
-			initializer:SetParentInitializer(subsectionInitializer);
-		end
-	end);
-
-	-- Assisted Highlight
-	InterfaceOverrides.RunSettingsCallback(function()
-		local tooltipFn = function()
-			local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
-			if isAvailable then
-				return OPTION_TOOLTIP_ASSISTED_COMBAT_HIGHLIGHT;
-			else
-				return format("%s|n|n%s", OPTION_TOOLTIP_ASSISTED_COMBAT_HIGHLIGHT, failureReason);
-			end
-		end
-		local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatHighlight", ASSISTED_COMBAT_HIGHLIGHT_LABEL, tooltipFn);
-		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
-
-		local onClickFn = function(checked)
-			if checked and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP) then
-				local systemPrefix = "SETTINGS";
-				local notificationType = "ASSISTED_HIGHLIGHT";
-				StaticPopup_ShowNotification(systemPrefix, notificationType, ASSISTED_COMBAT_HIGHLIGHT_DIALOG_WARNING);
-				local OnSettingsPanelHide = function()
-					EventRegistry:UnregisterCallback("SettingsPanel.OnHide", notificationType);
-					StaticPopup_HideNotification(systemPrefix, notificationType);
+		-- Assisted Rotation
+		InterfaceOverrides.RunSettingsCallback(function()
+			local tooltipFn = function()
+				local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
+				if isAvailable then
+					return ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP;
+				else
+					return format("%s|n|n%s", ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP, failureReason);
 				end
-				EventRegistry:RegisterCallback("SettingsPanel.OnHide", OnSettingsPanelHide, notificationType);
-				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP, true);
 			end
-			return false;
-		end
-		initializer:SetSettingIntercept(onClickFn);
-	end);
+
+			local function OnButtonClick()
+				SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell, false);
+				local skipTransitionBackToOpeningPanel = true;
+				SettingsPanel:Close(skipTransitionBackToOpeningPanel);
+				PlayerSpellsUtil.ToggleSpellBookFrame();
+			end
+
+			local subsectionInitializer;
+			local addSearchTags = false;
+			do
+				local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
+				initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+				initializer:SetKioskProtected();
+				layout:AddInitializer(initializer);
+				subsectionInitializer = initializer;
+			end
+			do
+				local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatReduceHighlights", ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS, OPTION_TOOLTIP_ASSISTED_COMBAT_ROTATION_REDUCE_HIGHLIGHTS);
+				initializer:SetParentInitializer(subsectionInitializer);
+			end
+		end);
+
+		-- Assisted Highlight
+		InterfaceOverrides.RunSettingsCallback(function()
+			local tooltipFn = function()
+				local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
+				if isAvailable then
+					return OPTION_TOOLTIP_ASSISTED_COMBAT_HIGHLIGHT;
+				else
+					return format("%s|n|n%s", OPTION_TOOLTIP_ASSISTED_COMBAT_HIGHLIGHT, failureReason);
+				end
+			end
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatHighlight", ASSISTED_COMBAT_HIGHLIGHT_LABEL, tooltipFn);
+			initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+
+			local onClickFn = function(checked)
+				if checked and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP) then
+					local systemPrefix = "SETTINGS";
+					local notificationType = "ASSISTED_HIGHLIGHT";
+					StaticPopup_ShowNotification(systemPrefix, notificationType, ASSISTED_COMBAT_HIGHLIGHT_DIALOG_WARNING);
+					local OnSettingsPanelHide = function()
+						EventRegistry:UnregisterCallback("SettingsPanel.OnHide", notificationType);
+						StaticPopup_HideNotification(systemPrefix, notificationType);
+					end
+					EventRegistry:RegisterCallback("SettingsPanel.OnHide", OnSettingsPanelHide, notificationType);
+					SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP, true);
+				end
+				return false;
+			end
+			initializer:SetSettingIntercept(onClickFn);
+		end);
+	end
 
 	-- Combat Warnings
 	InterfaceOverrides.RunSettingsCallback(function()
+
+		if not InterfaceOverrides.HasBossWarnings() then
+			return;
+		end
+
 		local COMBAT_WARNINGS_ENABLED_CVAR = "combatWarningsEnabled";
 		local ENCOUNTER_WARNINGS_ENABLED_CVAR = "encounterWarningsEnabled";
 		local ENCOUNTER_TIMELINE_ENABLED_CVAR = "encounterTimelineEnabled";
@@ -227,7 +236,7 @@ local function Register()
 		end
 
 		-- Spell support iconography
-		do
+		if C_AddOns.IsAddOnLoaded("Blizzard_EncounterTimeline") then
 			local checkboxSetting = Settings.RegisterCVarSetting(category, EncounterTimelineIndicatorIconCVars.Enabled, Settings.VarType.Boolean, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL);
 			local checkboxLabel = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL;
 			local checkboxTooltip = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_TOOLTIP;
@@ -300,61 +309,78 @@ local function Register()
 		end
 	end);
 
-	-- Cooldown Viewer
-	InterfaceOverrides.RunSettingsCallback(function()
-		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COOLDOWN_VIEWER_LABEL));
-	end);
+	if InterfaceOverrides.HasCooldownViewer() then
+		-- Cooldown Viewer
+		InterfaceOverrides.RunSettingsCallback(function()
+			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COOLDOWN_VIEWER_LABEL));
+		end);
 
-	InterfaceOverrides.RunSettingsCallback(function()
-		local addSearchTags = false;
+		InterfaceOverrides.RunSettingsCallback(function()
+			local addSearchTags = false;
 
-		-- Cooldown Viewer enable checkbox
-		local function TooltipFn()
-			local isAvailable, failureReason = C_CooldownViewer.IsCooldownViewerAvailable();
-			if isAvailable then
-				return ENABLE_COOLDOWN_VIEWER_TOOLTIP;
-			else
-				return format("%s|n|n%s", ENABLE_COOLDOWN_VIEWER_TOOLTIP, failureReason);
+			-- Cooldown Viewer enable checkbox
+			local function TooltipFn()
+				local isAvailable, failureReason = C_CooldownViewer.IsCooldownViewerAvailable();
+				if isAvailable then
+					return ENABLE_COOLDOWN_VIEWER_TOOLTIP;
+				else
+					return format("%s|n|n%s", ENABLE_COOLDOWN_VIEWER_TOOLTIP, failureReason);
+				end
 			end
-		end
 
-		Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, TooltipFn);
+			Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, TooltipFn);
 
-		local function ShowDesiredPanelFromSettingsPanel(panel)
-			local skipTransitionBackToOpeningPanel = true;
-			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
-			ShowUIPanel(panel);
-		end
+			local function ShowDesiredPanelFromSettingsPanel(panel)
+				local skipTransitionBackToOpeningPanel = true;
+				SettingsPanel:Close(skipTransitionBackToOpeningPanel);
+				ShowUIPanel(panel);
+			end
 
-		-- Open Edit Mode
-		local function OpenEditMode()
-			ShowDesiredPanelFromSettingsPanel(EditModeManagerFrame);
-		end
-		local editModeInitializer = CreateSettingsButtonInitializer("", COOLDOWN_VIEWER_OPTIONS_OPEN_EDIT_MODE, OpenEditMode, nil, addSearchTags);
-		editModeInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
-		layout:AddInitializer(editModeInitializer);
+			-- Open Edit Mode
+			local function OpenEditMode()
+				ShowDesiredPanelFromSettingsPanel(EditModeManagerFrame);
+			end
+			local editModeInitializer = CreateSettingsButtonInitializer("", COOLDOWN_VIEWER_OPTIONS_OPEN_EDIT_MODE, OpenEditMode, nil, addSearchTags);
+			editModeInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
+			layout:AddInitializer(editModeInitializer);
 
-		-- Open Cooldown Manager
-		local function OpenCooldownManager()
-			ShowDesiredPanelFromSettingsPanel(CooldownViewerSettings);
-		end
+			-- Open Cooldown Manager
+			local function OpenCooldownManager()
+				ShowDesiredPanelFromSettingsPanel(CooldownViewerSettings);
+			end
 
-		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags, "ADVANCED_COOLDOWN_SETTINGS");
-		managerInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
-		layout:AddInitializer(managerInitializer);
-	end);
+			local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags, "ADVANCED_COOLDOWN_SETTINGS");
+			managerInitializer:AddSearchTags(COOLDOWN_VIEWER_LABEL);
+			layout:AddInitializer(managerInitializer);
+		end);
+	end
 
-	-- External Defensives
-	InterfaceOverrides.RunSettingsCallback(function()
-		local _sectionTooltip = nil;
-		local sectionNewTagID = "EXTERNAL_DEFENSIVES_LABEL";
-		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(EXTERNAL_DEFENSIVES_LABEL, _sectionTooltip, sectionNewTagID));
-	end);
+	if InterfaceOverrides.HasExternalDefensives() then
+		-- External Defensives
+		InterfaceOverrides.RunSettingsCallback(function()
+			local _sectionTooltip = nil;
+			local sectionNewTagID = "EXTERNAL_DEFENSIVES_LABEL";
+			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(EXTERNAL_DEFENSIVES_LABEL, _sectionTooltip, sectionNewTagID));
+		end);
 
-	InterfaceOverrides.RunSettingsCallback(function()
-		-- External Defensives enable checkbox
-		Settings.SetupCVarCheckbox(category, "externalDefensivesEnabled", ENABLE_EXTERNAL_DEFENSIVES_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
-	end);
+		InterfaceOverrides.RunSettingsCallback(function()
+			-- External Defensives enable checkbox
+			Settings.SetupCVarCheckbox(category, "externalDefensivesEnabled", ENABLE_EXTERNAL_DEFENSIVES_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
+		end);
+	end
+
+	if InterfaceOverrides.HasSwingTimer() then
+		-- Swing Timer
+		InterfaceOverrides.RunSettingsCallback(function()
+			local _sectionTooltip = nil;
+			local sectionNewTagID = "SWING_TIMER_LABEL";
+			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SWING_TIMER_LABEL, _sectionTooltip, sectionNewTagID));
+		end);
+
+		InterfaceOverrides.RunSettingsCallback(function()
+			Settings.SetupCVarCheckbox(category, "showSwingTimer", ENABLE_SWING_TIMER, ENABLE_SWING_TIMER_TOOLTIP);
+		end);
+	end
 
 	-- Damage Meter
 	InterfaceOverrides.RunSettingsCallback(function()

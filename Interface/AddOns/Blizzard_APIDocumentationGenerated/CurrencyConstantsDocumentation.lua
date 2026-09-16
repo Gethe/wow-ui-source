@@ -144,6 +144,18 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "CurrencyWeeksFromStartOption",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "DebugLogging", Type = "CurrencyWeeksFromStartOption", EnumValue = 1 },
+				{ Name = "IgnoreTimeBeforeStart", Type = "CurrencyWeeksFromStartOption", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "LinkedCurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -201,6 +213,7 @@ local CurrencyConstants =
 				{ Name = "CONQUEST_ARENA_META_CURRENCY_ID", Type = "number", Value = 483 },
 				{ Name = "CONQUEST_BG_META_CURRENCY_ID", Type = "number", Value = 484 },
 				{ Name = "HONOR_CURRENCY_ID", Type = "number", Value = 1792 },
+				{ Name = "CLASSIC_HONOR_CURRENCY_ID", Type = "number", Value = 1901 },
 				{ Name = "ARTIFACT_KNOWLEDGE_CURRENCY_ID", Type = "number", Value = 1171 },
 				{ Name = "WAR_RESOURCES_CURRENCY_ID", Type = "number", Value = 1560 },
 				{ Name = "ECHOES_OF_NYALOTHA_CURRENCY_ID", Type = "number", Value = 1803 },
@@ -218,6 +231,8 @@ local CurrencyConstants =
 				{ Name = "CURRENCY_ID_WILLING_SOUL", Type = "number", Value = 1810 },
 				{ Name = "CURRENCY_ID_RESERVOIR_ANIMA", Type = "number", Value = 1813 },
 				{ Name = "CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO", Type = "number", Value = 2032 },
+				{ Name = "CURRENCY_ID_RENOWN_PVP_RANK", Type = "number", Value = 3473 },
+				{ Name = "CURRENCY_ID_RENOWN_LEGACY", Type = "number", Value = 3485 },
 				{ Name = "IMMEDIATE_CURRENCY_WALLET_ITEM_ID", Type = "number", Value = 276637 },
 				{ Name = "CURRENCY_WALLET_TYPE_WOWMONEY", Type = "number", Value = 0 },
 			},

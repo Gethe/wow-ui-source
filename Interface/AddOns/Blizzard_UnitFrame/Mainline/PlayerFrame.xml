@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="PlayerFrame.lua"/>
 
 	<Frame name="PlayerFrameBarSegmentTemplate" virtual="true">
 		<KeyValues>
@@ -11,7 +10,7 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to check in PlayerFrame.lua if these values get set there as well.
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent" mixin="PingableType_PlayerUnitFrameMixin" roleset="unitFrames">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent" mixin="PingableType_PlayerUnitFrameMixin, PlayerFrameMixin" roleset="unitFrames">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
@@ -77,11 +76,6 @@
 										<Anchor point="TOPLEFT" x="88" y="-27"/>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="RIGHT" justifyV="MIDDLE">
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="-24.5" y="-28"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
 								<!-- StatusTexture is a flash texture for the player portrait and top bar (where the player name is).
@@ -91,6 +85,26 @@
 										<Anchor point="TOPLEFT" x="17" y="-14"/>
 									</Anchors>
 								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="3">
+								<Texture parentKey="PvpBackgroundCircle" inherits="PlayerPvpBackgroundCircleTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-30"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="PvpBackgroundIcon" inherits="PlayerPvpBackgroundIconTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="4">
+								<Texture parentKey="LevelBackgroundCircle" inherits="PlayerLevelBackgroundCircleTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="13" y="7"/>
+									</Anchors>
+								</Texture>
+								<FontString name="PlayerLevelText" inherits="PlayerLevelTextTemplate"/>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -110,7 +124,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" x="85" y="-40"/>
 								</Anchors>
-								
+
 								<Frames>
 									<Frame parentKey="TempMaxHealthLossDivider" useParentLevel="true" hidden="true" inherits="SecureFrameParentPropagationTemplate" mixin="TempMaxHealthLossDividerMixin">
 										<Anchors>
@@ -119,15 +133,15 @@
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
-												<Texture parentKey="TempHPLossDivider" setAllPoints="true" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider"/>	
+												<Texture parentKey="TempHPLossDivider" setAllPoints="true" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider"/>
 												<Texture parentKey="TempHPLossDividerShadow" useAtlasSize="true" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider-Shadow">
 													<Anchors>
 														<Anchor point="CENTER" relativePoint="LEFT"/>
 													</Anchors>
-												</Texture>	
+												</Texture>
 											</Layer>
 											<Layer level="BACKGROUND">
-												
+
 											</Layer>
 											<Layer level="OVERLAY" textureSubLevel="2">
 												<MaskTexture parentKey="TempHPLossDividerMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -175,7 +189,7 @@
 											<Layer level="ARTWORK">
 												<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 												<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-											</Layer>											
+											</Layer>
 										</Layers>
 										<Scripts>
 											<OnLoad>

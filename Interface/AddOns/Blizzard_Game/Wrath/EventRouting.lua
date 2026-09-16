@@ -18,3 +18,4 @@ function GameEvent.InitEvents()
 	GameEvent.RegisterTBCEvents();
 	GameEvent.RegisterWrathEvents();
 end
+

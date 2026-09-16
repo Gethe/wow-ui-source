@@ -1,0 +1,8 @@
+## Title: Blizzard Legacy Challenge Tracker
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXMLBase
+## AllowLoadGameType: camelot
+## SavedVariablesPerCharacter: LegacyChallengesUnviewed
+## LoadSavedVariablesFirst: 1
+
+Blizzard_LegacyChallengeTracker.lua

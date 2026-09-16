@@ -2,6 +2,10 @@ local function IsInGame()
 	return not C_Glue.IsOnGlueScreen();
 end
 
+local function GameStateUsesUIPanelManager()
+	return IsInGame();
+end
+
 local function TabSort(tab1, tab2)
 	if tab1.tabOrder ~= tab2.tabOrder then
 		return tab1.tabOrder < tab2.tabOrder;
@@ -34,6 +38,8 @@ function SocialUIFrameMixin:OnLoad()
 	self:InitializeFrameVisuals();
 	self:InitializeTabSystem();
 	self:InitializeSideWindows();
+
+	self:TryInitializeUIPanelRegistration();
 end
 
 function SocialUIFrameMixin:OnShow()
@@ -130,7 +136,6 @@ local function CreateSideWindowFrame(socialUIFrame, template, parentKey)
 	end
 
 	local sideWindow = CreateFrame("Frame", nil, socialUIFrame, template);
-	sideWindow:SetPoint("TOPLEFT", socialUIFrame, "TOPRIGHT", 45, 0);
 	sideWindow:Hide();
 	socialUIFrame[parentKey] = sideWindow;
 	return sideWindow;
@@ -273,8 +278,8 @@ function SocialUIFrameMixin:InitializeTabDefinitions()
 			},
 			contentFrameTemplate = "RaidFrameSocialTemplate",
 			contentFrameParentKey = "RaidFrame",
-			IsSupported = IsInGame,
-			IsAvailable = function() return IsInGame() and not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups); end,
+			IsSupported = C_PartyInfo.IsRaidListSupported,
+			IsAvailable = C_PartyInfo.IsRaidListEnabled,
 			GetEnabledState = function()
 				if DifficultyUtil.InStoryRaid() then
 					return false, DIFFICULTY_LOCKED_REASON_STORY_RAID;
@@ -304,9 +309,11 @@ function SocialUIFrameMixin:Reset()
 	end
 
 	self:ResetTabs();
+	self:TryHideActiveSideWindowForUnavailableTab();
 
 	local deferredOpenTabType = self:ConsumeDeferredOpenTab();
-	if deferredOpenTabType then
+	local canOpenDeferredTab = self:GetDataForAvailableTab(deferredOpenTabType) ~= nil;
+	if canOpenDeferredTab then
 		self:SelectTab(deferredOpenTabType);
 	else
 		self:SelectBestDefaultTab();
@@ -496,6 +503,12 @@ function SocialUIFrameMixin:ClearLastSelectedTab()
 end
 
 function SocialUIFrameMixin:SelectTab(tabType)
+	local isClearingSelectedTab = tabType == nil;
+	local isRequestedTabAvailable = isClearingSelectedTab or (self:GetDataForAvailableTab(tabType) ~= nil);
+	if not isRequestedTabAvailable then
+		return;
+	end
+
 	local alreadySelected = self.selectedTab == tabType;
 	if alreadySelected then
 		return;
@@ -660,6 +673,10 @@ function SocialUIFrameMixin:InitializeSideWindows()
 		[SocialUISideWindowType.IgnoreListFrame] = self.IgnoreListFrame,
 	};
 
+	-- Remembers which tab a side window comes from, so we can close the side window if that tab goes away
+	-- Some side windows aren't linked to a specific tab and will not appear here (Ex. IgnoreListFrame, BattleNetBroadcastFrame, etc.)
+	self.sideWindowToLinkedTabType = {};
+
 	-- Create and register side windows defined by supported tabs
 	for _tabType, tabData in pairs(self.tabDefinitions) do
 		local hasSideWindows = IsTabSupported(tabData) and tabData.sideWindows ~= nil;
@@ -667,9 +684,35 @@ function SocialUIFrameMixin:InitializeSideWindows()
 			for _index, sideWindowDefinition in ipairs(tabData.sideWindows) do
 				local sideWindowFrame = CreateSideWindowFrame(self, sideWindowDefinition.template, sideWindowDefinition.key);
 				self.sideWindowFrames[sideWindowDefinition.sideWindowType] = sideWindowFrame;
+				self.sideWindowToLinkedTabType[sideWindowDefinition.sideWindowType] = tabData.tabType;
 			end
 		end
 	end
+
+	self:InitializeSideWindowAnchoring();
+end
+
+function SocialUIFrameMixin:InitializeSideWindowAnchoring()
+	local tabColumnWidth = SocialUIFrameMixin:GetTabColumnWidth();
+	for _sideWindowType, sideWindowFrame in pairs(self.sideWindowFrames) do
+		sideWindowFrame:ClearAllPoints();
+		sideWindowFrame:SetPoint("TOPLEFT", self, "TOPRIGHT", tabColumnWidth, 0);
+	end
+end
+
+function SocialUIFrameMixin:TryInitializeUIPanelRegistration()
+	if not GameStateUsesUIPanelManager() then
+		return;
+	end
+
+	local attributes =
+	{
+		area = "left",
+		pushable = 1,
+		whileDead = 1,
+		extraWidthFunc = SocialUIFrameMixin.GetPanelExtraWidth,
+	};
+	RegisterUIPanel(self, attributes);
 end
 
 function SocialUIFrameMixin:GetSideWindowFrame(sideWindowType)
@@ -691,6 +734,10 @@ function SocialUIFrameMixin:ShowSideWindow(sideWindowTypeToShow)
 		return;
 	end
 
+	if not self:IsSideWindowAllowedByLinkedTab(sideWindowTypeToShow) then
+		return;
+	end
+
 	local sideWindowFrameToShow = self:GetSideWindowFrame(sideWindowTypeToShow);
 	if not sideWindowFrameToShow then
 		return;
@@ -700,7 +747,27 @@ function SocialUIFrameMixin:ShowSideWindow(sideWindowTypeToShow)
 
 	self.activeSideWindowType = sideWindowTypeToShow;
 	sideWindowFrameToShow:Show();
-	self:TryRefreshUIPanelWidth();
+	self:TryRefreshUIPanelPositions();
+end
+
+function SocialUIFrameMixin:IsSideWindowAllowedByLinkedTab(sideWindowType)
+	local linkedTabType = self.sideWindowToLinkedTabType[sideWindowType];
+	local sideWindowLinkedToATab = linkedTabType ~= nil;
+	-- Some side windows aren't linked to a specific tab so they will always be allowed (Ex. IgnoreListFrame, BattleNetBroadcastFrame, etc.)
+	if not sideWindowLinkedToATab then
+		return true;
+	end
+
+	local linkedTabIsAvailableInSocialUI = self:GetDataForAvailableTab(linkedTabType) ~= nil;
+	return linkedTabIsAvailableInSocialUI;
+end
+
+-- A tab's side window shouldn't stick around if the linked tab disappears, ex. the feature is shut off by its kill switch
+function SocialUIFrameMixin:TryHideActiveSideWindowForUnavailableTab()
+	local activeSideWindowType = self:GetActiveSideWindowType();
+	if not self:IsSideWindowAllowedByLinkedTab(activeSideWindowType) then
+		self:HideActiveSideWindow();
+	end
 end
 
 function SocialUIFrameMixin:HideActiveSideWindow()
@@ -709,42 +776,49 @@ function SocialUIFrameMixin:HideActiveSideWindow()
 		return;
 	end
 
-	local sideWindowFrame = self:GetSideWindowFrame(self.activeSideWindowType);
-	if sideWindowFrame then
-		sideWindowFrame:Hide();
+	local activeSideWindowFrame = self:GetSideWindowFrame(self.activeSideWindowType);
+	if activeSideWindowFrame then
+		activeSideWindowFrame:Hide();
 	end
 
 	self.activeSideWindowType = nil;
-	self:TryRefreshUIPanelWidth();
+	self:TryRefreshUIPanelPositions();
 end
 
 function SocialUIFrameMixin:GetActiveSideWindowType()
 	return self.activeSideWindowType;
 end
 
-function SocialUIFrameMixin:TryRefreshUIPanelWidth()
-	local uiPanelManagerIsUsed = not C_Glue.IsOnGlueScreen();
-	if not uiPanelManagerIsUsed then
+-- The Social UI has various side windows that may affect its overall width, such as the Ignore List
+-- We need to dynamically adjust the width of the Social UI depending on which side windows are currently visible
+function SocialUIFrameMixin:TryRefreshUIPanelPositions()
+	if not GameStateUsesUIPanelManager() then
 		return;
 	end
 
-	local bestWidth = self:GetBestUIPanelWidth();
-	SetUIPanelAttribute(self, "width", bestWidth);
 	UpdateUIPanelPositions(self);
 end
 
--- The Social UI has various side windows that may affect its overall width, such as the Ignore List
--- We need to dynamically adjust the width of the Social UI depending on which side windows are currently visible
-function SocialUIFrameMixin:GetBestUIPanelWidth()
+function SocialUIFrameMixin:GetPanelExtraWidth()
+	return self:GetTabColumnWidth() + self:GetActiveSideWindowWidth();
+end
+
+function SocialUIFrameMixin:GetTabColumnWidth()
+	local tabWidth, _tabHeight = SocialUITabMixin.CalculateTabSizeBasedOnTabArt();
+	local padding = 7;
+	return tabWidth + padding;
+end
+
+function SocialUIFrameMixin:GetActiveSideWindowWidth()
 	local activeSideWindowType = self:GetActiveSideWindowType();
 	if not activeSideWindowType then
-		return self.baseUIPanelWidth;
+		return 0;
 	end
 
-	local sideWindowFrame = self:GetSideWindowFrame(activeSideWindowType);
-	if not sideWindowFrame then
-		return self.baseUIPanelWidth;
+	local activeSideWindowFrame = self:GetSideWindowFrame(activeSideWindowType);
+	if not activeSideWindowFrame then
+		return 0;
 	end
 
-	return self.baseUIPanelWidth + sideWindowFrame:GetWidth();
+	return activeSideWindowFrame:GetWidth();
 end

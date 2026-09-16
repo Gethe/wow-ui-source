@@ -16,7 +16,7 @@
 
 		<Frame name="GlueDialog" mixin="GlueDialogMixin" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 			<Frames>
-				<Frame parentKey="Container" inherits="UserScaledFrameTemplate">
+				<Frame parentKey="Container" inherits="UserScaledFrameTemplate, DefaultDialogPanelTemplate">
 					<KeyValues>
 						<KeyValue key="baseWidth" value="512" type="number"/>
 						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
@@ -74,9 +74,9 @@
 							<FontStringHeader1 inherits="UserScaledFontGlueNormalLarge" spacing="4"/>
 							<FontStringHeader2 inherits="UserScaledFontGlueHighlight" spacing="4"/>
 						</SimpleHTML>
-						<Button inherits="GlueDialogButtonUserScaledTemplate" id="1" parentKey="Button1"/>
-						<Button inherits="GlueDialogButtonUserScaledTemplate" id="2" parentKey="Button2"/>
-						<Button inherits="GlueDialogButtonUserScaledTemplate" id="3" parentKey="Button3"/>
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="1" parentKey="Button1" parentArray="Buttons" />
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="2" parentKey="Button2" parentArray="Buttons" />
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="3" parentKey="Button3" parentArray="Buttons" />
 
 						<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
 							<Size x="30" y="30"/>

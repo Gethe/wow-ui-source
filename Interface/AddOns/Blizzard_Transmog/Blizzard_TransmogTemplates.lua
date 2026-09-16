@@ -216,7 +216,7 @@ function TransmogSlotMixin:OnClick(buttonName)
 	elseif buttonName == "RightButton" then
 		if outfitSlotInfo.hasPending then
 			PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
-			C_TransmogOutfitInfo.RevertPendingTransmog(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentWeaponOptionInfo.weaponOption);
+			C_TransmogOutfitInfo.RevertPendingTransmog(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentOptionInfo.type);
 			self:OnSelect();
 		end
 	end
@@ -285,20 +285,23 @@ function TransmogSlotMixin:OnEnter()
 		if not itemID or not outfitSlotInfo.canTransmogrify or isHiddenEquipped or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Hidden then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-			-- Use weapon option name if set.
+			-- Use option name if set.
 			-- Use different names if slots are split.
 			local slot = transmogLocation:GetSlot();
-			local slotName = _G[transmogLocation:GetSlotName()];
-			if self.slotData.currentWeaponOptionInfo.weaponOption ~= Enum.TransmogOutfitSlotOption.None then
-				slotName = self.slotData.currentWeaponOptionInfo.name;
+			local title = _G[transmogLocation:GetSlotName()];
+			local subtitle = nil;
+			if self.slotData.currentOptionInfo.type ~= Enum.TransmogOutfitSlotOption.None then
+				subtitle = self.slotData.currentOptionInfo.name;
 			elseif C_TransmogOutfitInfo.GetSecondarySlotState(slot) then
 				if slot == Enum.TransmogOutfitSlot.ShoulderRight then
-					slotName = RIGHTSHOULDERSLOT;
+					title = RIGHTSHOULDERSLOT;
 				elseif slot == Enum.TransmogOutfitSlot.ShoulderLeft then
-					slotName = LEFTSHOULDERSLOT;
+					title = LEFTSHOULDERSLOT;
 				end
 			end
-			GameTooltip:SetText(slotName);
+
+			GameTooltip_AddColoredLine(GameTooltip, title, NORMAL_FONT_COLOR)
+			GameTooltip_AddColoredLine(GameTooltip, subtitle, WHITE_FONT_COLOR);
 
 			if outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Hidden then
 				GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_HIDDEN, TRANSMOGRIFY_FONT_COLOR);
@@ -361,12 +364,12 @@ function TransmogSlotMixin:GetSlotInfo()
 		return nil;
 	end
 
-	local slotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentWeaponOptionInfo.weaponOption);
+	local slotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentOptionInfo.type);
 
 	-- Some specific weapons may not be able to support illusions.
 	if self.slotData.transmogLocation:IsIllusion() then
 		local appearanceType = Enum.TransmogType.Appearance;
-		local appearanceSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), appearanceType, self.slotData.currentWeaponOptionInfo.weaponOption);
+		local appearanceSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), appearanceType, self.slotData.currentOptionInfo.type);
 		if appearanceSlotInfo then
 			-- If we have a valid warning state, make sure it can show relative to other possible warnings.
 			local cannotSupportIllusions = appearanceSlotInfo.transmogID ~= Constants.Transmog.NoTransmogID and not TransmogUtil.CanEnchantSource(appearanceSlotInfo.transmogID);
@@ -396,58 +399,58 @@ function TransmogSlotMixin:GetTransmogLocation()
 	return self.slotData.transmogLocation;
 end
 
-function TransmogSlotMixin:GetCurrentWeaponOptionInfo()
+function TransmogSlotMixin:GetCurrentOptionInfo()
 	if not self.slotData then
 		return nil;
 	end
 
-	return self.slotData.currentWeaponOptionInfo;
+	return self.slotData.currentOptionInfo;
 end
 
-function TransmogSlotMixin:SetCurrentWeaponOptionInfo(weaponOptionInfo)
-	if not self.slotData or not weaponOptionInfo.enabled then
+function TransmogSlotMixin:SetCurrentOptionInfo(optionInfo)
+	if not self.slotData or not optionInfo.enabled then
 		return;
 	end
 
-	self.slotData.currentWeaponOptionInfo = weaponOptionInfo;
+	self.slotData.currentOptionInfo = optionInfo;
 	if self.slotData.transmogLocation:IsAppearance() then
-		C_TransmogOutfitInfo.SetViewedWeaponOptionForSlot(self.slotData.transmogLocation:GetSlot(), weaponOptionInfo.weaponOption);
+		C_TransmogOutfitInfo.SetViewedOptionForSlot(self.slotData.transmogLocation:GetSlot(), optionInfo.type);
 	end
 end
 
-function TransmogSlotMixin:SetCurrentWeaponOption(weaponOption)
+function TransmogSlotMixin:SetCurrentOption(option)
 	if not self.slotData then
 		return false;
 	end
 
-	-- If weaponOption is not set, set to the first valid option.
-	local foundWeaponOption;
-	for _index, weaponOptionInfo in ipairs(self.slotData.weaponOptionsInfo) do
-		if weaponOptionInfo.enabled and (not weaponOption or weaponOptionInfo.weaponOption == weaponOption) then
-			self:SetCurrentWeaponOptionInfo(weaponOptionInfo);
-			foundWeaponOption = true;
+	-- If option is not set, set to the first valid option.
+	local foundOption;
+	for _index, optionInfo in ipairs(self.slotData.optionsInfo) do
+		if optionInfo.enabled and (not option or optionInfo.type == option) then
+			self:SetCurrentOptionInfo(optionInfo);
+			foundOption = true;
 			break;
 		end
 	end
 
-	if not foundWeaponOption and self.slotData.artifactOptionsInfo then
+	if not foundOption and self.slotData.artifactOptionsInfo then
 		for _index, artifactOptionInfo in ipairs(self.slotData.artifactOptionsInfo) do
-			if artifactOptionInfo.enabled and (not weaponOption or artifactOptionInfo.weaponOption == weaponOption) then
-				self:SetCurrentWeaponOptionInfo(artifactOptionInfo);
-				foundWeaponOption = true;
+			if artifactOptionInfo.enabled and (not option or artifactOptionInfo.type == option) then
+				self:SetCurrentOptionInfo(artifactOptionInfo);
+				foundOption = true;
 				break;
 			end
 		end
 	end
 
-	return foundWeaponOption;
+	return foundOption;
 end
 
 
 TransmogAppearanceSlotMixin = CreateFromMixins(TransmogSlotMixin);
 
-TransmogAppearanceSlotMixin.DEFAULT_WEAPON_OPTION_INFO = {
-	weaponOption = Enum.TransmogOutfitSlotOption.None,
+TransmogAppearanceSlotMixin.DEFAULT_OPTION_INFO = {
+	type = Enum.TransmogOutfitSlotOption.None,
 	name = "",
 	enabled = true
 };
@@ -479,34 +482,34 @@ end
 function TransmogAppearanceSlotMixin:Init(slotData)
 	TransmogSlotMixin.Init(self, slotData);
 
-	self:RefreshWeaponOptions();
+	self:RefreshOptions();
 
 	self.FlyoutDropdown:SetupMenu(function(_dropdown, rootDescription)
-		rootDescription:SetTag("MENU_TRANSMOG_WEAPON_OPTIONS");
+		rootDescription:SetTag("MENU_TRANSMOG_OPTIONS");
 
 		local function IsChecked(optionInfo)
-			return optionInfo.weaponOption == self.slotData.currentWeaponOptionInfo.weaponOption;
+			return optionInfo.type == self.slotData.currentOptionInfo.type;
 		end
 
 		local function SetChecked(optionInfo)
-			if optionInfo == self.slotData.currentWeaponOptionInfo then
+			if optionInfo == self.slotData.currentOptionInfo then
 				return;
 			end
 
-			self:SetCurrentWeaponOptionInfo(optionInfo);
+			self:SetCurrentOptionInfo(optionInfo);
 
 			if self.illusionSlotFrame then
-				self.illusionSlotFrame:SetCurrentWeaponOptionInfo(self.slotData.currentWeaponOptionInfo);
+				self.illusionSlotFrame:SetCurrentOptionInfo(self.slotData.currentOptionInfo);
 			end
 
-			-- Force update selected slot data and refresh visuals based on new weapon option.
+			-- Force update selected slot data and refresh visuals based on new option.
 			local forceRefresh = true;
 			self.slotData.transmogFrame:SelectSlot(self, forceRefresh);
 		end
 
 		local function CreateWarningIcon(frame, option)
-			-- Do not check this option if it is the current weapon option.
-			if self.slotData.currentWeaponOptionInfo.weaponOption == option then
+			-- Do not check this option if it is the current option.
+			if self.slotData.currentOptionInfo.type == option then
 				return;
 			end
 
@@ -533,12 +536,12 @@ function TransmogAppearanceSlotMixin:Init(slotData)
 			warningIcon:SetAtlas("transmog-icon-warning-small", TextureKitConstants.UseAtlasSize);
 		end
 
-		for _index, weaponOptionInfo in ipairs(self.slotData.weaponOptionsInfo) do
-			local elementDescription = rootDescription:CreateRadio(weaponOptionInfo.name, IsChecked, SetChecked, weaponOptionInfo);
+		for _index, optionInfo in ipairs(self.slotData.optionsInfo) do
+			local elementDescription = rootDescription:CreateRadio(optionInfo.name, IsChecked, SetChecked, optionInfo);
 			elementDescription:AddInitializer(function(frame, _description, _menu)
-				CreateWarningIcon(frame, weaponOptionInfo.weaponOption);
+				CreateWarningIcon(frame, optionInfo.type);
 			end);
-			elementDescription:SetEnabled(weaponOptionInfo.enabled);
+			elementDescription:SetEnabled(optionInfo.enabled);
 		end
 
 		if self.slotData.artifactOptionsInfo and #self.slotData.artifactOptionsInfo > 0 then
@@ -548,7 +551,7 @@ function TransmogAppearanceSlotMixin:Init(slotData)
 			for _index, artifactOptionInfo in ipairs(self.slotData.artifactOptionsInfo) do
 				local elementDescription = rootDescription:CreateRadio(artifactOptionInfo.name, IsChecked, SetChecked, artifactOptionInfo);
 				elementDescription:AddInitializer(function(frame, _description, _menu)
-					CreateWarningIcon(frame, artifactOptionInfo.weaponOption);
+					CreateWarningIcon(frame, artifactOptionInfo.type);
 				end);
 				elementDescription:SetEnabled(artifactOptionInfo.enabled);
 			end
@@ -579,8 +582,8 @@ function TransmogAppearanceSlotMixin:SetSelected(selected)
 
 	if selected then
 		local totalOptions = 0;
-		if self.slotData.weaponOptionsInfo then
-			totalOptions = totalOptions + #self.slotData.weaponOptionsInfo;
+		if self.slotData.optionsInfo then
+			totalOptions = totalOptions + #self.slotData.optionsInfo;
 		end
 
 		if self.slotData.artifactOptionsInfo then
@@ -593,46 +596,46 @@ function TransmogAppearanceSlotMixin:SetSelected(selected)
 	end
 end
 
-function TransmogAppearanceSlotMixin:RefreshWeaponOptions()
+function TransmogAppearanceSlotMixin:RefreshOptions()
 	if not self.slotData or not self.slotData.transmogLocation then
 		return;
 	end
 
-	-- A weapon slot can have several weapon or artifact options associated with them, and players can select which option they are editing for an outfit via a dropdown.
+	-- A slot can have several options associated with it, and players can select which option they are editing for an outfit via a dropdown.
 	-- For example the main hand weapon slot may have both 1 handed and 2 handed weapon options.
-	self.slotData.weaponOptionsInfo, self.slotData.artifactOptionsInfo = C_TransmogOutfitInfo.GetWeaponOptionsForSlot(self.slotData.transmogLocation:GetSlot());
+	self.slotData.optionsInfo, self.slotData.artifactOptionsInfo = C_TransmogOutfitInfo.GetOptionsForSlot(self.slotData.transmogLocation:GetSlot());
 
-	if (not self.slotData.weaponOptionsInfo or #self.slotData.weaponOptionsInfo == 0) and (not self.slotData.artifactOptionsInfo or #self.slotData.artifactOptionsInfo == 0) then
-		self:SetCurrentWeaponOptionInfo(self.DEFAULT_WEAPON_OPTION_INFO);
+	if (not self.slotData.optionsInfo or #self.slotData.optionsInfo == 0) and (not self.slotData.artifactOptionsInfo or #self.slotData.artifactOptionsInfo == 0) then
+		self:SetCurrentOptionInfo(self.DEFAULT_OPTION_INFO);
 	else
-		-- See if the current weapon option still exists and is enabled. If it is, use that, otherwise select new option.
-		local foundWeaponOption;
-		if self.slotData.currentWeaponOptionInfo then
-			foundWeaponOption = self:SetCurrentWeaponOption(self.slotData.currentWeaponOptionInfo);
+		-- See if the current option still exists and is enabled. If it is, use that, otherwise select new option.
+		local foundOption;
+		if self.slotData.currentOptionInfo then
+			foundOption = self:SetCurrentOption(self.slotData.currentOptionInfo);
 		end
 
 		-- Current option not found, select the preferred first option based on equipped gear for this slot.
-		if not foundWeaponOption then
-			local equippedWeaponOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
-			if equippedWeaponOption then
-				foundWeaponOption = self:SetCurrentWeaponOption(equippedWeaponOption);
+		if not foundOption then
+			local equippedOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
+			if equippedOption then
+				foundOption = self:SetCurrentOption(equippedOption);
 			end
 		end
 
 		-- No current or preferred option found, select the first valid option instead.
-		if not foundWeaponOption then
-			local weaponOption = nil;
-			foundWeaponOption = self:SetCurrentWeaponOption(weaponOption);
+		if not foundOption then
+			local option = nil;
+			foundOption = self:SetCurrentOption(option);
 		end
 
 		-- No valid options found, set to default.
-		if not foundWeaponOption then
-			self:SetCurrentWeaponOptionInfo(self.DEFAULT_WEAPON_OPTION_INFO);
+		if not foundOption then
+			self:SetCurrentOptionInfo(self.DEFAULT_OPTION_INFO);
 		end
 	end
 
 	if self.illusionSlotFrame then
-		self.illusionSlotFrame:SetCurrentWeaponOptionInfo(self.slotData.currentWeaponOptionInfo);
+		self.illusionSlotFrame:SetCurrentOptionInfo(self.slotData.currentOptionInfo);
 	end
 
 	-- Close menu as it could show outdated data.
@@ -704,33 +707,33 @@ function TransmogAppearanceSlotMixin:Update()
 end
 
 function TransmogAppearanceSlotMixin:GetCurrentIcons()
-	-- Collect all icons associated for this slot (and illusion slot, if present) for all weapon option types.
+	-- Collect all icons associated for this slot (and illusion slot, if present) for all option types.
 	local transmogIcons = {};
 
 	if not self.slotData then
 		return transmogIcons;
 	end
 
-	local function PopulateIcons(weaponOption)
-		local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), weaponOption);
+	local function PopulateIcons(option)
+		local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), option);
 		if outfitSlotInfo and outfitSlotInfo.texture then
 			table.insert(transmogIcons, outfitSlotInfo.texture);
 		end
 
 		if self.illusionSlotFrame then
-			local outfitIllusionSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.illusionSlotFrame:GetTransmogLocation():GetSlot(), self.illusionSlotFrame:GetTransmogLocation():GetType(), weaponOption);
+			local outfitIllusionSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.illusionSlotFrame:GetTransmogLocation():GetSlot(), self.illusionSlotFrame:GetTransmogLocation():GetType(), type);
 			if outfitIllusionSlotInfo and outfitIllusionSlotInfo.texture then
 				table.insert(transmogIcons, outfitIllusionSlotInfo.texture);
 			end
 		end
 	end
 
-	if self.slotData.weaponOptionsInfo then
-		for _index, weaponOptionInfo in ipairs(self.slotData.weaponOptionsInfo) do
-			PopulateIcons(weaponOptionInfo.weaponOption);
+	if self.slotData.optionsInfo then
+		for _index, optionInfo in ipairs(self.slotData.optionsInfo) do
+			PopulateIcons(optionInfo.type);
 		end
 	else
-		PopulateIcons(self.slotData.currentWeaponOptionInfo.weaponOption);
+		PopulateIcons(self.slotData.currentOptionInfo.type);
 	end
 
 	return transmogIcons;
@@ -738,6 +741,44 @@ end
 
 
 TransmogSlotFlyoutDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+TransmogSlotFlyoutLayoutData = {
+	[Enum.TransmogOutfitSlotPosition.Left] = {
+		anchorPoint = "LEFT",
+		anchorPointX = 0,
+		anchorPointY = 0,
+		anchorRelativePoint = "RIGHT",
+		menuPoint = "TOPLEFT",
+		menuPointX = 5,
+		menuPointY = 1,
+		menuRelativePoint = "TOPRIGHT",
+		rotationRadians = (-90 / 180) * math.pi,
+		isVertical = true,
+	},
+	[Enum.TransmogOutfitSlotPosition.Right] = {
+		anchorPoint = "RIGHT",
+		anchorPointX = 0,
+		anchorPointY = 0,
+		anchorRelativePoint = "LEFT",
+		menuPoint = "TOPRIGHT",
+		menuPointX = -5,
+		menuPointY = 1,
+		menuRelativePoint = "TOPLEFT",
+		rotationRadians = (90 / 180) * math.pi,
+		isVertical = true,
+	},
+	[Enum.TransmogOutfitSlotPosition.Bottom] = {
+		anchorPoint = "BOTTOM",
+		anchorPointX = 0,
+		anchorPointY = -2,
+		anchorRelativePoint = "TOP",
+		menuPoint = "BOTTOM",
+		menuPointX = 0,
+		menuPointY = -5,
+		menuRelativePoint = "TOP",
+		rotationRadians = 0,
+		isVertical = false,
+	},
+}
 
 -- Overridden.
 function TransmogSlotFlyoutDropdownMixin:OnButtonStateChanged()
@@ -760,6 +801,39 @@ function TransmogSlotFlyoutDropdownMixin:OnMenuClosed(menu, closeReason)
 	self:SetNormalAtlas("transmog-button-pullup", TextureKitConstants.UseAtlasSize);
 end
 
+function TransmogSlotFlyoutDropdownMixin:InitTransmogFlyout(slotPosition)
+	-- Setup Option Flyout dropdown and menus based on which group the slot is in
+	self:ClearAllPoints();
+	local rotationRadians = 0;
+	local slotFrame = self:GetParent();
+
+	local layoutData = TransmogSlotFlyoutLayoutData[slotPosition];
+	if not layoutData then
+		return;
+	end
+
+	self:SetPoint(layoutData.anchorPoint, slotFrame, layoutData.anchorRelativePoint, layoutData.anchorPointX, layoutData.anchorPointY);
+	if layoutData.isVertical then
+		self:SetSize(self.shortSideLength, self.longSideLength);
+	else
+		self:SetSize(self.longSideLength, self.shortSideLength);
+	end
+	self.menuPoint = layoutData.menuPoint;
+	self.menuPointX = layoutData.menuPointX;
+	self.menuPointY = layoutData.menuPointY;
+	self.menuRelativePoint = layoutData.menuRelativePoint;
+	rotationRadians = layoutData.rotationRadians;
+
+	local childRegions = { self:GetRegions() };
+	for i, child in ipairs(childRegions) do
+		if child.SetRotation ~= nil then
+			child:SetRotation(rotationRadians);
+		end
+	end
+
+	local anchor = AnchorUtil.CreateAnchor(self.menuPoint, self, self.menuRelativePoint, self.menuPointX, self.menuPointY);
+	self:SetMenuAnchor(anchor);
+end
 
 TransmogIllusionSlotMixin = CreateFromMixins(TransmogSlotMixin);
 
@@ -1164,7 +1238,7 @@ function TransmogItemModelMixin:UpdateItemBorder()
 		return;
 	end
 
-	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
+	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentOptionInfo.type);
 
 	local sourceID = appearanceInfo.sourceID;
 	if selectedSlotData.transmogLocation:IsAppearance() then
@@ -1207,7 +1281,7 @@ function TransmogItemModelMixin:UpdateItemBorder()
 end
 
 function TransmogItemModelMixin:UpdateItem()
-	local appearanceInfo = self:GetAppearanceInfo();
+	local appearanceInfo = self:GetAppearanceInfo(); -- This can also be a TransmogIllusionInfo
 	local itemsCollectionFrame = self:GetCollectionFrame();
 	if not appearanceInfo or not itemsCollectionFrame then
 		return;
@@ -1249,7 +1323,7 @@ function TransmogItemModelMixin:UpdateItem()
 	else
 		local selectedSlotData = itemsCollectionFrame:GetSelectedSlotCallback();
 		if selectedSlotData and selectedSlotData.transmogLocation then
-			local collectionInfo = C_TransmogOutfitInfo.GetCollectionInfoForSlotAndOption(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentWeaponOptionInfo.weaponOption, itemsCollectionFrame:GetActiveCategory());
+			local collectionInfo = C_TransmogOutfitInfo.GetCollectionInfoForSlotAndOption(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentOptionInfo.type, itemsCollectionFrame:GetActiveCategory());
 			isArmor = not collectionInfo or not collectionInfo.isWeapon;
 		end
 	end
@@ -1277,9 +1351,8 @@ function TransmogItemModelMixin:UpdateItem()
 	-- Icons
 	self.FavoriteVisual:SetShown(appearanceInfo.isFavorite);
 	self.HideVisual:SetShown(appearanceInfo.isHideVisual);
-
-	local isNewAppearance = C_TransmogCollection.IsNewAppearance(appearanceInfo.visualID);
-	self.NewVisual:SetShown(isNewAppearance);
+	self.WarnVisual:SetShown(isArmor and not appearanceInfo.isValidForEquippedItem);
+	self.NewVisual:SetShown(C_TransmogCollection.IsNewAppearance(appearanceInfo.visualID));
 end
 
 function TransmogItemModelMixin:RefreshItemCamera()

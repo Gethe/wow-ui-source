@@ -65,10 +65,16 @@ function CustomizationFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_InsertFrame(tooltip, self.expandedTooltipFrame);
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddDisabledLine(tooltip, RIGHT_CLICK_FOR_LESS);
+
+			if (not InputUtil.IsGamepadUIEnabled()) then
+				GameTooltip_AddDisabledLine(tooltip, RIGHT_CLICK_FOR_LESS);
+			end
 		else
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddDisabledLine(tooltip, RIGHT_CLICK_FOR_MORE);
+
+			if (not InputUtil.IsGamepadUIEnabled()) then
+				GameTooltip_AddDisabledLine(tooltip, RIGHT_CLICK_FOR_MORE);
+			end
 		end
 	end
 

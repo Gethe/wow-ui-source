@@ -1,7 +1,0 @@
-## Title: Blizzard_MirrorTimer
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: Game
-## AllowLoadGameType: classic
-Classic\MirrorTimer.lua
-Classic\MirrorTimer.xml

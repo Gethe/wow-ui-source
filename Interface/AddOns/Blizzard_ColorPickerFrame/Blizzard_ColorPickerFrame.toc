@@ -1,0 +1,7 @@
+## Title: Blizzard_ColorPickerFrame
+## Dep: Blizzard_FrameXMLBase
+## Dep: Blizzard_UIPanelTemplates
+## Dep: Blizzard_GameMenuEsc
+Shared\ColorPickerFrame.lua
+[Family]\ColorPickerFrame.lua
+[Family]\ColorPickerFrame.xml

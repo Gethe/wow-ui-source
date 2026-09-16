@@ -558,7 +558,8 @@ function RaidGroupButton_OpenMenu(self)
 		local contextData =
 		{
 			unit = self.unit,
-			name = self.name;
+			name = self.name,
+			ownerFrame = self,
 		};
 		UnitPopup_OpenMenu("RAID", contextData);
 	end

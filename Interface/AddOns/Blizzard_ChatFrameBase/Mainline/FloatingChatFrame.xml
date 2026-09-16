@@ -141,7 +141,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="DockManagerTemplate" frameStrata="LOW" virtual="true" parent="UIParent">
+	<Frame name="DockManagerTemplate" mixin="FloatingChatFrameDockMixin" frameStrata="LOW" virtual="true" parent="UIParent">
 		<Size x="0" y="26"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -206,9 +206,27 @@
 					<!--Frames will be dynamically added to the ScrollChild for now-->
 				</ScrollChild>
 			</ScrollFrame>
+			<Frame parentKey="LeftTabHint" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<Size x="19" y="19"/>
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightTabHint" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<Size x="19" y="19"/>
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="FCFDock_OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnEvent>
 				FCFDock_OnEvent(self, event, ...);
 			</OnEvent>
@@ -303,7 +321,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="ChatTabTemplate" frameStrata="LOW" parent="UIParent" virtual="true" inherits="ChatTabArtTemplate" parentArray="Tabs">
+	<Button name="ChatTabTemplate" frameStrata="MEDIUM" parent="UIParent" virtual="true" inherits="ChatTabArtTemplate" parentArray="Tabs">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="0" y="2"/>
 		</Anchors>
@@ -436,17 +454,11 @@
 			</maxResize>
 		</ResizeBounds>
 		<Frames>
-			<Button name="$parentClickAnywhereButton" setAllPoints="true" hidden="true" parentKey="clickAnywhereButton">
+			<Button name="$parentClickAnywhereButton" mixin="FloatingChatFrameClickAnywhereButtonMixin" setAllPoints="true" hidden="true" parentKey="clickAnywhereButton">
 				<Scripts>
-					<OnLoad>
-						FCFClickAnywhereButton_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						FCFClickAnywhereButton_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnClick>
-						ChatFrameUtil.SetLastActiveWindow(self:GetParent().editBox);
-					</OnClick>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentResizeButton" parentKey="ResizeButton">
@@ -532,6 +544,9 @@
 						self:GetParent():ScrollToBottom();
 					</OnClick>
 				</Scripts>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<NormalTexture atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true"/>
 				<PushedTexture atlas="minimal-scrollbar-arrow-returntobottom-down" useAtlasSize="true"/>
 				<HighlightTexture atlas="minimal-scrollbar-arrow-returntobottom-over" useAtlasSize="true"/>
@@ -543,6 +558,9 @@
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-5" y="-2"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_FloatingChatFrameEditBox" type="string"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad inherit="append">
 						self.chatFrame = self:GetParent();
@@ -557,14 +575,7 @@
 				SetChatWindowShown(self:GetID(), true);
 				FCF_StopAlertFlash(self);
 			</OnShow>
-			<OnHide>
-				--If the top-level parent is hidden (Alt-Z), OnHide is called, but self:IsShown() is still true (self:IsVisible() would be false)
-				if ( not self:IsShown() ) then
-					if ( not self.minimized ) then
-						SetChatWindowShown(self:GetID(), false);
-					end
-				end
-			</OnHide>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</ScrollingMessageFrame>
@@ -684,7 +695,7 @@
 	<Frame name="GeneralDockManager" inherits="DockManagerTemplate" roleset="chat">
 		<Scripts>
 			<OnLoad>
-				FCFDock_OnLoad(self);
+				FloatingChatFrameDockMixin.OnLoad(self);
 				GENERAL_CHAT_DOCK = self;
 				-- resize for locales
 				local list = self.overflowButton.list;

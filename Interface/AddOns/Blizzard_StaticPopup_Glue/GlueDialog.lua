@@ -36,6 +36,14 @@ do
 	end
 end
 
+local function ShouldHideButtonFromDialogData(dialogInfo, index)
+	local text = dialogInfo["button"..index];
+	if not text then
+		return true;
+	end
+	return false;
+end
+
 function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	local dialogInfo = StaticPopupDialogs[which];
 	local button1, button2, button3, alertIcon, text, htmlText, spinner = GetContainerRegions(self);
@@ -70,56 +78,43 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	useText:ClearAllPoints();
 	useText:SetPoint("TOP", 0, -23);
 
-	-- Set the buttons of the dialog
-	if dialogInfo.button3 then
-		button1:ClearAllPoints();
-		button2:ClearAllPoints();
-		button3:ClearAllPoints();
-
-		if dialogInfo.displayVertical then
-			button3:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
-			button2:SetPoint("BOTTOM", button3, "TOP", 0, 10);
-			button1:SetPoint("BOTTOM", button2, "TOP", 0, 10);
+	self.visibleButtons = {};
+	for i, button in ipairs(self.Container.Buttons) do
+		local shouldHideButton = ShouldHideButtonFromDialogData(dialogInfo, i);
+		button:ClearAllPoints();
+		if shouldHideButton then
+			button:Hide();
 		else
-			button2:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
-			button1:SetPoint("RIGHT", button2, "LEFT", -15, 0);
-			button3:SetPoint("LEFT", button2, "RIGHT", 15, 0);
+			button:SetText(dialogInfo["button"..i]);
+			table.insert(self.visibleButtons, button);
 		end
+	end
 
-		button1:SetText(dialogInfo.button1);
-		button1:Show();
-		button2:SetText(dialogInfo.button2);
-		button2:Show();
-		button3:SetText(dialogInfo.button3);
-		button3:Show();
-	elseif dialogInfo.button2 then
-		button1:ClearAllPoints();
-		button2:ClearAllPoints();
-
+	local numVisibleButtons = #self.visibleButtons;
+	if numVisibleButtons == 3 then
 		if dialogInfo.displayVertical then
-			button2:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
-			button1:SetPoint("BOTTOM", button2, "TOP", 0, 10);
+			self.visibleButtons[3]:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
+			self.visibleButtons[2]:SetPoint("BOTTOM", self.visibleButtons[3], "TOP", 0, 10);
+			self.visibleButtons[1]:SetPoint("BOTTOM", self.visibleButtons[2], "TOP", 0, 10);
 		else
-			button1:SetPoint("BOTTOMRIGHT", self.Container, "BOTTOM", -6, 18);
-			button2:SetPoint("LEFT", button1, "RIGHT", 15, 0);
+			self.visibleButtons[2]:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
+			self.visibleButtons[1]:SetPoint("RIGHT", self.visibleButtons[2], "LEFT", -15, 0);
+			self.visibleButtons[3]:SetPoint("LEFT", self.visibleButtons[2], "RIGHT", 15, 0);
 		end
+	elseif numVisibleButtons == 2 then
+		if dialogInfo.displayVertical then
+			self.visibleButtons[2]:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
+			self.visibleButtons[1]:SetPoint("BOTTOM", self.visibleButtons[2], "TOP", 0, 10);
+		else
+			self.visibleButtons[1]:SetPoint("BOTTOMRIGHT", self.Container, "BOTTOM", -6, 18);
+			self.visibleButtons[2]:SetPoint("LEFT", self.visibleButtons[1], "RIGHT", 15, 0);
+		end
+	elseif numVisibleButtons == 1 then
+		self.visibleButtons[1]:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
+	end
 
-		button1:SetText(dialogInfo.button1);
-		button1:Show();
-		button2:SetText(dialogInfo.button2);
-		button2:Show();
-		button3:Hide();
-	elseif dialogInfo.button1 then
-		button1:ClearAllPoints();
-		button1:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
-		button1:SetText(dialogInfo.button1);
-		button1:Show();
-		button2:Hide();
-		button3:Hide();
-	else
-		button1:Hide();
-		button2:Hide();
-		button3:Hide();
+	for _, button in ipairs(self.visibleButtons) do
+		button:Show();
 	end
 
 	button1:UpdateWidth();
@@ -172,7 +167,7 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	if dialogInfo.spinner then
 		spinner:Show();
 		spinner:ClearAllPoints();
-		if dialogInfo.button1 or dialogInfo.button2 or dialogInfo.button3 then
+		if numVisibleButtons > 0 then
 			spinner:SetPoint("BOTTOM", 0, 54);
 		else
 			spinner:SetPoint("BOTTOM", 0, 16);
@@ -254,13 +249,15 @@ function GlueDialogMixin:Resize(which)
 		textWidth = text:GetWidth();
 	end
 
+	local numVisibleButtons = #self.visibleButtons;
+
 	-- size the width first
 	if dialogInfo.displayVertical then
 		local borderPadding = 32;
-		local backgroundWidth = math.max(button1:GetWidth(), textWidth);
+		local backgroundWidth = math.max(self.visibleButtons[1]:GetWidth(), textWidth);
 		self.Container:SetDesiredWidth(backgroundWidth + borderPadding);
-	elseif dialogInfo.button3 then
-		local displayWidth = 75 + button1:GetWidth() + 15 + button2:GetWidth() + 15 + button3:GetWidth() + 75;
+	elseif numVisibleButtons == 3 then
+		local displayWidth = 75 + self.visibleButtons[1]:GetWidth() + 15 + self.visibleButtons[2]:GetWidth() + 15 + self.visibleButtons[3]:GetWidth() + 75;
 		self.Container:SetDesiredWidth(displayWidth);
 		text:SetDesiredWidth(displayWidth - 40);
 	end
@@ -276,12 +273,12 @@ function GlueDialogMixin:Resize(which)
 	-- now size the dialog box height
 	local displayHeight = 16 + textHeight;
 	if dialogInfo.displayVertical then
-		if dialogInfo.button1 then
-			displayHeight = displayHeight + 25 + button1:GetHeight() + 25;
-			if dialogInfo.button2 then
-				displayHeight = displayHeight + 10 + button2:GetHeight();
-				if dialogInfo.button3 then
-					displayHeight = displayHeight + 10 + button3:GetHeight();
+		if numVisibleButtons > 0 then
+			displayHeight = displayHeight + 25 + self.visibleButtons[1]:GetHeight() + 25;
+			if numVisibleButtons > 1 then
+				displayHeight = displayHeight + 10 + self.visibleButtons[2]:GetHeight();
+				if numVisibleButtons > 2 then
+					displayHeight = displayHeight + 10 + self.visibleButtons[3]:GetHeight();
 				end
 			end
 		end
@@ -290,8 +287,8 @@ function GlueDialogMixin:Resize(which)
 			displayHeight = displayHeight + spinner:GetHeight();
 		end
 	else
-		if dialogInfo.button1 then
-			displayHeight = displayHeight + 13 + button1:GetHeight() + 25;
+		if numVisibleButtons > 0 then
+			displayHeight = displayHeight + 13 + self.visibleButtons[1]:GetHeight() + 25;
 		else
 			displayHeight = displayHeight + 25;
 		end
@@ -389,4 +386,12 @@ function GlueDialogMixin:SetupStartDelay(dialogInfo)
 		self.acceptDelay = nil;
 		self:GetButton(1):Enable();
 	end
+end
+
+function GlueDialogMixin:StartFocus()
+	self.Container:StartFocus();
+end
+
+function GlueDialogMixin:EndFocus()
+	self.Container:EndFocus();
 end

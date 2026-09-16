@@ -1,8 +1,9 @@
-## Title: Blizzard_DelvesDifficultyPicker 
+## Title: Blizzard_DelvesDifficultyPicker
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_Colors
+## AllowLoadGameType: standard
 Blizzard_DelvesDifficultyPicker_Bootstrap.lua [Bootstrap]
 Blizzard_DelvesDifficultyPicker.lua
 Blizzard_DelvesDifficultyPicker.xml

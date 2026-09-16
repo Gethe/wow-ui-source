@@ -86,6 +86,7 @@
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
 			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="5"/>

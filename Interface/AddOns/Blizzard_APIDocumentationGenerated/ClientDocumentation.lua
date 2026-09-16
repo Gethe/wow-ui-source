@@ -59,6 +59,15 @@ local Client =
 			},
 		},
 		{
+			Name = "PlatformIsHandheld",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHandheld", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ReportBug",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -84,6 +93,10 @@ local Client =
 		},
 		{
 			Name = "Screenshot",
+			Type = "Function",
+		},
+		{
+			Name = "UIReload",
 			Type = "Function",
 		},
 		{

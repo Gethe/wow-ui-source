@@ -1,0 +1,48 @@
+## Title: Blizzard_Gamepad
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML, Blizzard_GamepadSmartNavigation, Blizzard_GamepadSharedUtility, Blizzard_MicroMenu
+## DefaultState: enabled
+## AllowLoadGameType: camelot
+
+###############################################
+# Utility
+###############################################
+
+Utility\Utility.lua
+
+###############################################
+# Root Directory & UI (depends on Utility)
+###############################################
+
+Core.lua
+
+Gameplay\SpecialInputStates.lua
+
+Utility\Bindings\HoldBindings.lua
+
+UI\FrameReforms\StackSplitFrame.lua
+
+UI\ConsoleHUD\ConsoleTemplates.lua
+UI\ConsoleHUD\ConsoleTemplates.xml
+
+UI\CinematicMovie.lua
+
+UI\Reticle\GamepadReticle.lua
+UI\Reticle\GamepadReticle.xml
+
+UI\HUDMode\GamepadHudMode.lua
+UI\HUDMode\GamepadHudMode.xml
+
+UI\Radials\GamepadRadial.lua
+UI\Radials\GamepadRadial.xml
+
+UI\PersistentInputLegend\GamepadPersistentInputLegend.lua
+UI\PersistentInputLegend\GamepadPersistentInputLegend.xml
+
+###########################
+# Smart Navigation for HUD
+###########################
+
+# Initialize last so we can reference any addon-generated frames here
+SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.lua
+SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.xml

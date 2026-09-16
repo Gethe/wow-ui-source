@@ -167,7 +167,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 		end
 	end);
 
-	WardrobeCollectionFrame.progressBar:Show();
+	self:SetProgressBarVisibility(true);
 	self:UpdateProgressBar();
 	self:RefreshCameras();
 
@@ -175,6 +175,10 @@ function WardrobeSetsCollectionMixin:OnShow()
 		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL);
 		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogSetsTab, true);
 	end
+end
+
+function WardrobeSetsCollectionMixin:SetProgressBarVisibility(show)
+	-- overridden
 end
 
 function WardrobeSetsCollectionMixin:OnHide()
@@ -443,11 +447,6 @@ function WardrobeSetsCollectionMixin:GetSelectedSetID()
 	return self.selectedSetID;
 end
 
-function WardrobeSetsCollectionMixin:HasSetsToShow()
-	local sets = SetsDataProvider:GetBaseSets();
-	return sets and sets[1];
-end
-
 function WardrobeSetsCollectionMixin:SetAppearanceTooltip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 	self.tooltipTransmogSlot = C_Transmog.GetSlotForInventoryType(frame.invType);
@@ -630,7 +629,7 @@ end
 
 local function ConvertClassMaskToClassList(classMask)
 	local classList = "";
-	for classID = 1, GetNumClasses() do
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
 		local classAllowed = FlagsUtil.IsSet(classMask, bit.lshift(1, (classID - 1)));
 		local allowedClassInfo = classAllowed and C_CreatureInfo.GetClassInfo(classID);
 		if allowedClassInfo then

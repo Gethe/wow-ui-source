@@ -4,7 +4,7 @@
 ## RequiredDep: Blizzard_PartyPoseUI, Blizzard_UIWidgets, Blizzard_LFGUtil
 ## Version: 1.0
 ## LoadOnDemand: 1
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 
 Blizzard_IslandsPartyPoseUI_Bootstrap.lua [Bootstrap]
 Blizzard_IslandsPartyPoseUI.lua

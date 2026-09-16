@@ -82,7 +82,10 @@ function SettingsPanelMixin:OnLoad()
 
 	self.SearchBox:HookScript("OnTextChanged", GenerateClosure(self.OnSearchTextChanged, self));
 
+	self:GetCategoryList():RegisterCallback(SettingsCategoryListMixin.Event.OnCategoryActivated, self.ActivateCategory, self);
 	self:GetCategoryList():RegisterCallback(SettingsCategoryListMixin.Event.OnCategorySelected, self.SelectCategory, self);
+	self:GetCategoryList():RegisterCallback(SettingsCategoryListMixin.Event.OnCategoriesUpdated, self.CategoriesUpdated, self);
+	self:GetSettingsList():RegisterCallback(SettingsListMixin.Event.OnSettingsUpdated, self.SettingsUpdated, self);
 
 	settingsList.ScrollBox:SetScript("OnMouseWheel", function(scrollBox, delta)
 		if not KeybindListener:OnForwardMouseWheel(delta) then
@@ -102,6 +105,8 @@ function SettingsPanelMixin:OnLoad()
 
 	self:RegisterEvent("SETTINGS_PANEL_OPEN");
 	self:RegisterEvent("UPDATE_BINDINGS");
+
+	self:RegisterTransitions();
 end
 
 function SettingsPanelMixin:OnTabSelected(tab, tabIndex)
@@ -187,7 +192,22 @@ function SettingsPanelMixin:OnShow()
 	self:CallRefreshOnCanvases();
 	self:CheckTutorials();
 
+	if (InputUtil.IsGamepadUIEnabled()) then
+		if (InGlue()) then
+			SmartNavigation:ActivateBinding();
+		end
+		-- Allow navigating left out of the settings list to return to the current category button.
+		SmartNavigation:RegisterCallback("HitLeftEdge", self.UnfocusContainer, self);
+		SmartNavigation:RegisterCallback("HitBottomEdge", self.FocusApplyOrClose, self);
+		SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, GenerateClosure(self.SmartNavPanelInfoAdded, self));
+	end
+
 	categories:RefreshNewFeatures();
+end
+
+function SettingsPanelMixin:SmartNavPanelInfoAdded(panelInfo)
+	local button = self:GetCategoryList():GetSelectedCategoryButton();
+	SmartNavigation:SetTargetButtonForFrame(self, button);
 end
 
 function SettingsPanelMixin:CheckTutorials()
@@ -217,6 +237,11 @@ function SettingsPanelMixin:OnHide()
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");
 	local bindingSet = checked and Enum.BindingSet.Character or Enum.BindingSet.Account;
 	SaveBindings(bindingSet);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		SmartNavigation:UnregisterCallback("HitLeftEdge", self);
+		SmartNavigation:UnregisterCallback("HitBottomEdge", self);
+	end
 
 	EventRegistry:TriggerEvent("SettingsPanel.OnHide");
 end
@@ -292,7 +317,7 @@ function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)
 	if categoryTbl then
 		categoryTbl:SetExpanded(true);
 
-		self:SelectCategory(categoryTbl);
+		self:ActivateCategory(categoryTbl);
 
 		if scrollToElementName then
 			self:GetSettingsList():ScrollToElementByName(scrollToElementName);
@@ -324,6 +349,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
+	local uiReload = false;
 
 	local settings = {};
 	for setting, record in pairs(self.modified) do
@@ -339,6 +365,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			uiReload = uiReload or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UIReload);
 
 			if not unrevertable then
 				if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
@@ -353,7 +380,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 		self.isCommitInProgress = nil;
 	end
 
-	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
+	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate, uiReload);
 
 	if #self.revertableSettings > 0 then
 		local duration = 8.0;
@@ -367,7 +394,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 
 end
 
-function SettingsPanelMixin:FinalizeCommit(saveBindings, gxRestart, windowUpdate)
+function SettingsPanelMixin:FinalizeCommit(saveBindings, gxRestart, windowUpdate, uiReload)
 	if saveBindings then
 		SaveBindings(GetCurrentBindingSet());
 	end
@@ -378,6 +405,10 @@ function SettingsPanelMixin:FinalizeCommit(saveBindings, gxRestart, windowUpdate
 
 	if windowUpdate then
 		UpdateWindow();
+	end
+
+	if uiReload then
+		UIReload();
 	end
 end
 
@@ -391,12 +422,14 @@ function SettingsPanelMixin:RevertSettings()
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
+	local uiReload = false;
 
 	for index, data in ipairs(self.revertableSettings) do
 		local setting = data.setting;
 		saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		uiReload = uiReload or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UIReload);
 
 		local immediate = true;
 		local originalValue = data.originalValue;
@@ -405,7 +438,7 @@ function SettingsPanelMixin:RevertSettings()
 
 	self:WipeModifiedTable();
 	self:CancelPendingRevertTimer();
-	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
+	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate, uiReload);
 end
 
 function SettingsPanelMixin:CancelPendingRevertTimer()
@@ -432,6 +465,7 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
+	local uiReload = false;
 	local settings = {};
 
 	for setting, category in pairs(self.settings) do
@@ -447,6 +481,7 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+				uiReload = uiReload or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UIReload);
 			end
 		end
 	end
@@ -454,7 +489,7 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	self:CallDefaultOnCanvases();
 	self:WipeModifiedTable();
 	self:CheckApplyButton();
-	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
+	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate, uiReload);
 
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
 
@@ -467,6 +502,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
+	local uiReload = false;
 
 	local settings = {};
 	local currentCategory = self:GetCurrentCategory();
@@ -486,6 +522,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+				uiReload = uiReload or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UIReload);
 			end
 			self.modified[setting] = nil;
 		end
@@ -502,7 +539,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 		end
 	end
 
-	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
+	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate, uiReload);
 
 	self:CheckApplyButton();
 
@@ -796,6 +833,11 @@ function SettingsPanelMixin:SelectFirstCategory(force)
 	end
 end
 
+function SettingsPanelMixin:ActivateCategory(category, force)
+	self:SelectCategory(category, force);
+	self:FocusContainer();
+end
+
 function SettingsPanelMixin:SelectCategory(category, force)
 	if force or (self:GetCurrentCategory() ~= category) then
 		self:ClearActiveCategoryTutorial();
@@ -804,6 +846,7 @@ function SettingsPanelMixin:SelectCategory(category, force)
 		self:ClearCurrentCategoryCanvas();
 		self:SetCurrentCategory(category);
 		self:DisplayCategory(category);
+		self:UnfocusContainer();
 
 		EventRegistry:TriggerEvent("Settings.CategoryChanged", category);
 	end
@@ -986,4 +1029,185 @@ function SettingsPanelMixin:ClearActiveCategoryTutorial()
 		local settingsList = self:GetSettingsList();
 		settingsList.Header.TutorialButton:Click();
 	end
+end
+
+function SettingsPanelMixin:FocusApplyOrClose()
+	local button = self.ApplyButton:IsShown() and self.ApplyButton or self.CloseButton;
+	self:UnfocusContainer(button);
+end
+
+function SettingsPanelMixin:FocusContainer(button)
+	if not SmartNavigation:IsInFocusGroup() then
+		SmartNavigation:EnterFocusGroup("Container");
+
+		if SmartNavigation.activeInfo then
+			if not button then
+				button = self.lastSettingOption;
+			end
+			if not button then
+				button = self:GetFirstSmartNavFocusableSettingFrame();
+			end
+			self.lastSettingOption = nil;
+			if button then
+				SmartNavigation:SelectButton(button);
+			end
+		end
+	end
+end
+
+function SettingsPanelMixin:UnfocusContainer(button)
+	if SmartNavigation:IsInFocusGroup() then
+		if not button then
+			button = self:GetCategoryList():GetSelectedCategoryButton();
+		end
+		self.lastSettingOption = SmartNavigation:GetCurrentButton();
+		SmartNavigation:LeaveFocusGroup(button);
+		return true;
+	end
+end
+
+function SettingsPanelMixin:SmartNavigationCloseHandler()
+	return self:UnfocusContainer();
+end
+
+function SettingsPanelMixin:CategoriesUpdated()
+	if InputUtil.IsMKBUIEnabled() then
+		return;
+	end
+
+	-- Navigating down from the tabs should go to the category list
+	local categoryList = self:GetCategoryList();
+	local firstCategoryButton = categoryList:GetFirstCategoryButton();
+	SmartNavigation_AddJumpNavigationOverride(self.GameTab, SMART_NAV_INPUT_DIRECTION.DOWN, firstCategoryButton);
+	SmartNavigation_AddJumpNavigationOverride(self.AddOnsTab, SMART_NAV_INPUT_DIRECTION.DOWN, firstCategoryButton);
+
+	-- Up from the first category should navigate to the active tab
+	SmartNavigation_AddJumpNavigationOverride(firstCategoryButton, SMART_NAV_INPUT_DIRECTION.UP, function()
+		return self.AddOnsTab:IsShown() and self.AddOnsTab:IsSelected() and self.AddOnsTab or self.GameTab;
+	end);
+
+	-- Navigating right from the category list should act as entering that category
+	for button in categoryList:EnumerateCategoryButtons() do
+		SmartNavigation_AddJumpNavigationOverride(button, SMART_NAV_INPUT_DIRECTION.RIGHT, function()
+			self:FocusContainer();
+			return true;
+		end);
+	end
+end
+
+local function RecurseFindSmartNavFocusableFrame(frame)
+	if not frame or (SmartNavigation_CanFocusFrame(frame) and not SmartNavigation_IsFrameIgnored(frame)) then
+		return frame;
+	end
+
+	local children = {frame:GetChildren()};
+	for _, child in ipairs(children) do
+		frame = RecurseFindSmartNavFocusableFrame(child);
+		if frame then
+			return frame;
+		end
+	end
+end
+
+local function GetFirstSmartNavFocusableFrame(frames, direction)
+	local bestFrame;
+	local bestFrameY = -math.huge;
+
+	for _, frame in ipairs(frames) do
+		local focusable = RecurseFindSmartNavFocusableFrame(frame);
+		if focusable then
+			local yPos = focusable:GetTop() * direction;
+			if yPos > bestFrameY then
+				bestFrame = focusable;
+				bestFrameY = yPos;
+			end
+		end
+	end
+
+	return bestFrame;
+end
+
+function SettingsPanelMixin:GetFirstSmartNavFocusableSettingFrame()
+	local settingFrames = self:GetSettingsList().ScrollBox:GetFrames();
+	return GetFirstSmartNavFocusableFrame(settingFrames, 1);
+end
+
+function SettingsPanelMixin:GetLastSmartNavFocusableSettingFrame()
+	local settingFrames = self:GetSettingsList().ScrollBox:GetFrames();
+	return GetFirstSmartNavFocusableFrame(settingFrames, -1);
+end
+
+function SettingsPanelMixin:SettingsUpdated()
+	if InputUtil.IsMKBUIEnabled() then
+		return;
+	end
+
+	-- Forget the last selected setting, since that element has likely been reused for a new option
+	self.lastSettingOption = nil;
+
+	local optionFrames = self:GetSettingsList().ScrollBox:GetFrames();
+
+	for _, frame in ipairs(optionFrames) do
+		local focusable = RecurseFindSmartNavFocusableFrame(frame);
+		if focusable then
+			SmartNavigation_ClearJumpNavigationOverridesInDirection(focusable, SMART_NAV_INPUT_DIRECTION.UP);
+		end
+	end
+
+	local topMostFrame = self:GetFirstSmartNavFocusableSettingFrame();
+	local defaultsButton = self:GetSettingsList().Header.DefaultsButton;
+	SmartNavigation_AddJumpNavigationOverride(topMostFrame, SMART_NAV_INPUT_DIRECTION.UP, defaultsButton);
+end
+
+function SettingsPanelMixin:SetupGamepad()
+	SmartNavigation_MarkFrameIgnored(self.CloseButton);
+	SmartNavigation_MarkFrameIgnored(self.ClosePanelButton);
+	SmartNavigation_MarkFrameSubSection(self.Container, "Container");
+
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.GameTab, SMART_NAV_INPUT_DIRECTION.RIGHT, self.AddOnsTab);
+
+	SmartNavigation_AddJumpNavigationOverride(self.SearchBox, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+		self:FocusContainer();
+		SmartNavigation:SelectButton(self.Container.SettingsList.Header.DefaultsButton);
+		return true;
+	end);
+
+	local defaultsButton = self:GetSettingsList().Header.DefaultsButton;
+	SmartNavigation_AddIgnoreInputNavigationOverride(defaultsButton, SMART_NAV_INPUT_DIRECTION.RIGHT);
+
+	SmartNavigation_AddJumpNavigationOverride(defaultsButton, SMART_NAV_INPUT_DIRECTION.LEFT, function()
+		self:UnfocusContainer();
+		return true;
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(defaultsButton, SMART_NAV_INPUT_DIRECTION.UP, function()
+		self:UnfocusContainer(self.SearchBox);
+		return true;
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(defaultsButton, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+		return self:GetFirstSmartNavFocusableSettingFrame();
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(self.ApplyButton, SMART_NAV_INPUT_DIRECTION.UP, function()
+		self:FocusContainer(self:GetLastSmartNavFocusableSettingFrame());
+		return true;
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(self.CloseButton, SMART_NAV_INPUT_DIRECTION.UP, function()
+		self:FocusContainer(self:GetLastSmartNavFocusableSettingFrame());
+		return true;
+	end);
+end
+
+function SettingsPanelMixin:InitializeGamepad()
+	if self:IsShown() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+end
+
+function SettingsPanelMixin:RegisterTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 end

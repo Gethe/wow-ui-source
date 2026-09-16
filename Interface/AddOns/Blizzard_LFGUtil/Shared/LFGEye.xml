@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="LFGEyeTemplate" virtual="true" hidden="true" mixin="LFGEyeTemplateMixin">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture"  parentKey="Texture" setAllPoints="true" file="Interface\LFGFrame\LFG-Eye"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

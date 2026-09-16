@@ -389,6 +389,13 @@ TalentButtonUtil.SizingAdjustment = {
 		{ region = "BorderShadowMask", adjust = -2, },
 		{ region = "DisabledOverlayMask", adjust = 9, },
 	},
+
+	LegacySquare = {
+		{ region = "Icon", adjust = 6, },
+		{ region = "IconMask", adjust = 6, },
+		{ region = "DisabledOverlay", adjust = 6, },
+		{ region = "DisabledOverlayMask", adjust = 6, },
+	},
 };
 
 local HoverAlphaByVisualState = {
@@ -663,7 +670,7 @@ end;
 -- TODO:: replace this with a more formal wrapper around the API.
 local OriginalGetConditionInfo = C_Traits.GetConditionInfo;
 C_Traits.GetConditionInfo = function (...)
-	local configID, condID, ignoreFontColor = ...;
+	local configID, condID, ignoreFontColor, traitTreeName = ...;
 	local condInfo = OriginalGetConditionInfo(configID, condID);
 	if not condInfo then
 		return nil;
@@ -689,8 +696,7 @@ C_Traits.GetConditionInfo = function (...)
 		elseif condInfo.playerLevel then
 			return tooltipFormat:format(condInfo.playerLevel);
 		elseif condInfo.spentAmountRequired then
-			local TEMP_GATE_FORMAT_STRING_ARG = ""; -- TODO:: Remove this once the appropriate strings have been updated.
-			return tooltipFormat:format(condInfo.spentAmountRequired, TEMP_GATE_FORMAT_STRING_ARG);
+			return tooltipFormat:format(condInfo.spentAmountRequired, traitTreeName or "");
 		end
 
 		return nil;

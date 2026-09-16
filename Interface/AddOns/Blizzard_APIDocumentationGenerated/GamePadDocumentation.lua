@@ -132,6 +132,15 @@ local GamePad =
 			},
 		},
 		{
+			Name = "GetAllowHoverEventsWithFreeLook",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCombinedDeviceID",
 			Type = "Function",
 
@@ -219,6 +228,16 @@ local GamePad =
 			},
 		},
 		{
+			Name = "SetAllowHoverEventsWithFreeLook",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetConfig",
 			Type = "Function",
 			HasRestrictions = true,
@@ -281,6 +300,16 @@ local GamePad =
 			Payload =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GamePadAllowHoverEventsWithFreeLookChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_ALLOW_HOVER_EVENTS_WITH_FREE_LOOK_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

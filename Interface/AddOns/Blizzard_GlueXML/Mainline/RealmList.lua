@@ -14,6 +14,11 @@ function RealmList_OnLoad(self)
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(RealmListBackground.ScrollBox, RealmListBackground.ScrollBar, view);
+
+	InputUtil.RegisterForInterfaceTransitions(RealmList);
+	InputUtil.RegisterGamepadSetup(RealmList, RealmList_SetupGamepad);
+	InputUtil.RegisterGamepadInit(RealmList, RealmList_InitializeGamepad);
+	InputUtil.RegisterGamepadUninit(RealmList, RealmList_UninitializeGamepad);
 end
 
 function RealmList_OnEvent(self, event, ...)
@@ -56,6 +61,10 @@ function RealmList_InitButton(button, realmAddr)
 end
 
 function RealmList_SetButtonSelected(button, selected)
+	if not RealmList_IsButtonSelectable(button) and selected then
+		-- Offline Realms are not selectable.
+		return;
+	end
 	local isPvP = button.isPvP;
 	local isRP = button.isRP;
 	if ( isPvP and isRP ) then
@@ -171,6 +180,50 @@ function RealmList_Update(retainScrollPosition)
 
 	RealmList_UpdateOKButton();
 	RealmList_UpdateSortIndicators();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(RealmNameSort, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(RealmTypeSort, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(RealmCharactersSort, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(RealmLoadSort, SMART_NAV_INPUT_DIRECTION.DOWN);
+
+		if RealmListBackground.ScrollBox:GetFrameCount() > 0 then
+			local topRealm = RealmListBackground.ScrollBox:GetFrames()[1];
+			SmartNavigation_AddJumpNavigationOverride(RealmNameSort, SMART_NAV_INPUT_DIRECTION.DOWN, topRealm);
+			SmartNavigation_AddJumpNavigationOverride(RealmTypeSort, SMART_NAV_INPUT_DIRECTION.DOWN, topRealm);
+			SmartNavigation_AddJumpNavigationOverride(RealmCharactersSort, SMART_NAV_INPUT_DIRECTION.DOWN, topRealm);
+			SmartNavigation_AddJumpNavigationOverride(RealmLoadSort, SMART_NAV_INPUT_DIRECTION.DOWN, topRealm);
+		end
+
+		local frames = RealmListBackground.ScrollBox:GetFrames();
+		SmartNavigation_AddJumpNavigationOverride(
+			frames[1],
+			SMART_NAV_INPUT_DIRECTION.UP,
+			RealmNameSort
+		);
+		SmartNavigation_RegisterOutgoingDirNavCallback(
+			frames[1],
+			SMART_NAV_INPUT_DIRECTION.UP,
+			function() RealmListBackground.JumpHint:Hide(); end
+		);
+		-- Navigating left or right selects a sort button for the top third of the realms, which is undesired.
+		for i = 1, RealmListBackground.ScrollBox:GetFrameCount(), 1 do
+			SmartNavigation_AddJumpNavigationOverride(
+				frames[i],
+				SMART_NAV_INPUT_DIRECTION.LEFT,
+				RealmNameSort
+			);
+			SmartNavigation_AddIgnoreInputNavigationOverride(
+				frames[i],
+				SMART_NAV_INPUT_DIRECTION.RIGHT
+			);
+			SmartNavigation_RegisterOutgoingDirNavCallback(
+				frames[i],
+				SMART_NAV_INPUT_DIRECTION.LEFT,
+				function() RealmListBackground.JumpHint:Hide(); end
+			);
+		end
+	end
 end
 
 function RealmList_UpdateOKButton()
@@ -221,6 +274,16 @@ function RealmList_UpdateTabs()
 	if ( tabIdx ) then
 		GlueTemplates_SetTab(RealmList, tabIdx);
 	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local gamepadTabIndicators = RealmList.GamepadTabIndicators;
+		local numIndicatorTabs = gamepadTabIndicators:GetNumTabs();
+		if numIndicatorTabs ~= numTabs then
+			gamepadTabIndicators:SetUpTabs(RealmListBackground.RealmSelectionTabs);
+		else
+			gamepadTabIndicators:UpdateTabVisibility();
+		end
+	end
 end
 
 function RealmList_GetCategoryIndex(categoryID)
@@ -247,7 +310,7 @@ function RealmList_OnOk()
 		-- If trying to join a Full realm then popup a dialog
 		local realmInfo = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-		if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
+		if (realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0) then
 			StaticPopup_Show("REALM_IS_FULL");
 		else
 			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
@@ -256,8 +319,8 @@ function RealmList_OnOk()
 end
 
 function RealmList_OnCancel()
-	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
-	if ( not connectedToWoW ) then
+	local loginState = C_Login.GetState();
+	if ( not loginState.connectedToWoW ) then
 		C_Login.DisconnectFromServer();
 	else
 		C_RealmList.ClearRealmList();
@@ -377,7 +440,7 @@ RealmListRealmButtonMixin = {};
 
 function RealmListRealmButtonMixin:OnEnter()
 	local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
-	if realmInfo.version and realmInfo.version.major then
+	if realmInfo and realmInfo.version and realmInfo.version.major then
 		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
 		GlueTooltip:SetText(realmInfo.version.major .. "." .. realmInfo.version.minor .. "." .. realmInfo.version.revision .. "  " .. realmInfo.version.build .. " CfgID: " .. realmInfo.version.cfgConfigsID);
 	end
@@ -399,6 +462,14 @@ function RealmListRealmButtonMixin:OnDoubleClick()
 	self:ClickAction(isDoubleClick);
 end
 
+function RealmListRealmButtonMixin:OnSmartNavSelect()
+	local isDoubleClick = false;
+	self:ClickAction(isDoubleClick);
+	if not RealmListOkButton:IsEnabled() then
+		GlueTooltip:Hide();
+	end
+end
+
 function RealmListRealmButtonMixin:ClickAction(isDoubleClick)
 	local name, isTournament, isInvalidLocale = C_RealmList.GetCategoryInfo(RealmList.selectedCategory);
 	if ( isInvalidLocale ) then
@@ -409,7 +480,7 @@ function RealmListRealmButtonMixin:ClickAction(isDoubleClick)
 
 	local oldSelectedRealm = RealmList.selectedRealm;
 	RealmList.selectedRealm = self.realmAddr;
-	
+
 	local function UpdateButtonSelected(realmAddr, selected)
 		if realmAddr then
 			local button = RealmListBackground.ScrollBox:FindFrameByPredicate(function(button)
@@ -420,7 +491,7 @@ function RealmListRealmButtonMixin:ClickAction(isDoubleClick)
 			end
 		end
 	end;
-	
+
 	UpdateButtonSelected(oldSelectedRealm, false);
 	UpdateButtonSelected(RealmList.selectedRealm, true);
 
@@ -467,6 +538,19 @@ function RealmListRealmButtonMixin:NarrationNavigationShouldSkipTooltips()
 	return true;
 end
 
+local function HasRealm()
+	return RealmListBackground.ScrollBox:GetFrameCount() > 0;
+end
+
+local function GetFirstRealmOrHeader()
+	if HasRealm() then
+		RealmListBackground.ScrollBox:ScrollToBegin();
+		return RealmListBackground.ScrollBox:GetFrames()[1];
+	else
+		return RealmNameSort;
+	end
+end
+
 function RealmList_OnShow(self)
 	local name = GetServerName();
 
@@ -482,6 +566,12 @@ function RealmList_OnShow(self)
 
 	if ( not C_RealmList.IsRealmListComplete() ) then
 		StaticPopup_Show("OKAY_MUST_ACCEPT", REALM_LIST_PARTIAL_RESULTS);
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:SetSmartNavPanelInfoAddedCallback(RealmListUI, function ()
+			SmartNavigation:SetTargetButtonForFrame(RealmListUI, GetFirstRealmOrHeader());
+		end);
 	end
 end
 
@@ -500,6 +590,29 @@ function RealmList_GetInfoFromName(name)
 	end
 
 	return nil, nil;
+end
+
+function RealmListTab_OnClick(tab)
+	if ( tab.disabled ) then
+		local name, isTournament = C_RealmList.GetCategoryInfo(C_RealmList.GetAvailableCategories()[tab:GetID()]);
+		if ( isTournament ) then
+			--Display popup explaining tournament realms
+			StaticPopup_Show("REALM_TOURNAMENT_WARNING");
+		end
+		return;
+	end
+	RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[tab:GetID()];
+	RealmList.selectedRealm = nil;
+	GlueTemplates_SetTab(RealmList, tab:GetID());
+
+	RealmList_Update();
+
+	if ( InputUtil.IsGamepadUIEnabled() ) then
+		SmartNavigation:SelectButton(GetFirstRealmOrHeader());
+		if HasRealm() then
+			RealmListBackground.JumpHint:Show();
+		end
+	end
 end
 
 function RealmHelpText_OnShow(self)
@@ -624,4 +737,72 @@ end
 
 function RealmListUtility_SortRealms(realms)
 	table.sort(realms, RealmListUtility_SortRealmsCB);
+end
+
+function RealmList_SetupGamepad()
+	-- Custom smart navigation overrides
+	do
+		SmartNavigation_AddJumpNavigationOverride(
+			RealmCharactersSort,
+			SMART_NAV_INPUT_DIRECTION.LEFT,
+			RealmTypeSort
+		);
+		local ScrollToBeginning = function()
+			RealmListBackground.JumpHint:Show();
+			RealmListBackground.ScrollBox:ScrollToBegin();
+		end
+		SmartNavigation_RegisterOutgoingDirNavCallback(RealmNameSort, SMART_NAV_INPUT_DIRECTION.DOWN, ScrollToBeginning);
+		SmartNavigation_RegisterOutgoingDirNavCallback(RealmTypeSort, SMART_NAV_INPUT_DIRECTION.DOWN, ScrollToBeginning);
+		SmartNavigation_RegisterOutgoingDirNavCallback(RealmCharactersSort, SMART_NAV_INPUT_DIRECTION.DOWN, ScrollToBeginning);
+		SmartNavigation_RegisterOutgoingDirNavCallback(RealmLoadSort, SMART_NAV_INPUT_DIRECTION.DOWN, ScrollToBeginning);
+	end
+
+	local realmListSelectBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, RealmList_OnOk, ACTION_LABEL_SELECT);
+	realmListSelectBinding:AddButtonContext("ButtonContext_RealmListRealmButton");
+
+	RealmList.footer = GamepadSharedUtility.CreatePromptedBindingFooter(RealmListBackground, "RealmList");
+	RealmList.footer:SetAnchorOffsets(10, -40);
+	RealmList.footer:AddPromptedBinding(realmListSelectBinding);
+	RealmList.footer:AddStandardSelectPrompt();
+	RealmList.footer:AddStandardBackPrompt();
+	RealmList.footer:Finalize();
+
+	RealmListUI.SmartNavigationCloseHandler = function()
+		RealmListCloseButton:Click();
+		return true;
+	end
+
+	RealmListUI.FocusGamepad = function()
+		RealmList.footer:ShowAndActivateBindings();
+	end
+
+	RealmListUI.UnfocusGamepad = function()
+		RealmList.footer:HideAndDeactivateBindings();
+	end
+end
+
+function RealmList_InitializeGamepad()
+	RealmListOkButton:Hide();
+	RealmListCancelButton:Hide();
+	RealmListCloseButton:Hide();
+
+	-- Swap top right corner.
+	RealmListBackground.KBMTopRight:Hide();
+	RealmListBackground.GamepadTopRight:Show();
+
+	RealmListBackground.JumpHint:Show();
+	RealmList.GamepadTabIndicators:Show();
+end
+
+function RealmList_UninitializeGamepad()
+	RealmListOkButton:Show();
+	RealmListCancelButton:Show();
+	RealmListCloseButton:Show();
+
+	-- Revert top right corner.
+	RealmListBackground.KBMTopRight:Show();
+	RealmListBackground.GamepadTopRight:Hide();
+
+	RealmListBackground.JumpHint:Hide();
+	RealmList.GamepadTabIndicators:Hide();
 end

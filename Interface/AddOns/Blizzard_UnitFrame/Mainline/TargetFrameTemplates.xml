@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<FontString name="LevelTextTemplate" inherits="GameNormalNumberFont" justifyH="CENTER" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-2"/>
+		</Anchors>
+	</FontString>
+
+	<!--Dummy templates - overriden in other flavors-->
+	<Texture name="LevelBackgroundCircleTemplate" virtual="true"/>
+	<Texture name="PvpBackgroundCircleTemplate" virtual="true"/>
+	<Texture name="PvpBackgroundIconTemplate" virtual="true"/>
+
+</Ui>

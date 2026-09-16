@@ -26,6 +26,8 @@
 				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
 				if ( self.permDisabled ) then
 					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+				elseif ( not self.isRecommended ) then
+					GameTooltip:AddLine(CLASS_ROLE_NOT_RECOMMENDED, 1, 0, 0, true);
 				end
 				GameTooltip:Show();
 			</OnEnter>

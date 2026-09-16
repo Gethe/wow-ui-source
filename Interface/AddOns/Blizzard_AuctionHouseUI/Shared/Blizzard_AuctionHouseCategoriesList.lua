@@ -16,10 +16,14 @@ function AuctionFrameFilters_UpdateCategories(categoriesList, forceSelectionInto
 		local selected = selectedCategoryIndex and selectedCategoryIndex == categoryIndex;
 		local isToken = categoryInfo:HasFlag("WOW_TOKEN_FLAG");
 
-		tinsert(EXPANDED_FILTERS, { name = categoryInfo.name, type = "category", categoryIndex = categoryIndex, selected = selected, isToken = isToken, });
+		local hide = isToken and not C_WowTokenUI.ShouldDisplayInAuctionHouse();
 
-		if ( selected ) then
-			AuctionFrameFilters_AddSubCategories(categoriesList, categoryInfo.subCategories);
+		if not hide then
+			tinsert(EXPANDED_FILTERS, { name = categoryInfo.name, type = "category", categoryIndex = categoryIndex, selected = selected, isToken = isToken, });
+
+			if ( selected ) then
+				AuctionFrameFilters_AddSubCategories(categoriesList, categoryInfo.subCategories);
+			end
 		end
 	end
 

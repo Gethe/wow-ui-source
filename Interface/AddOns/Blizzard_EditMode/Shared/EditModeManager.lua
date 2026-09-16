@@ -63,10 +63,17 @@ function EditModeManagerFrameMixin:OnLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
+	EventRegistry:RegisterCallback("EditModeManager.UpdateBottomActionBarPositions", self.OnUpdateBottomActionBarPositionsRequested, self);
 
 	self.FramesBlockingEditMode = {};
 
 	self:SetupEditModeDialogs();
+end
+
+function EditModeManagerFrameMixin:OnUpdateBottomActionBarPositionsRequested()
+	if self:IsInitialized() then
+		self:UpdateBottomActionBarPositions();
+	end
 end
 
 function EditModeManagerFrameMixin:OnDragStart()
@@ -187,7 +194,14 @@ end
 function EditModeManagerFrameMixin:OnEvent(event, ...)
 	if event == "EDIT_MODE_LAYOUTS_UPDATED" then
 		local layoutInfo, reconcileLayouts = ...;
-		self:UpdateLayoutInfo(layoutInfo, reconcileLayouts);
+
+		-- BUILD FIXME
+		-- Blizzard_GamepadActionBars is creating an invalid dependency having the MicroMenuContainer and ActionBar anchor to each other.
+		local success = pcall(function()
+			self:UpdateLayoutInfo(layoutInfo, reconcileLayouts);
+		end);
+		assertsafe(success, "EditMode: Error updating layout info in EDIT_MODE_LAYOUTS_UPDATED handler.");
+
 		self:UpdateTopFramePositions();
 		self:InitializeAccountSettings();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
@@ -456,7 +470,8 @@ function EditModeManagerFrameMixin:GetNumArenaFramesForcedShown()
 end
 
 function EditModeManagerFrameMixin:UseRaidStylePartyFrames()
-	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+	return InputUtil.IsGamepadUIEnabled()
+		or self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 end
 
 function EditModeManagerFrameMixin:ShouldShowPartyFrameBackground()
@@ -632,17 +647,51 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 		return;
 	end
 
-	local barsToUpdate = self:GetBottomActionBars();
+	local barsToUpdate = EditModeUtil:GetBottomActionBars();
 
-	local offsetX = 0;
-	local offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
+	local baseParent = nil;
+	local baseParentAnchor = nil;
+	local stackPointX = 0;
+	local stackPointY = 0;
 
-	if OverrideActionBar and OverrideActionBar:IsShown() then
-		local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
-		offsetY = OverrideActionBar:GetHeight() + xpBarHeight + 10;
+	-- If we're using relative-to-base positioning, the entire action bar stack moves with the first action bar.
+	if ACTION_BARS_RELATIVE_TO_BASE_POSITIONING then
+		if #barsToUpdate == 0 then
+			return;
+		end
+		local baseBar = barsToUpdate[1];
+
+		baseParent = baseBar;
+		baseParentAnchor = "BOTTOMLEFT";
+		stackPointX = 0;
+		stackPointY = 0;
+
+		-- If the base bar is not in its usual position, adjust the stack point Y now since it will be skipped over in the main loop.
+		if baseBar and baseBar:IsShown() and not baseBar:IsInDefaultPosition() then
+			stackPointY = stackPointY + baseBar:GetHeight() + BOTTOM_ACTION_BARS_SPACER_Y;
+		end
+	-- Otherwise, the action bar stack is at a fixed stack location, and there is no special "base" action bar.
+	else
+		baseParent = UIParent;
+		baseParentAnchor = "BOTTOM";
+		stackPointX = MAIN_ACTION_BAR_OFFSET_X;
+		stackPointY = MAIN_ACTION_BAR_OFFSET_Y;
+
+		-- If there's an active OverrideActionBar XP bar, adjust the stack point Y
+		if OverrideActionBar and OverrideActionBar:IsShown() then
+			local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
+			stackPointY = OverrideActionBar:GetHeight() + xpBarHeight + 10;
+		end
+
+		-- Find the first valid bar's width to adjust the stack point X
+		for index, bar in ipairs(barsToUpdate) do
+			if bar and bar:IsShown() and bar:IsInDefaultPosition() then
+				local barWidth = EditModeUtil:IsCenterManagedFrame(bar) and EditModeUtil:CalculateCenterManagedSystemWidth() or bar:GetWidth();
+				stackPointX = stackPointX - (barWidth / 2);
+				break;
+			end
+		end
 	end
-
-	local topMostBar = nil;
 
 	for index, bar in ipairs(barsToUpdate) do
 		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
@@ -651,17 +700,23 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 			if (bar.skipAutomaticPositioning) then
 				self:SetToLayoutAnchor(bar);
 			else
-				if not topMostBar then
-					offsetX = -bar:GetWidth() / 2;
+				local anchorInfo = EditModeManagerFrame:GetDefaultAnchor(bar);
+				local xOffset = anchorInfo and anchorInfo.bottomBarOffsetX or 0;
+				local excludeFromStackIncrement = anchorInfo and anchorInfo.bottomBarExcludeFromStackIncrement or false;
+
+				if bar == baseParent then
+					self:SetToLayoutAnchor(bar);
+				else
+					bar:SetPoint("BOTTOMLEFT", baseParent, baseParentAnchor, stackPointX + xOffset, stackPointY);
 				end
 
-				local topBarHeight = topMostBar and topMostBar:GetHeight() + BOTTOM_ACTION_BARS_SPACER_Y or 0;
-				offsetY = offsetY + topBarHeight;
-
-				bar:ClearAllPoints();
-				bar:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", offsetX, offsetY);
-
-				topMostBar = bar;
+				if not excludeFromStackIncrement then
+					if (index < #barsToUpdate and bar == SecondaryStatusTrackingBarContainer and barsToUpdate[index+1] == MainStatusTrackingBarContainer) then
+						stackPointY = stackPointY + bar:GetHeight() + PRIMARY_AND_SECONDARY_STATUS_TRACKING_BAR_SPACER_Y;
+					else
+						stackPointY = stackPointY + bar:GetHeight() + BOTTOM_ACTION_BARS_SPACER_Y;
+					end
+				end
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -891,11 +946,13 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetStatusTrackingBar2Shown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStatusTrackingBar2));
 	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
 	self.AccountSettings:SetPetFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetFrame));
+	self.AccountSettings:SetSwingTimerShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowSwingTimer));
 	self.AccountSettings:SetCooldownViewerShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCooldownViewer));
 	self.AccountSettings:SetPersonalResourceDisplayShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPersonalResourceDisplay));
 	self.AccountSettings:SetEncounterEventsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterEvents));
 	self.AccountSettings:SetDamageMeterShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDamageMeter));
 	self.AccountSettings:SetRaidWarningShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidWarning));
+	self.AccountSettings:SetGroupFinderShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowGroupFinder));
 	self.AccountSettings:SetLossOfControlShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLossOfControl));
 end
 
@@ -973,10 +1030,15 @@ function EditModeManagerFrameMixin:InvokeOnAnyEditModeSystemAnchorChanged(force)
 		return;
 	end
 
-	local function callOnAnyEditModeSystemAnchorChanged(index, systemFrame)
-		systemFrame:OnAnyEditModeSystemAnchorChanged();
-	end
-	secureexecuterange(self.registeredSystemFrames, callOnAnyEditModeSystemAnchorChanged);
+	-- BUILD FIXME
+	-- An error encountered while iterating handlers via secureexecuterange causes the dirty flag to never be set.
+	local success = pcall(function()
+		local function callOnAnyEditModeSystemAnchorChanged(index, systemFrame)
+			systemFrame:OnAnyEditModeSystemAnchorChanged();
+		end
+		secureexecuterange(self.registeredSystemFrames, callOnAnyEditModeSystemAnchorChanged);
+	end);
+	assertsafe(success, "EditMode: Error invoking anchor changed callbacks.");
 
 	self.editModeSystemAnchorDirty = nil;
 end
@@ -1279,75 +1341,85 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 
 		local lastLayoutType = nil;
 		local addedCharacterSpecificHeader = false;
+		local expectedStyle = InputUtil.GetCurrentInterfaceStyle();
 		for _, layoutTbl in ipairs(layoutTbls) do
 			local layoutInfo = layoutTbl.layoutInfo;
-			local index = layoutTbl.index;
 			local layoutType = layoutInfo.layoutType;
-
-			if layoutType == Enum.EditModeLayoutType.Character and not addedCharacterSpecificHeader then
-				addedCharacterSpecificHeader = true;
-				rootDescription:CreateTitle(characterLayoutHeaderText);
-			end
-
-			if lastLayoutType and lastLayoutType ~= layoutType then
-				rootDescription:CreateDivider();
-			end
-
-			lastLayoutType = layoutType;
-
-			local isUserLayout = layoutType == Enum.EditModeLayoutType.Account or layoutType == Enum.EditModeLayoutType.Character;
 			local isPreset = layoutType == Enum.EditModeLayoutType.Preset;
-			local text = isPreset and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
 
-			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, index);
-			if isUserLayout then
-				local copyButton = radio:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
-					self:ShowNewLayoutDialog(layoutInfo);
-				end);
+			local showLayout = (not isPreset) or (layoutInfo.interfaceStyle == expectedStyle);
 
-				local layoutsMaxed = EditModeManagerFrame:AreLayoutsFullyMaxed();
-				if layoutsMaxed or self:HasActiveChanges() then
-					copyButton:SetEnabled(false);
+			if showLayout then
+				local index = layoutTbl.index;
 
-					local tooltipText = layoutsMaxed and maxLayoutsCopyErrorText or HUD_EDIT_MODE_ERROR_COPY;
-					copyButton:SetTooltip(function(tooltip, elementDescription)
-						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
-						GameTooltip_AddErrorLine(tooltip, tooltipText);
-					end);
+				if layoutType == Enum.EditModeLayoutType.Character and not addedCharacterSpecificHeader then
+					addedCharacterSpecificHeader = true;
+					rootDescription:CreateTitle(characterLayoutHeaderText);
 				end
 
-				radio:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
-					self:ShowRenameLayoutDialog(index, layoutInfo);
-				end);
+				if lastLayoutType and lastLayoutType ~= layoutType then
+					rootDescription:CreateDivider();
+				end
 
-				radio:DeactivateSubmenu();
+				lastLayoutType = layoutType;
 
-				radio:AddInitializer(function(button, description, menu)
-					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
-					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
-					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
-						description:ForceOpenSubmenu();
-					end);
+				local isUserLayout = layoutType == Enum.EditModeLayoutType.Account or layoutType == Enum.EditModeLayoutType.Character;
+				local text = isPreset and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
 
-					local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-					MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
-					MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
-					MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
-						self:ShowDeleteLayoutDialog(index, layoutInfo);
-						menu:Close();
-					end);
-				end);
-			else
-				radio:AddInitializer(function(button, description, menu)
-					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_COPY_LAYOUT);
-					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
-					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+				local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, index);
+				if isUserLayout then
+					local layoutIsEnabled = ((expectedStyle == Enum.InputDeviceInterfaceType.Mkb) and (layoutInfo.interfaceStyle == nil)) or
+						(layoutInfo.interfaceStyle == expectedStyle);
+
+					local copyButton = radio:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
 						self:ShowNewLayoutDialog(layoutInfo);
-						menu:Close();
 					end);
-				end);
+
+					local layoutsMaxed = EditModeManagerFrame:AreLayoutsFullyMaxed();
+					if layoutsMaxed or self:HasActiveChanges() then
+						copyButton:SetEnabled(false);
+
+						local tooltipText = layoutsMaxed and maxLayoutsCopyErrorText or HUD_EDIT_MODE_ERROR_COPY;
+						copyButton:SetTooltip(function(tooltip, elementDescription)
+							GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
+							GameTooltip_AddErrorLine(tooltip, tooltipText);
+						end);
+					end
+
+					radio:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
+						self:ShowRenameLayoutDialog(index, layoutInfo);
+					end);
+
+					radio:DeactivateSubmenu();
+
+					radio:AddInitializer(function(button, description, menu)
+						description:SetEnabled(layoutIsEnabled);
+						local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+						MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
+						MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+						MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+							description:ForceOpenSubmenu();
+						end);
+
+						local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+						MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
+						MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
+						MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
+							self:ShowDeleteLayoutDialog(index, layoutInfo);
+							menu:Close();
+						end);
+					end);
+				else
+					radio:AddInitializer(function(button, description, menu)
+						local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+						MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_COPY_LAYOUT);
+						MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+						MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+							self:ShowNewLayoutDialog(layoutInfo);
+							menu:Close();
+						end);
+					end);
+				end
 			end
 		end
 
@@ -1401,6 +1473,10 @@ function EditModeManagerFrameMixin:UpdateSystems()
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
+	if not self:GetActiveLayoutInfo() then
+		return;
+	end
+
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
 		if forceFullUpdate then
@@ -1408,6 +1484,9 @@ function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
 		end
 
 		systemFrame:UpdateSystem(systemInfo);
+	else
+		-- If our active layout does not support this system, hide it
+		systemFrame:Hide();
 	end
 end
 
@@ -1655,7 +1734,7 @@ function EditModeManagerFrameMixin:CanEnterEditMode()
 end
 
 function EditModeManagerFrameMixin:GetBestLayoutIndex(layoutInfo)
-	return layoutInfo.layoutIndex or Constants.EditModeLayoutConsts.EditModeDefaultLayout;
+	return layoutInfo.layoutIndex or C_EditMode.GetEditModeDefaultLayout();
 end
 
 function EditModeManagerFrameMixin:GetDefaultAnchor(frame)
@@ -1667,7 +1746,7 @@ function EditModeManagerFrameMixin:GetDefaultAnchor(frame)
 	end
 
 	-- Assume we want preset since this is default anchoring and there is not an override active
-	return EditModePresetLayoutManager:GetPresetLayoutSystemAnchorInfo(Constants.EditModeLayoutConsts.EditModeDefaultLayout, frame.system, frame.systemIndex);
+	return EditModePresetLayoutManager:GetPresetLayoutSystemAnchorInfo(C_EditMode.GetEditModeDefaultLayout(), frame.system, frame.systemIndex);
 end
 
 EditModeGridMixin = {}
@@ -1807,6 +1886,7 @@ local checkBoxSetupData =
 	DurabilityFrame = { callbackName = "SetDurabilityFrameShown", mouseoverName = "SetDurabilityFrameMouseOver", },
 	PetFrame = { callbackName = "SetPetFrameShown", mouseoverName = "SetPetFrameMouseOver", },
 	TimerBars = { callbackName = "SetTimerBarsShown", mouseoverName = "SetTimerBarsMouseOver", },
+	SwingTimer = { callbackName = "SetSwingTimerShown", mouseoverName = "SetSwingTimerMouseOver", },
 	VehicleSeatIndicator = { callbackName = "SetVehicleSeatIndicatorShown", mouseoverName = "SetVehicleSeatIndicatorMouseOver", },
 	ArchaeologyBar = { callbackName = "SetArchaeologyBarShown", mouseoverName = "SetArchaeologyBarMouseOver", },
 	CooldownViewer = { callbackName = "SetCooldownViewerShown", mouseoverName = "SetCooldownViewerMouseOver", },
@@ -1816,6 +1896,7 @@ local checkBoxSetupData =
 	PetActionBar = { callbackName = "SetPetActionBarShown", mouseoverName = "SetPetActionBarMouseOver", },
 	PossessActionBar = { callbackName = "SetPossessActionBarShown", mouseoverName = "SetPossessActionBarMouseOver", },
 	TotemActionBar = { callbackName = "SetTotemActionBarShown", mouseoverName = "SetTotemActionBarMouseOver", },
+	GroupFinder = { callbackName = "SetGroupFinderShown", mouseoverName = "SetGroupFinderMouseOver", },
 	LossOfControl = { callbackName = "SetLossOfControlShown", mouseoverName = "SetLossOfControlMouseOver", },
 };
 
@@ -2093,6 +2174,12 @@ function EditModeAccountSettingsMixin:SetTimerBarsMouseOver(...)
 	MirrorTimerContainer:ShowEditInstructions(...);
 end
 
+function EditModeAccountSettingsMixin:SetSwingTimerMouseOver(...)
+	for _, swingTimer in ipairs(self:GetSwingTimerFrames()) do
+		swingTimer:ShowEditInstructions(...);
+	end
+end
+
 function EditModeAccountSettingsMixin:SetVehicleSeatIndicatorMouseOver(...)
 	VehicleSeatIndicator:ShowEditInstructions(...);
 end
@@ -2121,6 +2208,10 @@ function EditModeAccountSettingsMixin:SetDamageMeterMouseOver(...)
 	for index, frame in ipairs(self:GetDamageMeterFrames()) do
 		frame:ShowEditInstructions(...);
 	end
+end
+
+function EditModeAccountSettingsMixin:SetGroupFinderMouseOver(...)
+	QueueStatusButton:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:SetLossOfControlMouseOver(...)
@@ -2582,6 +2673,45 @@ function EditModeAccountSettingsMixin:RefreshTimerBars()
 	end
 end
 
+function EditModeAccountSettingsMixin:GetSwingTimerFrames()
+	-- The swing timer addon only loads for some game flavors.
+	if not SwingTimerMainHandFrame then
+		return {};
+	end
+
+	local frames = { SwingTimerMainHandFrame, SwingTimerOffHandFrame, SwingTimerRangedFrame };
+	assertsafe(#frames == Enum.EditModeSwingTimerSystemIndicesMeta.NumValues, "Missing swing timer frame.");
+	return frames;
+end
+
+function EditModeAccountSettingsMixin:SetupSwingTimer()
+	-- If the swing timer is already enabled then set control checked
+	if self.settingsCheckButtons.SwingTimer:ShouldEnable() then
+		self.settingsCheckButtons.SwingTimer:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetSwingTimerShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowSwingTimer, shown);
+		self:RefreshSwingTimer();
+	else
+		self.settingsCheckButtons.SwingTimer:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshSwingTimer()
+	local showSwingTimer = self.settingsCheckButtons.SwingTimer:IsControlChecked() and self.settingsCheckButtons.SwingTimer:ShouldEnable();
+	for _, frame in ipairs(self:GetSwingTimerFrames()) do
+		frame:SetIsInEditMode(showSwingTimer);
+		if showSwingTimer then
+			frame:HighlightSystem();
+		else
+			frame:ClearHighlight();
+		end
+	end
+end
+
 function EditModeAccountSettingsMixin:SetupVehicleSeatIndicator()
 	-- If the frame is already showing then set control checked
 	if VehicleSeatIndicator:IsShown() then
@@ -2632,6 +2762,7 @@ function EditModeAccountSettingsMixin:RefreshTotemActionBar()
 	else
 		MultiCastActionBarFrame:ClearHighlight();
 	end
+	MultiCastActionBarFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetupArchaeologyBar()
@@ -2686,27 +2817,12 @@ end
 
 function EditModeAccountSettingsMixin:RefreshCooldownViewer()
 	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked() and self.settingsCheckButtons.CooldownViewer:ShouldEnable();
-
-	for _, cooldownViewer in ipairs(self:GetCooldownViewerFrames()) do
-		cooldownViewer:SetIsEditing(showCooldownViewer);
-		if showCooldownViewer then
-			cooldownViewer:HighlightSystem();
-		else
-			cooldownViewer:ClearHighlight();
-		end
-	end
+	EventRegistry:TriggerEvent("EditMode.RefreshCooldownViewer", showCooldownViewer);
 end
 
 function EditModeAccountSettingsMixin:RefreshPersonalResourceDisplay()
 	local showPersonalResourceDisplay = self.settingsCheckButtons.PersonalResourceDisplay:IsControlChecked();
-
-	if showPersonalResourceDisplay then
-		PersonalResourceDisplayFrame:SetIsInEditMode(true);
-		PersonalResourceDisplayFrame:HighlightSystem();
-	else
-		PersonalResourceDisplayFrame:SetIsInEditMode(false);
-		PersonalResourceDisplayFrame:ClearHighlight();
-	end
+	EventRegistry:TriggerEvent("EditMode.RefreshPersonalResourceDisplay", showPersonalResourceDisplay);
 end
 
 function EditModeAccountSettingsMixin:SetEncounterEventsShown(shown, isUserInput)
@@ -2774,6 +2890,26 @@ function EditModeAccountSettingsMixin:RefreshDamageMeter()
 			damageMeter:SetIsEditing(false);
 			damageMeter:ClearHighlight();
 		end
+	end
+end
+
+function EditModeAccountSettingsMixin:SetGroupFinderShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowGroupFinder, shown);
+		self:RefreshGroupFinder();
+	else
+		self.settingsCheckButtons.GroupFinder:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshGroupFinder()
+	local showGroupFinder = self.settingsCheckButtons.GroupFinder:IsControlChecked();
+	-- Note: The overarching logic and system is called "GroupFinder",
+	-- but the actual, visual Edit Mode frame is the "QueueStatusButton".
+	if showGroupFinder then
+		QueueStatusButton:HighlightSystem();
+	else
+		QueueStatusButton:ClearHighlight();
 	end
 end
 

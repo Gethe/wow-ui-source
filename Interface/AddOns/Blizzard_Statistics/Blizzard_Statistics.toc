@@ -1,0 +1,6 @@
+## Title: Blizzard_Statistics
+## AllowLoadGameType: camelot
+## Dep: Blizzard_UIPanels_Game
+
+[Game]\StatisticsFrame.lua
+[Game]\StatisticsFrame.xml

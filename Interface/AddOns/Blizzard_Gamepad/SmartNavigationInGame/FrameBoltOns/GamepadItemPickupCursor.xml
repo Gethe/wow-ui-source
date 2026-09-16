@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="GamepadItemPickupCursor" mixin="GamepadItemPickupCursorMixin" frameStrata="TOOLTIP" hidden="true">
+		<Size x="32" y="32" />
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ItemIcon" setAllPoints="true" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CursorIcon" atlas="cursor_item_32" setAllPoints="true" />
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

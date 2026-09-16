@@ -5,8 +5,14 @@ local l10nTable = {
 	enGB = {},
 	enUS = {
         localizeFrames = function()
-			-- Random name button is for English only
-			CharacterCreateFrame.NameChoiceFrame.RandomNameButton:SetShown(true);
+			--[[
+				Random name button is for English only.
+
+				If the random name button is expanded to other locales in the future, make sure to update
+				the CharacterCreateMixin UninitializeGamepad function in Blizzard_CharacterCreate.lua.
+			]]
+			local canShowRandomNameButton = not InputUtil.IsGamepadUIEnabled();
+			CharacterCreateFrame.NameChoiceFrame.RandomNameButton:SetShown(canShowRandomNameButton);
         end,
 	},
 	esES = {},

@@ -5,12 +5,13 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="MIDDLE">
 					<Size x="32" y="18"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="-2" y="6"/>
-					</Anchors>
+					<!-- Anchoring is set in SocialUITabMixin:InitializeCounterAnchoring so the counter follows the icon -->
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Button>
 
 	<DropdownButton name="SocialUIOnlineStatusDropdownTemplate" mixin="SocialUIOnlineStatusDropdownMixin" inherits="WowStyle1DropdownTemplate" virtual="true">

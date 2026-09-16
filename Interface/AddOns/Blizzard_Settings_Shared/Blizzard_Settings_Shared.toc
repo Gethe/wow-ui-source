@@ -3,20 +3,26 @@
 ## Dep: Blizzard_HelpPlate
 ## Dep: Blizzard_StaticPopup_Glue [AllowLoad glue]
 ## Dep: Blizzard_StaticPopup_Game [AllowLoad game]
+## Dep: Blizzard_GamepadSharedUtility
 ## AllowLoad: Both
+
 NewDefinitionsFramework.lua
 NewDefinitionsFramework.xml
-[Family]\NewDefinitions.lua [AllowLoadGameType mainline]
+[Family]\NewDefinitions.lua				[AllowLoadGameType mainline]
 Blizzard_SettingsRegistrar.lua
 Blizzard_Settings.lua
 Blizzard_Category.lua
+Blizzard_CategoryList.lua
 Blizzard_CategoryList.xml
+Blizzard_SettingsList.lua
 Blizzard_SettingsList.xml
 Blizzard_Setting.lua
+Blizzard_SettingControls.lua
 Blizzard_SettingControls.xml
 [Family]\Blizzard_SettingsPanelTemplates.xml
 Blizzard_SettingsPanel.lua
 Blizzard_SettingsPanel.xml
+Blizzard_Keybindings.lua
 Blizzard_Keybindings.xml
 Blizzard_Dialogs.lua
 Blizzard_SettingsLayouts.lua
@@ -25,3 +31,6 @@ Blizzard_SettingsInbound.lua
 Blizzard_Deprecated.lua
 [Family]\GraphicsOverrides.lua
 [Family]\AudioOverrides.lua
+Blizzard_Settings_PreferredPlaySettings.lua
+[Family]\LanguagesOverrides.lua   [ExcludeLoadGameType camelot]
+[Game]\LanguagesOverrides.lua     [AllowLoadGameType camelot]

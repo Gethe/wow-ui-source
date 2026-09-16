@@ -1,3 +1,7 @@
+local function ShouldIgnoreCollectionToasts()
+	return not C_CVar.GetCVarBool("enableCollectionToasts");
+end
+
 function AlertFrameSystems_Register()
 	-- luacheck: ignore 111 (setting non-standard global variable)
 	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildChallengeAlertFrameTemplate", GuildChallengeAlertFrame_SetUp);
@@ -24,6 +28,12 @@ function AlertFrameSystems_Register()
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
 	HousingItemEarnedAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HousingItemEarnedAlertFrameTemplate", HousingItemEarnedAlertFrameSystem_SetUp);
 	InitiativeTaskCompleteAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("InitiativeTaskCompleteAlertFrameTemplate", InitiativeTaskCompleteAlertFrameSystem_SetUp);
+
+	NewPetAlertSystem:SetShouldIgnoreAlertsFunction(ShouldIgnoreCollectionToasts);
+	NewMountAlertSystem:SetShouldIgnoreAlertsFunction(ShouldIgnoreCollectionToasts);
+	NewToyAlertSystem:SetShouldIgnoreAlertsFunction(ShouldIgnoreCollectionToasts);
+	NewCosmeticAlertFrameSystem:SetShouldIgnoreAlertsFunction(ShouldIgnoreCollectionToasts);
+
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -578,6 +588,7 @@ function LootWonAlertFrame_OnClick(self, button, down)
 end
 
 LootAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootWonAlertFrameTemplate", LootWonAlertFrame_SetUp, 6, math.huge);
+LootAlertSystem:SetShouldIgnoreAlertsFunction(function() return not C_CVar.GetCVarBool("enableLootToasts") end);
 
 -- [[ LootUpgradeFrame ]] --
 function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
@@ -1022,7 +1033,12 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 	ProfessionsUtil.OpenProfessionFrameToRecipe(self.recipeID);
 end
 
+local function NewRecipeLearnedAlertFrame_ShouldIgnoreAlerts()
+	return not C_CVar.GetCVarBool("enableLearnedRecipeToasts");
+end
+
 NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipeLearnedAlertFrameTemplate", NewRecipeLearnedAlertFrame_SetUp, 2, 6);
+NewRecipeLearnedAlertSystem:SetShouldIgnoreAlertsFunction(NewRecipeLearnedAlertFrame_ShouldIgnoreAlerts);
 
 
 -- [[SkillLineSpecsUnlockedAlertFrame ]] --
@@ -1240,8 +1256,13 @@ function NewMountAlertFrameMixin:SetUp(mountID)
 	self.mountID = mountID;
 
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
-	local itemQuality = Enum.ItemQuality.Epic; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
+	local itemQuality = self:GetMountItemQuality();
 	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_COLLECTED_LABEL);
+end
+
+function NewMountAlertFrameMixin:GetMountItemQuality()
+	-- Mounts don't have an inherent concept of quality so we always use epic (for now). 
+	return Enum.ItemQuality.Epic;
 end
 
 function NewMountAlertFrameMixin:OnClick(button, down)

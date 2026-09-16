@@ -235,34 +235,38 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 
 		local function AddFilter(parent, cvarName)
 			local filter = self:GetWorldMapFilter(cvarName);
-			local checkbox = parent:CreateCheckbox(filter:GetText(), IsFilterChecked, function() SetFilterChecked(filter); self:RefreshFilterCounter(); end, filter);
-			local tooltipText = filter:GetTooltipText();
-			if tooltipText then
-				checkbox:SetOnEnter(function(button)
-					GameTooltip:ClearAllPoints();
-					GameTooltip:SetPoint("RIGHT", button, "LEFT", -3, 0);
-					GameTooltip:SetOwner(button, "ANCHOR_PRESERVE");
-					GameTooltip_SetTitle(GameTooltip, filter:GetText());
-					GameTooltip_AddNormalLine(GameTooltip, tooltipText);
-					GameTooltip:Show();
-				end);
-				checkbox:SetOnLeave(function(button)
-					GameTooltip:Hide();
-				end);
+			if filter then
+				local checkbox = parent:CreateCheckbox(filter:GetText(), IsFilterChecked, function() SetFilterChecked(filter); self:RefreshFilterCounter(); end, filter);
+				local tooltipText = filter:GetTooltipText();
+				if tooltipText then
+					checkbox:SetOnEnter(function(button)
+						GameTooltip:ClearAllPoints();
+						GameTooltip:SetPoint("RIGHT", button, "LEFT", -3, 0);
+						GameTooltip:SetOwner(button, "ANCHOR_PRESERVE");
+						GameTooltip_SetTitle(GameTooltip, filter:GetText());
+						GameTooltip_AddNormalLine(GameTooltip, tooltipText);
+						GameTooltip:Show();
+					end);
+					checkbox:SetOnLeave(function(button)
+						GameTooltip:Hide();
+					end);
+				end
+				return checkbox;
 			end
-			return checkbox;
 		end
 
 		local function AddFilterWithNewIndicator(description, cvarName, tutorialBit)
 			local filter = AddFilter(description, cvarName);
-			filter:AddInitializer(function(button, description, menu)
-				if not GetCVarBitfield("closedInfoFramesAccountWide", tutorialBit) then
-					button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
-					button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
-				end
+			if filter then
+				filter:AddInitializer(function(button, description, menu)
+					if not GetCVarBitfield("closedInfoFramesAccountWide", tutorialBit) then
+						button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+						button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
+					end
 
-				button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", tutorialBit, true); end)
-			end);
+					button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", tutorialBit, true); end)
+				end);
+			end
 
 			return filter;
 		end
@@ -302,6 +306,8 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		end
 
 		AddFilter(rootDescription, "questPOI");
+		AddFilter(rootDescription, "showQuestLevel");
+		AddFilter(rootDescription, "showQuestDifficultyColor");
 		AddFilter(rootDescription, "dragonRidingRacesFilter");
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
@@ -317,6 +323,10 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 	end);
 end
 
+function WorldMapTrackingOptionsButtonMixin:BuildGameSpecificFilterTable(addFilter)
+	-- overriden for game specific implementations
+end
+
 function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 	self.worldMapFilters = {};
 
@@ -327,26 +337,13 @@ function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 
 	AddFilter(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT, "questPOI", QUEST_OBJECTIVES_FILTER_DESCRIPTION);
 	AddFilter(SHOW_WORLD_QUESTS_ON_MAP_TEXT, "questPOIWQ", WORLD_QUESTS_FILTER_DESCRIPTION);
-	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamers", PET_BATTLES_FILTER_DESCRIPTION);
-	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamersWQ");
 	AddFilter(SHOW_PRIMARY_PROFESSION_ON_MAP_TEXT, "primaryProfessionsFilter");
 	AddFilter(SHOW_SECONDARY_PROFESSION_ON_MAP_TEXT, "secondaryProfessionsFilter");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_ANIMA, "worldQuestFilterAnima");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_RESOURCES, "worldQuestFilterResources");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER, "worldQuestFilterArtifactPower");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_PROFESSION_MATERIALS, "worldQuestFilterProfessionMaterials");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_GOLD, "worldQuestFilterGold");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_EQUIPMENT, "worldQuestFilterEquipment");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_REPUTATION, "worldQuestFilterReputation");
-	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilter", SKYRIDING_RACES_FILTER_DESCRIPTION);
-	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilterWQ");
 	AddFilter(SHOW_INSTANCE_ENTRANCES_ON_MAP_TEXT, "showDungeonEntrancesOnMap", INSTANCE_ENTRANCES_FILTER_DESCRIPTION);
-	AddFilter(DELVES_SHOW_ENTRACES_ON_MAP_TEXT, "showDelveEntrancesOnMap", DELVE_ENTRANCES_FILTER_DESCRIPTION);
 	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter", TRACKED_ITEMS_FILTER_DESCRIPTION);
-	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", SHOW_DIGSITES_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.Digsites);
-	AddFilter(SHOW_LOCAL_STORY_OFFERS_ON_MAP_TEXT, "questPOILocalStory", LOCAL_STORIES_FILTER_DESCRIPTION);
 	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", TRIVIAL_QUESTS_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.TrivialQuests, true);
-	AddFilter(MINIMAP_TRACKING_ACCOUNT_COMPLETED_QUESTS, "showAccountCompletedQuests", ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.AccountCompletedQuests, true);
+
+	self:BuildGameSpecificFilterTable(AddFilter);
 end
 
 function WorldMapTrackingOptionsButtonMixin:GetWorldMapFilters()
@@ -364,13 +361,13 @@ function WorldMapTrackingOptionsButtonMixin:OnEnter()
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
-	self.Icon:SetAtlas("Map-Filter-Button-down");
+	self.Icon:SetAtlas(self.mouseDownAtlas);
 
 	HelpTip:Acknowledge(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseUp()
-	self.Icon:SetAtlas("Map-Filter-Button");
+	self.Icon:SetAtlas(self.mouseUpAtlas);
 end
 
 function WorldMapTrackingOptionsButtonMixin:Refresh()
@@ -477,13 +474,18 @@ function WorldMapNavBarMixin:OnLoad()
 		name = WORLD,
 		OnClick = function(button)
 			local TOPMOST = true;
-			local cosmicMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), Enum.UIMapType.Cosmic, TOPMOST);
-			if cosmicMapInfo then
-				self:GoToMap(cosmicMapInfo.mapID)
+			local topMostMapType = self:GetTopMostUIMapType();
+			local topMostMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), topMostMapType, TOPMOST);
+			if topMostMapInfo then
+				self:GoToMap(topMostMapInfo.mapID)
 			end
 		end,
 	}
 	NavBar_Initialize(self, "NavButtonTemplate", homeData, self.home, self.overflow);
+end
+
+function WorldMapNavBarMixin:GetTopMostUIMapType()
+	return Enum.UIMapType.Cosmic;
 end
 
 function WorldMapNavBarMixin:GoToMap(mapID)

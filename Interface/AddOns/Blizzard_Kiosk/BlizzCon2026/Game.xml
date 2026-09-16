@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="KioskModeTimer" mixin="GameKioskTimerMixin" enableMouse="false" toplevel="true" setAllPoints="true">
+		<Size x="200" y="25"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-2"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="Game12Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="KioskFrame" inherits="KioskFrameTemplate" mixin="GameKioskFrameMixin">
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

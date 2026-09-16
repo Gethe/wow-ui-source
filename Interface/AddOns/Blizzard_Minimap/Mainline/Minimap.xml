@@ -15,6 +15,12 @@
 			<KeyValue key="widthPadding" value="20" type="number"/>
 		</KeyValues>
 		<Frames>
+			<Frame parentKey="GamepadHudBackground" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="BorderTop" inherits="NineSliceCodeTemplate">
 				<KeyValues>
 					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
@@ -26,6 +32,9 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="ZoneTextButton" mixin="MinimapZoneTextButtonMixin">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
+				</KeyValues>
 				<Size x="135" y="12"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BorderTop" x="4" y="0"/>
@@ -49,6 +58,9 @@
 				</Scripts>
 			</Button>
 			<Frame parentKey="Tracking" hidden="true">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="17" y="17"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
@@ -63,6 +75,7 @@
 						<KeyValues>
 							<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
 							<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
+							<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
 						</KeyValues>
 						<Size x="13" y="14"/>
 						<Anchors>
@@ -93,6 +106,7 @@
 						<Size x="20" y="15"/>
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
 						</KeyValues>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="0">
@@ -174,8 +188,14 @@
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP" x="10" y="-30"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Frames>
 					<Minimap name="Minimap" parentKey="Minimap" mixin="MinimapMixin" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="buttonContext" value="ButtonContext_Minimap" type="string"/>
+						</KeyValues>
 						<Size x="198" y="198"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
@@ -220,17 +240,25 @@
 							<Frame name="MinimapBackdrop">
 								<Size x="215" y="226"/>
 								<Anchors>
-									<Anchor point="CENTER" relativeTo="Minimap" x="0" y="0"/>
+									<Anchor point="CENTER" relativeTo="Minimap"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY" textureSubLevel="0">
 										<Texture parentKey="StaticOverlayTexture" setAllPoints="true" hidden="true"/>
 									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture name="MinimapCompassTextureUnderlay">
+											<Size x="215" y="226"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="2">
 										<Texture name="MinimapCompassTexture" atlas="ui-hud-minimap-frame">
 											<Size x="215" y="226"/>
 											<Anchors>
-												<Anchor point="CENTER" relativeTo="Minimap" x="0" y="0"/>
+												<Anchor point="CENTER" relativeTo="Minimap"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -414,6 +442,12 @@
 			<Frame parentKey="InstanceDifficulty" inherits="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="0" y="-15"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GamepadButtons">
+				<Size x="10" y="10" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BorderTop" relativePoint="BOTTOM" />
 				</Anchors>
 			</Frame>
 		</Frames>

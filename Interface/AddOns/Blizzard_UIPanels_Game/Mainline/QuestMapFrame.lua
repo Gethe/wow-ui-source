@@ -228,7 +228,7 @@ function QuestLogMixin:SetDisplayMode(displayMode)
 end
 
 function QuestLogMixin:ValidateTabs()
-	local canShowEvents = C_EventScheduler.CanShowEvents();
+	local canShowEvents = C_EventScheduler.CanShowEvents() and not QuestMapFrameOverrides.eventsTabHidden;
 	local showingEventsTab = self.EventsTab:IsShown();
 	local mapLegendRelativeTab = nil;
 	if canShowEvents and not showingEventsTab then
@@ -241,9 +241,15 @@ function QuestLogMixin:ValidateTabs()
 			self:SetDisplayMode(QuestLogDisplayMode.Quests);
 		end
 	end
-
-	if mapLegendRelativeTab then
+	
+	if QuestMapFrameOverrides.mapLegendTabHidden then
+		self.MapLegendTab:Hide()
+	elseif mapLegendRelativeTab then
 		self.MapLegendTab:SetPoint("TOP", mapLegendRelativeTab, "BOTTOM", 0, -3);
+	end
+
+	if QuestMapFrameOverrides.questTabHidden then
+		self.QuestsTab:Hide();
 	end
 end
 
@@ -375,6 +381,31 @@ function QuestLogMixin:SetHeaderQuestsTracked(headerLogIndex, setTracked)
 	QuestMapFrame_UpdateAll();
 end
 
+function QuestLogMixin:OnSmartNavFocus(parentFrame)
+	SmartNavigation:SetScrollFrameForFrame(parentFrame, self.QuestsFrame.ScrollFrame);
+	GamepadScrollBarHint:SetOwner(self.QuestsFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+end
+
+function QuestLogMixin:OnButtonSelected(inButton)
+	local rewardsFrame = MapQuestInfoRewardsFrame;
+	local isRewardButton = false;
+	if rewardsFrame:IsShown() and rewardsFrame.activeRewardElements then
+		for _, rewardButton in ipairs(rewardsFrame.activeRewardElements) do
+			if inButton == rewardButton then
+				isRewardButton = true;
+				break;
+			end
+		end
+	end
+
+	if isRewardButton then
+		local scrollFrame = QuestMapDetailsScrollFrame;
+		local maxScroll = scrollFrame:GetVerticalScrollRange();
+		scrollFrame:SetVerticalScroll(maxScroll);
+	end
+end
+
 QuestLogHeaderCodeMixin = {};
 
 function QuestLogHeaderCodeMixin:GetButtonType()
@@ -396,19 +427,7 @@ function QuestLogHeaderCodeMixin:OnLoad()
 				end
 			end
 		elseif button == "RightButton" then
-			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
-				rootDescription:SetTag("MENU_QUEST_MAP_FRAME");
-
-				rootDescription:CreateButton(QUEST_LOG_TRACK_ALL, function()
-					QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
-				end);
-
-				if QuestUtil.CanRemoveQuestWatch() then
-					rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
-						QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
-					end);
-				end
-			end);
+			QuestMapLogHeaderButton_CreateContextMenu(self);
 		end
 	end);
 end
@@ -461,6 +480,11 @@ function QuestMapFrame_OnLoad(self)
 		frame:SetCustomOnMouseUpHandler(TabHandler);
 	end
 
+	-- Adjust for slight art differences between game modes.
+	local questsTabOffsetX, questsTabOffsetY = QuestMapFrameOverrides.GetQuestsTabAnchorOffset();
+	self.QuestsTab:ClearAllPoints();
+	self.QuestsTab:SetPoint("TOPLEFT", self, "TOPRIGHT", questsTabOffsetX, questsTabOffsetY);
+
 	self:SetDisplayMode(QuestLogDisplayMode.Quests);
 end
 
@@ -493,7 +517,7 @@ local function QuestMapFrame_DoFullUpdate()
 		if not C_QuestLog.GetLogIndexForQuestID(QuestLogPopupDetailFrame.questID) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 		else
-			QuestLogPopupDetailFrame_Update();
+			QuestLogPopupDetailFrame:Update();
 			updateButtons = true;
 		end
 	end
@@ -516,6 +540,26 @@ local function QuestMapFrame_DoFullUpdate()
 
 	QuestMapFrame_UpdateAll();
 	QuestMapFrame_UpdateAllQuestCriteria();
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		-- Handle the case where an inactive quest button was selected by smart nav (can occur when abandoning quests).
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if (currentButton and not currentButton:IsShown()) then
+			local nextQuestButton = QuestScrollFrame.titleFramePool:GetNextActive();
+			if (nextQuestButton and nextQuestButton:IsShown()) then
+				SmartNavigation:SelectButton(nextQuestButton);
+			else
+				-- If a quest is unavailable, try to focus a header.
+				local nextHeaderButton = QuestScrollFrame.headerFramePool:GetNextActive();
+				if (nextHeaderButton and nextHeaderButton:IsShown()) then
+					SmartNavigation:SelectButton(nextHeaderButton);
+				else
+					-- Focus the Map if there are no active quests.
+					WorldMapFrame:FocusMap();
+				end
+			end
+		end
+	end
 end
 
 function QuestMapFrame_OnEvent(self, event, ...)
@@ -577,7 +621,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
 		self.initialCampaignHeadersUpdate = false;
 	elseif ( event == "CVAR_UPDATE" ) then
-		if ( arg1 == "questPOI" ) then
+		if ( (arg1 == "questPOI") or (arg1 == "showQuestObjectivesInLog") or (arg1 == "showQuestLevel") ) then
 			QuestMapFrame_UpdateAll();
 		end
 	end
@@ -640,6 +684,9 @@ end
 function QuestSessionManagementMixin:OnShow()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+	if not QuestMapFrameUtils.IsPartySyncEnabled() then
+		self:SetSuppressed(true);
+	end
 end
 
 function QuestSessionManagementMixin:OnHide()
@@ -802,6 +849,11 @@ function QuestMapFrame_OnShow(self)
 		self.initialCampaignHeadersUpdate = true;
 		C_QuestLog.UpdateCampaignHeaders();
 	end
+
+	local parent = QuestMapFrame:GetParent();
+	if parent then
+		parent:OnQuestLogShow();
+	end
 end
 
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode
@@ -827,7 +879,6 @@ function QuestMapFrame_Show()
 	if ( not QuestMapFrame:IsShown() ) then
 		QuestMapFrame_UpdateAll();
 		QuestMapFrame:Show();
-		QuestMapFrame:GetParent():OnQuestLogShow();
 	end
 end
 
@@ -912,8 +963,8 @@ end
 QuestLogQuestDetailsMixin = { };
 
 function QuestLogQuestDetailsMixin:OnLoad()
-	QuestMapDetailsScrollFrame:RegisterCallback("OnVerticalScroll", GenerateClosure(self.AdjustRewardsFrameContainer, self));
-	QuestMapDetailsScrollFrame:RegisterCallback("OnScrollRangeChanged", GenerateClosure(self.AdjustRewardsFrameContainer, self));
+	self.ScrollFrame:RegisterCallback("OnVerticalScroll", GenerateClosure(self.AdjustRewardsFrameContainer, self));
+	self.ScrollFrame:RegisterCallback("OnScrollRangeChanged", GenerateClosure(self.AdjustRewardsFrameContainer, self));
 end
 
 function QuestLogQuestDetailsMixin:OnShow()
@@ -1052,6 +1103,10 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		WorldMapFrame:OnOpenQuestDetails();
+	end
 end
 
 function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
@@ -1066,11 +1121,15 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		WorldMapFrame:OnCloseQuestDetails();
+	end
 end
 
 function QuestMapFrame_UpdateSuperTrackedQuest(self)
 	local questID = C_SuperTrack.GetSuperTrackedQuestID();
-	if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
+	if ( QuestMapFrame.DetailsFrame:IsShown() and questID ~= QuestMapFrame.DetailsFrame.questID and not InputUtil.IsGamepadUIEnabled() ) then
 		QuestMapFrame_CloseQuestDetails(self:GetParent());
 		QuestScrollFrame.Contents:SelectButtonByQuestID(questID);
 	end
@@ -1416,6 +1475,12 @@ function QuestMapQuestOptions_AbandonQuest(questID)
 	C_QuestLog.SetSelectedQuest(questID);
 	C_QuestLog.SetAbandonQuest();
 
+	-- Remove the smart nav return frame to prevent refocusing the quest frame on showing the static popup.
+	if (InputUtil.IsGamepadUIEnabled()) then
+		local menu = GamepadMode.FrameControlsManager:GetActiveFrame();
+		menu.smartNavReturnFrame = nil;
+	end
+
 	local items = BuildItemNames(C_QuestLog.GetAbandonQuestItems());
 	local title = QuestUtils_GetQuestName(C_QuestLog.GetAbandonQuest());
 	if ( items ) then
@@ -1443,6 +1508,11 @@ end
 local function SetupObjectiveTextColor(text, isDisabledQuest, isHighlighted)
 	local color = GetObjectiveTextColor(isDisabledQuest, isHighlighted);
 	text:SetTextColor(color:GetRGB());
+end
+
+local function SetupQuestTitleTextColor(button, color)
+	button.Text:SetTextColor(color.r, color.g, color.b);
+	button.TagText:SetTextColor(color.r, color.g, color.b);
 end
 
 local function QuestLogQuests_GetPreviousButtonInfo(displayState)
@@ -1558,8 +1628,9 @@ local function QuestLogQuests_GetTitle(displayState, info)
 		end
 	end
 
-	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
-		title = "["..info.difficultyLevel.."] "..title;
+	local prefix = QuestMapFrameOverrides.GetQuestTitlePrefix(info);
+	if prefix then
+		title = prefix .. title;
 	end
 
 	-- If not a header see if any nearby group mates are on this quest
@@ -1726,6 +1797,14 @@ local function QuestLogQuests_GetBestTagID(questID, info)
 	return nil;
 end
 
+function QuestLogQuests_GetQuestButton(questID)
+	for titleFrame in QuestScrollFrame.titleFramePool:EnumerateActive() do
+		if titleFrame.questID == questID then
+			return titleFrame;
+		end
+	end
+end
+
 local function QuestLogQuests_AddQuestButton(displayState, info)
 	local button = QuestScrollFrame.titleFramePool:Acquire();
 	local questID = info.questID;
@@ -1749,19 +1828,32 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title, useLargeIcon, ignoreReplayable, ignoreDisabled, ignoreTypes));
 
 	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
-	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
+	SetupQuestTitleTextColor(button, difficultyColor);
+
+	local tagText = QuestMapFrameOverrides.GetQuestTagText(info);
+	button.TagText:SetShown(tagText ~= nil);
+	if tagText then
+		button.TagText:SetText(tagText);
+		button.Text:SetPoint("RIGHT", button.TagText, "LEFT", -4, 0);
+	else
+		button.Text:SetPoint("RIGHT", button.StorylineTexture, "LEFT", -4, 0);
+	end
 
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
+	button.Checkbox.smartNavigationIgnored = true;
+	button.buttonContext = "ButtonContext_QuestLogButton";
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local tagAtlas;
-	if C_QuestLog.IsAccountQuest(questID) then
-		-- If this is an account wide quest, prioritize the account icon over everything else
-		tagAtlas = "questlog-questtypeicon-account";
-	else
-		local tagID = QuestLogQuests_GetBestTagID(questID, info);
-		tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	if not QuestUtil.IsQuestTagIconHidden() then
+		if C_QuestLog.IsAccountQuest(questID) then
+			-- If this is an account wide quest, prioritize the account icon over everything else
+			tagAtlas = "questlog-questtypeicon-account";
+		else
+			local tagID = QuestLogQuests_GetBestTagID(questID, info);
+			tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+		end
 	end
 	button.TagTexture:SetShown(tagAtlas ~= nil);
 
@@ -1857,6 +1949,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 
 	local poiButton = QuestScrollFrame.Contents:GetButtonForQuest(info.questID, POIButtonUtil.GetStyle(questID));
 	if poiButton then
+		SmartNavigation_MarkFrameIgnored(poiButton);
 		poiButton:SetPoint("TOPLEFT", button, 6, -4);
 		poiButton.parent = button;
 	end
@@ -1895,6 +1988,7 @@ local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, in
 	button:UpdateCollapsedState(displayState, info);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
+	button.buttonContext = "ButtonContext_QuestLogButton";
 
 	return button;
 end
@@ -2066,6 +2160,12 @@ function QuestLogQuests_Update()
 	QuestScrollFrame:UpdateBackground(displayState);
 	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
+
+	QuestLogQuests_ShowQuestCount();
+end
+
+function QuestLogQuests_ShowQuestCount()
+	-- Override in QuestMapFrameUtils.lua
 end
 
 function ToggleQuestLog()
@@ -2104,7 +2204,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		difficultyHighlightColor = select(2, GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID)));
 	end
 
-	self.Text:SetTextColor(difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b);
+	SetupQuestTitleTextColor(self, difficultyHighlightColor);
 
 	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
 	for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
@@ -2210,7 +2310,7 @@ function QuestMapLogTitleButton_OnLeave(self)
 	local info = C_QuestLog.GetInfo(self.questLogIndex);
 	if info then
 		local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
-		self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+		SetupQuestTitleTextColor(self, difficultyColor);
 
 		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);
 		for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
@@ -2261,8 +2361,13 @@ function QuestLogObjectiveMixin:GetButtonType()
 	return QuestLogButtonTypes.Quest;
 end
 
-function QuestMapLogTitleButton_CreateContextMenu(self)
-	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+function QuestMapLogTitleButton_CreateContextMenu(self, parent)
+	local menuParent = self;
+	if (parent) then
+		menuParent = parent;
+	end
+
+	local menu = MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
 
 		local questIsWatched = QuestUtils_IsQuestWatched(self.questID);
@@ -2291,12 +2396,89 @@ function QuestMapLogTitleButton_CreateContextMenu(self)
 			button:SetEnabled(false);
 		end
 
+		rootDescription:CreateButton(SHARE_IN_CHAT, function()
+			local chatLink = GetQuestLink(self.questID);
+			if not ChatFrameUtil.InsertLink(chatLink) then
+				ChatFrameUtil.OpenChat(chatLink);
+			end
+		end);
+
 		if C_QuestLog.CanAbandonQuest(self.questID) then
 			rootDescription:CreateButton(ABANDON_QUEST, function()
 				QuestMapQuestOptions_AbandonQuest(self.questID);
 			end);
 		end
 	end);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		if (WorldMapFrame:IsQuestFocused() or WorldMapFrame:IsMapFocused()) then
+			menu:SetPoint("TOPLEFT", self, "BOTTOMLEFT");
+		else
+			menu:SetPoint("TOPLEFT", QuestMapFrame.DetailsFrame, "TOPRIGHT");
+		end
+	end
+end
+
+function QuestMapWaypoint_CreateContextMenu(self, parent)
+	local menuParent = self;
+	if (parent) then
+		menuParent = parent;
+	end
+
+	local menu = MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
+
+		rootDescription:CreateButton("Remove", function()
+			C_Map.ClearUserWaypoint();
+			C_SuperTrack.SetSuperTrackedUserWaypoint(false);
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE);
+		end);
+
+		if C_SuperTrack.IsSuperTrackingUserWaypoint() then
+			rootDescription:CreateButton("Unfocus", function()
+				C_SuperTrack.SetSuperTrackedUserWaypoint(false);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_OFF);
+			end);
+		else
+			rootDescription:CreateButton("Focus", function()
+				C_SuperTrack.SetSuperTrackedUserWaypoint(true);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_ON);
+			end);
+		end
+
+		rootDescription:CreateButton("Link in chat", function()
+			if InputUtil.IsGamepadUIEnabled() then
+				GamepadSendChat(C_Map.GetUserWaypointHyperlink());
+			else
+				ChatFrameUtil.InsertLink(C_Map.GetUserWaypointHyperlink());
+			end
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
+		end);
+	end);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		menu:SetPoint("TOPLEFT", self, "BOTTOMLEFT");
+	end
+end
+
+function QuestMapLogHeaderButton_CreateContextMenu(self)
+	local menu = MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUEST_MAP_FRAME");
+
+		rootDescription:CreateButton(QUEST_LOG_TRACK_ALL, function()
+			QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
+		end);
+
+		if QuestUtil.CanRemoveQuestWatch() then
+			rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
+				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+			end);
+		end
+	end);
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		menu:SetPoint("TOPLEFT", self, "BOTTOMLEFT");
+	end
 end
 
 function QuestMapLogTitleButton_OnClick(self, button)
@@ -2340,14 +2522,74 @@ end
 -- ***** POPUP DETAIL FRAME
 -- *****************************************************************************************************
 
-function QuestLogPopupDetailFrame_OnHide(self)
+QuestLogPopupDetailMixin = {};
+
+function QuestLogPopupDetailMixin:OnLoad()
+	self:RegisterForTransitions();
+end
+
+function QuestLogPopupDetailMixin:OnHide()
 	self.questID = nil;
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 end
 
-function QuestLogPopupDetailFrame_IsShowingQuest(questID)
-	if QuestLogPopupDetailFrame:IsShown() then
-		if QuestLogPopupDetailFrame.questID == questID then
+function QuestLogPopupDetailMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function QuestLogPopupDetailMixin:SetupGamepad()
+	local questDetailsFocusPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.ToggleQuestFocus, self), CONTEXT_ACTION_LABEL_FOCUS);
+	local questDetailsOptionsPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self), CONTEXT_ACTION_LABEL_OPTIONS);
+
+	self.questDetailsFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "QuestDetailsFooter");
+	self.questDetailsFooter:AddPromptedBinding(questDetailsFocusPage);
+	self.questDetailsFooter:AddPromptedBinding(questDetailsOptionsPage);
+	self.questDetailsFooter:AddStandardBackPrompt();
+	self.questDetailsFooter:Finalize();
+end
+
+function QuestLogPopupDetailMixin:InitializeGamepad()
+	self:GamepadHideUnneededElements();
+end
+
+function QuestLogPopupDetailMixin:UninitializeGamepad()
+	self:GamepadShowUnneededElements();
+end
+
+function QuestLogPopupDetailMixin:FocusGamepad()
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollFrame);
+	GamepadScrollBarHint:SetOwner(self.ScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	self.questDetailsFooter:ShowAndActivateBindings();
+end
+
+function QuestLogPopupDetailMixin:UnfocusGamepad()
+	self.questDetailsFooter:HideAndDeactivateBindings();
+end
+
+function QuestLogPopupDetailMixin:GamepadHideUnneededElements()
+	self.CloseButton:Hide();
+	self.ShowMapButton:Hide();
+	self.AbandonButton:Hide();
+	self.TrackButton:Hide();
+	self.ShareButton:Hide();
+end
+
+function QuestLogPopupDetailMixin:GamepadShowUnneededElements()
+	self.CloseButton:Show();
+	self.ShowMapButton:Show();
+	self.AbandonButton:Show();
+	self.TrackButton:Show();
+	self.ShareButton:Show();
+end
+
+function QuestLogPopupDetailMixin:IsShowingQuest(questID)
+	if self:IsShown() then
+		if self.questID == questID then
 			return true;
 		end
 	end
@@ -2355,13 +2597,13 @@ function QuestLogPopupDetailFrame_IsShowingQuest(questID)
 	return false;
 end
 
-function QuestLogPopupDetailFrame_Show(questID)
-	if QuestLogPopupDetailFrame_IsShowingQuest(questID) then
-		HideUIPanel(QuestLogPopupDetailFrame);
+function QuestLogPopupDetailMixin:ShowQuest(questID)
+	if self:IsShowingQuest(questID) then
+		HideUIPanel(self);
 		return;
 	end
 
-	QuestLogPopupDetailFrame.questID = questID;
+	self.questID = questID;
 	C_QuestLog.SetSelectedQuest(questID);
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
@@ -2369,25 +2611,84 @@ function QuestLogPopupDetailFrame_Show(questID)
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
 
-	QuestLogPopupDetailFrame_Update(true);
-	ShowUIPanel(QuestLogPopupDetailFrame);
+	self:Update(true);
+	ShowUIPanel(self);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
-	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
+	self.Bg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
 		local useCompactDescription = true;
-		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
+		QuestFrame_ShowQuestPortrait(self, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
 end
 
-function QuestLogPopupDetailFrame_Update(resetScrollBar)
-	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogPopupDetailFrame.ScrollFrame.ScrollChild)
+function QuestLogPopupDetailMixin:ToggleQuestFocus()
+	if (self.questID == C_SuperTrack.GetSuperTrackedQuestID()) then
+		C_SuperTrack.ClearAllSuperTracked();
+	else
+		C_SuperTrack.SetSuperTrackedQuestID(self.questID);
+	end
+end
+
+function QuestLogPopupDetailMixin:OpenQuestOptions()
+	local menu = MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUEST_LOG_POPUP_DETAIL_FRAME");
+
+		local questIsWatched = QuestUtils_IsQuestWatched(self.questID);
+		local canRemoveQuestWatch = QuestUtil.CanRemoveQuestWatch();
+		if not questIsWatched or canRemoveQuestWatch then
+			local text = questIsWatched and UNTRACK_QUEST or TRACK_QUEST;
+			rootDescription:CreateButton(text, function()
+				QuestMapQuestOptions_TrackQuest(self.questID);
+			end);
+		end
+
+		if C_SuperTrack.GetSuperTrackedQuestID() ~= self.questID then
+			rootDescription:CreateButton(SUPER_TRACK_QUEST, function()
+				C_SuperTrack.SetSuperTrackedQuestID(self.questID);
+			end);
+		else
+			rootDescription:CreateButton(STOP_SUPER_TRACK_QUEST, function()
+				C_SuperTrack.SetSuperTrackedQuestID(0);
+			end);
+		end
+
+		rootDescription:CreateButton(SHOW_MAP, function()
+			self.ShowMapButton:Click();
+		end);
+
+		local button = rootDescription:CreateButton(SHARE_QUEST, function()
+			QuestMapQuestOptions_ShareQuest(self.questID);
+		end);
+		if not C_QuestLog.IsPushableQuest(self.questID) or not IsInGroup() then
+			button:SetEnabled(false);
+		end
+
+		rootDescription:CreateButton(SHARE_IN_CHAT, function()
+			local chatLink = GetQuestLink(self.questID);
+			if not ChatFrameUtil.InsertLink(chatLink) then
+				ChatFrameUtil.OpenChat(chatLink);
+			end
+		end);
+
+		if C_QuestLog.CanAbandonQuest(self.questID) then
+			rootDescription:CreateButton(ABANDON_QUEST, function()
+				QuestMapQuestOptions_AbandonQuest(self.questID);
+			end);
+		end
+	end);
+
+	menu:SetPoint("TOPLEFT", self, "TOPRIGHT");
+end
+
+function QuestLogPopupDetailMixin:Update(resetScrollBar)
+	QuestInfo_Display(QUEST_TEMPLATE_LOG, self.ScrollFrame.ScrollChild)
 	if ( resetScrollBar ) then
-		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:ScrollToBegin();
+		self.ScrollFrame.ScrollBar:ScrollToBegin();
 	end
 end
 

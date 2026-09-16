@@ -18,6 +18,10 @@ function QuestInfoItem_OnClick(self)
 	end
 end
 
+function QuestInfoItem_IsSelected(self)
+	return self.type == "choice" and QuestInfoFrame.itemChoice == self:GetID();
+end
+
 local ACTIVE_TEMPLATE;
 local QuestBgTextContrast = false;
 
@@ -565,7 +569,7 @@ local function QuestInfo_ShowFixedRewardAsItem(questItem, index)
 end
 
 local function FormatAssertMissingChoiceCurrencyID(questID, index)
-	return string.format("nil currencyID for choice quest reward. questID: %s, reward index: %s", 
+	return string.format("nil currencyID for choice quest reward. questID: %s, reward index: %s",
 		tostring(questID), tostring(index));
 end
 
@@ -620,6 +624,8 @@ function QuestInfo_ShowRewards()
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
 	local hasWarModeBonus = false;
 	local majorFactionRepRewards;
+
+	rewardsFrame.activeRewardElements = {};
 
 	if ( QuestInfoFrame.questLog ) then
 		if C_QuestLog.ShouldShowQuestRewards(questID) then
@@ -704,6 +710,7 @@ function QuestInfo_ShowRewards()
 	local lastAnchorElement = rewardsFrame.Header;
 	local rightSideElementPlaced = false;
 	local function AddRewardElement(rewardElement)
+		table.insert(rewardsFrame.activeRewardElements, rewardElement);
 		if not startNewSection and not rightSideElementPlaced and not useOneElementPerRow then
 			-- continue on same row
 			local separation = ACTIVE_TEMPLATE.horizontalRewardSeparation or 1;
@@ -1085,7 +1092,7 @@ function QuestInfo_OnHyperlinkEnter(self, link, text, region, left, bottom, widt
 					local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID, displayableOnly);
 					if questLineInfo then
 						body = questLineInfo.questLineName;
-					end					
+					end
 				elseif classification == Enum.QuestClassification.Recurring then
 					local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
 					if timeLeft then
@@ -1191,7 +1198,7 @@ local function GetBestCurrencyRewardContextDescription(currencyInfo, questReward
 		if entireAmountIsBonus then
 			return ACCOUNT_FIRST_TIME_QUEST_BONUS_TOOLTIP;
 		end
-		
+
 		local bonusString = isReputationReward and ACCOUNT_FIRST_TIME_QUEST_BONUS_REP_TOOLTIP or ACCOUNT_FIRST_TIME_QUEST_BONUS_CURRENCY_TOOLTIP;
 		return bonusString:format(currencyInfo.baseRewardAmount, currencyInfo.bonusRewardAmount);
 	end
@@ -1200,7 +1207,7 @@ local function GetBestCurrencyRewardContextDescription(currencyInfo, questReward
 		if entireAmountIsBonus then
 			return ACCOUNT_PREVIOUSLY_COMPLETED_QUEST_BONUS_TOOLTIP;
 		end
-		
+
 		local bonusString = isReputationReward and ACCOUNT_PREVIOUSLY_COMPLETED_QUEST_REP_BONUS_TOOLTIP or ACCOUNT_PREVIOUSLY_COMPLETED_QUEST_CURRENCY_BONUS_TOOLTIP;
 		return bonusString:format(currencyInfo.baseRewardAmount, currencyInfo.bonusRewardAmount);
 	end
@@ -1228,9 +1235,9 @@ function QuestInfoRewardItemMixin:GetBestQuestRewardContextIcon()
 		return nil;
 	end
 
-	if (FlagsUtil.IsSet(self.questRewardContextFlags, Enum.QuestRewardContextFlags.FirstCompletionBonus)) then 
+	if (FlagsUtil.IsSet(self.questRewardContextFlags, Enum.QuestRewardContextFlags.FirstCompletionBonus)) then
 		return QUEST_REWARD_CONTEXT_ICONS[Enum.QuestRewardContextFlags.FirstCompletionBonus];
-	elseif (FlagsUtil.IsSet(self.questRewardContextFlags, Enum.QuestRewardContextFlags.RepeatCompletionBonus)) then 
+	elseif (FlagsUtil.IsSet(self.questRewardContextFlags, Enum.QuestRewardContextFlags.RepeatCompletionBonus)) then
 		return QUEST_REWARD_CONTEXT_ICONS[Enum.QuestRewardContextFlags.RepeatCompletionBonus];
 	end
 

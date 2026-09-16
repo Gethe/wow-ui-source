@@ -1,0 +1,23 @@
+## Title: Blizzard Legacy System
+## LoadOnDemand: 1
+## AllowLoadGameType: camelot
+## Dependencies: Blizzard_SharedTalentUI, Blizzard_AchievementUI, Blizzard_ProfessionsTemplates, Blizzard_LegacyChallengeTracker
+
+Blizzard_LegacySystem_Bootstrap.lua [Bootstrap]
+Blizzard_LegacySystemConstants.lua
+Blizzard_LegacySystemUtil.lua
+Blizzard_LegacyChallengeButton.lua
+Blizzard_LegacySystemTemplates.xml
+Blizzard_LegacyRewardTrack.xml
+Blizzard_LegacyRewardTrack.lua
+Blizzard_LegacyTree.xml
+Blizzard_LegacyTree.lua
+Blizzard_LegacyChallengeDetailPane.xml
+Blizzard_LegacyChallengeDetailPane.lua
+Blizzard_LegacyChallengeCategoryList.xml
+Blizzard_LegacyChallengeCategoryList.lua
+Blizzard_LegacyChallenges.xml
+Blizzard_LegacyChallenges.lua
+Blizzard_LegacySystem.lua
+Blizzard_LegacySystem.xml
+Blizzard_LegacySystemRegistration.lua

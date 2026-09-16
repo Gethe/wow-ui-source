@@ -107,6 +107,10 @@ function PlayerUtil.CanUseClassTalents()
 end
 
 function PlayerUtil.IsPlayerEffectivelyTank()
+	if (UnitHasEffectivelyTankAura("player")) then
+		return true;
+	end
+
 	local assignedRole = UnitGroupRolesAssigned("player");
 	if GetSpecializationSystem() == Enum.SpecializationSystem.ChrSpecialization and assignedRole == "NONE" then
 		local spec = C_SpecializationInfo.GetSpecialization();

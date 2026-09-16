@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!--
+	*******************************************************************************
+		Focus State templates
+
+		This section contains templates that can be used to add focus related
+		elements to frames.
+	*******************************************************************************
+	-->
+	<Frame name="FrameGlowTemplate" mixin="FrameGlowMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="GlowTexture" scale="0.5"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="FrameLeftJumpHintTemplate" inherits="InputIconTextureFrameTemplate" frameStrata="HIGH" virtual="true">
+		<KeyValues>
+			<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_LEFT" type="global"/>
+			<KeyValue key="useDropShadow" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="BOTTOM" x="0.0" y="4.0"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="FrameRightJumpHintTemplate" inherits="InputIconTextureFrameTemplate" frameStrata="HIGH" virtual="true">
+		<KeyValues>
+			<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+			<KeyValue key="useDropShadow" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="BOTTOM" x="0.0" y="4.0"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="FrameFocusJumpHintTemplate" inherits="InputIconTextureFrameTemplate" frameStrata="HIGH" virtual="true">
+		<KeyValues>
+			<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+			<KeyValue key="useDropShadow" value="true" type="boolean"/>
+			<!-- Needed for the StaticPopupBaseTemplate case to prevent this frame from affecting total height -->
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0.0" y="4.0"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="DialogFrameGlowTemplate" frameStrata="BACKGROUND" hidden="true" virtual="true">
+		<Size x="616.0" y="463.0"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="13" />
+		</Anchors>
+		<Layers>
+			<!-- The glow needs to be below StaticPopupTemplate's lowest sublevel. -->
+			<Layer level="BACKGROUND" textureSubLevel="-8"> 
+				<Texture parentKey="GlowTexture" atlas="gamepad-uiframediamondmetal-focus-small"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

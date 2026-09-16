@@ -253,6 +253,7 @@ local TransmogItems =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
 				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = true },
 			},
 
 			Returns =
@@ -684,6 +685,15 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAnyAppearance",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAnyAppearance", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1191,6 +1201,8 @@ local TransmogItems =
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "hasRequiredHoliday", Type = "bool", Nilable = false },
 				{ Name = "hasActiveRequiredHoliday", Type = "bool", Nilable = false },
+				{ Name = "minIlvl", Type = "number", Nilable = false },
+				{ Name = "isValidForEquippedItem", Type = "bool", Nilable = false },
 				{ Name = "alwaysShowItem", Type = "bool", Nilable = true, Documentation = { "For internal testing only" } },
 			},
 		},

@@ -1,0 +1,253 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PrimaryProfessionTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="isPrimary" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="664" y="142"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="ProfessionName" text="TRADE_SKILLS">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall2" justifyH="LEFT" parentKey="missingText" text="PROFESSIONS_MISSING_PROFESSION">
+					<Size x="485" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton1" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="15" y="10" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton2" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.SpellButton1" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<Frame parentKey="StatusBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
+				<KeyValues>
+					<KeyValue key="overrideBorderAtlas" value="Profession-ProgressBar-frame" type="string"/>
+					<KeyValue key="overrideBackgroundAtlas" value="Profession-ProgressBar-BG" type="string"/>
+					<KeyValue key="overrideWidth" value="441" type="number"/>
+					<KeyValue key="overrideFillAnchorLeft" value="2" type="number"/>
+					<KeyValue key="overrideMaskRightOffset" value="-7" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-40" y="0"/>
+				</Anchors>				
+			</Frame>
+			<Button parentKey="UnlearnButton" mixin="ProfessionsUnlearnButtonMixin">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.StatusBar" relativePoint="RIGHT" x="1" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="Profession-button-red-crossmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="Profession-button-red-crossmark-pressed" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="GamepadUnlearnButton" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UnlearnButton" relativePoint="RIGHT" x="3" y="2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="SecondaryProfessionTemplate" virtual="true">
+		<Size x="225" y="275"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentProfessionName" inherits="GameFontNormal" justifyH="LEFT" parentKey="ProfessionName" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="TOP"  x="0" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMissing" inherits="GameFontNormal" justifyH="LEFT" parentKey="missingHeader" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"  x="0" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall2" justifyH="LEFT" justifyV="TOP" parentKey="missingText" text="">
+					<Size x="175" y="0" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.missingHeader" relativePoint="BOTTOM" x="5" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton1" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="25"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton2" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SpellButton1" relativePoint="TOP"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton3" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SpellButton2" relativePoint="TOP"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton4" parentArray="spellButtons">
+				<KeyValues>
+					<KeyValue key="doNotCloseParentUI" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SpellButton3" relativePoint="TOP"/>
+				</Anchors>
+			</CheckButton>			
+
+			<Frame parentKey="StatusBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
+				<KeyValues>
+					<KeyValue key="overrideBorderAtlas" value="Profession-ProgressBar-frame" type="string"/>
+					<KeyValue key="overrideBackgroundAtlas" value="Profession-ProgressBar-BG" type="string"/>
+					<KeyValue key="overrideWidth" value="190" type="number"/>
+					<KeyValue key="overrideFillAnchorLeft" value="2" type="number"/>
+					<KeyValue key="overrideMaskRightOffset" value="-5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-47"/>
+				</Anchors>	
+			</Frame>	
+		</Frames>
+	</Frame>
+
+	<Frame name="ProfessionsBookFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="ProfessionsContentFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PrimaryProfession1" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-41"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PrimaryProfession2" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_SECOND_PROFESSION);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession1" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Background:SetAtlas("Profession-overview-card-generic-cooking", true);
+								self.missingHeader:SetText(PROFESSIONS_COOKING);
+								self.missingText:SetText(PROFESSIONS_COOKING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession2" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SecondaryProfession1" relativePoint="TOPRIGHT" x="-6"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Background:SetAtlas("Profession-overview-card-generic-fishing", true);
+								self.missingHeader:SetText(PROFESSIONS_FISHING);
+								self.missingText:SetText(PROFESSIONS_FISHING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession3" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SecondaryProfession2" relativePoint="TOPRIGHT" x="-6"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Background:SetAtlas("Profession-overview-card-generic-firstaid", true);
+								self.missingHeader:SetText(PROFESSIONS_FIRST_AID);
+								self.missingText:SetText(PROFESSIONS_FIRST_AID_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+</Ui>

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" mixin="BasePrivateAuraBehaviorMixin" virtual="true">
+	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate, SmartNavigationNoContextActions" mixin="BasePrivateAuraBehaviorMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxPrivateAuras" value="5" type="number"/>
 		</KeyValues>
@@ -70,7 +70,7 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<Button name="$parentCenterStatusIcon" parentKey="centerStatusIcon" frameLevel="110" registerForClicks="LeftButtonDown,RightButtonUp" propagateMouseInputMask="Motion" mixin="CompactUnitFrameCenterStatusIconMixin">
+			<Button name="$parentCenterStatusIcon" parentKey="centerStatusIcon" inherits="SmartNavigationIgnoredTemplate" frameLevel="110" registerForClicks="LeftButtonDown,RightButtonUp" propagateMouseInputMask="Motion" mixin="CompactUnitFrameCenterStatusIconMixin">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>

@@ -24,6 +24,11 @@
 								<Anchor point="TOPLEFT" x="90" y="-100"/>
 							</Anchors>
 						</FontString>
+						<FontString parentKey="NewSurnameLabel" mixin="NewSurnameLabelMixin" inherits="GameFontNormalMed3" justifyH="LEFT" text="PNC_FLOW_NEW_SECONDARY_NAME_LABEL" maxLines="1" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" x="0" y="-70"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -37,6 +42,22 @@
 						<Scripts>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnTabPressed method="OnTabPressed"/>
+						</Scripts>
+					</EditBox>
+					<EditBox parentKey="NewSurnameEditbox" mixin="NewSurnameEditboxMixin" inherits="CharacterServicesEditBoxHorizontalLabelTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NewSurnameLabel" relativePoint="BOTTOMLEFT" x="3" y="-7"/>
+						</Anchors>
+						<TextInsets>
+							<AbsInset left="9" right="9"/>
+						</TextInsets>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnTabPressed method="OnTabPressed"/>
 						</Scripts>
 					</EditBox>
 				</Frames>

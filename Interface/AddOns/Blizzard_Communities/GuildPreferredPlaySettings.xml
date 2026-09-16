@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CommunitiesGuildPreferredPlaySettingsFrameTemplate" mixin="CommunitiesGuildPreferredPlaySettingsFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="18" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NotGuildMasterNotice" inherits="GameFontDisableSmall" justifyH="LEFT" hidden="true">
+					<Size x="440" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LocaleLabel" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DatacenterLabel" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocaleLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LocaleDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LocaleLabel" relativePoint="BOTTOMLEFT" x="-16" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="LocaleApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LocaleDropdown" relativePoint="RIGHT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesGuildPreferredPlaySettingsFrame_OnLocaleApplyButtonClick"/>
+					<OnEnter function="CommunitiesGuildPreferredPlaySettingsFrame_OnLocaleApplyButtonEnter"/>
+					<OnLeave function="CommunitiesGuildPreferredPlaySettingsFrame_OnLocaleApplyButtonLeave"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="DatacenterDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DatacenterLabel" relativePoint="BOTTOMLEFT" x="-16" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="DatacenterApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DatacenterDropdown" relativePoint="RIGHT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesGuildPreferredPlaySettingsFrame_OnDatacenterApplyButtonClick"/>
+					<OnEnter function="CommunitiesGuildPreferredPlaySettingsFrame_OnDatacenterApplyButtonEnter"/>
+					<OnLeave function="CommunitiesGuildPreferredPlaySettingsFrame_OnDatacenterApplyButtonLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

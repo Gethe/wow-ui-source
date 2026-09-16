@@ -1,0 +1,9 @@
+## Title: Blizzard_SplashFrame
+## Dep: Blizzard_FrameXMLBase
+## Dep: Blizzard_UIPanelTemplates
+## Dep: Blizzard_UIPanels_Game
+## Dep: Blizzard_GameMenuEsc
+## AllowLoadGameType: mainline
+
+[Family]\SplashFrame.lua
+[Family]\SplashFrame.xml

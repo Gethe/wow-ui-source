@@ -2,7 +2,7 @@
 ## Dep: middleclass
 ## Dep: Blizzard_TutorialManager
 ## Dep: Blizzard_UIFrameManager
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 StateMachineUtil.lua
 StateMachineTutorialUtil.lua
 BagTutorialUtil.lua

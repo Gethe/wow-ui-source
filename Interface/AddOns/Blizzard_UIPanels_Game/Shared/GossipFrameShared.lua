@@ -25,7 +25,6 @@ end
 
 GossipSharedQuestButtonMixin = CreateFromMixins(GossipSharedTitleButtonMixin);
 function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
-
 	if ( isIgnored ) then
 		self:SetFormattedText(IGNORED_QUEST_DISPLAY, titleText);
 		self.Icon:SetVertexColor(0.5,0.5,0.5);

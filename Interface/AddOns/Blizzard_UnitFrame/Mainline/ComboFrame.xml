@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="ComboFrame.lua"/>
 	<Frame name="ComboPointTemplate" virtual="true">
 		<Size x="12" y="12"/>
 		<Layers>
@@ -42,47 +41,47 @@
 		<Frames>
 			<Frame name="ComboPoint1" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-9" y="6"/>
+					<Anchor point="TOPRIGHT" x="-39" y="7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint2" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="-26.5" y="8"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint3" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="7" y="-8"/>
+					<Anchor point="TOPRIGHT" x="-14" y="7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint4" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="12" y="-19"/>
+					<Anchor point="TOPRIGHT" x="-2.5" y="1.5"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint5" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="14" y="-30"/>
+					<Anchor point="TOPRIGHT" x="6.5" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint6" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="12" y="-41"/>
+					<Anchor point="TOPRIGHT" x="12" y="-18.5"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint7" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="24" y="-33"/>
+					<Anchor point="TOPRIGHT" x="14" y="-30"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint8" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="24" y="-22"/>
+					<Anchor point="TOPRIGHT" x="12" y="-41"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ComboPoint9" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="20" y="-12"/>
+					<Anchor point="TOPRIGHT" x="24" y="-33"/>
 				</Anchors>
 			</Frame>
 		</Frames>

@@ -64,6 +64,15 @@ local GenericTraitFrameLayoutOptions = {
 	AltarOfCorrosion = {
 		HeaderSize = { Width = 500, Height = 120 },
 	},
+
+	CamelotLegacy = {
+		Title = "Legacy Talents",
+		TitleDividerShown = false,
+		FrameSize = { Width = 850, Height = 750 },
+		CurrencyOffset = { x = 100, y = 50 },
+		PanOffset = { x = -20, y = -20 },
+		ButtonPurchaseFXIDs = {},
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -86,6 +95,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Altar of Corrosion
 	[1191] = GenericTraitFrameLayoutOptions.AltarOfCorrosion,
+
+	-- Camelot Legacy Talents
+	[1118] = GenericTraitFrameLayoutOptions.CamelotLegacy,
 };
 
 local GenericTraitFrameTutorials = {

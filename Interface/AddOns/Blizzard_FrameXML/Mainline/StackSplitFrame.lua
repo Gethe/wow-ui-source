@@ -1,4 +1,4 @@
-StackSplitMixin = { }; 
+StackSplitMixin = { };
 
 function StackSplitMixin:OpenStackSplitFrame(maxStack, parent, anchor, anchorTo, stackCount)
 	if ( self.owner ) then

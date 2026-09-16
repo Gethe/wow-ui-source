@@ -8,6 +8,15 @@ local Video =
 	Functions =
 	{
 		{
+			Name = "AreHighResTexturesAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentGameWindowSize",
 			Type = "Function",
 
@@ -54,6 +63,42 @@ local Video =
 			Returns =
 			{
 				{ Name = "adapters", Type = "table", InnerType = "GxAdapterInfoDetails", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLinearEnabledOnStart",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsOutlineModeSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPBRWaterSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSecondaryLightingSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSupported", Type = "bool", Nilable = false },
 			},
 		},
 		{

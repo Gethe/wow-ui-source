@@ -1,0 +1,166 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadActionBarEditFrameInfoFrameTitleBoxTemplate" mixin="GamepadActionBarEditFrameInfoFrameTitleBoxMixin" virtual="true" frameStrata="DIALOG">
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate" setAllPoints="true"/>
+			<Frame parentKey="HighlightFrame" inherits="DialogFrameGlowTemplate" frameStrata="DIALOG" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="GameFontNormalLarge2" text="DEFAULT_TITLE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="Title" value="DEFAULT_TITLE" type="string"/>	<!-- Set the text to be displayed in the box using this key value. -->
+		</KeyValues>
+	</Frame>
+
+	<!-- Binding Info -->
+	<Frame name="GamepadActionBarEditBindingsInfoFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate" setAllPoints="true"/>
+			<Frame parentKey="TitleBox" inherits="GamepadActionBarEditFrameInfoFrameTitleBoxTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-7"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="Title" value="GAMEPAD_EDIT_FRAME_BIND_INFO_FRAME_TITLE" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HighlightFrame" inherits="DialogFrameGlowTemplate" frameStrata="DIALOG" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BindInstructionText" inherits="GameFontNormalLarge" text="GAMEPAD_EDIT_FRAME_BIND_INFO_FRAME_BIND_INSTRUCTION">
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ActionName" inherits="GameFontNormalLarge2">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ActionIcon">	<!-- This texture displays the action being bound. -->
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ActionName" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+		</Frames>
+	</Frame>
+
+	<!-- Edit Action Bars Info -->
+	<Frame name="GamepadActionBarEditActionBarsInfoFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate" setAllPoints="true"/>
+			<Frame parentKey="TitleBox" inherits="GamepadActionBarEditFrameInfoFrameTitleBoxTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-7"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="Title" value="GAMEPAD_EDIT_FRAME_EDIT_ACTION_BARS_INFO_FRAME_TITLE" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HighlightFrame" inherits="DialogFrameGlowTemplate" frameStrata="DIALOG" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PickupInstructionText" inherits="GameFontNormalLarge" text="GAMEPAD_EDIT_FRAME_EDIT_ACTION_BARS_INFO_FRAME_PICKUP_INSTRUCTION">
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GamepadActionBarEditFrame" parent="UIParent" mixin="GamepadActionBarEditFrameMixin" hidden="true" frameStrata="HIGH" toplevel="true">
+		<Size x="900" y="685"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<!--
+				This frame doesn't need smart nav support but it is still treated like a panel (so it can receive focus).
+				When the frame receives focus smart nav's navigation system is enabled by default. By marking the frame as 
+				using a custom navigation system, we prevent smart nav from being used on this frame in favor of no navigation 
+				system at all.
+			-->
+			<KeyValue key="useCustomNavigation" value="true" type="boolean"/>
+			<KeyValue key="dismissOnUnfocus" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<!--
+				An alternate display from the main action bar frame that we can manipulate for UX purposes during binding/editing
+				while keeping the actual action bar intact. 
+			-->
+			<Frame name="$parentPageUnit" parentKey="PageUnit" inherits="GamepadActionBarPageUnitTemplate" toplevel="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="UIParent" x="0" y="25"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BindingInfoFrame" inherits="GamepadActionBarEditBindingsInfoFrameTemplate" hidden="true">
+				<Size x="485" y="180"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="75"/>		
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="EditActionBarsInfoFrame" inherits="GamepadActionBarEditActionBarsInfoFrameTemplate" hidden="true">
+				<Size x="485" y="110"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="75"/>
+				</Anchors>
+			</Frame>
+			
+			<GameTooltip name="$parentActionTooltip" parentKey="ActionTooltip" inherits="GameTooltipTemplate"/>
+			
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" x="6" y="-6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -40,6 +40,22 @@ local TraitConstants =
 			},
 		},
 		{
+			Name = "RespecType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Talents", Type = "RespecType", EnumValue = 0 },
+				{ Name = "Glyphs", Type = "RespecType", EnumValue = 1 },
+				{ Name = "SetPrimarySpecialization", Type = "RespecType", EnumValue = 2 },
+				{ Name = "PetTalents", Type = "RespecType", EnumValue = 3 },
+				{ Name = "Legacy", Type = "RespecType", EnumValue = 4 },
+				{ Name = "Specialization", Type = "RespecType", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "SharedStringFlag",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -53,14 +69,15 @@ local TraitConstants =
 		{
 			Name = "TraitCombatConfigFlags",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "ActiveForSpec", Type = "TraitCombatConfigFlags", EnumValue = 1 },
 				{ Name = "StarterBuild", Type = "TraitCombatConfigFlags", EnumValue = 2 },
 				{ Name = "SharedActionBars", Type = "TraitCombatConfigFlags", EnumValue = 4 },
+				{ Name = "SecondarySpec", Type = "TraitCombatConfigFlags", EnumValue = 8 },
 			},
 		},
 		{
@@ -109,15 +126,16 @@ local TraitConstants =
 		{
 			Name = "TraitConfigType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TraitConfigType", EnumValue = 0 },
 				{ Name = "Combat", Type = "TraitConfigType", EnumValue = 1 },
 				{ Name = "Profession", Type = "TraitConfigType", EnumValue = 2 },
 				{ Name = "Generic", Type = "TraitConfigType", EnumValue = 3 },
+				{ Name = "CamelotCombat", Type = "TraitConfigType", EnumValue = 4 },
 			},
 		},
 		{
@@ -309,6 +327,19 @@ local TraitConstants =
 			{
 				{ Name = "CannotRefund", Type = "TraitTreeFlag", EnumValue = 1 },
 				{ Name = "HideSingleRankNumbers", Type = "TraitTreeFlag", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "TraitVendorResetFailureReason",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "TraitVendorResetFailureReason", EnumValue = 0 },
+				{ Name = "DataError", Type = "TraitVendorResetFailureReason", EnumValue = 1 },
+				{ Name = "ClassPointDeficit", Type = "TraitVendorResetFailureReason", EnumValue = 2 },
 			},
 		},
 		{

@@ -8,6 +8,9 @@
 		</Scripts>
 	</Button>
 	<Frame name="MoneyFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="192" y="28"/>
 		<Frames>
 			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
@@ -15,7 +18,7 @@
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
 				</Anchors>
-				<NormalTexture atlas="coin-copper">
+				<NormalTexture parentKey="NormalTexture" atlas="coin-copper">
 					<Size x="19" y="19"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
@@ -78,6 +81,7 @@
 	<Frame name="SmallMoneyFrameTemplate" mixin="SmallMoneyFrameMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="small" value="1" type="number"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="128" y="13"/>
 		<Layers>

@@ -11,7 +11,8 @@ Shared\Blizzard_AuctionHouseUI_Bootstrap.lua [Bootstrap]
 Shared\Blizzard_AuctionHouseUtil.lua
 [Family]\Blizzard_AuctionHouseUtil.lua
 Shared\Blizzard_AuctionData.lua
-[Family]\Blizzard_AuctionData.lua
+[Family]\Blizzard_AuctionData.lua [ExcludeLoadGameType camelot]
+[Game]\Blizzard_AuctionData.lua [AllowLoadGameType camelot]
 Shared\Blizzard_AuctionHouseSharedTemplates.lua
 [Family]\Blizzard_AuctionHouseSharedTemplates.lua
 Shared\Blizzard_AuctionHouseSharedTemplates.xml

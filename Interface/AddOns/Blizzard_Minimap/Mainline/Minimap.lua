@@ -27,39 +27,6 @@ local followerToPulseLock = {
 	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_9_0,
 };
 
-local REMOVED_FILTERS = {
-	[Enum.MinimapTrackingFilter.VenderFood] = true,
-	[Enum.MinimapTrackingFilter.VendorReagent] = true,
-	[Enum.MinimapTrackingFilter.POI] = true,
-	[Enum.MinimapTrackingFilter.Focus] = true,
-};
-
-local ALWAYS_ON_FILTERS = {
-	[Enum.MinimapTrackingFilter.QuestPOIs] = true,
-	[Enum.MinimapTrackingFilter.TaxiNode] = true,
-	[Enum.MinimapTrackingFilter.Innkeeper] = true,
-	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
-	[Enum.MinimapTrackingFilter.Battlemaster] = true,
-	[Enum.MinimapTrackingFilter.Stablemaster] = true,
-};
-
-local CONDITIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Target] = true,
-	[Enum.MinimapTrackingFilter.Digsites] = true,
-	[Enum.MinimapTrackingFilter.Repair] = true,
-};
-
-local OPTIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Banker] = true,
-	[Enum.MinimapTrackingFilter.Auctioneer] = true,
-	[Enum.MinimapTrackingFilter.Barber] = true,
-	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
-	[Enum.MinimapTrackingFilter.AccountCompletedQuests] = true,
-	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
-	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
-	[Enum.MinimapTrackingFilter.Mailbox] = true,
-};
-
 local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
@@ -412,6 +379,11 @@ function MinimapClusterMixin:SetEditModeScale(scale)
 		self.BorderTop:SetScale(headerScale);
 		self.ZoneTextButton:SetScale(headerScale);
 	end
+	EventRegistry:TriggerEvent("Minimap.OnScaleUpdated", scale);
+end
+
+function MinimapClusterMixin:GetEditModeScale(scale)
+	return self.MinimapContainer:GetScale();
 end
 
 function MinimapClusterMixin:SetIconScale(scale)
@@ -468,7 +440,6 @@ function MiniMapIndicatorFrame_UpdatePosition()
 		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
 	end
 end
-
 
 MiniMapMailFrameMixin = { };
 
@@ -588,7 +559,7 @@ local function CanDisplayTrackingInfo(index)
 		return false;
 	end
 
-	return OPTIONAL_FILTERS[filter.filterID] or filter.spellID;
+	return MinimapConstants.OPTIONAL_FILTERS[filter.filterID] or filter.spellID;
 end
 
 local function ToggleTrackingSelected(info)
@@ -613,12 +584,62 @@ end
 
 MiniMapTrackingButtonMixin = { };
 
+function MiniMapTrackingButtonMixin:GamepadHandleRStick(x, y)
+	if y == 0 or self.zoomMinimapCooldown ~= nil then
+		return;
+	end
+
+	if y > 0 then
+		Minimap_ZoomIn();
+	else
+		Minimap_ZoomOut();
+	end
+
+	self.zoomMinimapCooldown = true;
+
+	C_Timer.After(0.15, function()
+		self.zoomMinimapCooldown = nil;
+	end)
+end
+
+function MiniMapTrackingButtonMixin:SetupGamepad()
+	local zoomMinimap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+	self.bindings = GamepadMode.CreateBindingGroup("MinimapZoomBindings");
+	self.bindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.GamepadHandleRStick, self));
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(GameTooltip, "MinimapFooter")
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddPromptedBinding(zoomMinimap);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function MiniMapTrackingButtonMixin:OnMenuOpened(menu)
+	if self.footer == nil or self.bindings == nil then
+		return;
+	end
+	if menu and menu.footer then
+		menu.footer:HideAndDeactivateBindings();
+	end
+	self.footer:SetParentFrame(menu);
+	self.footer:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.bindings);
+end
+
+function MiniMapTrackingButtonMixin:OnMenuClosed(menu, closeReason)
+	if self.footer == nil or self.bindings == nil then
+		return;
+	end
+	self.footer:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.bindings);
+end
+
 function MiniMapTrackingButtonMixin:OnLoad()
 	local inGameTrackingDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameTrackingDisabled);
 	if not inGameTrackingDisabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
 		self:RegisterEvent("SPELLS_CHANGED");
+		self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 
 		self:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_MINIMAP_TRACKING");
@@ -634,7 +655,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 
 					for index = 1, C_Minimap.GetNumTrackingTypes() do
 						local filter = C_Minimap.GetTrackingFilter(index);
-						if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
+						if MinimapConstants.ALWAYS_ON_FILTERS[filter.filterID] or MinimapConstants.CONDITIONAL_FILTERS[filter.filterID] then
 							trackingState:SetSelected(index, true);
 						end
 					end
@@ -744,7 +765,9 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	end
 
 	MinimapCluster.Tracking:SetShown(not inGameTrackingDisabled);
-
+	if InputUtil.IsGamepadUIEnabled() then
+		self:SetupGamepad();
+	end
 	self:RegisterSettingEntryCallbacks();
 end
 
@@ -772,7 +795,7 @@ function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, ...)
-	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" or event == "MINIMAP_UPDATE_TRACKING" then
 		if event == "CVAR_UPDATE" then
 			local cvarName, value = ...;
 			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov4");

@@ -26,6 +26,7 @@ PlayerSpellsUtil.SpellBookCategories = {
 	Class = 1,
 	General = 2,
 	Pet = 3,
+	Transmog = 4,
 }
 
 function PlayerSpellsUtil.OpenToClassTalentsTab(inspectUnit)

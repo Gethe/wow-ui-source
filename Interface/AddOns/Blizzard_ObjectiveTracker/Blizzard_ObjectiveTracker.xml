@@ -2,8 +2,8 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Frame name="ObjectiveTrackerFrame" inherits="RightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate, ObjectiveTrackerContainerTemplate" mixin="ObjectiveTrackerFrameMixin" frameStrata="LOW" roleset="objectives">
 		<KeyValues>
-  			<KeyValue key="topPadding" value="0" type="number"/>
-			<KeyValue key="topModulePadding" value="38" type="number"/>
+			<KeyValue key="topPadding" value="15" type="number"/>
+			<KeyValue key="topModulePadding" value="0" type="number"/>
 			<KeyValue key="headerText" value="TRACKER_ALL_OBJECTIVES" type="global"/>
 			<KeyValue key="layoutIndex" value="50" type="number"/>
 		</KeyValues>

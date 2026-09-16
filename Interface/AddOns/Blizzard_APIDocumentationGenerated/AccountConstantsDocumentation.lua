@@ -175,9 +175,9 @@ local AccountConstants =
 		{
 			Name = "BnetAccountFlag",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 23,
 			MinValue = 0,
-			MaxValue = 1048576,
+			MaxValue = 2097152,
 			Fields =
 			{
 				{ Name = "None", Type = "BnetAccountFlag", EnumValue = 0 },
@@ -202,6 +202,7 @@ local AccountConstants =
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
 				{ Name = "MopQuestLogFlagsFixUp", Type = "BnetAccountFlag", EnumValue = 1048576 },
+				{ Name = "Unused", Type = "BnetAccountFlag", EnumValue = 2097152 },
 			},
 		},
 		{

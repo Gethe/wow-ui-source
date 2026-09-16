@@ -8,10 +8,13 @@ UnitPopupCustomControls.lua
 UnitPopupCustomControls.xml
 [Family]\UnitPopupUtils.lua
 [Family]\UnitPopupButtons_Shared.lua [AllowLoadGameType classic]
-[Game]\UnitPopupButtons.lua [AllowLoadGameType standard, plunderstorm, wowhack, vanilla, tbc, wrath]
+[Family]\UnitPopupButtons.lua [AllowLoadGameType standard, camelot]
+[Game]\UnitPopupButtons.lua [AllowLoadGameType plunderstorm, wowhack, vanilla, tbc, wrath]
 Wrath\UnitPopupButtons.lua [AllowLoadGameType cata, mists]
-[Game]\UnitPopupMenus.lua [AllowLoadGameType standard, plunderstorm, wowhack, vanilla, tbc, wrath]
+[Family]\UnitPopupMenus.lua [AllowLoadGameType standard, camelot]
+[Game]\UnitPopupMenus.lua [AllowLoadGameType plunderstorm, wowhack, vanilla, tbc, wrath, camelot]
 Wrath\UnitPopupMenus.lua [AllowLoadGameType cata, mists]
 [Family]\UnitPopup.lua [AllowLoadGameType mainline]
 [Game]\UnitPopup.lua [AllowLoadGameType vanilla]
 TBC\UnitPopup.lua [AllowLoadGameType tbc, wrath, cata, mists]
+Shared\UnitPopupButtonsHardcore.lua [AllowLoadGameType camelot, vanilla]

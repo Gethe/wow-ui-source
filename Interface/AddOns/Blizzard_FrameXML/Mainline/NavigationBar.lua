@@ -311,3 +311,23 @@ function NavBar_OverflowItemOnClick(junk, index, navBar)
 		button:Click();
 	end
 end
+
+NavButtonMixin = {}
+
+function NavButtonMixin:OnLoad()
+	self.MenuArrowButton:RegisterCallback(self.MenuArrowButton.Event.OnMenuClose, self.RefreshReturnFrameGamepadNavButtonFocus, self);
+end
+
+function NavButtonMixin:RefreshReturnFrameGamepadNavButtonFocus(dropdown, menu, closeReason)
+	if (not InputUtil.IsGamepadUIEnabled()) then
+		return;
+	end
+
+	-- Get the new button representing the current nav level.
+	local navBar = self:GetParent();
+	local navLevel = #navBar.navList;
+	local navLevelButton = navBar.navList[navLevel];
+
+	-- Specify the navButton that should recieve focus when the menu is closed.
+	SmartNavigation_SetReturnFrameFocusButton(navLevelButton);
+end

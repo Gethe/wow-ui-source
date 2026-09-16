@@ -1,0 +1,85 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LegacyChallengePointSummaryTemplate" mixin="LegacyChallengePointSummaryMixin" virtual="true">
+		<Size x="520" y="36"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ProgressBarBackground" atlas="Legacy-Progressbar-BG">
+					<Size y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-6" y="-3"/>
+						<Anchor point="RIGHT" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="PointsBar" inherits="LegacyProgressBarTemplate" mixin="ChallengePointBarMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProgressBarBackground" x="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProgressBarBackground" x="0" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</StatusBar>
+			<Button parentKey="Shield" inherits="LegacyPointShield" frameLevel="800">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="14" y="4"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LegacyChallengesPageTemplate" parent="LegacySystemFrame" mixin="LegacyChallengesPageMixin" setAllPoints="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Legacy-Challenge-BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CategoryList" inherits="LegacyChallengeCategoryListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-80"/>
+					<Anchor point="BOTTOMLEFT" y="8"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DetailPane" inherits="LegacyChallengeDetailPaneTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="8"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LegacyChallengePointSummary" inherits="LegacyChallengePointSummaryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="280" y="-25"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="VerticalDivider" frameLevel="800">
+				<Size x="12" y="503"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="328" y="-72"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Legacy-Tree-Frame-divider-Vertical" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

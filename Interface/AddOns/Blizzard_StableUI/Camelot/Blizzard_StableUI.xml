@@ -1,0 +1,310 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="PetStableSlotTemplate" virtual="true" mixin="PetStableSlotMixin">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-13" y="13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="64" y="64"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+
+	<Frame name="PetStableLoyaltyLevelTemplate" virtual="true" mixin="PetStableLoyaltyLevelMixin">
+		<Size x="32" y="32"/>
+		<KeyValues>
+			<KeyValue key="levelTextOffsetX" value="0.5" type="number"/>
+			<KeyValue key="levelTextOffsetXLevelOne" value="-0.5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="UI-HUD-UnitFrame-Target-PortraitOn-Boss-IconRing"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="levelText" text="5" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="PetStableFrame" mixin="StableFrameMixin" inherits="PortraitFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="PetStableLevelText" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-34"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableLoyaltyText" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PetStableLevelText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableSlotText" inherits="GameFontHighlightSmall" text="STABLE_SLOT_TEXT">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="70" y="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<ModelScene parentKey="modelScene" inherits="PanningModelSceneMixinTemplate"  mixin="StablePetModelSceneMixin">
+				
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-72" />
+					<Anchor point="BOTTOMRIGHT" x="-10" y="140" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" alpha="0.8">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PetShadow" atlas="perks-char-shadow" alpha="0.6">
+							<Size x="410" y="90"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="-80"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate">
+						<Anchors>
+							<Anchor point="TOP" y="-10"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="PetModelSceneShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"  x="1" y="-1"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="diet" enableMouse="true" inherits="PetFrameHappinessTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="4" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+				</Frames>
+			</ModelScene>
+
+			<Frame parentKey="expBar" inherits="PetExpStatusBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" y="10" relativeKey="$parent.modelScene"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="loyaltyLevel" inherits="PetStableLoyaltyLevelTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-9" y="-30"/>
+				</Anchors>
+			</Frame>
+
+			<CheckButton name="PetStableCurrentPet" inherits="PetStableSlotTemplate" id="1">
+				<Anchors>
+					<!-- This is moved in Blizzard_StableUI.lua when the purchase button is hidden. -->
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.modelScene" x ="-69" y="-23"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="CURRENT_PET">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet1" inherits="PetStableSlotTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCurrentPet" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="53" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormalSmall" text="STABLED_PETS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="24" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Button parentKey="purchaseButton" inherits="UIPanelButtonTemplate" mixin="PetStablePurchaseButtonMixin" text="PURCHASE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-75" y="25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="PetStableMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="28"/>
+					<Anchor point="BOTTOMLEFT" x="10" y="7"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
+						<KeyValues>
+							<KeyValue key="leftEdge" value="common-coinbox-left" type="string"/>
+							<KeyValue key="rightEdge" value="common-coinbox-right" type="string"/>
+							<KeyValue key="centerEdge" value="_common-coinbox-center" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" />
+							<Anchor point="RIGHT" />
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			
+			<Frame name="PetStableCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCostLabel" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

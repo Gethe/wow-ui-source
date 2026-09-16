@@ -132,7 +132,7 @@ function PingSystemMixin:Init(category)
 end
 
 function PingSystemMixin:OnCategoryChanged(category)
-    if category == self.category then
+	if category == self.category and InputUtil.IsMKBUIEnabled() then
         if GetCVar("pingCategoryTutorialShown") == "0" and self:TutorialCutoffVersionCheck() then
             PingSystemTutorial:Show();
             SetCVar("pingCategoryTutorialShown", "1");

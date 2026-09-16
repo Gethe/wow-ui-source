@@ -1,0 +1,43 @@
+## Title: Blizzard_Game
+## Dep: Blizzard_GameMenuEsc
+## Dep: Blizzard_UIParentUtil
+## LoadFirst: 1
+
+Shared\GameEvent.lua
+Shared\EventImplementation.lua
+Shared\EventRouting.lua
+Shared\Game.lua
+
+[Family]\EventImplementation.lua
+[Family]\EventRouting.lua
+[Family]\Game.lua
+
+[Game]\EventImplementation.lua			[AllowLoadGameType camelot]
+[Game]\EventRouting.lua					[AllowLoadGameType camelot]
+[Game]\Game.lua							[AllowLoadGameType camelot]
+
+Vanilla\EventImplementation.lua			[AllowLoadGameType classic]
+Vanilla\EventRouting.lua				[AllowLoadGameType classic]
+Vanilla\Game.lua						[AllowLoadGameType classic]
+
+Hardcore\EventImplementation.lua		[AllowLoadGameType vanilla, camelot]
+Hardcore\EventRouting.lua				[AllowLoadGameType vanilla, camelot]
+
+TBC\EventImplementation.lua				[AllowLoadGameType tbc, wrath, cata, mists]
+TBC\EventRouting.lua					[AllowLoadGameType tbc, wrath, cata, mists]
+TBC\Game.lua							[AllowLoadGameType tbc, wrath, cata, mists]
+
+Wrath\EventImplementation.lua			[AllowLoadGameType wrath, cata, mists]
+Wrath\EventRouting.lua					[AllowLoadGameType wrath, cata, mists]
+Wrath\Game.lua							[AllowLoadGameType wrath, cata, mists]
+
+Cata\EventImplementation.lua			[AllowLoadGameType cata, mists]
+Cata\EventRouting.lua					[AllowLoadGameType cata, mists]
+Cata\Game.lua							[AllowLoadGameType cata, mists]
+
+[Game]\EventImplementation.lua			[AllowLoadGameType mists]
+[Game]\EventRouting.lua					[AllowLoadGameType mists]
+[Game]\Game.lua							[AllowLoadGameType mists]
+
+[Game]\Startup.lua						[AllowLoadGameType vanilla, camelot]
+Startup.lua								[AllowLoadGameType classic, mainline] [ExcludeLoadGameType vanilla, camelot]

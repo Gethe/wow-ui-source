@@ -25,7 +25,7 @@ end
 
 function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID)
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
-	if majorFactionData then
+	if majorFactionData and not majorFactionData.hideRenownLevelUpToast then
 		TopBannerManager_Show(self, {
 			name = majorFactionData.name,
 			factionColor = majorFactionData.factionFontColor and majorFactionData.factionFontColor.color or HIGHLIGHT_FONT_COLOR,

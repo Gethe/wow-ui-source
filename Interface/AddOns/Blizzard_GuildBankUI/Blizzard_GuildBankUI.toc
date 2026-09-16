@@ -1,0 +1,9 @@
+## Title: Blizzard_GuildBankUI
+## LoadOnDemand: 1
+Blizzard_GuildBankUI_Bootstrap.lua [Bootstrap]
+TBC\Blizzard_GuildBankUI.lua [AllowLoadGameType tbc, wrath, cata, mists]
+TBC\Blizzard_GuildBankUI.xml [AllowLoadGameType tbc, wrath, cata]
+Mists\Blizzard_GuildBankUI.xml [AllowLoadGameType mists]
+[Family]\Blizzard_GuildBankUI.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_GuildBankUI.xml [AllowLoadGameType mainline]
+Localization.lua [AllowLoadGameType mainline]

@@ -31,7 +31,7 @@ function DelvesToastMixin:OnHyperlinkClick(link, text, button)
 	if button == "RightButton" then
 		local linkType, linkData = LinkUtil.SplitLinkData(link);
 		if linkType == DelvesConstants.PlayerHyperlink then
-			local contextData = { name = linkData };
+			local contextData = { name = linkData, ownerFrame = self };
 			UnitPopup_OpenMenu("FRIEND", contextData);
 		end
 	else

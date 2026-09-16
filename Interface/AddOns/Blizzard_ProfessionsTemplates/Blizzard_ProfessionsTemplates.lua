@@ -137,6 +137,12 @@ end
 
 ProfessionsButtonMixin = {};
 
+function ProfessionsButtonMixin:OnLoad()
+	self.IconBorder:ClearAllPoints();
+	self.IconBorder:SetPoint("TOPLEFT", self.Icon, "TOPLEFT");
+	self.IconBorder:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, -1);
+end
+
 function ProfessionsButtonMixin:SetSlotQuality(quality)
 	local atlasData = ColorManager.GetAtlasDataForProfessionsItemQuality(quality);
 	if atlasData.atlas then
@@ -712,10 +718,12 @@ ProfessionsRecipeListPanelMixin = {};
 function ProfessionsRecipeListPanelMixin:StoreCollapses(scrollbox)
 	self.collapses = {};
 	local dataProvider = scrollbox:GetDataProvider();
-	local childrenNodes = dataProvider:GetChildrenNodes();
-	for idx, child in ipairs(childrenNodes) do
-		if child.data and child:IsCollapsed() then
-			self.collapses[child.data.categoryInfo.categoryID] = true;
+	if dataProvider then
+		local childrenNodes = dataProvider:GetChildrenNodes();
+		for idx, child in ipairs(childrenNodes) do
+			if child.data and child:IsCollapsed() then
+				self.collapses[child.data.categoryInfo.categoryID] = true;
+			end
 		end
 	end
 end
@@ -936,4 +944,48 @@ function ProfessionsConcentrateToggleButtonMixin:OnClick()
 	if self:IsMouseOver() then
 		self:OnEnter();
 	end
+end
+
+local ProfessionsLargeRightTabMixin = CreateFromMixins(SidePanelTabButtonMixin);
+
+function ProfessionsLargeRightTabMixin:OnLoad()
+	SidePanelTabButtonMixin.OnLoad(self);
+
+	self.Icon:SetTexture(self.iconTexture);
+	self.Icon:SetSize(30, 30);
+	self.Icon:SetTexCoord(0.03125, 0.96875, 0.03125, 0.96875);
+
+	self:SetCustomOnMouseUpHandler(function(tab, button, upInside)
+		if button == "LeftButton" and upInside then
+			tab:OnClick();
+		end
+	end);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:CastProfessionSpell(); end, self);
+end
+
+function ProfessionsLargeRightTabMixin:CastProfessionSpell()
+	local alreadyLoaded = Professions.IsSelectedProfession(self.skillLine);
+
+	if self.spellOffsetIndex and not alreadyLoaded then
+		C_SpellBook.CastSpellBookItem(self.spellOffsetIndex + 1, Enum.SpellBookSpellBank.Player);
+	end
+end
+
+ProfessionsBookRightTabMixin = CreateFromMixins(ProfessionsLargeRightTabMixin);
+
+function ProfessionsBookRightTabMixin:OnClick()
+	ProfessionsFrame:SelectBookPage();
+
+	ProfessionsFrame:RightTabSelected(self);
+end
+
+ProfessionsFrameRightTabMixin = CreateFromMixins(ProfessionsLargeRightTabMixin);
+
+function ProfessionsFrameRightTabMixin:OnClick()
+	self:CastProfessionSpell();
+
+	ProfessionsFrame.BookPage:Hide();
+	ProfessionsFrame.CraftingPage:Show();
+
+	ProfessionsFrame:RightTabSelected(self);
 end

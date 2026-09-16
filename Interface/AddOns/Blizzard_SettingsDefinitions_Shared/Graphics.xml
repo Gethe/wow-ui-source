@@ -151,9 +151,15 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="ParticleDensity" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+			<Frame parentKey="PBRLiquidDetail" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LiquidDetail" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ParticleDensity" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PBRLiquidDetail" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
 			</Frame>
 
@@ -163,9 +169,15 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="DepthEffects" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+			<Frame parentKey="BloomMult" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SSAO" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="DepthEffects" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BloomMult" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
 			</Frame>
 
@@ -199,9 +211,15 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="ViewDistance" parentArray="Controls" inherits="SettingsAdvancedSliderTemplate">
+			<Frame parentKey="LightMode" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ProjectedTextures" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ViewDistance" parentArray="Controls" inherits="SettingsAdvancedSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LightMode" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
 			</Frame>
 

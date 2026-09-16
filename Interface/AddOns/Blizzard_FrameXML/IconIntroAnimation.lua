@@ -18,7 +18,12 @@ end
 function IconIntroTrackerMixin:OnEvent(event, ...)
 	if event == "SPELL_PUSHED_TO_ACTIONBAR" or event == "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR" then
 		local spellID, slotIndex, slotPos = ...;
-		self:PushSpellToActionBar(spellID, slotIndex, slotPos);
+
+		-- The slot index may be zero when the gamepad interface is enabled. Since the gamepad
+		-- interface handles its own flyins, we should ignore it here.
+		if slotIndex > 0 then
+			self:PushSpellToActionBar(spellID, slotIndex, slotPos);
+		end
 	end
 end
 
@@ -54,20 +59,18 @@ function IconIntroTrackerMixin:PushSpellToActionBar(spellID, slotIndex, slotPos)
 	end
 
 	freeIcon.icon.icon:SetTexture(icon);
+	freeIcon.icon.spellID = spellID;
 	freeIcon.icon.slot = slotIndex;
-	freeIcon.icon.pos = slotPos;
-	 freeIcon:ClearAllPoints();
-
+	freeIcon:ClearAllPoints();
 
 	if (page == MULTIBOTTOMLEFTINDEX) then
-		freeIcon:SetPoint("CENTER", _G["MultiBarBottomLeftButton"..slotPos], 0, 0);
-		freeIcon:SetFrameLevel(_G["MultiBarBottomLeftButton"..slotPos]:GetFrameLevel()+1);
-		freeIcon.icon.multibar = true;
+		freeIcon.icon.button = _G["MultiBarBottomLeftButton" .. slotPos];
 	else
-		freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
-		freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
-		freeIcon.icon.multibar = false;
+		freeIcon.icon.button = _G["ActionButton" .. slotPos];
 	end
+
+	freeIcon:SetPoint("CENTER", freeIcon.icon.button, 0, 0);
+	freeIcon:SetFrameLevel(freeIcon.icon.button:GetFrameLevel() + 1);
 
 	freeIcon.icon.flyin:Play(1);
 	freeIcon.isFree = false;
@@ -121,18 +124,14 @@ function IconIntroFlyinAnimMixin:OnAnimFinished()
 	local iconFrame = self:GetParent();
 	if iconFrame.isBase then
 		iconFrame.glow:Play();
-		SetBarSlotFromIntro(iconFrame.slot);
+		C_SpellBook.SetBarSlotFromIntro(iconFrame.spellID, iconFrame.slot);
 		iconFrame.isFree = true;
 
-		local button;
-		if (iconFrame.multibar) then
-			button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
-		else
-			button = _G["ActionButton"..iconFrame.pos];
+		if not iconFrame.noHighlight then
+			MarkNewActionHighlight(iconFrame.slot);
 		end
 
-		MarkNewActionHighlight(iconFrame.slot);
-		button:UpdateAction(true);
+		iconFrame.button:UpdateAction(true);
 	else
 		iconFrame:SetFrameLevel(1);
 	end

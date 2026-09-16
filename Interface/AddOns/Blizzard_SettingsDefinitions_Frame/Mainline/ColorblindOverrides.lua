@@ -112,6 +112,9 @@ function ItemQualityColorOverrideMixin:SetupColorSwatch(frame, data)
 	frame.ColorSwatch:SetScript("OnClick", function(button, buttonName, down)
 		self:OpenColorPicker(frame);
 	end);
+
+	local cursorAnchor = CreateAnchor("RIGHT", frame.Text, "LEFT", -22);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(frame.ColorSwatch, cursorAnchor);
 end
 
 function ItemQualityColorOverrideMixin:OpenColorPicker(frame)

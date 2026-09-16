@@ -7,62 +7,6 @@ function MapLegendMixin:OnLoad()
 	self.ScrollFrame:UpdateScrollChildRect();
 end
 
---Legend Category data
---Add more pin types here! Data Structure:
---  Atlas - Atlas name to use for icon
---  Name - Global String for Icon Label
---  Tooltip - Global String for Icon Tooltip
---  TemplateNames - Table of asscotiated Map Pin Template names
---      Note: when adding a new template for the legend, be sure the template inherits LegendHighlightableMapPoiPinTemplate and also calls LegendHighlightablePoiPinMixin:OnLegendPinMouseEnter/Leave
---  MetaData - Table of needed meta data to differentiate between different pins with the same template. If no meta data exists, all pins with the given template names will highlight
---      Note: when adding new meta data types, be sure to update MapLegendButtonMixin:MetaDataMatches to check the new data comparison
---  BackgroundAtlas - Optional Atlas name for background to icon
-local QuestsCategoryData = {
-  {Atlas = "Quest-Campaign-Available", fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_CAMPAIGN,   Tooltip = MAP_LEGEND_CAMPAIGN_TOOLTIP,    TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"},  MetaData = {questClassification = Enum.QuestClassification.Campaign }},
-  {Atlas = "UI-QuestPoiImportant-QuestBang", fixedWidth = 28, fixedHeight = 32,  Name = MAP_LEGEND_IMPORTANT,  Tooltip = MAP_LEGEND_IMPORTANT_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"},  MetaData = {questClassification = Enum.QuestClassification.Important}},
-  {Atlas = "UI-QuestPoiLegendary-QuestBang",  Name = MAP_LEGEND_LEGENDARY,  Tooltip = MAP_LEGEND_LEGENDARY_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Legendary}},
-  {Atlas = "UI-QuestPoiWrapper-QuestBang",    Name = MAP_LEGEND_META,       Tooltip = MAP_LEGEND_META_TOOLTIP,        TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Meta}},
-  {Atlas = "UI-QuestPoiRecurring-QuestBang",    Name = MAP_LEGEND_REPEATABLE, Tooltip = MAP_LEGEND_REPEATABLE_TOOLTIP,        TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Recurring}},
-  {Atlas = "QuestNormal", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_LOCALSTORY, Tooltip = MAP_LEGEND_LOCALSTORY_TOOLTIP,  TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Normal}},
-  {Atlas = "Quest-In-Progress-Icon-yellow",   Name = MAP_LEGEND_INPROGRESS, Tooltip = MAP_LEGEND_INPROGRESS_TOOLTIP,  TemplateNames = {"QuestPinTemplate"},                         MetaData = {Style = POIButtonUtil.Style.QuestInProgress},     BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
-  {Atlas = "UI-QuestPoi-QuestBangTurnIn",     Name = MAP_LEGEND_TURNIN,     Tooltip = MAP_LEGEND_TURNIN_TOOLTIP,      TemplateNames = {"QuestPinTemplate"},                         MetaData = {Style = POIButtonUtil.Style.QuestComplete},       BackgroundAtlas = "UI-QuestPoi-QuestNumber"}
-};
-
-local LimitedCategoryData = {
-  {Atlas = "worldquest-icon",               Name = MAP_LEGEND_WORLDQUEST,     Tooltip = MAP_LEGEND_WORLDQUEST_TOOLTIP,      TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
-  {Atlas = "vignettekillboss",              Name = MAP_LEGEND_WORLDBOSS,      Tooltip = MAP_LEGEND_WORLDBOSS_TOOLTIP,       TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  MetaData = {worldQuestType = Enum.QuestTagType.WorldBoss}},
-  {Atlas = "Bonus-Objective-Star",           Name = MAP_LEGEND_BONUSOBJECTIVE, Tooltip = MAP_LEGEND_BONUSOBJECTIVE_TOOLTIP,  TemplateNames = {"BonusObjectivePinTemplate"}, BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
-  {Atlas = "minimap-genericevent-hornicon", fixedWidth = 32, fixedHeight = 32, Name = MAP_LEGEND_EVENT,          Tooltip = MAP_LEGEND_EVENT_TOOLTIP,           TemplateNames = {"AreaPOIEventPinTemplate"}, MetaData = {AtlasPrefix="UI-EventPoi"}},
-  {Atlas = "VignetteKill",                  Name = MAP_LEGEND_RARE,           Tooltip = MAP_LEGEND_RARE_TOOLTIP,            TemplateNames = {"VignettePinPOIButtonTemplate"}, MetaData = {Atlas="VignetteKill"}},
-  {Atlas = "VignetteKillElite",             Name = MAP_LEGEND_RAREELITE,      Tooltip = MAP_LEGEND_RAREELITE_TOOLTIP,       TemplateNames = {"VignettePinPOIButtonTemplate"}, MetaData = {Atlas="VignetteKillElite"}},
-};
-
-local ActivitiesCategoryData = {
-  {Atlas = "Dungeon",                  Name = MAP_LEGEND_DUNGEON,   Tooltip = MAP_LEGEND_DUNGEON_TOOLTIP,   TemplateNames = {"DungeonEntrancePinTemplate"}, MetaData = {isRaid = false}},
-  {Atlas = "Raid",                     Name = MAP_LEGEND_RAID,      Tooltip = MAP_LEGEND_RAID_TOOLTIP,      TemplateNames = {"DungeonEntrancePinTemplate"}, MetaData = {isRaid = true}},
-  {Atlas = "poi-hub",                  Name = MAP_LEGEND_HUB,       Tooltip = MAP_LEGEND_HUB_TOOLTIP,       TemplateNames = {"QuestHubPinTemplate"}},
-  {Atlas = "ArchBlob",                 Name = MAP_LEGEND_DIGSITE,   Tooltip = MAP_LEGEND_DIGSITE_TOOLTIP,   TemplateNames = {"DigSitePinTemplate"}},
-  {Atlas = "WildBattlePetCapturable", fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
-  {Atlas = "delves-regular",		   Name = MAP_LEGEND_DELVE,		Tooltip = MAP_LEGEND_DELVE_TOOLTIP,		TemplateNames = {"DelveEntrancePinTemplate", "AreaPOIPinTemplate"}, MetaData = {AtlasPrefix="delves-"}},
-};
-
-local MovementCategoryData = {
-  {Atlas = "TaxiNode_Continent_Neutral",  Name = MAP_LEGEND_TELEPORT,     Tooltip = MAP_LEGEND_TELEPORT_TOOLTIP,    TemplateNames = {"AreaPOIPinTemplate"}, MetaData = {AtlasPrefix = "TaxiNode_Continent"}},
-  {Atlas = "CaveUnderground-Up",          Name = MAP_LEGEND_CAVE,         Tooltip = MAP_LEGEND_CAVE_TOOLTIP,        TemplateNames = {"MapLinkPinTemplate"}},
-  {Atlas = "FlightPath",                  fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_FLIGHTPOINT,  Tooltip = MAP_LEGEND_FLIGHTPOINT_TOOLTIP, TemplateNames = {"FlightPointPinTemplate"}},
-};
-
---Legend Data
---Add more categories here! Data Structure:
---  CategoryTitle = Global String Title to display
---  CategoryData = Legend Catagory Data table defined above
-local MapLegendData = {
-  {CategoryTitle = MAP_LEGEND_CATEGORY_QUESTS,      CategoryData = QuestsCategoryData},
-  {CategoryTitle = MAP_LEGEND_CATEGORY_LTA,         CategoryData = LimitedCategoryData},
-  {CategoryTitle = MAP_LEGEND_CATEGORY_ACTIVITIES,  CategoryData = ActivitiesCategoryData},
-  {CategoryTitle = MAP_LEGEND_CATEGORY_MOVEMENT,    CategoryData = MovementCategoryData},
-};
-
 function MapLegendMixin:SetupCategories()
 	for index, data in ipairs(MapLegendData) do
 		local category = CreateFrame("Frame", nil, self.ScrollFrame.ScrollChild, "MapLegendCategoryTemplate", index);
@@ -71,10 +15,13 @@ function MapLegendMixin:SetupCategories()
 		category:Show();
 
 		local buttons = {};
-		for i, categoryData in ipairs(data.CategoryData) do
-			local button = CreateFrame("Button", nil, category, "MapLegendButtonTemplate", i);
-			button:InitilizeButton(categoryData, i);
-			table.insert(buttons, button);
+		for i, categoryID in ipairs(data.CategoryData) do
+			local categoryData = MapLegendPinDefinitions[categoryID];
+			if categoryData then
+				local button = CreateFrame("Button", nil, category, "MapLegendButtonTemplate", i);
+				button:InitializeButton(categoryData, i);
+				table.insert(buttons, button);
+			end
 		end
 
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 2, 0, 5);
@@ -101,7 +48,7 @@ function MapLegendButtonMixin:OnLeave()
 	self:ClearHighlights();
 end
 
-function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
+function MapLegendButtonMixin:InitializeButton(buttonInfo, index)
 	self.Icon:SetAtlas(buttonInfo.Atlas, TextureKitConstants.UseAtlasSize);
 	if buttonInfo.fixedWidth and buttonInfo.fixedHeight then
 		self.Icon:SetSize(buttonInfo.fixedWidth, buttonInfo.fixedHeight);

@@ -217,8 +217,20 @@
 		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
-	<CheckButton name="AchievementCheckButtonTemplate" mixin="AchivementButtonCheckMixin" virtual="true">
+<CheckButton name="AchievementCheckButtonBaseTemplate" mixin="AchievementButtonCheckMixin" virtual="true">
 		<Size x="15" y="15"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="AchievementCheckButtonTemplate" inherits="AchievementCheckButtonBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontNormalSmall" text="TRACK_ACHIEVEMENT">
@@ -232,15 +244,6 @@
 		<HitRectInsets>
 			<AbsInset left="0" right="-100" top="0" bottom="0"/>
 		</HitRectInsets>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
@@ -338,6 +341,10 @@
 	</Button>
 
 	<Frame name="AchievementFrameAchievementsObjectivesTemplate" mixin="AchievementsObjectivesMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="clearOnClose" type="boolean" value="true"/>
+			<KeyValue key="smartNavigationIgnoredDontPropagate" type="boolean" value="true"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontNormalSmall" parentKey="RepCriteria">
@@ -508,6 +515,9 @@
 	</Button>
 
 	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="212" y="14"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -701,6 +711,9 @@
 	</Frame>
 
 	<Frame name="AchievementCriteriaTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="350" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1988,6 +2001,9 @@
 			</Frame>
 			<Frame name="$parentAchievements">
 				<Size x="504" y="440"/>
+				<KeyValues>
+					<KeyValue key="elementTemplate" value="AchievementTemplate" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT" x="22" y="-36"/>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>

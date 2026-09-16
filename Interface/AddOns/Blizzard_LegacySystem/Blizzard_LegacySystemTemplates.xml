@@ -1,0 +1,287 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LegacySystemTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="LegacySystemFrameTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="LegacyPointShield" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="46" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="UI-Legacy-Points-icon-c60">
+					<Size x="46" y="66"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Points" inherits="GameFontNormalMed3" justifyH="CENTER" text="11">
+					<Size x="42" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-2" y="-31"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="LegacyChallengeIconFrameTemplate" mixin="LegacyChallengeIconFrameMixin" virtual="true">
+		<Size x="60" y="60"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="texture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Size x="50" y="50"/>
+				</Texture>
+				<MaskTexture parentKey="TextureMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.texture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.texture"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="texture"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="frame" atlas="Legacy-Tree-Frame-icon-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<CheckButton name="LegacyChallengeTrackedTemplate" inherits="AchievementCheckButtonBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+			<KeyValue key="buttonContext" value="ButtonContext_LegacyChallengeTracked" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" text="TRACK_ACHIEVEMENT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="-100" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+	</CheckButton>
+
+	<StatusBar name="LegacyProgressBarTemplate" minValue="0" maxValue="1" virtual="true">
+		<BarTexture atlas="Legacy-Progressbar-Fill"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ProgressBarFrame" atlas="Legacy-Progressbar-Frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="7"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-10"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="NumberFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</StatusBar>
+
+	<Frame name="LegacyChallengeCriteriaTemplate" mixin="LegacyChallengeCriteriaMixin" virtual="true">
+		<Size x="180" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Legacy-Challenge-Cards-Bar" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ProgressBarBackground" atlas="Legacy-Progressbar-BG" hidden="true">
+					<Size y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Check" atlas="worldquest-tracker-checkmark" useAtlasSize="true" scale="0.4" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-6" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="SystemFont_Small2" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="0"/>
+						<Anchor point="RIGHT" x="-24" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="ProgressBar" inherits="LegacyProgressBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProgressBarBackground" x="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProgressBarBackground" x="0" y="3"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+	</Frame>
+
+	<Frame name="LegacyChallengeObjectivesTemplate" mixin="LegacyChallengeObjectivesMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="clearOnClose" type="boolean" value="true"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LegacyChallengeObjectives" inherits="LegacyChallengeObjectivesTemplate"/>
+
+	<EventButton name="LegacyChallengeTemplate" mixin="LegacyChallengeTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_LegacyChallenge" type="string"/>
+		</KeyValues>
+		<Size x="516" y="122"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="BackgroundMiddle" atlas="Legacy-Challenge-Cards-tiled-vertical" vertTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Legacy-Challenge-Cards" setAllPoints="true"/>
+				<Texture parentKey="BackgroundTop" atlas="Legacy-Challenge-Cards-tiled-top" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundBottom" atlas="Legacy-Challenge-Cards-tiled-bottom" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SelectedOverlay" atlas="Legacy-Challenge-Cards-selected" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TitleBar" atlas="Legacy-Challenge-Cards-Ribbon-Brown" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-80" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleBar" relativePoint="TOPLEFT" x="70" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="SystemFont_Shadow_Med1" justifyH="LEFT" justifyV="TOP">
+					<!-- Re-anchored by UpdatePlusMinusTexture based on presence of the PlusMinus texture. -->
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleBar" relativePoint="BOTTOMLEFT" x="72" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HiddenDescription" inherits="SystemFont_Shadow_Med1" justifyH="LEFT" justifyV="TOP" hidden="true">
+					<!-- Re-anchored by UpdatePlusMinusTexture based on presence of the PlusMinus texture. -->
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleBar" relativePoint="BOTTOMLEFT" x="72" y="-2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="PlusMinus" atlas="128-redbutton-plus" hidden="true">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="76" y="-49"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="Icon" inherits="LegacyChallengeIconFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-18"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Shield" mixin="LegacyChallengeShieldMixin">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon" atlas="Legacy-Tree-Frame-Points-Icon" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-8" y="-24"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Points" inherits="GameFontNormalMed3" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" y="-4"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="CheckBackground" atlas="Legacy-Challenge-Cards-Date-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Check" atlas="worldquest-tracker-checkmark" useAtlasSize="true" scale="0.5">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-4" y="-4"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="DateCompleted" inherits="GameFontNormal" hidden="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Check" relativePoint="LEFT" x ="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="AchievementShield_OnEnter"/>
+					<OnLeave function="AchievementShield_OnLeave"/>
+				</Scripts>
+			</Button>
+			<CheckButton parentKey="Tracked" hidden="true" inherits="LegacyChallengeTrackedTemplate" frameLevel="10">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-8"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</EventButton>
+
+</Ui>

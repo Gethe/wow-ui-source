@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ProfessionsFrameRightTabTemplateWrapper" inherits="ProfessionsFrameRightTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="ProfessionsFrame" inherits="ProfessionsFrameBase">
+		<Size x="673" y="594"/>
+		<Frames>
+			<Frame parentKey="ProfessionsOverviewTab" inherits="LargeSideTabButtonTemplate" mixin="ProfessionsBookRightTabMixin" id="1">
+				<KeyValues>
+					<KeyValue key="fillToInterior" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="TRADE_SKILLS" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/ICONS/INV_SideTab_Professions_c60" type="string"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" y="-60"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Professions1Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProfessionsOverviewTab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions2Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions1Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions3Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions2Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions4Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions3Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions5Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions4Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions6Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions5Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Professions7Tab" inherits="ProfessionsFrameRightTabTemplateWrapper" parentArray="rightProfessionTabs" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Professions6Tab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="isVertical" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="CraftingPage" inherits="ProfessionsCraftingPageTemplate" parentArray="Pages" frameLevel="100">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-3">
+						<Texture atlas="Profession-Background-Template2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-21"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="BookPage" inherits="ProfessionsBookPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,12 @@
+## Title: Blizzard_GameMenu
+## Dep: Blizzard_GameTooltip
+## Dep: Blizzard_StaticPopup
+## Dep: Blizzard_GameMenuEsc [AllowLoadGameType classic, standard, wowhack, camelot]
+## Dep: Blizzard_UIPanelTemplates [AllowLoadGameType classic]
+## Dep: Blizzard_GamepadSharedUtility [AllowLoadGameType camelot]
+Shared\GameMenuFrame.lua [AllowLoadGameType classic, standard, wowhack, camelot]
+Classic\GameMenuFrameOverrides.lua [AllowLoadGameType classic]
+Shared\GameMenuFrame.xml [AllowLoadGameType classic, standard, wowhack, camelot]
+[Game]\GameMenuFrame.lua [AllowLoadGameType plunderstorm]
+[Game]\GameMenuFrame.xml [AllowLoadGameType plunderstorm]
+Shared\Localization.lua

@@ -56,6 +56,17 @@ local TargetScript =
 			},
 		},
 		{
+			Name = "SetPreferredGamepadInteractTarget",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+		},
+		{
 			Name = "TargetDirectionEnemy",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

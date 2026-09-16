@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SoftCursorPointerTemplate" virtual="true">
+		<Size x="100" y="100"/>
+		<Animations>
+			<AnimationGroup parentKey="IntroAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration="0.25" smoothing="IN"/>
+				<Scale childKey="Icon" duration="0.25" smoothing="IN" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Icon" setAllPoints="true" frameStrata="HIGH">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="gamepad-mapquestlog-cursor-diamond-gold">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color color="BLACK_COLOR"/>
+						</Texture>
+						<Texture parentKey="Texture" atlas="gamepad-mapquestlog-cursor-diamond-gold">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="SoftCursor" parent="UIParent" inherits="SoftCursorPointerTemplate" mixin="SoftCursorMixin" hidden="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnGamePadStick method="OnGamePadStick"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

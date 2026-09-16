@@ -112,6 +112,10 @@ function AssistedCombatManager:ShouldHighlightSpellbookSpell(spellID)
 end
 
 function AssistedCombatManager:IsHighlightableSpellbookSpell(spellID)
+	if not spellID then
+		return;
+	end
+
 	if not self:IsRotationSpell(spellID) then
 		return false;
 	end

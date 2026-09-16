@@ -9,11 +9,14 @@
 			<!--Layout does not propagate from a menu to it's children to prevent overriding precalculated
 			sizes prior to the menu layout step.-->
 			<KeyValue key="skipChildLayout" value="true" type="boolean"/>
+			<KeyValue key="disableFrameFocusPagingWhenFocused" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>
 			<OnMouseWheel function="nop"/>
+			<OnShow function="nop"/>
+			<OnHide function="nop"/>
 		</Scripts>
 	</Frame>
 </Ui>

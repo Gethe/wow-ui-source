@@ -4,6 +4,7 @@ UI.xsd">
 		<KeyValues>
 			<KeyValue key="isScrollingMessageFrame" value="true" type="boolean"/>
 			<KeyValue key="allowScroll" value="true" type="boolean"/>
+			<KeyValue key="smartNavRightStickMaxScrollSpeed" value="25" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="FontStringContainer" clipChildren="true" propagateHyperlinksToParent="true" setAllPoints="true" />

@@ -81,6 +81,7 @@
 				<Texture parentKey="Background" atlas="UI-Character-Info-Title" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -98,7 +99,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterStatFrameTemplate" virtual="true">
+	<Frame name="CharacterStatFrameTemplate" mixin="CharacterStatFrameMixin" virtual="true">
 		<Size x="187" y="15"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -122,22 +123,100 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				if ( self.onEnterFunc ) then
-					self:onEnterFunc();
-				else
-					PaperDollStatTooltip(self);
-				end
-			</OnEnter>
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnLoad>
-				if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
-					self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
-				end
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
+	<Frame name="CharacterStatsPaneScrollBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.InsetRight" x="3" y="-3"/>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetRight" x="-3" y="2"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-23"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>		
+	</Frame>
+	<Frame name="CharacterStatFrameCategoryScrollBoxElementTemplate" inherits="CharacterStatFrameCategoryTemplate" mixin="CharacterStatFrameCategoryScrollBoxElementMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="CharacterStatFrameScrollBoxBaseElementTemplate" mixin="CharacterStatFrameScrollBoxBaseElementMixin" virtual="true">
+		<Size x="187" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce" useAtlasSize="true" alpha="0.3">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Value" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="CharacterStatFrameScrollBoxIconElementTemplate" inherits="CharacterStatFrameScrollBoxBaseElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+		<Size x="187" y="29"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="32" y="29"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CharacterStatFrameScrollBoxLabelElementTemplate" inherits="CharacterStatFrameScrollBoxBaseElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollLabel" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" x="11" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Button name="CharacterFrameTabTemplate" inherits="PanelTabButtonTemplate" mixin="CharacterFrameTabButtonMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnClick"/>
@@ -189,13 +268,39 @@
 					</OnEnter>
                 </Scripts>
             </Button>
-			<Frame name="$parentInsetRight" parentKey="InsetRight" inherits="InsetFrameTemplate" hidden="true">
+					<Button name="CharacterFrameTab4" inherits="CharacterFrameTabTemplate" id="4" text="PVP" hidden ="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameTab3" relativePoint="TOPRIGHT" x="1" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(MicroButtonTooltipText(PVP, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
+							</OnEnter>
+						</Scripts>
+					</Button>
+					<Button name="CharacterFrameTab5" inherits="CharacterFrameTabTemplate" id="5" text="SKILLS" hidden ="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameTab4" relativePoint="TOPRIGHT" x="1" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
+							</OnEnter>
+						</Scripts>
+					</Button>
+					<Frame name="$parentInsetRight" parentKey="InsetRight" inherits="InsetFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="1" y="0"/>
 					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
 				</Anchors>
 			</Frame>
 
+			<Frame name="CharacterStatsPaneScrollBox" inherits="CharacterStatsPaneScrollBoxTemplate" hidden="true" mixin="CharacterStatsPaneScrollBoxMixin"/>
+
+			<Frame name="CharacterStatsPanePetScrollBox" inherits="CharacterStatsPaneScrollBoxTemplate" hidden="true" mixin="CharacterStatsPanePetScrollBoxMixin"/>
+					
 			<Frame name="CharacterStatsPane" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.InsetRight" x="3" y="-3"/>
@@ -300,9 +405,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-            <OnEvent method="OnEvent"/>
-            <OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-        </Scripts>
-    </Frame>
+		</Scripts>
+		</Frame>
 </Ui>

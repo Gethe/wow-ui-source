@@ -89,6 +89,10 @@ local PlayerInteractionManager =
 			Type = "Function",
 			HasRestrictions = true,
 		},
+		{
+			Name = "ShardTransferConfirm",
+			Type = "Function",
+		},
 	},
 
 	Events =

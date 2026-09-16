@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate, EnchantingItemButtonAnimTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
-    <Layers>
+	<ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate, EnchantingItemButtonAnimTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
+		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
 					<Size x="40" y="40"/>
@@ -36,6 +36,9 @@
 			<OnEnter function="PaperDollItemSlotButton_OnEnter"/>
 			<OnLeave function="PaperDollItemSlotButton_OnLeave"/>
 		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_PaperDollItemSlotButton" type="string"/>
+		</KeyValues>
 	</ItemButton>
 	<Frame name="PaperDollItemSocketSlotTemplate" parentArray="Slots" virtual="true">
 		<Size x="11" y="11"/>
@@ -200,7 +203,7 @@
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="GearSetButtonTemplate" virtual="true">
+	<Button name="GearSetButtonTemplate" mixin="GearSetButtonMixin" virtual="true">
 		<Size x="169" y="44"/>
 		<Anchors>
 			<Anchor point="LEFT" x="2" y="0"/>
@@ -366,6 +369,9 @@
 				end
 			</OnDragStart>
 		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_GearSetButton" type="string"/>
+		</KeyValues>
 		<NormalTexture name="$parentIcon" parentKey="icon">
 			<Size x="36" y="36"/>
 			<Anchors>
@@ -390,7 +396,7 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 
-	<Button name="PaperDollSidebarTabTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="PaperDollSidebarTabTemplate" parentArray="Tabs" mixin="PaperDollSidebarTabMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="33" y="35"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -430,34 +436,23 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.Icon:SetTexture(PAPERDOLL_SIDEBARS[self:GetID()].icon);
-				local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
-				self.disabledTooltip = PAPERDOLL_SIDEBARS[self:GetID()].disabledTooltip;
-				self.Icon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
-			</OnLoad>
-			<OnClick>
-				PaperDollFrame_SetSidebar(self, self:GetID());
-			</OnClick>
-			<OnEnable>
-				self:SetAlpha(1);
-				self.Icon:SetDesaturation(0);
-			</OnEnable>
-			<OnDisable>
-				self:SetAlpha(0.5);
-				self.Icon:SetDesaturation(1);
-			</OnDisable>
-			<OnEnter function="PaperDollFrame_SidebarTab_OnEnter" />
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
 
-    <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
+	<Frame name="PaperDollFrame" mixin="PaperDollFrameMixin" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString name="CharacterLevelText" inherits="GameFontNormalSmall2" justifyV="MIDDLE" justifyH="CENTER" text="Level level race class">
+						<Size x="220" y="24"/>
+					</FontString>
+					<FontString name="PetLoyaltyText" inherits="GameFontNormalSmall2" justifyV="MIDDLE" justifyH="CENTER" text="Super Loyal">
 						<Size x="220" y="24"/>
 					</FontString>
 				</Layer>
@@ -568,7 +563,7 @@
 						</Scripts>
 					</Frame>
 
-					<Frame parentKey="EquipmentManagerPane" hidden="true">
+					<Frame parentKey="EquipmentManagerPane" mixin="PaperDollEquipmentManagerPaneMixin" hidden="true">
 						<Size x="172" y="331"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
@@ -618,7 +613,7 @@
 							<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
 						</Scripts>
 					</Frame>
-			<ModelScene name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
+			<ModelScene parentKey="CharacterModelScene" name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
 				<Size x="231" y="320"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="52" y="-66"/>
@@ -807,6 +802,16 @@
 							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</Frame>
+					<Frame name="PetPaperDollPetHappinessInfo" enableMouse="true" hidden="true" inherits="PetFrameHappinessTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="8" y="-8"/>
+						</Anchors>
+					</Frame>
+					<Frame name="PetPaperDollFrameExpBar" inherits="PetExpStatusBarTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" x="3" y="2"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 
 				<Scripts>
@@ -814,8 +819,8 @@
 					<OnReceiveDrag method="OnReceiveDrag"/>
 				</Scripts>
 			</ModelScene>
-
-			<Frame name="PaperDollItemsFrame" setAllPoints="true" frameLevel="100">
+					
+			<Frame name="PaperDollItemsFrame" parentKey="ItemsFrame" setAllPoints="true" frameLevel="100">
 				<Frames>
 					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
@@ -925,6 +930,127 @@
 							</Layer>
 						</Layers>
 					</ItemButton>
+					<ItemButton name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ItemButton>
+					<ItemButton name="CharacterAmmoSlot">
+						<Size>
+							<AbsDimension x="27" y="27"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CharacterRangedSlot" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
+									<Size>
+										<AbsDimension x="41" y="41"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.640625" top="0" bottom="0.640625"/>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture name="$parentIconTexture"/>
+								<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-1" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
+									<Size>
+										<AbsDimension x="23" y="41"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="-22" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.640625" right="1.0" top="0" bottom="0.640625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.maxDisplayCount = 999;
+								PaperDollItemSlotButton_OnLoad(self);
+							</OnLoad>
+							<OnEvent>
+								PaperDollItemSlotButton_OnEvent(self, event, ...);
+							</OnEvent>
+							<OnShow>
+								PaperDollItemSlotButton_OnShow(self);
+							</OnShow>
+							<OnHide>
+								PaperDollItemSlotButton_OnHide(self);
+							</OnHide>
+							<OnClick>
+								if ( IsModifiedClick() ) then
+									PaperDollItemSlotButton_OnModifiedClick(self, button);
+								else
+									PaperDollItemSlotButton_OnClick(self, button);
+								end
+							</OnClick>
+							<OnDragStart>
+								PaperDollItemSlotButton_OnClick(self, "LeftButton");
+							</OnDragStart>
+							<OnReceiveDrag>
+								PaperDollItemSlotButton_OnClick(self, "LeftButton");
+							</OnReceiveDrag>
+							<OnEnter>
+								PaperDollItemSlotButton_OnEnter(self, motion);
+							</OnEnter>
+							<OnLeave>
+								PaperDollItemSlotButton_OnLeave(self, motion);
+							</OnLeave>
+						</Scripts>
+						<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Size>
+								<AbsDimension x="47" y="47"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+					</ItemButton>
 				</Frames>
 			</Frame>
 		</Frames>
@@ -932,7 +1058,7 @@
             <OnLoad function="PaperDollFrame_OnLoad"/>
             <OnEvent function="PaperDollFrame_OnEvent"/>
             <OnShow function="PaperDollFrame_OnShow"/>
-						<OnHide function="PaperDollFrame_OnHide"/>
+			<OnHide function="PaperDollFrame_OnHide"/>
         </Scripts>
     </Frame>
 

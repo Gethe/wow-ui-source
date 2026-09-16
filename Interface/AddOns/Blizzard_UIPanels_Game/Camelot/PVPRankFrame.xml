@@ -1,0 +1,117 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PVPRankFrame" mixin="PVPRankFrameMixin" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="4">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SeasonTimerField" inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="CharacterFrameLeftPaneHost" x="-46" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Primary rank information -->
+			<Frame parentKey="MainInfoFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost" x="0" y="-60" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameLeftPaneHost" relativePoint="TOPRIGHT" x="0" y="-195"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrentSeasonField" inherits="GameFontNormalMed2" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-20"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CurrentRankField" inherits="GameFontHighlightLarge" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CurrentSeasonField" relativePoint="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CurrentRankProgressField" inherits="GameFontNormal" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CurrentRankField" relativePoint="BOTTOM" x="0" y="-210"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Line" atlas="UI-Character-Info-Honor-LevelBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.CurrentRankField" relativePoint="BOTTOM" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="RankProgressBarDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="RankProgressBarDisplayMixin">
+						<Size x="154" y="154"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-95"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="0">
+								<Texture atlas="UI-Character-Info-Honor-Bar-BG-Glow">
+									<Size x="275" y="295"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="0">
+								<Texture parentKey="Background">
+									<Size x="115" y="115"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="Bar" atlas="pvpqueue-sidebar-honorbar-background">
+									<Size x="235" y="209"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="FactionBadge">
+									<Size x="72" y="84"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+							<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate" mixin="RewardBadgeMixin">
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-1"/>
+								</Anchors>
+							</Button>
+						</Frames>
+						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Cooldown>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="DetailFrame" inherits="CharacterFrameSidePaneTemplate" enableMouse="true" mixin="PVPRankDetailFrameMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

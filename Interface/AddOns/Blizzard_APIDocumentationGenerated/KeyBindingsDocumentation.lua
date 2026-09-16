@@ -198,7 +198,7 @@ local KeyBindings =
 				{ Name = "HousingEditorLayoutMode", Type = "BindingContext", EnumValue = 6 },
 				{ Name = "HousingEditorBasicAndExpertDecorMode", Type = "BindingContext", EnumValue = 7 },
 				{ Name = "HousingEditorExteriorCustomizationMode", Type = "BindingContext", EnumValue = 8 },
-				{ Name = "ReservedFutureFeatureBinding01", Type = "BindingContext", EnumValue = 9 },
+				{ Name = "GamepadModeInGameCore", Type = "BindingContext", EnumValue = 9 },
 			},
 		},
 		{

@@ -5,7 +5,8 @@ MainActionBarMixin = {};
 function MainActionBarMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	
 	self.state = "player";
 	MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 end
@@ -27,11 +28,36 @@ function MainActionBarMixin:GetYOffset()
 	return self.yOffset;
 end
 
+function MainActionBar_InitializeGamepad()
+	MainActionBar:Hide();
+	StanceBar:Hide();
+	MicroMenu:Hide();
+	BagsBar:Hide();
+end
+
+function MainActionBar_InitializeMKB()
+	MainActionBar:Show();
+	MicroMenu:Show();
+	BagsBar:Show();
+end
+
+function MainActionBar_UnInitializeMKB()
+	MainActionBar:Hide();
+	StanceBar:Hide();
+	MicroMenu:Hide();
+	BagsBar:Hide();
+end
+
 function MainActionBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self:UpdateEndCaps(self.hideBarArt);
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		InputUtil.RegisterForInterfaceTransitions(MainActionBar);
+		InputUtil.RegisterGamepadInit(MainActionBar, MainActionBar_InitializeGamepad);
+		InputUtil.RegisterMKBInit(MainActionBar, MainActionBar_InitializeMKB);
+		InputUtil.RegisterMKBUninit(MainActionBar, MainActionBar_UnInitializeMKB);
 	end
 end
 
@@ -153,7 +179,6 @@ end
 function MainActionBarDownButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
-
 -- For arrow buttons that need to swap their textures between two styles.
 -- Currently used by Classic.
 MainActionBarSwappableButtonMixin = {};

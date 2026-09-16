@@ -166,9 +166,9 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitSlotOption",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 11,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogOutfitSlotOption", EnumValue = 0 },
@@ -183,6 +183,10 @@ local TransmogOutfitConstants =
 				{ Name = "ArtifactSpecTwo", Type = "TransmogOutfitSlotOption", EnumValue = 9 },
 				{ Name = "ArtifactSpecThree", Type = "TransmogOutfitSlotOption", EnumValue = 10 },
 				{ Name = "ArtifactSpecFour", Type = "TransmogOutfitSlotOption", EnumValue = 11 },
+				{ Name = "ArmorCloth", Type = "TransmogOutfitSlotOption", EnumValue = 12 },
+				{ Name = "ArmorLeather", Type = "TransmogOutfitSlotOption", EnumValue = 13 },
+				{ Name = "ArmorMail", Type = "TransmogOutfitSlotOption", EnumValue = 14 },
+				{ Name = "ArmorPlate", Type = "TransmogOutfitSlotOption", EnumValue = 15 },
 			},
 		},
 		{
@@ -239,17 +243,19 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitSlotWarning",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Ok", Type = "TransmogOutfitSlotWarning", EnumValue = 0 },
 				{ Name = "InvalidEquippedDestinationItem", Type = "TransmogOutfitSlotWarning", EnumValue = 1 },
 				{ Name = "WrongWeaponCategoryEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 2 },
-				{ Name = "PendingWeaponChanges", Type = "TransmogOutfitSlotWarning", EnumValue = 3 },
-				{ Name = "WeaponDoesNotSupportIllusions", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
-				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 5 },
+				{ Name = "WrongArmorTypeEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 3 },
+				{ Name = "EquippedItemLowLevel", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
+				{ Name = "PendingWeaponChanges", Type = "TransmogOutfitSlotWarning", EnumValue = 5 },
+				{ Name = "WeaponDoesNotSupportIllusions", Type = "TransmogOutfitSlotWarning", EnumValue = 6 },
+				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 7 },
 			},
 		},
 		{
@@ -285,6 +291,18 @@ local TransmogOutfitConstants =
 				{ Name = "CreateOutfitInfo", Type = "TransmogOutfitTransactionType", EnumValue = 2 },
 				{ Name = "UpdateSlots", Type = "TransmogOutfitTransactionType", EnumValue = 3 },
 				{ Name = "UpdateSituations", Type = "TransmogOutfitTransactionType", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "TransmogSettingsUpdateType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "TransmogSettingsUpdateType", EnumValue = 0 },
+				{ Name = "OptOut", Type = "TransmogSettingsUpdateType", EnumValue = 1 },
 			},
 		},
 		{
@@ -360,9 +378,9 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogSituationTrigger",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogSituationTrigger", EnumValue = 0 },
@@ -376,6 +394,7 @@ local TransmogOutfitConstants =
 				{ Name = "EventOutfit", Type = "TransmogSituationTrigger", EnumValue = 8 },
 				{ Name = "Weather", Type = "TransmogSituationTrigger", EnumValue = 9 },
 				{ Name = "TimeOfDay", Type = "TransmogSituationTrigger", EnumValue = 10 },
+				{ Name = "SettingsUpdate", Type = "TransmogSituationTrigger", EnumValue = 11 },
 			},
 		},
 		{
@@ -427,6 +446,7 @@ local TransmogOutfitConstants =
 			Values =
 			{
 				{ Name = "EQUIP_TRANSMOG_OUTFIT_MANUAL_SPELL_ID", Type = "number", Value = 1247613 },
+				{ Name = "CLEAR_TRANSMOG_OUTFIT_MANUAL_SPELL_ID", Type = "number", Value = 1247917 },
 				{ Name = "TRANSMOG_OUTFIT_SLOT_NONE", Type = "TransmogOutfitSlot", Value = -1 },
 			},
 		},

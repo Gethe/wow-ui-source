@@ -206,6 +206,8 @@ function CustomizationCategoryButtonMixin:NarrationGetContext()
 end
 
 ----------------- Customization Frame -----------------
+local CUSTOMIZATION_FRAME_DEFAULT_MAX_AXIS_ZOOM_SPEED = 2.5;
+local CUSTOMIZATION_FRAME_DEFAULT_MAX_AXIS_ROTATE_SPEED = 3;
 
 CustomizationFrameBaseMixin = {};
 
@@ -229,6 +231,11 @@ function CustomizationFrameBaseMixin:CustomizationFrameBase_OnLoad()
 	for _, button in ipairs(self.SmallButtons.ControlButtons) do
 		button:SetCustomizationFrame(self);
 	end
+
+	self.maxAxisZoomSpeed = self.maxAxisZoomSpeed and self.maxAxisZoomSpeed or CUSTOMIZATION_FRAME_DEFAULT_MAX_AXIS_ZOOM_SPEED;
+	self.maxAxisRotateSpeed = self.maxAxisRotateSpeed and self.maxAxisRotateSpeed or CUSTOMIZATION_FRAME_DEFAULT_MAX_AXIS_ROTATE_SPEED;
+
+	SmartNavigation_MarkFrameIgnored(self.Categories); -- Categories are meant to be navigated with the shoulder buttons in gamepad mode.
 end
 
 function CustomizationFrameBaseMixin:OnEvent(event, ...)
@@ -355,7 +362,7 @@ function CustomizationFrameBaseMixin:GetCategories()
 	return self.categories;
 end
 
-function CustomizationFrameBaseMixin:SetCustomizations(categories)
+function CustomizationFrameBaseMixin:SetCustomizations(categories, dontResetCamera)
 	self.categories = categories;
 
 	local keepState = self:HasSelectedCategory();
@@ -363,17 +370,17 @@ function CustomizationFrameBaseMixin:SetCustomizations(categories)
 	-- Select required Category if needed.
 	local needsCategorySelected = self:NeedsCategorySelected();
 	if needsCategorySelected then
-		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState);
+		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState, dontResetCamera);
 	else
-		self:SetSelectedCategory(self.selectedCategoryData, keepState);
+		self:SetSelectedCategory(self.selectedCategoryData, keepState, dontResetCamera);
 	end
 
 	-- Select required Subcategory if needed.
 	keepState = self:HasSelectedSubcategory();
 	if needsCategorySelected or self:NeedsSubcategorySelected() then
-		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState);
+		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState, dontResetCamera);
 	else
-		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState);
+		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState, dontResetCamera);
 	end
 
 	self:AddMissingOptions();
@@ -492,6 +499,26 @@ function CustomizationFrameBaseMixin:ProcessCategory(categoryData, interactingOp
 end
 
 function CustomizationFrameBaseMixin:UpdateOptionButtons(forceReset)
+	local previousSmartNavFocusedOptionID;
+	if (InputUtil.IsGamepadUIEnabled()) then
+		local currentSmartNavButton = SmartNavigation:GetCurrentButton();
+		local function IsActivePoolsOption()
+			for option in self.pools:EnumerateActive() do
+				if (option == currentSmartNavButton) then
+					return true;
+				end
+			end
+
+			return false;
+		end
+
+		if (self.sliderPool:IsActive(currentSmartNavButton) or
+			self.dropdownPool:IsActive(currentSmartNavButton) or
+			IsActivePoolsOption()) then
+			previousSmartNavFocusedOptionID = currentSmartNavButton.optionData.id;
+		end
+	end
+
 	self.pools:ReleaseAll();
 
 	local interactingOption;
@@ -531,13 +558,65 @@ function CustomizationFrameBaseMixin:UpdateOptionButtons(forceReset)
 		if optionFrame:HasSound() then
 			optionFrame:SetupAudio(self.pools:Acquire("CustomizationAudioInterface"));
 		end
+
+		if (InputUtil.IsGamepadUIEnabled()) then
+			--[[
+				Clear all the custom jumps that have been set for the option frame as it may have moved
+				position itself, or its neighbors may have been changed.
+			]]
+			SmartNavigation_ClearJumpNavigationOverrides(optionFrame);
+
+			if (optionData.id == previousSmartNavFocusedOptionID) then
+				SmartNavigation:SelectButton(optionFrame);
+			end
+
+			if (optionData.optionType == Enum.ChrCustomizationOptionType.Checkbox) then
+				-- Prevent the smart nav cursor from exiting the options list using left/right by default.
+				SmartNavigation_AddIgnoreInputNavigationOverride(optionFrame, SMART_NAV_INPUT_DIRECTION.LEFT);
+				SmartNavigation_AddIgnoreInputNavigationOverride(optionFrame, SMART_NAV_INPUT_DIRECTION.RIGHT);
+			end
+		end
 	end
 
 	self:UpdateCategoriesContainer();
+	self:OnOptionButtonsUpdated();
+end
+
+-- Default implementation, expected to be overridden in child mixin as needed.
+function CustomizationFrameBaseMixin:OnOptionButtonsUpdated()
+	self:UpdateDifferentOptionTypeSmartNavCustomJumps();
 end
 
 function CustomizationFrameBaseMixin:UpdateOptionsContainer()
 	self.Options:Layout();
+end
+
+function CustomizationFrameBaseMixin:UpdateDifferentOptionTypeSmartNavCustomJumps()
+	--[[
+		Setup custom jumps between option elements of different types. This adds a bit of robustness 
+		to the smart nav system to handle cases where the next element may be skipped due to differing 
+		widths of the option elements. This makes the assumption that consecutive options of the same
+		type can be navigated between using the default smart nav logic.
+	]]
+	local options = self.Options:GetLayoutChildren();
+	local prevOptionType;
+	local prevOption;
+	for _, option in ipairs(options) do
+		if (prevOption and option.optionData.optionType ~= prevOptionType) then
+			SmartNavigation_AddBidirectionalJumpNavigationOverride(option, SMART_NAV_INPUT_DIRECTION.UP, prevOption);
+		end
+		prevOptionType = option.optionData.optionType;
+		prevOption = option;
+	end
+end
+
+function CustomizationFrameBaseMixin:IsActiveOptionFrame(inFrame)
+	if (not inFrame or not inFrame.optionData) then
+		return false;
+	end
+
+	local pool = self:GetOptionPool(inFrame.optionData.optionType);
+	return pool and pool:IsActive(inFrame);
 end
 
 function CustomizationFrameBaseMixin:UpdateCategoriesContainer()
@@ -584,20 +663,22 @@ function CustomizationFrameBaseMixin:UpdateCameraMode(keepCustomZoom)
 	self:UpdateZoomButtonStates();
 end
 
-function CustomizationFrameBaseMixin:SetSelectedCategory(categoryData, keepState)
+function CustomizationFrameBaseMixin:SetSelectedCategory(categoryData, keepState, dontResetCamera)
 	local hadCategoryChange = not self:IsSelectedCategory(categoryData);
 
 	self.selectedCategoryData = categoryData;
 	if not self.selectedSubcategoryData then
 		self:UpdateOptionButtons(not keepState);
-		self:UpdateCameraDistanceOffset();
-		self:UpdateCameraMode(keepState);
+		if (not dontResetCamera) then
+			self:UpdateCameraDistanceOffset();
+			self:UpdateCameraMode(keepState);
+		end
 	end
 
 	EventRegistry:TriggerEvent("Customization.OnCategorySelected", self, hadCategoryChange);
 end
 
-function CustomizationFrameBaseMixin:SetSelectedSubcategory(categoryData, keepState)
+function CustomizationFrameBaseMixin:SetSelectedSubcategory(categoryData, keepState, dontResetCamera)
 	if not categoryData then
 		self.selectedSubcategoryData = nil;
 		return;
@@ -607,8 +688,10 @@ function CustomizationFrameBaseMixin:SetSelectedSubcategory(categoryData, keepSt
 
 	self.selectedSubcategoryData = categoryData;
 	self:UpdateOptionButtons(not keepState);
-	self:UpdateCameraDistanceOffset();
-	self:UpdateCameraMode(keepState);
+	if (not dontResetCamera) then
+		self:UpdateCameraDistanceOffset();
+		self:UpdateCameraMode(keepState);
+	end
 
 	EventRegistry:TriggerEvent("Customization.OnCategorySelected", self, hadCategoryChange);
 end
@@ -661,6 +744,23 @@ end
 
 function CustomizationFrameBaseMixin:RotateSubject(rotationAmount)
 	self.parentFrame:RotateSubject(rotationAmount);
+end
+
+--[[
+	Rotates the subject using x axis input, and zooms the camera using y axis input.
+	The parameters inX and inY are expected to be in the range [-1, 1]. The action
+	associated with the axis that has the largest magnitude will be performed. If
+	both axis have the same magnitude, rotation is used as the default.
+]]
+function CustomizationFrameBaseMixin:RotateSubjectOrZoomCameraUsingAxes(inX, inY)
+	local xSquared = inX * inX;
+	local ySquared = inY * inY;
+
+	if (ySquared > xSquared) then
+		self:ZoomCamera(self.maxAxisZoomSpeed * inY);
+	else
+		self:RotateSubject(self.maxAxisRotateSpeed * inX);
+	end
 end
 
 function CustomizationFrameBaseMixin:RandomizeAppearance()
@@ -755,4 +855,39 @@ end
 
 function CustomizationFrameBaseMixin:GetTooltipsExpanded()
 	return self.tooltipsExpanded;
+end
+
+function CustomizationFrameBaseMixin:GetFirstDisplayedOption()
+	local optionLayoutChildren = self.Options:GetLayoutChildren();
+	return optionLayoutChildren[1];
+end
+
+function CustomizationFrameBaseMixin:GetDisplayedOptions()
+	return self.Options:GetLayoutChildren();
+end
+
+-- Returns previous category frame first, next category frame second.
+function CustomizationFrameBaseMixin:GetCategoryFramesAdjacentToSelectedFrame()
+	local selectedCategoryData = self:GetBestCategoryData();
+	local categoryLayoutChildren = self.Categories:GetLayoutChildren();
+
+	for index, categoryChild in ipairs(categoryLayoutChildren) do
+		if(selectedCategoryData.id == categoryChild.categoryData.id) then
+			return categoryLayoutChildren[index - 1], categoryLayoutChildren[index + 1];
+		end
+	end
+end
+
+function CustomizationFrameBaseMixin:SelectPrevCategoryFrame()
+	local prevCategoryFrame = self:GetCategoryFramesAdjacentToSelectedFrame();
+	if (prevCategoryFrame) then
+		prevCategoryFrame:Click();
+	end
+end
+
+function CustomizationFrameBaseMixin:SelectNextCategoryFrame()
+	local _, nextCategoryFrame = self:GetCategoryFramesAdjacentToSelectedFrame();
+	if (nextCategoryFrame) then
+		nextCategoryFrame:Click();
+	end
 end

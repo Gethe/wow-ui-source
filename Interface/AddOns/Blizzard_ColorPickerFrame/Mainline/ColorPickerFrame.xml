@@ -207,4 +207,15 @@
 			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="ColorPickerSoftCursor" parent="UIParent" inherits="SoftCursorPointerTemplate" mixin="SoftCursorMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" hidden="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate function="ColorPickerSoftCursor_OnUpdate"/>
+			<OnGamePadStick method="OnGamePadStick"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

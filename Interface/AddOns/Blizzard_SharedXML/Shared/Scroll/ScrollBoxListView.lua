@@ -420,6 +420,13 @@ function ScrollBoxListViewMixin:InvokeInitializers()
 
 	secureexecuterange(self.initializers, SecureInvokeInitializer);
 	wipe(self.initializers);
+	self:RefreshSmartNav();
+end
+
+function ScrollBoxListViewMixin:RefreshSmartNav()
+	if InputUtil.IsGamepadUIEnabled() and SmartNavigation and self.scrollBox then
+		SmartNavigation:UpdateParent(self.scrollBox);
+	end
 end
 
 function ScrollBoxListViewMixin:AcquireRange(dataIndices)
@@ -445,6 +452,8 @@ function ScrollBoxListViewMixin:ReinitializeFrames()
 		local template, initializer = self:GetFactoryDataFromElementData(elementData);
 		self:InvokeInitializer(frame, initializer);
 	end
+
+	self:RefreshSmartNav();
 end
 
 function ScrollBoxListViewMixin:Release(frame)
@@ -750,8 +759,8 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 		end
 
 		self:ClearInvalidation();
-
 		self:SortFrames();
+		self:RefreshSmartNav();
 
 		return true;
 	end

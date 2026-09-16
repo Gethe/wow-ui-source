@@ -7,6 +7,7 @@
 	<Button name="ContainerFramePortraitButtonRouterTemplate" mixin="DropdownButtonProxyMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="routeToSibling" value="PortraitButton" type="string"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeKey="$parent.TitleContainer"/>
@@ -57,6 +58,9 @@
 
 	<DropdownButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" virtual="true">
 		<Size x="50" y="40"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_OpenBagDropdownSettings" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" setAllPoints="true" hidden="true">
@@ -78,6 +82,7 @@
 		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="emptyBackgroundAtlas" value="bags-item-slot64" type="string"/>
+			<KeyValue key="buttonContext" value="ButtonContext_ContainerFrameItemButton" type="string"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -142,6 +147,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" alphaMode="ADD" file="Interface\Store\store-item-highlight" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
@@ -190,6 +202,7 @@
 	<Frame name="ContainerMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="showCurrencyTracking" value="true" type="boolean"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
@@ -219,6 +232,7 @@
 		<KeyValues>
 			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>
 			<KeyValue key="onCloseCallback" value="ContainerFrame_OnCloseButtonClicked" type="global"/>
+			<KeyValue key="isBagContainer" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="256" y="256"/>
 		<Layers>
@@ -274,6 +288,9 @@
 		<Frames>
 			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="ContainerMoneyFrameTemplate"/>
 		</Frames>
+		<KeyValues>
+			<KeyValue key="isBackpack" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnShow method="OnShow"/>
@@ -286,6 +303,7 @@
 	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame6" inherits="ContainerFrameReagentBagTemplate"/>
+	<Frame name="ContainerFrame7" inherits="ContainerFrameTemplate"/>
 
 	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" roleset="bags">
 		<KeyValues>
@@ -296,6 +314,21 @@
 			<DropdownButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate"/>
 			<Button inherits="ContainerFramePortraitButtonRouterTemplate"/>
 			<Frame parentKey="MoneyFrame" inherits="ContainerMoneyFrameTemplate"/>
+			<Frame parentKey="CountContainer" frameStrata="HIGH">
+				<Size x="100" y="100" />
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOM" y="5"/>
+						</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.PortraitContainer.portrait"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEvent function="ContainerFrame_OnEvent"/>

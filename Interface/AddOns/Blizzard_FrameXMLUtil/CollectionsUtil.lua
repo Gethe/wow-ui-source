@@ -186,6 +186,7 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, appearanceData)
 	local inLegionArtifactCategory = appearanceData.inLegionArtifactCategory;
 	local subheaderString = appearanceData.subheaderString;
 	local warningString = appearanceData.warningString;
+	local showWarningAsError = appearanceData.showWarningAsError;
 	local showTrackingInfo = appearanceData.showTrackingInfo;
 	local slotType = appearanceData.slotType;
 
@@ -300,7 +301,11 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, appearanceData)
 	end
 
 	if warningString then
-		GameTooltip_AddNormalLine(tooltip, warningString);
+		if not showWarningAsError then
+			GameTooltip_AddNormalLine(tooltip, warningString);
+		else
+			GameTooltip_AddErrorLine(tooltip, warningString);
+		end
 	end
 
 	local useError;
@@ -506,4 +511,55 @@ function CollectionWardrobeUtil.GetAppearanceItemHyperlink(appearanceInfo, prefe
 	end
 
 	return itemLink;
+end
+
+function CollectionWardrobeUtil.CompareAppearance(source1, source2)
+	if source1.isCollected ~= source2.isCollected then
+		return source1.isCollected;
+	end
+	if source1.isUsable ~= source2.isUsable then
+		return source1.isUsable;
+	end
+	if source1.isFavorite ~= source2.isFavorite then
+		return source1.isFavorite;
+	end
+	if source1.canDisplayOnPlayer ~= source2.canDisplayOnPlayer then
+		return source1.canDisplayOnPlayer;
+	end
+	if source1.isHideVisual ~= source2.isHideVisual then
+		return source1.isHideVisual;
+	end
+	if source1.hasActiveRequiredHoliday ~= source2.hasActiveRequiredHoliday then
+		return source1.hasActiveRequiredHoliday;
+	end
+	if source1.uiOrder and source2.uiOrder then
+		return source1.uiOrder > source2.uiOrder;
+	end
+	return source1.sourceID > source2.sourceID;
+end
+
+CollectionsUtil = { };
+
+function CollectionsUtil.IsJournalDisabled()
+	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		if C_TransmogCollection.HasAnyAppearance() then
+			return false;
+		end
+
+		if C_MountJournal.HasDisplayableMount() then
+			return false;
+		end
+
+		if select(2, C_PetJournal.GetNumPets()) > 0 then
+			return false;
+		end
+
+		if C_ToyBoxInfo.HasAnyToy() then
+			return false;
+		end
+
+		return true;
+	end
+
+	return false;
 end

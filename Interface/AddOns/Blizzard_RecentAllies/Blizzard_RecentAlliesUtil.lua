@@ -1,5 +1,46 @@
 RecentAlliesUtil = {};
 
+local interactionCategoryFilterToLabel =
+{
+	[Enum.RecentAlliesInteractionCategoryFilter.Professions] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PROFESSIONS,
+	[Enum.RecentAlliesInteractionCategoryFilter.PvP] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PVP,
+	[Enum.RecentAlliesInteractionCategoryFilter.Raiding] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_RAIDING,
+	[Enum.RecentAlliesInteractionCategoryFilter.Dungeons] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,
+	[Enum.RecentAlliesInteractionCategoryFilter.Delves] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,
+	[Enum.RecentAlliesInteractionCategoryFilter.Questing] = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,
+};
+assertsafe(Enum.RecentAlliesInteractionCategoryFilterMeta.NumValues == table.count(interactionCategoryFilterToLabel), "Not all RecentAlliesInteractionCategoryFilters have a label defined in interactionCategoryFilterToLabel!");
+
+function RecentAlliesUtil.GetLabelForInteractionCategoryFilter(interactionCategoryFilter)
+	return interactionCategoryFilterToLabel[interactionCategoryFilter] or "";
+end
+
+local interactionCategoryFilterUIOrder =
+{
+	Enum.RecentAlliesInteractionCategoryFilter.Professions,
+	Enum.RecentAlliesInteractionCategoryFilter.PvP,
+	Enum.RecentAlliesInteractionCategoryFilter.Raiding,
+	Enum.RecentAlliesInteractionCategoryFilter.Dungeons,
+	Enum.RecentAlliesInteractionCategoryFilter.Delves,
+	Enum.RecentAlliesInteractionCategoryFilter.Questing,
+};
+assertsafe(Enum.RecentAlliesInteractionCategoryFilterMeta.NumValues == #interactionCategoryFilterUIOrder, "Not all RecentAlliesInteractionCategoryFilters are listed in interactionCategoryFilterUIOrder!");
+
+function RecentAlliesUtil.GetSupportedInteractionCategoryFiltersForCurrentGameType()
+	local supportedInteractionCategoryFilters = {};
+	for _index, interactionCategoryFilter in ipairs(interactionCategoryFilterUIOrder) do
+		if C_RecentAllies.IsInteractionCategoryFilterSupportedForCurrentGameType(interactionCategoryFilter) then
+			table.insert(supportedInteractionCategoryFilters, interactionCategoryFilter);
+		end
+	end
+
+	return supportedInteractionCategoryFilters;
+end
+
+function RecentAlliesUtil.GetBestDisplayNameForCharacter(characterData)
+	return RegionalUniqueNamesEnabled() and characterData.fullName or characterData.name;
+end
+
 local recentAlliesTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
 recentAlliesTimeFormatter:Init(
 	SECONDS_PER_HOUR,

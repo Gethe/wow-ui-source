@@ -80,27 +80,12 @@ function WardrobeCollectionFrameMixin:InitItemsFilterButton()
 	end);
 
 	self.FilterButton:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_WARDROBE_FILTER");
-
-		rootDescription:CreateCheckbox(COLLECTED, C_TransmogCollection.GetCollectedShown, function()
-			C_TransmogCollection.SetCollectedShown(not C_TransmogCollection.GetCollectedShown());
-		end);
-
-		rootDescription:CreateCheckbox(NOT_COLLECTED, C_TransmogCollection.GetUncollectedShown, function()
-			C_TransmogCollection.SetUncollectedShown(not C_TransmogCollection.GetUncollectedShown());
-		end);
-
-		rootDescription:CreateCheckbox(TRANSMOG_SHOW_ALL_FACTIONS, C_TransmogCollection.GetAllFactionsShown, function()
-			C_TransmogCollection.SetAllFactionsShown(not C_TransmogCollection.GetAllFactionsShown());
-		end);
-
-		rootDescription:CreateCheckbox(TRANSMOG_SHOW_ALL_RACES, C_TransmogCollection.GetAllRacesShown, function()
-			C_TransmogCollection.SetAllRacesShown(not C_TransmogCollection.GetAllRacesShown());
-		end);
-
-		local submenu = rootDescription:CreateButton(SOURCES);
-		CreateSourceFilters(submenu);
+		self:InitItemsFilterButtonSetupMenu(dropdown, rootDescription, CreateSourceFilters);
 	end);
+end
+
+function WardrobeCollectionFrameMixin:InitItemsFilterButtonSetupMenu(dropdown, rootDescription, CreateSourceFilters)
+	-- Overridden
 end
 
 function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
@@ -302,8 +287,14 @@ function WardrobeCollectionFrameMixin:GoToSet(setID)
 end
 
 function WardrobeCollectionFrameMixin:UpdateTabButtons()
-	-- sets tab
-	self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID);
+	if(C_TransmogSets:HasAnyValidSets()) then
+		self.SetsTab:Show();
+		self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID);
+	else
+		-- if we have no sets to show, hide the tab and go back to items
+		self.SetsTab:Hide();
+		self:SetTab(WARDROBE_TAB_ITEMS);
+	end
 end
 
 local function IsAnySourceCollected(sources)
@@ -458,25 +449,25 @@ function WardrobeItemsCollectionSlotButtonMixin:OnEnter()
 	end
 end
 
-WardrobeItemsCollectionMixin = { };
-
-local spacingNoSmallButton = 2;
-local spacingWithSmallButton = 12;
-local defaultSectionSpacing = 24;
-local shorterSectionSpacing = 19;
+WardrobeItemsCollectionMixin = {
+	spacingNoSmallButton = 2;
+	spacingWithSmallButton = 12;
+	defaultSectionSpacing = 24;
+	shorterSectionSpacing = 19;
+	slots = { }; -- overridden in OverrideDefaults()
+};
 
 function WardrobeItemsCollectionMixin:CreateSlotButtons()
-	local slots = { "head", "shoulder", "back", "chest", "shirt", "tabard", "wrist", defaultSectionSpacing, "hands", "waist", "legs", "feet", defaultSectionSpacing, "mainhand", spacingWithSmallButton, "secondaryhand" };
 	local parentFrame = self.SlotsFrame;
 	local lastButton;
-	local xOffset = spacingNoSmallButton;
-	for i = 1, #slots do
-		local value = tonumber(slots[i]);
+	local xOffset = self.spacingNoSmallButton;
+	for i = 1, #self.slots do
+		local value = tonumber(self.slots[i]);
 		if ( value ) then
 			-- this is a spacer
 			xOffset = value;
 		else
-			local slotString = slots[i];
+			local slotString = self.slots[i];
 			local button = CreateFrame("BUTTON", nil, parentFrame, "WardrobeSlotButtonTemplate");
 			button.NormalTexture:SetAtlas("transmog-nav-slot-"..slotString, true);
 			if ( lastButton ) then
@@ -485,22 +476,24 @@ function WardrobeItemsCollectionMixin:CreateSlotButtons()
 				button:SetPoint("TOPLEFT");
 			end
 			button.slot = string.upper(slotString).."SLOT";
-			xOffset = spacingNoSmallButton;
+			xOffset = self.spacingNoSmallButton;
 			lastButton = button;
 			-- small buttons
-			if ( slotString == "mainhand" or slotString == "secondaryhand" or slotString == "shoulder" ) then
-				local smallButton = CreateFrame("BUTTON", nil, parentFrame, "WardrobeSmallSlotButtonTemplate");
-				smallButton:SetPoint("BOTTOMRIGHT", button, "TOPRIGHT", 16, -15);
-				smallButton.slot = button.slot;
-				if ( slotString == "shoulder" ) then
-					local isSecondary = true;
-					smallButton.transmogLocation = TransmogUtil.GetTransmogLocation(smallButton.slot, Enum.TransmogType.Appearance, isSecondary);
+			local isShoulderSlot = slotString == "shoulder";
+			if ( isShoulderSlot or slotString == "mainhand" or slotString == "secondaryhand" ) then
+				local isSecondary = isShoulderSlot;
+				local mogType = isShoulderSlot and Enum.TransmogType.Appearance or Enum.TransmogType.Illusion;
+				local loc = TransmogUtil.GetTransmogLocation(button.slot, mogType, isSecondary);
+				if ( loc ) then
+					local smallButton = CreateFrame("BUTTON", nil, parentFrame, "WardrobeSmallSlotButtonTemplate");
+					smallButton:SetPoint("BOTTOMRIGHT", button, "TOPRIGHT", 16, -15);
+					smallButton.slot = button.slot;
+					smallButton.transmogLocation = loc;
 
-					smallButton.NormalTexture:SetAtlas("transmog-nav-slot-shoulder", false);
-					smallButton:Hide();
-				else
-					local isSecondary = false;
-					smallButton.transmogLocation = TransmogUtil.GetTransmogLocation(smallButton.slot, Enum.TransmogType.Illusion, isSecondary);
+					if ( isShoulderSlot ) then
+						smallButton.NormalTexture:SetAtlas("transmog-nav-slot-shoulder", false);
+						smallButton:Hide();
+					end
 				end
 			end
 
@@ -556,7 +549,12 @@ function WardrobeItemsCollectionMixin:CheckLatestAppearance(changeTab)
 	end
 end
 
+function WardrobeItemsCollectionMixin:OverrideDefaults()
+	-- overridden
+end
+
 function WardrobeItemsCollectionMixin:OnLoad()
+	self:OverrideDefaults();
 	self:CreateSlotButtons();
 	self.BGCornerTopLeft:Hide();
 	self.BGCornerTopRight:Hide();
@@ -625,7 +623,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 		self:SetActiveSlot(transmogLocation);
 	end
 
-	WardrobeCollectionFrame.progressBar:SetShown(not TransmogUtil.IsCategoryLegionArtifact(self:GetActiveCategory()));
+	self:SetProgressBarVisibility(self:GetActiveCategory());
 
 	if ( needsUpdate ) then
 		WardrobeCollectionFrame:UpdateUsableAppearances();
@@ -638,6 +636,10 @@ function WardrobeItemsCollectionMixin:OnShow()
 
 	-- tab tutorial
 	self:CheckHelpTip();
+end
+
+function WardrobeItemsCollectionMixin:SetProgressBarVisibility(category)
+	-- Overridden
 end
 
 function WardrobeItemsCollectionMixin:OnHide()
@@ -780,9 +782,12 @@ function WardrobeItemsCollectionMixin:GetActiveCategory()
 end
 
 function WardrobeItemsCollectionMixin:IsValidWeaponCategoryForSlot(categoryID)
-	local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+	local name, isWeapon, canEnchant, canMainHand, canOffHand, canRanged = C_TransmogCollection.GetCategoryInfo(categoryID);
 	if ( name and isWeapon ) then
-		if ( (self.transmogLocation:IsMainHand() and canMainHand) or (self.transmogLocation:IsOffHand() and canOffHand) ) then
+		local isForMainHand = self.transmogLocation:IsMainHand();
+		local isForOffHand = self.transmogLocation:IsOffHand();
+		local isForRanged = self.transmogLocation:IsRangedSlot();
+		if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) or (isForRanged and canRanged) ) then
 			return true;
 		end
 	end
@@ -803,7 +808,7 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 		if ( self.transmogLocation:IsIllusion() ) then
 			category = nil;
 		elseif ( self.transmogLocation:IsAppearance() ) then
-			local useLastWeaponCategory = self.transmogLocation:IsEitherHand() and
+			local useLastWeaponCategory = (self.transmogLocation:IsEitherHand() or self.transmogLocation:IsRangedSlot()) and
 											self.lastWeaponCategory and
 											self:IsValidWeaponCategoryForSlot(self.lastWeaponCategory);
 			if ( useLastWeaponCategory ) then
@@ -819,7 +824,7 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 				end
 			end
 			if ( not category ) then
-				if ( self.transmogLocation:IsEitherHand() ) then
+				if ( self.transmogLocation:IsEitherHand() or self.transmogLocation:IsRangedSlot()) then
 					-- find the first valid weapon category
 					for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
 						if ( self:IsValidWeaponCategoryForSlot(categoryID) ) then
@@ -845,8 +850,9 @@ end
 
 function WardrobeItemsCollectionMixin:UpdateWeaponDropdown()
 	local _name, isActiveCategoryWeapon;
-	if self.transmogLocation:IsAppearance() then
-		_name, isActiveCategoryWeapon = C_TransmogCollection.GetCategoryInfo(self:GetActiveCategory());
+	local activeCategory = self:GetActiveCategory();
+	if self.transmogLocation:IsAppearance() and activeCategory then
+		_name, isActiveCategoryWeapon = C_TransmogCollection.GetCategoryInfo(activeCategory);
 	end
 
 	self.WeaponDropdown:SetShown(isActiveCategoryWeapon);
@@ -871,10 +877,11 @@ function WardrobeItemsCollectionMixin:UpdateWeaponDropdown()
 
 		local isForMainHand = transmogLocation:IsMainHand();
 		local isForOffHand = transmogLocation:IsOffHand();
+		local isForRanged = transmogLocation:IsRangedSlot();
 
 		for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
-			local name, isWeapon, _canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-			if name and isWeapon and ((isForMainHand and canMainHand) or (isForOffHand and canOffHand)) then
+			local name, isWeapon, _canEnchant, canMainHand, canOffHand, canRanged = C_TransmogCollection.GetCategoryInfo(categoryID);
+			if name and isWeapon and ((isForMainHand and canMainHand) or (isForOffHand and canOffHand) or (isForRanged and canRanged)) then
 				rootDescription:CreateRadio(name, IsSelected, SetSelected, categoryID);
 			end
 		end
@@ -886,7 +893,7 @@ end
 function WardrobeItemsCollectionMixin:SetActiveCategory(category)
 	local previousCategory = self.activeCategory;
 	self.activeCategory = category;
-	if previousCategory ~= category and self.transmogLocation:IsAppearance() then
+	if previousCategory ~= category and self.transmogLocation:IsAppearance() and category ~= nil then
 		C_TransmogCollection.SetSearchAndFilterCategory(category);
 		local name, isWeapon = C_TransmogCollection.GetCategoryInfo(category);
 		if ( isWeapon ) then
@@ -899,7 +906,7 @@ function WardrobeItemsCollectionMixin:SetActiveCategory(category)
 	end
 	self:UpdateWeaponDropdown();
 
-	self:GetParent().progressBar:SetShown(not TransmogUtil.IsCategoryLegionArtifact(category));
+	self:SetProgressBarVisibility(category);
 
 	local slotButtons = self.SlotsFrame.Buttons;
 	for i = 1, #slotButtons do
@@ -962,32 +969,7 @@ function WardrobeItemsCollectionMixin:FilterVisuals()
 end
 
 function WardrobeItemsCollectionMixin:SortVisuals()
-	local comparison = function(source1, source2)
-		if ( source1.isCollected ~= source2.isCollected ) then
-			return source1.isCollected;
-		end
-		if ( source1.isUsable ~= source2.isUsable ) then
-			return source1.isUsable;
-		end
-		if ( source1.isFavorite ~= source2.isFavorite ) then
-			return source1.isFavorite;
-		end
-		if ( source1.canDisplayOnPlayer ~= source2.canDisplayOnPlayer ) then
-			return source1.canDisplayOnPlayer;
-		end
-		if ( source1.isHideVisual ~= source2.isHideVisual ) then
-			return source1.isHideVisual;
-		end
-		if ( source1.hasActiveRequiredHoliday ~= source2.hasActiveRequiredHoliday ) then
-			return source1.hasActiveRequiredHoliday;
-		end
-		if ( source1.uiOrder and source2.uiOrder ) then
-			return source1.uiOrder > source2.uiOrder;
-		end
-		return source1.sourceID > source2.sourceID;
-	end
-
-	table.sort(self.filteredVisualsList, comparison);
+	table.sort(self.filteredVisualsList, CollectionWardrobeUtil.CompareAppearance);
 end
 
 function WardrobeItemsCollectionMixin:GetActiveSlotInfo()
@@ -1062,7 +1044,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 			self.illusionWeaponAppearanceID = appearanceSourceID;
 			changeModel = true;
 		end
-	else
+	elseif self.activeCategory then
 		local _, isWeapon = C_TransmogCollection.GetCategoryInfo(self.activeCategory);
 		isArmor = not isWeapon;
 	end
@@ -1157,6 +1139,10 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 		end
 	end
 
+	if not self.activeCategory then
+		return;
+	end
+
 	-- progress bar
 	self:UpdateProgressBar();
 	-- tutorial
@@ -1205,7 +1191,9 @@ function WardrobeItemsCollectionMixin:UpdateProgressBar()
 end
 
 function WardrobeItemsCollectionMixin:RefreshVisualsList()
-	if self.transmogLocation:IsIllusion() then
+	if self.activeCategory == nil then
+		self.visualsList = {};
+	elseif self.transmogLocation:IsIllusion() then
 		self.visualsList = C_TransmogCollection.GetIllusions();
 	else
 		self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory, self.transmogLocation:GetData());
@@ -1306,10 +1294,10 @@ function WardrobeItemsCollectionMixin:UpdateSlotButtons()
 		if not button.isSmallButton then
 			local slotName =  button.transmogLocation:GetSlotName();
 			if slotName == "BACKSLOT" then
-				local xOffset = showSecondaryShoulder and spacingWithSmallButton or spacingNoSmallButton;
+				local xOffset = showSecondaryShoulder and self.spacingWithSmallButton or self.spacingNoSmallButton;
 				button:SetPoint("LEFT", lastButton, "RIGHT", xOffset, 0);
 			elseif slotName == "HANDSSLOT" or slotName == "MAINHANDSLOT" then
-				local xOffset = showSecondaryShoulder and shorterSectionSpacing or defaultSectionSpacing;
+				local xOffset = showSecondaryShoulder and self.shorterSectionSpacing or self.defaultSectionSpacing;
 				button:SetPoint("LEFT", lastButton, "RIGHT", xOffset, 0);
 			end
 			lastButton = button;
@@ -1610,10 +1598,19 @@ function WardrobeCollectionClassDropdownMixin:SetClassFilter(classID)
 	if searchType == Enum.TransmogSearchType.Items then
 		-- Let's reset to the helmet category if the class filter changes while a weapon category is active
 		-- Not all classes can use the same weapons so the current category might not be valid
-		local _name, isWeapon = C_TransmogCollection.GetCategoryInfo(WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory());
-		if isWeapon then
+		local function SetDefaultActiveSlot()
 			local isSecondary = false;
 			WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, isSecondary));
+		end
+
+		local activeCategory = WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory();
+		if (not activeCategory) then
+			SetDefaultActiveSlot();
+		else
+			local _name, isWeapon = C_TransmogCollection.GetCategoryInfo(activeCategory);
+			if isWeapon then
+				SetDefaultActiveSlot();
+			end
 		end
 
 		C_TransmogCollection.SetClassFilter(classID);
@@ -1646,7 +1643,7 @@ function WardrobeCollectionClassDropdownMixin:Refresh()
 			self:SetClassFilter(classInfo.classID);
 		end;
 
-		for classID = 1, GetNumClasses() do
+		for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
 			local classInfo = C_CreatureInfo.GetClassInfo(classID);
 			rootDescription:CreateRadio(classInfo.className, IsClassFilterSet, SetClassFilter, classInfo);
 		end

@@ -183,8 +183,8 @@
 			</Frame>
 
 			<Frame parentKey="RaidTargetFrame" mixin="NamePlateRaidTargetMixin" collapsesLayout="true">
+				<!-- Anchoring handled in lua.-->
 				<Size x="22" y="22"/>
-				<!-- Anchoring handled dynamically in lua.-->
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
@@ -235,19 +235,15 @@
 						</Anchors>
 					</Frame>
 					<Frame parentKey="CrowdControlListFrame" inherits="NamePlateAuraListTemplate">
+						<!-- Anchoring handled in lua.-->
 						<KeyValues>
 							<KeyValue key="maxAuraItemsDisplayed" value="2" type="number"/>
 							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
 						</KeyValues>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer" relativePoint="RIGHT" x="5"/>
-						</Anchors>
 					</Frame>
 					<Frame parentKey="LossOfControlFrame">
+						<!-- Anchoring handled in lua.-->
 						<Size x="30" y="30"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer" relativePoint="RIGHT" x="5"/>
-						</Anchors>
 						<Frames>
 							<Frame parentKey="AuraItemFrame" inherits="NameplateAuraItemTemplate" setAllPoints="true"/>
 						</Frames>
@@ -259,29 +255,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="PlayerLevelDiffFrame" frameStrata="HIGH" hidden="true">
-				<Size x="28" y="28" />
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="LEFT" x="6"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="playerLevelDiffIcon" atlas="plunderstorm-nameplates-icon-ring">
-							<Size x="18" y="18" />
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="playerLevelDiffText" inherits="GameFontWhiteTiny2">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER" x="1" relativeKey="$parent.playerLevelDiffIcon"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
+			<Frame parentKey="PlayerLevelDiffFrame" inherits="NameplateLevelFrame" hidden="true"/>
 
 			<Frame parentKey="SoftTargetFrame">
 				<Size x="24" y="24"/>

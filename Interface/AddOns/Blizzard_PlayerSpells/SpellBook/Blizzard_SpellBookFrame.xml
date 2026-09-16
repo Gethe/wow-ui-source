@@ -1,8 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_SpellBookCategory.lua"/>
-	<Script file="Blizzard_SpellBookFrameTutorials.lua"/>
-	<Script file="Blizzard_SpellBookFrame.lua"/>
 
 	<Frame name="SpellBookFrameTemplate" mixin="SpellBookFrameMixin" inherits="TabSystemOwnerTemplate" virtual="true">
 		<KeyValues>
@@ -10,30 +7,10 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="TopBar" atlas="spellbook-background-evergreen-header">
-					<Size x="1612" y="54"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BookBGHalved" atlas="spellbook-background-evergreen-right" useAtlasSize="false" hidden="true" parentArray="minimizedArt">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="-51"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BookBGLeft" atlas="spellbook-background-evergreen-left" useAtlasSize="false" parentArray="maximizedArt">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="-51"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BookBGRight" atlas="spellbook-background-evergreen-right" useAtlasSize="false" parentArray="maximizedArt">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOP" y="-51"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="TopBar" inherits="SpellBookTopBarTemplate"/>
+				<Texture parentKey="BookBGHalved" inherits="SpellBookBGHalvedTemplate" hidden="true" parentArray="minimizedArt"/>
+				<Texture parentKey="BookBGLeft" inherits="SpellBookBGLeftTemplate" parentArray="maximizedArt"/>
+				<Texture parentKey="BookBGRight" inherits="SpellBookBGRightTemplate" parentArray="maximizedArt"/>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="BookCornerFlipbook" atlas="spellbook-corner-flipbook-evergreen" useAtlasSize="false">
@@ -47,11 +24,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="Bookmark" atlas="spellbook-background-evergreen-ribbon" useAtlasSize="true" parentArray="maximizedArt">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BookBGLeft" x="62" y="0"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Bookmark" inherits="SpellBookBookmarkTemplate" parentArray="maximizedArt"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -60,22 +33,49 @@
 					<Anchor point="TOPLEFT" x="38" y="42" />
 				</Anchors>
 			</Button>
-			<Frame parentKey="CategoryTabSystem" inherits="TabSystemTemplate">
+			<Frame parentKey="CategoryTabSystem" inherits="SpellbookCategoryTabSystemTemplate">
 				<KeyValues>
-					<KeyValue key="minTabWidth" value="100" type="number"/>
 					<KeyValue key="maxTabWidth" value="150" type="number"/>
 					<KeyValue key="tabTemplate" value="SpellBookCategoryTabTemplate" type="string"/>
 					<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_SPELLBOOK_OPEN" type="global"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
+			</Frame>
+			<Frame parentKey="PreviousCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-19"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.CategoryTabSystem" relativePoint="TOPLEFT" />
 				</Anchors>
 			</Frame>
-			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+			<Frame parentKey="NextCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-30" y="-17" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryTabSystem" relativePoint="TOPRIGHT" />
 				</Anchors>
+			</Frame>
+			<DropdownButton parentKey="SettingsDropdown" inherits="SpellBookSettingsDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 			</DropdownButton>
+			<Frame parentKey="SettingsTopFaceIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5" y="4" />
+				</Anchors>
+			</Frame>
 			<Frame parentKey="AssistedCombatRotationSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="AssistedCombatRotationSpellFrameMixin">
 				<KeyValues>
 					<KeyValue key="labelText" value="ASSISTED_COMBAT_ROTATION_SPELLBOOK_LABEL" type="global"/>
@@ -100,15 +100,22 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<EditBox parentKey="SearchBox" inherits="SpellSearchBoxTemplate" hidden="false">
+			<EditBox parentKey="SearchBox" inherits="SpellBookSearchBoxTemplate" hidden="false">
 				<KeyValues>
 					<KeyValue key="instructionText" value="SPELLBOOK_SEARCH_INSTRUCTIONS" type="global"/>
 				</KeyValues>
 				<Size x="300" y="30"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5"/>
-				</Anchors>
 			</EditBox>
+			<Frame parentKey="SearchBoxIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SearchBox" relativePoint="LEFT" x="-7" y="0" />
+				</Anchors>
+			</Frame>
 			<Frame parentKey="SearchPreviewContainer" inherits="SpellSearchPreviewContainerTemplate" hidden="true" frameLevel="200">
 				<Size x="176"/>
 				<Anchors>
@@ -116,7 +123,7 @@
 					<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="PagedSpellsFrame" inherits="PagedCondensedVerticalGridContentFrameTemplate">
+			<Frame parentKey="PagedSpellsFrame" inherits="PagedSpellsTemplate">
 				<KeyValues>
 					<KeyValue key="viewsPerPage" value="2" type="number"/>
 					<KeyValue key="autoExpandHeaders" value="true" type="boolean"/>
@@ -131,18 +138,8 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="View1" inherits="StaticGridLayoutFrame" parentArray="ViewFrames">
-						<Size x="680" y="650"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="85" y="-65" />
-						</Anchors>
-					</Frame>
-					<Frame parentKey="View2" inherits="StaticGridLayoutFrame" parentArray="ViewFrames">
-						<Size x="680" y="650"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-50" y="-65" />
-						</Anchors>
-					</Frame>
+					<Frame parentKey="View1" inherits="PagedSpellsView1Template" parentArray="ViewFrames"/>
+					<Frame parentKey="View2" inherits="PagedSpellsView2Template" parentArray="ViewFrames"/>	
 					<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-75" y="40"/>

@@ -1,0 +1,48 @@
+## Title: Blizzard_Collections
+## Notes: Collections
+## LoadOnDemand: 1
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_TransmogShared
+## Dep: Blizzard_ContentTracking [AllowLoadGameType mainline]
+## Dep: Blizzard_ClassMenu [AllowLoadGameType mainline]
+## Dep: Blizzard_Flyout [AllowLoadGameType mainline]
+## Dep: Blizzard_PagedContent [AllowLoadGameType mainline]
+## Dep: Blizzard_Colors [AllowLoadGameType mainline]
+## Dep: Blizzard_HelpPlate [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_Plunderstorm
+## AllowLoadGameType: wrath, cata, mists, mainline
+Blizzard_Collections_Bootstrap.lua [Bootstrap]
+Shared\Blizzard_CollectionsConstants.lua
+[Game]\Blizzard_CollectionsConstants.lua [AllowLoadGameType camelot]
+Shared\Blizzard_CollectionTemplates.lua
+[Family]\Blizzard_CollectionTemplates.xml
+Shared\Blizzard_CollectionTemplates.xml
+Shared\Blizzard_Collections.lua
+[Game]\Blizzard_CollectionsOverrides.lua [AllowLoadGameType camelot]
+Shared\Blizzard_CollectionsTabs.xml [ExcludeLoadGameType camelot]
+[Game]\Blizzard_CollectionsTabs.xml [AllowLoadGameType camelot]
+Shared\Blizzard_Collections.xml
+[Family]\Blizzard_MountCollection.lua
+[Family]\Blizzard_MountCollection.xml
+[Family]\Blizzard_PetCollection.lua [AllowLoadGameType wrath, cata]
+[Family]\Blizzard_PetCollection.xml [AllowLoadGameType wrath, cata]
+Shared\Blizzard_PetCollection.lua [AllowLoadGameType mists, mainline]
+Shared\Blizzard_PetCollection.xml [AllowLoadGameType mists, mainline] [ExcludeLoadGameType camelot]
+Camelot\Blizzard_PetCollectionScrollBar.xml [AllowLoadGameType camelot]
+Classic\Blizzard_PetCollection.lua [AllowLoadGameType camelot]
+Classic\Blizzard_PetCollection.xml [AllowLoadGameType camelot]
+[Family]\Blizzard_ToyBoxProgressTracker.xml [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\Blizzard_ToyBoxProgressTracker.xml [AllowLoadGameType camelot]
+[Family]\Blizzard_ToyBox.lua
+[Family]\Blizzard_ToyBox.xml
+[Family]\Blizzard_HeirloomCollection.lua
+[Family]\Blizzard_HeirloomCollection.xml
+Shared\Blizzard_Wardrobe_Sets.lua
+Shared\Blizzard_Wardrobe_Sets.xml
+[Family]\Blizzard_Wardrobe.lua
+[Game]\Blizzard_Wardrobe.lua [AllowLoadGameType camelot, standard]
+[Family]\Blizzard_Wardrobe.xml
+[Family]\Blizzard_WarbandSceneCollection.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_WarbandSceneCollection.xml [AllowLoadGameType mainline]
+[Family]\Localization.lua [AllowLoadGameType wrath, cata, mists]
+Localization.lua [AllowLoadGameType mainline]

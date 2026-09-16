@@ -20,6 +20,8 @@ function RadialWheelFrameMixin:OnLoad()
     self.radialWheelWedgePool = CreateFramePool("FRAME", self, "RadialWheelWedgeButtonTemplate");
     self.radialParent = nil; -- to be overridden by whatever system uses this.
     self.OutroAnim:SetScript("OnFinished", function() self:Hide(); end);
+
+    self:RegisterForTransitions();
 end
 
 function RadialWheelFrameMixin:OnUpdate()
@@ -42,7 +44,7 @@ function RadialWheelFrameMixin:UpdateSelection(forceUpdate)
     self.lastX, self.lastY = x, y;
     self.lastRadialParentX, self.lastRadialParentY = radialParentX, radialParentY;
 
-	if self.radialParent then
+    if self.radialParent then
         local centerX, centerY = self.radialParent:GetCenter();
 
         -- Minimum distance for a selection, to account for middle button.
@@ -111,10 +113,8 @@ function RadialWheelFrameMixin:SelectionStart(wedges, isSmall, cooldownInfo)
     self:UpdateFrameTexture();
     self.Background:SetAtlas(FormatStringForSize("Radial_Wheel_BG", self.isSmall), true);
     self.Pointer:SetAtlas(FormatStringForSize("Radial_Wheel_Select_Pointer", self.isSmall), true);
-    self.Pointer:Show();
 
     self.CancelButton.SelectedTexture:SetAtlas(FormatStringForSize("Radial_Wheel_Select_Close", self.isSmall), true);
-    self.CancelButton.Icon:SetAtlas(FormatStringForSize("Radial_Wheel_Icon_Close", self.isSmall), true);
     self.CancelButton.Text:SetText(nil);
     self.CancelButton.IntroAnim:Restart();
 
@@ -123,10 +123,24 @@ function RadialWheelFrameMixin:SelectionStart(wedges, isSmall, cooldownInfo)
     self.IntroAnim:Restart();
     self:Show();
 
+    if InputUtil.IsGamepadUIEnabled() then
+		self:EnableGamePadButton(true);
+        self:EnableGamePadStick(true);
+        self.CancelButton.Icon:SetAtlas(FormatStringForSize("gamepad-xb-32x-rstick", self.isSmall), true);
+        self.Pointer:Hide();
+    else
     self:SetScript("OnUpdate", self.OnUpdate);
+        self.CancelButton.Icon:SetAtlas(FormatStringForSize("Radial_Wheel_Icon_Close", self.isSmall), true);
+        self.Pointer:Show();
+    end
 end
 
 function RadialWheelFrameMixin:SelectionEnd()
+    if InputUtil.IsGamepadUIEnabled() then
+		self:EnableGamePadButton(false);
+        self:EnableGamePadStick(false);
+    end
+
     if self.currentSelected then
         if self.currentSelected == self.CancelButton then
             return nil;
@@ -178,12 +192,12 @@ function RadialWheelFrameMixin:SetupRadialWedgeButtons(wedges)
         -- General identifier associated with each wedge, useful when evaluating result.
         wedgeFrame.type = wedgeInfo.type;
 
-		local frameX = math.cos(angle) * wedgeSpacing;
-		local frameY = math.sin(angle) * wedgeSpacing;
+        local frameX = math.cos(angle) * wedgeSpacing;
+        local frameY = math.sin(angle) * wedgeSpacing;
         wedgeFrame:SetPoint("CENTER", self, "CENTER", frameX, frameY);
 
-		local selectedX = math.cos(angle) * wedgeSelectedSpacing;
-		local selectedY = math.sin(angle) * wedgeSelectedSpacing;
+        local selectedX = math.cos(angle) * wedgeSelectedSpacing;
+        local selectedY = math.sin(angle) * wedgeSelectedSpacing;
 
         wedgeFrame.SelectedTexture:SetAtlas(FormatStringForSize(selectedTexture, self.isSmall), true);
         wedgeFrame.SelectedTexture:SetRotation(angle);
@@ -528,4 +542,82 @@ RadialWheelCooldownOutroAnimMixin = {};
 function RadialWheelCooldownOutroAnimMixin:OnFinished()
     local cooldown = self:GetParent();
     cooldown:OnOutroAnimFinished();
+end
+
+function RadialWheelFrameMixin:ProcessGamepadButtonDown(button)
+	local propagateInput = true;
+
+	if button == "PAD2" then
+		if self.currentSelected then
+			self.currentSelected:SetSelected(false);
+		end
+		self.currentSelected = self.CancelButton;
+		self.processStickInputStarted = false;
+		self.CancelButton:SetSelected(true);
+		self:EndGamepadStickSelection();
+		propagateInput = false;
+	end
+
+	return propagateInput;
+end
+
+function RadialWheelFrameMixin:ProcessGamepadStickInput(stick, x, y)
+    -- Only allow this to consume Right Stick input
+    if (stick == "Left" or stick == "Movement") then
+        return true;
+    end
+
+    -- End the pending ping when the stick is released
+	if self.processStickInputStarted and x == 0 and y == 0 then
+        self:EndGamepadStickSelection(); -- Defined in the mixin class that derives from RadialWheelFrame
+        self.processStickInputStarted= false;
+    end
+
+    local distance = math.sqrt(Square(x) + Square(y));
+    local degree = 0;
+    if ((x ~= 0 or y ~= 0) and distance > 0.5) then
+        degree = math.deg(math.atan2(y, x));
+        if degree < 0 then
+            degree = degree + 360;
+        end
+
+        self.CancelButton:SetSelected(false);
+
+        if self:IsOnCooldown() then
+            self.Pointer:Hide();
+            return;
+        end
+
+        local angle = degree * (math.pi / 180); -- In radians
+
+        self.Pointer:Show();
+        self.Pointer:SetRotation(angle);
+
+        angle = angle - self.wedgeAngleOffsetInitial + self.wedgeAngleIntervalRadiansHalf;
+        if angle < 0 then
+            angle = angle + TWO_PI;
+        end
+
+        local targetWedgeIndex = 1;
+        while angle >= self.wedgeAngleIntervalRadians do
+            targetWedgeIndex = targetWedgeIndex + 1;
+            angle = angle - self.wedgeAngleIntervalRadians;
+        end
+
+        -- If wedge changed, unselect old and reselect new.
+        local targetWedge = self.radialWheelWedgeButtons[targetWedgeIndex];
+        if targetWedge ~= self.currentSelected then
+            if self.currentSelected then
+                self.currentSelected:SetSelected(false);
+            end
+            self.currentSelected = targetWedge;
+            self.currentSelected:SetSelected(true);
+
+            self.processStickInputStarted = true;
+        end
+    end
+end
+
+function RadialWheelFrameMixin:RegisterForTransitions()
+    InputUtil.RegisterForInterfaceTransitions(self, nil);
 end

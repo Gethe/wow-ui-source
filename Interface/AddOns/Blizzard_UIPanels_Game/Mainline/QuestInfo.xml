@@ -76,6 +76,9 @@
 	</Button>
 
 	<Button name="LargeQuestRewardItemButtonTemplate" inherits="LargeItemButtonTemplate" mixin="LargeQuestInfoRewardItemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_QuestItemButton" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">

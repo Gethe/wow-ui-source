@@ -7,7 +7,13 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 		
 		GuildInviteFrameInviterName:SetText(inviterName);
 		GuildInviteFrameGuildName:SetText(guildName);
-		GuildInviteFrame.Points.Text:SetText(guildPoints);
+
+		if C_AchievementInfo.AreGuildAchievementsEnabled() then
+			GuildInviteFrame.Points.Text:SetText(guildPoints);
+		else
+			GuildInviteFrame.Points:SetShown(false);
+		end
+
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, tabardData);
 		-- check if player has any guild rep beyond Neutral 0 if it's being invited to a new guild
 		local guildFactionData = C_Reputation.GetGuildFactionData();

@@ -8,6 +8,16 @@ local SpellBook =
 	Functions =
 	{
 		{
+			Name = "AbortSpellIntro",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CastSpellBookItem",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -94,6 +104,16 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetClassSkillLineInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "skillLineInfo", Type = "SpellBookSkillLineInfo", Nilable = false },
 			},
 		},
 		{
@@ -611,6 +631,40 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "IsSpellBookItemLooseFlyoutMember",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the SpellBookItem is represented in a Flyout." },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFlyoutMember", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemLowRank",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if the SpellBookItem is a lower rank of a known higher rank spell.  Returns false if there is only a single rank or it is the highest rank known." },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLowRank", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellBookItemOffSpec",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -727,6 +781,17 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "SetBarSlotFromIntro",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSpellBookItemAutoCastEnabled",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -833,8 +898,8 @@ local SpellBook =
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "page", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "page", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

@@ -3,6 +3,9 @@ local SPELLFLYOUT_DEFAULT_SPACING = 4;
 local SPELLFLYOUT_INITIAL_SPACING = 9;
 local SPELLFLYOUT_FINAL_SPACING = 9;
 
+local BEAR_FORM_SPELL_ID = 5487;
+local DIRE_BEAR_FORM_SPELL_ID = 9634;
+
 SpellFlyoutOpenReason = EnumUtil.MakeEnum("GlyphPending", "GlyphActivated");
 
 function SpellFlyout_EscapePressed()
@@ -20,7 +23,7 @@ SpellFlyoutPopupButtonMixin = {};
 
 function SpellFlyoutPopupButtonMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
-	_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
+	self.Count:SetPoint("BOTTOMRIGHT", 0, 0);
 	self.maxDisplayCount = 99;
 end
 
@@ -83,7 +86,8 @@ function SpellFlyoutPopupButtonMixin:SetTooltip()
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4);
 		end
-		if ( GameTooltip:SetSpellByID(self.spellID) ) then
+		if ( GameTooltip:SetSpellByID(self.spellID, false, true) ) then
+
 			self.UpdateTooltip = self.SetTooltip;
 		else
 			self.UpdateTooltip = nil;
@@ -119,8 +123,7 @@ end
 
 function SpellFlyoutPopupButtonMixin:UpdateUsable()
 	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
-	local name = self:GetName();
-	local icon = _G[name.."Icon"];
+	local icon = self.icon;
 	if ( isUsable or not self.isActionBar) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
 	elseif ( notEnoughMana ) then
@@ -155,8 +158,7 @@ function SpellFlyoutPopupButtonMixin:UpdateGlyphState(reason)
 end
 
 function SpellFlyoutPopupButtonMixin:UpdateCount()
-	local text = _G[self:GetName().."Count"];
-	text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount));
+	self.Count:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount));
 end
 
 -- Override for BaseActionButtonInfoMixin.
@@ -175,8 +177,45 @@ end
 
 SpellFlyoutMixin = {};
 
+function SpellFlyoutMixin:IsButtonContextValid()
+	local button = SmartNavigation:GetCurrentButton();
+	if not button or not button.spellID then
+		return false;
+	end
+
+	return not C_Spell.IsSpellPassive(button.spellID);
+end
+
+function SpellFlyoutMixin:SetUpGamepad()
+	local bindSpell = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.BindToGamepadActionBar, self), CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR);
+	bindSpell:AddButtonContext("ButtonContext_SpellButton");
+	bindSpell:AddCondition(GenerateFlatClosure(self.IsButtonContextValid, self));
+
+	local castSpell = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, CONTEXT_ACTION_LABEL_CAST);
+	castSpell:AddButtonContext("ButtonContext_SpellButton");
+	castSpell:AddCondition(GenerateFlatClosure(self.IsButtonContextValid, self));
+
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SpellFlyoutFrameFooter");
+	self.frameFooter:AddStandardBackPrompt();
+	self.frameFooter:AddPromptedBinding(castSpell);
+	self.frameFooter:AddPromptedBinding(bindSpell);
+	self.frameFooter:Finalize();
+end
+
+function SpellFlyoutMixin:BindToGamepadActionBar()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	if focusedButton and focusedButton.spellID then
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadActionBarEditFrame:BindSpell(focusedButton.spellID);
+	end
+end
+
 function SpellFlyoutMixin:OnLoad()
+	self.buttons = {};
+	self.buttonPool = CreateFramePool("CHECKBUTTON", self, self.buttonTemplate, Pool_HideAndClearAnchors);
 	self.eventsRegistered = false;
+
+	self:SetUpGamepad();
 end
 
 function SpellFlyoutMixin:OnEvent(event, ...)
@@ -232,6 +271,10 @@ function SpellFlyoutMixin:OnEvent(event, ...)
 	end
 end
 
+function SpellFlyoutMixin:ShowAllRanks(isActionBar)
+	return not isActionBar and C_CVar.GetCVar("ShowAllSpellRanks") ~= "0";
+end
+
 function SpellFlyoutMixin:Toggle(flyoutButton, flyoutID, isActionBar, specID, showFullTooltip, reason)
 	if (self:IsShown() and self.glyphActivating) then
 		return;
@@ -257,14 +300,30 @@ function SpellFlyoutMixin:Toggle(flyoutButton, flyoutID, isActionBar, specID, sh
 		return;
 	end
 
-	local direction = flyoutButton:GetPopupDirection();
+	self.buttons = {};
+	self.buttonPool:ReleaseAll();
 
 	-- Update all spell buttons for this flyout
+	local showAllRanks = self:ShowAllRanks(isActionBar);
+	local prevSpellID = nil;
+	local prevSpellName = nil;
 	local prevButton = nil;
-	local numButtons = 0;
+	local layoutIndex = 0;
 	for i=1, numSlots do
 		local spellID, overrideSpellID, isKnownSlot, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
+		local spellLevel = C_Spell.GetSpellLevelLearned(spellID);
 		local visible = true;
+
+		-- If we're not showing all ranks, increment the layout index whenever we reach a new
+		-- spell, whether or not it is known, so we can leave gaps in the right places for unknown
+		-- spells.
+		if showAllRanks or prevSpellName ~= spellName then
+			-- Bear Form and Dire Bear Form should use the same layout index despite not being the
+			-- same spell as they behave in the same way as ranks do.
+			if prevSpellID ~= BEAR_FORM_SPELL_ID or spellID ~= DIRE_BEAR_FORM_SPELL_ID then
+				layoutIndex = layoutIndex + 1;
+			end
+		end
 
 		-- Ignore Call Pet spells if there isn't a pet in that slot
 		local petIndex, petName = GetCallPetSpellInfo(spellID);
@@ -273,72 +332,93 @@ function SpellFlyoutMixin:Toggle(flyoutButton, flyoutID, isActionBar, specID, sh
 		end
 
 		if ( ((not offSpec or slotSpecID == 0) and visible and isKnownSlot) or (offSpec and slotSpecID == specID) ) then
-			local button = _G["SpellFlyoutPopupButton"..numButtons+1];
-			if (not button) then
-				button = CreateFrame("CHECKBUTTON", "SpellFlyoutPopupButton"..numButtons+1, SpellFlyout, "SpellFlyoutPopupButtonTemplate");
+			local button;
+
+			if showAllRanks or not prevButton or prevButton.spellName ~= spellName then
+				button = self.buttonPool:Acquire();
+				table.insert(self.buttons, button);
+			elseif prevButton.spellLevel < spellLevel then
+				-- Replace the previous button with the higher rank (data is sorted in ascending rank order)
+				button = prevButton;
 			end
 
-			button:ClearAllPoints();
-			if (direction == "UP") then
-				if (prevButton) then
-					button:SetPoint("BOTTOM", prevButton, "TOP", 0, SPELLFLYOUT_DEFAULT_SPACING);
+			if button then
+				button:Show();
+				button.showFullTooltip = showFullTooltip;
+				button.isActionBar = isActionBar;
+				button.layoutIndex = layoutIndex;
+
+				button.icon:SetTexture(C_Spell.GetSpellTexture(overrideSpellID));
+				button.icon:SetDesaturated(offSpec);
+				button.offSpec = offSpec;
+				button.spellID = spellID;
+				button.spellName = spellName;
+				button.spellLevel = spellLevel;
+				if ( offSpec ) then
+					button:Disable();
 				else
-					button:SetPoint("BOTTOM", 0, SPELLFLYOUT_INITIAL_SPACING);
+					button:Enable();
 				end
-			elseif (direction == "DOWN") then
-				if (prevButton) then
-					button:SetPoint("TOP", prevButton, "BOTTOM", 0, -SPELLFLYOUT_DEFAULT_SPACING);
-				else
-					button:SetPoint("TOP", 0, -SPELLFLYOUT_INITIAL_SPACING);
-				end
-			elseif (direction == "LEFT") then
-				if (prevButton) then
-					button:SetPoint("RIGHT", prevButton, "LEFT", -SPELLFLYOUT_DEFAULT_SPACING, 0);
-				else
-					button:SetPoint("RIGHT", -SPELLFLYOUT_INITIAL_SPACING, 0);
-				end
-			elseif (direction == "RIGHT") then
-				if (prevButton) then
-					button:SetPoint("LEFT", prevButton, "RIGHT", SPELLFLYOUT_DEFAULT_SPACING, 0);
-				else
-					button:SetPoint("LEFT", SPELLFLYOUT_INITIAL_SPACING, 0);
-				end
+				button:UpdateCooldown();
+				button:UpdateState();
+				button:UpdateUsable();
+				button:UpdateCount();
+				button:UpdateGlyphState(reason);
+
+				prevButton = button;
 			end
-
-			button:Show();
-			button.showFullTooltip = showFullTooltip;
-			button.isActionBar = isActionBar;
-
-			_G[button:GetName().."Icon"]:SetTexture(C_Spell.GetSpellTexture(overrideSpellID));
-			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
-			button.offSpec = offSpec;
-			button.spellID = spellID;
-			button.spellName = spellName;
-			if ( offSpec ) then
-				button:Disable();
-			else
-				button:Enable();
-			end
-			button:UpdateCooldown();
-			button:UpdateState();
-			button:UpdateUsable();
-			button:UpdateCount();
-			button:UpdateGlyphState(reason);
-
-			prevButton = button;
-			numButtons = numButtons+1;
 		end
+
+		prevSpellID = spellID;
+		prevSpellName = spellName;
 	end
 
-	-- Hide unused buttons
-	local unusedButtonIndex = numButtons+1;
-	while (_G["SpellFlyoutPopupButton"..unusedButtonIndex]) do
-		_G["SpellFlyoutPopupButton"..unusedButtonIndex]:Hide();
-		unusedButtonIndex = unusedButtonIndex+1;
-	end
+	-- We don't use `numSlots` here since that doesn't account for spell ranks
+	self.numSlots = layoutIndex;
 
-	if (numButtons == 0) then
+	if (#self.buttons == 0) then
 		return;
+	end
+
+	self:UpdateLayout(flyoutButton);
+	flyoutButton:TogglePopup();
+end
+
+function SpellFlyoutMixin:UpdateLayout(flyoutButton)
+	local buttonIndex = 1;
+	local direction = flyoutButton:GetPopupDirection();
+	local prevButton = nil;
+
+	for _, button in ipairs(self.buttons) do
+		button:ClearAllPoints();
+
+		if (direction == "UP") then
+			if (prevButton) then
+				button:SetPoint("BOTTOM", prevButton, "TOP", 0, SPELLFLYOUT_DEFAULT_SPACING);
+			else
+				button:SetPoint("BOTTOM", 0, SPELLFLYOUT_INITIAL_SPACING);
+			end
+		elseif (direction == "DOWN") then
+			if (prevButton) then
+				button:SetPoint("TOP", prevButton, "BOTTOM", 0, -SPELLFLYOUT_DEFAULT_SPACING);
+			else
+				button:SetPoint("TOP", 0, -SPELLFLYOUT_INITIAL_SPACING);
+			end
+		elseif (direction == "LEFT") then
+			if (prevButton) then
+				button:SetPoint("RIGHT", prevButton, "LEFT", -SPELLFLYOUT_DEFAULT_SPACING, 0);
+			else
+				button:SetPoint("RIGHT", -SPELLFLYOUT_INITIAL_SPACING, 0);
+			end
+		elseif (direction == "RIGHT") then
+			if (prevButton) then
+				button:SetPoint("LEFT", prevButton, "RIGHT", SPELLFLYOUT_DEFAULT_SPACING, 0);
+			else
+				button:SetPoint("LEFT", SPELLFLYOUT_INITIAL_SPACING, 0);
+			end
+		end
+
+		prevButton = button;
 	end
 
 	self:SetFrameStrata("DIALOG");
@@ -346,14 +426,16 @@ function SpellFlyoutMixin:Toggle(flyoutButton, flyoutID, isActionBar, specID, sh
 	self:SetHeightPadding(8);
 	self:Layout();
 	self:SetBorderColor(0.7, 0.7, 0.7);
-
-	flyoutButton:TogglePopup();
 end
 
 function SpellFlyoutMixin:CloseIfWorldMapMaximized()
 	if (WorldMapFrame:IsMaximized()) then
 		self:Close();
 	end
+end
+
+function SpellFlyoutMixin:SmartNavigationCloseHandler()
+	self:Close();
 end
 
 function SpellFlyoutMixin:OnShow()
@@ -370,9 +452,21 @@ function SpellFlyoutMixin:OnShow()
 		EventRegistry:RegisterCallback("WorldMapOnShow", self.CloseIfWorldMapMaximized, self);
 		self.eventsRegistered = true;
 	end
+
+	if not self.isActionBar and InputUtil.IsGamepadUIEnabled() then
+		self.didCallIntoFrameControlsManager = true;
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function SpellFlyoutMixin:OnHide()
+	if self.didCallIntoFrameControlsManager then
+		self.didCallIntoFrameControlsManager = nil;
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+		GamepadMode.FrameControlsManager:UnsuspendFrame();
+	end
+
 	FlyoutPopupMixin.OnHide(self);
 
 	if (self.eventsRegistered == true) then
@@ -390,6 +484,16 @@ function SpellFlyoutMixin:OnHide()
 	end
 
 	self.glyphActivating = false;
+end
+
+function SpellFlyoutMixin:FocusGamepad()
+	local parentFrame = GamepadMode.FrameControlsManager:GetSuspendedFrame();
+	self.frameFooter:SetParentFrame(parentFrame or self);
+	self.frameFooter:ShowAndActivateBindings();
+end
+
+function SpellFlyoutMixin:UnfocusGamepad()
+	self.frameFooter:HideAndDeactivateBindings();
 end
 
 function SpellFlyoutMixin:GetFlyoutButtonForSpell(spellID)

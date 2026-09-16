@@ -22,6 +22,9 @@
 	<Button name="ListHeaderVisualTemplate" mixin="ListHeaderVisualMixin" virtual="true">
 		<Frames>
 			<Button parentKey="CollapseButton" inherits="CollapseButtonTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-6"/>
 				</Anchors>
@@ -29,8 +32,8 @@
 		</Frames>
 		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
 			<Anchors>
-				<Anchor point="LEFT" x="8" y="1"/>
-				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" relativePoint="LEFT" x="-4" y="1"/>
+				<Anchor point="LEFT" x="8" y="0"/>
+				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" relativePoint="LEFT" x="-4" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalTexture atlas="common-button-list-collapseExpand"/>

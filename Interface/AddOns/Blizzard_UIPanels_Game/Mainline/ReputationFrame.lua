@@ -72,7 +72,17 @@ function ReputationFrameMixin:OnLoad()
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, GenerateClosure(self.RefreshAccountWideReputationTutorial), self);
 
-	self.filterDropdown:SetWidth(130);
+	if self:ShouldShowFilters() then
+		self.filterDropdown:SetWidth(130);
+	else
+		self.filterDropdown:Hide();
+	end
+
+	
+end
+
+function ReputationFrameMixin:ShouldShowFilters()
+	return true;
 end
 
 local ReputationFrameEvents = {
@@ -116,7 +126,8 @@ function ReputationFrameMixin:OnShow()
 		end
 
 		local playerOwnsCurrentExpansion = GetExpansionLevel() == GetServerExpansionLevel();
-		if playerOwnsCurrentExpansion then
+		local isFirstExpansion = GetExpansionLevel() == LE_EXPANSION_CLASSIC;
+		if playerOwnsCurrentExpansion and not isFirstExpansion then
 			rootDescription:CreateDivider();
 			local checkbox = rootDescription:CreateCheckbox(REPUTATION_CHECKBOX_SHOW_LEGACY_REPUTATIONS, IsLegacyRepSelected, SetLegacyRepSelected);
 			checkbox:SetSelectionIgnored();
@@ -264,6 +275,16 @@ function ReputationEntryMixin:Initialize(elementData)
 	self:TryInitParagonDisplay();
 
 	self:RefreshHighlightVisuals();
+	
+	self.Content.Name:SetPointsOffset(0, 0);
+	if not self:ShouldIndentNonAccountReputations() and not self.Content.AccountWideIcon:IsShown() then
+		self.Content.Name:AdjustPointsOffset(-10, 0);
+	end
+
+end
+
+function ReputationEntryMixin:ShouldIndentNonAccountReputations()
+	return true;
 end
 
 function ReputationEntryMixin:TryInitParagonDisplay()

@@ -7,6 +7,15 @@ local Trainer =
 
 	Functions =
 	{
+		{
+			Name = "GetTrainerType",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "trainerType", Type = "TrainerType", Nilable = false },
+			},
+		},
 	},
 
 	Events =

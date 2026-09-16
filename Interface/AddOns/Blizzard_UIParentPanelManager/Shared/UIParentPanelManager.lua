@@ -438,6 +438,7 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 
 		if ( oldFrame ) then
 			oldFrame:Hide();
+			self:BroadcastForcePanelHide(oldFrame);
 		end
 
 		if ( frame ) then
@@ -458,14 +459,17 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 
 		if ( oldDoubleWide ) then
 			oldDoubleWide:Hide();
+			self:BroadcastForcePanelHide(oldDoubleWide);
 		end
 
 		if ( oldLeft ) then
 			oldLeft:Hide();
+			self:BroadcastForcePanelHide(oldLeft);
 		end
 
 		if ( oldCenter ) then
 			oldCenter:Hide();
+			self:BroadcastForcePanelHide(oldCenter);
 		end
 	elseif ( key ~= "left" and key ~= "center" and key ~= "right" ) then
 		return;
@@ -474,10 +478,12 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 		self[key] = frame;
 		if ( oldFrame ) then
 			oldFrame:Hide();
+			self:BroadcastForcePanelHide(oldFrame);
 		else
 			if ( self.doublewide ) then
 				if ( key == "left" or key == "center" ) then
 					self.doublewide:Hide();
+					self:BroadcastForcePanelHide(self.doublewide);
 					self.doublewide = nil;
 				end
 			end
@@ -516,9 +522,12 @@ function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint, skipOpera
 	end
 end
 
+function FramePositionDelegate:BroadcastForcePanelHide(frame)
+	EventRegistry:TriggerEvent("UIParentPanelManager.ForcePanelHide", frame);
+end
+
 function FramePositionDelegate:HideUIPanel(frame, skipSetPoint)
 	self:HideUIPanelImplementation(frame, skipSetPoint);
-
 	local contextKey = frame.uiPanelContextKey;
 	if contextKey then
 		EventRegistry:TriggerEvent("UIPanel.FrameHidden", contextKey);
@@ -580,6 +589,7 @@ function FramePositionDelegate:HideUIPanelImplementation(frame, skipSetPoint)
 		self:SetUIPanel("left", nil, skipSetPoint);
 	else
 		frame:Hide();
+		self:BroadcastForcePanelHide(frame);
 	end
 end
 
@@ -797,7 +807,7 @@ end
 function FramePositionDelegate:ManageBottomFrameContainer()
 	local customOverlayHeight = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CustomActionbarOverlayHeightOffset);
 	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
-	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + BOTTOM_FRAME_CONTAINER_MARGIN or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + BOTTOM_FRAME_CONTAINER_MARGIN or MAIN_ACTION_BAR_OFFSET_Y;
 	local bottomManagedFrameContainer = GetBottomManagedFrameContainer();
 	bottomManagedFrameContainer.fixedWidth = 573;
 	bottomManagedFrameContainer:ClearAllPoints();
@@ -859,6 +869,10 @@ function ToggleUIPanel(frame)
 end
 
 function ShowUIPanel(frame, force, contextKey)
+	local function BroadcastShowUIPanelEvent()
+		EventRegistry:TriggerEvent("UIParentPanelManager.ShowUIPanel", frame, force, contextKey);
+	end
+
 	if ( CanAutoSetGamePadCursorControl(true) ) then
 		SetGamePadCursorControl(true);
 	end
@@ -873,6 +887,7 @@ function ShowUIPanel(frame, force, contextKey)
 
 	if ( frame.editModeManuallyShown or not GetUIPanelAttribute(frame, "area") ) then
 		frame:Show();
+		BroadcastShowUIPanelEvent();
 		return;
 	end
 
@@ -881,9 +896,15 @@ function ShowUIPanel(frame, force, contextKey)
 	FramePositionDelegate:SetAttribute("panel-force", force);
 	FramePositionDelegate:SetAttribute("panel-frame", frame);
 	FramePositionDelegate:SetAttribute("panel-show", true);
+
+	BroadcastShowUIPanelEvent();
 end
 
 function HideUIPanel(frame, skipSetPoint, skipShownCheck)
+	local function BroadcastHideUIPanelEvent()
+		EventRegistry:TriggerEvent("UIParentPanelManager.HideUIPanel", frame, skipSetPoint);
+	end
+
 	if ( not frame ) then
 		return;
 	end
@@ -898,6 +919,7 @@ function HideUIPanel(frame, skipSetPoint, skipShownCheck)
 
 	if ( frame.editModeManuallyShown or not GetUIPanelAttribute(frame, "area") ) then
 		frame:Hide();
+		BroadcastHideUIPanelEvent();
 		return;
 	end
 
@@ -905,6 +927,8 @@ function HideUIPanel(frame, skipSetPoint, skipShownCheck)
 	FramePositionDelegate:SetAttribute("panel-frame", frame);
 	FramePositionDelegate:SetAttribute("panel-skipSetPoint", skipSetPoint);
 	FramePositionDelegate:SetAttribute("panel-hide", true);
+
+	BroadcastHideUIPanelEvent();
 end
 
 function SetUIPanelShown(frame, shown, force)

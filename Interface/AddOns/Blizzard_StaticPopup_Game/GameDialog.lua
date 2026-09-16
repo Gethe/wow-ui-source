@@ -26,6 +26,14 @@ function GameDialogBaseMixin:OnLoad()
 	self.BG.Bottom:SetAtlas("UI-DialogBox-Background-Dark", TextureKitConstants.UseAtlasSize);
 	self.BG.Bottom:SetPoint("TOPLEFT", 7, -7);
 	self.BG.Bottom:SetPoint("BOTTOMRIGHT", -7, 7);
+
+	self.GamepadSequence:SetSequence({GAMEPAD_FACE_TOP, GAMEPAD_SHOULDER_LEFT, GAMEPAD_FACE_BOTTOM, GAMEPAD_FACE_LEFT, GAMEPAD_SHOULDER_RIGHT});
+
+	local function OnSequenceComplete()
+		self:GetButton1():Enable();
+	end
+
+	self.GamepadSequence:RegisterOnSequenceComplete(OnSequenceComplete);
 end
 
 function GameDialogBaseMixin:SetCloseButtonToMinimize()
@@ -200,6 +208,17 @@ function GameDialogMixin:SetupInsertedFrame(insertedFrame)
 	if insertedFrame then
 		insertedFrame:SetParent(self);
 		insertedFrame:Show();
+	end
+end
+
+function GameDialogMixin:SetupConfirmation(dialogInfo)
+	if dialogInfo.requiresConfirmation then
+		if InputUtil.IsGamepadUIEnabled() then
+			self.GamepadSequence:ResetButtons();
+			self.GamepadSequence:Show();
+		end
+	else
+		self.GamepadSequence:Hide();
 	end
 end
 
@@ -386,6 +405,7 @@ function GameDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	self:SetupText(which, text_arg1, text_arg2, data);
 	self:SetupCloseButton(dialogInfo);
 	self:SetupInsertedFrame(insertedFrame);
+	self:SetupConfirmation(dialogInfo);
 	self:SetupEditBox(dialogInfo);
 	self:SetupDropdown(dialogInfo);
 	self:SetupMoneyFrame(dialogInfo);
@@ -396,6 +416,16 @@ function GameDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	self:SetupExtraButton(dialogInfo);
 	self:SetupProgressBar(dialogInfo);
 	self:SetupElementAnchoring();
+end
+
+function GameDialogMixin:OnGainGamepadFocus()
+	if self.dialogInfo.requiresConfirmation then
+		self.GamepadSequence:EnableBindings();
+	end
+end
+
+function GameDialogMixin:OnLoseGamepadFocus()
+	self.GamepadSequence:DisableBindings();
 end
 
 local function GetSubTextVerticalOffset(_previous, _current, dialog, dialogInfo)
@@ -442,6 +472,7 @@ DialogElementLayout:AddSpacingPair("Text", "MoneyFrame", -5);
 DialogElementLayout:AddSpacingPair("Text", "MoneyInputFrame", -5);
 DialogElementLayout:AddSpacingPair("Any", "EditBox", -8);
 DialogElementLayout:AddSpacingPair("SubText", "EditBox", -10);
+DialogElementLayout:AddSpacingPair("Any", "GamepadSequence", -8);
 DialogElementLayout:AddSpacingPair("Any", "Dropdown", -5);
 DialogElementLayout:AddSpacingPair("Any", "ButtonContainer", -9);
 DialogElementLayout:AddSpacingPair("Text", "ButtonContainer", GetSpacing_ButtonsAfterText);
@@ -490,6 +521,7 @@ function GameDialogMixin:SetupElementAnchoring()
 	self:SetupAnchor("MoneyInputFrame");
 	self:SetupAnchor("Dropdown");
 	self:SetupAnchor("EditBox");
+	self:SetupAnchor("GamepadSequence");
 
 	local buttons = self.visibleButtons;
 	if #buttons > 0 then

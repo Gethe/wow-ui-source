@@ -54,6 +54,15 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetAllClassIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allClassIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllSelectedPvpTalentIDs",
 			Type = "Function",
 
@@ -75,6 +84,21 @@ local SpecializationInfo =
 			Returns =
 			{
 				{ Name = "classID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCombatConfigIDForSpecGroup",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "groupIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "configID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -304,6 +328,15 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "HasPlayerEarnedATalentPoint",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasEarned", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsInitialized",
 			Type = "Function",
 
@@ -328,6 +361,21 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "IsSpecSelectionEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "MatchesCurrentSpecSet",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -340,6 +388,16 @@ local SpecializationInfo =
 			Returns =
 			{
 				{ Name = "matches", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetActiveSpecGroup",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "groupIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

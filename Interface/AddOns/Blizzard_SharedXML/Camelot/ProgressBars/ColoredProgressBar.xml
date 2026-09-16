@@ -1,0 +1,40 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Frame name="ColoredProgressBarTemplate" mixin="ColoredProgressBarMixin" virtual="true">
+		<Size x="67" y="29"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="common-stat-bar-BG"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Fill" atlas="common-stat-bar-white" useAtlasSize="true">
+					<Size x="0" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="common-stat-bar-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Fill"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

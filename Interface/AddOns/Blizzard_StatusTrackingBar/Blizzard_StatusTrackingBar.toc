@@ -1,0 +1,28 @@
+## Title: Blizzard_StatusTrackingBar
+## Dep: Blizzard_TextStatusBar
+Shared\StatusTrackingBarConstants.lua
+[Family]\StatusTrackingBarConstants.lua [ExcludeLoadGameType camelot]
+[Game]\StatusTrackingBarConstants.lua [AllowLoadGameType camelot]
+Shared\StatusTrackingBar.lua
+[Family]\StatusTrackingBarTemplate.xml
+Shared\ExpBar.lua
+[Family]\ExpBarOverrides.lua
+[Family]\ExpBar.xml
+[Family]\PetExpBar.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\PetExpBar.xml [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\PetExpBar.lua [AllowLoadGameType camelot]
+[Game]\PetExpBar.xml [AllowLoadGameType camelot]
+Shared\ReputationBar.lua
+[Family]\ReputationBarOverrides.lua
+Shared\ReputationBar.xml
+[Family]\HouseFavorBar.lua [AllowLoadGameType mainline]
+[Family]\HouseFavorBar.xml [AllowLoadGameType mainline]
+[Family]\AzeriteBar.lua [AllowLoadGameType mainline]
+[Family]\AzeriteBar.xml [AllowLoadGameType mainline]
+[Family]\ArtifactBar.lua [AllowLoadGameType mainline]
+[Family]\ArtifactBar.xml [AllowLoadGameType mainline]
+[Family]\HonorBar.lua [AllowLoadGameType mainline]
+[Family]\HonorBar.xml [AllowLoadGameType mainline]
+Shared\StatusTrackingManager.lua
+[Family]\StatusTrackingManagerOverrides.lua
+[Family]\StatusTrackingBar.xml

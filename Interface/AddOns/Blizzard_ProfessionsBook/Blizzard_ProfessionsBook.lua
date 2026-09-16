@@ -13,29 +13,23 @@ PROFESSION_RANKS[11] = {950, BATTLE_FOR_AZEROTH_MASTER};
 
 local strlen = strlen;
 
-function ProfessionsBookFrame_OnLoad(self)
+ProfessionsBookFrameMixin = {};
+
+function ProfessionsBookFrameMixin:OnLoad()
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-
-	-- Initialize portrait texture
-	self:SetPortraitToAsset("Interface\\Spellbook\\Spellbook-Icon");
-
-	ButtonFrameTemplate_HideButtonBar(self);
-	ButtonFrameTemplate_HideAttic(self);
-
-	self:SetTitle(TRADE_SKILLS);
 end
 
-function ProfessionsBookFrame_OnEvent(self, event, ...)
+function ProfessionsBookFrameMixin:OnEvent(event, ...)
 	if ( event == "SPELLS_CHANGED" ) then
-		ProfessionsBookFrame_Update();
+		self:Update();
 	elseif (event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE") then
-		ProfessionsBookFrame_Update();
+		self:Update();
 	end
 end
 
-function ProfessionsBookFrame_OnShow(self)
-	ProfessionsBookFrame_Update();
+function ProfessionsBookFrameMixin:OnShow()
+	self:Update();
 	EventRegistry:TriggerEvent("ProfessionsBookFrame.Show");
 
 	-- Show multibar slots
@@ -44,7 +38,7 @@ function ProfessionsBookFrame_OnShow(self)
 
 	self:RegisterEvent("SPELLS_CHANGED");
 
-	ProfessionsBookFrame_PlayOpenSound();
+	self:PlayOpenSound();
 	MicroButtonPulseStop(ProfessionMicroButton);
 	MainMenuMicroButton_HideAlert(ProfessionMicroButton);
 	if ( ProfessionMicroButton.showProfessionSpellHighlights ) then
@@ -54,31 +48,32 @@ function ProfessionsBookFrame_OnShow(self)
 	end
 end
 
-function ProfessionsBookFrame_Update()
+function ProfessionsBookFrameMixin:Update()
 	local prof1, prof2, arch, fish, cook = GetProfessions();
-	FormatProfession(PrimaryProfession1, prof1);
-	FormatProfession(PrimaryProfession2, prof2);
-	FormatProfession(SecondaryProfession1, cook);
-	FormatProfession(SecondaryProfession2, fish);
-	FormatProfession(SecondaryProfession3, arch);
+	self:FormatProfession(self.ProfessionsContentFrame.PrimaryProfession1, prof1);
+	self:FormatProfession(self.ProfessionsContentFrame.PrimaryProfession2, prof2);
+	self:FormatProfession(self.ProfessionsContentFrame.SecondaryProfession1, cook);
+	self:FormatProfession(self.ProfessionsContentFrame.SecondaryProfession2, fish);
+	self:FormatProfession(self.ProfessionsContentFrame.SecondaryProfession3, arch);
 end
 
-function ProfessionsBookFrame_PlayOpenSound()
+function ProfessionsBookFrameMixin:PlayOpenSound()
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
-function ProfessionsBookFrame_PlayCloseSound()
+function ProfessionsBookFrameMixin:PlayCloseSound()
 	PlaySound(SOUNDKIT.IG_ABILITY_CLOSE);
 end
 
-local function ProfessionsBookFrame_HideStaticPopups()
+function ProfessionsBookFrameMixin:HideStaticPopups()
 	StaticPopup_Hide("UNLEARN_SKILL");
+	StaticPopup_Hide("UNLEARN_SKILL_GAMEPAD");
 end
 
-function ProfessionsBookFrame_OnHide(self)
-	ProfessionsBookFrame_HideStaticPopups();
+function ProfessionsBookFrameMixin:OnHide()
+	self:HideStaticPopups();
 	HelpPlate.Hide();
-	ProfessionsBookFrame_PlayCloseSound();
+	self:PlayCloseSound();
 	EventRegistry:TriggerEvent("ProfessionsBookFrame.Hide");
 
 	-- Hide multibar slots
@@ -88,6 +83,148 @@ function ProfessionsBookFrame_OnHide(self)
 	UpdateMicroButtons();
 
 	self:UnregisterEvent("SPELLS_CHANGED");
+end
+
+function ProfessionsBookFrameMixin:UpdateStatusBar(frame, rank, maxRank, rankModifier)
+		frame.StatusBar:SetMinMaxValues(1,maxRank);
+		frame.StatusBar:SetValue(rank);
+
+		frame.StatusBar:Show();
+		if rank == maxRank then
+			frame.StatusBar.capRight:Show();
+		else
+			frame.StatusBar.capRight:Hide();
+		end
+
+		frame.StatusBar.capped:Hide();
+		frame.StatusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		frame.StatusBar.tooltip = nil;
+
+		-- trial cap
+		if ( GameLimitedMode_IsActive() ) then
+			local _, _, profCap = GetRestrictedAccountData();
+			if rank >= profCap and profCap > 0 then
+				frame.StatusBar.capped:Show();
+				frame.StatusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				frame.StatusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
+			end
+		end
+
+		if ( rankModifier > 0 ) then
+			frame.StatusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
+		else
+			frame.StatusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
+		end
+end
+
+function ProfessionsBookFrameMixin:FormatProfession(frame, index)
+	if index then
+		frame.missingHeader:Hide();
+		frame.missingText:Hide();
+
+		local name, texture, rank, maxRank, numSpells, spellOffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
+		frame.professionInitialized = true;
+		frame.skillName = name;
+		frame.spellOffset = spellOffset;
+		frame.skillLine = skillLine;
+		frame.specializationIndex = specializationIndex;
+		frame.specializationOffset = specializationOffset;
+
+		if frame.UnlearnButton ~= nil then
+			frame.UnlearnButton:Show();
+			frame.UnlearnButton:SetScript("OnClick", function() 
+				StaticPopup_Show("UNLEARN_SKILL", name, nil, skillLine);
+			end);
+		end
+
+		local prof_title = "";
+		if (skillLineName) then
+			prof_title = skillLineName;
+		else
+			for i=1,#PROFESSION_RANKS do
+				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2];
+				if maxRank < value then break end
+				prof_title = title;
+			end
+		end
+
+		if frame.Rank then
+			frame.Rank:SetText(prof_title);
+		end
+
+		if frame.icon and texture then
+			frame.icon:SetTexture(texture);
+		end
+
+		frame.ProfessionName:SetText(name);
+
+		self:UpdateStatusBar(frame, rank, maxRank, rankModifier);
+
+		local hasSpell = false;
+		if numSpells <= 0 then
+			frame.SpellButton1:Hide();
+			frame.SpellButton2:Hide();
+		elseif numSpells == 1 then
+			hasSpell = true;
+			frame.SpellButton2:Hide();
+			frame.SpellButton1:Show();
+			frame.SpellButton1:UpdateButton();
+		else -- if numSpells >= 2 then
+			hasSpell = true;
+			frame.SpellButton1:Show();
+			frame.SpellButton2:Show();
+			frame.SpellButton1:UpdateButton();
+			frame.SpellButton2:UpdateButton();
+		end
+
+		if hasSpell and ProfessionsBookFrame.showProfessionSpellHighlights and C_ProfSpecs.ShouldShowPointsReminderForSkillLine(skillLine) then
+			UIFrameFlash(frame.SpellButton1.Flash, 0.5, 0.5, -1);
+		else
+			UIFrameFlashStop(frame.SpellButton1.Flash);
+		end
+
+		if numSpells >  2 then
+			local errorStr = "Found "..numSpells.." skills for "..name.." the max is 2:"
+			for i=1,numSpells do
+				errorStr = errorStr.." ("..C_SpellBook.GetSpellBookItemName(i + spellOffset, Enum.SpellBookSpellBank.Player)..")";
+			end
+			assert(false, errorStr)
+		end
+	else
+		frame.missingHeader:Show();
+		frame.missingText:Show();
+
+		if frame.icon then
+			frame.icon:SetTexture("Interface\\Icons\\INV_Scroll_04");
+			frame.specialization:SetText("");
+		end
+		frame.SpellButton1:Hide();
+		frame.SpellButton2:Hide();
+		frame.StatusBar:Hide();
+		if frame.Rank then
+			frame.Rank:SetText("");
+		end
+		frame.ProfessionName:SetText("");
+
+		if frame.UnlearnButton ~= nil then
+			frame.UnlearnButton:Hide();
+		end
+	end
+end
+
+
+ProfessionsBookFrameStandaloneMixin = CreateFromMixins(ProfessionsBookFrameMixin);
+
+function ProfessionsBookFrameStandaloneMixin:OnLoad()
+	ProfessionsBookFrameMixin.OnLoad(self);
+
+	-- Initialize portrait texture
+	self:SetPortraitToAsset("Interface\\Spellbook\\Spellbook-Icon");
+
+	ButtonFrameTemplate_HideButtonBar(self);
+	ButtonFrameTemplate_HideAttic(self);
+
+	self:SetTitle(TRADE_SKILLS);
 end
 
 ProfessionSpellButtonMixin = {};
@@ -200,7 +337,19 @@ function ProfessionSpellButtonMixin:OnClick(button)
 		SpellFlyout:Toggle(self, actionID, isActionBar, self.offSpecID, showFullTooltip, reason);
 		SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 	else
-		C_SpellBook.CastSpellBookItem(slotIndex, activeSpellBank);
+		local alreadyLoaded = Professions.IsSelectedProfession(self.skillLine);
+		local canOpenUI = false;
+		local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, activeSpellBank);
+		if spellBookItemInfo and spellBookItemInfo.spellID then
+			canOpenUI = C_TradeSkillUI.CanTradeSkillShowCraftingUI(spellBookItemInfo.spellID);
+		end
+
+		local shouldNotCloseUI = self.doNotCloseParentUI and canOpenUI and alreadyLoaded;
+		if shouldNotCloseUI then
+			EventRegistry:TriggerEvent("Professions.ShowSelectedCraftingPage");
+		else
+			C_SpellBook.CastSpellBookItem(slotIndex, activeSpellBank);
+		end
 	end
 	self:UpdateSelection();
 end
@@ -302,11 +451,17 @@ function ProfessionSpellButtonMixin:UpdateCooldown()
 	end
 end
 
+function ProfessionSpellButtonMixin:UpdateOverlay()
+	-- derived
+end
+
 function ProfessionSpellButtonMixin:UpdateButton()
 	local parent = self:GetParent();
 	if not parent.professionInitialized then
 		return;
 	end
+
+	self.skillLine = parent.skillLine;
 
 	local activeSpellBank = Enum.SpellBookSpellBank.Player;
 	local spellIndex = self:GetID() + parent.spellOffset;
@@ -342,6 +497,7 @@ function ProfessionSpellButtonMixin:UpdateButton()
 		end);
 	end
 	self.IconTexture:SetTexture(spellBookItemInfo.iconID);
+	self:UpdateOverlay();
 
 	if (spellBookItemInfo.itemType == Enum.SpellBookItemType.Flyout) then
 		self:SetPopup(SpellFlyout);
@@ -377,124 +533,6 @@ end
 
 function ProfessionsUnlearnButtonMixin:OnMouseUp()
     self.Icon:SetPoint("TOPLEFT", 0, 0);
-end
-
-function FormatProfession(frame, index)
-	if index then
-		frame.missingHeader:Hide();
-		frame.missingText:Hide();
-
-		local name, texture, rank, maxRank, numSpells, spellOffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
-		frame.professionInitialized = true;
-		frame.skillName = name;
-		frame.spellOffset = spellOffset;
-		frame.skillLine = skillLine;
-		frame.specializationIndex = specializationIndex;
-		frame.specializationOffset = specializationOffset;
-
-		frame.statusBar:SetMinMaxValues(1,maxRank);
-		frame.statusBar:SetValue(rank);
-
-		if frame.UnlearnButton ~= nil then
-			frame.UnlearnButton:Show();
-			frame.UnlearnButton:SetScript("OnClick", function() 
-				StaticPopup_Show("UNLEARN_SKILL", name, nil, skillLine);
-			end);
-		end
-
-		local prof_title = "";
-		if (skillLineName) then
-			prof_title = skillLineName;
-		else
-			for i=1,#PROFESSION_RANKS do
-				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2];
-				if maxRank < value then break end
-				prof_title = title;
-			end
-		end
-		frame.rank:SetText(prof_title);
-
-		frame.statusBar:Show();
-		if rank == maxRank then
-			frame.statusBar.capRight:Show();
-		else
-			frame.statusBar.capRight:Hide();
-		end
-
-		frame.statusBar.capped:Hide();
-		frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		frame.statusBar.tooltip = nil;
-
-		-- trial cap
-		if ( GameLimitedMode_IsActive() ) then
-			local _, _, profCap = GetRestrictedAccountData();
-			if rank >= profCap and profCap > 0 then
-				frame.statusBar.capped:Show();
-				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
-			end
-		end
-
-		if frame.icon and texture then
-			frame.icon:SetTexture(texture);
-		end
-
-		frame.professionName:SetText(name);
-
-		if ( rankModifier > 0 ) then
-			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
-		else
-			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
-		end
-
-		local hasSpell = false;
-		if numSpells <= 0 then
-			frame.SpellButton1:Hide();
-			frame.SpellButton2:Hide();
-		elseif numSpells == 1 then
-			hasSpell = true;
-			frame.SpellButton2:Hide();
-			frame.SpellButton1:Show();
-			frame.SpellButton1:UpdateButton();
-		else -- if numSpells >= 2 then
-			hasSpell = true;
-			frame.SpellButton1:Show();
-			frame.SpellButton2:Show();
-			frame.SpellButton1:UpdateButton();
-			frame.SpellButton2:UpdateButton();
-		end
-
-		if hasSpell and ProfessionsBookFrame.showProfessionSpellHighlights and C_ProfSpecs.ShouldShowPointsReminderForSkillLine(skillLine) then
-			UIFrameFlash(frame.SpellButton1.Flash, 0.5, 0.5, -1);
-		else
-			UIFrameFlashStop(frame.SpellButton1.Flash);
-		end
-
-		if numSpells >  2 then
-			local errorStr = "Found "..numSpells.." skills for "..name.." the max is 2:"
-			for i=1,numSpells do
-				errorStr = errorStr.." ("..C_SpellBook.GetSpellBookItemName(i + spelloffset, Enum.SpellBookSpellBank.Player)..")";
-			end
-			assert(false, errorStr)
-		end
-	else
-		frame.missingHeader:Show();
-		frame.missingText:Show();
-
-		if frame.icon then
-			frame.icon:SetTexture("Interface\\Icons\\INV_Scroll_04");
-			frame.specialization:SetText("");
-		end
-		frame.SpellButton1:Hide();
-		frame.SpellButton2:Hide();
-		frame.statusBar:Hide();
-		frame.rank:SetText("");
-		frame.professionName:SetText("");
-
-		if frame.UnlearnButton ~= nil then
-			frame.UnlearnButton:Hide();
-		end
-	end
 end
 
 -- *************************************************************************************

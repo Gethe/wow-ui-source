@@ -1278,6 +1278,9 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
 		end
+
+		SmartNavigation:OnDropDownShown(listFrame);
+
 		return true;
 	end
 end

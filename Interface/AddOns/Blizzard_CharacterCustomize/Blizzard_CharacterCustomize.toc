@@ -2,6 +2,9 @@
 ## AllowLoad: Both
 ## LoadOnDemand: 1
 ## Dependencies: Blizzard_CustomizationUI
-
-Blizzard_CharacterCustomize.lua [AllowLoadGameType mainline]
-Blizzard_CharacterCustomize.xml [AllowLoadGameType mainline]
+[Family]/Blizzard_CharacterCustomizeTemplates.xml	[ExcludeLoadGameType classic, camelot]
+[Family]/Blizzard_CharacterCustomize.lua			[ExcludeLoadGameType classic, camelot]
+[Family]/Blizzard_CharacterCustomize.xml			[ExcludeLoadGameType classic, camelot]
+[Game]/Blizzard_CharacterCustomizeTemplates.xml		[AllowLoadGameType camelot]
+[Game]/Blizzard_CharacterCustomize.lua				[AllowLoadGameType camelot]
+[Game]/Blizzard_CharacterCustomize.xml				[AllowLoadGameType camelot]

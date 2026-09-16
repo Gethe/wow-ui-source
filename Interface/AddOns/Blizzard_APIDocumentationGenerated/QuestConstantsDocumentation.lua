@@ -142,6 +142,14 @@ local QuestConstants =
 			},
 		},
 		{
+			Name = "QuestLogConstsMainlineCamelot",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MAXIMUM_NUM_QUESTS_LOG_CAN_ACCEPT", Type = "number", Value = 40 },
+			},
+		},
+		{
 			Name = "QuestWatchConsts",
 			Type = "Constants",
 			Values =

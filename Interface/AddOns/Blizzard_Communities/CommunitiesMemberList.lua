@@ -138,7 +138,7 @@ local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
 local EXTRA_GUILD_COLUMN_PENDING = 4;
 local EXTRA_GUILD_COLUMN_DUNGEON_SCORE = 5;
 
-local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
+local COMMUNITY_APPLICANT_LIST_VALUE = 2;
 
 local function CanShowFinderDropdownOptions()
 	local canGuildInvite = CanGuildInvite() and (C_GuildInfo.IsGuildOfficer() or IsGuildLeader());
@@ -153,7 +153,7 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "achievementPoints",
 		width = 115,
 		CanShow = function()
-			return CanShowAchievementUI();
+			return CanShowAchievementUI() and CommunitiesFrame_ShouldDisplayPersonalAchievements();
 		end,
 	};
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
@@ -185,8 +185,7 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "dungeonScore",
 		width = 115,
 		CanShow = function()
-			-- TODO: Could use an API of C_MythicPlus once it gets exposed to Classic.
-			return ClassicExpansionAtLeast(LE_EXPANSION_LEGION);
+			return C_MythicPlus.IsMythicPlusActive();
 		end,
 	};
 
@@ -322,7 +321,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 			dataProvider:Insert({memberInfo=memberInfo});
 		end
 	end
-	
+
 	local invitations = self.invitations;
 	local displayInvitations = self.expandedDisplay and not displayingProfessions and #invitations > 0;
 	if displayInvitations then
@@ -464,7 +463,7 @@ function CommunitiesMemberListMixin:OnLoad()
 	self.ShowOfflineButton:SetChecked(self.showOfflinePlayers);
 
 	self:SetExpandedDisplay(false);
-	if( CanShowAchievementUI() ) then
+	if( CanShowAchievementUI() and CommunitiesFrame_ShouldDisplayPersonalAchievements() ) then
 		self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
 	else
 		self:SetGuildColumnIndex(nil);
@@ -726,8 +725,8 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 			return;
 		end
 
-        local memberInfo = entry:GetMemberInfo();
-		
+		local memberInfo = entry:GetMemberInfo();
+
 		if memberInfo and memberInfo.name then
 			local clubPrivileges = self:GetCommunitiesFrame():GetPrivilegesForClub(clubInfo.clubId);
 			local contextData =
@@ -740,9 +739,10 @@ function CommunitiesMemberListMixin:OnClubMemberButtonClicked(entry, button)
 				isSelf = memberInfo.isSelf,
 				guid = memberInfo.guid,
 				isMobile = memberInfo.presence == Enum.ClubMemberPresence.OnlineMobile,
-                isGuildMember = clubInfo.clubType == Enum.ClubType.Guild,
+				isGuildMember = clubInfo.clubType == Enum.ClubType.Guild,
+				ownerFrame = self,
 			};
-			
+
 			local which = clubTypeToUnitPopup[clubInfo.clubType];
 			UnitPopup_OpenMenu(which, contextData);
 		end
@@ -891,14 +891,14 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 			end
 		end);
-	elseif sortAttribute == "dungeonScore" then 
+	elseif sortAttribute == "dungeonScore" then
 		table.sort(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
 			if self.reverseActiveColumnSort then
 				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
 			end
-			-- If the score somehow hasn't been populated yet, we want to treat it like a score of 0. 
+			-- If the score somehow hasn't been populated yet, we want to treat it like a score of 0.
 			local lhsSortScore = lhsMemberInfo.overallDungeonScore or 0;
-			local rhsSortScore = rhsMemberInfo.overallDungeonScore or 0; 
+			local rhsSortScore = rhsMemberInfo.overallDungeonScore or 0;
 			return lhsSortScore < rhsSortScore;
 		end);
 		return;
@@ -1087,7 +1087,7 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 		if name and memberInfo.timerunningSeasonID then
 			name = TimerunningUtil.AddTinyIcon(name);
 		end
-		self.NameFrame.Name:SetText(name or "");
+		self.NameFrame.Name:SetText(name);
 	else
 		self.memberInfo = nil;
 		self:SetMemberPlayerLocationFromGuid(nil);
@@ -1157,7 +1157,7 @@ end
 
 function CommunitiesMemberListEntryMixin:GetFaction()
 	return  self.memberInfo and self.memberInfo.faction or nil;
-end 
+end
 
 function CommunitiesMemberListEntryMixin:OnEnter()
 	if self.expanded then
@@ -1204,7 +1204,7 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			GameTooltip:AddLine(COMMUNITY_MEMBER_NOTE_FORMAT:format(memberInfo.memberNote), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
 
-		if(clubInfo and clubInfo.clubType ~= Enum.ClubType.BattleNet and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
+		if(clubInfo and clubInfo.clubType ~= Enum.ClubType.BattleNet and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip:AddLine(COMMUNITY_MEMBER_LIST_CROSS_FACTION:format(PLAYER_FACTION_BRIGHT_COLORS[memberInfo.faction]:GenerateHexColorMarkup() .. FACTION_LABELS[memberInfo.faction]), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
@@ -1322,14 +1322,14 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_DUNGEON_SCORE then
-		if(memberInfo.overallDungeonScore) then 
+		if(memberInfo.overallDungeonScore) then
 			local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
-			if(not color) then 
-				color = HIGHLIGHT_FONT_COLOR; 
-			end 
+			if(not color) then
+				color = HIGHLIGHT_FONT_COLOR;
+			end
 			self.GuildInfo:SetText(color:WrapTextInColorCode(memberInfo.overallDungeonScore));
-		else 
-			self.GuildInfo:SetText(NO_ROSTER_ACHIEVEMENT_POINTS); -- Display - if there is no dungeon score. 
+		else
+			self.GuildInfo:SetText(NO_ROSTER_ACHIEVEMENT_POINTS); -- Display - if there is no dungeon score.
 		end
 	end
 end
@@ -1542,7 +1542,7 @@ function GuildMemberListDropdownMixin:OnShow()
 	self:SetupMenu();
 
 	local communitiesFrame = self:GetCommunitiesFrame();
-	if( CanShowAchievementUI() ) then
+	if( CanShowAchievementUI() and CommunitiesFrame_ShouldDisplayPersonalAchievements() ) then
 		communitiesFrame.MemberList:SetGuildColumnIndex(1);
 	else
 		communitiesFrame.MemberList:SetGuildColumnIndex(nil);
@@ -1552,14 +1552,18 @@ function GuildMemberListDropdownMixin:OnShow()
 end
 
 function GuildMemberListDropdownMixin:ResetGuildColumnIndex()
-		local communitiesFrame = self:GetCommunitiesFrame();
+	local communitiesFrame = self:GetCommunitiesFrame();
 	local memberList = communitiesFrame.MemberList;
-	memberList:SetGuildColumnIndex(1);
+	if CanShowAchievementUI() and CommunitiesFrame_ShouldDisplayPersonalAchievements() then
+		memberList:SetGuildColumnIndex(1);
+	else
+		memberList:SetGuildColumnIndex(nil);
+	end
 
-	if(not self.hasApplicants) then 
+	if(not self.hasApplicants) then
 		self.NotificationOverlay:Hide();
-	end 
-end 
+	end
+end
 
 function GuildMemberListDropdownMixin:SetupMenu()
 	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
@@ -1567,16 +1571,16 @@ function GuildMemberListDropdownMixin:SetupMenu()
 
 		local communitiesFrame = self:GetCommunitiesFrame();
 		local memberList = communitiesFrame.MemberList;
-		if (self.shouldResetDropdown and (memberList:GetGuildColumnIndex() == EXTRA_GUILD_COLUMN_APPLICANTS) and communitiesFrame:IsShowingApplicantList()) then 
+		if (self.shouldResetDropdown and (memberList:GetGuildColumnIndex() == EXTRA_GUILD_COLUMN_APPLICANTS) and communitiesFrame:IsShowingApplicantList()) then
 			self:ResetGuildColumnIndex();
-		end 
+		end
 
 		local function IsChecked(data)
 			return data.index == memberList:GetGuildColumnIndex();
 		end
 
 		local function SetApplicantListPending(index, isPendingList)
-			communitiesFrame.ApplicantList.isPendingList = isPendingList; 
+			communitiesFrame.ApplicantList.isPendingList = isPendingList;
 			communitiesFrame.ApplicantList:BuildList();
 			communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
 			memberList:SetGuildColumnIndex(index);
@@ -1584,18 +1588,19 @@ function GuildMemberListDropdownMixin:SetupMenu()
 
 		local canGuildInvite = CanGuildInvite() and (C_GuildInfo.IsGuildOfficer() or IsGuildLeader());
 		local canModifyApplicants = canGuildInvite and C_ClubFinder.IsEnabled();
+		local count = 0;
 
 		for index, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 			if extraColumnInfo:CanShow() then
 				local text = extraColumnInfo.text;
 				local data = { index = index, dropdownText = text };
 
-				if index == EXTRA_GUILD_COLUMN_APPLICANTS then 
+				if index == EXTRA_GUILD_COLUMN_APPLICANTS then
 					if canModifyApplicants then
-						if self.hasApplicants then 
+						if self.hasApplicants then
 							text = CreateCommunitiesIconNotificationMarkup(text);
 						end
-								
+
 						local function SetChecked(data)
 							SetApplicantListPending(data.index, false);
 						end
@@ -1612,7 +1617,7 @@ function GuildMemberListDropdownMixin:SetupMenu()
 						local radio = rootDescription:CreateRadio(text, IsChecked, SetChecked, data);
 						radio:SetEnabled(self.hasPendingApplicants);
 					end
-				else 
+				else
 					local function SetChecked(data)
 						communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
 						memberList:SetGuildColumnIndex(data.index);
@@ -1620,10 +1625,12 @@ function GuildMemberListDropdownMixin:SetupMenu()
 
 					rootDescription:CreateRadio(text, IsChecked, SetChecked, data);
 				end
+
+				count = count + 1;
 			end
 		end
 
-		dropdown:SetShown(rootDescription:HasElements());
+		dropdown:SetShown(count > 1);
 	end);
 end
 
@@ -1633,7 +1640,7 @@ function GuildMemberListDropdownMixin:OnCommunitiesClubSelected(clubId)
 		local clubInfo = communitiesFrame:GetSelectedClubInfo();
 		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
 			self:Hide();
-		else 
+		else
 			communitiesFrame.CommunityMemberListDropdown:Hide();
 		end
 	end
@@ -1642,7 +1649,7 @@ end
 function GuildMemberListDropdownMixin:ResetDisplayMode()
 	self:ResetGuildColumnIndex();
 	self:SetupMenu();
-end 
+end
 
 CommunityMemberListDropdownMixin = CreateFromMixins(CommunitiesFrameMemberListDropdownMixin);
 
@@ -1656,10 +1663,10 @@ end
 function CommunityMemberListDropdownMixin:ResetCurrentIndex()
 	self.currentIndex = 1;
 
-	if(not self.hasApplicants) then 
+	if(not self.hasApplicants) then
 		self.NotificationOverlay:Hide();
-	end 
-end 
+	end
+end
 
 function CommunityMemberListDropdownMixin:SetupMenu()
 	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
@@ -1668,18 +1675,18 @@ function CommunityMemberListDropdownMixin:SetupMenu()
 	local communitiesFrame = self:GetCommunitiesFrame();
 	local memberList = communitiesFrame.MemberList;
 
-		if self.shouldResetDropdown and (self.currentIndex == COMMUNITY_APPLICANT_LIST_VALUE) and communitiesFrame:IsShowingApplicantList() then 
+		if self.shouldResetDropdown and (self.currentIndex == COMMUNITY_APPLICANT_LIST_VALUE) and communitiesFrame:IsShowingApplicantList() then
 			self:ResetCurrentIndex();
-	end 
+	end
 
-		local hasFinderPermissions = false; 
+		local hasFinderPermissions = false;
 	local clubInfo = communitiesFrame:GetSelectedClubInfo();
-	if (clubInfo) then 
+	if (clubInfo) then
 		local selectedClubId = clubInfo.clubId;
 		local myMemberInfo = C_Club.GetMemberInfoForSelf(selectedClubId);
-		if (myMemberInfo.role and myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader) then 
+		if (myMemberInfo.role and myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader) then
 			hasFinderPermissions = true;
-		end 
+		end
 	end
 
 		local function IsChecked(data)
@@ -1698,7 +1705,7 @@ function CommunityMemberListDropdownMixin:SetupMenu()
 
 		local function SetApplicantListPending(index, isPendingList)
 			self.currentIndex = index;
-			communitiesFrame.ApplicantList.isPendingList = isPendingList; 
+			communitiesFrame.ApplicantList.isPendingList = isPendingList;
 			communitiesFrame.ApplicantList:BuildList();
 			communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_APPLICANT_LIST);
 		end
@@ -1707,7 +1714,7 @@ function CommunityMemberListDropdownMixin:SetupMenu()
 			local text = CLUB_FINDER_APPLICANTS;
 			local data = {index = COMMUNITY_APPLICANT_LIST_VALUE, dropdownText = text};
 
-	if (self.hasApplicants and hasFinderPermissions) then 
+	if (self.hasApplicants and hasFinderPermissions) then
 				text = CreateCommunitiesIconNotificationMarkup(text);
 			end
 
@@ -1740,7 +1747,7 @@ function CommunityMemberListDropdownMixin:OnCommunitiesClubSelected(clubId)
 		local clubInfo = communitiesFrame:GetSelectedClubInfo();
 		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
 			self:Hide();
-		else 
+		else
 			communitiesFrame.GuildMemberListDropdown:Hide();
 		end
 	end
@@ -1751,28 +1758,28 @@ function CommunityMemberListDropdownMixin:ResetDisplayMode()
 	self:SetupMenu();
 end
 
-CommunitiesMemberListFactionButtonMixin = { }; 
+CommunitiesMemberListFactionButtonMixin = { };
 function CommunitiesMemberListFactionButtonMixin:OnShow()
-	local faction = self:GetParent():GetFaction(); 
-	if(not faction) then 
-		return; 
-	end 
+	local faction = self:GetParent():GetFaction();
+	if(not faction) then
+		return;
+	end
 
-	if(PLAYER_FACTION_GROUP[faction] == "Horde") then 
+	if(PLAYER_FACTION_GROUP[faction] == "Horde") then
 		self:SetNormalAtlas("communities-icon-faction-horde")
-	else 
+	else
 		self:SetNormalAtlas("communities-icon-faction-alliance");
-	end 
-end		
+	end
+end
 
 function CommunitiesMemberListFactionButtonMixin:OnEnter()
-	local faction = self:GetParent():GetFaction(); 
-	if(not faction) then 
-		return; 
-	end 
-	
+	local faction = self:GetParent():GetFaction();
+	if(not faction) then
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, COMMUNITIES_CROSS_FACTION_BUTTON_TOOLTIP_TITLE:format(FACTION_LABELS[faction]));
-	GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS[faction])); 
-	GameTooltip:Show(); 
+	GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS[faction]));
+	GameTooltip:Show();
 end

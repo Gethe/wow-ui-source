@@ -9,6 +9,8 @@
 ## Dep: Blizzard_TransmogShared [AllowLoad game] [AllowLoadGameType mainline]
 ## Dep: Blizzard_UIParentPanelManager [AllowLoadGameType classic]
 ## Dep: Blizzard_GameMenuEsc
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_GamepadSharedUtility [AllowLoadGameType mainline, camelot]
 ## AllowLoad: both [AllowLoadGameType mainline]
 ## AllowLoad: game [AllowLoadGameType classic]
 ## LoadFirst: 1 [AllowLoadGameType classic]

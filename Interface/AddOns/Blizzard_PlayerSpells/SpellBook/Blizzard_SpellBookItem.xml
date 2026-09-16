@@ -102,6 +102,7 @@
 					<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
 					<KeyValue key="openArrowOffset" value="2" type="number"/>
 					<KeyValue key="closedArrowOffset" value="4" type="number"/>
+					<KeyValue key="buttonContext" value="ButtonContext_SpellButton" type="string"/>
 				</KeyValues>
 				<Size x="40" y="40"/>
 				<Anchors>
@@ -305,4 +306,5 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+	<Frame name="SpellBookOutfitItemTemplate" inherits="SpellBookItemTemplate" mixin="SpellBookOutfitItemMixin" virtual="true"/>
 </Ui>

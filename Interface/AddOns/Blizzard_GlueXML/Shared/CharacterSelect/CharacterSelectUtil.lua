@@ -9,7 +9,7 @@ function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
 	end
 
 	local characterInfo = GetBasicCharacterInfo(characterGuid);
-	if not characterInfo.name then
+	if not characterInfo.characterName then
 		return nil;
 	end
 

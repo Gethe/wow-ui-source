@@ -63,6 +63,10 @@ ClassTalentsFrameMixin:GenerateCallbackEvents(
 	"SelectTalentIDForSlot",
 });
 
+function ClassTalentsFrameMixin:HasCopyButton()
+	return true;
+end
+
 function ClassTalentsFrameMixin:OnLoad()
 	self.initialBasePanOffsetX = self.basePanOffsetX;
 	self.initialBasePanOffsetY = self.basePanOffsetY;
@@ -87,17 +91,25 @@ function ClassTalentsFrameMixin:OnLoad()
 	self.ApplyButton:SetOnEnterHandler(GenerateClosure(self.UpdateConfigButtonsState, self));
 	self.UndoButton:SetOnClickHandler(GenerateClosure(self.RollbackConfig, self));
 
-	self.InspectCopyButton:SetTextToFit(TALENT_FRAME_INSPECT_COPY_BUTTON_TEXT);
-	self.InspectCopyButton:SetOnClickHandler(GenerateClosure(self.CopyInspectLoadout, self));
+	if self:HasCopyButton() then
+		self.InspectCopyButton:SetTextToFit(TALENT_FRAME_INSPECT_COPY_BUTTON_TEXT);
+		self.InspectCopyButton:SetOnClickHandler(GenerateClosure(self.CopyInspectLoadout, self));
+	else
+		self.InspectCopyButton:Hide();
+	end
 
-	self.PvPTalentList:SetTalentFrame(self);
-	self.PvPTalentSlotTray:SetTalentFrame(self);
+	self:SetPvPTalentFrames(self);
 
 	self.HeroTalentsContainer:Init(self, self.heroSpecSelectionDialog);
 
 	self:InitializeLoadSystem();
 
 	self:InitializeSearch();
+
+	self:InitializeTreeHeaders();
+
+	self:InitializeOther();
+
 
 	-- Initial inspecting update to start UI in a non-inspecting initial state
 	self:UpdateInspecting();
@@ -132,7 +144,7 @@ function ClassTalentsFrameMixin:OnUpdate()
 	self.HeroTalentsContainer:UpdateHeroTalentInfo();
 end
 
-function ClassTalentsFrameMixin:OnShow()
+function ClassTalentsFrameMixin:OnShowBase()
 	self:UpdateSpecBackground();
 	self:RefreshConfigID();
 	self:CheckSetSelectedConfigID();
@@ -157,6 +169,12 @@ function ClassTalentsFrameMixin:OnShow()
 
 	self:CheckLoadSystemTutorials();
 end
+
+function ClassTalentsFrameMixin:OnShow()
+	-- overriden in other flavors
+	self:OnShowBase();
+end
+
 
 function ClassTalentsFrameMixin:LoadSavedVariables()
 	self.variablesLoaded = true;
@@ -193,10 +211,10 @@ function ClassTalentsFrameMixin:UpdateSpecBackground()
 	local currentSpecID = self:GetSpecID();
 	local specVisuals = ClassTalentUtil.GetVisualsForSpecID(currentSpecID);
 	if specVisuals and specVisuals.background and C_Texture.GetAtlasInfo(specVisuals.background) then
-		self.BackgroundFlash:SetAtlas(specVisuals.background, TextureKitConstants.UseAtlasSize);
+		self.BackgroundFlash:SetAtlas(specVisuals.background, specVisuals.useAtlasSize);
 
 		for i, background in ipairs(self.specBackgrounds) do
-			background:SetAtlas(specVisuals.background, TextureKitConstants.UseAtlasSize);
+			background:SetAtlas(specVisuals.background, specVisuals.useAtlasSize);
 		end
 	end
 
@@ -274,7 +292,7 @@ function ClassTalentsFrameMixin:TrySetSeenPurchasableClassCapstone()
 	end
 end
 
-function ClassTalentsFrameMixin:OnHide()
+function ClassTalentsFrameMixin:OnHideBase()
 	self:TrySetSeenPurchasableClassCapstone();
 
 	TalentFrameBaseMixin.OnHide(self);
@@ -290,12 +308,16 @@ function ClassTalentsFrameMixin:OnHide()
 	self:CancelLoadSystemTutorials();
 end
 
+function ClassTalentsFrameMixin:OnHide()
+	self:OnHideBase();
+end
+
 function ClassTalentsFrameMixin:OnEvent(event, ...)
 	-- Overrides TalentFrameBaseMixin. The base method happens after because TRAIT_CONFIG_UPDATED requires self.commitedConfigID.
 
 	if event == "TRAIT_CONFIG_CREATED" then
 		local configInfo = ...;
-		if configInfo.type == Enum.TraitConfigType.Combat then
+		if configInfo.type == Enum.TraitConfigType.Combat or configInfo.type == Enum.TraitConfigType.CamelotCombat then
 			self:RefreshLoadoutOptions();
 
 			local configID = configInfo.ID;
@@ -317,7 +339,7 @@ function ClassTalentsFrameMixin:OnEvent(event, ...)
 		self:OnTraitConfigDeleted(configID);
 	elseif event == "ACTIVE_COMBAT_CONFIG_CHANGED" then
 		local configID = ...;
-		self:SetConfigID(configID);
+		self:OnConfigChanged(configID);
 	elseif event == "CONFIG_COMMIT_FAILED" then
 		-- If failed to commit while in a "we're waiting until next commit" state, keep us in that state
 		if not self.unflagStarterBuildAfterNextCommit then
@@ -332,8 +354,7 @@ function ClassTalentsFrameMixin:OnEvent(event, ...)
 		self:MarkTreeDirty();
 		self:CheckSetSelectedConfigID();
 	elseif event == "PLAYER_TALENT_UPDATE" then
-		self:CheckSetSelectedConfigID();
-		self:UnregisterEvent("PLAYER_TALENT_UPDATE");
+		self:HandlePlayerTalentUpdate();
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:CheckSetSelectedConfigID();
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
@@ -367,7 +388,10 @@ end
 function ClassTalentsFrameMixin:OnTraitConfigUpdated(configID)
 	-- Overrides TalentFrameBaseMixin.
 
-	PlayerSpellsMicroButton:EvaluateAlertVisibility();
+	local microButtons = self:GetAssociatedMicroButtons();
+	for index, button in ipairs(microButtons) do
+		button:EvaluateAlertVisibility();
+	end
 
 	if self.unflagStarterBuildAfterNextCommit and self.commitedConfigID then
 		-- Player committed changes, it is now save to unflag them as using the Starter Build
@@ -429,6 +453,10 @@ function ClassTalentsFrameMixin:OnTraitConfigCreateStarted(newConfigHasPurchased
 end
 
 function ClassTalentsFrameMixin:OnTraitConfigCreateFinished(configID)
+	self:OnTraitConfigCreateFinishedBase(configID);
+end
+
+function ClassTalentsFrameMixin:OnTraitConfigCreateFinishedBase(configID)
 	self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedComplete);
 
 	local autoApply = true;
@@ -738,31 +766,25 @@ function ClassTalentsFrameMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
 	TalentFrameBaseMixin.UpdateTreeCurrencyInfo(self, skipButtonUpdates);
 
 	self:RefreshCurrencyDisplay();
+	self:RefreshTreeHeaders();
 
 	if not skipButtonUpdates then
-		for condID, condInfo in pairs(self.condInfoCache) do
-			self:MarkCondInfoCacheDirty(condID);
-			self:ForceCondInfoUpdate(condID);
-		end
-
-		self:RefreshGates();
+		self:RefreshConditionsCache();
 	end
 end
 
-function ClassTalentsFrameMixin:RefreshCurrencyDisplay()
+function ClassTalentsFrameMixin:RefreshClassCurrencyDisplay()
 	local classCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
 	self.ClassCurrencyDisplay:SetAmount(classCurrencyInfo and classCurrencyInfo.quantity or 0);
 	local className = self:GetClassName();
 	if className then
 		self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
 	end
+end
 
-	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
-	self.SpecCurrencyDisplay:SetAmount(specCurrencyInfo and specCurrencyInfo.quantity or 0);
-	local specName = self:GetSpecName();
-	if specName then
-		self.SpecCurrencyDisplay:SetPointTypeText(string.upper(specName));
-	end
+function ClassTalentsFrameMixin:RefreshCurrencyDisplay()
+	self:RefreshClassCurrencyDisplay();
+	self:RefreshTreeCurrencyDisplay();
 
 	self.HeroTalentsContainer:UpdateHeroTalentCurrency();
 end
@@ -892,10 +914,9 @@ function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)
 	end
 end
 
-function ClassTalentsFrameMixin:SetTalentTreeID(talentTreeID, forceUpdate)
-	if TalentFrameBaseMixin.SetTalentTreeID(self, talentTreeID, forceUpdate) then
-		self:UpdateConfigButtonsState();
-	end
+function ClassTalentsFrameMixin:UpdateTreeInfo(skipButtonUpdates)
+	TalentFrameBaseMixin.UpdateTreeInfo(self, skipButtonUpdates);
+	self:UpdateConfigButtonsState();
 end
 
 function ClassTalentsFrameMixin:CanCommitInstantly()
@@ -1291,13 +1312,7 @@ function ClassTalentsFrameMixin:UpdateConfigButtonsState()
 
 	-- Avoid showing our button's glow if the Hero Spec Selection's button is showing, since it will also be glowing
 	if anyChangesPending and not isHeroSpecApplyButtonShowing then
-		if canApplyChanges then
-			GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
-			self.ApplyButton.YellowGlow:Hide();
-		else
-			GlowEmitterFactory:Hide(self.ApplyButton);
-			self.ApplyButton.YellowGlow:Show();
-		end
+		self:ShowOrHideGlowOnChangesPending();
 	else
 		GlowEmitterFactory:Hide(self.ApplyButton);
 		self.ApplyButton.YellowGlow:Hide();
@@ -1305,8 +1320,11 @@ function ClassTalentsFrameMixin:UpdateConfigButtonsState()
 
 	local shouldShowUndo = self:HasAnyConfigChanges() and not self.isConfigReadyToApply;
 	self.UndoButton:SetShown(shouldShowUndo);
-	self.ResetButton:SetShown(not shouldShowUndo);
+	local cannotRefund = self.talentTreeInfo and self.talentTreeInfo.cannotRefund;
+	self.ResetButton:SetShown(not shouldShowUndo and not cannotRefund);
 	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
+
+	self:RefreshGamepadFooter();
 
 	self.LoadSystem:SetEnabledState(not self:IsCommitInProgress());
 
@@ -1366,7 +1384,6 @@ function ClassTalentsFrameMixin:UpdateInspecting()
 
 	local hiddenDuringInspect = {
 		self.ApplyButton,
-		self.ResetButton,
 		self.UndoButton,
 		self.WarmodeButton,
 		self.LoadSystem,
@@ -1377,16 +1394,18 @@ function ClassTalentsFrameMixin:UpdateInspecting()
 		frame:SetShown(not isInspecting);
 	end
 
-	self.InspectCopyButton:SetShown(isInspecting);
+	local cannotRefund = self.talentTreeInfo and self.talentTreeInfo.cannotRefund;
+	self.ResetButton:SetShown(not isInspecting and not cannotRefund);
 
-	self.PvPTalentSlotTray:SetPoint("RIGHT", self.BottomBar, "RIGHT", isInspecting and -24 or -114, 0);
-	self.PvPTalentSlotTray:SetShown(not isInspecting or (self:GetInspectUnit() ~= nil));
+	self.InspectCopyButton:SetShown(isInspecting and self:HasCopyButton());
+
+	self:UpdateInspectingPvPSlots(isInspecting);
 
 	self.SearchBox:ClearAllPoints();
 	if isInspecting then
 		self.SearchBox:SetPoint("BOTTOMLEFT", 53, 27);
 	else
-		self.SearchBox:SetPoint("LEFT", self.LoadSystem, "RIGHT", 20, 0);
+		self:SetSearchBoxDefaultPosition();
 	end
 
 	self:RefreshCurrencyDisplay();
@@ -1711,6 +1730,148 @@ function ClassTalentsFrameMixin:CancelLoadSystemTutorials()
 	end
 end
 
+function ClassTalentsFrameMixin:GetAssociatedMicroButtons()
+	return self:GetPlayerSpellsFrame():GetAssociatedMicroButtons();
+end
+
+function ClassTalentsFrameMixin:HandlePlayerTalentUpdate()
+	self:CheckSetSelectedConfigID();
+	self:UnregisterEvent("PLAYER_TALENT_UPDATE");
+end
+
+function ClassTalentsFrameMixin:InitializeTreeHeaders()
+	-- No base implementation, overriden elsewhere.
+end
+
+function ClassTalentsFrameMixin:RefreshTreeHeaders()
+	-- No base implementation, overriden elsewhere.
+end
+
+function ClassTalentsFrameMixin:InitializeOther()
+	-- No base implementation, overriden elsewhere.
+end
+
+function ClassTalentsFrameMixin:OnConfigChanged(configID)
+	self:SetConfigID(configID);
+end
+
+function ClassTalentsFrameMixin:ResetGamepadCursorLocation()
+	-- On reset, navigate to the upper leftmost Talent button on the first tree 
+	local navigateTo = self:GamepadGetStartingButtonForTree();
+
+	SmartNavigation:SelectButton(nil);
+	SmartNavigation:SelectButton(navigateTo);
+end
+
+function ClassTalentsFrameMixin:RefreshGamepadFooter()
+	local gamepadFooter = self:GetPlayerSpellsFrame().classTalentsFrameFooter;
+	if gamepadFooter then
+		gamepadFooter:Refresh();
+	end
+end
+
+function ClassTalentsFrameMixin:IsTalentButton(element)
+	return element and element.buttonContext and element.buttonContext == "ButtonContext_ClassTalent";
+end
+
+function ClassTalentsFrameMixin:GamepadNavigateVerticalSection()
+	local navigateTo;
+	local currentButton = SmartNavigation:GetCurrentButton();
+	local rightMostTree = #self.treeHeaders;
+	local centerTree = rightMostTree - 1;
+
+	if self:IsTalentButton(currentButton) then
+		if self:GetTreeSectionIndexOfCurrentButton() == rightMostTree then
+			navigateTo = self.SearchBox;
+		elseif self:GetTreeSectionIndexOfCurrentButton() == centerTree and self.ActiveSpec.ActivateButton:IsShown() then
+			navigateTo = self.ActiveSpec.ActivateButton;
+		end
+	else
+		if currentButton == self.SearchBox then
+			navigateTo = self:GamepadGetStartingButtonForTree(rightMostTree);
+		elseif currentButton == self.ActiveSpec.ActivateButton then
+			navigateTo = self:GamepadGetStartingButtonForTree(centerTree);
+		end
+	end
+
+	if navigateTo then
+		SmartNavigation:SelectButton(nil);
+		SmartNavigation:SelectButton(navigateTo);
+	end
+end
+
+function ClassTalentsFrameMixin:GamepadNavigateHorizontalSection(direction)
+	local navigateTo;
+	local currentButton = SmartNavigation:GetCurrentButton();
+
+	if self:IsTalentButton(currentButton) then
+		local currentTreeIndex = self:GetTreeSectionIndexOfCurrentButton();
+		navigateTo = self:GamepadGetStartingButtonForTree(currentTreeIndex, direction);
+	else
+		if currentButton == self.SearchBox and self.ActiveSpec.ActivateButton:IsShown() and direction == -1 then
+			navigateTo = self.ActiveSpec.ActivateButton;
+		elseif currentButton == self.ActiveSpec.ActivateButton and direction == 1 then
+			navigateTo = self.SearchBox;
+		end
+	end
+
+	if navigateTo then
+		SmartNavigation:SelectButton(nil);
+		SmartNavigation:SelectButton(navigateTo);
+	end
+end
+
+function ClassTalentsFrameMixin:GamepadGetStartingButtonForTree(current, direction)
+	-- Refresh smart nav button list on the parent frame (PlayerSpellsFrame).
+	SmartNavigation:RefreshButtonGroups(self:GetParent());
+
+	-- Default to leftmost tree if none specified
+	if current == nil then current = 1 end
+
+	-- Default to no change in direction if none specified
+	if direction == nil then direction = 0 end
+
+	local newTreeIndex = Clamp(current + direction, 1, #self.treeHeaders);
+	local tree = self.treeHeaders[newTreeIndex];
+	local treeGroupID = tree.displayInfo.groupID;
+
+	-- Find the first grid object in a given tree group
+	for _, button in ipairs(self:GetButtonsInDefaultOrder()) do
+		local nodeInfo = button:GetNodeInfo();
+
+		for _, groupID in ipairs(nodeInfo.groupIDs) do
+			if groupID == treeGroupID and button:IsVisible() then
+				if (SmartNavigation:GetActiveFrame() == self:GetParent()) then
+					return button;
+				end
+				return nil;
+			end
+		end
+	end
+end
+
+function ClassTalentsFrameMixin:GetTreeSectionIndexOfCurrentButton()
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not (currentButton and currentButton:IsShown()) then
+		return nil;
+	end
+
+	if not self:IsTalentButton(currentButton) then
+		return nil;
+	end
+
+	local nodeInfo = currentButton:GetNodeInfo();
+	for i, header in ipairs(self.treeHeaders) do
+		local treeGroupID = header.displayInfo.groupID;
+
+		for _, groupID in ipairs(nodeInfo.groupIDs) do
+			if groupID == treeGroupID then
+				return i;
+			end
+		end
+	end
+end
+
 --------------------------- Script Command Helpers --------------------------------
 function ClassTalentsFrameMixin:LoadConfigByPredicate(predicate)
 	if self:IsInspecting() then
@@ -1770,4 +1931,5 @@ function ClassTalentsFrameMixin:LoadConfigByIndex(index)
 		return configIndex == index;
 	end);
 end
+
 --------------------------- End Script Command Helpers --------------------------------

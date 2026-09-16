@@ -1711,6 +1711,8 @@ function MenuMixin:Close(closeReason)
 		self.onCloseCallback(menuFrame, closeReason);
 	end
 
+	EventRegistry:TriggerEvent("MenuProxy.OnClose", menuFrame, closeReason);
+
 	-- Hide is necessary here to ensure any OnLeave scripts are fired on child frames before
 	-- the compositor flushes our keys.
 	menuFrame:Hide();
@@ -1751,6 +1753,8 @@ function MenuProxyMixin:OnLoad()
 	self.ScrollBar:SetPoint("TOPLEFT", self.ScrollBox, "TOPRIGHT");
 	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollBox, "BOTTOMRIGHT");
 
+	self:RegisterForTransitions();
+
 	local view = CreateScrollBoxListLinearView();
 
 	view:SetFrameFactoryResetter(function(pool, frame, new)
@@ -1772,6 +1776,37 @@ function MenuProxyMixin:OnLoad()
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function MenuProxyMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function MenuProxyMixin:SetupGamepad()
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "MenuFooter");
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	self.footer:Finalize();
+end
+
+function MenuProxyMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+	self.footer.inputLegend:SetClampedToScreen(true);
+end
+
+function MenuProxyMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
+end
+
+function MenuProxyMixin:OnShow()
+	ResizeLayoutMixin.OnShow(self);
+
+	EventRegistry:TriggerEvent("MenuProxy.OnShow", self);
+end
+
+function MenuProxyMixin:OnHide()
+	EventRegistry:TriggerEvent("MenuProxy.OnHide", self);
 end
 
 function MenuProxyMixin:ClearScrollLayout()
@@ -2062,7 +2097,35 @@ end
 
 function MenuManagerMixin:GenerateSubmenuInternal(menuDescription, level, relativeFrame)
 	local function SetMenuPosition(menu)
-		menu:SetPoint("TOPLEFT", relativeFrame, "TOPRIGHT");
+		if InputUtil.IsGamepadUIEnabled() then
+			local left, top, right, bottom = securecallfunction(SecureGetInset, menu);
+
+			-- The intent is to open the root level menu with an anchor based on the quadrant the
+			-- menu owner is in, and for every submenu to use the same anchor behavior as its
+			-- parent menu. But since we can't trust every menu to use the default anchor point,
+			-- only use the parent anchor if the parent is also a submenu.
+			if level > 2 then
+				local point, _, relativePoint = relativeFrame:GetPoint();
+				local offsetX = point:match("RIGHT$") and -right or left;
+				local offsetY = point:match("^BOTTOM") and -bottom or top;
+				menu:SetPoint(point, relativeFrame, relativePoint, offsetX, offsetY);
+			else
+				local rootMenu = self:GetOpenMenu():ToProxy();
+				local rootOwner = rootMenu:GetOwnerRegion() or rootMenu;
+				local rootQuadrant = FrameUtil.GetScreenQuadrant(rootOwner);
+				if rootQuadrant == FrameUtilQuadrantEnum.BottomRight then
+					menu:SetPoint("BOTTOMRIGHT", relativeFrame, "BOTTOMLEFT", -right, -bottom);
+				elseif rootQuadrant == FrameUtilQuadrantEnum.BottomLeft then
+					menu:SetPoint("BOTTOMLEFT", relativeFrame, "BOTTOMRIGHT", left, -bottom);
+				elseif rootQuadrant == FrameUtilQuadrantEnum.TopRight then
+					menu:SetPoint("TOPRIGHT", relativeFrame, "TOPLEFT", -right, top);
+				else
+					menu:SetPoint("TOPLEFT", relativeFrame, "TOPRIGHT", left, top);
+				end
+			end
+		else
+			menu:SetPoint("TOPLEFT", relativeFrame, "TOPRIGHT");
+		end
 	end
 
 	local params = {};
@@ -2415,6 +2478,13 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 		frameLevel = 9500;
 	end
 
+	-- The pool calls `SetToDefaults` on newly allocated objects and re-used objects.
+	-- `SetToDefaults` ends up calling `FreeScripts` so we need to re-set our scripts
+	-- here before `:Show()`. The pool reset func also sets the frame to hidden so we
+	-- are guaranteed the `:Show()` below will transition from hidden to visible.
+	proxy:SetScript("OnShow", MenuProxyMixin.OnShow);
+	proxy:SetScript("OnHide", MenuProxyMixin.OnHide);
+
 	proxy:SetFrameLevel(frameLevel + menu:GetLevel());
 	proxy:Show();
 
@@ -2515,7 +2585,22 @@ function MenuManagerMixin:OpenContextMenu(ownerRegion, menuDescription)
 	assert(ownerRegion, "MenuManagerMixin:OpenContextMenu(ownerRegion, menuDescription): ownerRegion was not provided.");
 
 	local function SetMenuPosition(menuFrame)
-		InputUtil.AnchorRegionToCursor(menuFrame, "TOPLEFT");
+		if InputUtil.IsGamepadUIEnabled() then
+			menuFrame:ClearAllPoints();
+
+			local ownerQuadrant = FrameUtil.GetScreenQuadrant(ownerRegion);
+			if ownerQuadrant == FrameUtilQuadrantEnum.BottomRight then
+				menuFrame:SetPoint("BOTTOMRIGHT", ownerRegion, "BOTTOMLEFT");
+			elseif ownerQuadrant == FrameUtilQuadrantEnum.BottomLeft then
+				menuFrame:SetPoint("BOTTOMLEFT", ownerRegion, "BOTTOMRIGHT");
+			elseif ownerQuadrant == FrameUtilQuadrantEnum.TopRight then
+				menuFrame:SetPoint("TOPRIGHT", ownerRegion, "TOPLEFT");
+			else
+				menuFrame:SetPoint("TOPLEFT", ownerRegion, "TOPRIGHT");
+			end
+		else
+			InputUtil.AnchorRegionToCursor(menuFrame, "TOPLEFT");
+		end
 	end
 
 	local params = {};

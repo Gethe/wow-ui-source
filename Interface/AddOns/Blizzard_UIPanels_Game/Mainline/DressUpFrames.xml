@@ -319,6 +319,36 @@
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGTopLeft" hidden="true">
+							<Size y="348"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-85"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGTopRight" hidden="true">
+							<Size x="85" y="348"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGBottomLeft" hidden="true">
+							<Size y="175"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BGTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.BGTopLeft" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGBottomRight" hidden="true">
+							<Size x="85" y="175"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.BGTopRight" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
 						<Anchors>

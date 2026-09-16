@@ -1309,10 +1309,10 @@
 	</Binding>
 
 	<Binding name="TOGGLEGROUPFINDER" ignoreInKioskMode="true" header="BLANK13" category="BINDING_HEADER_INTERFACE">
-		PVEFrame_ToggleFrame();
+		ToggleGroupFinderFrame();
 	</Binding>
 	<Binding name="TOGGLEDUNGEONSANDRAIDS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		PVEFrame_ToggleFrame("GroupFinderFrame", nil);
+		ToggleGroupFinderFrame("GroupFinderFrame", nil);
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
 		if not DISALLOW_FRAME_TOGGLING and not PlayerIsTimerunning() then
@@ -1774,6 +1774,7 @@
 
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="EXPANDTOOLTIP" default="SHIFT"/>
 	<ModifiedClick action="FOCUSCAST" default="NONE"/>
 	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>

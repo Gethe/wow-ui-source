@@ -26,6 +26,9 @@
 		</Layers>
 		<Frames>
 			<ItemButton parentKey="Button" inherits="ProfessionsButtonTemplate" mixin="ProfessionsReagentSlotButtonMixin">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_ProfessionsReagentButton" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>

@@ -4,3 +4,4 @@
 StaticPopup.lua
 SharedTemplates.lua
 SharedDialogDefs.lua
+StaticPopupGamepad.lua

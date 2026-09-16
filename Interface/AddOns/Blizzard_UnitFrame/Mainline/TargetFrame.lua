@@ -13,11 +13,15 @@ local LARGE_FOCUS_SCALE = 1;
 local SMALL_FOCUS_SCALE = 0.75;
 local SMALL_FOCUS_UPSCALE = 1.333;
 
+-- Frame action keys
+local FOCUS_AURA_CONTENT_FRAME_ACTION_KEY = "FocusAuraContent";
+local OPEN_TARGET_FRAME_OPTIONS_MENU_FRAME_ACTION_KEY = "OpenOptions";
+
 CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
 
 TargetFrameMixin = {};
 
-function TargetFrameMixin:OnLoad(unit, menuFunc)
+function TargetFrameMixin:OnLoadBase(unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -117,6 +121,10 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	EventRegistry:RegisterCallback("EditMode.Exit", function()
 		self:UpdateAuras();
 	end, self);
+end
+
+function TargetFrameMixin:OnLoad(unit, menuFunc)
+	self:OnLoadBase(unit, menuFunc);
 end
 
 function TargetFrameMixin:Update()
@@ -328,13 +336,44 @@ function TargetFrameMixin:CheckFaction()
 	end
 end
 
+function TargetFrameMixin:ShowPrestigeLevel(parentFrame, factionGroup, honorRewardInfo)
+	parentFrame.PrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
+	parentFrame.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+	parentFrame.PrestigePortrait:Show();
+	parentFrame.PrestigeBadge:Show();
+	parentFrame.PvpIcon:Hide();
+end
+
+function TargetFrameMixin:ShowPvPIcon(parentFrame, factionGroup)
+	parentFrame.PrestigePortrait:Hide();
+	parentFrame.PrestigeBadge:Hide();
+	if (factionGroup == "Horde") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "Alliance") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "FFA") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
+	end
+	parentFrame.PvpIcon:Show();
+end
+
+function TargetFrameMixin:HidePvPFrames(parentFrame)
+	parentFrame.PrestigePortrait:Hide();
+	parentFrame.PrestigeBadge:Hide();
+	parentFrame.PvpIcon:Hide();
+end
+
 function TargetFrameMixin:CheckBattlePet()
 	if (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
-		local petType = UnitBattlePetType(self.unit);
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
-	else
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
+		if (ShouldShowBattlePetIcon()) then
+			local petType = UnitBattlePetType(self.unit);
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
+		else
+			self.TargetFrameContent.TargetFrameContentMain.LevelBackgroundCircle:Hide();
+			self.TargetFrameContent.TargetFrameContentMain.LevelText:Hide();
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
+		end
 	end
 end
 
@@ -395,17 +434,10 @@ function TargetFrameMixin:CheckClassification()
 
 	-- Boss frame pieces (dragon frame, icons)
 	local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture;
-	if (UnitIsBossMob(self.unit)) then
-		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -8);
-		bossPortraitFrameTexture:Show();
-	elseif (classification == "rareelite") then
-		bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
-		bossPortraitFrameTexture:Show();
-	elseif (classification == "elite") then
-		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
+	local bossPortraitAtlas, bossPortraitOffsetX, bossPortraitOffsetY = GetBossPortraitFrameData(self.unit, classification);
+	if (bossPortraitAtlas) then
+		bossPortraitFrameTexture:SetAtlas(bossPortraitAtlas, TextureKitConstants.UseAtlasSize);
+		bossPortraitFrameTexture:SetPoint("TOPRIGHT", self.TargetFrameContainer, "TOPRIGHT", bossPortraitOffsetX, bossPortraitOffsetY);
 		bossPortraitFrameTexture:Show();
 	else
 		bossPortraitFrameTexture:Hide();
@@ -421,7 +453,7 @@ function TargetFrameMixin:CheckClassification()
 	-- Quest icon showing trumps rarity icon.
 	if (targetFrameContenContextual.QuestIcon and isQuestBoss) then
 		targetFrameContenContextual.BossIcon:Hide();
-	elseif (classification == "rare" or classification == "rareelite") then
+	elseif (ShouldShowStar(classification)) then
 		targetFrameContenContextual.BossIcon:SetAtlas("UnitFrame-Target-PortraitOn-Boss-Rare-Star", TextureKitConstants.UseAtlasSize);
 		targetFrameContenContextual.BossIcon:Show();
 	else
@@ -623,13 +655,17 @@ function TargetFrame_OpenMenu(self)
 		name = RAID_TARGET_ICON;
 	end
 	if (which) then
-		local contextData = {
-			fromTargetFrame = true;
+		local contextData =
+		{
+			fromTargetFrame = true,
+			ownerFrame = self,
 			unit = "target",
 			name = name,
 		};
 
-		UnitPopup_OpenMenu(which, contextData);
+		local menu = UnitPopup_OpenMenu(which, contextData);
+		menu:ClearAllPoints();
+		menu:SetPoint("LEFT", self, "RIGHT");
 	end
 end
 
@@ -1005,10 +1041,13 @@ end
 
 function BossTargetFrame_OpenMenu(self)
 	local contextData = {
-		fromTargetFrame = true;
+		fromTargetFrame = true,
+		ownerFrame = self,
 		unit = self.unit,
 	};
-	UnitPopup_OpenMenu("BOSS", contextData);
+	local menu = UnitPopup_OpenMenu("BOSS", contextData);
+	menu:ClearAllPoints();
+	menu:SetPoint("LEFT", self, "RIGHT");
 end
 
 BossTargetFrameContainerMixin = { };
@@ -1095,7 +1134,8 @@ FocusFrameMixin = {};
 
 function FocusFrame_OpenMenu(self)
 	local contextData = {
-		fromFocusFrame = true;
+		fromFocusFrame = true,
+		ownerFrame = self,
 		unit = "focus",
 		name = SET_FOCUS,
 	};

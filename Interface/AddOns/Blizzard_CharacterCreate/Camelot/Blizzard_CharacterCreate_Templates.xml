@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CharacterCreateLabelFrameTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" text="" font="GameFontNormalLarge" justifyH="LEFT">
+					<Size x="310" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterCreateHeaderFrameTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" text="" font="GameFontNormalLarge2" justifyH="LEFT">
+					<Size x="310" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color color="WHITE_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterCreateSpaceFrameTemplate" virtual="true">
+		<Size x="310" y="14"/>
+	</Frame>
+
+	<Frame name="CharCreateBodyTypeButtonTemplate" inherits="CharCustomizeBodyTypeButtonTemplate" virtual="true">
+		<Size x="55" y="55"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="character-create-icon-frame" type="string"/>
+			<KeyValue key="ringWidth" value="60" type="number"/>
+			<KeyValue key="ringHeight" value="60" type="number"/>
+			<KeyValue key="checkedAtlas" value="character-create-icon-selectedglow" type="string"/>
+			<KeyValue key="checkedTextureSize" value="80" type="number"/>
+			<KeyValue key="highlightAtlas" value="character-create-icon-selectedglow" type="string"/>
+			<KeyValue key="maskAtlas" value="character-create-icon-mask" type="string"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.75" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CharacterCreateDetaislListTemplate" inherits="CallbackRegistrantTemplate" mixin="CharacterCreateDetaislListFrameMixin, PortraitFrameMixin" enableMouse="true" frameLevel="4" virtual="true">
+		<Size x="390" y="1"/>		
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Frame" atlas="heavybronze-frame-basic" setAllPoints="true"/>
+				<Texture name="Frame_TR" atlas="heavybronze-vert-cornerbracket-TR"  useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="Frame_BR" atlas="heavybronze-vert-cornerbracket-BR"  useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backdrop" atlas="heavybronze-frame-background" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="44" y="-14"/>
+					<Anchor point="BOTTOMRIGHT" x="-35" y="15"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Content" inherits="VerticalLayoutFrame">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="spacing" value="10" type="number"/>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-16"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
+					<Anchor point="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame parentKey="PortraitContainer" frameLevel="400">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-25" y="5" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentPortrait" parentKey="portrait">
+							<Size x="62" y="62"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="7" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RingBorder" atlas="character-create-icon-circle-frame" >
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.portrait" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" atlas="character-create-icon-circle-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="4"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="portrait"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+		</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+			</Scripts>
+		</Frame>
+	
+</Ui>

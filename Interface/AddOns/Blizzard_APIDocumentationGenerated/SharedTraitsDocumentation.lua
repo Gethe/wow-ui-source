@@ -278,6 +278,37 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetGroupCurrencyInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "groupIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "groupCurrencyInfos", Type = "table", InnerType = "GroupCurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGroupDisplayInfoByTreeID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "displayInfos", Type = "table", InnerType = "TraitGroupDisplayInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetIncreasedTraitData",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -301,6 +332,22 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "serializationVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxAvailableTraitCurrency",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitCurrencyID", Type = "number", Nilable = false },
+				{ Name = "limitBySourcedMax", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxAvailable", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -401,6 +448,22 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "systemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTraitCurrencyForAchievement",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitCurrencyID", Type = "number", Nilable = false },
+				{ Name = "achievementID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -906,6 +969,15 @@ local SharedTraits =
 	Tables =
 	{
 		{
+			Name = "GroupCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "traitNodeGroupID", Type = "number", Nilable = false },
+				{ Name = "currencyInfos", Type = "table", InnerType = "TreeCurrencyInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "IncreasedTraitData",
 			Type = "Structure",
 			Fields =
@@ -1005,6 +1077,19 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "TraitGroupDisplayInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "groupID", Type = "number", Nilable = false },
+				{ Name = "treeID", Type = "number", Nilable = false },
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "displayName", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TraitNodeInfo",
 			Type = "Structure",
 			Fields =
@@ -1093,6 +1178,7 @@ local SharedTraits =
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "gates", Type = "table", InnerType = "TraitGateInfo", Nilable = false },
 				{ Name = "hideSingleRankNumbers", Type = "bool", Nilable = false },
+				{ Name = "cannotRefund", Type = "bool", Nilable = false },
 				{ Name = "rootNodeID", Type = "number", Nilable = true },
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "titleText", Type = "string", Nilable = true },
@@ -1107,6 +1193,7 @@ local SharedTraits =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "maxQuantity", Type = "number", Nilable = true },
 				{ Name = "spent", Type = "number", Nilable = false },
+				{ Name = "spentInTree", Type = "number", Nilable = true },
 			},
 		},
 	},

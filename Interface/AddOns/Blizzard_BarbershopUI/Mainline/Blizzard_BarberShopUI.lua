@@ -124,7 +124,7 @@ function BarberShopMixin:UpdateButtons()
 	self.ResetButton:SetEnabled(hasAnyChanges);
 end
 
-function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
+function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset, dontResetCamera)
 	local customizationCategoryData = C_BarberShop.GetAvailableCustomizations();
 	if not customizationCategoryData then
 		-- This means we are calling GetAvailableCustomizations when there is no character component set up. Do nothing
@@ -139,7 +139,7 @@ function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
 	local useAlteredFormsDropdown = C_BarberShop.HasCustomizationFeature(Enum.ChrModelFeatureFlags.Mounts);
 	CharCustomizeFrame:SetAlteredFormsUseDropdown(useAlteredFormsDropdown);
 
-	CharCustomizeFrame:SetCustomizations(customizationCategoryData);
+	CharCustomizeFrame:SetCustomizations(customizationCategoryData, dontResetCamera);
 
 	self:UpdateButtons();
 end
@@ -250,4 +250,25 @@ function BarberShopButtonMixin:OnClick()
 	elseif self.barberShopFunction then
 		C_BarberShop[self.barberShopFunction]();
 	end
+end
+
+BarberShopSDToggleMixin = {};
+
+function BarberShopSDToggleMixin:OnLoad()
+	if(C_GameRules.IsSDHDToggleEnabled()) then
+		self:Show();
+	else
+		self:Hide();
+	end
+end
+
+function BarberShopSDToggleMixin:OnShow()
+	self:SetChecked(not C_GameRules.AccountHasSDEnabled());
+end
+
+function BarberShopSDToggleMixin:OnClick()
+	C_GameRules.SetSDHDToggleValue(not self:GetChecked());
+	local alsoReset = true;
+	local dontResetCamera = true;
+	BarberShopFrame:UpdateCharCustomizationFrame(alsoReset, dontResetCamera);
 end

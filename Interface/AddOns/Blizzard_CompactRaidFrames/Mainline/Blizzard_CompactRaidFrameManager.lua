@@ -430,7 +430,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	{
 		{
 			parentKey = "difficulty",
-			IsShown = function() return isRaid or isLeader; end,
+			IsShown = function() return (isRaid or isLeader) and DifficultyUtil.HasAnyUserSelectableDifficulties(); end,
 		},
 		{
 			parentKey = "editMode",

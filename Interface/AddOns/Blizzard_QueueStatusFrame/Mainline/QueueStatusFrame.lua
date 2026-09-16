@@ -42,7 +42,7 @@ end
 
 function EyeTemplateMixin:StartFoundAnimationInit()
 	self:StopAnimating();
-	
+
 	self:PlayAnim(self.EyeFoundInitial, self.EyeFoundInitial.EyeFoundInitialAnim);
 
 	self.currAnim = LFG_EYE_FOUND_INIT_ANIM;
@@ -50,7 +50,7 @@ end
 
 function EyeTemplateMixin:StartFoundAnimationLoop()
 	self:StopAnimating();
-	
+
 	self:PlayAnim(self.EyeFoundLoop, self.EyeFoundLoop.EyeFoundLoopAnim);
 	self:PlayAnim(self.EyeFoundLoop, self.GlowBackLoop.GlowBackLoopAnim);
 
@@ -135,6 +135,9 @@ function QueueStatusButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self.glowLocks = {};
 	self.angerVal = 0;
+
+	-- For Camelot, we need to call UpdateDefaultAnchor when the Minimap scale changes.
+	EventRegistry:RegisterCallback("Minimap.OnScaleUpdated", self.UpdateDefaultAnchor, self);
 end
 
 function QueueStatusButtonMixin:IsInitialEyeAnimFinished()
@@ -187,7 +190,11 @@ function QueueStatusButtonMixin:OnUpdate()
 end
 
 function QueueStatusButtonMixin:OnEnter()
+	QueueStatusFrame:SetOwner(self);
+	QueueStatusFrame:ClearAllPoints();
+	QueueStatusFrame:SetPoint("RIGHT", self, "LEFT", 0, 28);
 	QueueStatusFrame:Show();
+
 	self.cursorOnButton = true;
 
 	if ( self.Eye:IsStaticMode() ) then
@@ -202,7 +209,7 @@ end
 function QueueStatusButtonMixin:OnLeave()
 	QueueStatusFrame:Hide();
 	self.cursorOnButton = false;
-	
+
 	if ( self.Eye:IsStaticMode() ) then
 		return;
 	end
@@ -232,7 +239,7 @@ function QueueStatusButtonMixin:ShowContextMenu()
 		--LFGList
 		local isActive = C_LFGList.HasActiveEntryInfo();
 		if ( isActive ) then
-			QueueStatusDropdown_AddLFGListButtons(rootDescription);
+			QueueStatusDropdown_AddLFGListButtons(rootDescription, self);
 		end
 
 		local apps = C_LFGList.GetApplications();
@@ -280,6 +287,12 @@ function QueueStatusButtonMixin:ShowContextMenu()
 	end);
 end
 
+-- Abstracted so that game modes with a different LFG system can override
+-- this method without duplicating OnClick logic.
+function QueueStatusButtonMixin:ShowLFGFrame(toggle)
+	LFGListUtil_OpenBestWindow(toggle);
+end
+
 function QueueStatusButtonMixin:OnClick(button)
 	if ( button == "RightButton" ) then
 		self:ShowContextMenu();
@@ -298,7 +311,7 @@ function QueueStatusButtonMixin:OnClick(button)
 				TogglePVPScoreboardOrResults();
 			end
 		elseif ( lfgListActiveEntry ) then
-			LFGListUtil_OpenBestWindow(true);
+			self:ShowLFGFrame(true);
 		else
 			--See if we have any active LFGList applications
 			local apps = C_LFGList.GetApplications();
@@ -306,7 +319,7 @@ function QueueStatusButtonMixin:OnClick(button)
 				local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
 				if ( appStatus == "applied" or appStatus == "invited" ) then
 					--We want to open to the LFGList screen
-					LFGListUtil_OpenBestWindow(true);
+					self:ShowLFGFrame(true);
 					return;
 				end
 			end
@@ -338,13 +351,11 @@ end
 
 function QueueStatusButtonMixin:OnShow()
 	self:CheckTutorials();
-	
+
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.Eye:StartInitialAnimation();
 	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
-
-	MicroMenuContainer:Layout();
 end
 
 function QueueStatusButtonMixin:OnHide()
@@ -394,72 +405,6 @@ function QueueStatusButtonMixin:OnGlowPulse()
 	return playSounds;
 end
 
-function QueueStatusButtonMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
-	-- Position button so that it is facing towards the center of the screen to avoid it going offscreen
-	local point, relativeTo, relativePoint, offsetX, offsetY;
-
-	self:ClearAllPoints();
-	if MicroMenu:GetParent() == MicroMenuContainer then
-		-- Micro menu is in default container. Anchor to the micro menu
-		relativeTo = MicroMenu;
-
-		if isMenuHorizontal then
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", -15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", -15, 0;
-			end
-		else
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 0, 15;
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", 0, 15;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 0, -15;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", 0, -15;
-			end
-		end
-	else
-		-- Micro menu isn't in it's normal container so don't anchor to it and instead anchor relative to the container
-		relativeTo = MicroMenuContainer;
-		offsetX, offsetY = 0, 0;
-
-		if isMenuHorizontal then
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint = "TOPLEFT", "TOPLEFT";
-			end
-		else
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint = "TOPLEFT", "TOPLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
-			end
-		end
-	end
-
-	-- Make sure to account for scale since it can be changed via edit mode
-	local scale = self:GetScale();
-	offsetX = offsetX / scale;
-	offsetY = offsetY / scale;
-
-	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
-end
-
 ----------------------------------------------
 ------------QueueStatusFrame------------------
 ----------------------------------------------
@@ -470,7 +415,7 @@ function QueueStatusFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
-	--For Plunderstorm 
+	--For Plunderstorm
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE");
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_ABANDONED");
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_POPPED");
@@ -517,6 +462,11 @@ function QueueStatusFrameMixin:OnEvent(event, ...)
 		QueueStatusButton.Eye:StartSearchingAnimation();
 	end
 
+end
+
+function QueueStatusFrameMixin:SetOwner(parent)
+	-- This function only exists so this frame can be treated more or less as a tooltip
+	self:SetParent(parent);
 end
 
 function QueueStatusFrameMixin:GetEntry(entryIndex)
@@ -577,7 +527,7 @@ function QueueStatusFrameMixin:Update()
 	local totalHeight = 4; --Add some buffer height
 
 	self.statusEntriesPool:ReleaseAll();
-	
+
 	-- NOTE: Plunderstorm Queue is exclusive to all other queues
 	local queuedForPlunderstorm = C_LobbyMatchmakerInfo.IsInQueue();
 	if queuedForPlunderstorm then
@@ -774,27 +724,31 @@ function QueueStatusFrameMixin:HasNonPlunderstormQueue()
 	return self.hasNonPlunderstormQueue;
 end
 
-function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+function QueueStatusFrameMixin:UpdatePosition(position, isMenuHorizontal)
 	-- Position frame so that it is facing towards the center of the screen to avoid it going offscreen
+	-- Note: "isMenuHorizontal" refers to how in Modern the QueueStatusButton is by default anchored
+	--  to the MicroMenu, which can be either horizontal or vertical.
+	--  Horizontal can be thought of as the default.
 	local point, relativePoint, offsetX, offsetY;
+
 	if isMenuHorizontal then
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+		if position == FrameUtilQuadrantEnum.BottomLeft then
 			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 0, 25;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+		elseif position == FrameUtilQuadrantEnum.BottomRight then
 			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", 0, 25;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+		elseif position == FrameUtilQuadrantEnum.TopLeft then
 			point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 0, -25;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+		elseif position == FrameUtilQuadrantEnum.TopRight then
 			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", 0, -25;
 		end
 	else
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+		if position == FrameUtilQuadrantEnum.BottomLeft then
 			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+		elseif position == FrameUtilQuadrantEnum.BottomRight then
 			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", -25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+		elseif position == FrameUtilQuadrantEnum.TopLeft then
 			point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+		elseif position == FrameUtilQuadrantEnum.TopRight then
 			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", -25, 0;
 		end
 	end
@@ -1134,7 +1088,7 @@ local function AddQueuedTimeToEntry(entry, queuedTime, heightOffset)
 	end
 	entry.TimeInQueue:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(heightOffset + 5));
 	entry.TimeInQueue:Show();
-	
+
 	return entry.TimeInQueue:GetHeight();
 end
 
@@ -1259,7 +1213,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalHealers - healerNeeds, totalHealers);
 		entry.DamagersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalDPS - dpsNeeds, totalDPS);
 
-		local needMoreTanks, needMoreHealers, needMoreDPS = tankNeeds ~= 0, healerNeeds ~= 0, dpsNeeds ~= 0; 
+		local needMoreTanks, needMoreHealers, needMoreDPS = tankNeeds ~= 0, healerNeeds ~= 0, dpsNeeds ~= 0;
 		entry.TanksFound.RoleIcon:SetAtlas(GetIconForRole("TANK", needMoreTanks), TextureKitConstants.IgnoreAtlasSize);
 		entry.HealersFound.RoleIcon:SetAtlas(GetIconForRole("HEALER", needMoreHealers), TextureKitConstants.IgnoreAtlasSize);
 		entry.DamagersFound.RoleIcon:SetAtlas(GetIconForRole("DAMAGER", needMoreDPS), TextureKitConstants.IgnoreAtlasSize);
@@ -1423,7 +1377,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 		local leaveButton = description:CreateButton(text, function()
 			ConfirmOrLeaveBattlefield();
 		end);
-		
+
 		if disabled then
 			leaveButton:SetEnabled(false);
 		end
@@ -1529,12 +1483,12 @@ function QueueStatusDropdown_AddLFGButtons(description, category)
 	end
 end
 
-function QueueStatusDropdown_AddLFGListButtons(description)
+function QueueStatusDropdown_AddLFGListButtons(description, queueStatusButton)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	description:CreateTitle(activeEntryInfo.name);
 
 	description:CreateButton(LFG_LIST_VIEW_GROUP, function()
-		LFGListUtil_OpenBestWindow();
+		queueStatusButton:ShowLFGFrame();
 	end);
 
 	local button = description:CreateButton(UNLIST_MY_GROUP, function()

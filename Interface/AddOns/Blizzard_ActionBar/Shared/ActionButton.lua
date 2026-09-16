@@ -540,6 +540,8 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		C_ActionBar.RegisterActionUIButton(self, action, self.cooldown);
 
 		local isAssistedCombatRotation = self:UpdateAssistedCombatRotationFrame();
+		self:UpdateCastingAnimation();
+		self:ClearInterruptDisplay();
 
 		self:Update();
 
@@ -670,13 +672,43 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	end
 end
 
+function ActionBarActionButtonMixin:UpdateCastingAnimation()
+	local type, id = GetActionInfo(self.action);
+
+	if (self:HasAction() and type == "spell" and id) then
+		local channeledSpellID, isEmpowered = select(8, UnitChannelInfo("player"));
+		local castingSpellID = select(9, UnitCastingInfo("player"));
+
+		-- Depending on the casting animation type, display the animation at the current progress that has been casted/channeled.
+		if (channeledSpellID == id) then
+			if (isEmpowered) then
+				self:PlaySpellCastAnim(ActionButtonCastType.Empowered, true);
+			else
+				self:PlaySpellCastAnim(ActionButtonCastType.Channel, true);
+			end
+			return;
+		elseif (castingSpellID == id) then
+			self:PlaySpellCastAnim(ActionButtonCastType.Cast, true);
+			return;
+		end
+	end
+
+	--[[
+		The action in this slot doesn't have the action being casted/channeled, so
+		stop the animation in case it was playing before the update occured.
+	]]
+	for _, castTypeVal in pairs(ActionButtonCastType) do
+		self:StopSpellCastAnim(true, castTypeVal);
+	end
+end
+
 function ActionBarActionButtonMixin:UpdateState()
 	local action = self.action;
 	local isChecked = (C_ActionBar.IsCurrentAction(action) or C_ActionBar.IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
 	self:SetChecked(isChecked);
 end
 
-function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana)
+function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana, isLevelLinkLocked)
 	local icon = self.icon;
 
 	assertsafe(action == nil or action == self.action);
@@ -691,7 +723,9 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 		icon:SetVertexColor(0.4, 0.4, 0.4);
 	end
 
-	local isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
+	if isLevelLinkLocked == nil then
+		isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
+	end
 	if isLevelLinkLocked then
 		icon:SetDesaturated(true);
 	end
@@ -1139,6 +1173,9 @@ function ActionBarActionButtonMixin:OnShow()
 		self:Update();
 		self:RegisterActionBarButtonCheckFrames(self.action);
 	end
+	if self.InterruptDisplay then
+		self.InterruptDisplay:Hide(); -- Cancel out any events that may trigger a delayed interrupt display show call when this button was hidden.
+	end
 end
 
 function ActionBarActionButtonMixin:OnHide()
@@ -1172,7 +1209,7 @@ function ActionBarActionButtonMixin:ClearInterruptDisplay()
 	end
 end
 
-function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
+function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType, progressToCurrentElapsed)
 	if (not self:SpellFXEnabled()) then
 		return;
 	end
@@ -1181,7 +1218,7 @@ function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
 	self.hideCooldownFrame = true;
 	self:ClearInterruptDisplay();
 	self:ClearReticle();
-	self.SpellCastAnimFrame:Setup(actionButtonCastType);
+	self.SpellCastAnimFrame:Setup(actionButtonCastType, progressToCurrentElapsed);
 	self.actionButtonCastType = actionButtonCastType;
 end
 
@@ -1295,6 +1332,8 @@ function ActionBarActionButtonMixin:UpdateFlash()
 end
 
 function ActionBarActionButtonMixin:ClearFlash()
+	self:StopFlash();
+
 	if ( self.AutoCastOverlay ) then
 		self.AutoCastOverlay:ShowAutoCastEnabled(false);
 		self.AutoCastOverlay:Hide();
@@ -1332,6 +1371,18 @@ function ActionBarActionButtonMixin:SetButtonStateOverride(state)
 	self:SetButtonStateBase(state);
 end
 
+--[[
+	Calls the SecureActionButton_OnClick function for the button. Pulled out of
+	the ActionBarActionButtonMixin:OnClick function so that the gamepad action button
+	can override it separately from the OnClick function which both the MKB and gamepad
+	buttons use.
+]]
+function ActionBarActionButtonMixin:TriggerSecureClick(button, down)
+	local isKeyPress = false;
+	local isSecureAction = true;
+	SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+end
+
 function ActionBarActionButtonMixin:OnClick(button, down)
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		local cursorType = GetCursorInfo();
@@ -1360,9 +1411,7 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 				return;
 			end
 
-			local isKeyPress = false;
-			local isSecureAction = true;
-			SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+			self:TriggerSecureClick(button, down);
 		end
 	end
 end
@@ -1639,6 +1688,10 @@ function BaseActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 		self:SetPopupDirection(popupDirection);
 	end
 
+	self:UpdateFlyoutPopup(actionType);
+end
+
+function BaseActionButtonMixin:UpdateFlyoutPopup(actionType)
 	if actionType == "flyout" and SpellFlyout then
 		self:SetPopup(SpellFlyout);
 	else
@@ -1731,7 +1784,7 @@ end
 
 ActionButtonCastingAnimFrameMixin = { };
 
-function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
+function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType, progressToCurrentElapsed)
 	local startTime, endTime, totalTimeInSeconds;
 
 	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel;
@@ -1745,24 +1798,16 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 
 	self.EndBurst:Hide();
 
-	local fillFrame = self.Fill;
-	fillFrame.CastFill:ClearAllPoints();
+	self.Fill.CastFill:ClearAllPoints();
 	local castingAnim = self.Fill.CastingAnim;
 	local finishCastAnim = self.EndBurst.FinishCastAnim;
 
+	local castingAnimCurrentElapsed = castingAnim:GetElapsed();
+
 	castingAnim:Stop();
 	finishCastAnim:Stop();
-	if (isChannelCast) then
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true);
-		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
-		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
-		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
-	else
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true);
-		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
-		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
-		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
-	end
+	self:SetupAnimAtlases(isChannelCast);
+
 
 	if not isEmpoweredCast and (not startTime or not endTime)  then
 
@@ -1772,7 +1817,13 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 	end
 
 	castingAnim.CastFillTranslation:SetDuration(totalTimeInSeconds);
-	castingAnim:Play();
+
+	if (progressToCurrentElapsed) then
+		castingAnim:Play(false, castingAnimCurrentElapsed);
+	else
+		castingAnim:Play();
+	end
+
 	self:Show();
 end
 
@@ -1786,6 +1837,22 @@ end
 function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()
 	self.Fill.CastingAnim:Stop();
 	self.Fill.CastingAnim:OnFinished();
+end
+
+function ActionButtonCastingAnimFrameMixin:SetupAnimAtlases(isChannelCast)
+	local fillFrame = self.Fill;
+
+	if (isChannelCast) then
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true);
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
+	else
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true);
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
+	end
 end
 
 ActionButtonCastingAnimationFillMixin = { };

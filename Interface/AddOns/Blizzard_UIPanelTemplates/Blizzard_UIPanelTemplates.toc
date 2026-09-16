@@ -1,0 +1,10 @@
+## Title: Blizzard_UIPanelTemplates
+## Dep: Blizzard_SharedXMLGame
+
+[Family]\AutoCastTemplates.lua
+[Family]\AutoCastTemplates.xml
+Shared\UIPanelSpellButtonFrame.lua
+Shared\UIPanelSpellButtonFrame.xml
+Shared\UIPanelTemplatesShared.lua
+[Family]\UIPanelTemplates.lua
+[Family]\UIPanelTemplates.xml

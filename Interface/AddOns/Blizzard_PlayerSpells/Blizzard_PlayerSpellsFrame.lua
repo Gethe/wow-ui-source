@@ -35,10 +35,15 @@ function PlayerSpellsFrameMixin:OnLoad()
 	self:SetFrameLevelsFromBaseLevel(5000);
 
 	self:UpdatePortrait();
+
+	self:RegisterForTransitions();
 end
 
 function PlayerSpellsFrameMixin:OnShow()
-	PlayerSpellsMicroButton:EvaluateAlertVisibility();
+	local microButtons = self.GetAssociatedMicroButtons();
+	for index, button in ipairs(microButtons) do
+		button:EvaluateAlertVisibility();
+	end
 
 	FrameUtil.RegisterFrameForEvents(self, PlayerSpellsFrameEvents);
 	FrameUtil.RegisterFrameForUnitEvents(self, PlayerSpellsFrameUnitEvents, "player");
@@ -52,10 +57,23 @@ function PlayerSpellsFrameMixin:OnShow()
 
 	-- This flag is intended for single-use only so reset it once the frame has been shown.
 	self.minimizedOnNextShow = false;
+
+	-- Make sure that the FrameControlsManager picks up the spells frame and selects the correct button after auto resizing.
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+		if self:IsFrameTabActive(PlayerSpellsUtil.FrameTabs.SpellBook) then
+			self.SpellBookFrame:ResetGamepadCursorLocation();
+		elseif self:IsFrameTabActive(PlayerSpellsUtil.FrameTabs.ClassTalents) then
+			self.TalentsFrame:ResetGamepadCursorLocation();
+		end
+	end
 end
 
 function PlayerSpellsFrameMixin:OnHide()
-	PlayerSpellsMicroButton:EvaluateAlertVisibility();
+	local microButtons = self.GetAssociatedMicroButtons();
+	for index, button in ipairs(microButtons) do
+		button:EvaluateAlertVisibility();
+	end
 
 	FrameUtil.UnregisterFrameForEvents(self, PlayerSpellsFrameEvents);
 	FrameUtil.UnregisterFrameForEvents(self, PlayerSpellsFrameUnitEvents);
@@ -69,6 +87,10 @@ function PlayerSpellsFrameMixin:OnHide()
 	self.lockInspect = false;
 
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.CloseFrame");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.spellsFrameFooter:HideAndDeactivateBindings();
+	end
 end
 
 function PlayerSpellsFrameMixin:OnEvent(event)
@@ -85,7 +107,15 @@ function PlayerSpellsFrameMixin:GetTalentsTabButton()
 	return self:GetTabButton(self.talentTabID);
 end
 
+-- Override in game types that don't use tabs.
+function PlayerSpellsFrameMixin:IsTabSystemAvailable()
+	return true;
+end
+
 function PlayerSpellsFrameMixin:UpdateTabs()
+	local tabSystemAvailable = self:IsTabSystemAvailable();
+	self.TabSystem:SetShown(tabSystemAvailable);
+
 	local specTabAvailable = self:IsTabAvailable(self.specTabID);
 	local spellBookTabAvailable = self:IsTabAvailable(self.spellBookTabID);
 	self.TabSystem:SetTabShown(self.specTabID, specTabAvailable);
@@ -152,10 +182,19 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 		self:SetTabMinimized(tabID, self.isMinimized);
 	end
 
-	self.MaximizeMinimizeButton:SetShown(canNewTabBeMinimized);
+	-- Do not enable the button for gamepad.
+	if (not InputUtil.IsGamepadUIEnabled()) then
+		self.MaximizeMinimizeButton:SetShown(canNewTabBeMinimized);
+	end
 
 	self:UpdateFrameTitle();
+	self:UpdatePortrait();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TabSet", PlayerSpellsFrame, tabID);
+
+	local microButtons = self.GetAssociatedMicroButtons();
+	for index, button in ipairs(microButtons) do
+		button:UpdateMicroButton();
+	end
 
 	return true; -- Don't show the tab as selected yet.
 end
@@ -178,10 +217,20 @@ function PlayerSpellsFrameMixin:TrySetTab(frameTab)
 
 	local isTabAvailable = self:IsTabAvailable(tabID);
 	if isTabAvailable then
+		SetUIPanelAttribute(self, "area", self:AreaAttributeForTab(frameTab));
+
 		self:SetTab(tabID);
 	end
 
 	return isTabAvailable;
+end
+
+function PlayerSpellsFrameMixin:AreaAttributeForTab(frameTab)
+	if self.isMinimizingEnabled then
+		return "centerOrLeft";
+	end
+
+	return "center";
 end
 
 function PlayerSpellsFrameMixin:IsTabAvailable(tabID)
@@ -189,9 +238,9 @@ function PlayerSpellsFrameMixin:IsTabAvailable(tabID)
 	local isInspecting = self:IsInspecting();
 
 	if tabID == self.specTabID then
-		return not isInspecting and canUseTalentSpecUI;
+		return not isInspecting and canUseTalentSpecUI and C_SpecializationInfo.IsSpecSelectionEnabled(self:GetClassID());
 	elseif tabID == self.talentTabID then
-		return isInspecting or (PlayerUtil.CanUseClassTalents() and canUseTalentSpecUI);
+		return isInspecting or (PlayerUtil.CanUseClassTalents() and (canUseTalentSpecUI or not C_SpecializationInfo.IsSpecSelectionEnabled(self:GetClassID())));
 	elseif tabID == self.spellBookTabID then
 		return not isInspecting;
 	end
@@ -361,6 +410,38 @@ function PlayerSpellsFrameMixin:CheckConfirmResetAction(callback, cancelCallback
 	end
 end
 
+-- Override in game types that have different values for different tabs.
+function PlayerSpellsFrameMixin:GetDesiredMinimizedWidth(tabID)
+	return self.minimizedWidth;
+end
+
+-- Override in game types that have different values for different tabs.
+function PlayerSpellsFrameMixin:GetDesiredMaximizedWidth(tabID)
+	return self.maximizedWidth;
+end
+
+-- Override in game types that have different values for different tabs.
+function PlayerSpellsFrameMixin:GetDesiredMinimizedHeight(tabID)
+	return self.desiredHeight;
+end
+
+-- Override in game types that have different values for different tabs.
+function PlayerSpellsFrameMixin:GetDesiredMaximizedHeight(tabID)
+	return self.desiredHeight;
+end
+
+function PlayerSpellsFrameMixin:UpdateSize()
+	local currentTab = self:GetTab();
+
+	if self:IsMinimized() then
+		self:SetWidth(self:GetDesiredMinimizedWidth(currentTab));
+		self:SetHeight(self:GetDesiredMinimizedHeight(currentTab));
+	else
+		self:SetWidth(self:GetDesiredMaximizedWidth(currentTab));
+		self:SetHeight(self:GetDesiredMaximizedHeight(currentTab));
+	end
+end
+
 function PlayerSpellsFrameMixin:IsMinimized()
 	return self.isMinimized;
 end
@@ -441,7 +522,7 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 			self:SetTabMinimized(currentTab, true);
 		end
 
-		self:SetWidth(self.minimizedWidth);
+		self:UpdateSize();
 
 		-- Update minimize button to reflect current state, but ensure it doesn't circle back to the click callback
 		-- This ensures that auto-minimizes are reflected by the button state, and the click callback only occurs on manual minimizes
@@ -453,7 +534,7 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 		SetUIPanelAttribute(self, "centerXOffset", -405);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
-		self:SetWidth(self.maximizedWidth);
+		self:UpdateSize();
 		self:SetTabMinimized(currentTab, false);
 
 		local isAutomaticAction, skipCallback = true, true;
@@ -496,4 +577,653 @@ function PlayerSpellsFrameMixin:SetMinimizingEnabled(enabled)
 		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
 		SetUIPanelAttribute(self, "area", "center");
 	end
+end
+
+function PlayerSpellsFrameMixin:GetAssociatedMicroButtons()
+	return { PlayerSpellsMicroButton };
+end
+
+function PlayerSpellsFrameMixin:IsSpellButton(button)
+	return button and button.buttonContext == "ButtonContext_SpellButton"
+end
+
+function PlayerSpellsFrameMixin:IsOutfitButton(button)
+	return button and button.buttonContext == "ButtonContext_OutfitButton"
+end
+
+function PlayerSpellsFrameMixin:BindToGamepadActionBar()
+	if (not GamepadMode.FrameControlsManager:IsFrameSuspended()) then
+		GamepadMode.FrameControlsManager:SuspendFrame();
+	end
+
+	local suspendedButton = GamepadMode.FrameControlsManager:GetSuspendedButton();
+	if (suspendedButton) then
+		local spellBookItem = suspendedButton:GetParent();
+		if (spellBookItem) then
+			if self:IsSpellButton(suspendedButton) then
+				GamepadActionBarEditFrame:BindSpellBookItem(spellBookItem.slotIndex, spellBookItem.spellBank);
+			elseif self:IsOutfitButton(suspendedButton) then
+				GamepadActionBarEditFrame:BindOutfit(spellBookItem:GetOutfitID());
+			end
+		end
+	end
+end
+
+function PlayerSpellsFrameMixin:ToggleAutoCastOrCastSpell(toggleAutoCast)
+	-- This action is triggered from a context menu, so the desired button is suspended.
+	local suspendedButton = GamepadMode.FrameControlsManager:GetSuspendedButton();
+	if (suspendedButton) then
+		if (toggleAutoCast) then
+			local spellBookItem = suspendedButton:GetParent();
+			if (spellBookItem) then
+				local itemInfo = spellBookItem.spellBookItemInfo;
+				if (itemInfo) then
+					C_Spell.ToggleSpellAutoCast(itemInfo.spellID);
+				end
+			end
+		else
+			suspendedButton:Click();
+		end
+	end
+end
+
+function PlayerSpellsFrameMixin:OpenSpellBookSettings()
+	self.SpellBookFrame.SettingsDropdown:OpenMenu();
+end
+
+function PlayerSpellsFrameMixin:OpenTalentSettings()
+	self.TalentsFrame.SearchOptionsDropdown:OpenMenu();
+end
+
+function PlayerSpellsFrameMixin:SelectNextSpellBookCategory(forward)
+	if (SmartNavigation:GetActiveFrame() == self) then
+		if self.SpellBookFrame:IsInSearchResultsMode() then
+			self.SpellBookFrame:ClearActiveSearchState();
+		end
+
+		self.SpellBookFrame:SelectNextTab(forward);
+	end
+end
+
+function PlayerSpellsFrameMixin:IsAutoCastDropdownContextActionValid()
+	local spellButton = SmartNavigation:GetCurrentButton();
+	if (spellButton) then
+		local spellBookItem = spellButton:GetParent();
+		if (spellBookItem) then
+			local itemInfo = spellBookItem.spellBookItemInfo;
+			if (itemInfo) then
+				local isLearned = not itemInfo.isOffSpec and itemInfo.itemType ~= Enum.SpellBookItemType.FutureSpell;
+				local isNotPassive = not itemInfo.isPassive;
+
+				if ((isLearned and isNotPassive) and itemInfo.spellID and C_Spell.GetSpellAutoCast(itemInfo.spellID)) then
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
+local function IsPassiveFlyout(spellBookItemInfo)
+	if spellBookItemInfo.itemType ~= Enum.SpellBookItemType.Flyout then
+		return false;
+	end
+
+	if spellBookItemInfo.isPassive then
+		return true;
+	end
+
+	local _, _, numSlots = GetFlyoutInfo(spellBookItemInfo.actionID);
+	local allPassive = true;
+
+	for i = 1, numSlots do
+		local _, overrideSpellID, isKnown = GetFlyoutSlotInfo(spellBookItemInfo.actionID, i);
+		if isKnown and not C_Spell.IsSpellPassive(overrideSpellID) then
+			allPassive = false;
+			break;
+		end
+	end
+
+	return allPassive;
+end
+
+--[[
+	Even though the button has been marked as a spell button, we
+	want to perform extra checks to make sure that the spell button
+	contains a spell and that the spell is non-passive and known.
+]]
+function PlayerSpellsFrameMixin:GetSmartNavSpellBookItemInfo()
+	local spellButton = SmartNavigation:GetCurrentButton();
+	if not spellButton then
+		return nil;
+	end
+
+	local spellBookItem = spellButton:GetParent();
+	if not spellBookItem then
+		return nil;
+	end
+
+	return spellBookItem.spellBookItemInfo;
+end
+
+function PlayerSpellsFrameMixin:IsSpellButtonButtonContextBindable()
+	local itemInfo = self:GetSmartNavSpellBookItemInfo()
+	if not itemInfo then
+		return false;
+	end
+
+	local type = itemInfo.itemType;
+	local isLearned = not itemInfo.isOffSpec and type ~= Enum.SpellBookItemType.FutureSpell;
+	local isPassive = itemInfo.isPassive or IsPassiveFlyout(itemInfo);
+	return isLearned and not isPassive;
+end
+
+function PlayerSpellsFrameMixin:IsSpellButtonButtonContextUsable()
+	local itemInfo = self:GetSmartNavSpellBookItemInfo()
+	return itemInfo
+		and not itemInfo.isOffSpec
+		and not itemInfo.isPassive
+		and itemInfo.type ~= Enum.SpellBookItemType.FutureSpell;
+end
+
+function PlayerSpellsFrameMixin:IsTransmogButtonButtonContextValid()
+	local spellButton = SmartNavigation:GetCurrentButton();
+	if not spellButton then
+		return nil;
+	end
+
+	local spellBookItem = spellButton:GetParent();
+	if not spellBookItem then
+		return nil;
+	end
+
+	return spellBookItem:HasValidData();
+end
+
+function PlayerSpellsFrameMixin:IsCurrentButtonUsable()
+	local button = SmartNavigation:GetCurrentButton();
+	
+	if self:IsSpellButton(button) then
+		return self:IsSpellButtonButtonContextUsable();
+	elseif self:IsOutfitButton(button) then
+		return self:IsTransmogButtonButtonContextValid();
+	end
+
+	return false;
+end
+
+function PlayerSpellsFrameMixin:IsCurrentButtonBindable()
+	local button = SmartNavigation:GetCurrentButton();
+	
+	if self:IsSpellButton(button) then
+		return self:IsSpellButtonButtonContextBindable();
+	elseif self:IsOutfitButton(button) then
+		return self:IsTransmogButtonButtonContextValid();
+	end
+
+	return false;
+end
+
+function PlayerSpellsFrameMixin:GetCastPromptLabel()
+	local itemInfo = self:GetSmartNavSpellBookItemInfo()
+	return (itemInfo and itemInfo.itemType == Enum.SpellBookItemType.Flyout)
+		and CONTEXT_ACTION_LABEL_OPEN
+		or CONTEXT_ACTION_LABEL_CAST;
+end
+
+local INPUT_THRESHOLD = 0.5;
+local STICK_RESET_THRESHOLD = 0.25;
+
+function PlayerSpellsFrameMixin:NavigateSection(x, y, directionHandlers)
+	self.waitingForStickReset = self.waitingForStickReset or false;
+
+	if self.waitingForStickReset then
+		if math.abs(x) <= STICK_RESET_THRESHOLD and math.abs(y) <= STICK_RESET_THRESHOLD then
+			self.waitingForStickReset = false;
+		else
+			return;
+		end
+	end
+
+	local directionHandler;
+
+	if math.abs(x) >= math.abs(y) then
+		if x >= INPUT_THRESHOLD then
+			directionHandler = directionHandlers.right;
+		elseif x <= -INPUT_THRESHOLD then
+			directionHandler = directionHandlers.left;
+		end
+	else
+		if y >= INPUT_THRESHOLD then
+			directionHandler = directionHandlers.up;
+		elseif y <= -INPUT_THRESHOLD then
+			directionHandler = directionHandlers.down;
+		end
+	end
+
+	
+	if directionHandler then
+		directionHandler();
+		self.waitingForStickReset = true;
+	end
+end
+
+function PlayerSpellsFrameMixin:SetUpSpellBookGamepad()
+	local bindSpell = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.BindToGamepadActionBar, self), CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR);
+	bindSpell:AddButtonContext("ButtonContext_SpellButton");
+	bindSpell:AddButtonContext("ButtonContext_OutfitButton");
+	bindSpell:AddCondition(GenerateFlatClosure(self.IsCurrentButtonBindable, self));
+
+
+	-- Use the button's click handler directly rather than routing though SmartNavigation synthesized MouseUp/Down events.
+	-- Certain game states (ex: pending ground casts) suppress emulated mouse input before they reach OnClick handlers, preventing them from firing.
+	local function ClickSelectedSpellBookButton()
+		local button = SmartNavigation:GetCurrentButton();
+		return button and button:Click();
+	end
+
+	local castSpell = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, ClickSelectedSpellBookButton);
+	castSpell:AddButtonContext("ButtonContext_SpellButton");
+	castSpell:AddButtonContext("ButtonContext_OutfitButton");
+	castSpell:AddCondition(GenerateFlatClosure(self.IsCurrentButtonUsable, self));
+	castSpell:SetLabelFunction(GenerateFlatClosure(self.GetCastPromptLabel, self));
+
+	local function Back()
+		self.CloseButton:Click();
+		GameTooltip_Hide();
+	end
+
+	local backAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back, FRAME_ACTION_BACK);
+
+	local autoCastOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_BOTTOM);
+	autoCastOptions:AddButtonContext("ButtonContext_SpellButton");
+	autoCastOptions:AddCondition(GenerateFlatClosure(self.IsAutoCastDropdownContextActionValid, self));
+	autoCastOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_CAST, GenerateFlatClosure(self.ToggleAutoCastOrCastSpell, self, false));
+	autoCastOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_AUTO_CAST, GenerateFlatClosure(self.ToggleAutoCastOrCastSpell, self, true));
+
+	-- "Auto-cast" should have higher priority than "Cast" if usable, but "Cast" should be shown if both are unusable.
+	autoCastOptions:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local openSettings = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, GenerateFlatClosure(self.OpenSpellBookSettings, self), nil);
+	openSettings:SetCustomPromptFrame(self.SpellBookFrame.SettingsTopFaceIcon);
+
+	local enterSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, function() self.SpellBookFrame.SearchBox:SetFocus(); end, nil);
+	enterSearchBox:SetCustomPromptFrame(self.SpellBookFrame.SearchBoxIcon);
+
+	local editActionBar = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(GamepadActionBarEditFrame.EnterEditMode, GamepadActionBarEditFrame), FRAME_ACTION_EDIT_ACTION_BAR);
+
+	local previousCategory = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_LEFT, GenerateFlatClosure(self.SelectNextSpellBookCategory, self, false), nil);
+	previousCategory:SetCustomPromptFrame(self.SpellBookFrame.PreviousCategoryIcon);
+
+	local nextCategory = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, GenerateFlatClosure(self.SelectNextSpellBookCategory, self, true), nil);
+	nextCategory:SetCustomPromptFrame(self.SpellBookFrame.NextCategoryIcon);
+
+	local tooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
+
+	-- Navigate Section --
+	local SpellBookFrameSectionHandlers = {
+		left = function()
+			self.SpellBookFrame:GamepadNavigateViewLeft();
+		end,
+
+		right = function()
+			self.SpellBookFrame:GamepadNavigateViewRight();
+		end,
+	};
+
+	self.navigateSpellBookSection = GamepadMode.CreateBindingGroup("SpellbookNavigateSection");
+	self.navigateSpellBookSection:AddAxisBinding(GAMEPAD_STICK_LEFT, 
+		function(x, y)
+			self:NavigateSection(x, y, SpellBookFrameSectionHandlers);
+		end
+	);
+
+	-- Navigate Elements --
+	local navigateElements = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD, nil, FRAME_ACTION_NAVIGATE);
+
+	self.spellsFrameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SpellsFrameFooter");
+	self.spellsFrameFooter:SetAnchorOffsets(0, -5);
+	self.spellsFrameFooter:AddPromptedBinding(backAction);
+	self.spellsFrameFooter:AddPromptedBinding(autoCastOptions);
+	self.spellsFrameFooter:AddPromptedBinding(castSpell);
+	self.spellsFrameFooter:AddPromptedBinding(bindSpell);
+	self.spellsFrameFooter:AddPromptedBinding(editActionBar);
+	self.spellsFrameFooter:AddPromptedBinding(navigateElements);
+	self.spellsFrameFooter:AddPromptedBinding(openSettings);
+	self.spellsFrameFooter:AddPromptedBinding(enterSearchBox);
+	self.spellsFrameFooter:AddPromptedBinding(previousCategory);
+	self.spellsFrameFooter:AddPromptedBinding(nextCategory);
+	self.spellsFrameFooter:AddPromptedBinding(tooltips);
+	self.spellsFrameFooter:AddStandardFrameControlManagerBindings(self);
+	self.spellsFrameFooter:Finalize();
+end
+
+function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
+	local talentFrame = self.TalentsFrame;
+
+	-- Tabbing --
+	local function SecondarySpecUnlocked()
+		return GetNumSpecGroups() > 1;
+	end
+
+	-- Undo Changes --
+	local function UndoChanges()
+		self.TalentsFrame.UndoButton:Click();
+	end
+	local function ShouldShowUndo()
+		return talentFrame:HasAnyConfigChanges() and not talentFrame.isConfigReadyToApply;
+	end
+
+	-- Add point --
+	local function CanAddPoint()
+		local classTalentButton = SmartNavigation:GetCurrentButton();
+		return classTalentButton and classTalentButton:CanPurchaseRank();
+	end
+	local function AddPoint()
+		local classTalentButton = SmartNavigation:GetCurrentButton();
+		if classTalentButton:CanPurchaseRank() then
+			classTalentButton:PurchaseRank();
+		end
+	end
+
+	-- Select --
+	local function Select()
+		local element = SmartNavigation:GetCurrentButton();
+		if element and element.Click then
+			element:Click();
+			if element == talentFrame.UndoButton then
+				SmartNavigation:SelectButton(talentFrame:GamepadGetStartingButtonForTree());
+			end
+		end
+	end
+
+	local function ElementNotTalentButton()
+		local element = SmartNavigation:GetCurrentButton();
+		return not (element and element.buttonContext and element.buttonContext == "ButtonContext_ClassTalent");
+	end
+
+	-- Remove point --
+	local function CanRemovePoint()
+		local classTalentButton = SmartNavigation:GetCurrentButton();
+		return classTalentButton and classTalentButton:CanRefundRank();
+	end
+	local function RemovePoint()
+		local classTalentButton = SmartNavigation:GetCurrentButton();
+		classTalentButton:RefundRank();
+	end
+
+	-- Apply changes --
+	local function CanApplyChanges()
+		return talentFrame.ApplyButton:IsEnabled();
+	end
+	local function ApplyChanges()
+		return talentFrame.ApplyButton:Click();
+	end
+
+	-- Section Navigation --
+	local TalentFrameSectionHandlers = {
+		left = function()
+			talentFrame:GamepadNavigateHorizontalSection(-1);
+		end,
+
+		right = function()
+			talentFrame:GamepadNavigateHorizontalSection(1);
+		end,
+
+		up = function()
+			talentFrame:GamepadNavigateVerticalSection(1);
+		end,
+
+		down = function()
+			talentFrame:GamepadNavigateVerticalSection(-1);
+		end,
+	};
+
+	-- Tabbing --
+	local primarySpecTab = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_LEFT, function()
+		talentFrame:SetTab(talentFrame.primarySpecTabID)
+		if not talentFrame:IsActiveTabSelected() and talentFrame.ActiveSpec.ActivateButton:IsShown() then
+			SmartNavigation:SelectButton(talentFrame.ActiveSpec.ActivateButton);
+		else
+			SmartNavigation:SelectButton(talentFrame:GamepadGetStartingButtonForTree());
+		end
+	end, nil);
+	primarySpecTab:SetCustomPromptFrame(self.TalentsFrame.GamepadPrimaryTabIcon);
+
+	local secondarySpecTab = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, function()
+		talentFrame:SetTab(talentFrame.secondarySpecTabID)
+		if not talentFrame:IsActiveTabSelected() and talentFrame.ActiveSpec.ActivateButton:IsShown() then
+			SmartNavigation:SelectButton(talentFrame.ActiveSpec.ActivateButton);
+		else
+			SmartNavigation:SelectButton(talentFrame:GamepadGetStartingButtonForTree());
+		end
+	end, nil);
+	secondarySpecTab:SetCustomPromptFrame(talentFrame.GamepadSecondaryTabIcon, talentFrame.GamepadSecondaryTabIcon.SetPressable, talentFrame.GamepadSecondaryTabIcon.SetDisabled);
+	secondarySpecTab:AddCondition(SecondarySpecUnlocked);
+
+	-- Add point --
+	local addPoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, AddPoint, GAMEPAD_TALENT_ADD_POINT);
+	addPoint:AddButtonContext("ButtonContext_ClassTalent");
+	addPoint:AddCondition(CanAddPoint);
+
+	-- Select --
+	local select = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, Select, ACTION_LABEL_SELECT);
+	select:AddCondition(ElementNotTalentButton);
+	select:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	-- Remove point --
+	local removePoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, RemovePoint, GAMEPAD_TALENT_REMOVE_POINT);
+	removePoint:AddButtonContext("ButtonContext_ClassTalent");
+	removePoint:AddCondition(CanRemovePoint);
+
+	local undoChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_TRIGGER_RIGHT, 0.5, nil, UndoChanges);
+	undoChanges:SetCustomPromptFrame(talentFrame.GamepadUndoButton);
+	undoChanges:AddCondition(ShouldShowUndo);
+	undoChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	-- Apply changes --
+	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);
+	applyChanges:AddCondition(CanApplyChanges);
+	applyChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	local applyChangesIcon = GamepadMode.AddGamepadIconToButton(talentFrame.ApplyButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.3), });
+	GamepadMode.SetGamepadIconShown(applyChangesIcon, true);
+
+	-- Navigate Section --
+	self.navigateTalentSection = GamepadMode.CreateBindingGroup("ClassTalentsNavigateSection");
+	self.navigateTalentSection:AddAxisBinding(GAMEPAD_STICK_LEFT, 
+		function(x, y)
+			self:NavigateSection(x, y, TalentFrameSectionHandlers);
+		end
+	);
+
+	-- Toggle Tooltips --
+	local tooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
+
+	-- Navigate Elements --
+	local navigateElements = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD, nil, FRAME_ACTION_NAVIGATE);
+
+	-- Open Settings --
+	local openSettings = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, GenerateFlatClosure(self.OpenTalentSettings, self), nil);
+	openSettings:SetCustomPromptFrame(talentFrame.SettingsTopFaceIcon);
+
+	-- Enter Searchbox --
+	local enterSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, function() talentFrame.SearchBox:SetFocus(); end, nil);
+	enterSearchBox:SetCustomPromptFrame(talentFrame.SearchBoxIcon);
+
+	self.classTalentsFrameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ClassTalentsFrameFooter");
+	self.classTalentsFrameFooter:SetAnchorOffsets(0, -5);
+	self.classTalentsFrameFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	self.classTalentsFrameFooter:AddPromptedBinding(primarySpecTab);
+	self.classTalentsFrameFooter:AddPromptedBinding(secondarySpecTab);
+	self.classTalentsFrameFooter:AddPromptedBinding(addPoint);
+	self.classTalentsFrameFooter:AddPromptedBinding(select);
+	self.classTalentsFrameFooter:AddPromptedBinding(removePoint);
+	self.classTalentsFrameFooter:AddPromptedBinding(undoChanges);
+	self.classTalentsFrameFooter:AddPromptedBinding(applyChanges);
+	self.classTalentsFrameFooter:AddPromptedBinding(tooltips);
+	self.classTalentsFrameFooter:AddPromptedBinding(navigateElements);
+	self.classTalentsFrameFooter:AddPromptedBinding(openSettings);
+	self.classTalentsFrameFooter:AddPromptedBinding(enterSearchBox);
+	self.classTalentsFrameFooter:AddStandardFrameControlManagerBindings(self);
+	self.classTalentsFrameFooter:Finalize();
+end
+
+function PlayerSpellsFrameMixin:SetUpSearchGamepad(frame)
+	local searchBox = frame.SearchBox;
+	local searchPreview = frame.SearchPreviewContainer;
+
+	local function ClearText()
+		if searchBox then
+			frame:ClearActiveSearchState();
+			searchBox:SetFocus();
+		end
+	end
+
+	local function HasText()
+		if searchBox then
+			return searchBox:GetText() ~= "";
+		end
+	end
+
+	local function Back()
+		if searchBox then
+			searchBox:ClearFocus();
+		end
+	end
+
+	local clear = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, ClearText, NARRATION_OBJECT_CLEAR_BUTTON);
+	clear:AddCondition(HasText);
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back, BACK);
+	local unfocusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, Back, nil);
+	unfocusSearch:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
+
+	local footerName = frame:GetParentKey().."SearchBoxFooter";
+	local searchBoxFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, footerName);
+	searchBoxFooter:AddStandardSelectPrompt(SEARCH);
+	searchBoxFooter:AddPromptedBinding(clear);
+	searchBoxFooter:AddPromptedBinding(back);
+	searchBoxFooter:AddPromptedBinding(unfocusSearch);
+	searchBoxFooter:Finalize();
+
+	local function OnSearchBoxFocusGained(_, focusTarget)
+		if focusTarget ~= searchBox then
+			return;
+		end
+
+		searchBoxFooter:ShowAndActivateBindings();
+	end
+
+	local function OnSearchBoxFocusLost(_, focusTarget)
+		if focusTarget ~= searchBox then
+			return;
+		end
+
+		searchBoxFooter:HideAndDeactivateBindings();
+	end
+
+	local function OnSearchPreviewFocusGained(_, focusTarget)
+		if focusTarget ~= searchPreview then
+			return;
+		end
+
+		searchBoxFooter:SetParentFrame(searchPreview);
+		searchBoxFooter:ShowAndActivateBindings();
+	end
+
+	local function OnSearchPreviewFocusLost(_, focusTarget)
+		if focusTarget ~= searchPreview then
+			return;
+		end
+
+		searchBoxFooter:SetParentFrame(searchBox);
+		searchBoxFooter:HideAndDeactivateBindings();
+	end
+
+	searchBox.clearButton.smartNavigationIgnored = true;
+	EventRegistry:RegisterCallback("SpellSearchBox.FocusedGained", OnSearchBoxFocusGained, frame);
+	EventRegistry:RegisterCallback("SpellSearchBox.FocusedLost", OnSearchBoxFocusLost, frame); 
+	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedGained", OnSearchPreviewFocusGained, frame);
+	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedLost", OnSearchPreviewFocusLost, frame);
+end
+
+function PlayerSpellsFrameMixin:SetUpGamepad()
+	-- Set up gamepad bindings for both frames, then conditionally activate based on which is shown
+	self:SetUpSpellBookGamepad();
+	self:SetUpClassTalentsGamepad();
+
+	self:SetUpSearchGamepad(self.SpellBookFrame);
+	self:SetUpSearchGamepad(self.TalentsFrame);
+	
+	local function OnSpellBookHitRightEdge(self)
+		self.SpellBookFrame:GamepadSpellBookNextPage();
+	end
+
+	local function OnSpellBookHitLeftEdge(self)
+		self.SpellBookFrame:GamepadSpellBookPreviousPage(true);
+	end
+
+	function PlayerSpellsFrame.UnfocusGamepad()
+		SmartNavigation:UnregisterCallback("HitRightEdge", self);
+		SmartNavigation:UnregisterCallback("HitLeftEdge", self);
+		self.spellsFrameFooter:HideAndDeactivateBindings();
+		self.classTalentsFrameFooter:HideAndDeactivateBindings();
+		GamepadMode.DeactivateBindingGroup(self.navigateTalentSection);
+		GamepadMode.DeactivateBindingGroup(self.navigateSpellBookSection);
+	end
+
+	function PlayerSpellsFrame.FocusGamepad()
+		if self:IsFrameTabActive(PlayerSpellsUtil.FrameTabs.SpellBook) then
+			SmartNavigation:RegisterCallback("HitRightEdge", OnSpellBookHitRightEdge, self);
+			SmartNavigation:RegisterCallback("HitLeftEdge", OnSpellBookHitLeftEdge, self);
+			self.spellsFrameFooter:ShowAndActivateBindings();
+			GamepadMode.ActivateBindingGroup(self.navigateSpellBookSection);
+		elseif self:IsFrameTabActive(PlayerSpellsUtil.FrameTabs.ClassTalents) then
+			self.classTalentsFrameFooter:ShowAndActivateBindings();
+			GamepadMode.ActivateBindingGroup(self.navigateTalentSection);
+		end
+	end
+end
+
+function PlayerSpellsFrameMixin:InitializeGamepad()
+	-- Hide unnecessary Spellbook elements for gamepad.
+	self.TabSystem:Hide();
+	self.MaximizeMinimizeButton:Hide();
+	self.CloseButton:Hide();
+	self.SpellBookFrame.HelpPlateButton:Hide();
+	self.SpellBookFrame.PagedSpellsFrame.PagingControls.PrevPageButton:Hide();
+	self.SpellBookFrame.PagedSpellsFrame.PagingControls.NextPageButton:Hide();
+	self.SpellBookFrame.SearchBox:ClearAllPoints();
+	self.SpellBookFrame.SearchBox:SetPoint("RIGHT", self.SpellBookFrame.SettingsTopFaceIcon, "LEFT", -15, 0);
+
+	self.TalentsFrame.UndoButton:ClearAllPoints();
+	self.TalentsFrame.UndoButton:SetPoint("LEFT", self.TalentsFrame.GamepadUndoButton, "RIGHT");
+	self.TalentsFrame.SearchOptionsDropdown:ClearAllPoints();
+	self.TalentsFrame.SearchOptionsDropdown:SetPoint("BOTTOMRIGHT", self.TalentsFrame.BackgroundBorder, "TOPRIGHT", -5, 4);
+	self.TalentsFrame.SearchBox:ClearAllPoints();
+	self.TalentsFrame.SearchBox:SetPoint("RIGHT", self.TalentsFrame.SettingsTopFaceIcon, "LEFT", -10, 0);
+end
+
+function PlayerSpellsFrameMixin:UninitializeGamepad()
+	-- Show Spellbook elements hidden for gamepad.
+	self.TabSystem:Show();
+	self.MaximizeMinimizeButton:Show();
+	self.CloseButton:Show();
+	self.SpellBookFrame.HelpPlateButton:Show();
+	self.SpellBookFrame.PagedSpellsFrame.PagingControls.PrevPageButton:Show();
+	self.SpellBookFrame.PagedSpellsFrame.PagingControls.NextPageButton:Show();
+	self.SpellBookFrame.SearchBox:ClearAllPoints();
+	self.SpellBookFrame.SearchBox:SetPoint("RIGHT", self.SpellBookFrame.SettingsDropdown, "LEFT", -5, 4);
+
+	self.TalentsFrame.UndoButton:ClearAllPoints();
+	self.TalentsFrame.UndoButton:SetPoint("CENTER", self.TalentsFrame.ResetButton, "CENTER");
+	self.TalentsFrame.SearchBox:ClearAllPoints();
+	self.TalentsFrame.SearchOptionsDropdown:ClearAllPoints();
+	self.TalentsFrame.SearchBox:SetSearchBoxDefaultPosition();
+end
+
+function PlayerSpellsFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end

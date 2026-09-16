@@ -813,7 +813,9 @@ CooldownViewerSettingsContentMixin = {};
 CooldownViewerSettingsMixin = {};
 
 function CooldownViewerSettingsMixin:GetExtraPanelWidth()
-	return 50;
+	local tabWidth = self.SpellsTab:GetWidth();
+	local padding = 7;
+	return tabWidth + padding;
 end
 
 function CooldownViewerSettingsMixin:OnLoad()

@@ -3,6 +3,27 @@ InterfaceOverrides = {}
 function InterfaceOverrides.AdjustDisplaySettings(category)
 end
 
+
+function InterfaceOverrides.HasAssistedCombat()
+	return true;
+end
+
+function InterfaceOverrides.HasBossWarnings()
+	return true;
+end
+
+function InterfaceOverrides.HasExternalDefensives()
+	return true;
+end
+
+function InterfaceOverrides.HasCooldownViewer()
+	return true;
+end
+
+function InterfaceOverrides.HasSwingTimer()
+	return false;
+end
+
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	-- TODO: As of 12.0.7, Classic Raid Frame options closely match Mainline ones.
 	-- Unfork these at a point where it's convenient, with overrides
@@ -302,4 +323,25 @@ function InterfaceOverrides.CreateQuestSettings(category, layout)
 	local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
 		Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
 	Settings.CreateCheckbox(category, trivialQuestFilterSetting);
+end
+
+--This function is overriden in camelot
+function InterfaceOverrides.AdjustInGameNavigationSettings(category)
+	-- Enabling ingame navigation checkbox
+	Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+end
+
+function InterfaceOverrides.RegisterOutlineSettings(category)
+	if C_CVar.GetCVar("Outline") then
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
+			container:Add(1, OBJECT_NPC_OUTLINE_MODE_ONE);
+			container:Add(2, OBJECT_NPC_OUTLINE_MODE_TWO);
+			container:Add(3, OBJECT_NPC_OUTLINE_MODE_THREE);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
+	end
 end

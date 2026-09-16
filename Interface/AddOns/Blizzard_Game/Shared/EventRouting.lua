@@ -97,6 +97,8 @@ local eventHandlers = {
 	["TRIAL_CAP_REACHED_MONEY"] = function(...) GameEvent.HandleTrialCapReached(...) end,
 	["TRIAL_CAP_REACHED_LEVEL"] = function(...) GameEvent.HandleTrialCapReached(...) end,
 	["BEHAVIORAL_NOTIFICATION"] = function(...) GameEvent.HandleBehavioralNotification(...) end,
+	["SHARD_TRANSFER_IMMINENT"] = function(...) GameEvent.HandleShardTransferImminentEvent(...) end,
+	["SHARD_TRANSFER"] = function(...) GameEvent.HandleShardTransferEvent(...) end,
 };
 
 function GameEvent.RegisterSharedEvents()

@@ -1,0 +1,227 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PrimaryProfessionTemplate" virtual="true">
+		<Size x="437" y="81"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="ProfessionName" text="TRADE_SKILLS">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="100" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="120" y="-13"/>
+					</Anchors>
+					<Color r="0.85" g="0.7" b="0.6"/>
+				</FontString>
+				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="PROFESSIONS_MISSING_PROFESSION">
+					<Size x="305" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.missingHeader" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.1" g="0.05" b="0.05"/>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="Rank" text="TRADE_SKILLS">
+					<Size x="182" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ProfessionName" x="0" y="-43"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="IconBorder" file="Interface\Spellbook\ProfessionsBook">
+					<Size x="72" y="72"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.43359375" right="0.72265625" top="0.14843750" bottom="0.72656250"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIcon" parentKey="icon" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SpellButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<StatusBar inherits="ProfessionStatusBarTemplate" parentKey="StatusBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Rank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
+				</Anchors>
+			</StatusBar>
+			<Button parentKey="UnlearnButton" inherits="ResizeLayoutFrame" mixin="ProfessionsUnlearnButtonMixin" scale=".7">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.StatusBar" relativePoint="LEFT" x="-30" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75">
+							<Size x="26" y="26"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.icon:SetAlpha(0.6)
+				self.icon:SetDesaturated(true);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SecondaryProfessionTemplate" virtual="true">
+		<Size x="437" y="46"/>
+		<Frames>
+			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentSpellButtonLeft" inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SpellButton1" relativePoint="TOPLEFT" x="-109"/>
+				</Anchors>
+			</CheckButton>
+
+			<StatusBar inherits="ProfessionStatusBarTemplate" parentKey="StatusBar">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="-1"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="Rank" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.StatusBar" relativePoint="TOPLEFT" x="-14" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StatusBar" relativePoint="TOPRIGHT" x="25" y="4"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentProfessionName" inherits="QuestFont_Shadow_Small" justifyH="LEFT" parentKey="ProfessionName" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Rank" relativePoint="TOPLEFT" x="0" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rank" relativePoint="TOPRIGHT" x="0" y="2"/>
+					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="1" g=".82" b="0"/>
+				</FontString>
+				<FontString name="$parentMissing" inherits="QuestFont_Large" justifyH="LEFT" parentKey="missingHeader" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="4" y="-15"/>
+					</Anchors>
+					<Color r="0.15" g="0.1" b="0.1"/>
+				</FontString>
+				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="">
+					<Size x="250" y="0" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-5" y="0"/>
+					</Anchors>
+					<Color r="0.1" g="0.05" b="0.05"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsBookFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="ProfessionsContentFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PrimaryProfession1" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="80" y="-67"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PrimaryProfession2" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_SECOND_PROFESSION);
+								self.icon:SetAlpha(0.6)
+								self.icon:SetDesaturated(true);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession1" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PrimaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_COOKING);
+								self.missingText:SetText(PROFESSIONS_COOKING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession2" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SecondaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_FISHING);
+								self.missingText:SetText(PROFESSIONS_FISHING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="SecondaryProfession3" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SecondaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_ARCHAEOLOGY);
+								self.missingText:SetText(PROFESSIONS_ARCHAEOLOGY_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	</Ui>

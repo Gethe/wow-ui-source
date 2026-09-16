@@ -2,6 +2,6 @@
 ## LoadOnDemand: 0
 ## RequiredDep: Blizzard_UIPanels_Game
 ## AllowLoad: Game
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 Blizzard_GuildRename.lua
 Blizzard_GuildRename.xml

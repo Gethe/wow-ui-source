@@ -124,6 +124,30 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GetPreferredPlaySettings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "loaded", Type = "bool", Nilable = false },
+				{ Name = "preferredLocaleID", Type = "number", Nilable = false },
+				{ Name = "preferredDatacenterLocalityID", Type = "number", Nilable = false },
+				{ Name = "lastPreferredLocaleChangeDate", Type = "time_t", Nilable = false },
+				{ Name = "lastPreferredDatacenterLocalityChangeDate", Type = "time_t", Nilable = false },
+				{ Name = "changeCooldownDays", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPreferredPlaySettingsFeatures",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canChangeLocale", Type = "bool", Nilable = false },
+				{ Name = "canChangeDatacenterLocality", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GuildControlGetRankFlags",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -290,6 +314,15 @@ local GuildInfo =
 			HasRestrictions = true,
 		},
 		{
+			Name = "RequestPreferredPlaySettings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "startedSuccessfully", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestRenameNameCheck",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -363,6 +396,22 @@ local GuildInfo =
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "note", Type = "cstring", Nilable = false },
 				{ Name = "isPublic", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPreferredPlaySettings",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preferredLocaleID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "preferredDatacenterLocalityID", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "startedSuccessfully", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -468,6 +517,20 @@ local GuildInfo =
 			Payload =
 			{
 				{ Name = "inGuildParty", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GuildPreferredPlaySettingsUpdated",
+			Type = "Event",
+			LiteralName = "GUILD_PREFERRED_PLAY_SETTINGS_UPDATED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "status", Type = "PreferredPlaySettingsStatus", Nilable = false },
+				{ Name = "preferredLocaleID", Type = "number", Nilable = false },
+				{ Name = "preferredDatacenterLocalityID", Type = "number", Nilable = false },
+				{ Name = "lastPreferredLocaleChangeDate", Type = "time_t", Nilable = false },
+				{ Name = "lastPreferredDatacenterLocalityChangeDate", Type = "time_t", Nilable = false },
 			},
 		},
 		{

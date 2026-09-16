@@ -291,6 +291,12 @@ function SettingsListElementMixin:DisplayEnabled(enabled)
 	local color = enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR;
 	self.Text:SetTextColor(color:GetRGB());
 	self:DesaturateHierarchy(enabled and 0 or 1);
+
+	if enabled then
+		SmartNavigation_ClearIgnoreStatus(self);
+	else
+		SmartNavigation_MarkFrameIgnored(self);
+	end
 end
 
 function SettingsListElementMixin:GetIndent()
@@ -345,9 +351,12 @@ function SettingsListElementMixin:Init(initializer)
 	if newTagShown then
 		initializer:MarkSettingAsSeen();
 	end
+
+	SmartNavigation_MarkFrameIgnored(self.Tooltip);
 end
 
 function SettingsListElementMixin:Release()
+	SmartNavigation_ResetData(self, true);
 	self.cbrHandles:Unregister();
 	self.data = nil;
 end
@@ -436,6 +445,11 @@ function SettingsListElementMixin:GetNarrationIndexString()
 	end
 
 	return NarrationUtil.MakeNarrationStringFromIndexInfo(NarrationUtil.MakeIndexInfo(settingsIndex, settingsTotal));
+end
+
+function SettingsListElementMixin:SetSmartNavCursorAnchor(control)
+	local cursorAnchor = CreateAnchor("RIGHT", self, "LEFT", 30);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(control, cursorAnchor);
 end
 
 SettingsCheckboxNarrationContextMixin = {};
@@ -597,6 +611,9 @@ function SettingsCheckboxControlMixin:Init(initializer)
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self.Checkbox);
+
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT);
 end
 
 function SettingsCheckboxControlMixin:OnSettingValueChanged(setting, value)
@@ -649,6 +666,24 @@ end
 
 SettingsSliderControlMixin = CreateFromMixins(SettingsControlMixin);
 
+do
+	local function DecreaseSlider()
+		local control = SmartNavigation:GetCurrentButton();
+		control.SliderWithSteppers:OnStepperClicked(false);
+	end
+
+	local function IncreaseSlider()
+		local control = SmartNavigation:GetCurrentButton();
+		control.SliderWithSteppers:OnStepperClicked(true);
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "SettingsSliderControl");
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, DecreaseSlider);
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, IncreaseSlider);
+	bindings:Finalize();
+	SettingsSliderControlMixin.bindingGroup = bindings;
+end
+
 function SettingsSliderControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 
@@ -673,6 +708,14 @@ function SettingsSliderControlMixin:OnLoad()
 	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
 end
 
+function SettingsSliderControlMixin:OnSmartNavSelect()
+	self.bindingGroup:ShowAndActivateBindings();
+end
+
+function SettingsSliderControlMixin:OnSmartNavDeselect()
+	self.bindingGroup:HideAndDeactivateBindings();
+end
+
 function SettingsSliderControlMixin:Init(initializer)
 	SettingsControlMixin.Init(self, initializer);
 
@@ -685,6 +728,10 @@ function SettingsSliderControlMixin:Init(initializer)
 	self.cbrHandles:RegisterCallback(self.SliderWithSteppers, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self);
+
+	SmartNavigation_MarkFrameIgnored(self.SliderWithSteppers);
+	SmartNavigation_MarkFrameFocusable(self);
 end
 
 function SettingsSliderControlMixin:Release()
@@ -721,6 +768,32 @@ function SettingsSliderControlMixin:NarrationGetContext()
 end
 
 SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);
+
+do
+	local function Increment()
+		local settingsDropdownControl = SmartNavigation:GetCurrentButton();
+		settingsDropdownControl.Control.IncrementButton:Click();
+	end
+
+	local function Decrement()
+		local settingsDropdownControl = SmartNavigation:GetCurrentButton();
+		settingsDropdownControl.Control.DecrementButton:Click();
+	end
+
+	local function OpenDropdown()
+		local settingsDropdownControl = SmartNavigation:GetCurrentButton();
+		settingsDropdownControl.Control.Dropdown:MouseDown();
+		settingsDropdownControl.Control.Dropdown:MouseUp();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "SettingsDropdownControl");
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increment);
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrement);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_TOP, OpenDropdown);  -- TOP is added as extra for consistency with Checkbox+Dropdown options
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, OpenDropdown);
+	bindings:Finalize();
+	SettingsDropdownControlMixin.settingsDropdownControlFooter = bindings;
+end
 
 function SettingsDropdownControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
@@ -766,6 +839,10 @@ end
 function SettingsDropdownControlMixin:Init(initializer)
 	SettingsControlMixin.Init(self, initializer);
 
+	SmartNavigation_MarkFrameIgnored(self.Control);
+	SmartNavigation_MarkFrameFocusable(self);
+	self:SetSmartNavCursorAnchor(self);
+
 	self:InitDropdown();
 	self:EvaluateState();
 end
@@ -777,7 +854,8 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options, initializer);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip, initializer);
 
-	if self.forceSteppersHidden then
+	local forceSteppersHidden = self.forceSteppersHidden or (initializer.data and initializer.data.forceSteppersHidden);
+	if forceSteppersHidden then
 		self.Control:HideSteppers();
 	else
 		local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
@@ -825,6 +903,14 @@ function SettingsDropdownControlMixin:EvaluateState()
 	return enabled;
 end
 
+function SettingsDropdownControlMixin:OnSmartNavSelect()
+	self.settingsDropdownControlFooter:ShowAndActivateBindings();
+end
+
+function SettingsDropdownControlMixin:OnSmartNavDeselect()
+	self.settingsDropdownControlFooter:HideAndDeactivateBindings();
+end
+
 SettingsButtonControlMixin = CreateFromMixins(SettingsListElementMixin, SettingsNewTagMixin);
 
 function SettingsButtonControlMixin:OnLoad()
@@ -863,8 +949,18 @@ function SettingsButtonControlMixin:Init(initializer)
 	self.Button:SetScript("OnClick", self.data.buttonClick);
 	self.Button:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 
+	local alignment = "LEFT";
+	if self.data.buttonAlignment and self.data.buttonAlignment ~= "" then
+		alignment = self.data.buttonAlignment;
+	end
 	local name = initializer:GetName();
-	if name == "" then
+	if alignment == "CENTER" then
+		self.Button:SetPoint("CENTER", self, "CENTER", 0, 0);
+		self.Tooltip:Hide();
+	elseif alignment == "RIGHT" then
+		self.Button:SetPoint("RIGHT", self, "RIGHT", -10, 0);
+		self.Tooltip:Hide();
+	elseif name == "" then
 		self.Button:SetPoint("LEFT", self.Text, "LEFT", 0, 0);
 		self.Tooltip:Hide();
 	else
@@ -881,6 +977,9 @@ function SettingsButtonControlMixin:Init(initializer)
 	end
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self.Button);
+
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.RIGHT);
 end
 
 function SettingsButtonControlMixin:Release()
@@ -1018,6 +1117,10 @@ function SettingsColorSwatchControlMixin:Init(initializer)
 	end);
 
 	self:EvaluateState();
+
+	self:SetSmartNavCursorAnchor(self.ColorSwatch);
+
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.ColorSwatch, SMART_NAV_INPUT_DIRECTION.RIGHT);
 end
 
 function SettingsColorSwatchControlMixin:OnSwatchValueChanged(value)
@@ -1086,6 +1189,20 @@ function SettingsCheckboxWithButtonControlMixin:Init(initializer)
 	self.Button:SetScript("OnClick", self.data.OnButtonClick);
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self.Checkbox);
+
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.RIGHT);
+
+	SmartNavigation_AddJumpNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.UP, function()
+		local nextUp = SmartNavigation:GetButtonInfoInDirection(self.Checkbox, SMART_NAV_INPUT_DIRECTION.UP);
+		return nextUp and nextUp.button;
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+		local nextDown = SmartNavigation:GetButtonInfoInDirection(self.Checkbox, SMART_NAV_INPUT_DIRECTION.DOWN);
+		return nextDown and nextDown.button;
+	end);
 end
 
 function SettingsCheckboxWithButtonControlMixin:OnCheckboxValueChanged(value)
@@ -1106,6 +1223,14 @@ end
 
 function SettingsCheckboxWithButtonControlMixin:SetButtonState(enabled)
 	self.Button:SetEnabled(enabled);
+
+	if enabled then
+		SmartNavigation_ClearIgnoreStatus(self.Button);
+		SmartNavigation_AddJumpNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button);
+	else
+		SmartNavigation_MarkFrameIgnored(self.Button);
+		SmartNavigation_AddIgnoreInputNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT);
+	end
 end
 
 function SettingsCheckboxWithButtonControlMixin:OnSettingValueChanged(setting, value)
@@ -1165,6 +1290,34 @@ end
 
 SettingsCheckboxSliderControlMixin = CreateFromMixins(SettingsListElementMixin);
 
+do
+	local function DecreaseSlider()
+		local control = SmartNavigation:GetCurrentButton();
+		if control.Checkbox:GetChecked() then
+			control.SliderWithSteppers:OnStepperClicked(false);
+		end
+	end
+
+	local function IncreaseSlider()
+		local control = SmartNavigation:GetCurrentButton();
+		if control.Checkbox:GetChecked() then
+			control.SliderWithSteppers:OnStepperClicked(true);
+		end
+	end
+
+	local function ToggleCheckbox()
+		local control = SmartNavigation:GetCurrentButton();
+		control.Checkbox:Click();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "SettingsCheckboxSliderControl");
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, DecreaseSlider);
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, IncreaseSlider);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, ToggleCheckbox);
+	bindings:Finalize();
+	SettingsCheckboxSliderControlMixin.bindingGroup = bindings;
+end
+
 function SettingsCheckboxSliderControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
 
@@ -1205,6 +1358,14 @@ function SettingsCheckboxSliderControlMixin:OnLoad()
 	end);
 end
 
+function SettingsCheckboxSliderControlMixin:OnSmartNavSelect()
+	self.bindingGroup:ShowAndActivateBindings();
+end
+
+function SettingsCheckboxSliderControlMixin:OnSmartNavDeselect()
+	self.bindingGroup:HideAndDeactivateBindings();
+end
+
 function SettingsCheckboxSliderControlMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 
@@ -1240,6 +1401,11 @@ function SettingsCheckboxSliderControlMixin:Init(initializer)
 	self.cbrHandles:SetOnValueChangedCallback(sliderSetting:GetVariable(), OnSliderSettingValueChanged);
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self);
+
+	SmartNavigation_MarkFrameIgnored(self.Checkbox);
+	SmartNavigation_MarkFrameIgnored(self.SliderWithSteppers);
+	SmartNavigation_MarkFrameFocusable(self);
 end
 
 function SettingsCheckboxSliderControlMixin:GetSettings()
@@ -1323,6 +1489,43 @@ end
 
 SettingsCheckboxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin, SettingsCheckboxNarrationContextMixin);
 
+do
+	local function Increment()
+		local control = SmartNavigation:GetCurrentButton();
+		if control.Checkbox:GetChecked() then
+			control.Control.IncrementButton:Click();
+		end
+	end
+
+	local function Decrement()
+		local control = SmartNavigation:GetCurrentButton();
+		if control.Checkbox:GetChecked() then
+			control.Control.DecrementButton:Click();
+		end
+	end
+
+	local function OpenDropdown()
+		local control = SmartNavigation:GetCurrentButton();
+		if control.Checkbox:GetChecked() then
+			control.Control.Dropdown:MouseDown();
+			control.Control.Dropdown:MouseUp();
+		end
+	end
+
+	local function ToggleCheckbox()
+		local control = SmartNavigation:GetCurrentButton();
+		control.Checkbox:Click();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "SettingsCheckboxDropdownControl");
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increment);
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrement);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_TOP, OpenDropdown);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, ToggleCheckbox);
+	bindings:Finalize();
+	SettingsCheckboxDropdownControlMixin.bindingGroup = bindings;
+end
+
 function SettingsCheckboxDropdownControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
 
@@ -1354,6 +1557,14 @@ function SettingsCheckboxDropdownControlMixin:OnLoad()
 			self.Checkbox:Click();
 		end
 	end);
+end
+
+function SettingsCheckboxDropdownControlMixin:OnSmartNavSelect()
+	self.bindingGroup:ShowAndActivateBindings();
+end
+
+function SettingsCheckboxDropdownControlMixin:OnSmartNavDeselect()
+	self.bindingGroup:HideAndDeactivateBindings();
 end
 
 function SettingsCheckboxDropdownControlMixin:Init(initializer)
@@ -1398,6 +1609,11 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self);
+
+	SmartNavigation_MarkFrameIgnored(self.Checkbox);
+	SmartNavigation_MarkFrameIgnored(self.Control);
+	SmartNavigation_MarkFrameFocusable(self);
 end
 
 function SettingsCheckboxDropdownControlMixin:GetSettings()
@@ -1463,6 +1679,24 @@ end
 
 SettingsCheckboxWithColorSwatchControlMixin = CreateFromMixins(SettingsControlMixin, SettingsCheckboxNarrationContextMixin);
 
+do
+	local function OpenSelector()
+		local control = SmartNavigation:GetCurrentButton();
+		control.ColorSwatch:Click();
+	end
+
+	local function ToggleCheckbox()
+		local control = SmartNavigation:GetCurrentButton();
+		control.Checkbox:Click();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "SettingsCheckboxWithColorSwatchControl");
+	bindings:AddFunctionBinding(GAMEPAD_FACE_TOP, OpenSelector);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, ToggleCheckbox);
+	bindings:Finalize();
+	SettingsCheckboxWithColorSwatchControlMixin.bindingGroup = bindings;
+end
+
 function SettingsCheckboxWithColorSwatchControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 
@@ -1479,6 +1713,14 @@ function SettingsCheckboxWithColorSwatchControlMixin:OnLoad()
 			self.Checkbox:Click();
 		end
 	end);
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:OnSmartNavSelect()
+	self.bindingGroup:ShowAndActivateBindings();
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:OnSmartNavDeselect()
+	self.bindingGroup:HideAndDeactivateBindings();
 end
 
 function SettingsCheckboxWithColorSwatchControlMixin:Init(initializer)
@@ -1509,6 +1751,22 @@ function SettingsCheckboxWithColorSwatchControlMixin:Init(initializer)
 	end
 
 	self:EvaluateState();
+	self:SetSmartNavCursorAnchor(self);
+
+	SmartNavigation_MarkFrameIgnored(self.Checkbox);
+	SmartNavigation_MarkFrameFocusable(self);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self, SMART_NAV_INPUT_DIRECTION.RIGHT, self.ColorSwatch);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.ColorSwatch, SMART_NAV_INPUT_DIRECTION.RIGHT);
+
+	SmartNavigation_AddJumpNavigationOverride(self.ColorSwatch, SMART_NAV_INPUT_DIRECTION.UP, function()
+		local nextUp = SmartNavigation:GetButtonInfoInDirection(self, SMART_NAV_INPUT_DIRECTION.UP);
+		return nextUp and nextUp.button;
+	end);
+
+	SmartNavigation_AddJumpNavigationOverride(self.ColorSwatch, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+		local nextDown = SmartNavigation:GetButtonInfoInDirection(self, SMART_NAV_INPUT_DIRECTION.DOWN);
+		return nextDown and nextDown.button;
+	end);
 end
 
 function SettingsCheckboxWithColorSwatchControlMixin:OnCheckboxValueChanged(value)
@@ -1595,6 +1853,10 @@ end
 function SettingsExpandableSectionMixin:Init(initializer)
 	local name = initializer:GetName();
 	self.Button.Text:SetText(name);
+
+	local cursorAnchor = CreateAnchor("RIGHT", self.Button, "LEFT");
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self.Button, cursorAnchor);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.RIGHT);
 end
 
 SettingsExpandableSectionInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);

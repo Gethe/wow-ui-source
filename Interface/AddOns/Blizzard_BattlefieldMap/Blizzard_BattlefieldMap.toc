@@ -5,7 +5,7 @@
 ## Dep: Blizzard_SharedMapDataProviders [AllowLoadGameType mainline]
 ## Dep: Blizzard_ObjectiveTracker [AllowLoadGameType mainline]
 ## Dep: Blizzard_ColorPickerFrame [AllowLoadGameType mainline]
-## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+## OptionalDep: Blizzard_Plunderstorm
 Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_BattlefieldMap.lua

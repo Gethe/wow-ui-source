@@ -1,6 +1,8 @@
 ## Title: Blizzard_TokenUI
 Blizzard_CurrencyTransfer.lua
 Blizzard_CurrencyTransfer.xml
-Blizzard_TokenUI.lua
-Blizzard_TokenUI.xml
+Mainline/Blizzard_TokenUI.lua [ExcludeLoadGameType camelot]
+Mainline/Blizzard_TokenUI.xml [ExcludeLoadGameType camelot]
+Camelot/Blizzard_TokenUI.lua [AllowLoadGameType camelot]
+Camelot/Blizzard_TokenUI.xml [AllowLoadGameType camelot]
 Localization.lua

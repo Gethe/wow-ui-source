@@ -5,11 +5,6 @@ QuickJoinToastMixin = {}
 function QuickJoinToastMixin:OnLoad()
 	QUICK_JOIN_CONFIG = C_SocialQueue.GetConfig();
 
-	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
-	self:RegisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
-	self:RegisterEvent("GROUP_JOINED");
-	self:RegisterEvent("GROUP_LEFT");
-	self:RegisterForClicks("AnyUp");
 	self.groups = {};
 	self.groupsAwaitingDisplay = {};
 	self.queuedUpdates = {}; --Updates queued until we get config
@@ -33,20 +28,27 @@ function QuickJoinToastMixin:OnLoad()
 		group:MarkAllAsDisplayed();
 		self.groups[groups[i]] = group;
 	end
-	
-	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-	if inGameFriendsListDisabled then
-		self:Hide();
-	end
+
+	self:RegisterForInterfaceTransitions();
 end
 
 function QuickJoinToastMixin:OnShow()
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterForClicks("AnyUp");
 	EventRegistry:TriggerEvent("QuickJoinToastButtonShown");
 end
 
 function QuickJoinToastMixin:OnHide()
 	self:UnregisterEvent("PVP_BRAWL_INFO_UPDATED");
+	self:UnregisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:UnregisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
+	self:UnregisterEvent("GROUP_JOINED");
+	self:UnregisterEvent("GROUP_LEFT");
+	self:RegisterForClicks();
 	self:ClearCachedQueueData();
 end
 
@@ -80,6 +82,21 @@ function QuickJoinToastMixin:OnEvent(event, ...)
 			end
 		end
 	end
+end
+
+function QuickJoinToastMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterMKBInit(self, GenerateClosure(self.InitMKB, self));
+	InputUtil.RegisterMKBUninit(self, GenerateClosure(self.UninitMKB, self));
+end
+
+function QuickJoinToastMixin:InitMKB()
+	local enabled = not C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	self:SetShown(enabled);
+end
+
+function QuickJoinToastMixin:UninitMKB()
+	self:Hide();
 end
 
 function QuickJoinToastMixin:ProcessOrQueueUpdate(guid)
@@ -645,7 +662,7 @@ function QuickJoinToastGroupMixin:Update()
 	local canJoin = C_SocialQueue.GetGroupInfo(self.guid);
 	local queues = C_SocialQueue.GetGroupQueues(self.guid);
 	local players = C_SocialQueue.GetGroupMembers(self.guid);
-	
+
 	self.suppressToast = true;
 	if players then
 		for i, player in ipairs(players) do

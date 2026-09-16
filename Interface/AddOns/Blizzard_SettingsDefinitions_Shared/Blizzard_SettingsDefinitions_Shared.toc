@@ -8,6 +8,7 @@ Graphics.xml
 Audio.xml
 Languages.xml
 Network.lua
+Gamepad.lua
 Mac.lua
 AccessibilitySettingsPreview.lua
 [Family]\QuestTextPreview.lua [AllowLoadGameType mainline]

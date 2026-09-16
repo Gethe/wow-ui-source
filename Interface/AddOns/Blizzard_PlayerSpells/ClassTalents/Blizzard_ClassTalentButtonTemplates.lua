@@ -191,12 +191,9 @@ function ClassTalentButtonSpendMixin:UpdateEntryInfo(skipUpdate)
 	-- Overrides TalentButtonSpendMixin.
 
 	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
-	
-	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
-	else
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
-	end
+
+	local entryType = self.entryInfo and self.entryInfo.type;
+	self.selectSound = ClassTalentUtil.GetSpendSoundKitID(entryType);
 end
 
 function ClassTalentButtonSpendMixin:FullUpdate()
@@ -251,12 +248,9 @@ function ClassTalentButtonSelectMixin:UpdateEntryInfo(skipUpdate)
 	-- Overrides TalentButtonSelectMixin.
 
 	TalentButtonSelectMixin.UpdateEntryInfo(self, skipUpdate);
-	
-	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
-	else
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
-	end
+
+	local entryType = self.entryInfo and self.entryInfo.type;
+	self.selectSound = ClassTalentUtil.GetSpendSoundKitID(entryType);
 end
 
 function ClassTalentButtonSelectMixin:FullUpdate()
@@ -440,8 +434,8 @@ end
 function ClassTalentButtonCapstoneWithTrackMixin:UpdateEntryInfo(skipUpdate)
 	-- Overrides TalentButtonSpendMixin.
 	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
-	local useMajorSpendSound = self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneSquare;
-	self.selectSound = useMajorSpendSound and SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR or SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	local entryType = self.entryInfo and self.entryInfo.type;
+	self.selectSound = ClassTalentUtil.GetSpendSoundKitID(entryType);
 end
 
 function ClassTalentButtonCapstoneWithTrackMixin:CanPlaySelectableGlow()

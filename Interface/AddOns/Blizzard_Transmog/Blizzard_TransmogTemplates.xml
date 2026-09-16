@@ -193,17 +193,24 @@
 		<Frames>
 			<DropdownButton parentKey="FlyoutDropdown" mixin="TransmogSlotFlyoutDropdownMixin" hidden="true">
 				<KeyValues>
-					<KeyValue key="menuPoint" type="string" value="BOTTOM"/>
-					<KeyValue key="menuPointX" type="number" value="0"/>
-					<KeyValue key="menuPointY" type="number" value="-5"/>
-					<KeyValue key="menuRelativePoint" type="string" value="TOP"/>
+					<KeyValue key="shortSideLength" type="number" value="19"/>
+					<KeyValue key="longSideLength" type="number" value="43"/>
 				</KeyValues>
-				<Size x="43" y="19"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" y="-4"/>
-				</Anchors>
-				<NormalTexture parentKey="NormalTexture" atlas="transmog-button-pullup" useAtlasSize="true"/>
-				<PushedTexture parentKey="PushedTexture" atlas="transmog-button-pullup-pressed" useAtlasSize="true"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="transmog-button-pullup" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<NormalTexture parentKey="NormalTexture" atlas="transmog-button-pullup" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="transmog-button-pullup-pressed" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnMouseDown method="OnMouseDown"/>
@@ -1053,6 +1060,17 @@
 						<Texture parentKey="Icon" atlas="transmog-icon-hidden" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-3" y="-2" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WarnVisual" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-icon-warning" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="-2" relativePoint="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>

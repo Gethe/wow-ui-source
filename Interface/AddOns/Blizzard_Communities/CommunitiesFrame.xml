@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="CommunitiesFrame.lua"/>
 
 	<Frame name="GuildBenefitsFrameTemplate" virtual="true">
 		<Frames>
@@ -426,6 +425,16 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.GuildBenefitsTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 			</CheckButton>
+			<CheckButton parentKey="GuildPreferredPlaySettingsTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="PREFERRED_PLAY_SETTINGS" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/inv_misc_map02" type="string"/>
+					<KeyValue key="displayMode" value="COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_PREFERRED_PLAY_SETTINGS" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GuildInfoTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+			</CheckButton>
 			<DropdownButton parentKey="StreamDropdown" inherits="StreamDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="188" y="-32"/>
@@ -531,6 +540,12 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GuildDetailsFrame" name="$parentGuildDetailsFrame" inherits="GuildDetailsFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GuildPreferredPlaySettingsFrame" name="$parentGuildPreferredPlaySettingsFrame" inherits="CommunitiesGuildPreferredPlaySettingsFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>

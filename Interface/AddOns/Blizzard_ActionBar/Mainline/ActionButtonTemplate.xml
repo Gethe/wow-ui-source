@@ -161,7 +161,7 @@
 				<Anchor point="TOPLEFT"/>
 			</Anchors>
 		</HighlightTexture>
-		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture">
+		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" parentKey="CheckedTexture">
 			<Size x="46" y="45"/>
 			<Anchors>
 				<Anchor point="TOPLEFT"/>

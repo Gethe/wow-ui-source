@@ -288,6 +288,16 @@ local MinimapFrameAPI =
 			},
 		},
 		{
+			Name = "SetUsingSoftCursor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "usingSoftCursor", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetZoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -303,6 +313,17 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
+			},
+		},
+		{
+			Name = "UpdateMouseoverAtPoint",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "pointX", Type = "number", Nilable = false },
+				{ Name = "pointY", Type = "number", Nilable = false },
 			},
 		},
 	},

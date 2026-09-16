@@ -61,6 +61,8 @@ function MerchantFrame_OnLoad(self)
 		rootDescription:CreateRadio(ITEM_BIND_ON_EQUIP, IsSelected, SetSelected, LE_LOOT_FILTER_BOE);
 		rootDescription:CreateRadio(ALL, IsSelected, SetSelected, LE_LOOT_FILTER_ALL);
 	end);
+
+	MerchantFrame_RegisterTransitions(self);
 end
 
 function MerchantFrame_MerchantShow()
@@ -166,6 +168,11 @@ function MerchantFrame_OnHide(self)
 
 	ResetCursor();
 
+	if InputUtil.IsGamepadUIEnabled() then
+		-- Reset the smart nav cursor if it was updated during single repair.
+		SmartNavigation:ClearOverrideIconAtlas();
+	end
+
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
 	StaticPopup_Hide("CONFIRM_PURCHASE_ITEM_DELAYED");
 	StaticPopup_Hide("CONFIRM_REFUND_TOKEN_ITEM");
@@ -176,22 +183,13 @@ end
 
 function MerchantFrame_OnMouseWheel(self, value)
 	if ( value > 0 ) then
-		if ( MerchantPrevPageButton:IsShown() and MerchantPrevPageButton:IsEnabled() ) then
-			MerchantPrevPageButton_OnClick();
-		end
+		MerchantPrevPageButton_OnClick();
 	else
-		if ( MerchantNextPageButton:IsShown() and MerchantNextPageButton:IsEnabled() ) then
-			MerchantNextPageButton_OnClick();
-		end
+		MerchantNextPageButton_OnClick();
 	end
 end
 
 function MerchantFrame_Update()
-	if ( MerchantFrame.lastTab ~= MerchantFrame.selectedTab ) then
-		MerchantFrame_CloseStackSplitFrame();
-		MerchantFrame.lastTab = MerchantFrame.selectedTab;
-	end
-
 	local filterDropdownDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MerchantFilterDisabled);
 	MerchantFrame.FilterDropdown:SetShown(not filterDropdownDisabled);
 	if ( not filterDropdownDisabled ) then
@@ -204,9 +202,18 @@ function MerchantFrame_Update()
 		MerchantFrame_UpdateBuybackInfo();
 	end
 
+	if ( MerchantFrame.lastTab ~= MerchantFrame.selectedTab ) then
+		MerchantFrame_CloseStackSplitFrame();
+		MerchantFrame.lastTab = MerchantFrame.selectedTab;
+	end
+
 	local hasJunkItems = C_MerchantFrame.GetNumJunkItems() > 0;
 	MerchantSellAllJunkButton.Icon:SetDesaturated(not hasJunkItems);
 	MerchantSellAllJunkButton:SetEnabled(hasJunkItems);
+
+	if MerchantFrame.footer then
+		MerchantFrame.footer:Refresh();
+	end
 end
 
 function MerchantFrameItem_UpdateQuality(self, link, isBound)
@@ -446,7 +453,26 @@ function MerchantFrame_UpdateMerchantInfo()
 	else
 		MerchantPageText:Hide();
 		MerchantPrevPageButton:Hide();
+		MerchantPrevPageButton:Disable();
 		MerchantNextPageButton:Hide();
+		MerchantNextPageButton:Disable();
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		-- Update paging for gamepad.
+		MerchantPageTurnIndicatorLeft:Show();
+		MerchantPageTurnIndicatorLeft:SetEnabled(MerchantPrevPageButton:IsEnabled());
+
+		MerchantPageTurnIndicatorRight:Show();
+		MerchantPageTurnIndicatorRight:SetEnabled(MerchantNextPageButton:IsEnabled());
+
+		MerchantPrevPageButton:Hide();
+		MerchantNextPageButton:Hide();
+
+		-- Update selected button when returning from buyback.
+		if MerchantFrame.lastTab == 2 then
+			SmartNavigation:SelectTopLeftButton();
+		end
 	end
 
 	-- Show all merchant related items
@@ -568,9 +594,20 @@ function MerchantFrame_UpdateBuybackInfo()
 	MerchantPageText:Hide();
 	MerchantGuildBankRepairButton:Hide();
 	MerchantSellAllJunkButton:Hide();
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		SmartNavigation:SelectTopLeftButton();
+		MerchantPageTurnIndicatorLeft:Hide();
+		MerchantPageTurnIndicatorRight:Hide();
+	end
 end
 
 function MerchantPrevPageButton_OnClick()
+	local prevButtonShown = MerchantPrevPageButton:IsShown() or MerchantPageTurnIndicatorLeft:IsShown();
+	if ( not prevButtonShown or not MerchantPrevPageButton:IsEnabled() ) then
+		return;
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MerchantFrame.page = MerchantFrame.page - 1;
 	MerchantFrame_CloseStackSplitFrame();
@@ -578,6 +615,11 @@ function MerchantPrevPageButton_OnClick()
 end
 
 function MerchantNextPageButton_OnClick()
+	local nextButtonShown = MerchantNextPageButton:IsShown() or MerchantPageTurnIndicatorRight:IsShown();
+	if ( not nextButtonShown or not MerchantNextPageButton:IsEnabled() ) then
+		return;
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MerchantFrame.page = MerchantFrame.page + 1;
 	MerchantFrame_CloseStackSplitFrame();
@@ -668,6 +710,34 @@ function MerchantItemButton_OnClick(self, button)
 	end
 end
 
+function MerchantItemButton_BuyMultipleStacks(self)
+	local maxStack = GetMerchantItemMaxStack(self:GetID());
+		local info = C_MerchantFrame.GetItemInfo(self:GetID());
+
+		local canAfford;
+		if (info.price and info.price > 0) then
+			canAfford = floor(GetMoney() / (info.price / info.stackCount));
+		else
+			canAfford = maxStack;
+		end
+
+		if (info.hasExtendedCost) then
+			local itemCount = GetMerchantItemCostInfo(self:GetID());
+			for i = 1, MAX_ITEM_COST do
+				local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
+				if (itemLink and not currencyName) then
+					local myCount = C_Item.GetItemCount(itemLink, false, false, true);
+					canAfford = min(canAfford, floor(myCount / (itemValue / info.stackCount)));
+				end
+			end
+		end
+
+		if ( maxStack > 1 ) then
+			local maxPurchasable = min(maxStack, canAfford);
+			StackSplitFrame:OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", info.stackCount);
+		end
+end
+
 function MerchantItemButton_OnModifiedClick(self, button)
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
@@ -675,31 +745,7 @@ function MerchantItemButton_OnModifiedClick(self, button)
 			return;
 		end
 		if ( IsModifiedClick("SPLITSTACK")) then
-			local maxStack = GetMerchantItemMaxStack(self:GetID());
-			local info = C_MerchantFrame.GetItemInfo(self:GetID());
-
-			local canAfford;
-			if (info.price and info.price > 0) then
-				canAfford = floor(GetMoney() / (info.price / info.stackCount));
-			else
-				canAfford = maxStack;
-			end
-
-			if (info.hasExtendedCost) then
-				local itemCount = GetMerchantItemCostInfo(self:GetID());
-				for i = 1, MAX_ITEM_COST do
-					local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
-					if (itemLink and not currencyName) then
-						local myCount = C_Item.GetItemCount(itemLink, false, false, true);
-						canAfford = min(canAfford, floor(myCount / (itemValue / info.stackCount)));
-					end
-				end
-			end
-
-			if ( maxStack > 1 ) then
-				local maxPurchasable = min(maxStack, canAfford);
-				StackSplitFrame:OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", info.stackCount);
-			end
+			MerchantItemButton_BuyMultipleStacks(self);
 			return;
 		end
 	else
@@ -720,6 +766,10 @@ function MerchantItemButton_OnEnter(button)
 		else
 			ShowBuybackSellCursor(button:GetID());
 		end
+	end
+
+	if MerchantFrame.footer then
+		MerchantFrame.footer:Refresh();
 	end
 end
 
@@ -917,6 +967,10 @@ function MerchantFrame_UpdateCanRepairAll()
 			MerchantRepairAllButton:Disable();
 		end
 	end
+
+	if MerchantFrame.footer then
+		MerchantFrame.footer:Refresh();
+	end
 end
 
 function MerchantFrame_UpdateGuildBankRepair()
@@ -963,6 +1017,10 @@ function MerchantFrame_UpdateRepairButtons()
 		MerchantRepairItemButton:Hide();
 		MerchantGuildBankRepairButton:Hide();
 		MerchantSellAllJunkButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMRIGHT", -148, 33);
+	end
+
+	if MerchantFrame.footer then
+		MerchantFrame.footer:Refresh();
 	end
 end
 
@@ -1074,6 +1132,28 @@ function MerchantFrame_OnSellAllJunkButtonClicked()
 	StaticPopup_ShowCustomGenericConfirmation(popupData);
 end
 
+function MerchantRepairItemButton_OnClick()
+	if InRepairMode() then
+		MerchantFrame:UnregisterEvent("PLAYER_MONEY");
+		HideRepairCursor();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			SmartNavigation:ClearOverrideIconAtlas();
+			MerchantFrame.footer:Refresh();
+		end
+	else
+		MerchantFrame:RegisterEvent("PLAYER_MONEY");
+		ShowRepairCursor();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			SmartNavigation:SetOverrideIconAtlas("gamepad-repairhammercursor-vendor");
+			ToggleCharacter("PaperDollFrame", true);
+			GamepadMode.FrameControlsManager:FocusFrame(CharacterFrame);
+			SmartNavigation:SelectTopLeftButton(); -- Make sure a PaperDoll button is selected if enabling while another sub-frame is active.
+		end
+	end
+end
+
 
 function MerchantBuyBackButton_OnEnter(button)
 	MerchantBuyBackItem.itemHover = button:GetID();
@@ -1098,3 +1178,160 @@ function UpdateCursorAfterBuyBack(buybackButton)
 	end
 end
 
+function MerchantFrame_SetupGamepad(self)
+	local function IsValidItem()
+		local button = SmartNavigation:GetCurrentButton();
+		return button and button.count >= 1
+	end
+
+	local function BuyItem()
+		SmartNavigation:RightClick();
+	end
+
+	local buyItem = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, BuyItem, CONTEXT_ACTION_LABEL_BUY);
+	buyItem:AddButtonContext("ButtonContext_MerchantItemButton");
+	buyItem:AddCondition(IsValidItem);
+
+	local function MultiBuyItem()
+		local button = SmartNavigation:GetCurrentButton();
+		if button then
+			MerchantItemButton_BuyMultipleStacks(button);
+		end
+	end
+	local function CanMultiBuyItem()
+		if self.selectedTab == 1 then
+			local button = SmartNavigation:GetCurrentButton();
+			if button then
+				local maxStack = GetMerchantItemMaxStack(button:GetID());
+				return maxStack > 1;
+			end
+		end
+		return false;
+	end
+
+	local multibuyItem = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, MultiBuyItem, CONTEXT_ACTION_LABEL_MULTI_BUY);
+	multibuyItem:AddButtonContext("ButtonContext_MerchantItemButton");
+	multibuyItem:AddCondition(CanMultiBuyItem);
+	multibuyItem:AddCondition(IsValidItem);
+
+	local function InspectItem()
+		local button = SmartNavigation:GetCurrentButton();
+		if button then
+			local link = GetMerchantItemLink(button:GetID())
+			DressUpLink(link);
+		end
+	end
+	local function CanInspectItem()
+		if self.selectedTab == 1 then
+			local button = SmartNavigation:GetCurrentButton();
+			if button then
+				local link = GetMerchantItemLink(button:GetID())
+				if link then
+					return C_Item.IsDressableItemByID(link);
+				end
+			end
+		end
+		return false;
+	end
+
+	local inspectItem = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, InspectItem, CONTEXT_ACTION_LABEL_INSPECT);
+	inspectItem:AddButtonContext("ButtonContext_MerchantItemButton");
+	inspectItem:AddCondition(CanInspectItem);
+	inspectItem:AddCondition(IsValidItem);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "MerchantFrameFooter");
+	self.footer:SetAnchorOffsets(-5, -35);
+	self.footer:AddPromptedBinding(buyItem);
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddPromptedBinding(multibuyItem);
+	self.footer:AddPromptedBinding(inspectItem);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+
+	MerchantFrame.TabIndicators:SetUpTabs(MerchantFrame.Tabs);
+	MerchantPageTurnIndicatorLeft:SetOnClick(MerchantPrevPageButton_OnClick);
+	MerchantPageTurnIndicatorRight:SetOnClick(MerchantNextPageButton_OnClick);
+
+	local function GamepadTurnPage(next)
+		if self.selectedTab ~= 1 then
+			return;
+		end
+
+		local pageButton;
+		if (next) then
+			pageButton = MerchantNextPageButton;
+		else
+			pageButton = MerchantPrevPageButton;
+		end
+
+		if (pageButton:IsEnabled()) then
+			local button = SmartNavigation:GetCurrentButton();
+			if (button and button.hasItem) then
+				pageButton:Click();
+				button = SmartNavigation:GetCurrentButton();
+
+				if not button.hasItem then
+					for i=MERCHANT_ITEMS_PER_PAGE, 1, -1 do
+						local item = _G["MerchantItem"..i.."ItemButton"];
+						if item.hasItem then
+							SmartNavigation:SelectButton(item);
+							break;
+						end
+					end
+				end
+			end
+		end
+	end
+
+	function MerchantFrame.UnfocusGamepad(self)
+		self.TabIndicators:Hide();
+		self.footer:HideAndDeactivateBindings();
+
+		SmartNavigation:UnregisterCallback("HitRightEdge", self);
+		SmartNavigation:UnregisterCallback("HitLeftEdge", self);
+	end
+
+	function MerchantFrame.FocusGamepad(self)
+		self.TabIndicators:Show();
+		self.footer:ShowAndActivateBindings();
+
+		SmartNavigation:RegisterCallback("HitRightEdge", GamepadTurnPage, true);
+		SmartNavigation:RegisterCallback("HitLeftEdge", GamepadTurnPage, false);
+
+		-- End single repair mode when refocusing the frame.
+		if InRepairMode() then
+			MerchantRepairItemButton_OnClick();
+		end
+	end
+
+	SmartNavigation_AddJumpNavigationOverride(MerchantItem1ItemButton, SMART_NAV_INPUT_DIRECTION.UP, self.FilterDropdown);
+	SmartNavigation_AddJumpNavigationOverride(MerchantItem2ItemButton, SMART_NAV_INPUT_DIRECTION.UP, self.FilterDropdown);
+	SmartNavigation_AddJumpNavigationOverride(self.FilterDropdown, SMART_NAV_INPUT_DIRECTION.DOWN, MerchantItem1ItemButton);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.FilterDropdown, SMART_NAV_INPUT_DIRECTION.LEFT);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.FilterDropdown, SMART_NAV_INPUT_DIRECTION.RIGHT);
+
+	SmartNavigation_SetDirectionBufferThreshold(MerchantItem2ItemButton, SMART_NAV_INPUT_DIRECTION.RIGHT, 0);
+	SmartNavigation_SetDirectionBufferThreshold(MerchantItem9ItemButton, SMART_NAV_INPUT_DIRECTION.RIGHT, 0);
+	SmartNavigation_SetDirectionBufferThreshold(MerchantItem9ItemButton, SMART_NAV_INPUT_DIRECTION.DOWN, 65);
+end
+
+function MerchantFrame_InitializeGamepad(self)
+	MerchantFrameCloseButton:Hide();
+	MerchantNextPageButton:Hide();
+	MerchantPrevPageButton:Hide();
+end
+
+function MerchantFrame_UninitializeGamepad(self)
+	MerchantFrameCloseButton:Show();
+	MerchantNextPageButton:Show();
+	MerchantPrevPageButton:Show();
+	MerchantPageTurnIndicatorLeft:Hide();
+	MerchantPageTurnIndicatorRight:Hide();
+end
+
+function MerchantFrame_RegisterTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(MerchantFrame_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(MerchantFrame_InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(MerchantFrame_UninitializeGamepad, self));
+end

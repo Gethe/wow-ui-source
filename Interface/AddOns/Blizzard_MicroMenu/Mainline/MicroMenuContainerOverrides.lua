@@ -2,7 +2,7 @@
 function MicroMenuMixin:GenerateButtonInfos()
 	local buttonInfos = {
 		MicroMenuUtil.GenerateButtonGameRuleInfo(CharacterMicroButton, Enum.GameRule.CharacterPanelDisabled),
-		MicroMenuUtil.GenerateButtonGameRuleInfo(ProfessionMicroButton, Enum.GameRule.SpellbookPanelDisabled),
+		MicroMenuUtil.GenerateButtonGameRuleInfo(ProfessionMicroButton, Enum.GameRule.ProfessionsPanelDisabled),
 		MicroMenuUtil.GenerateButtonGameRuleInfo(PlayerSpellsMicroButton, Enum.GameRule.TalentsPanelDisabled),
 		MicroMenuUtil.GenerateButtonGameRuleInfo(AchievementMicroButton, Enum.GameRule.AchievementsPanelDisabled),
 		MicroMenuUtil.GenerateButtonGameRuleInfo(QuestLogMicroButton, Enum.GameRule.QuestLogMicrobuttonDisabled),

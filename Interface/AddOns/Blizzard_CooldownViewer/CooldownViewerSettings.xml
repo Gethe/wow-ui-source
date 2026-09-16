@@ -175,7 +175,7 @@
 					<KeyValue key="newTagID" value="ADVANCED_COOLDOWN_SETTINGS1" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="AurasTab" inherits="CooldownViewerSettingsTabWithNewOptionTemplate">

@@ -53,10 +53,6 @@ local function CanInviteByGameMode(gameAccountInfo)
 end
 
 local function GetHighestPriorityRestriction(restrictionA, restrictionB)
-	if not restrictionA then
-		return restrictionB;
-	end
-
 	local priorityA = BattleNetFriendPartyInviteRestrictionPriority[restrictionA] or 0;
 	local priorityB = BattleNetFriendPartyInviteRestrictionPriority[restrictionB] or 0;
 	if priorityA > priorityB then
@@ -132,7 +128,7 @@ function FriendsListUtil.GetBattleNetFriendPartyInviteRestriction(friendIndex)
 		return BattleNetFriendPartyInviteRestrictionType.NoGameAccounts;
 	end
 
-	local highestPriorityRestriction = BattleNetFriendPartyInviteRestrictionType.None;
+	local highestPriorityRestriction = BattleNetFriendPartyInviteRestrictionType.NoGameAccounts;
 	for accountIndex = 1, numGameAccounts do
 		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex);
 		local accountRestriction = FriendsListUtil.GetGameAccountPartyInviteRestriction(gameAccountInfo);

@@ -33,6 +33,8 @@ function MirrorTimerContainerMixin:OnEvent(event, ...)
 	elseif event == "MIRROR_TIMER_START" then
 		local timer, value, maxvalue, _, paused, label = ...;
 		self:SetupTimer(timer, value, maxvalue, paused, label);
+
+		self:SetShown(self:ShouldShow());
 	elseif event == "MIRROR_TIMER_STOP" then
 		local timer = ...;
 		self:ClearTimer(timer);

@@ -1,0 +1,4 @@
+## Title: Blizzard_ManagedFrameSystem
+Shared\ManagedFrameSystem.lua
+Shared\ManagedFrameSystem.xml
+[Family]\ManagedFrameSystem.xml

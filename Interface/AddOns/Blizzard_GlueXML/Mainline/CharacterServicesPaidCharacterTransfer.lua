@@ -8,6 +8,7 @@ local function RequestAssignPCTForResults(results, isValidationOnly)
 		results.destinationRealmAddress,
 		results.account.accountGUID,
 		results.account.bnetAccountGUID,
+		results.superDistrictInfo.superDistrictID,
 		isValidationOnly
 	);
 end
@@ -48,6 +49,12 @@ function PCTCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
 	serviceInfo.playerguid = playerguid;
 	serviceInfo.requiresLogin = characterServiceRequiresLogin;
 	return serviceInfo;
+end
+
+TransferRealmLabelMixin = {};
+
+function TransferRealmLabelMixin:ShouldShow()
+	return not C_CharacterServices.IsRealmlessRealmSelectionEnabled();
 end
 
 TransferRealmEditboxMixin = {};
@@ -92,6 +99,16 @@ function TransferRealmEditboxMixin:GetRealmAddress()
 	return self:GetAutoCompleteUserDataForValue(self:GetText());
 end
 
+function TransferRealmEditboxMixin:ShouldShow()
+	return not C_CharacterServices.IsRealmlessRealmSelectionEnabled();
+end
+
+TransferSuperDistrictPCTContainerMixin = {};
+
+function TransferSuperDistrictPCTContainerMixin:ShouldShow()
+	return C_CharacterServices.IsRealmlessRealmSelectionEnabled();
+end
+
 local PCTDestinationSelectBlock = {
 	FrameName = "PCTDestinationSelect",
 	Back = true,
@@ -110,15 +127,33 @@ function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
 		end
 
 		controlsFrame.TransferRealmEditbox:SetOnTextChangedCallback(checkUpdate);
+		controlsFrame.TransferSuperDistrictPCTContainer:SetOnSelectedCallback(checkUpdate);
 		controlsFrame.TransferAccountContainer:SetOnSelectedCallback(checkUpdate);
 	end
 
 	controlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
+	controlsFrame.TransferSuperDistrictPCTContainer:Initialize(results, wasFromRewind);
 	controlsFrame.TransferAccountContainer:Initialize(results, wasFromRewind);
+
+	controlsFrame.TransferRealmLabel:SetShown(controlsFrame.TransferRealmLabel:ShouldShow());
+	controlsFrame.TransferRealmEditbox:SetShown(controlsFrame.TransferRealmEditbox:ShouldShow());
+	controlsFrame.TransferSuperDistrictPCTContainer:SetShown(controlsFrame.TransferSuperDistrictPCTContainer:ShouldShow());
+
+	local basicInfo = GetBasicCharacterInfo(results.selectedCharacterGUID);
+	self.selectedCharacterSuperDistrictID = basicInfo.superDistrictID;
 end
 
 function PCTDestinationSelectBlock:CheckUpdate()
 	CharacterServicesMaster_Update();
+end
+
+function PCTDestinationSelectBlock:IsSameSuperDistrict(superDistrictInfo)
+	-- 0 is an invalid superDistrictID, so early out
+	if (not superDistrictInfo) or (superDistrictInfo.superDistrictID == 0) then
+		return true;
+	end
+
+	return superDistrictInfo.superDistrictID == self.selectedCharacterSuperDistrictID;
 end
 
 local function IsSameRealm(candidate)
@@ -148,6 +183,17 @@ function PCTDestinationSelectBlock:IsFinished(wasFromRewind)
 	end
 
 	local result = self:GetResult();
+
+	if C_CharacterServices.IsRealmlessRealmSelectionEnabled() then
+		-- You can transfer to:
+		-- Same super district, different wow account
+		-- Different super district, same wow account
+		-- Different super district, different wow account
+
+		local IsDifferentSuperDistrict = not self:IsSameSuperDistrict(result.superDistrictInfo);
+		local IsDifferentWoWAccount = result.account and result.account.accountGUID ~= GetCurrentWoWAccountGUID();
+		return IsDifferentSuperDistrict or IsDifferentWoWAccount;
+	end
 
 	-- You can transfer to:
 	-- Same realm, different account (if the realm is the same the account MUST be different)
@@ -183,6 +229,7 @@ function PCTDestinationSelectBlock:GetResult()
 		destinationRealm = self.frame.ControlsFrame.TransferRealmEditbox:GetRealmName(),
 		destinationRealmAddress = self.frame.ControlsFrame.TransferRealmEditbox:GetRealmAddress(),
 		account = self.frame.ControlsFrame.TransferAccountContainer:GetResult(),
+		superDistrictInfo = self.frame.ControlsFrame.TransferSuperDistrictPCTContainer:GetResult(),
 	};
 end
 
@@ -192,6 +239,10 @@ function PCTDestinationSelectBlock:FormatResult()
 
 	if not IsSameRealm(result.destinationRealm) then
 		table.insert(formattedResult, PCT_DESTINATION_REALM_LABEL_COMPLETE:format(result.destinationRealm));
+	end
+
+	if not self:IsSameSuperDistrict(result.superDistrictInfo) then
+		table.insert(formattedResult, PCT_DESTINATION_SUPER_DISTRICT_LABEL_COMPLETE:format(result.superDistrictInfo.displayName));
 	end
 
 	if result.account.accountGUID ~= GetCurrentWoWAccountGUID() then

@@ -1,0 +1,129 @@
+## Title: Blizzard_UnitFrame
+## Dep: Blizzard_SettingsDefinitions_Frame
+## Dep: Blizzard_BuffFrame
+## Dep: Blizzard_UIPanels_Game
+## Dep: Blizzard_ActionBar [AllowLoadGameType mainline]
+## Dep: Blizzard_TextStatusBar
+## Dep: Blizzard_ReadyCheck [AllowLoadGameType classic]
+## Dep: Blizzard_UIParentPanelManager [AllowLoadGameType classic]
+## Dep: Blizzard_SpellDiminishUI [AllowLoadGameType mainline]
+## Dep: Blizzard_PingUI [AllowLoadGameType mainline]
+## Dep: Blizzard_ColorPickerFrame
+## Dep: Blizzard_ManagedFrameSystem
+## Dep: Blizzard_StatusTrayManager [AllowLoadGameType mainline]
+
+[Family]\BuilderSpenderFrame.lua		[AllowLoadGameType mainline]
+[Family]\BuilderSpenderFrame.xml		[AllowLoadGameType mainline]
+[Family]\UnitPowerBarAlt.lua
+[Family]\UnitPowerBarAlt.xml
+[Family]\PowerBarColorUtil.lua			[AllowLoadGameType mainline]
+[Family]\UnitFrameUtil.lua				[AllowLoadGameType mainline]
+Shared\StatusBarOverlaySegment.lua
+Shared\StatusBarOverlaySegment.xml
+Shared\UnitFrame.lua
+[Family]\UnitFrame.lua
+Shared\UnitFrame.xml
+Shared\PlayerFrameTemplates.xml
+Shared\PlayerFrame.lua
+[Family]\PlayerFrame.lua
+[Game]\PlayerFrame.lua							[AllowLoadGameType camelot]
+[Family]\PlayerFrameTemplates.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\PlayerFrameTemplates.xml					[AllowLoadGameType camelot]
+[Family]\PlayerFrame.xml
+Wrath\AlternatePowerBar.lua				[AllowLoadGameType wrath, cata, mists]
+Wrath\AlternatePowerBar.xml				[AllowLoadGameType wrath, cata]
+Mists\AlternatePowerBar.xml				[AllowLoadGameType mists]
+Shared\GroupFrameVisibility.lua
+Shared\PartyMemberFrame.lua
+[Family]\PartyMemberFrame.lua
+Shared\PartyFrameTemplates.xml
+[Family]\PartyFrameTemplates.xml
+Shared\PartyFrame.lua
+Shared\PartyFrame.xml
+Shared\TargetFrame.lua
+Shared\TargetFrameAuraShared.lua		[AllowLoadGameType mainline]
+Shared\TargetFrameAuraContainer.lua		[AllowLoadGameType mainline] [LoadIntoEnvironment secure]
+Shared\TargetFrameAuraContainer.xml		[AllowLoadGameType mainline]
+Shared\TargetFrameAuraButton.lua		[AllowLoadGameType mainline] [LoadIntoEnvironment secure]
+Shared\TargetFrameAuraButton.xml		[AllowLoadGameType mainline]
+[Family]\TargetFrame.lua
+Vanilla\TargetFrameOverrides.lua		[AllowLoadGameType vanilla]
+[Game]\TargetFrame.lua							[AllowLoadGameType camelot]
+[Family]\TargetFrameTemplates.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\TargetFrameTemplates.xml					[AllowLoadGameType camelot]
+[Family]\TargetFrame.xml
+[Family]\TotemFrame.lua					[AllowLoadGameType mainline, tbc, wrath, cata, mists]
+[Family]\TotemFrame.xml					[AllowLoadGameType mainline, tbc, wrath, cata, mists]
+[Family]\PetFrame.lua
+[Family]\PetFrame.xml
+[Family]\ComboFrame.lua
+[Family]\ComboFrame.xml
+[Family]\ComboFrameOverrides.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\ComboFrameOverrides.lua					[AllowLoadGameType camelot]
+[Family]\ClassPowerBar.lua				[AllowLoadGameType mainline]
+[Family]\ClassPowerBar.xml				[AllowLoadGameType mainline]
+[Family]\ClassResourceBarTemplate.lua	[AllowLoadGameType mainline]
+[Family]\ClassResourceBarTemplate.xml	[AllowLoadGameType mainline]
+[Family]\RuneFrame.lua					[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\RuneFrame.xml					[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\ShardBar.lua					[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\ShardBar.xml					[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\RogueComboPointBar.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\RogueComboPointBar.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\DruidComboPointBar.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\DruidComboPointBar.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\InsanityBar.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\InsanityBar.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\EssenceFramePlayer.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\EssenceFramePlayer.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\AlternatePowerBarBase.lua		[AllowLoadGameType mainline]
+[Family]\AlternatePowerBarBase.xml		[AllowLoadGameType mainline]
+[Family]\AlternatePowerBar.lua			[AllowLoadGameType mainline]
+[Family]\AlternatePowerBar.xml			[AllowLoadGameType mainline]
+[Family]\MonkStaggerBar.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\MonkStaggerBar.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\EvokerEbonMightBar.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\EvokerEbonMightBar.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\CompactUnitFrameOptions.lua
+Shared\CompactUnitFrame.lua
+Shared\CompactUnitFrame.xml
+Shared\CompactUnitFrameUtil.lua			[AllowLoadGameType mainline]
+Shared\CompactUnitFrameContainer.lua	[AllowLoadGameType mainline]
+Shared\CompactUnitFrameContainer.xml	[AllowLoadGameType mainline]
+Shared\CompactRaidGroup.lua
+Shared\CompactRaidGroup.xml
+Shared\CompactPartyFrame.lua
+Shared\CompactPartyFrame.xml
+[Family]\CompactArenaFrame.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\CompactArenaFrame.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\PaladinPowerBar.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\PaladinPowerBar.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\MageArcaneChargesBar.lua		[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\MageArcaneChargesBar.xml		[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\MonkHarmonyBar.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\MonkHarmonyBar.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+DemonHunterSoulFragmentsBar.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+DemonHunterSoulFragmentsBar.xml			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+DevourerFuryBar.lua						[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+DevourerFuryBar.xml						[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Family]\RuneFrame_Shared.lua			[AllowLoadGameType wrath, cata, mists]
+Wrath\RuneFrame.lua						[AllowLoadGameType wrath]
+Wrath\RuneFrame.xml						[AllowLoadGameType wrath]
+Cata\RuneFrame.lua						[AllowLoadGameType cata, mists]
+Cata\RuneFrame.xml						[AllowLoadGameType cata, mists]
+[Game]\ShardBar.lua						[AllowLoadGameType cata, mists]
+[Game]\ShardBar.xml						[AllowLoadGameType cata, mists]
+Cata\EclipseBarFrame.lua				[AllowLoadGameType cata, mists]
+Cata\EclipseBarFrame.xml				[AllowLoadGameType cata, mists]
+[Game]\PaladinPowerBar.lua				[AllowLoadGameType cata, mists]
+[Game]\PaladinPowerBar.xml				[AllowLoadGameType cata, mists]
+[Game]\MonkHarmonyBar.lua				[AllowLoadGameType mists]
+[Game]\MonkHarmonyBar.xml				[AllowLoadGameType mists]
+[Game]\MonkStaggerBar.lua				[AllowLoadGameType mists]
+[Game]\MonkStaggerBar.xml				[AllowLoadGameType mists]
+[Game]\PriestBar.lua					[AllowLoadGameType mists]
+[Game]\PriestBar.xml					[AllowLoadGameType mists]
+Shared\Localization.lua
+[Family]\Localization.lua
+[Family]\TargetFrameUtils.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\TargetFrameUtils.lua					[AllowLoadGameType camelot]

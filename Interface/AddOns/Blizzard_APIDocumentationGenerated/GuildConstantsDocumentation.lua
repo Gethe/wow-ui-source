@@ -5,9 +5,9 @@ local GuildConstants =
 		{
 			Name = "GuildErrorType",
 			Type = "Enumeration",
-			NumValues = 53,
+			NumValues = 55,
 			MinValue = 0,
-			MaxValue = 52,
+			MaxValue = 54,
 			Fields =
 			{
 				{ Name = "Success", Type = "GuildErrorType", EnumValue = 0 },
@@ -63,6 +63,8 @@ local GuildConstants =
 				{ Name = "ReservationExpired", Type = "GuildErrorType", EnumValue = 50 },
 				{ Name = "HousingEvictError", Type = "GuildErrorType", EnumValue = 51 },
 				{ Name = "Throttled", Type = "GuildErrorType", EnumValue = 52 },
+				{ Name = "BankSelfFound", Type = "GuildErrorType", EnumValue = 53 },
+				{ Name = "InviteBadSuperDistrict", Type = "GuildErrorType", EnumValue = 54 },
 			},
 		},
 	},

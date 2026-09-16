@@ -8,6 +8,52 @@ local PetInfo =
 	Functions =
 	{
 		{
+			Name = "CanPetEatItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canEat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetFoodTypes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "foodTypes", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetHappiness",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "happiness", Type = "number", Nilable = false },
+				{ Name = "damagePercentage", Type = "number", Nilable = false },
+				{ Name = "loyaltyRate", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetLoyalty",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "loyaltyName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetTalentTree",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -30,6 +76,25 @@ local PetInfo =
 			Returns =
 			{
 				{ Name = "petTamers", Type = "table", InnerType = "PetTamerMapInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetTrainingPoints",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalPoints", Type = "number", Nilable = false },
+				{ Name = "usedPoints", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetUIModelSceneID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "modelSceneID", Type = "number", Nilable = false },
 			},
 		},
 		{

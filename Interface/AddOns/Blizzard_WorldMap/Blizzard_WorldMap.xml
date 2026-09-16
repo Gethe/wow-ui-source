@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_WorldMap.lua"/>
 
 	<Frame name="WorldMapFrameTemplate" inherits="MapCanvasFrameTemplate" mixin="QuestLogOwnerMixin, WorldMapMixin" virtual="true">
 		<Frames>
@@ -16,6 +15,46 @@
 					<Anchor point="RIGHT" relativeKey="$parent.TitleCanvasSpacerFrame"/>
 				</Anchors>
 			</ScrollFrame>
+			<Frame parentKey="OverscrollBG" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollContainer"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollContainer"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Texture" atlas="gamepad-mapquestlog-bgtile-2k" horizTile="true" vertTile="true" setAllPoints="true" />
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="TopLeftVignette" atlas="gamepad-mapquestlog-bg-vignette" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRightVignette" atlas="gamepad-mapquestlog-bg-vignette" useAtlasSize="true" >
+							<TexCoords left="1" right="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomLeftVignette" atlas="gamepad-mapquestlog-bg-vignette" useAtlasSize="true" >
+							<TexCoords top="1" bottom="0"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomRightVignette" atlas="gamepad-mapquestlog-bg-vignette" useAtlasSize="true" >
+							<TexCoords left="1" right="0" top="1" bottom="0" />
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -25,7 +64,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" frameBuffer="true">
+	<Frame name="WorldMapFrame" mixin="FocusFramesInterfaceMixin" inherits="WorldMapFrameTemplate" parent="UIParent" frameBuffer="true">
+		<KeyValues>
+			<KeyValue key="FocusFrameParent" value="BorderFrame" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="BlackoutFrame" frameStrata="LOW" enableMouse="true">
 				<Anchors>
@@ -80,6 +122,46 @@
 					</OnLoad>
 					<OnMouseWheel function="nop" />
 				</Scripts>
+			</Frame>
+			<Frame parentKey="GamepadFocusLeftDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollContainer" x="-5" y="0" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GamepadFocusRightDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollContainer" x="-5" y="0" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GamepadFocusUpDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_TOP" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ScrollContainer" x="0" y="-5" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GamepadFocusDownDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_BOTTOM" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ScrollContainer" x="0" y="-5" />
+				</Anchors>
 			</Frame>
 		</Frames>
 	</Frame>

@@ -41,3 +41,5 @@ AnchorUtil.lua
 CurveConstants.lua
 ForbiddenAspectTemplates.xml
 TimerUtil.lua
+FocusEffects.lua
+FocusEffectTemplates.xml

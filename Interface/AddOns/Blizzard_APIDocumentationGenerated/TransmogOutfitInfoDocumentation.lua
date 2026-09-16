@@ -162,13 +162,13 @@ local TransmogOutfitInfo =
 			Arguments =
 			{
 				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
-				{ Name = "weaponOption", Type = "TransmogOutfitSlotOption", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 				{ Name = "collectionType", Type = "TransmogCollectionType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "collectionInfo", Type = "TransmogOutfitWeaponCollectionInfo", Nilable = false },
+				{ Name = "collectionInfo", Type = "TransmogOutfitCollectionInfo", Nilable = false },
 			},
 		},
 		{
@@ -193,7 +193,7 @@ local TransmogOutfitInfo =
 
 			Returns =
 			{
-				{ Name = "weaponOption", Type = "TransmogOutfitSlotOption", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 			},
 		},
 		{
@@ -289,6 +289,23 @@ local TransmogOutfitInfo =
 			Returns =
 			{
 				{ Name = "unlockedOutfitCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOptionsForSlot",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "options", Type = "table", InnerType = "TransmogOutfitOptionInfo", Nilable = false },
+				{ Name = "artifactOptions", Type = "table", InnerType = "TransmogOutfitOptionInfo", Nilable = true },
 			},
 		},
 		{
@@ -536,23 +553,6 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
-			Name = "GetWeaponOptionsForSlot",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "weaponOptions", Type = "table", InnerType = "TransmogOutfitWeaponOptionInfo", Nilable = false },
-				{ Name = "artifactOptions", Type = "table", InnerType = "TransmogOutfitWeaponOptionInfo", Nilable = true },
-			},
-		},
-		{
 			Name = "HasPendingOutfitSituations",
 			Type = "Function",
 
@@ -765,14 +765,14 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
-			Name = "SetViewedWeaponOptionForSlot",
+			Name = "SetViewedOptionForSlot",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
-				{ Name = "weaponOption", Type = "TransmogOutfitSlotOption", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 			},
 		},
 		{
@@ -850,6 +850,17 @@ local TransmogOutfitInfo =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "ViewedTransmogOutfitSlotOptionChanged",
+			Type = "Event",
+			LiteralName = "VIEWED_TRANSMOG_OUTFIT_SLOT_OPTION_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
+			},
+		},
+		{
 			Name = "ViewedTransmogOutfitSlotRefresh",
 			Type = "Event",
 			LiteralName = "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
@@ -867,21 +878,20 @@ local TransmogOutfitInfo =
 				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 			},
 		},
-		{
-			Name = "ViewedTransmogOutfitSlotWeaponOptionChanged",
-			Type = "Event",
-			LiteralName = "VIEWED_TRANSMOG_OUTFIT_SLOT_WEAPON_OPTION_CHANGED",
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
-				{ Name = "weaponOption", Type = "TransmogOutfitSlotOption", Nilable = false },
-			},
-		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "TransmogOutfitCollectionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "isWeapon", Type = "bool", Nilable = false },
+				{ Name = "canHaveIllusions", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "TransmogOutfitEntryInfo",
 			Type = "Structure",
@@ -903,6 +913,16 @@ local TransmogOutfitInfo =
 			{
 				{ Name = "primarySlotInfo", Type = "TransmogOutfitSlotInfo", Nilable = false },
 				{ Name = "secondarySlotInfo", Type = "TransmogOutfitSlotInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogOutfitOptionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "TransmogOutfitSlotOption", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -934,26 +954,6 @@ local TransmogOutfitInfo =
 				{ Name = "collectionType", Type = "TransmogCollectionType", Nilable = false },
 				{ Name = "slotName", Type = "cstring", Nilable = false },
 				{ Name = "isSecondary", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "TransmogOutfitWeaponCollectionInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "isWeapon", Type = "bool", Nilable = false },
-				{ Name = "canHaveIllusions", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "TransmogOutfitWeaponOptionInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "weaponOption", Type = "TransmogOutfitSlotOption", Nilable = false },
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CategoryTabSystemTemplate" inherits="TabSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="minTabWidth" value="1" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="PagedSpellsTemplate" inherits="PagedCondensedVerticalGridContentFrameTemplate" virtual="true">
+	</Frame>
+
+	<Frame name="PagedSpellsView1Template" inherits="StaticGridLayoutFrame" virtual="true">
+		<Size x="680" y="590"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="85" y="-45" />
+		</Anchors>
+	</Frame>
+	<Frame name="PagedSpellsView2Template" inherits="StaticGridLayoutFrame" virtual="true">
+		<Size x="680" y="590"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-50" y="-45" />
+		</Anchors>
+	</Frame>
+
+	<Texture name="SpellBookTopBarTemplate" virtual="true">
+		<Size x="1612" y="0"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Texture>
+	<Texture name="SpellBookBGHalvedTemplate" atlas="spellbook-Page-Right-C60" useAtlasSize="false" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+	</Texture>
+	<Texture name="SpellBookBGLeftTemplate" atlas="spellbook-Page-Left-C60" useAtlasSize="false" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Texture>
+	<Texture name="SpellBookBGRightTemplate" atlas="spellbook-Page-Right-C60" useAtlasSize="false" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOP"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+	</Texture>
+	<Texture name="SpellBookBookmarkTemplate" virtual="true"/>
+
+	<Frame name="SpellbookCategoryTabSystemTemplate" inherits="CategoryTabSystemTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="70" y="-26"/>
+		</Anchors>
+	</Frame>
+
+	<DropdownButton name="SpellBookSettingsDropdownTemplate" inherits="UIPanelArrowDropdownButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="yOffset" value="-27" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-30" y="-27" />
+		</Anchors>
+	</DropdownButton>
+
+	<EditBox name="SpellBookSearchBoxTemplate" inherits="SpellSearchBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5" y ="4"/>
+		</Anchors>
+	</EditBox>
+
+</Ui>

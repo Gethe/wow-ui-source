@@ -405,8 +405,8 @@ function CatalogShopMixin:IsLoading()
 	-- TODO fix this C_StoreSecure call
 	if ( not C_StoreSecure.HasPurchaseList() ) then
 		if (C_Glue.IsOnGlueScreen()) then
-			local _, _, wowConnectionState = C_Login.GetState();
-			if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+			local loginState = C_Login.GetState();
+			if ( loginState.wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 				return true;
 			end
 		end

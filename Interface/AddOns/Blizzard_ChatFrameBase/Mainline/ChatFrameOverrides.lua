@@ -395,7 +395,8 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 		end
 
 		if ( type == "SYSTEM" or type == "SKILL" or type == "CURRENCY" or type == "MONEY" or
-			 type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
+			 type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or
+			 type == "BN_WHISPER_PLAYER_OFFLINE" or type == "COLLECTED_APPEARANCE") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);

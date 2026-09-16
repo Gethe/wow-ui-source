@@ -16,6 +16,18 @@ local InputConstants =
 				{ Name = "GamePad", Type = "InputContext", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "InputDeviceInterfaceType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Mkb", Type = "InputDeviceInterfaceType", EnumValue = 0 },
+				{ Name = "Gamepad", Type = "InputDeviceInterfaceType", EnumValue = 1 },
+			},
+		},
 	},
 
 	Predicates =

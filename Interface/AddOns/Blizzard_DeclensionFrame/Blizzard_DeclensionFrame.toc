@@ -1,0 +1,10 @@
+## Title: Blizzard_DeclensionFrame
+## AllowLoad: both
+## Dep: Blizzard_GlueXML [AllowLoad glue]
+[Family]\DeclensionFrameGlue.lua	[AllowLoadTextLocale ruRU] [AllowLoad glue] [ExcludeLoadGameType camelot]
+[Family]\DeclensionFrameGlue.xml	[AllowLoadTextLocale ruRU] [AllowLoad glue] [ExcludeLoadGameType camelot]
+[Game]\DeclensionFrameGlue.lua		[AllowLoadTextLocale ruRU] [AllowLoad glue] [AllowLoadGameType camelot]
+[Game]\DeclensionFrameGlue.xml		[AllowLoadTextLocale ruRU] [AllowLoad glue] [AllowLoadGameType camelot]
+[Family]\DeclensionFrame.lua [AllowLoadTextLocale ruRU] [AllowLoad game]
+[Family]\DeclensionFrame.xml [AllowLoadTextLocale ruRU] [AllowLoad game]
+

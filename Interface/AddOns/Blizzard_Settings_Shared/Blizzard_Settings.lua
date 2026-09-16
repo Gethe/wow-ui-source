@@ -34,7 +34,8 @@ Settings.CommitFlag = FlagsUtil.MakeFlags(
 	"Revertable",
 	"Apply",
 	"IgnoreApply",
-	"KioskProtected"
+	"KioskProtected",
+	"UIReload"
 );
 Settings.CommitFlag.None = 0;
 
@@ -476,7 +477,12 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options, init
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddErrorLine(SettingsTooltip, VIDEO_OPTIONS_NEED_CLIENTRESTART);
 		end
-
+		
+		if setting:HasCommitFlag(Settings.CommitFlag.UIReload) then
+			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
+			GameTooltip_AddErrorLine(SettingsTooltip, VIDEO_OPTIONS_NEED_UIRELOAD);
+		end
+		
 		if initializer and initializer.additionalTooltipText then
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddColoredLine(SettingsTooltip, initializer.additionalTooltipText, GREEN_FONT_COLOR);

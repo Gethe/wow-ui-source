@@ -199,7 +199,7 @@ function RecentAlliesEntryMixin:AddInteractionsToTooltip(tooltip)
 	if not mostRecentInteraction then
 		return;
 	end
-	
+
 	local leftTooltipText = RECENT_ALLY_RECENT_ACTIVITIES_LABEL;
 	local timeSinceInteraction = GetServerTime() - mostRecentInteraction.timestamp;
 	local rightTooltipText = RECENT_ALLY_INTERACTION_TIME_FORMAT:format(RecentAlliesUtil.GetFormattedTime(timeSinceInteraction));
@@ -217,7 +217,7 @@ end
 
 function RecentAlliesEntryMixin:AddInteractionDataToTooltip(tooltip)
 	TryAddNoteInfoToTooltip(tooltip, self.elementData.interactionData);
-	
+
 	if self:HasInteractions() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		self:AddInteractionsToTooltip(tooltip);
@@ -241,7 +241,7 @@ function RecentAlliesEntryMixin:InitializeStateDisplay()
 	self.StateIconContainer.PinDisplay:SetShown(stateData.pinExpirationDate ~= nil);
 
 	self.PartyButton:SetEnabled(stateData.isOnline);
-	
+
 	self:SetCharacterLocation(stateData.currentLocation);
 end
 
@@ -308,7 +308,7 @@ local function GetBestCharacterDataDisplayColor(stateData)
 end
 
 function RecentAlliesEntryMixin:SetCharacterName()
-	self.CharacterData.Name:SetText(GetBestCharacterDataDisplayColor(self.elementData.stateData):WrapTextInColorCode(self.elementData.characterData.name));
+	self.CharacterData.Name:SetText(GetBestCharacterDataDisplayColor(self.elementData.stateData):WrapTextInColorCode(RecentAlliesUtil.GetBestDisplayNameForCharacter(self.elementData.characterData)));
 	self.CharacterData.Name:SetWidth(math.min(self.CharacterData.Name:GetUnboundedStringWidth(), self.CharacterData.Name.maxWidth));
 end
 
@@ -348,10 +348,10 @@ function RecentAlliesEntryMixin:OpenMenu()
 	local contextData = {
 		recentAllyData = recentAllyData,
 		-- The generic unit popup code expects data in the format  below, so we duplicate a couple things for compatibility
-		name = recentAllyData.characterData.name,
-		server = recentAllyData.characterData.realmName,
+		name = recentAllyData.characterData.fullName,
 		guid = recentAllyData.characterData.guid,
 		isOffline = not recentAllyData.stateData.isOnline,
+		ownerFrame = self,
 	};
 
 	local bestMenu = recentAllyData.stateData.isOnline and "RECENT_ALLY" or "RECENT_ALLY_OFFLINE";
@@ -422,18 +422,30 @@ function RecentAlliesEntryPinDisplayMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-local RecentAlliesSearchFilterOptions = {
-	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_ONLINE,                  searchInfo = { isOnline = true } },
-	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY,                    searchInfo = { isAFK = true } },
-	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY,                    searchInfo = { isDND = true } },
-	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_OFFLINE,                 searchInfo = { isOffline = true } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PROFESSIONS,     searchInfo = { interests = { Enum.RecentAlliesFriendTag.Professions } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_PVP,             searchInfo = { interests = { Enum.RecentAlliesFriendTag.PvP } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_RAIDING,         searchInfo = { interests = { Enum.RecentAlliesFriendTag.Raiding } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DUNGEONS,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Dungeons } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,           searchInfo = { interests = { Enum.RecentAlliesFriendTag.Delves } } },
-	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,        searchInfo = { interests = { Enum.RecentAlliesFriendTag.Questing } } },
+local RecentAlliesStatusFilterOptions =
+{
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_ONLINE,      searchInfo = { isOnline = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY,        searchInfo = { isAFK = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY,        searchInfo = { isDND = true } },
+	{ label = SOCIAL_UI_PRESENCE_TYPE_LABEL_OFFLINE,     searchInfo = { isOffline = true } },
 };
+
+local function CreateRecentAlliesInteractionCategoryFilterOptions(interactionCategoryFilters)
+	local filterOptions = {};
+	for _index, interactionCategoryFilter in ipairs(interactionCategoryFilters) do
+		local filterOption =
+		{
+			label = RecentAlliesUtil.GetLabelForInteractionCategoryFilter(interactionCategoryFilter),
+			searchInfo = { interactionCategoryFilters = { interactionCategoryFilter } },
+		};
+
+		table.insert(filterOptions, filterOption);
+	end
+
+	return filterOptions;
+end
+
+local RecentAlliesInteractionCategoryFilterOptions = CreateRecentAlliesInteractionCategoryFilterOptions(RecentAlliesUtil.GetSupportedInteractionCategoryFiltersForCurrentGameType());
 
 RecentAlliesSocialViewMixin = CreateFromMixins(SocialUISystemMixin, SocialUIScrollableElementExtentPreviewerMixin);
 
@@ -462,7 +474,7 @@ function RecentAlliesSocialViewMixin:InitializeFilterBar()
 	self.FilterBar.SearchFilterDropdown.GenerateFilterMenu = function(_dropdown, rootDescription) self:GenerateSearchFilterMenu(rootDescription); end
 end
 
-local function AddSearchFilterOptionsToDescription(socialView, description, predicate)
+local function AddSearchFilterOptionsToDescription(socialView, description, filterOptions)
 	socialView.selectedSearchFilterOptions = socialView.selectedSearchFilterOptions or {};
 
 	local function IsSelected(filterOption)
@@ -474,26 +486,22 @@ local function AddSearchFilterOptionsToDescription(socialView, description, pred
 		socialView:RefreshSearchResults();
 	end
 
-	for _, filterOption in ipairs(RecentAlliesSearchFilterOptions) do
-		if predicate(filterOption) then
-			local checkbox = description:CreateCheckbox(filterOption.label, IsSelected, SetSelected, filterOption);
-			checkbox:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
-		end
+	for _, filterOption in ipairs(filterOptions) do
+		local checkbox = description:CreateCheckbox(filterOption.label, IsSelected, SetSelected, filterOption);
+		checkbox:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
 	end
 end
 
 function RecentAlliesSocialViewMixin:GenerateSearchFilterMenu(rootDescription)
 	local statusSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_STATUS);
 	statusSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
-	AddSearchFilterOptionsToDescription(self, statusSubmenu, function(filterOption)
-		return not filterOption.searchInfo.interests;
-	end);
+	AddSearchFilterOptionsToDescription(self, statusSubmenu, RecentAlliesStatusFilterOptions);
 
-	local interestsSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
-	interestsSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
-	AddSearchFilterOptionsToDescription(self, interestsSubmenu, function(filterOption)
-		return filterOption.searchInfo.interests ~= nil;
-	end);
+	if TableHasAnyEntries(RecentAlliesInteractionCategoryFilterOptions) then
+		local interactionCategoryFiltersSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
+		interactionCategoryFiltersSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
+		AddSearchFilterOptionsToDescription(self, interactionCategoryFiltersSubmenu, RecentAlliesInteractionCategoryFilterOptions);
+	end
 end
 
 function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
@@ -503,15 +511,15 @@ function RecentAlliesSocialViewMixin:BuildActiveSearchInfo()
 		isAFK = false,
 		isDND = false,
 		isOffline = false,
-		interests = {},
+		interactionCategoryFilters = {},
 	};
 
 	for filterOption, isChecked in pairs(self.selectedSearchFilterOptions or {}) do
 		if isChecked then
 			local searchInfo = filterOption.searchInfo;
-			if searchInfo.interests then
-				for _, interest in ipairs(searchInfo.interests) do
-					table.insert(compositeSearchInfo.interests, interest);
+			if searchInfo.interactionCategoryFilters then
+				for _, interactionCategoryFilter in ipairs(searchInfo.interactionCategoryFilters) do
+					table.insert(compositeSearchInfo.interactionCategoryFilters, interactionCategoryFilter);
 				end
 			else
 				for field, value in pairs(searchInfo) do
@@ -776,7 +784,8 @@ end
 
 local function BuildCharacterNameDisplayText(characterData, stateData)
 	local displayColor = stateData and stateData.isOnline and NORMAL_FONT_COLOR or DARKGRAY_COLOR;
-	return displayColor:WrapTextInColorCode(characterData.name);
+	local bestDisplayName = RecentAlliesUtil.GetBestDisplayNameForCharacter(characterData);
+	return displayColor:WrapTextInColorCode(bestDisplayName);
 end
 
 local function BuildCharacterLevelDisplayText(characterData, stateData)
@@ -906,29 +915,41 @@ function RecentAlliesSocialCardMixin:LayoutCardDisplayTextCompact()
 	local scaledStateDisplayXOffset = (stateDisplayWidth > 0) and TextSizeManager:GetScaledValueWeighted(self.stateDisplayXOffset, scaleWeightSource) or 0;
 	remainingUsableRowWidth = remainingUsableRowWidth - stateDisplayWidth - scaledStateDisplayXOffset;
 
-	-- Now that we know how much space exists for text on this row we can calculate the width of each string
+	-- Now that we know how much space exists for text on this row, we can calculate the width of each string
 	-- We start with the level text because it's never truncated
 	local levelWidth = self.Level:GetUnboundedStringWidth();
 	self.Level:SetWidth(levelWidth);
 	remainingUsableRowWidth = remainingUsableRowWidth - levelWidth;
 
-	-- Next we look at the name.
-	-- The name can get up to 50% of the row...
+	-- Next we look at the name. We start with up to 50% of the row...
 	local maxNameWidthByRatio = totalAvailableRowWidth * 0.5;
-	-- ... but we need to show at least part of the class name so it might get less than 50% if the level text is very long.
-	local minClassWidth = 30;
+	-- ... but we still need to leave at least minClassWidth for the class. (Need to show at least a few letters of it)
+	local classWidthNeeded = self.Class:GetUnboundedStringWidth();
+	local minClassWidth = math.min(classWidthNeeded, 30);
 	local maxNameWidthByRemainingSpace = remainingUsableRowWidth - minClassWidth;
-	-- We pick whichever limit is smaller...
-	local bestMaxNameWidth = math.min(maxNameWidthByRatio, maxNameWidthByRemainingSpace);
-	-- ... and clamp it to 0 in case the untruncated level text ate all the space (shouldn't happen, but just to be safe)
-	bestMaxNameWidth = math.max(bestMaxNameWidth, 0);
+	local maxNameWidth = math.min(maxNameWidthByRatio, maxNameWidthByRemainingSpace);
 
-	local finalNameWidth = math.min(self.Name:GetUnboundedStringWidth(), bestMaxNameWidth);
+	-- If the class is short, the name can take the space it doesn't need.
+	local spaceLeftAfterClass = remainingUsableRowWidth - classWidthNeeded;
+	maxNameWidth = math.max(maxNameWidth, spaceLeftAfterClass);
+
+	-- If the whole name fits while leaving minClassWidth for the class, let's show it all.
+	-- We'd rather truncate just the class than truncate both.
+	local nameWidthNeeded = self.Name:GetUnboundedStringWidth();
+	local wholeNameFits = nameWidthNeeded <= maxNameWidthByRemainingSpace;
+	if wholeNameFits then
+		maxNameWidth = nameWidthNeeded;
+	end
+
+	-- The level and icons shouldn't use up all the space, but clamp to 0 just to be safe.
+	maxNameWidth = math.max(maxNameWidth, 0);
+
+	local finalNameWidth = math.min(nameWidthNeeded, maxNameWidth);
 	self.Name:SetWidth(finalNameWidth);
 	remainingUsableRowWidth = remainingUsableRowWidth - finalNameWidth;
 
-	-- Then finally, the class name gets whatever text space remains after Name and Level (we already reserved at least minClassWidth for it assuming the level text isn't huge)
-	local classWidth = math.min(self.Class:GetUnboundedStringWidth(), math.max(remainingUsableRowWidth, 0));
+	-- Then finally, the class gets whatever space remains after Name and Level (we already reserved at least minClassWidth for it assuming the level text isn't huge)
+	local classWidth = math.min(classWidthNeeded, math.max(remainingUsableRowWidth, 0));
 	self.Class:SetWidth(classWidth);
 
 	-- With all the calculations done we can now anchor the text elements on this row (name is always anchored to the text holder)
@@ -964,7 +985,7 @@ function RecentAlliesSocialCardMixin:LayoutCardDisplayTextExpanded()
 	remainingRow1UsableWidth = remainingRow1UsableWidth - stateDisplayWidth - scaledStateDisplayXOffset;
 
 	-- Then the name gets whatever width remains on this row after the state display
-	local nameWidth = math.min(self.Name:GetUnboundedStringWidth(), remainingRow1UsableWidth);
+	local nameWidth = math.min(self.Name:GetUnboundedStringWidth(), math.max(remainingRow1UsableWidth, 0));
 	self.Name:SetWidth(nameWidth);
 
 	-- Row 2:
@@ -976,7 +997,7 @@ function RecentAlliesSocialCardMixin:LayoutCardDisplayTextExpanded()
 
 	-- We need to show at least part of the class name, so we reserve some space for that before giving level its width
 	local minClassWidth = 30;
-	local levelWidth = math.min(self.Level:GetUnboundedStringWidth(), remainingRow2UsableWidth - minClassWidth);
+	local levelWidth = math.min(self.Level:GetUnboundedStringWidth(), math.max(remainingRow2UsableWidth - minClassWidth, 0));
 	self.Level:SetWidth(levelWidth);
 
 	-- With all the calculations done we can now anchor the state display to the name on Row 1...
@@ -1016,14 +1037,14 @@ function RecentAlliesSocialCardMixin:OpenMenu()
 	{
 		recentAllyData = recentAllyData,
 		-- The generic unit popup code expects data in the format  below, so we duplicate a couple things for compatibility
-		name = recentAllyData.characterData.name,
-		server = recentAllyData.characterData.realmName,
+		name = recentAllyData.characterData.fullName,
 		guid = recentAllyData.characterData.guid,
 		isOffline = not recentAllyData.stateData.isOnline,
 		menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownMainTitle,
 		menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 		menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
 		hasMainTitleDivider = true,
+		ownerFrame = self,
 	};
 
 	local bestMenu = recentAllyData.stateData.isOnline and "RECENT_ALLY" or "RECENT_ALLY_OFFLINE";

@@ -66,7 +66,7 @@ do
 end
 
 function MainMenuBarBagManager:OnExpandBarChanged()
-	if (BagsBar and not BagsBar.hideExpandToggle) then
+	if (BagsBar and BagsBar:ShouldShowExpandToggle()) then
 		local isExpanded = self:ShouldBarExpand();
 		for i, bagButton in self:EnumerateBagButtons() do
 			bagButton:SetBarExpanded(isExpanded);

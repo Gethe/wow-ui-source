@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-  <Script file="ShardBar.lua"/>
 
 	<Frame name="ShardTemplate" virtual="true" mixin="WarlockShardMixin">
 		<Size x="23" y="30"/>
@@ -163,7 +162,7 @@
 			<KeyValue key="topPadding" value="-2" type="number"/>
 		</KeyValues>
 	</Frame>
-	
+
 	<Frame name="WarlockPowerFrame" inherits="WarlockPowerFrameTemplate">
 		<Size x="110" y="25"/>
 		<KeyValues>

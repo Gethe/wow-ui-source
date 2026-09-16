@@ -87,7 +87,8 @@ end
 
 function UIButtonFitToTextBehaviorMixin:FitToText()
 	local minWidth = self.fitTextCanWidthDecrease and 0 or self:GetWidth();
-	self:SetWidth(math.max(minWidth, self:GetTextWidth() + self.fitTextWidthPadding));
+	local padding = self.fitTextWidthPadding or 0;
+	self:SetWidth(math.max(minWidth, self:GetTextWidth() + padding));
 end
 
 UIPanelButtonNoTooltipResizeToFitMixin = {};

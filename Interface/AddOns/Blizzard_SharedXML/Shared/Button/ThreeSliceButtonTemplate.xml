@@ -58,8 +58,12 @@
 		</Scripts>
 	</Button>
 
-	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
+	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" mixin="UIButtonFitToTextBehaviorMixin" virtual="true">
 		<Size x="441" y="128"/>
+		<KeyValues>
+			<KeyValue key="fitTextCanWidthDecrease" value="false" type="boolean"/>
+			<KeyValue key="fitTextWidthPadding" value="30" type="number"/>
+		</KeyValues>
 		<KeyValues>
 			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
 		</KeyValues>

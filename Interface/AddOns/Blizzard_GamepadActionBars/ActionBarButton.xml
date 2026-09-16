@@ -1,0 +1,213 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<!-- Standard action button used by the gamepad action bar system -->
+	<CheckButton name="GamepadActionBarButtonTemplate" inherits="ActionBarButtonTemplate" mixin="GamepadActionBarStandardButtonMixin" virtual="true" >
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SpecialActionIcon" file="Interface\Cursor\Interact" hidden="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PermaboundOverlay" atlas="gamepad-actionbar-circleslot-permabound" hidden="true" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<MaskTexture parentKey="CircleMask" atlas="CircleMask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+						<MaskedTexture childKey="Flash"/>
+						<MaskedTexture childKey="SpecialActionIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="SquareMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+						<MaskedTexture childKey="Flash"/>
+						<MaskedTexture childKey="SpecialActionIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="CircleShadow" atlas="gamepad-actionbar-circleslot-dropshadow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CircleShadowFocus" atlas="gamepad-actionbar-focus-bg-circ" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareShadow" atlas="gamepad-actionbar-squareslot-dropshadow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareShadowFocus" atlas="gamepad-actionbar-focus-bg-square" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="CircleGlowFocus" atlas="gamepad-actionbar-fx-circglw" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="4" />
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareGlowFocus" atlas="gamepad-actionbar-fx-squareglw" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5" />
+						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RangeIndicator" inherits="NumberFontNormalSmallGray" text="RANGE_INDICATOR" justifyH="CENTER" hidden="true">
+					<Size x="32" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EditModeSquareFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="SquareGlowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SquareShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.6"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GameplayModeSquareFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="SquareShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="EditModeCircleFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="CircleGlowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CircleShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.6"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GameplayModeCircleFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="CircleShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.4"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Variant of the gamepad action bar button used for the gamepad pet action bar -->
+	<CheckButton name="GamepadActionBarPetButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, ActionButtonTemplate" mixin="GamepadActionBarPetButtonMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SpecialActionIcon" file="Interface\Cursor\Interact" hidden="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<MaskTexture parentKey="CircleMask" atlas="CircleMask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+						<MaskedTexture childKey="Flash"/>
+						<MaskedTexture childKey="SpecialActionIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="SquareMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+						<MaskedTexture childKey="Flash"/>
+						<MaskedTexture childKey="SpecialActionIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="CircleShadow" atlas="gamepad-actionbar-circleslot-dropshadow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CircleShadowFocus" atlas="gamepad-actionbar-focus-bg-circ" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareShadow" atlas="gamepad-actionbar-squareslot-dropshadow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareShadowFocus" atlas="gamepad-actionbar-focus-bg-square" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="CircleGlowFocus" atlas="gamepad-actionbar-fx-circglw" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="4" />
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareGlowFocus" atlas="gamepad-actionbar-fx-squareglw" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5" />
+						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RangeIndicator" inherits="NumberFontNormalSmallGray" text="RANGE_INDICATOR" justifyH="CENTER" hidden="true">
+					<Size x="32" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EditModeSquareFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="SquareGlowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SquareShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.6"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GameplayModeSquareFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="SquareShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="EditModeCircleFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="CircleGlowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CircleShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.6"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GameplayModeCircleFocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="CircleShadowFocus" duration="0.33" order="1" fromAlpha="1" toAlpha="0.4"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<PreClick method="PetActionButtonMixin_PreClick"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="PetActionButtonMixin_OnReceiveDrag"/>
+			<OnEnter method="PetActionButtonMixin_OnEnter"/>
+			<OnLeave method="PetActionButtonMixin_OnLeave"/>
+			<OnUpdate method="PetActionButtonMixin_OnUpdate"/>
+		</Scripts>
+	</CheckButton>
+</Ui>

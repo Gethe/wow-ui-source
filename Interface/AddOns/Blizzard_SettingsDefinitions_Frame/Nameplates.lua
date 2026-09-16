@@ -351,6 +351,13 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
 	end);
 
+	if RegionalUniqueNamesEnabled() then
+		-- My surname
+		InterfaceOverrides.RunSettingsCallback(function()
+			Settings.SetupCVarCheckbox(category, "UnitSurnameOwn", UNIT_SECONDARY_NAME_OWN, OPTION_TOOLTIP_UNIT_SECONDARY_NAME_OWN);
+		end);
+	end
+
 	-- NPC Names
 	InterfaceOverrides.RunSettingsCallback(function()
 		local function GetValue()
@@ -454,7 +461,7 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end);
 
-	-- Enemy Units
+		-- Enemy Units
 	InterfaceOverrides.RunSettingsCallback(function()
 		local enemyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES, "NAMEPLATES");
 		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
@@ -576,21 +583,7 @@ local function Register()
 
 	-- NamePlate Style
 	if C_CVar.GetCVar("nameplateStyle") then
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-
-			if (NameplatesOverrides.ShowClassicStyleOption()) then container:Add(Enum.NamePlateStyle.Classic, UNIT_NAMEPLATES_STYLE_CLASSIC); end
-			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
-			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
-			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
-			container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
-			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
-			container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
-
-			return container:GetData();
-		end
-
-		local _setting, initializer = Settings.SetupCVarDropdown(category, "nameplateStyle", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_STYLE, UNIT_NAMEPLATES_STYLE_TOOLTIP);
+		local _setting, initializer = Settings.SetupCVarDropdown(category, "nameplateStyle", Settings.VarType.Number, NameplatesOverrides.GetNameplateStyleOptions, UNIT_NAMEPLATES_STYLE, UNIT_NAMEPLATES_STYLE_TOOLTIP);
 		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 	end
 	Settings.SetOnValueChangedCallback("nameplateStyle", function()
@@ -613,7 +606,9 @@ local function Register()
 			local container = Settings.CreateControlTextContainer();
 			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthPercent, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthValue, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE_TOOLTIP);
-			container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP);
+			if NameplatesOverrides.ShowRarityIconInfoDisplayOption() then
+				container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP);
+			end
 			return container:GetData();
 		end
 
@@ -644,7 +639,9 @@ local function Register()
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellName, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellIcon, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET_TOOLTIP);
-			if (NameplatesOverrides.ShowHighlightImportantCastsOption()) then container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP); end
+			if NameplatesOverrides.ShowHighlightImportantCastsOption() then
+				container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP);
+			end
 			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET_TOOLTIP);
 			return container:GetData();
 		end

@@ -1,0 +1,12 @@
+## Title: Blizzard_GamepadTargeting
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML, Blizzard_GamepadSmartNavigation, Blizzard_GamepadSharedUtility, Blizzard_Gamepad, Blizzard_GamepadActionBars
+## DefaultState: enabled
+## AllowLoadGameType: camelot
+
+TargetLogic.lua
+GroupTargeting.lua
+RaidPartyTargeting\RaidTargeting.lua
+RaidPartyTargeting\RaidTargetDPAD.lua
+RaidPartyTargeting\RaidTargeting.xml
+

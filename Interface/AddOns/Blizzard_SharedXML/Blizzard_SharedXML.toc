@@ -2,6 +2,7 @@
 ## AllowLoad: Both
 ## Dependencies: Blizzard_ProjectConstants, Blizzard_Fonts_Shared, Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_Narration
 Shared\LocalizationMachinery.lua
+Shared\GamepadConstants.lua
 SharedConstants.lua
 ColorUtil.lua
 AddOnUtil.lua
@@ -27,9 +28,11 @@ TimeUtil.lua
 BenchmarkUtil.lua
 VectorLib.xml
 [Family]\NineSliceLayouts.lua
+[Game]\NineSliceLayoutOverrides.lua [AllowLoadGameType camelot]
 NineSlice.lua
 EasingUtil.lua
 BindingUtil.lua
+[Family]\InputUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
@@ -56,10 +59,14 @@ PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua [ExcludeLoadGameType vanilla tbc wrath]
 NewFeatureLabel.xml
+Shared\SharedUtils.lua
 Shared\VASErrorLookup.lua
 SelectableButton.lua
 SelectableButton.xml
 ButtonGroup.lua
+Shared\InputIcons\InputDeviceIconSetManager.lua
+Shared\InputIcons\InputIconTexture.lua
+Shared\InputIcons\InputIconTexture.xml
 Shared\Button\CheckButtonTemplates.xml
 Shared\Button\UIButtonTemplate.lua
 Shared\Button\UIButtonTemplate.xml
@@ -109,7 +116,6 @@ Shared\Scroll\ScrollTemplates.lua
 Shared\Scroll\ScrollTemplates.xml
 Shared\Scroll\TrimScrollBar.lua
 Shared\Scroll\TrimScrollBar.xml
-Classic\Scroll\TrimScrollBar.xml [AllowLoadGameType classic]
 Mainline\Scroll\OribosScrollBar.lua [AllowLoadGameType mainline]
 Mainline\Scroll\OribosScrollBar.xml [AllowLoadGameType mainline]
 Shared\Scroll\MinimalScrollBar.lua
@@ -182,6 +188,7 @@ SecureUIPanelTemplates.xml
 Spinner.lua
 Spinner.xml
 [Family]\SharedUIPanelTemplates.lua
+Camelot\SharedUIPanelTemplates.lua [AllowLoadGameType camelot]
 PortraitFrame.lua
 [Family]\SharedUIPanelTemplates.xml
 Mainline\SharedCollectionUtil.lua [AllowLoadGameType mainline]
@@ -192,6 +199,10 @@ CustomBindingButtonTemplate.xml
 Classic\SliderTemplates.xml [AllowLoadGameType classic]
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
+Shared\Tabs\RightSideTab.lua
+Shared\Tabs\RightSideTab.xml
+Camelot\ProgressBars\ColoredProgressBar.lua [AllowLoadGameType camelot]
+Camelot\ProgressBars\ColoredProgressBar.xml [AllowLoadGameType camelot]
 Shared\Button\UIPanelButtonTemplates.lua
 Shared\Button\UIPanelButtonTemplates.xml
 Shared\Dialog\DialogTemplates.lua
@@ -219,7 +230,6 @@ ModelFrameTemplates.xml [AllowLoadGameType mainline]
 ModelPreviewFrame.lua
 ModelPreviewFrame.xml
 CharacterModelFrameMixin.lua [ExcludeLoadGameType vanilla tbc wrath]
-Classic\SharedUtils.lua [AllowLoadGameType classic]
 ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml

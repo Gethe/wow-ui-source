@@ -65,6 +65,10 @@ function DamageMeterEntryMixin:UpdateIcon()
 end
 
 function DamageMeterEntryMixin:GetClassificationAtlasElement()
+	if not self:ShouldShowClassification() then
+		return nil;
+	end
+
 	-- Using same logic as NamePlateClassificationFrameMixin
 	if self.classification == "elite" or self.classification == "worldboss" then
 		return "nameplates-icon-elite-gold";
@@ -75,6 +79,11 @@ function DamageMeterEntryMixin:GetClassificationAtlasElement()
 	end
 
 	return nil;
+end
+
+function DamageMeterEntryMixin:ShouldShowClassification()
+	-- Some game modes intentionally hide classification icons and override this method.
+	return true;
 end
 
 function DamageMeterEntryMixin:GetSourceTypeAtlasElement()

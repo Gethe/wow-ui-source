@@ -131,10 +131,30 @@ local DateAndTime =
 				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
+		{
+			Name = "IsDayTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDayTime", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "DielCycleChanged",
+			Type = "Event",
+			LiteralName = "DIEL_CYCLE_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when the game time transitions between day and night." },
+			Payload =
+			{
+				{ Name = "isDayTime", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

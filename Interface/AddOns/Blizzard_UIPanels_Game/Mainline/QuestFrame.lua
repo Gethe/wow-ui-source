@@ -17,6 +17,8 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
+
+	QuestFrame_RegisterForTransitions(self);
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -42,7 +44,7 @@ function QuestFrame_OnEvent(self, event, ...)
 			return;
 		end
 
-        if(questStartItemID ~= nil and questStartItemID ~= 0) then		
+		if(questStartItemID ~= nil and questStartItemID ~= 0) then
 			if (QuestObjectiveTracker:AddAutoQuestPopUp(GetQuestID(), "OFFER", questStartItemID)) then
                 PlayAutoAcceptQuestSound();
             end
@@ -353,6 +355,7 @@ function QuestFrameGreetingPanel_OnShow()
 			else
 				questTitleButton:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
 			end
+			questTitleButton:SetText(title);
 			questTitleButton:Show();
 			lastTitleButton = questTitleButton;
 		end
@@ -374,7 +377,7 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta, questInfoID = GetAvailableQuestInfo(i - numActiveQuests);
 			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
-			
+
 			local title = GetAvailableTitle(i - numActiveQuests);
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
@@ -398,6 +401,7 @@ function QuestFrameGreetingPanel_OnShow()
 			else
 				questTitleButton:SetPoint("TOPLEFT", "AvailableQuestsText", "BOTTOMLEFT", -10, -5);
 			end
+			questTitleButton:SetText(title);
 			questTitleButton:Show();
 			lastTitleButton = questTitleButton;
 		end
@@ -411,6 +415,10 @@ function QuestFrame_OnShow()
 	end
 	QuestFrame.FriendshipStatusBar:Update();
 	QuestFrame.AccountCompletedNotice:Refresh();
+
+	if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+		GamepadHudMode:Hide();
+	end
 end
 
 function QuestFrame_OnHide()
@@ -549,12 +557,14 @@ function QuestFrameDetailPanel_OnShow()
 		QuestFrameCloseButton:Disable();
 		QuestFrame.autoQuest = true;
 	else
-		QuestFrameDeclineButton:Show();
+		if not InputUtil.IsGamepadUIEnabled() then
+			QuestFrameDeclineButton:Show();
+		end
 	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
-	
+
 	QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
 
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
@@ -623,4 +633,179 @@ function QuestFrame_SetTextColor(fontString, material)
 		materialTextColor = GetMaterialTextColors("Stone");
 	end
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);
+end
+
+function QuestFrame_ActivateRewardsCursor(self)
+	SmartNavigation:SuspendCursor(false);
+	GamepadMode.DeactivateBindingGroup(self.cursorInputBindings);
+	SmartNavigation:SelectFirstButton();
+end
+
+function QuestFrame_GeneralProgressAction(self)
+	if QuestFrameDetailPanel:IsVisible() then
+		QuestFrameAcceptButton:Click();
+	elseif QuestFrameRewardPanel:IsVisible() then
+		QuestFrameCompleteQuestButton:Click();
+	elseif QuestProgressScrollFrame:IsVisible() then
+		QuestFrameCompleteButton:Click();
+	else
+		-- This is needed for multi-quest dialogs to select a line as a normal button.
+		QuestFrame_SelectFocusedButton(self);
+	end
+end
+
+function QuestFrame_SelectFocusedButton(self)
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	if (focusedButton) then
+		focusedButton:Click();
+		self.gamepadFooter:Refresh();
+	end
+end
+
+local function IsQuestSelectValid()
+	return QuestFrameGreetingPanel:IsVisible();
+end
+
+local function IsQuestAcceptValid()
+	return QuestFrameDetailPanel:IsVisible();
+end
+
+local function IsQuestContinueValid()
+	-- The player must have the required quest items to turn in.
+	return QuestFrameProgressPanel:IsVisible() and IsQuestCompletable();
+end
+
+local function IsQuestCompleteValid()
+	if not QuestFrameRewardPanel:IsVisible() then
+		return false;
+	end
+	local numChoices = GetNumQuestChoices();
+	if numChoices ~= 0 and (QuestInfoFrame.itemChoice <= 0 or QuestInfoFrame.itemChoice > numChoices) then
+		return false;
+	end
+	return true;
+end
+
+local function IsSelectRewardValid()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	if not focusedButton then
+		return false;
+	end
+	if focusedButton.buttonContext ~= "ButtonContext_QuestItemButton" then
+		return false;
+	end
+	if focusedButton.type ~= "choice" then
+		return false;
+	end
+	return not QuestInfoItem_IsSelected(focusedButton);
+end
+
+function QuestFrame_SetupGamepad(self)
+	local generalQuestConfirmFunction = GenerateClosure(QuestFrame_GeneralProgressAction, self);
+
+	local selectQuestAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, generalQuestConfirmFunction, ACTION_LABEL_SELECT);
+	selectQuestAction:AddCondition(IsQuestSelectValid);
+	selectQuestAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local acceptQuestAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, generalQuestConfirmFunction, FRAME_ACTION_ACCEPT);
+	acceptQuestAction:AddCondition(IsQuestAcceptValid);
+	acceptQuestAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local continueQuestAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, generalQuestConfirmFunction, FRAME_ACTION_CONTINUE);
+	continueQuestAction:AddCondition(IsQuestContinueValid); -- Continue is the only confirmation that should have a disabled state.
+
+	local completeQuestAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, generalQuestConfirmFunction, FRAME_ACTION_COMPLETE);
+	completeQuestAction:AddCondition(IsQuestCompleteValid);
+	completeQuestAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local selectRewardAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(QuestFrame_SelectFocusedButton, self), CONTEXT_ACTION_LABEL_CHOOSE_REWARD);
+	selectRewardAction:AddButtonContext("ButtonContext_QuestItemButton");
+	selectRewardAction:AddCondition(IsSelectRewardValid);
+	selectRewardAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "QuestFrameFooter");
+	self.gamepadFooter:AddPromptedBinding(selectQuestAction);
+	self.gamepadFooter:AddPromptedBinding(acceptQuestAction);
+	self.gamepadFooter:AddPromptedBinding(selectRewardAction);	-- should be above completeQuestAction
+	self.gamepadFooter:AddPromptedBinding(completeQuestAction);
+	self.gamepadFooter:AddPromptedBinding(continueQuestAction);
+	self.gamepadFooter:AddStandardBackPrompt();
+
+	self.gamepadFooter:Finalize();
+
+	function QuestFrame.UnfocusGamepad(self)
+		self.gamepadFooter:HideAndDeactivateBindings();
+		GamepadMode.DeactivateBindingGroup(self.cursorInputBindings);
+		SmartNavigation:SuspendCursor(false);
+	end
+
+	function QuestFrame.FocusGamepad(self)
+		-- Add cursor binding set if there are quest items to focus.
+		local isRewardItemShown = QuestInfoFrame.rewardsFrame.RewardButtons[1]:IsVisible();
+		local isProgressItemShown = GetNumQuestItems() >= 1;
+		if (isRewardItemShown or isProgressItemShown)  then
+			GamepadMode.ActivateBindingGroup(self.cursorInputBindings);
+		end
+
+		SmartNavigation:SuspendCursor(true);
+		self.gamepadFooter:ShowAndActivateBindings();
+
+		-- Update scroll frame and prompt text based on current panel.
+		if QuestFrameDetailPanel:IsVisible() then
+			SmartNavigation:SetScrollFrameForFrame(self, QuestDetailScrollFrame);
+			GamepadScrollBarHint:SetOwner(QuestDetailScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+			GamepadScrollBarHint:Show();
+		elseif QuestFrameRewardPanel:IsVisible() then
+			SmartNavigation:SetScrollFrameForFrame(self, QuestRewardScrollFrame);
+			GamepadScrollBarHint:SetOwner(QuestRewardScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+			GamepadScrollBarHint:Show();
+			SmartNavigation:SelectFirstButton();
+			SmartNavigation:SuspendCursor(false);
+		elseif QuestProgressScrollFrame:IsVisible() then
+			SmartNavigation:SetScrollFrameForFrame(self, QuestProgressScrollFrame);
+			GamepadScrollBarHint:SetOwner(QuestProgressScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+			GamepadScrollBarHint:Show();
+		elseif QuestFrameGreetingPanel:IsVisible() then
+			SmartNavigation:SetScrollFrameForFrame(self, QuestGreetingScrollFrame);
+			GamepadScrollBarHint:SetOwner(QuestGreetingScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+			GamepadScrollBarHint:Show();
+			SmartNavigation:SelectFirstButton();
+			SmartNavigation:SuspendCursor(false);
+		end
+	end
+
+	-- Cursor binding setup.
+	local activateRewardsFunction = GenerateClosure(QuestFrame_ActivateRewardsCursor, self);
+	self.cursorInputBindings = GamepadMode.CreateBindingGroup("QuestFrameCursorFrameBindings");
+	self.cursorInputBindings:AddFunctionBinding(GAMEPAD_DPAD_TOP, activateRewardsFunction);
+	self.cursorInputBindings:AddFunctionBinding(GAMEPAD_DPAD_BOTTOM, activateRewardsFunction);
+	self.cursorInputBindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, activateRewardsFunction);
+	self.cursorInputBindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, activateRewardsFunction);
+end
+
+function QuestFrame_InitializeGamepad(self)
+	QuestFrameAcceptButton:Hide();
+	QuestFrameCloseButton:Hide();
+	QuestFrameCompleteButton:Hide();
+	QuestFrameCompleteQuestButton:Hide();
+	QuestFrameDeclineButton:Hide();
+	QuestFrameGoodbyeButton:Hide();
+	QuestFrameGreetingGoodbyeButton:Hide();
+end
+
+function QuestFrame_UninitializeGamepad(self)
+	QuestFrameAcceptButton:Show();
+	QuestFrameCloseButton:Show();
+	QuestFrameCompleteButton:Show();
+	QuestFrameCompleteQuestButton:Show();
+	QuestFrameDeclineButton:Show();
+	QuestFrameGoodbyeButton:Show();
+	QuestFrameGreetingGoodbyeButton:Show();
+end
+
+function QuestFrame_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(QuestFrame_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(QuestFrame_InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(QuestFrame_UninitializeGamepad, self));
 end

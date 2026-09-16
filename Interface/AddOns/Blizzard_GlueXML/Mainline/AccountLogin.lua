@@ -15,6 +15,12 @@ function AccountLoginEditBoxMixin:NarrationGetDescription()
 	return NARRATION_STATUS_REQUIRED;
 end
 
+AccountEditBoxMixin = CreateFromMixins(AccountLoginEditBoxMixin);
+
+function AccountEditBoxMixin:AdjustAnchor()
+	-- No base implementation, overriden elsewhere.
+end
+
 function AccountLogin_OnLoad(self)
 	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -51,6 +57,9 @@ function AccountLogin_OnLoad(self)
 	self.UI.AccountsDropdown:SetWidth(234);
 
 	AccountLoginDropdown_SetupList();
+	self.UI.AccountEditBox:AdjustAnchor();
+
+	AccountLogin_RegisterForTransitions(self);
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -68,24 +77,24 @@ function AccountLogin_OnEvent(self, event, ...)
 end
 
 function AccountLogin_CheckLoginState(self)
-	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
+	local loginState = C_Login.GetState();
 
 	-- account select dialog
-	self.UI.WoWAccountSelectDialog:SetShown(auroraState == LE_AURORA_STATE_SELECT_ACCOUNT);
+	self.UI.WoWAccountSelectDialog:SetShown(loginState.auroraState == LE_AURORA_STATE_SELECT_ACCOUNT);
 
 	--captcha
-	self.UI.CaptchaEntryDialog:SetShown(auroraState == LE_AURORA_STATE_ENTER_CAPTCHA);
+	self.UI.CaptchaEntryDialog:SetShown(loginState.auroraState == LE_AURORA_STATE_ENTER_CAPTCHA);
 
 	-- authenticator
 	local tokenEntryShown = false;
-	if ( auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
+	if ( loginState.auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
 		local authType = C_Login.GetExtraAuthInfo();
 		if ( authType == LE_AUTH_AUTHENTICATOR ) then
 			tokenEntryShown = true;
 		end
 	end
 
-	if ( auroraState == LE_AURORA_STATE_LEGAL_AGREEMENT ) then
+	if ( loginState.auroraState == LE_AURORA_STATE_LEGAL_AGREEMENT ) then
 		StaticPopup_Show("OKAY_LEGAL_REDIRECT");
 	end
 
@@ -264,6 +273,79 @@ function AccountLogin_OnEditFocusLost(self, userAction)
 	self:HighlightText(0, 0);
 end
 
+function AccountLogin_ToggleAlertFrame()
+	if ServerAlertFrame:IsShown() then
+		ServerAlertFrame.ExpandBar:Toggle();
+	end
+end
+
+function AccountLogin_OnSmartNavFocus(self)
+	local reconnectButton = self.UI.ReconnectLoginButton;
+	local accountBox = self.UI.AccountEditBox;
+	if reconnectButton:IsShown() then
+		SmartNavigation:SelectButton(reconnectButton);
+	else
+		SmartNavigation:SelectButton(accountBox);
+	end
+
+	GamepadMode.ActivateBindingGroup(self.accountLoginBindings);
+
+	if CachedLogin and CachedLogin.frames then
+		local cachedLoginFrame = CachedLogin.frames[1];
+		if cachedLoginFrame then
+			local menuButton = self.UI.MenuButton;
+			SmartNavigation_AddBidirectionalJumpNavigationOverride(accountBox, SMART_NAV_INPUT_DIRECTION.UP, cachedLoginFrame.LoginButton, SMART_NAV_INPUT_DIRECTION.LEFT);
+			SmartNavigation_AddBidirectionalJumpNavigationOverride(menuButton, SMART_NAV_INPUT_DIRECTION.UP, cachedLoginFrame.LoginButton);
+		end
+	end
+end
+
+function AccountLogin_UnfocusGamepad(self)
+	GamepadMode.DeactivateBindingGroup(self.accountLoginBindings);
+end
+
+function AccountLogin_SetUpGamepad(self)
+	-- Set up navigation overrides.
+	local loginButton = self.UI.LoginButton;
+	local saveAccountCheckbox = self.UI.SaveAccountNameCheckButton.Button;
+	local menuButton = self.UI.MenuButton;
+	local passwordBox = self.UI.PasswordEditBox;
+	local accountBox = self.UI.AccountEditBox;
+
+	SmartNavigation_AddJumpNavigationOverride(saveAccountCheckbox, SMART_NAV_INPUT_DIRECTION.RIGHT, menuButton);
+	SmartNavigation_AddJumpNavigationOverride(passwordBox, SMART_NAV_INPUT_DIRECTION.RIGHT, menuButton);
+	SmartNavigation_AddJumpNavigationOverride(accountBox, SMART_NAV_INPUT_DIRECTION.RIGHT, menuButton);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(passwordBox, SMART_NAV_INPUT_DIRECTION.UP, accountBox);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(loginButton, SMART_NAV_INPUT_DIRECTION.UP, saveAccountCheckbox);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(saveAccountCheckbox, SMART_NAV_INPUT_DIRECTION.UP, passwordBox);
+	SmartNavigation_AddIgnoreInputNavigationOverride(loginButton, SMART_NAV_INPUT_DIRECTION.LEFT);
+	SmartNavigation_AddIgnoreInputNavigationOverride(passwordBox, SMART_NAV_INPUT_DIRECTION.LEFT);
+	SmartNavigation_AddIgnoreInputNavigationOverride(accountBox, SMART_NAV_INPUT_DIRECTION.LEFT);
+
+	--Set up input bindings.
+	self.accountLoginBindings = GamepadMode.CreateBindingGroup("AccountLoginBindings");
+	self.accountLoginBindings:AddFunctionBinding(GAMEPAD_FACE_TOP, AccountLogin_ToggleAlertFrame);
+	self.accountLoginBindings:AddFunctionBinding(GAMEPAD_MENU_RIGHT, function() GlueMenuFrameUtil.ShowMenu(); end);
+
+	self.UnfocusGamepad = AccountLogin_UnfocusGamepad;
+	self.OnSmartNavFocus = AccountLogin_OnSmartNavFocus;
+end
+
+function AccountLogin_InitializeGamepad(self)
+	if self:IsShown() then
+		GamepadMode.FrameControlsManager:FrameShown(self, false, function()
+			local numShownFrames = #GamepadMode.FrameControlsManager.shownFrames;
+			return numShownFrames <= 1;
+		end);
+	end
+end
+
+function AccountLogin_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(AccountLogin_SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(AccountLogin_InitializeGamepad, self));
+end
+
 AccountLoginMenuButtonMixin = {};
 
 function AccountLoginMenuButtonMixin:OnClick()
@@ -314,6 +396,8 @@ function WoWAccountSelect_OnLoad(self)
 	view:SetElementInitializer("AccountNameButtonTemplate", Initializer);
 
 	self.Background.Container.ScrollBox:Init(view);
+
+	WoWAccountSelect_RegisterForTransitions(self);
 end
 
 function WoWAccountSelect_OnShow(self)
@@ -321,6 +405,10 @@ function WoWAccountSelect_OnShow(self)
 	AccountLogin.UI.AccountEditBox:ClearFocus();
 	self.selectedAccount = 1;
 	WoWAccountSelect_Update(self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(AccountLogin.UI.WoWAccountSelectDialog);
+	end
 end
 
 function WoWAccountSelect_SelectAccount(selectedIndex)
@@ -343,6 +431,19 @@ function WoWAccountSelect_Update(self)
 	self.Background.AcceptButton:SetPoint("BOTTOMLEFT", 15, 12);
 	self.Background.CancelButton:SetPoint("BOTTOMRIGHT", -15, 12);
 	self.Background.Container:SetPoint("BOTTOMRIGHT", -16, 36);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local accountButtons = self.Background.Container.ScrollBox:GetFrames();
+
+		-- Clear any previous navigation overrides.
+		for _, button in ipairs(accountButtons) do
+			SmartNavigation_ClearJumpNavigationOverrides(button);
+		end
+
+		-- Make sure the final account button navigates to Accept on down press.
+		local lastAccountButton = accountButtons[#accountButtons];
+		SmartNavigation_AddJumpNavigationOverride(lastAccountButton, SMART_NAV_INPUT_DIRECTION.DOWN, self.Background.AcceptButton);
+	end
 end
 
 function WoWAccountSelect_OnKeyDown(self, key)
@@ -368,6 +469,34 @@ end
 
 function WoWAccountSelect_OnAccept()
 	WoWAccountSelect_SelectAccount(AccountLogin.UI.WoWAccountSelectDialog.selectedAccount);
+end
+
+function WoWAccountSelect_SetUpGamepad(self)
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "AccountSelectFooter");
+	self.frameFooter:AddStandardSelectPrompt();
+	self.frameFooter:Finalize();
+	self.frameFooter.inputLegend:ClearAllPoints();
+	self.frameFooter.inputLegend:SetPoint("TOPLEFT", self.Background, "BOTTOMLEFT", 10, 0);
+
+	local accountSelectFrame = AccountLogin.UI.WoWAccountSelectDialog;
+	function accountSelectFrame.UnfocusGamepad()
+		self.frameFooter:HideAndDeactivateBindings();
+	end
+	function accountSelectFrame.FocusGamepad()
+		self.frameFooter:ShowAndActivateBindings();
+	end
+
+	function accountSelectFrame.StartFocus()
+		self.Background:StartFocus();
+	end
+	function accountSelectFrame.EndFocus()
+		self.Background:EndFocus();
+	end
+end
+
+function WoWAccountSelect_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(WoWAccountSelect_SetUpGamepad, self));
 end
 
 -- =============================================================

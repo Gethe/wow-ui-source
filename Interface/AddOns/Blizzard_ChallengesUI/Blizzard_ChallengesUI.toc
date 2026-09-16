@@ -1,0 +1,10 @@
+## Title: Blizzard_ChallengesUI
+## LoadOnDemand: 1
+## Dep: Blizzard_GroupFinder [AllowLoadGameType mists]
+## Dep: Blizzard_GameMenuEsc
+## AllowLoadGameType: standard, mists
+
+Blizzard_ChallengesUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_ChallengesUI.lua
+[Family]\Blizzard_ChallengesUI.xml
+[Family]\Localization.lua

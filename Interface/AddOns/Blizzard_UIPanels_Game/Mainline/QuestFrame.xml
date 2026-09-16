@@ -33,6 +33,12 @@
 		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>
 	</Texture>
 
+	<Button name="QuestProgressItemTemplate" inherits="QuestItemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_QuestItemButton" type="string"/>
+		</KeyValues>
+	</Button>
+
 	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Size x="338" y="496"/>
 		<Layers>
@@ -148,32 +154,32 @@
 											</OnLoad>
 										</Scripts>
 									</Frame>
-									<Button name="QuestProgressItem1" inherits="QuestItemTemplate" id="1">
+									<Button name="QuestProgressItem1" inherits="QuestProgressItemTemplate" id="1">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT" x="-3" y="-5"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestProgressItem2" inherits="QuestItemTemplate" id="2">
+									<Button name="QuestProgressItem2" inherits="QuestProgressItemTemplate" id="2">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="QuestProgressItem1" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestProgressItem3" inherits="QuestItemTemplate" id="3">
+									<Button name="QuestProgressItem3" inherits="QuestProgressItemTemplate" id="3">
 										<Anchors>
 											<Anchor point="TOP" relativeTo="QuestProgressItem1" relativePoint="BOTTOM" x="0" y="-3"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestProgressItem4" inherits="QuestItemTemplate" id="4">
+									<Button name="QuestProgressItem4" inherits="QuestProgressItemTemplate" id="4">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="QuestProgressItem3" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestProgressItem5" inherits="QuestItemTemplate" id="5">
+									<Button name="QuestProgressItem5" inherits="QuestProgressItemTemplate" id="5">
 										<Anchors>
 											<Anchor point="TOP" relativeTo="QuestProgressItem3" relativePoint="BOTTOM" x="0" y="-3"/>
 										</Anchors>
 									</Button>
-									<Button name="QuestProgressItem6" inherits="QuestItemTemplate" id="6">
+									<Button name="QuestProgressItem6" inherits="QuestProgressItemTemplate" id="6">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="QuestProgressItem5" relativePoint="RIGHT" x="2" y="0"/>
 										</Anchors>

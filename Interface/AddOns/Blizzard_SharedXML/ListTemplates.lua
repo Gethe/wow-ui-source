@@ -43,6 +43,7 @@ function ListHeaderVisualMixin:SetTitleColor(useHighlight, color)
 	end
 
 	self.titleColors[useHighlight] = color;
+	self:CheckHighlightTitle(self:IsMouseMotionFocus());
 end
 
 function ListHeaderVisualMixin:CheckHighlightTitle(isMouseOver)

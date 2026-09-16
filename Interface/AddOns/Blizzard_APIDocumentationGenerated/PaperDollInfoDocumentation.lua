@@ -8,27 +8,21 @@ local PaperDollInfo =
 	Functions =
 	{
 		{
+			Name = "AmmoNeeded",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ammoNeeded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAutoEquipCursorItem",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "canAutoEquip", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "CanCursorCanGoInSlot",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canOccupySlot", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -41,6 +35,21 @@ local PaperDollInfo =
 			Arguments =
 			{
 				{ Name = "slot", Type = "LuaInventorySlot", Nilable = false },
+			},
+		},
+		{
+			Name = "CursorCanGoInSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canOccupySlot", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -360,9 +369,9 @@ local PaperDollInfo =
 			SynchronousEvent = true,
 		},
 		{
-			Name = "PetSpellPowerUpdate",
+			Name = "PetStatsUpdate",
 			Type = "Event",
-			LiteralName = "PET_SPELL_POWER_UPDATE",
+			LiteralName = "PET_STATS_UPDATE",
 			SynchronousEvent = true,
 		},
 		{

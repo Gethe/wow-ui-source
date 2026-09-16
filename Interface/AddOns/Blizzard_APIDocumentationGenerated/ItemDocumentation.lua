@@ -81,12 +81,34 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "ConfirmDeleteItem",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmNoRefundOnUse",
 			Type = "Function",
 		},
 		{
 			Name = "ConfirmOnUse",
 			Type = "Function",
+		},
+		{
+			Name = "DeleteItem",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
 		},
 		{
 			Name = "DoesItemContainSpec",
@@ -1116,6 +1138,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetWeaponEnchantInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "weaponSlot", Type = "WeaponSlot", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "enchants", Type = "table", InnerType = "WeaponEnchantInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAnimaItemByID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1759,6 +1796,7 @@ local Item =
 				{ Name = "qualityID", Type = "number", Nilable = false },
 				{ Name = "bonding", Type = "number", Nilable = false },
 				{ Name = "questWarn", Type = "number", Nilable = false },
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = true },
 			},
 		},
 		{
@@ -1924,6 +1962,19 @@ local Item =
 				{ Name = "maxItemLevel", Type = "number", Nilable = false },
 				{ Name = "trackString", Type = "cstring", Nilable = true },
 				{ Name = "trackStringID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "WeaponEnchantInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "hasEnchant", Type = "bool", Nilable = false },
+				{ Name = "enchantType", Type = "ItemEnchantType", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+				{ Name = "charges", Type = "number", Nilable = false },
+				{ Name = "enchantID", Type = "number", Nilable = false },
+				{ Name = "enchantIconID", Type = "number", Nilable = false },
 			},
 		},
 	},

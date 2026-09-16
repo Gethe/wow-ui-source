@@ -1,0 +1,7 @@
+## Title: Blizzard_SwingTimer
+## AllowLoadGameType: camelot
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_ManagedFrameSystem
+
+Blizzard_SwingTimer.lua
+Blizzard_SwingTimer.xml

@@ -77,6 +77,17 @@ function PartyFrameMixin:UpdateMemberFrames()
 	self:Layout();
 end
 
+function PartyFrameMixin:GetPartyMemberFrame(index)
+	local foundFrame = nil;
+	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
+		if memberFrame.layoutIndex == index then
+			foundFrame = memberFrame;
+		end
+	end
+
+	return foundFrame;
+end
+
 function PartyFrameMixin:UpdatePartyMemberBackground()
 	if not self.Background then
 		return;
@@ -159,6 +170,10 @@ function PartyFrameMixin:UpdatePartyFrames()
 
 	self:UpdatePartyMemberBackground();
 	self:UpdatePaddingAndLayout();
+
+	if GamepadPartyTargeting then
+		GamepadPartyTargeting:RefreshPlayerAnchors();
+	end
 end
 
 PartyMemberBuffTooltipMixin = {};

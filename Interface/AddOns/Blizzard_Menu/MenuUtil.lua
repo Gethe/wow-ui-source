@@ -253,6 +253,11 @@ function MenuUtil.CreateColorSwatch(text, callback, colorInfo)
 	return ConfigureTextButton(text, elementDescription);
 end
 
+function MenuUtil.CreateSearchEntry(text, callback, data)
+	local elementDescription = MenuTemplates.CreateSearchEntry(text, callback, data);
+	return ConfigureTextButton(text, elementDescription);
+end
+
 --[[
 Wrappers for convenience since all other create functions are in MenuUtil. Note that these
 are not accompanied by any additional utilities or inserters.
@@ -273,6 +278,7 @@ MenuUtilPrivate.Inserters =
 	CreateDivider = MenuUtil.CreateDivider,
 	CreateSpacer = MenuUtil.CreateSpacer,
 	CreateColorSwatch = MenuUtil.CreateColorSwatch,
+	CreateSearchEntry = MenuUtil.CreateSearchEntry,
 };
 
 function MenuUtilPrivate.GetInserters()

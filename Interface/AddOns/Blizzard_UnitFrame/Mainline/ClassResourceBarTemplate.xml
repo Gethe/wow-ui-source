@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-  <Script file="ClassResourceBarTemplate.lua"/>
-   		
+
 	<!-- Default template with a horizontal layout group for pooled point instances -->
 	<Frame name="ClassResourceBarTemplate" inherits="ClassPowerBarFrame, HorizontalLayoutFrame, PlayerBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
 		<KeyValues>
@@ -12,7 +11,7 @@
 			<KeyValue key="usePooledResourceButtons" value="true" type="boolean" />
 		</KeyValues>
 	</Frame>
-	
+
   	<!-- Template without a layout group for resources that require a special self-managed point layout -->
 	  <Frame name="ClassResourceBarSelfManagedPointsTemplate" inherits="ClassPowerBarFrame, PlayerBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
 		<KeyValues>

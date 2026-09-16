@@ -276,20 +276,22 @@ function PingManager:CancelPendingPing()
 end
 
 function PingManager:ShowPingSpot(type, posX, posY)
-    local pingSpot = self.pingSpotPool:Acquire();
-    pingSpot:ClearAllPoints();
-    pingSpot:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", posX, posY);
+	local pingSpot = self.pingSpotPool:Acquire();
+	pingSpot:ClearAllPoints();
+	pingSpot:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", posX, posY);
 
-    local uiTextureKit = C_Ping.GetTextureKitForType(type);
-    pingSpot.GlowIn:SetAtlas(("Ping_SpotGlw_%s_In"):format(uiTextureKit), true);
-    pingSpot.GlowOut:SetAtlas(("Ping_SpotGlw_%s_Out"):format(uiTextureKit), true);
+	local uiTextureKit = C_Ping.GetTextureKitForType(type);
+	if uiTextureKit then
+		pingSpot.GlowIn:SetAtlas(("Ping_SpotGlw_%s_In"):format(uiTextureKit), true);
+		pingSpot.GlowOut:SetAtlas(("Ping_SpotGlw_%s_Out"):format(uiTextureKit), true);
+	end
 
-    pingSpot.PulseAnim:SetScript("OnFinished", function()
-        pingSpot.PulseAnim:SetScript("OnFinished", nil);
-        pingSpot:Hide();
+	pingSpot.PulseAnim:SetScript("OnFinished", function()
+		pingSpot.PulseAnim:SetScript("OnFinished", nil);
+		pingSpot:Hide();
 
-        self.pingSpotPool:Release(pingSpot);
-    end);
-    pingSpot:Show();
-    pingSpot.PulseAnim:Restart();
+		self.pingSpotPool:Release(pingSpot);
+	end);
+	pingSpot:Show();
+	pingSpot.PulseAnim:Restart();
 end

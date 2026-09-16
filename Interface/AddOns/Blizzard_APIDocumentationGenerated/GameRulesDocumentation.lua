@@ -8,6 +8,15 @@ local GameRules =
 	Functions =
 	{
 		{
+			Name = "AccountHasSDEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSDEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AutoConnectToGameModeRealm",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -219,6 +228,15 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsHardcoreActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMultiActionBarVisibilityForced",
 			Type = "Function",
 
@@ -247,6 +265,24 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsSDHDToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSelfFoundAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsStandard",
 			Type = "Function",
 
@@ -262,6 +298,24 @@ local GameRules =
 			Returns =
 			{
 				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SelectClassicExperiencePreset",
+			Type = "Function",
+		},
+		{
+			Name = "SelectModernExperiencePreset",
+			Type = "Function",
+		},
+		{
+			Name = "SetSDHDToggleValue",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setToSD", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -310,6 +364,12 @@ local GameRules =
 				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
 				{ Name = "disabled", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "GameRulesChanged",
+			Type = "Event",
+			LiteralName = "GAME_RULES_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 

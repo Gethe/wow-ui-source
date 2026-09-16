@@ -44,7 +44,7 @@ local function TryHandleWorldEsc()
 		return true;
 	end
 
-	return false;
+		return false;
 end
 
 RegisterGameMenuEscHandler(GameMenuEscPriority.World, TryHandleWorldEsc);
@@ -70,6 +70,23 @@ function CloseMenus()
 end
 
 RegisterGameMenuEscHandler(GameMenuEscPriority.Menu, SecureCloseMenus);
+
+function ToggleGroupFinderFrame(sidePanelName, selection)
+	local style = C_LFGList.GetPremadeGroupFinderStyle();
+	if style == Enum.PremadeGroupFinderStyle.Disabled then
+		return;
+	end
+
+	if style == Enum.PremadeGroupFinderStyle.Vanilla then
+		if not C_AddOns.IsAddOnLoaded("Blizzard_GroupFinder_VanillaStyle") then
+			return;
+		end
+
+		LFGVanilla_ToggleFrame();
+	else
+		PVEFrame_ToggleFrame(sidePanelName, selection);
+	end
+end
 
 EventRegistry:RegisterCallback("UI.TopLevelParentShown", function()
 	CloseAllWindows();

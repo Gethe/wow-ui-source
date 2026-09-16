@@ -1,0 +1,62 @@
+## Title: Blizzard_Communities
+## Dep: Blizzard_GuildControlUI
+## Dep: Blizzard_HelpPlate
+## Dep: Blizzard_ChatFrameBase
+## Dep: Blizzard_ChatFrame
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_TimerunningUtil [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_Plunderstorm
+## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
+
+CommunitiesList.lua
+CommunitiesList.xml
+CommunitiesMemberList.lua
+CommunitiesMemberList.xml
+CommunitiesChatFrame.lua
+CommunitiesChatFrame.xml
+CommunitiesInvitationFrame.lua
+CommunitiesInvitationFrame.xml
+CommunitiesGuildFinderFrame.lua
+CommunitiesGuildFinderFrame.xml
+CommunitiesStreams.lua
+CommunitiesStreams.xml
+CommunitiesAvatarPickerDialog.lua
+CommunitiesAvatarPickerDialog.xml
+CommunitiesAddDialogInsecure.lua
+CommunitiesAddDialogInsecure.xml
+CommunitiesTabs.lua
+CommunitiesTabs.xml
+CommunitiesLanguage.lua
+CommunitiesLanguage.xml
+ClubFinderApplicantList.lua
+ClubFinderApplicantList.xml
+ClubFinder.lua
+ClubFinder.xml
+CommunitiesSettings.lua
+CommunitiesSettings.xml
+CommunitiesTicketManagerDialog.lua
+CommunitiesTicketManagerDialog.xml
+CommunitiesErrors.lua
+CommunitiesHyperlink.lua
+CommunitiesCalendar.lua
+CommunitiesCalendar.xml
+GuildRewards.lua
+GuildRewards.xml
+GuildPerks.lua
+GuildPerks.xml
+[Family]\CommunitiesFrame_Bootstrap.lua
+[Family]\GuildInfo.lua
+GuildInfo.lua
+GuildInfo.xml
+GuildNews.lua
+GuildNews.xml
+GuildRoster.lua
+GuildRoster.xml
+GuildPreferredPlaySettings.lua
+GuildPreferredPlaySettings.xml
+GuildNameChange.xml
+CommunitiesFrame.lua
+CommunitiesFrame.xml
+[Game]/CommunitiesFrameOverrides.lua [AllowLoadGameType camelot]
+Localization.lua

@@ -1,0 +1,18 @@
+## Title: Blizzard_MicroMenu
+## Dep: Blizzard_Communities [AllowLoadGameType mainline]
+
+Shared\MicroMenuUtil.lua
+
+[Family]\MainMenuBarMicroButtons.lua
+[Game]\MainMenuBarMicroButtonsOverrides.lua [AllowLoadGameType camelot]
+[Family]\MainMenuBarMicroButtons.xml
+
+Shared\MicroMenuContainer.lua
+[Family]\MicroMenuContainerOverrides.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MicroMenuContainerOverrides.lua [AllowLoadGameType vanilla, wrath, cata, mists, camelot]
+Vanilla\MicroMenuContainerOverrides.lua [AllowLoadGameType tbc]
+[Family]\MicroMenuContainer.xml
+
+[Family]\MainMenuBarMicroMenuTemplate.xml
+Shared\MainMenuBarMicroMenu.xml [ExcludeLoadGameType camelot]
+[Game]\MainMenuBarMicroMenu.xml [AllowLoadGameType camelot]

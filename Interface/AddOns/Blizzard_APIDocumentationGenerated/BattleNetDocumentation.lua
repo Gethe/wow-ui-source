@@ -17,6 +17,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "AreHighResTexturesInstalled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "installed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AreTitleFriendCustomNamesEnabled",
 			Type = "Function",
 
@@ -233,6 +242,21 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "isBattleNetFriendsListSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFriendTagSupportedForCurrentGameType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "friendTag", Type = "BattleNetFriendTag", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFriendTagSupportedForCurrentGameType", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -132,6 +132,9 @@
 	<Font name="WhiteNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="WhiteLargeNumberFont" inherits="NumberFont_GameLarge" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 	<Font name="TextStatusBarTextLarge" inherits="SystemFont_Outline" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>

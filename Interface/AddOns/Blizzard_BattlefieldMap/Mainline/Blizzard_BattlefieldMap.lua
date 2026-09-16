@@ -198,7 +198,6 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FogOfWarDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DeathMapDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
@@ -213,6 +212,11 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIEventDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
+
+	-- Encounter Journal does not exist in all game types.
+	if EncounterJournalDataProviderMixin then
+		self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
+	end
 
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));

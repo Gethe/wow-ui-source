@@ -160,14 +160,38 @@ function CustomizationOptionSliderMixin:NarrationGetContext()
 end
 
 ----------------- Option Check Button -----------------
-
 CustomizationOptionCheckButtonMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, CustomizationFrameWithTooltipMixin);
+
+do
+	local function ClickCheckButton()
+		local optionCheckButton = SmartNavigation:GetCurrentButton();
+		optionCheckButton.Button:Click();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "CustomizationOptionCheckButton");
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, ClickCheckButton);
+	bindings:Finalize();
+	CustomizationOptionCheckButtonMixin.customizationOptionCheckButtonFooter = bindings;
+end
 
 function CustomizationOptionCheckButtonMixin:CustomizationOptionCheckButton_OnLoad()
 	self.Button:SetScript("OnClick", GenerateClosure(self.OnCheckButtonClick, self));
 	self.Button:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
 	self.Button:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
 	Mixin(self.Button, NarrationForwardToParentMixin);
+
+	SmartNavigation_MarkFrameIgnored(self.Button);
+
+	-- Smart nav should focus the containing frame as a whole, rather than the child button.
+	SmartNavigation_MarkFrameFocusable(self);
+
+	-- Default the smart nav cursor to appear to the left of the label text.
+	local defaultSmartNavCursorPosition = CreateAnchor("RIGHT", self.Label, "LEFT");
+	if (self.defaultAnchorSmartNavCursorToCheckButton) then
+		defaultSmartNavCursorPosition = CreateAnchor("RIGHT", self.Button, "LEFT");
+	end
+
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, defaultSmartNavCursorPosition);
 end
 
 function CustomizationOptionCheckButtonMixin:SetupOption(optionData)
@@ -207,15 +231,50 @@ function CustomizationOptionCheckButtonMixin:NarrationGetContext()
 	return NarrationUtil.MakeNarrationString(checkboxContext);
 end
 
+function CustomizationOptionCheckButtonMixin:OnSmartNavSelect()
+	self.customizationOptionCheckButtonFooter:ShowAndActivateBindings();
+end
+
+function CustomizationOptionCheckButtonMixin:OnSmartNavDeselect()
+	self.customizationOptionCheckButtonFooter:HideAndDeactivateBindings();
+end
+
 ----------------- Dropdown with Steppers + Label -----------------
 
 -- Expects to inherit DropdownWithSteppersAndLabelTemplate
 
 CustomizationDropdownWithSteppersAndLabelMixin = CreateFromMixins(CustomizationOptionFrameBaseMixin, CustomizationFrameWithTooltipMixin);
 
+do
+	local function Increment()
+		local dropdownWithSteppers = SmartNavigation:GetCurrentButton();
+		dropdownWithSteppers.IncrementButton:Click();
+	end
+
+	local function Decrement()
+		local dropdownWithSteppers = SmartNavigation:GetCurrentButton();
+		dropdownWithSteppers.DecrementButton:Click();
+	end
+
+	local function OpenDropdown()
+		local dropdownWithSteppers = SmartNavigation:GetCurrentButton();
+		dropdownWithSteppers.Dropdown:MouseDown();
+		dropdownWithSteppers.Dropdown:MouseUp();
+	end
+
+	local bindings = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent and UIParent or GlueParent, "CustomizationDropdownWithSteppersAndLabel");
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increment);
+	bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrement);
+	bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, OpenDropdown);
+	bindings:Finalize();
+	CustomizationDropdownWithSteppersAndLabelMixin.customizationDropdownWithSteppersAndLabelFooter = bindings;
+end
+
 function CustomizationDropdownWithSteppersAndLabelMixin:OnLoad()
 	CustomizationFrameWithTooltipMixin.OnLoad(self);
 	DropdownWithSteppersAndLabelMixin.OnLoad(self);
+	NarrationUtil.SetStaticName(self.DecrementButton, NARRATION_DROPDOWN_PREVIOUS_OPTION);
+	NarrationUtil.SetStaticName(self.IncrementButton, NARRATION_DROPDOWN_NEXT_OPTION);
 
 	self.Dropdown:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self.Dropdown, "BOTTOMRIGHT"));
 	self.Dropdown:EnableMouseWheel(true);
@@ -448,6 +507,14 @@ function CustomizationDropdownWithSteppersAndLabelMixin:SetMissingOptionWarningE
 	elseif self:GetWarningTexture() then
 		self:GetWarningTexture():Hide();
 	end
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:OnSmartNavSelect()
+	self.customizationDropdownWithSteppersAndLabelFooter:ShowAndActivateBindings();
+end
+
+function CustomizationDropdownWithSteppersAndLabelMixin:OnSmartNavDeselect()
+	self.customizationDropdownWithSteppersAndLabelFooter:HideAndDeactivateBindings();
 end
 
 

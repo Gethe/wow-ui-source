@@ -10,9 +10,18 @@ function ToyBox_OnLoad(self)
 	self.fanfarePool = CreateFramePool("MODELSCENE", self, "NonInteractableWrappedModelSceneTemplate");
 
 	ToyBox_UpdatePages();
-	ToyBox_UpdateProgressBar(self);
+	ToyBox_UpdateProgress(self);
 
-	ToyBox_InitFilterDropdown(self);
+	-- If there is only one filter setting available, hide filter
+	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		self.FilterDropdown:Hide();
+
+		-- Move search bar over to previous filter position
+		local point, relativeFrame, relativePoint, offsetX, offsetY = ToyBox.FilterDropdown:GetPoint();
+		ToyBox.searchBox:SetPoint(point, relativeFrame, relativePoint, offsetX, offsetY);
+	else
+		ToyBox_InitFilterDropdown(self);
+	end
 
 	self:RegisterEvent("TOYS_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
@@ -154,7 +163,7 @@ function ToyBox_OnEvent(self, event, itemID, new, fanfare)
 		end
 
 		ToyBox_UpdatePages();
-		ToyBox_UpdateProgressBar(self);
+		ToyBox_UpdateProgress(self);
 		ToyBox_UpdateButtons();
 
 		if (new) then
@@ -178,7 +187,7 @@ function ToyBox_OnShow(self)
 	C_ToyBox.ForceToyRefilter();
 
 	ToyBox_UpdatePages();
-	ToyBox_UpdateProgressBar(self);
+	ToyBox_UpdateProgress(self);
 	ToyBox_UpdateButtons();
 end
 
@@ -438,14 +447,19 @@ function ToyBox_UpdatePages()
 	end
 end
 
-function ToyBox_UpdateProgressBar(self)
+function ToyBox_UpdateProgress(self)
 	local maxProgress = C_ToyBox.GetNumTotalDisplayedToys();
 	local currentProgress = C_ToyBox.GetNumLearnedDisplayedToys();
 
-	self.progressBar:SetMinMaxValues(0, maxProgress);
-	self.progressBar:SetValue(currentProgress);
+	if self.ProgressTracker.isBar then
+		self.ProgressTracker:SetMinMaxValues(0, maxProgress);
+		self.ProgressTracker:SetValue(currentProgress);
+		self.ProgressTracker.text:SetFormattedText(TOY_PROGRESS_FORMAT, currentProgress, maxProgress);
+	end
 
-	self.progressBar.text:SetFormattedText(TOY_PROGRESS_FORMAT, currentProgress, maxProgress);
+	if self.ProgressTracker.isCount then
+		self.ProgressTracker.Count:SetText(currentProgress);
+	end
 end
 
 function ToyBox_OnSearchTextChanged(self)

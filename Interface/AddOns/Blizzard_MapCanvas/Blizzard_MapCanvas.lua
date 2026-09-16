@@ -24,6 +24,7 @@ function MapCanvasMixin:OnLoad()
 	self:EvaluateLockReasons();
 
 	self.debugAreaTriggers = false;
+	self.currentPoIPins = {};
 end
 
 function MapCanvasMixin:OnUpdate()
@@ -32,6 +33,11 @@ function MapCanvasMixin:OnUpdate()
 	self:UpdatePinNudging();
 	self:ProcessCursorHandlers();
 	self:RunDataProviderOnUpdate();
+
+	--Highlight stuff based on cursor...
+	if InputUtil.IsGamepadUIEnabled() then
+		self:UpdateGamepadCursor();
+	end
 end
 
 function MapCanvasMixin:SetMapID(mapID)
@@ -100,6 +106,22 @@ do
 	end
 end
 
+local function EnterMapPin(inPin)
+	if inPin.OnEnter then
+		inPin:OnEnter();
+	end
+	inPin:SetHighlightLocked(true);
+	inPin:OnMouseEnter();
+end
+
+local function ExitMapPin(inPin)
+	if inPin.OnExit then
+		inPin:OnExit();
+	end
+	inPin:SetHighlightLocked(false);
+	inPin:OnMouseLeave();
+end
+
 do
 	local function MapCanvasOnDataProviderHide(dataProvider, _included)
 		dataProvider:OnHide();
@@ -107,6 +129,13 @@ do
 
 	function MapCanvasMixin:OnHide()
 		self:UnregisterEvent("HANDLE_UI_ACTION");
+
+		if InputUtil.IsGamepadUIEnabled() then
+			for _, pin in ipairs(self.currentPoIPins) do
+				ExitMapPin(pin);
+			end
+			table.wipe(self.currentPoIPins);
+		end
 
 		secureexecuterange(self.dataProviders, MapCanvasOnDataProviderHide);
 	end
@@ -378,7 +407,12 @@ function MapCanvasMixin:UnregisterPin(pin)
 	if pin:IsPinSuppressor() then
 		tDeleteItem(self.pinSuppressors, pin);
 		self:SetPinSuppressionDirty();
-	end	
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		ExitMapPin(pin);
+		tDeleteItem(self.currentPoIPins, pin);
+	end
 end
 
 function MapCanvasMixin:GetPinSuppressors()
@@ -678,6 +712,12 @@ function MapCanvasMixin:SetPinPosition(pin, normalizedX, normalizedY, insetIndex
 			self:AddPinToNudge(pin);
 		end
 	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		--Since gamepad can overscroll the map we have to hide the pins that are not over the map art.
+		local shouldShowPin = (normalizedX >= 0 and normalizedX <= 1) and (normalizedY >= 0 and normalizedY <= 1);
+		pin:SetShown(shouldShowPin);
+	end
 end
 
 function MapCanvasMixin:ApplyPinPosition(pin, normalizedX, normalizedY, insetIndex)
@@ -815,8 +855,8 @@ function MapCanvasMixin:ZoomOut()
 	self.ScrollContainer:ZoomOut();
 end
 
-function MapCanvasMixin:ResetZoom()
-	self.ScrollContainer:ResetZoom();
+function MapCanvasMixin:ResetZoom(ignoreScaleRatio)
+	self.ScrollContainer:ResetZoom(ignoreScaleRatio);
 end
 
 function MapCanvasMixin:InstantPanAndZoom(scale, x, y, ignoreScaleRatio)
@@ -929,6 +969,10 @@ function MapCanvasMixin:GetNormalizedCursorPosition()
 	return self.ScrollContainer:GetNormalizedCursorPosition()
 end
 
+function MapCanvasMixin:GetNormalizedGamepadCursorPosition()
+	return self.ScrollContainer:GetNormalizedGamepadCursorPosition();
+end
+
 function MapCanvasMixin:IsCanvasMouseFocus()
 	return self.ScrollContainer:IsMouseMotionFocus();
 end
@@ -999,6 +1043,16 @@ end
 
 function MapCanvasMixin:NavigateToCursor(ignoreZoneMapPositionData)
 	local normalizedCursorX, normalizedCursorY = self:GetNormalizedCursorPosition();
+	local mapInfo = C_Map.GetMapInfoAtPosition(self:GetMapID(), normalizedCursorX, normalizedCursorY, ignoreZoneMapPositionData);
+	if mapInfo then
+		self:SetMapID(mapInfo.mapID);
+		return true;
+	end
+	return false;
+end
+
+function MapCanvasMixin:NavigateToGamepadCursor(ignoreZoneMapPositionData)
+	local normalizedCursorX, normalizedCursorY = self:GetNormalizedGamepadCursorPosition();
 	local mapInfo = C_Map.GetMapInfoAtPosition(self:GetMapID(), normalizedCursorX, normalizedCursorY, ignoreZoneMapPositionData);
 	if mapInfo then
 		self:SetMapID(mapInfo.mapID);
@@ -1176,6 +1230,100 @@ function MapCanvasMixin:HandleUIAction(actionType)
 	if actionType == Enum.UIActionType.UpdateMapSystem then
 		self:RefreshAllDataProviders();
 	end
+end
+
+local MIN_PIN_DISTANCE_SQUARED = 10 * 10;
+
+function MapCanvasMixin:UpdateGamepadCursor()
+	local cursorX, cursorY = self.ScrollContainer:GetGamepadCursorPosition();
+
+	local possiblePoIPins = {};
+
+	local function CheckPinDistance(inPin)
+		local pinLeft, pinBottom, pinWidth, pinHeight = inPin:GetScaledRect();
+		local pinX = pinLeft + (pinWidth/2);
+		local pinY = pinBottom + (pinHeight/2);
+
+		local distanceFromCursorSquared = SquaredDistanceBetweenPoints(cursorX, cursorY, pinX, pinY);
+		
+		if distanceFromCursorSquared <= MIN_PIN_DISTANCE_SQUARED then
+			table.insert(possiblePoIPins, inPin);
+		end
+	end
+
+	self:ExecuteOnAllPins(CheckPinDistance);
+
+	local enteredPins = {};
+	local exitedPins = {};
+
+	for _, possiblePin in ipairs(possiblePoIPins) do
+		local found = false;
+		for _, currentPin in ipairs(self.currentPoIPins) do
+			if possiblePin == currentPin then
+				found = true;
+				break;
+			end
+		end
+
+		if not found then
+			table.insert(enteredPins, possiblePin);
+		end
+	end
+
+	for _, currentPin in ipairs(self.currentPoIPins) do
+		local found = false;
+		for _, possiblePin in ipairs(possiblePoIPins) do
+			if currentPin == possiblePin then
+				found = true;
+			end
+		end
+
+		if not found then
+			table.insert(exitedPins, currentPin);
+		end
+	end
+	
+	for _, exitedPin in ipairs(exitedPins) do
+		ExitMapPin(exitedPin);
+
+		local index = nil;
+		for i, currentPin in ipairs(self.currentPoIPins) do
+			if currentPin == exitedPin then
+				index = i;
+				break;
+			end
+		end
+
+		if index then
+			table.remove(self.currentPoIPins, index);
+		end
+	end
+
+	for _, enteredPin in ipairs(enteredPins) do
+		EnterMapPin(enteredPin);
+		table.insert(self.currentPoIPins, enteredPin);
+	end
+
+	self.ScrollContainer:CheckForEdgePan();
+end
+
+function MapCanvasMixin:GetHoveredPin()
+	if #self.currentPoIPins > 0 then
+		return self.currentPoIPins[1];
+	end
+
+	return nil;
+end
+
+function MapCanvasMixin:ClickHoveredPins()
+	if #self.currentPoIPins > 0 then
+		for _, pin in ipairs(self.currentPoIPins) do
+			pin:OnClick("LeftButton");
+		end
+		return true;
+	end
+
+	return false;
 end
 
 function MapCanvasMixin:SetAllPinsByTemplateGlowing(pinTemplate, glowing, glowLoopCount)

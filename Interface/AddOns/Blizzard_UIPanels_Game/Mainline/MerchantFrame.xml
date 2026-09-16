@@ -26,6 +26,9 @@
 		</Layers>
 		<Frames>
 			<ItemButton parentKey="ItemButton" name="$parentItemButton">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_MerchantItemButton" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -184,6 +187,16 @@
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT" x="12" y="0"/>
 				</Anchors>
 			</Frame>
+			<Button name="MerchantPageTurnIndicatorLeft" inherits="GamepadPrevPageButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MerchantFrame" relativePoint="BOTTOMLEFT" x="25" y="100"/>
+				</Anchors>
+			</Button>
+			<Button name="MerchantPageTurnIndicatorRight" inherits="GamepadNextPageButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="MerchantFrame" relativePoint="BOTTOMRIGHT" x="-25" y="100"/>
+				</Anchors>
+			</Button>			
 			<Button name="MerchantSellAllJunkButton">
 				<Size x="36" y="36"/>
 				<Anchors>
@@ -303,13 +316,7 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
-						if ( InRepairMode() ) then
-							MerchantFrame:UnregisterEvent("PLAYER_MONEY");
-							HideRepairCursor();
-						else
-							MerchantFrame:RegisterEvent("PLAYER_MONEY");
-							ShowRepairCursor();
-						end
+						MerchantRepairItemButton_OnClick();
 					</OnClick>
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
@@ -610,6 +617,7 @@
 					<Anchor point="TOPRIGHT" x="-11" y="-30"/>
 				</Anchors>
 			</DropdownButton>
+			<Frame name="MerchantFrameTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true" />
 		</Frames>
 		<Scripts>
 			<OnHide function="MerchantFrame_OnHide"/>

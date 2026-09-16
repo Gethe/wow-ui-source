@@ -35,6 +35,10 @@ function BaseSpellBookCategoryMixin:GetCategoryEnum()
 	return self.categoryEnum;
 end
 
+function BaseSpellBookCategoryMixin:GetIcon()
+	return self.displayIcon;
+end
+
 function BaseSpellBookCategoryMixin:GetSpellGroupForSlotIndex(slotIndex)
 	for _, spellGroup in ipairs(self.spellGroups) do
 		if spellGroup.spellBookItemSlotIndices and spellGroup.spellBookItemSlotIndices[slotIndex] then
@@ -317,6 +321,7 @@ function SpellBookPetCategoryMixin:UpdateSpellGroups()
 	local numPetSpells = C_SpellBook.HasPetSpells() or 0;
 	local newSpellGroups = {
 		{
+			displayName = self.showHeader and PET or nil;
 			slotIndexOffset = 0,
 			numSpellBookItems = numPetSpells,
 			showActionBarStatuses = true,
@@ -341,5 +346,169 @@ function SpellBookPetCategoryMixin:IsAvailable()
 end
 
 function SpellBookPetCategoryMixin:ContainsSkillLine(skillLineIndex)
+	return false;
+end
+
+--------------------------- Single Skill Line (Classic-Style) --------------------------------
+
+SpellBookSingleSkillLineCategoryMixin = CreateFromMixins(BaseSpellBookCategoryMixin);
+
+function SpellBookSingleSkillLineCategoryMixin:Init(spellBookFrame, skillLineIndex)
+	self.skillLineIndex = skillLineIndex;
+	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex);
+	if skillLineInfo and not skillLineInfo.shouldHide then
+		-- Use Class Icon for General tab
+		if skillLineIndex == Enum.SpellBookSkillLineIndex.General then
+			self.displayIcon = C_SpellBook.GetClassSkillLineInfo().iconID;
+		else
+			self.displayIcon = skillLineInfo.iconID;
+		end
+		self.spellBank = Enum.SpellBookSpellBank.Player;
+		self.categoryEnum = PlayerSpellsUtil.SpellBookCategories.Class;
+	end
+
+	BaseSpellBookCategoryMixin.Init(self, spellBookFrame);
+end
+
+function SpellBookSingleSkillLineCategoryMixin:UpdateSpellGroups()
+	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(self.skillLineIndex);
+	local newSpellGroups = {
+		{
+			displayName = skillLineInfo.name,
+			slotIndexOffset = skillLineInfo.itemIndexOffset,
+			numSpellBookItems = skillLineInfo.numSpellBookItems,
+			showActionBarStatuses = true,
+			spellBookItemSlotIndices = {},
+			orderedSpellBookItemSlotIndices = {},
+		}
+	};
+
+	local compareSpellIndicies = false;
+	local anyChanges = self:DidSpellGroupsChange(self.spellGroups, newSpellGroups, compareSpellIndicies);
+
+	if anyChanges then
+		self.spellGroups = newSpellGroups;
+		self:PopulateSpellGroupsIndiciesByRange();
+	end
+
+	return anyChanges;
+end
+
+function SpellBookSingleSkillLineCategoryMixin:IsAvailable()
+	-- Category is always available
+	return true;
+end
+
+function SpellBookSingleSkillLineCategoryMixin:ContainsSkillLine(skillLineIndex)
+	return self.skillLineIndex == skillLineIndex;
+end
+
+--------------------------- Transmog --------------------------------
+
+SpellBookTransmogCategoryMixin = CreateFromMixins(BaseSpellBookCategoryMixin);
+
+-- Search infrastructure assumes SpellBookItems are uniquely identified by (spellBank, slotIndex). Transmog outfits are not real spellbook
+-- entries, so use an offset range to avoid collisions with actual spellbook slot indices.
+local TRANSMOG_SEARCH_OFFSET = 100000;
+
+local function GetSlotIndexFromOutfitID(outfitID)
+	return TRANSMOG_SEARCH_OFFSET + outfitID;
+end
+
+local function GetOutfitIDFromSlotIndex(slotIndex)
+	return slotIndex - TRANSMOG_SEARCH_OFFSET;
+end
+
+function SpellBookTransmogCategoryMixin:Init(spellBookFrame)
+	self.displayName = TRANSMOGRIFY;
+	self.spellBank = Enum.SpellBookSpellBank.Player;
+	self.categoryEnum = PlayerSpellsUtil.SpellBookCategories.Transmog;
+
+	local spellInfo = C_Spell.GetSpellInfo(Constants.TransmogOutfitDataConsts.CLEAR_TRANSMOG_OUTFIT_MANUAL_SPELL_ID);
+	self.clearOutfitInfo = {
+		outfitID = 0,
+		name = TRANSMOG_SHOW_EQUIPPED_GEAR,
+		icon = spellInfo.iconID,
+	};
+
+	BaseSpellBookCategoryMixin.Init(self, spellBookFrame);
+end
+
+function SpellBookTransmogCategoryMixin:GetElementDataForOutfit(outfitInfo)
+	if not outfitInfo then
+		return;
+	end
+
+	return {
+		templateKey = "OUTFIT",
+		outfitID = outfitInfo.outfitID,
+		name = outfitInfo.name,
+		icon = outfitInfo.icon,
+		showActionBarStatuses = true,
+		slotIndex = GetSlotIndexFromOutfitID(outfitInfo.outfitID),
+		spellBank = Enum.SpellBookSpellBank.Player,
+	};
+end
+
+function SpellBookTransmogCategoryMixin:GetElementDataForItem(slotIndex)
+	local outfitID = GetOutfitIDFromSlotIndex(slotIndex);
+	local outfitInfo = outfitID == 0
+		and self.clearOutfitInfo
+		or C_TransmogOutfitInfo.GetOutfitInfo(outfitID);
+
+	return self:GetElementDataForOutfit(outfitInfo);
+end
+
+-- Override base range population because outfit IDs are sparse.
+function SpellBookTransmogCategoryMixin:PopulateSpellGroupsIndiciesByRange()
+	local outfitsInfo = C_TransmogOutfitInfo.GetOutfitsInfo() or {};
+
+	for _, spellGroup in ipairs(self.spellGroups) do
+		spellGroup.spellBookItemSlotIndices = {};
+		spellGroup.orderedSpellBookItemSlotIndices = {};
+
+		local clearSlotIndex = GetSlotIndexFromOutfitID(0);
+		spellGroup.spellBookItemSlotIndices[clearSlotIndex] = true;
+		table.insert(spellGroup.orderedSpellBookItemSlotIndices, clearSlotIndex);
+
+		for _, outfitInfo in ipairs(outfitsInfo) do
+			local slotIndex = GetSlotIndexFromOutfitID(outfitInfo.outfitID);
+
+			spellGroup.spellBookItemSlotIndices[slotIndex] = true;
+			table.insert(spellGroup.orderedSpellBookItemSlotIndices, slotIndex);
+		end
+	end
+end
+
+function SpellBookTransmogCategoryMixin:UpdateSpellGroups()
+	local numOutfits = #(C_TransmogOutfitInfo.GetOutfitsInfo() or {});
+	local newSpellGroups = {
+		{
+			displayName = TRANSMOGRIFY;
+			numSpellBookItems = numOutfits + 1,
+			showActionBarStatuses = true,
+			spellBookItemSlotIndices = {},
+			orderedSpellBookItemSlotIndices = {},
+		}
+	};
+
+	local compareSpellIndices = false;
+	local anyChanges = self:DidSpellGroupsChange(self.spellGroups, newSpellGroups, compareSpellIndices);
+
+	if anyChanges then
+		self.spellGroups = newSpellGroups;
+		self:PopulateSpellGroupsIndiciesByRange();
+	end
+
+	return anyChanges;
+end
+
+function SpellBookTransmogCategoryMixin:IsAvailable()
+	local transmogEnabled = C_TransmogOutfitInfo.IsTransmogEnabled();
+	local hasOutfits = #(C_TransmogOutfitInfo.GetOutfitsInfo() or {}) > 0;
+	return InputUtil.IsGamepadUIEnabled() and transmogEnabled and hasOutfits;
+end
+
+function SpellBookTransmogCategoryMixin:ContainsSkillLine(skillLineIndex)
 	return false;
 end

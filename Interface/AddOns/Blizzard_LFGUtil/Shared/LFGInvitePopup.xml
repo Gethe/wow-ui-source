@@ -1,0 +1,95 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="LFGInvitePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="180"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="240" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="QueueWarningText" inherits="GameFontHighlight" justifyH="CENTER" text="ACCEPTING_INVITE_WILL_REMOVE_QUEUE" hidden="true">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-138"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-55"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupAccept_OnClick"/>
+					<OnEnter>
+						if ( not self:IsEnabled() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, true);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupDecline_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+			</OnLoad>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_PLAYER_INVITE);
+			</OnShow>
+			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+				self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT);
+				self.QueueWarningText:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

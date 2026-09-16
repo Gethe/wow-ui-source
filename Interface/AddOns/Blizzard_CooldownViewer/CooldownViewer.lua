@@ -1675,6 +1675,8 @@ function CooldownViewerMixin:OnLoad()
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", self.OnViewerSettingsShownStateChange, self);
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", self.OnViewerSettingsShownStateChange, self);
 
+	EventRegistry:RegisterCallback("EditMode.RefreshCooldownViewer", self.OnEditModeRefreshCooldownViewer, self);
+
 	self:UpdateShownState();
 
 	-- The edit mode selection indicator uses the bounds of the item container to more closely match the player's expectation.
@@ -1759,6 +1761,15 @@ end
 
 function CooldownViewerMixin:OnCooldownViewerEnabledCVarChanged()
 	self:UpdateShownState();
+end
+
+function CooldownViewerMixin:OnEditModeRefreshCooldownViewer(showCooldownViewer)
+	self:SetIsEditing(showCooldownViewer);
+	if showCooldownViewer then
+		self:HighlightSystem();
+	else
+		self:ClearHighlight();
+	end
 end
 
 function CooldownViewerMixin:OnEvent(event, ...)

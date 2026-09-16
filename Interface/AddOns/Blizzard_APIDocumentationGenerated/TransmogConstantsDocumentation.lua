@@ -5,9 +5,9 @@ local TransmogConstants =
 		{
 			Name = "TransmogSlot",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "Head", Type = "TransmogSlot", EnumValue = 0 },
@@ -23,6 +23,7 @@ local TransmogConstants =
 				{ Name = "Feet", Type = "TransmogSlot", EnumValue = 10 },
 				{ Name = "Mainhand", Type = "TransmogSlot", EnumValue = 11 },
 				{ Name = "Offhand", Type = "TransmogSlot", EnumValue = 12 },
+				{ Name = "Ranged", Type = "TransmogSlot", EnumValue = 13 },
 			},
 		},
 		{

@@ -29,6 +29,14 @@ function IsVASAssignmentValid(storeError, vasPurchaseResult, characterGUID)
 	return false, table.concat(msgTable, "\n");
 end
 
+function GetFormattedVASName(name, surname)
+	local fullName = name;
+	if surname ~= nil and surname ~= "" then
+		fullName = name .. Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR .. surname;
+	end
+	return NORMAL_FONT_COLOR:WrapTextInColorCode(fullName);
+end
+
 VASReviewChoicesBlockBase = {
 	AutoAdvance = false,
 	Back = true,
@@ -236,7 +244,7 @@ function VASCharacterSelectBlockBase:FormatResult()
 
 	local basicInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
 	if basicInfo.classFilename then
-		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.name);
+		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.fullName);
 
 		local color = CreateColor(GetClassColor(basicInfo.classFilename));
 		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);

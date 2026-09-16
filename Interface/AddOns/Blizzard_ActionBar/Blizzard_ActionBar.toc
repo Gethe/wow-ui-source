@@ -16,27 +16,11 @@ Shared\ActionButtonUtil.lua
 [Family]\ActionButtonUtilOverrides.lua
 Shared\ActionButtonSpellAlerts.lua
 Shared\ActionButtonSpellAlerts.xml
-[Family]\AssistedCombatManager.lua [AllowLoadGameType mainline]
-Shared\StatusTrackingBar.lua
-[Family]\StatusTrackingBarTemplate.xml
-Shared\ExpBar.lua
-[Family]\ExpBarOverrides.lua
-[Family]\ExpBar.xml
-Shared\ReputationBar.lua
-[Family]\ReputationBarOverrides.lua
-Shared\ReputationBar.xml
-[Family]\AzeriteBar.lua [AllowLoadGameType mainline]
-[Family]\AzeriteBar.xml [AllowLoadGameType mainline]
-[Family]\ArtifactBar.lua [AllowLoadGameType mainline]
-[Family]\ArtifactBar.xml [AllowLoadGameType mainline]
-[Family]\HonorBar.lua [AllowLoadGameType mainline]
-[Family]\HonorBar.xml [AllowLoadGameType mainline]
-[Family]\HouseFavorBar.lua [AllowLoadGameType mainline]
-[Family]\HouseFavorBar.xml [AllowLoadGameType mainline]
 [Family]\MainMenuBar.lua [AllowLoadGameType classic]
 [Family]\MainMenuBar.xml [AllowLoadGameType classic]
+[Family]\AssistedCombatManager.lua [AllowLoadGameType mainline]
 Shared\ActionButton.lua
-[Family]\ActionButtonOverrides.lua
+[Family]\ActionButtonOverrides.lua [AllowLoadGameType mainline]
 [Game]\ActionButtonOverrides.lua [AllowLoadGameType plunderstorm]
 Shared\ActionButtonComponentTemplate.xml
 [Family]\ActionButtonTemplate.xml
@@ -46,12 +30,12 @@ Shared\MultiActionBars.lua
 Shared\MultiActionBars.xml
 Shared\MainActionBar.lua
 [Family]\MainActionBarOverrides.lua
+[Family]\MainMenuBarEndCaps.xml [ExcludeLoadGameType camelot, classic]
+[Game]\MainMenuBarEndCaps.lua [AllowLoadGameType camelot]
+[Game]\MainMenuBarEndCaps.xml [AllowLoadGameType camelot]
 [Family]\MainActionBar.xml
 Shared\VehicleLeaveButton.lua
 Shared\VehicleLeaveButton.xml
-Shared\StatusTrackingManager.lua
-[Family]\StatusTrackingManagerOverrides.lua
-[Family]\StatusTrackingBar.xml
 Shared\StanceBar.lua
 [Family]\StanceBarOverrides.lua [AllowLoadGameType classic]
 [Family]\StanceBar.xml
@@ -63,8 +47,8 @@ Shared\PossessActionBar.lua
 [Game]\CustomActionBarOverlays.xml [AllowLoadGameType plunderstorm]
 Shared\PetActionBar.lua
 [Family]\PetActionBar.xml
-[Family]\MultiCastActionBarFrame.lua [AllowLoadGameType wrath, cata]
-[Family]\MultiCastActionBarFrame.xml [AllowLoadGameType wrath, cata]
+Shared\MultiCastActionBarFrame.lua [AllowLoadGameType camelot, wrath, cata]
+Shared\MultiCastActionBarFrame.xml [AllowLoadGameType camelot, wrath, cata]
 Shared\SpellFlyout.lua
 Shared\SpellFlyout.xml
 [Game]\KeybindReminder.lua [AllowLoadGameType plunderstorm]

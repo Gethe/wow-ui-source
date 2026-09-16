@@ -253,6 +253,12 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SPECTATOR_WARGAME, SLASH_COM
 	end
 
 	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	if (bnetIDGameAccount1 == nil or bnetIDGameAccount2 == nil) then
+		target1 = target1:gsub("-", " ")
+		target2 = target2:gsub("-", " ")
+		bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	end
+
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	StartSpectatorWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, size, area, ValueToBoolean(isTournamentMode));

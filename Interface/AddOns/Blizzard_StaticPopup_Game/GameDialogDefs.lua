@@ -239,6 +239,22 @@ StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["CAMP"] = {
+	text = CAMP_TIMER,
+	GetExpirationText = GameDialogDefsUtil.GetDefaultExpirationText,
+	button2 = CANCEL,
+	cancelIfNotAllowedWhileLoggingOut = true,
+	OnAccept = function(dialog, data)
+		CancelLogout();
+	end,
+	OnCancel = function(dialog, data)
+		CancelLogout();
+	end,
+	timeout = 20,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["GENERIC_DROP_DOWN"] = {
 	text = "", -- supplied dynamically.
 	button1 = ACCEPT,
@@ -1241,7 +1257,7 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	noCancelOnReuse = 1
+	noCancelOnReuse = 1,
 };
 StaticPopupDialogs["SKINNED"] = {
 	text = DEATH_CORPSE_SKINNED,
@@ -1281,7 +1297,8 @@ StaticPopupDialogs["TRADE"] = {
 		CancelTrade();
 	end,
 	timeout = StaticPopupTimeoutSec,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
 	text = "%s",
@@ -1307,6 +1324,7 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	end,
 	timeout = StaticPopupTimeoutSec,
 	whileDead = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
@@ -1361,6 +1379,7 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	timeout = CHANNEL_INVITE_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["BN_BLOCK_FAILED_TOO_MANY_RID"] = {
@@ -1535,13 +1554,18 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		DeleteCursorItem();
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
 	end,
 	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if ( not CursorHasItem() ) then
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
 			dialog:Hide();
 		end
 	end,
@@ -1552,20 +1576,25 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 	whileDead = 1,
 	exclusive = 1,
 	showAlert = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 StaticPopupDialogs["DELETE_QUEST_ITEM"] = {
 	text = DELETE_QUEST_ITEM,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		DeleteCursorItem();
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
 	end,
 	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if ( not CursorHasItem() ) then
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
 			dialog:Hide();
 		end
 	end,
@@ -1576,7 +1605,7 @@ StaticPopupDialogs["DELETE_QUEST_ITEM"] = {
 	whileDead = 1,
 	exclusive = 1,
 	showAlert = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["QUEST_ACCEPT"] = {
@@ -2053,7 +2082,7 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
-	notClosableByLogout = 1
+	notClosableByLogout = 1,
 };
 
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
@@ -2080,7 +2109,8 @@ StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	notClosableByLogout = 1,
 	hideOnEscape = 1,
 	timeoutInformationalOnly = 1,
-	noCancelOnReuse = 1
+	noCancelOnReuse = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["BIND_ENCHANT"] = {
@@ -2435,6 +2465,7 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	timeout = 0,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {
@@ -2462,6 +2493,7 @@ StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
 	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 -- Summon dialog when being summoned when in a starting area
@@ -2491,6 +2523,17 @@ StaticPopupDialogs["CONFIRM_SUMMON_STARTING_AREA"] = {
 	notClosableByLogout = 1,
 	hideOnEscape = 1,
 	showAlert = 1,
+	skipGamepadAutoFocus = 1,
+};
+
+StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
+	text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
+	button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
+	button2 = CANCEL,
+	escapeHides = true,
+	OnAccept = function(dialog, data)
+		C_BattleNet.InstallHighResTextures();
+	end,
 };
 
 StaticPopupDialogs["BILLING_NAG"] = {
@@ -2652,10 +2695,10 @@ StaticPopupDialogs["CONFIRM_BUY_STABLE_SLOT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		BuyStableSlot();
+		C_StableInfo.BuyStableSlot();
 	end,
 	OnShow = function(dialog, data)
-		MoneyFrame_Update(dialog.MoneyFrame, GetNextStableSlotCost());
+		MoneyFrame_Update(dialog.MoneyFrame, C_StableInfo.GetNextStableSlotCost());
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -3110,7 +3153,7 @@ StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE"] = {
 
 StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES"] = {
 	text = TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES,
-	button1 = CANCEL,
+	button2 = CANCEL,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
@@ -3333,3 +3376,240 @@ StaticPopupDialogs["CATALOG_SHOP_BULK_REFUND_ERROR"] = {
 		dialog:SetFrameLevel(3000);
 	end,
 };
+
+StaticPopupDialogs["SHARD_TRANSFER_IMMINENT_EVENT"] = {
+	text = "",
+	GetExpirationText = function(dialog, data, timeleft)
+		if timeleft <= 0 then
+			return SHARD_TRANSFER_ANYTIME;
+		elseif timeleft < 60 then
+			return string.format(SHARD_TRANSFER_COUNTDOWN_MESSAGE, timeleft, SECONDS);
+		else
+			return string.format(SHARD_TRANSFER_COUNTDOWN_MESSAGE, ceil(timeleft / 60), MINUTES);
+		end
+	end,
+	button1 = SHARD_TRANSFER_NOW_BUTTON,
+	OnButton1 = function(dialog, data)
+		C_PlayerInteractionManager.ShardTransferConfirm();
+		return;
+	end,
+	button2 = OKAY,
+	OnShow = function(dialog, data)
+		dialog.timeleft = GetEvictionTimeRemaining();
+	end,
+};
+
+StaticPopupDialogs["SHARD_TRANSFER_IMMEDIATE"] = {
+	text = SHARD_TRANSFER_NOW,
+	button1 = SHARD_TRANSFER_NOW_BUTTON,
+	OnButton1 = function(dialog, data)
+		C_PlayerInteractionManager.ShardTransferConfirm();
+		return;
+	end,
+};
+
+-- Hardcore popups
+if (C_GameRules.IsHardcoreActive()) then
+	StaticPopupDialogs["HARDCORE_DEATH"] = {
+		text = HARDCORE_DEATH,
+		button1 = HARDCORE_GO_AGAIN,
+		button2 = DEATH_RELEASE,
+		--button3 = DEATH_REINCARNATE_CHARACTER,
+		selectCallbackByIndex = true,
+		OnShow = function(dialog, data)
+			dialog:GetButton1():Enable();
+			dialog:GetButton2():Enable();
+			return;
+		end,
+		OnButton1 = function(dialog, data)
+			Logout();
+			return;
+		end,
+		OnButton2 = function(dialog, data)
+			RepopMe();
+		end,
+		OnButton3 = function(dialog, data)
+			-- Set some state, then start logout process as normal
+			local guid = UnitGUID("player");
+			local className, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
+			local level = UnitLevel("player");
+			C_Reincarnation.StartReincarnation(guid, characterName, className, level);
+			Logout();
+		end,
+		OnUpdate = function(dialog, elapsed)
+			-- If button text is too long, widen out the dialogue
+			if (string.len(dialog:GetButton1():GetText()) > 20 or string.len(dialog:GetButton2():GetText()) > 20) then
+				local textWidth = math.max(dialog:GetButton1():GetWidth(), dialog:GetButton2():GetWidth())
+				if (textWidth > 120) then
+					dialog:GetButton1():SetWidth(textWidth);
+					dialog:GetButton2():SetWidth(textWidth);
+				end
+				dialog:SetWidth(420)
+			end
+			if ( IsFalling() and not IsOutOfBounds()) then
+				dialog:GetButton1():Disable();
+				dialog:GetButton2():Disable();
+				return;
+			else
+				dialog:GetButton1():Enable();
+				dialog:GetButton2():Enable();
+				return;
+			end
+		end,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1,
+		noCancelOnReuse = 1,
+		hideOnEscape = false,
+		noCloseOnAlt = true,
+		cancels = "HARDCORE_RECOVER_CORPSE",
+		timeoutInformationalOnly = 1,
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
+		text = HARDCORE_RECOVER_CORPSE,
+		button1 = HARDCORE_GO_AGAIN,
+		OnAccept = function(dialog, data)
+			Logout();
+			return 1;
+		end,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
+		text = HARDCORE_RECOVER_CORPSE_INSTANCE,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"] = {
+		text = DUEL_TO_THE_DEATH_REQUESTED,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		sound = SOUNDKIT.HARDCORE_DUEL,
+		OnAccept = function(dialog, data)
+			dialog:Hide();
+			StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED_CONFIRM");
+		end,
+		OnCancel = function(dialog, data)
+			CancelDuel();
+		end,
+		OnUpdate = function(dialog, elapsed)
+			if ( not dialog.linkRegion or not dialog.nextUpdateTime ) then
+				return;
+			end
+
+			local timeNow = GetTime();
+			if ( dialog.nextUpdateTime > timeNow ) then
+				return;
+			end
+
+			local guid, level = GetDuelerInfo();
+			local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
+			dialog.target = characterName;
+			GameTooltip:SetOwner(dialog.linkRegion, "ANCHOR_CURSOR_RIGHT");
+
+			if ( className ) then
+				dialog.nextUpdateTime = nil; -- The tooltip will be created with valid data, no more updates necessary.
+
+				local _, _, _, colorCode = GetClassColor(classFilename);
+				GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
+				local characterLine
+				if (level < 0) then
+					characterLine = UNIT_TYPE_LETHAL_LEVEL_TEMPLATE:format(className);
+				else
+					characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+				end
+				GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
+			else
+				dialog.nextUpdateTime = timeNow + .5;
+				GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+			end
+
+			GameTooltip:Show();
+		end,
+		OnHyperlinkClick = function(dialog, link, text, button)
+			-- Target whoever is challenging us.
+			if ( button == "LeftButton" and dialog.target ) then
+				TargetUnit(dialog.target)
+			end
+		end,
+		OnHyperlinkEnter = function(dialog, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+			dialog.linkRegion = region;
+			dialog.linkText = text;
+			dialog.nextUpdateTime = GetTime();
+			StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"].OnUpdate(dialog);
+		end,
+		OnHyperlinkLeave = function(dialog)
+			dialog.linkRegion = nil;
+			dialog.linkText = nil;
+			dialog.nextUpdateTime = nil;
+			GameTooltip:Hide();
+		end,
+		timeout = StaticPopupTimeoutSec,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		OnAccept = function(dialog, data)
+			AcceptDuel();
+		end,
+		OnCancel = function(dialog, data)
+			CancelDuel();
+		end,
+		EditBoxOnTextChanged = function(editBox, data)
+			local dialog = editBox:GetParent();
+			if (strupper(editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				dialog:GetButton1():Enable();
+			else
+				dialog:GetButton1():Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(editBox, data)
+			CancelDuel();
+			editBox:GetParent():Hide();
+		end,
+		OnShow = function(dialog, data)
+			dialog:GetButton1():Disable();
+		end,
+		timeout = StaticPopupTimeoutSec,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		OnAccept = function(dialog, data)
+			StartDuel(data.unit, true, true);
+		end,
+		OnCancel = function(dialog, data)
+			-- Duel hasn't started yet
+		end,
+		EditBoxOnTextChanged = function(editBox, data)
+			local dialog = editBox:GetParent();
+			if (strupper(editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				dialog:GetButton1():Enable();
+			else
+				dialog:GetButton1():Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(editBox, data)
+			editBox:GetParent():Hide();
+		end,
+		OnShow = function(dialog, data)
+			dialog:GetButton1():Disable();
+		end,
+		timeout = StaticPopupTimeoutSec,
+		hideOnEscape = 1
+	};
+end

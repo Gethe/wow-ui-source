@@ -40,7 +40,7 @@ function CharacterSelectUIMixin:OnLoad()
 		local buttonArtKit = visibilityState and "128-redbutton-visibilityon" or "128-redbutton-visibilityoff";
 		self.VisibilityToggleButton:SetButtonArtKit(buttonArtKit);
 
-		self.VisibilityToggleButton:SetShown(visibilityState);
+		self.VisibilityToggleButton:SetShown(visibilityState and not InputUtil.IsGamepadUIEnabled());
 
 		if visibilityState then
 			CharSelectAccountUpgradePanel:EvaluateShownState();
@@ -78,6 +78,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
 	self:RegisterEvent("MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME");
+	self:RegisterEvent("GAME_RULES_CHANGED");
 
 	local function OnCollectionsShow()
 		if self.ModelFFX:IsShown() then
@@ -92,8 +93,10 @@ function CharacterSelectUIMixin:OnLoad()
 
 	local function OnCollectionsHide()
 		if self.ModelFFX:IsShown() then
-			CharacterSelectRotateLeft:Show();
-			CharacterSelectRotateRight:Show();
+			if not InputUtil.IsGamepadUIEnabled() then
+				CharacterSelectRotateLeft:Show();
+				CharacterSelectRotateRight:Show();
+			end
 		else
 			for _, footer in ipairs(self.footerFrames) do
 				footer:Show();
@@ -172,7 +175,7 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 			-- Show the retrieving character list dialog again once conversion is complete if needed.
 			if CharacterSelect.retrievingCharacters then
 				-- Do not stop showing the login queue dialog if currently showing.
-				if not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") then
+				if CharacterSelectUtil.ShouldShowRetrievingCharacterList() then
 					StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
 				end
 			end
@@ -185,6 +188,8 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then
 			self:SetupOverlayFrameForCharacter(characterID);
 		end
+	elseif event == "GAME_RULES_CHANGED" then
+		self:RefreshConfig();
 	end
 end
 
@@ -254,10 +259,10 @@ function CharacterSelectUIMixin:RefreshConfig()
 	local useSimpleList = C_GameRules.IsGameRuleActive(Enum.GameRule.UseSimpleCharacterSelectList);
 	config[CharacterSelectUtil.ConfigParam.CharacterTooltips] = not useSimpleList;
 	config[CharacterSelectUtil.ConfigParam.CharacterListSearch] = not useSimpleList;
-	config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup] = not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableCampsites) and not useSimpleList;
 	config[CharacterSelectUtil.ConfigParam.CharacterListGroupCollapse] = not useSimpleList;
 	config[CharacterSelectUtil.ConfigParam.CharacterListDetails] = not useSimpleList;
-	config[CharacterSelectUtil.ConfigParam.CharacterListUngroupedSection] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListUngroupedSection] = not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableCampsites) and not useSimpleList;
 	config[CharacterSelectUtil.ConfigParam.CharacterContext] = not useSimpleList;
 	config[CharacterSelectUtil.ConfigParam.CharacterListFaction] = not C_GameRules.IsGameRuleActive(Enum.GameRule.HideFaction);
 	config[CharacterSelectUtil.ConfigParam.VASTokens] = not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableVas);
@@ -279,7 +284,7 @@ function CharacterSelectUIMixin:UpdateConfigElements()
 	self.VisibilityFramesContainer.VASTokenContainer:SetShown(isVASEnabled);
 
 	if isVASEnabled then
-		self.VisibilityFramesContainer.CharacterList:SetPoint("TOPRIGHT", self.VisibilityFramesContainer.VASTokenContainer, "BOTTOMRIGHT", 10, -2);
+		self.VisibilityFramesContainer.CharacterList:SetPoint("TOPRIGHT", self.VisibilityFramesContainer.VASTokenContainer, "BOTTOMRIGHT", CHARACTER_LIST_X_OFFSET, CHARACTER_LIST_Y_OFFSET);
 	else
 		-- Anchor the same as the VAS container since it's not visible.
 		self.VisibilityFramesContainer.CharacterList:SetPoint(self.VisibilityFramesContainer.VASTokenContainer:GetPoint(1));
@@ -391,8 +396,10 @@ function CharacterSelectUIMixin:ShowModelFFX()
 	self.MapScene:Hide();
 	self.ModelFFX:Show();
 
-	CharacterSelectRotateLeft:Show();
-	CharacterSelectRotateRight:Show();
+	if not InputUtil.IsGamepadUIEnabled() then
+		CharacterSelectRotateLeft:Show();
+		CharacterSelectRotateRight:Show();
+	end
 	MoveCharactersToModelFFXFrame();
 	ResetModel(self.ModelFFX);
 	self:ReleaseCharacterOverlayFrames();
@@ -558,7 +565,7 @@ function CharacterSelectUIMixin:ToggleVisibilityState()
 end
 
 function CharacterSelectUIMixin:ToggleVisibilityButtonState()
-	self.VisibilityToggleButton:SetShown(not self.VisibilityToggleButton:IsShown());
+	self.VisibilityToggleButton:SetShown(not self.VisibilityToggleButton:IsShown() and not InputUtil.IsGamepadUIEnabled());
 end
 
 function CharacterSelectUIMixin:ResetVisibilityState()
@@ -688,7 +695,7 @@ function CharacterSelectHeaderMixin:Initialize(characterID)
 		self.Name:SetFontObject(nameFontStyle);
 		self.CharacterContext:SetFontObject(characterContextFontStyle);
 
-		self.Name:SetText(self.basicCharacterInfo.name);
+		self.Name:SetText(self.basicCharacterInfo.fullName);
 
 		self.RPEAvailable:SetShown(IsRPEBoostEligible(characterID));
 
@@ -735,7 +742,7 @@ function CharacterSelectHeaderMixin:NarrationShouldIgnoreFocus()
 end
 
 function CharacterSelectHeaderMixin:NarrationGetName()
-	return self.basicCharacterInfo and self.basicCharacterInfo.name or "";
+	return self.basicCharacterInfo and self.basicCharacterInfo.fullName or "";
 end
 
 function CharacterSelectHeaderMixin:NarrationGetContext()
@@ -790,6 +797,8 @@ function CharacterDeletionDialogMixin:OnLoad()
 	self.EditBox:SetScript("OnEscapePressed", function()
 		self:Hide();
 	end);
+
+	self:RegisterForTransitions();
 end
 
 function CharacterDeletionDialogMixin:OnShow()
@@ -801,9 +810,16 @@ function CharacterDeletionDialogMixin:OnShow()
 	end
 
 	local basicInfo = GetBasicCharacterInfo(self.characterGuid);
-	self.Background.Text1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
+	self.Background.Text1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.fullName, basicInfo.experienceLevel, basicInfo.className);
 	self.Background:SetHeight(16 + self.Background.Text1:GetHeight() + self.Background.Text2:GetHeight() + 23 + self.EditBox:GetHeight() + 8 + self.Background.Button1:GetHeight() + 16);
 	self.Background.Button1:Disable();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+		GamepadMode.ActivateBindingGroup(self.deleteDialogBindings);
+		self.GamepadSequence:ResetButtons();
+		self.GamepadSequence:EnableBindings();
+	end
 
 	local narrationInfo = NarrationUtil.RegionToNarrationInfo(self, NarrationUtil.TriggerType.Notification);
 	if narrationInfo then
@@ -829,6 +845,12 @@ end
 
 function CharacterDeletionDialogMixin:OnHide()
 	self.EditBox:SetText("");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+		self.GamepadSequence:DisableBindings();
+		GamepadMode.DeactivateBindingGroup(self.deleteDialogBindings);
+	end
 end
 
 function CharacterDeletionDialogMixin:DeleteCharacter()
@@ -841,6 +863,57 @@ function CharacterDeletionDialogMixin:DeleteCharacter()
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	CharacterSelectCharacterFrame:ClearSearch();
 	StaticPopup_Show("CHAR_DELETE_IN_PROGRESS");
+end
+
+function CharacterDeletionDialogMixin:SetupGamepad()
+	self.useCustomNavigation = true;
+
+	self.deleteDialogBindings = GamepadMode.CreateBindingGroup("DeleteDialogBindings");
+	self.deleteDialogBindings:BlockEverything();
+	self.deleteDialogBindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function() self:DeleteCharacter() end);
+	self.deleteDialogBindings:AddFunctionBinding(GAMEPAD_FACE_RIGHT, function() self:Hide() end);
+
+	self.GamepadSequence:SetSequence({GAMEPAD_FACE_TOP, GAMEPAD_SHOULDER_LEFT, GAMEPAD_FACE_BOTTOM, GAMEPAD_FACE_LEFT, GAMEPAD_SHOULDER_RIGHT});
+
+	local function OnSequenceComplete()
+		self.Background.Button1:SetEnabled(true);
+	end
+
+	self.GamepadSequence:RegisterOnSequenceComplete(OnSequenceComplete);
+
+	self.confirmIcon = GamepadMode.AddGamepadIconToButton(self.Background.Button1, GAMEPAD_FACE_BOTTOM);
+	self.cancelIcon = GamepadMode.AddGamepadIconToButton(self.Background.Button2, GAMEPAD_FACE_RIGHT);
+end
+
+function CharacterDeletionDialogMixin:InitializeGamepad()
+	self.GamepadSequence:Show();
+	self.EditBox:Hide();
+	GamepadMode.SetGamepadIconShown(self.confirmIcon, true);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, true);
+	self.Background.Text2:SetText(CONFIRM_CHAR_DELETE_INSTRUCTIONS_GAMEPAD);
+end
+
+function CharacterDeletionDialogMixin:UninitializeGamepad()
+	self.GamepadSequence:Hide();
+	self.EditBox:Show();
+	GamepadMode.SetGamepadIconShown(self.confirmIcon, false);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, false);
+	self.Background.Text2:SetText(CONFIRM_CHAR_DELETE_INSTRUCTIONS);
+end
+
+function CharacterDeletionDialogMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function CharacterDeletionDialogMixin:StartFocus()
+	self.Background:StartFocus();
+end
+
+function CharacterDeletionDialogMixin:EndFocus()
+	self.Background:EndFocus();
 end
 
 

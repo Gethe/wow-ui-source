@@ -73,7 +73,8 @@ end
 local CharacterSelectNavBarEvents = {
 	"GLOBAL_MOUSE_DOWN",
 	"EVENT_REALM_QUEUES_UPDATED",
-	"SHOW_NEW_PRODUCT_NOTIFICATION"
+	"SHOW_NEW_PRODUCT_NOTIFICATION",
+	"CLIENT_FEATURE_STATUS_CHANGED"
 };
 
 function CharacterSelectNavBarMixin:OnLoad()
@@ -97,6 +98,7 @@ function CharacterSelectNavBarMixin:OnLoad()
 	self:TrySetUpStoreButton();
 	self:TrySetUpMenuButton();
 	self:TrySetUpRealmsButton();
+	self:TrySetUpSuperDistrictsButton();
 	self:TrySetUpCampsButton();
 
 	EventRegistry:RegisterCallback("GameModeFrame.Hide", self.OnGameModeFrameHide, self);
@@ -116,13 +118,15 @@ end
 function CharacterSelectNavBarMixin:OnShow()
 	CallbackRegistrantMixin.OnShow(self);
 
-	self.GameModeButton.TutorialBadge:Hide();
+	if self.GameModeButton then
+		self.GameModeButton.TutorialBadge:Hide();
+	end
 	self.tryForceShowModes = not g_newGameModeAvailableAcknowledged and C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
 end
 
 function CharacterSelectNavBarMixin:OnEvent(event, ...)
 	if event == "GLOBAL_MOUSE_DOWN" then
-		if self.GameModeButton.SelectionDrawer:IsShown() and 
+		if self.GameModeButton and self.GameModeButton.SelectionDrawer:IsShown() and 
 			not self.GameModeButton:IsMouseOver() and
 			not self.GameModeButton.SelectionDrawer:IsMouseOver() then
 			self:ToggleGameModeDrawer();
@@ -133,7 +137,9 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 		end
 	elseif event == "EVENT_REALM_QUEUES_UPDATED" then
 		local eventRealmQueues = ...;
-		self.GameModeButton.TutorialBadge:Hide();
+		if self.GameModeButton then
+			self.GameModeButton.TutorialBadge:Hide();
+		end
 		self.tryForceShowModes = not g_newGameModeAvailableAcknowledged and eventRealmQueues ~= Enum.EventRealmQueues.None;
 
 		self:UpdateGameModeSelectionTutorial();
@@ -143,6 +149,10 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 		elseif self.StoreButton then
 			self.StoreButton.TutorialBadge:Hide();
 		end
+	elseif event == "CLIENT_FEATURE_STATUS_CHANGED" then
+		self:ResetButtonVisuals(self.rightmostButton);
+		self:TrySetUpRealmsButton();
+		self:SetButtonVisuals();
 	end
 end
 
@@ -195,6 +205,7 @@ function CharacterSelectNavBarMixin:TrySetUpGameModeButton()
 
 	self:UpdateSelectedGameMode();
 	self.GameModeButton:SetWidth(self.GameModeButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+	SmartNavigation_UseVerticalCursorForFrame(self.GameModeButton);
 	self.ButtonTray:Layout();
 end
 
@@ -222,6 +233,8 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		self.PlunderstoreButton:SetScript("OnLeave", function()
 			GetAppropriateTooltip():Hide();
 		end);
+
+		SmartNavigation_UseVerticalCursorForFrame(self.PlunderstoreButton);
 	else
 		self.StoreButton = self:AddButton(nil, ToggleStoreUI);
 
@@ -241,6 +254,7 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		local highlight = false;
 		self.StoreButton:formatButtonTextCallback(enabled, highlight);
 		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+		SmartNavigation_UseVerticalCursorForFrame(self.StoreButton);
 		
 		self.StoreButton.TutorialBadge:ClearAllPoints();
 		self.StoreButton.TutorialBadge:SetPoint("CENTER", self.StoreButton:GetFontString(), "LEFT", -10, 0);
@@ -253,6 +267,7 @@ function CharacterSelectNavBarMixin:TrySetUpMenuButton()
 	end
 
 	self.MenuButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
+	SmartNavigation_UseVerticalCursorForFrame(self.MenuButton);
 
 	-- Menu button should not trigger focus replay narration, as it opens the game menu which has contextual narration.
 	self.MenuButton.NarrationShouldIgnoreFocusReplay = function()
@@ -265,12 +280,23 @@ function CharacterSelectNavBarMixin:TrySetUpMenuButton()
 end
 
 function CharacterSelectNavBarMixin:TrySetUpRealmsButton()
-	if not self.realmsButtonAvailable then
+	if ((not self.realmsButtonAvailable and not C_RealmList.ShouldShowRealmsAsCheatButton()) or self.RealmsButton) then
 		return;
 	end
 
 	local realmsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeRealm);
 	self.RealmsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
+	SmartNavigation_UseVerticalCursorForFrame(self.RealmsButton);
+end
+
+function CharacterSelectNavBarMixin:TrySetUpSuperDistrictsButton()
+	if not self.superDistrictsButtonAvailable then
+		return;
+	end
+
+	local superDistrictsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeSuperDistrict);
+	self.SuperDistrictsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_SUPER_DISTRICTS, superDistrictsCallback);
+	SmartNavigation_UseVerticalCursorForFrame(self.SuperDistrictsButton);
 end
 
 function CharacterSelectNavBarMixin:TrySetUpCampsButton()
@@ -279,6 +305,7 @@ function CharacterSelectNavBarMixin:TrySetUpCampsButton()
 	end
 
 	self.CampsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_CAMPS, ToggleCollections);
+	SmartNavigation_UseVerticalCursorForFrame(self.CampsButton);
 	local function OnCollectionsHide()
 		UpdateButtonStatesForCollections(false);
 	end
@@ -286,6 +313,10 @@ function CharacterSelectNavBarMixin:TrySetUpCampsButton()
 end
 
 function CharacterSelectNavBarMixin:ToggleGameModeDrawer()
+	if not self.GameModeButton then
+		return;
+	end
+
 	local selectionDrawer = self.GameModeButton.SelectionDrawer;
 	selectionDrawer:SetShown(not selectionDrawer:IsShown());
 
@@ -320,14 +351,34 @@ function CharacterSelectNavBarMixin:SetButtonVisuals()
 	self.rightmostButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
 end
 
+function CharacterSelectNavBarMixin:ResetButtonVisuals(button)
+	button.Bar:Show();
+	button.Highlight:ClearAllPoints();
+	button.Highlight:SetPoint("TOPLEFT", 0, 0);
+	button.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
+	button.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-middle", TextureKitConstants.IgnoreAtlasSize);
+	button.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-middle", TextureKitConstants.IgnoreAtlasSize);
+
+	button.NormalTexture:SetAtlas("glues-characterselect-tophud-middle-bg", TextureKitConstants.IgnoreAtlasSize);
+	button.NormalTexture:ClearAllPoints();
+	button.NormalTexture:SetAllPoints();
+	button.DisabledTexture:SetAtlas("glues-characterselect-tophud-middle-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	button.DisabledTexture:ClearAllPoints();
+	button.DisabledTexture:SetAllPoints();
+end
+
 function CharacterSelectNavBarMixin:UpdateSelectedGameMode()
+	if not self.GameModeButton then
+		return;
+	end
+
 	local enabled = true;
 	local highlight = false;
 	self.GameModeButton:formatButtonTextCallback(enabled, highlight);
 end
 
 function CharacterSelectNavBarMixin:UpdateButtonDividerState(button)
-	if not button.Bar or not button.Bar:IsShown() then
+	if not button or not button.Bar or not button.Bar:IsShown() then
 		return;
 	end
 
@@ -339,13 +390,17 @@ function CharacterSelectNavBarMixin:UpdateButtonDividerState(button)
 	elseif button == self.MenuButton then
 		isDividerBarEnabled = isDividerBarEnabled or self.RealmsButton:IsEnabled();
 	elseif button == self.RealmsButton then
-		isDividerBarEnabled = isDividerBarEnabled or self.CampsButton:IsEnabled();
+		isDividerBarEnabled = isDividerBarEnabled or (self.CampsButton and self.CampsButton:IsEnabled()) or (self.SuperDistrictsButton and self.SuperDistrictsButton:IsEnabled());
 	end
 
 	button.Bar:SetAtlas(isDividerBarEnabled and "glues-characterselect-tophud-bg-divider" or "glues-characterselect-tophud-bg-divider-dis", TextureKitConstants.UseAtlasSize);
 end
 
 function CharacterSelectNavBarMixin:UpdateGameModeSelectionTutorial()
+	if not self.GameModeButton then
+		return;
+	end
+
 	-- When a new mode is available we want to make sure the player knows
 	if self.GameModeButton:IsEnabled() and self.tryForceShowModes then
 		if not self.GameModeButton.SelectionDrawer:IsShown() then
@@ -358,6 +413,10 @@ function CharacterSelectNavBarMixin:UpdateGameModeSelectionTutorial()
 end
 
 function CharacterSelectNavBarMixin:SetGameModeButtonEnabled(enabled)
+	if not self.GameModeButton then
+		return;
+	end
+
 	self.GameModeButton:SetEnabled(enabled);
 
 	local highlight = false;
@@ -385,6 +444,10 @@ function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
 end
 
 function CharacterSelectNavBarMixin:SetMenuButtonEnabled(enabled)
+	if not self.MenuButton then
+		return;
+	end
+
 	self.MenuButton:SetEnabled(enabled);
 
 	self:UpdateButtonDividerState(self.StoreButton or self.PlunderstoreButton);
@@ -392,6 +455,10 @@ function CharacterSelectNavBarMixin:SetMenuButtonEnabled(enabled)
 end
 
 function CharacterSelectNavBarMixin:SetRealmsButtonEnabled(enabled)
+	if not self.RealmsButton then
+		return;
+	end
+
 	self.RealmsButton:SetEnabled(enabled);
 
 	self:UpdateButtonDividerState(self.MenuButton);
@@ -399,6 +466,10 @@ function CharacterSelectNavBarMixin:SetRealmsButtonEnabled(enabled)
 end
 
 function CharacterSelectNavBarMixin:SetCampsButtonEnabled(enabled)
+	if not self.CampsButton then
+		return;
+	end
+
 	self.CampsButton:SetEnabled(enabled);
 
 	self:UpdateButtonDividerState(self.RealmsButton);

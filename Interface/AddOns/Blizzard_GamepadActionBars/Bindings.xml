@@ -1,0 +1,32 @@
+<Bindings>
+	<!--
+	The Gamepad Action Buttons correspond to these buttons:
+						 02          06
+					  01    03    05    07
+						 04          08
+	-->
+	<Binding name="GAMEPADACTIONBUTTON1" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(1, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON2" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(2, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON3" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(3, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON4" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(4, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON5" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(5, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON6" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(6, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON7" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(7, "LeftButton", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADACTIONBUTTON8" runOnUp="true" category="Gamepad Action Buttons" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMainActionBarFrame:PressActionButton(8, "LeftButton", keystate == "down");
+	</Binding>
+</Bindings>

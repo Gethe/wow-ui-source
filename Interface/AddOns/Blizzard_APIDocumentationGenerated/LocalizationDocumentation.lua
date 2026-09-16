@@ -95,6 +95,7 @@ local Localization =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "gender", Type = "UnitSex", Nilable = true },
 				{ Name = "declensionSet", Type = "luaIndex", Nilable = false },
+				{ Name = "namePartType", Type = "NamePartType", Nilable = true },
 			},
 
 			Returns =
@@ -127,6 +128,7 @@ local Localization =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "gender", Type = "UnitSex", Nilable = true },
+				{ Name = "namePartType", Type = "NamePartType", Nilable = true },
 			},
 
 			Returns =

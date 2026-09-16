@@ -2,6 +2,20 @@
 ModelSceneUtil = {};
 
 local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
+function ModelSceneUtil.SetPlayerActor(modelScene)
+	local actor = modelScene:GetPlayerActor();
+	if actor then
+		local inAlternateForm = select(2, C_PlayerInfo.GetAlternateFormInfo());
+		local sheatheWeapon = GetSheathState() == 1;
+		local autodress = true;
+		local hideWeapon = false;
+		local useNativeForm = not inAlternateForm;
+		local useUnitSheatheCategories = true;
+		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+	end
+end
+
 function ModelSceneUtil.SetUpCharacterSheetScene(modelScene)
 	modelScene:ReleaseAllActors();
 	modelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
@@ -32,17 +46,5 @@ function ModelSceneUtil.SetUpCharacterSheetScene(modelScene)
 		end
 	end
 
-	local actor = modelScene:GetPlayerActor();
-	if actor then
-		local inAlternateForm = select(2, C_PlayerInfo.GetAlternateFormInfo());
-		local sheatheWeapon = GetSheathState() == 1;
-		local autodress = true;
-		local hideWeapon = false;
-		local useNativeForm = not inAlternateForm;
-		local useUnitSheatheCategories = true;
-
-		actor:UseUnitSheatheCategory(useUnitSheatheCategories);
-		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
-		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-	end
+	ModelSceneUtil.SetPlayerActor(modelScene);
 end

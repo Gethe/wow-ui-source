@@ -674,6 +674,7 @@
 
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="EXPANDTOOLTIP" default="SHIFT"/>
 	<ModifiedClick action="FOCUSCAST" default="NONE"/>
 	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>

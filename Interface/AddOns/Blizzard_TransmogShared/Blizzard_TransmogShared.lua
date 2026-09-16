@@ -25,6 +25,7 @@ TransmogSlotOrder = {
 	INVSLOT_FEET,
 	INVSLOT_MAINHAND,
 	INVSLOT_OFFHAND,
+	INVSLOT_RANGED
 };
 
 local WARDROBE_MODEL_SETUP = {
@@ -625,7 +626,7 @@ do
 				if armorCategoryID == Enum.TransmogCollectionType.None then
 					armorCategoryID = nil;
 				end
-				TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID };
+				TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID, name = slotInfo.slotName };
 			end
 		end
 

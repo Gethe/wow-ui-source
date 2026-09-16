@@ -537,6 +537,15 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestTimers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "questTimers", Type = "table", InnerType = "QuestTimerInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestType",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -672,6 +681,15 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetTrivialRange",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "range", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetZoneStoryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -725,6 +743,21 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEliteQuest",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEliteQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1581,6 +1614,15 @@ local QuestLog =
 				{ Name = "signature", Type = "cstring", Nilable = false },
 				{ Name = "poiIcon", Type = "textureAtlas", Nilable = false },
 				{ Name = "mapPinInfo", Type = "UIMapPinInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "QuestTimerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "questTimer", Type = "number", Nilable = false },
 			},
 		},
 	},

@@ -132,3 +132,5 @@ function EventUtil.CreateCallbackHandleContainer()
 	cbrHandles:Init();
 	return cbrHandles;
 end
+
+return EventUtil;

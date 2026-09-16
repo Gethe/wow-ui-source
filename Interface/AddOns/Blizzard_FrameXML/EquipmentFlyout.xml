@@ -25,6 +25,9 @@
 	</ItemButton>
 	<Button name="EquipmentFlyoutPopoutButtonTemplate" hidden="true" virtual="true">
 		<Size x="16" y="32"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativePoint="RIGHT"/>
 		</Anchors>
@@ -35,8 +38,12 @@
 		<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 	</Button>
-	<Frame name="EquipmentFlyoutFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
+	<Frame name="EquipmentFlyoutFrame" mixin="EquipmentFlyoutMixin" hidden="true" enableMouse="false" frameStrata="HIGH">
 		<Size x="43" y="43"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnoredContainerFrame" value="true" type="boolean"/>
+			<KeyValue key="disableFrameFocusPagingWhenFocused" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Highlight" name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
@@ -52,6 +59,9 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentButtons" frameStrata="HIGH" enableMouse="true" parentKey="buttonFrame" clampedToScreen="true">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnoredContainerFrame" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset x="0" y="0"/>
@@ -76,6 +86,9 @@
 			</Frame>
 			<Frame parentKey="NavigationFrame" frameStrata="HIGH">
 				<Size x="214" y="41"/>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.buttonFrame" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
 				</Anchors>
@@ -86,12 +99,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString inherits="GameFontHighlightSmall" text="PREVIOUS">
+						<FontString parentKey="PreviousPageText" inherits="GameFontHighlightSmall" text="PREVIOUS">
 							<Anchors>
 								<Anchor point="LEFT" x="36" y="1"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="NEXT">
+						<FontString parentKey="NextPageText" inherits="GameFontHighlightSmall" text="NEXT">
 							<Anchors>
 								<Anchor point="RIGHT" x="-33" y="1"/>
 							</Anchors>
@@ -129,6 +142,34 @@
 						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
+					<Button parentKey="PageTurnIndicatorLeft" inherits="GamepadPrevPageButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="6" y="1"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="PageTurnIndicatorRight" inherits="GamepadNextPageButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-3" y="1"/>
+						</Anchors>
+					</Button>
+					<Frame parentKey="PrevPagePrompt" inherits="InputIconTextureFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PrevButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="PADLSHOULDER" type="string"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="NextPagePrompt" inherits="InputIconTextureFrameTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.NextButton" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="PADRSHOULDER" type="string"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
 				</Frames>
 			</Frame>
 		</Frames>

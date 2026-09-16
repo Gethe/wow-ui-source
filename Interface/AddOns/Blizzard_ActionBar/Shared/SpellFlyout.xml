@@ -2,6 +2,9 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<CheckButton name="SpellFlyoutPopupButtonTemplate" inherits="SmallActionButtonTemplate, FlyoutPopupButtonTemplate, SecureFrameTemplate" mixin="SpellFlyoutPopupButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_SpellButton" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
@@ -60,6 +63,9 @@
 	</CheckButton>
 
 	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame, FlyoutPopupTemplate" mixin="SpellFlyoutMixin" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" type="string" value="SpellFlyoutPopupButtonTemplate"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

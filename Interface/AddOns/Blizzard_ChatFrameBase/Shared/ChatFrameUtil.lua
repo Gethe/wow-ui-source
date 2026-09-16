@@ -585,12 +585,12 @@ function ChatFrameUtil.SetLastActiveWindow(editBox)
 		editBox:Deactivate();
 	end
 
-	if ( previousValue ) then
-		FCFClickAnywhereButton_UpdateState(previousValue.chatFrame.clickAnywhereButton);
+	if ( previousValue and previousValue.chatFrame.clickAnywhereButton.UpdateState ) then
+		previousValue.chatFrame.clickAnywhereButton:UpdateState();
 	end
 
-	if ( editBox ) then
-		FCFClickAnywhereButton_UpdateState(editBox.chatFrame.clickAnywhereButton);
+	if ( editBox and editBox.chatFrame.clickAnywhereButton.UpdateState ) then
+		editBox.chatFrame.clickAnywhereButton:UpdateState();
 	end
 end
 
@@ -1110,6 +1110,7 @@ function ChatFrameUtil.GetDecoratedSenderName(event, ...)
 	end
 
 	decoratedPlayerName = ChatFrameUtil.ProcessSenderNameFilters(event, decoratedPlayerName, ...);
+
 	return decoratedPlayerName;
 end
 

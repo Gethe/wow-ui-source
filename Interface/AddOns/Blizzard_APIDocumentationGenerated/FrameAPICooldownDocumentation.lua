@@ -529,7 +529,7 @@ local FrameAPICooldown =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "FileAsset", Nilable = false },
+				{ Name = "texture", Type = "FileAsset", Nilable = true },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },

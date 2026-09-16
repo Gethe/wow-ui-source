@@ -7,10 +7,6 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<!--
-				GameTimeTexture is the old day/night icon and is currently ALWAYS hidden, it is still here in case we want it back at some point
-				-->
-				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator" hidden="true"/>
 				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
 					<Size x="28" y="32"/>
 					<Anchors>

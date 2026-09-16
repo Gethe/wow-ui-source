@@ -1,0 +1,12 @@
+## Title: Blizzard_GlueMenuFrame
+## Dep: Blizzard_StaticPopup_Glue [AllowLoadGameType classic]
+## Dep: Blizzard_LoginWarningDialogs [AllowLoadGameType classic]
+## Dep: Blizzard_CharacterSelectNavBar [AllowLoadGameType classic]
+## Dep: Blizzard_GlueXMLBase [AllowLoadGameType mainline]
+## Dep: Blizzard_GlueParent [AllowLoadGameType mainline]
+## Dep: Blizzard_GamepadSharedUtility [AllowLoadGameType camelot]
+## LoadFirst: 1
+## AllowLoad: Glue
+GlueMenuFrameUtil.lua
+[Family]\GlueMenuFrame.lua
+[Family]\GlueMenuFrame.xml

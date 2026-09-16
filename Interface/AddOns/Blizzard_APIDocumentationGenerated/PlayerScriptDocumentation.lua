@@ -84,6 +84,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "CanPortGraveyard",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canPortGraveyard", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelAreaSpiritHeal",
 			Type = "Function",
 		},
@@ -192,6 +201,16 @@ local PlayerScript =
 		{
 			Name = "GetAreaSpiritHealerTime",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetArmorPenetration",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
 
 			Returns =
 			{
@@ -366,6 +385,23 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetCritChanceFromStat",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "stat", Type = "luaIndex", Nilable = false },
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "critChance", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCritChanceProvidesParryEffect",
 			Type = "Function",
 
@@ -388,6 +424,15 @@ local PlayerScript =
 			Name = "GetDodgeChanceFromAttribute",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEvictionTimeRemaining",
+			Type = "Function",
 
 			Returns =
 			{
@@ -426,6 +471,26 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHealthRegen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healthRegen", Type = "number", Nilable = false },
+				{ Name = "combatHealthRegen", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHealthRegenFromSpirit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healthRegen", Type = "number", Nilable = false },
+				{ Name = "combatHealthRegen", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -475,6 +540,16 @@ local PlayerScript =
 			{
 				{ Name = "baseManaRegen", Type = "number", Nilable = false },
 				{ Name = "castingManaRegen", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetManaRegenFromSpirit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "powerRegen", Type = "number", Nilable = false },
+				{ Name = "combatPowerRegen", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -643,6 +718,16 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetPetHitChanceModifier",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetMeleeHaste",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
@@ -654,6 +739,16 @@ local PlayerScript =
 		},
 		{
 			Name = "GetPetSpellBonusDamage",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetSpellHitChanceModifier",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
 
@@ -743,6 +838,23 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetRangedAttackPowerForStat",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "stat", Type = "luaIndex", Nilable = false },
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRangedCritChance",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
@@ -754,6 +866,17 @@ local PlayerScript =
 		},
 		{
 			Name = "GetRangedHaste",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+				{ Name = "quiverHaste", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRangedHitModifier",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
 
@@ -900,6 +1023,23 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCritChanceFromStat",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "stat", Type = "luaIndex", Nilable = false },
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCritChance", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1391,6 +1531,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "ReagentsFromBankAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RepopMe",
 			Type = "Function",
 		},
@@ -1510,6 +1659,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "ShouldDisplayRaidRolesInSocialFrame",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldDisplayStoryModeTooltipInSocialFrame",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldShowIslandsWeeklyPOI",
 			Type = "Function",
 
@@ -1614,6 +1781,11 @@ local PlayerScript =
 		{
 			Name = "ToggleSheath",
 			Type = "Function",
+		},
+		{
+			Name = "ToggleSit",
+			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

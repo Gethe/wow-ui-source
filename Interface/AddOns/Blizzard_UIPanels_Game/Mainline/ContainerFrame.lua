@@ -1,8 +1,14 @@
 NUM_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots;
 NUM_REAGENTBAG_FRAMES = Constants.InventoryConstants.NumReagentBagSlots;
 NUM_TOTAL_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots + Constants.InventoryConstants.NumReagentBagSlots;
+
 -- We need container frames for all your bags + your backpack
 NUM_CONTAINER_FRAMES = NUM_TOTAL_BAG_FRAMES + 1;
+
+if (C_ActionBar.ShouldShowKeyring()) then
+	NUM_CONTAINER_FRAMES = NUM_CONTAINER_FRAMES + 1;
+end
+
 CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
@@ -14,6 +20,8 @@ local CONTAINER_SCALE = 0.75;
 local BACKPACK_BASE_SIZE = 16;
 local FRAME_THAT_OPENED_BAGS = nil;
 local CONTAINER_HELPTIP_SYSTEM = "ContainerFrame";
+
+local OPEN_ITEM_CONTEXT_ACTION_KEY = "OpenItem";
 
 local bagNames =
 {
@@ -59,7 +67,7 @@ Mixin(BagUpdaterFrame, BagUpdaterMixin);
 BagUpdaterFrame:SetScript("OnUpdate", BagUpdaterFrame.Clean);
 
 local function ContainerFrame_IsHeldBag(id)
-	return id >= Enum.BagIndex.Backpack and id <= NUM_TOTAL_BAG_FRAMES;
+	return (id >= Enum.BagIndex.Backpack and id <= NUM_TOTAL_BAG_FRAMES) or (C_ActionBar.ShouldShowKeyring() and id == KEYRING_CONTAINER);
 end
 
 local function ContainerFrame_IsGenericHeldBag(id)
@@ -72,11 +80,11 @@ local function ContainerFrame_IsBackpack(id)
 end
 
 local function ContainerFrame_IsCharacterBankTab(id)
-	return id >= Enum.BagIndex.CharacterBankTab_1 and id <= Enum.BagIndex.CharacterBankTab_6;
+	return id >= Enum.BagIndex.CharacterBankTab_1 and id <= Enum.BagIndex.CharacterBankTab_9;
 end
 
 local function ContainerFrame_IsAccountBankTab(id)
-	return id >= Enum.BagIndex.AccountBankTab_1 and id <= Enum.BagIndex.AccountBankTab_5;
+	return id >= Enum.BagIndex.AccountBankTab_1 and id <= Enum.BagIndex.AccountBankTab_9;
 end
 
 local function ContainerFrame_IsBankTab(id)
@@ -176,8 +184,14 @@ function ToggleBackpack()
 end
 
 function ToggleBag_Individual(id)
-	local size = ContainerFrame_GetContainerNumSlots(id);
-	if size > 0 then
+	local size = 0;
+	if (id == KEYRING_CONTAINER ) then
+		size = GetKeyRingSize();
+	else
+		size = ContainerFrame_GetContainerNumSlots(id);
+	end
+
+	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerFrame = ContainerFrameUtil_GetShownFrameForID(id);
 		if containerFrame then
 			if containerFrame:IsBackpack() then
@@ -191,6 +205,11 @@ function ToggleBag_Individual(id)
 			end
 
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(id), size, id);
+
+			-- Stop keyring button pulse
+			if (id == KEYRING_CONTAINER) then
+				SetButtonPulse(KeyRingButton, 0, 1);
+			end
 		end
 	end
 end
@@ -201,6 +220,10 @@ function ToggleBag_Combined(id)
 end
 
 function ToggleBag(id)
+	if (id == KEYRING_CONTAINER and GetCVarBool("showKeyring") == false) then
+		return;
+	end
+
 	if not ContainerFrame_AllowedToOpenBags() then
 		return;
 	end
@@ -257,6 +280,9 @@ end
 
 local function OpenBag_Individual(id, force)
 	local size = ContainerFrame_GetContainerNumSlots(id);
+	if(id == KEYRING_CONTAINER) then
+		size = GetKeyRingSize();
+	end
 	if ( size > 0 ) then
 		local containerFrame, containerShowing = ContainerFrameUtil_GetShownFrameForID(id);
 
@@ -360,6 +386,18 @@ function SearchBagsForItem(itemID)
 		for j = 1, C_Container.GetContainerNumSlots(i) do
 			local id = C_Container.GetContainerItemID(i, j);
 			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
+				return i;
+			end
+		end
+	end
+	return -1;
+end
+
+function SearchBagsForFirstItem(itemID)
+	for i = Enum.BagIndex.Backpack, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+		for j = 1, C_Container.GetContainerNumSlots(i) do
+			local id = C_Container.GetContainerItemID(i, j);
+			if (id == itemID) then
 				return i;
 			end
 		end
@@ -574,10 +612,20 @@ function ContainerFrame_OnEvent(self, event, ...)
 			ContainerFrameSettingsManager:ClearFilterFlag(bagID);
 			self:UpdateFilterIcon();
 		end
+	elseif event == "CURRENT_SPELL_CAST_CHANGED" then
+		if SpellCanTargetItem() then
+			self.wasBagOpenBeforeItemTargeting = IsBagOpen(Enum.BagIndex.Backpack);
+			OpenAllBags(self);
+		else
+			if not self.wasBagOpenBeforeItemTargeting then
+				CloseAllBags(self);
+			end
+			self.wasBagOpenBeforeItemTargeting = nil;
+		end
 	end
 end
 
-local function AddButtons_BagFilters(description, bagID)
+function ContainerFrame_AddButtons_BagFilters(description, bagID)
 	if not ContainerFrame_CanContainerUseFilterMenu(bagID) then
 		return;
 	end
@@ -600,7 +648,7 @@ local function AddButtons_BagFilters(description, bagID)
 	end
 end
 
-local function AddButtons_BagCleanup(description, bagID)
+function ContainerFrame_AddButtons_BagCleanup(description, bagID)
 	description:CreateTitle(BAG_FILTER_IGNORE);
 
 	do
@@ -652,12 +700,56 @@ local function AddButtons_BagModeToggle(description, containerFrame)
 		return;
 	end
 
+	if InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
 	description:CreateDivider();
 
 	local text = ContainerFrameSettingsManager:IsUsingCombinedBags() and BAG_COMMAND_CONVERT_TO_INDIVIDUAL or BAG_COMMAND_CONVERT_TO_COMBINED;
 	description:CreateButton(text, function()
 		SetCVar("combinedBags", GetCVarBool("combinedBags") and 0 or 1);
 	end);
+end
+
+local function CanSellItems()
+	-- The first tab is the purchase/sell state, the second tab is the buyback state.
+	return MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1;
+end
+
+local function Gamepad_SetupMenuOptions(menuDescription, bagID)
+	if (ContainerFrame_IsBackpack(bagID)) then
+		-- Add cleanup button to the menu for gamepad.
+		menuDescription:CreateDivider();
+		menuDescription:CreateButton(BAG_CLEANUP_BAGS, function()
+			C_Container.SortBags();
+		end);
+
+		-- Add item comparison toggle to the menu for gamepad.
+		local function IsSelected()
+			return GetCVarBool("alwaysCompareItems");
+		end
+
+		local function SetSelected()
+			local value = not IsSelected();
+			SetCVar("alwaysCompareItems", value);
+		end
+
+		menuDescription:CreateDivider();
+		local checkbox = menuDescription:CreateCheckbox(FRAME_ACTION_TOGGLE_ITEM_COMPARE, IsSelected, SetSelected);
+		checkbox:SetResponse(MenuResponse.Close);
+	end
+end
+
+
+local function Gamepad_BagClose()
+	if CursorHasItem() then
+		ClearCursor();
+		return true;
+	end
+
+	CloseAllBags();
+	return true;
 end
 
 function ContainerFrame_OnLoad(self)
@@ -674,8 +766,8 @@ function ContainerFrame_OnLoad(self)
 			return;
 		end
 
-		AddButtons_BagFilters(rootDescription, bagID);
-		AddButtons_BagCleanup(rootDescription, bagID);
+		ContainerFrame_AddButtons_BagFilters(rootDescription, bagID);
+		ContainerFrame_AddButtons_BagCleanup(rootDescription, bagID);
 		AddButtons_BagModeToggle(rootDescription, self);
 	end);
 
@@ -689,7 +781,11 @@ end
 function ContainerFrame_OnHide(self)
 	EventRegistry:TriggerEvent("ContainerFrame.CloseBag", self);
 
-	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
+	if ( self:GetID() == KEYRING_CONTAINER ) then
+		PlaySound(SOUNDKIT.KEY_RING_CLOSE);
+	else
+		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
+	end
 
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
@@ -713,7 +809,11 @@ end
 function ContainerFrame_OnShow(self)
 	EventRegistry:TriggerEvent("ContainerFrame.OpenBag", self);
 
-	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
+	if ( self:GetID() == KEYRING_CONTAINER ) then
+		PlaySound(SOUNDKIT.KEY_RING_OPEN);
+	else
+		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
+	end
 
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
@@ -728,6 +828,11 @@ function ContainerFrame_OnShow(self)
 	ContainerFrameSettingsManager:MarkBagsShownDirty();
 
 	HelpTip:Hide(MainMenuBarBackpackButton, AZERITE_TUTORIAL_ITEM_IN_BAG);
+	ContainerFrame_UpdatePortraitPosition(self);
+end
+
+function ContainerFrame_UpdatePortraitPosition(self)
+	-- Stub function
 end
 
 function ContainerFrame_OnCloseButtonClicked(closeButton)
@@ -823,6 +928,8 @@ end
 function ContainerFrameMixin:UpdateMiscellaneousFrames()
 	if self:IsBackpack() then
 		self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08");
+	elseif self:MatchesBagID(Enum.BagIndex.Keyring) then
+		self:SetPortraitToAsset("Interface/Icons/ui-hud-actionbar-keyring");
 	else
 		self:SetPortraitToBag(self:GetBagID());
 	end
@@ -863,6 +970,7 @@ function ContainerFrameMixin:UpdateFrameSize()
 	local width = self:CalculateWidth();
 	local height = self:CalculateHeight();
 	self:SetSize(width, height);
+	NineSliceUtil.UpdateCornerCropping(self, height);
 end
 
 function ContainerFrameMixin:GetAnchorLayout()
@@ -874,24 +982,61 @@ function ContainerFrameMixin:GetInitialItemAnchor()
 end
 
 do
-	local function SortItemsByExtendedState(item1, item2)
-		local extended1, extended2 = item1:IsExtended(), item2:IsExtended();
-		if extended1 ~= extended2 then
-			return not extended1;
-		end
-
+	local function SortItemsBottomRight(item1, item2)
 		local bag1, bag2 = item1:GetBagID(), item2:GetBagID();
 		if bag1 ~= bag2 then
 			return bag1 > bag2;
 		end
 
 		local id1, id2 = item1:GetID(), item2:GetID();
+		return id1 > id2;
+	end
+
+	local function SortItemsByExtendedStateBottomRight(item1, item2)
+		local extended1, extended2 = item1:IsExtended(), item2:IsExtended();
+		if extended1 ~= extended2 then
+			return not extended1;
+		end
+
+		return SortItemsBottomRight(item1, item2);
+	end
+
+	local function SortItemsTopLeft(item1, item2)
+		local bag1, bag2 = item1:GetBagID(), item2:GetBagID();
+		if bag1 ~= bag2 then
+			return bag1 < bag2;
+		end
+
+		local id1, id2 = item1:GetID(), item2:GetID();
 		return id1 < id2;
 	end
 
+	local function SortItemsByExtendedStateTopLeft(item1, item2)
+		local extended1, extended2 = item1:IsExtended(), item2:IsExtended();
+		if extended1 ~= extended2 then
+			return not extended1;
+		end
+
+		SortItemsTopLeft(item1, item2);
+	end
+
 	local function UpdateItemSort(items)
-		if not IsAccountSecured() and ContainerFrameSettingsManager:IsUsingCombinedBags() then
-			table.sort(items, SortItemsByExtendedState);
+		if not ContainerFrameSettingsManager:IsUsingCombinedBags() then
+			return;
+		end
+
+		if not IsAccountSecured() then
+			if InputUtil.IsGamepadUIEnabled() then
+				table.sort(items, SortItemsByExtendedStateTopLeft);
+			else
+				table.sort(items, SortItemsByExtendedStateBottomRight);
+			end
+		else
+			if InputUtil.IsGamepadUIEnabled() then
+				table.sort(items, SortItemsTopLeft);
+			else
+				table.sort(items, SortItemsBottomRight);
+			end
 		end
 	end
 
@@ -909,7 +1054,7 @@ do
 
 		return itemButton;
 	end
-	
+
 	function ContainerFrameMixin:ClearItems()
 		self.itemButtonPool:ReleaseAll();
 		self.Items = {};
@@ -919,10 +1064,10 @@ do
 		self:ClearItems();
 		if self:IsCombinedBagContainer() then
 			local useAscendingOrder = false;
-			local startIndex, endIndex, increment = GetBagSetupIndices(useAscendingOrder);	
+			local startIndex, endIndex, increment = GetBagSetupIndices(useAscendingOrder);
 			for bag = startIndex, endIndex, increment do
 				local bagSize = ContainerFrame_GetContainerNumSlots(bag);
-				for i = 1, bagSize do	
+				for i = 1, bagSize do
 					local itemButton = self:AcquireNewItemButton();
 					local slotID = bagSize - i + 1;
 					itemButton:Initialize(bag, slotID);
@@ -974,9 +1119,20 @@ function ContainerFrameMixin:UpdateSearchBox()
 		self:SetSearchBoxPoint(BagItemSearchBox);
 		BagItemSearchBox.anchorBag = self;
 		BagItemSearchBox:Show();
-		BagItemAutoSortButton:SetParent(self);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", -9, -34);
-		BagItemAutoSortButton:Show();
+		if InputUtil.IsGamepadUIEnabled() then
+			BagItemSearchBox:Hide();
+			BagItemAutoSortButton:ClearAllPoints();
+			BagItemAutoSortButton:Hide();
+			GamepadBagBar:SetShown(self:IsCombinedBagContainer());
+		else
+			BagItemSearchBox:Show();
+			BagItemAutoSortButton:SetParent(self);
+			BagItemAutoSortButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", -9, -34);
+			BagItemAutoSortButton:Show();
+			if GamepadBagBar ~= nil then
+				GamepadBagBar:Hide();
+			end
+		end
 	elseif BagItemSearchBox.anchorBag == self then
 		BagItemSearchBox:ClearAllPoints();
 		BagItemSearchBox:Hide();
@@ -1039,7 +1195,7 @@ function ContainerFrameMixin:UpdateItems()
 		local itemCount = info and info.stackCount;
 		local locked = info and info.isLocked;
 		local quality = info and info.quality;
-		local readable = info and info.IsReadable;
+		local readable = info and info.isReadable;
 		local itemLink = info and info.hyperlink;
 		local isFiltered = info and info.isFiltered;
 		local noValue = info and info.hasNoValue;
@@ -1074,7 +1230,7 @@ function ContainerFrameMixin:UpdateItems()
 		if itemButton:CheckForTutorials(not isFiltered and shouldDoTutorialChecks, itemID) then
 			shouldDoTutorialChecks = false;
 		end
-	    end
+	end
 end
 
 function ContainerFrameMixin:UpdateIfShown()
@@ -1154,7 +1310,11 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 end
 
 local function GetInitialContainerFrameOffsetX()
-	return EditModeUtil:GetRightActionBarWidth() + 10;
+	local xOffset = 10;
+	if (InputUtil.IsGamepadUIEnabled()) then
+		xOffset = 20; -- Push bags further in to account for Gamepad UI hints.
+	end
+	return EditModeUtil:GetRightActionBarWidth() + xOffset;
 end
 
 local function GetContainerScale()
@@ -1354,7 +1514,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 			else
 				C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
 			end
-		else	
+		else
 			local cursorItemLocation = C_Cursor.GetCursorItem();
 			local cursorItemIsFromAccountBank = false;
 			if cursorItemLocation then
@@ -1443,6 +1603,8 @@ function ContainerFrameItemButton_OnClick(self, button)
 		end
 		StackSplitFrame:Hide();
 	end
+
+	EventRegistry:TriggerEvent("ContainerFrameItemButton.OnItemClicked", self);
 end
 
 function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip)
@@ -1484,6 +1646,12 @@ function ContainerFrameItemButtonMixin:OnLoad()
 		return ItemLocation:CreateFromBagAndSlot(self:GetBagID(), self:GetID());
 	end
 	self:SetItemLocationCallback(GetItemLocationCallback);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.Highlight:Show();
+	else
+		self.Highlight:Hide();
+	end
 end
 
 function ContainerFrameItemButtonMixin:OnClick(button)
@@ -1520,6 +1688,8 @@ function ContainerFrameItemButtonMixin:OnEnter()
 		local itemLocationValid = itemLocation:IsValid();
 		SetCursorHoveredItem(itemLocation);
 	end
+
+	EventRegistry:TriggerEvent("ContainerFrameItemButton.EnterButton", self);
 end
 
 function ContainerFrameItemButtonMixin:OnLeave()
@@ -1533,6 +1703,7 @@ function ContainerFrameItemButtonMixin:OnLeave()
 	end
 
 	ClearCursorHoveredItem();
+	EventRegistry:TriggerEvent("ContainerFrameItemButton.ExitButton", self);
 end
 
 function ContainerFrameItemButtonMixin:OnUpdate()
@@ -1559,7 +1730,7 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 	if ( not SpellIsTargeting() ) then
 		if ( IsModifiedClick("DRESSUP") and self:HasItem() ) then
 			ShowInspectCursor();
-		elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
+		elseif ( CanSellItems() ) then
 			C_Container.ShowContainerSellCursor(self:GetBagID(), self:GetID());
 		elseif ( self:IsReadable() ) then
 			ShowInspectCursor();
@@ -1686,9 +1857,9 @@ function ContainerFrameItemButtonMixin:UpdateQuestItem(isQuestItem, questID, isA
 end
 
 function ContainerFrameItemButtonMixin:UpdateNewItem(quality)
-	if(not self.BattlepayItemTexture and not self.NewItemTexture) then 
-		return; 
-	end 
+	if(not self.BattlepayItemTexture and not self.NewItemTexture) then
+		return;
+	end
 
 	if C_NewItems.IsNewItem(self:GetBagID(), self:GetID()) then
 		if C_Container.IsBattlePayItem(self:GetBagID(), self:GetID()) then
@@ -1825,13 +1996,17 @@ function ContainerFramePortraitButtonMixin:OnMouseDown()
 end
 
 function ContainerFramePortraitButtonMixin:OnEnter()
+	local gamepadUIEnabled = InputUtil.IsGamepadUIEnabled();
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
+	local isKeyring = self:GetParent():MatchesBagID(Enum.BagIndex.Keyring);
 	if self:GetParent():MatchesBagID(Enum.BagIndex.Backpack) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
-		if (GetBindingKey("TOGGLEBACKPACK")) then
+		if (GetBindingKey("TOGGLEBACKPACK") and not gamepadUIEnabled) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 		end
+	elseif isKeyring then
+		GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
 	else
 		local parent = self:GetParent();
 		local id = parent:GetBagID();
@@ -1856,7 +2031,10 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 		end
 	end
-	GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+
+	if (not isKeyring and not gamepadUIEnabled) then
+		GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+	end
 	self.UpdateTooltip = waitingOnData and ContainerFramePortraitButton_OnEnter or nil;
 	GameTooltip:Show();
 end
@@ -1932,6 +2110,11 @@ function ToggleAllBags()
 		CloseBackpack();
 	end
 
+	if IsBagOpen(Enum.BagIndex.Keyring) then
+		bagsOpen = bagsOpen + 1;
+		CloseBag(KEYRING_CONTAINER);
+	end
+
 	-- We need to close individual bags only if we're using individual bags, or the bag in question is always shown individually.
 	local isUsingCombinedBags = ContainerFrameSettingsManager:IsUsingCombinedBags();
 	for i = 1, NUM_TOTAL_BAG_FRAMES, 1 do
@@ -1959,6 +2142,12 @@ end
 local function CheckIsBagOpen_Internal(startBagID, endBagID, checkingAny)
 	for i = startBagID, endBagID do
 		if IsBagOpen(i) == checkingAny then
+			return checkingAny;
+		end
+	end
+
+	if(endBagID == NUM_TOTAL_BAG_FRAMES and C_ActionBar.ShouldShowKeyring()) then
+		if IsBagOpen(KEYRING_CONTAINER) == checkingAny then
 			return checkingAny;
 		end
 	end
@@ -1997,6 +2186,15 @@ function OpenAllBagsMatchingContext(frame)
 		end
 	end
 
+	if (C_ActionBar.ShouldShowKeyring())  then
+		if ItemButtonUtil.GetItemContextMatchResultForContainer(KEYRING_CONTAINER) == ItemButtonUtil.ItemContextMatchResult.Match then
+			if not IsBagOpen(KEYRING_CONTAINER) then
+				OpenBag(KEYRING_CONTAINER);
+				count = count + 1;
+			end
+		end
+	end
+
 	if frame and not FRAME_THAT_OPENED_BAGS then
 		FRAME_THAT_OPENED_BAGS = frame:GetName();
 	end
@@ -2019,6 +2217,10 @@ function CloseAllBags(frame, forceUpdate)
 	local bagsClosed = CloseBackpack();
 	for i=1, NUM_TOTAL_BAG_FRAMES, 1 do
 		bagsClosed = CloseBag(i) or bagsClosed;
+	end
+
+	if (C_ActionBar.ShouldShowKeyring())  then
+		bagsClosed = CloseBag(KEYRING_CONTAINER) or bagsClosed;
 	end
 
 	EventRegistry:TriggerEvent("ContainerFrame.CloseAllBags");
@@ -2185,7 +2387,7 @@ function ContainerFrameSettingsManager:IsUsingCombinedBags(optionalID)
 		end
 	end
 
-	return self.isUsingCombinedBags;
+	return self.isUsingCombinedBags or InputUtil.IsGamepadUIEnabled();
 end
 
 function ContainerFrameSettingsManager:SetUsingCombinedBags(useCombinedBags)
@@ -2193,6 +2395,11 @@ function ContainerFrameSettingsManager:SetUsingCombinedBags(useCombinedBags)
 end
 
 function ContainerFrameSettingsManager:OnCombinedBagSettingChanged(willUseCombinedBags)
+	if InputUtil.IsGamepadUIEnabled() then
+		self:SetUsingCombinedBags(willUseCombinedBags);
+		return;
+	end
+
 	self:MarkBagSetupDirty();
 
 	if IsAnyBagOpen() then
@@ -2515,7 +2722,11 @@ function ContainerFrameBackpackMixin:GetInitialItemAnchor()
 end
 
 function ContainerFrameBackpackMixin:GetPaddingHeight()
-	return ContainerFrameMixin.GetPaddingHeight(self) + 30; -- Account for the search box in the backpack
+	if InputUtil.IsGamepadUIEnabled() then
+		return ContainerFrameMixin.GetPaddingHeight(self);
+	else
+		return ContainerFrameMixin.GetPaddingHeight(self) + 30; -- Account for the search box in the backpack
+	end
 end
 
 function ContainerFrameBackpackMixin:CalculateExtraHeight()
@@ -2542,24 +2753,65 @@ function ContainerFrameCombinedBagsMixin:OnLoad()
 
 		for bagID = 0, Constants.InventoryConstants.NumBagSlots do
 			local submenu = rootDescription:CreateButton(bagNames[bagID]);
-			AddButtons_BagFilters(submenu, bagID);
-			AddButtons_BagCleanup(submenu, bagID);
+			ContainerFrame_AddButtons_BagFilters(submenu, bagID);
+			ContainerFrame_AddButtons_BagCleanup(submenu, bagID);
+
+			-- Highlight bag slots on hover for gamepad.
+			if (InputUtil.IsGamepadUIEnabled()) then
+				submenu:SetOnEnter(GenerateClosure(self.SetItemsMatchingBagHighlighted, self, bagID, true));
+				submenu:SetOnLeave(GenerateClosure(self.SetItemsMatchingBagHighlighted, self, bagID, false));
+			end
 		end
 
 		AddButtons_BagModeToggle(rootDescription, self);
+
+		if (InputUtil.IsGamepadUIEnabled()) then
+			Gamepad_SetupMenuOptions(rootDescription, Enum.BagIndex.Backpack);
+		end
 	end);
+
+	self:RegisterForTransitions();
+	self.SmartNavigationCloseHandler = Gamepad_BagClose;
 end
 
 function ContainerFrameCombinedBagsMixin:OnShow()
+	self:UpdateFrameSize();
+	self:UpdateItemLayout();
+	UpdateContainerFrameAnchors();
+
 	ContainerFrameTokenWatcherMixin.OnShow(self);
 	EventRegistry:RegisterCallback("BagSlot.OnEnter", self.OnBagSlotEnter, self);
 	EventRegistry:RegisterCallback("BagSlot.OnLeave", self.OnBagSlotLeave, self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, GenerateClosure(self.SmartNavPanelInfoAdded, self));
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:OnHide()
 	ContainerFrameTokenWatcherMixin.OnHide(self);
 	EventRegistry:UnregisterCallback("BagSlot.OnEnter", self);
 	EventRegistry:UnregisterCallback("BagSlot.OnLeave", self);
+	self:ClearBagHighlights();
+
+	if InputUtil.IsGamepadUIEnabled() and CharacterFrame:IsShown() then
+		ToggleCharacter("PaperDollFrame");
+	end
+end
+
+local BACKPACK_FREESLOTS_FORMAT = "(%s)";
+
+function ContainerFrameCombinedBagsMixin:Update()
+	ContainerFrameExtendedSlotPack.Update(self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local countText = self.CountContainer.Count;
+		local totalFree = C_Container.CalculateTotalNumberOfFreeBagSlots();
+
+		countText:SetText(BACKPACK_FREESLOTS_FORMAT:format(totalFree));
+
+		self.gamepadFooter:Refresh();
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:IsCombinedBagContainer()
@@ -2603,6 +2855,9 @@ end
 function ContainerFrameCombinedBagsMixin:GetContainedBagIDs(outContainedBagIDs)
 	for i = 0, NUM_TOTAL_BAG_FRAMES do
 		table.insert(outContainedBagIDs, i);
+	end
+	if(C_ActionBar.ShouldShowKeyring()) then
+		table.insert(outContainedBagIDs, KEYRING_CONTAINER);
 	end
 end
 
@@ -2662,11 +2917,27 @@ function ContainerFrameCombinedBagsMixin:UpdateFilterIcon()
 end
 
 function ContainerFrameCombinedBagsMixin:Close()
+	if InputUtil.IsGamepadUIEnabled() then
+		Gamepad_BagClose();
+		return;
+	end
 	CloseAllBags();
 end
 
+function ContainerFrameCombinedBagsMixin:GetAnchorLayout()
+	if InputUtil.IsGamepadUIEnabled() then
+		return AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, self:GetColumns(), ITEM_SPACING_X, ITEM_SPACING_Y);
+	else
+		return ContainerFrameMixin.GetAnchorLayout(self);
+	end
+end
+
 function ContainerFrameCombinedBagsMixin:GetInitialItemAnchor()
-	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
+	if InputUtil.IsGamepadUIEnabled() then
+		return AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 10, -65);
+	else
+		return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:OnTokenWatchChanged()
@@ -2678,12 +2949,22 @@ end
 
 function ContainerFrameCombinedBagsMixin:SetSearchBoxPoint(searchBox)
 	searchBox:SetPoint("TOPLEFT", self, "TOPLEFT", 62, -37);
-	searchBox:SetWidth(330);
+	if InputUtil.IsGamepadUIEnabled() then
+		searchBox:SetWidth(150);
+	else
+		searchBox:SetWidth(330);
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:SetItemsMatchingBagHighlighted(bagID, highlight)
 	for i, item in self:EnumerateValidItems() do
 		item.BagIndicator:SetShown(highlight and item:GetBagID() == bagID);
+	end
+end
+
+function ContainerFrameCombinedBagsMixin:ClearBagHighlights()
+	for i, item in self:EnumerateValidItems() do
+		item.BagIndicator:SetShown(false);
 	end
 end
 
@@ -2695,6 +2976,411 @@ end
 
 function ContainerFrameCombinedBagsMixin:OnBagSlotLeave(bagSlot)
 	self:SetItemsMatchingBagHighlighted(bagSlot:GetBagID(), false);
+end
+
+function ContainerFrameCombinedBagsMixin:Gamepad_OnItemClicked()
+	self.gamepadFooter:Refresh();
+end
+
+function ContainerFrameCombinedBagsMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+	EventRegistry:RegisterCallback("ContainerFrameItemButton.OnItemClicked", self.Gamepad_OnItemClicked, self);
+
+	self.CountContainer.Count:Show();
+
+	ContainerFrameUtil_MarkContainerEnumeratorDirty();
+
+	if self:IsVisible() then
+		self:UpdateFrameSize();
+		self:UpdateItemLayout();
+		UpdateContainerFrameAnchors();
+	end
+
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+end
+
+function ContainerFrameCombinedBagsMixin:UninitializeGamepad()
+	self.CloseButton:Show();
+	EventRegistry:UnregisterCallback("ContainerFrameItemButton.OnItemClicked", self);
+
+	self.CountContainer.Count:Hide();
+
+	if self:IsVisible() then
+		self:UpdateFrameSize();
+		self:UpdateItemLayout();
+		UpdateContainerFrameAnchors();
+	end
+
+	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
+end
+
+local function Gamepad_OpenBagDropdownSettings()
+	local portraitButton = SmartNavigation:GetCurrentButton();
+
+	if (portraitButton.OpenMenu) then
+		portraitButton:OpenMenu();
+	else
+		portraitButton.BagDropdownButton:OpenMenu();
+	end
+end
+
+local function Gamepad_DoBackAction(containerFrame)
+	SmartNavigation:AttemptClose();
+	containerFrame.gamepadFooter:Refresh();
+end
+
+local function Gamepad_OpenItemButtonContextAction_OnHeld()
+	C_AutoLoot.SetUseAutoLootToggle(true);
+	SmartNavigation:RightClick();
+	C_AutoLoot.SetUseAutoLootToggle(false);
+end
+
+local function Gamepad_IsItemUseBlocked()
+	return MerchantFrame:IsShown();
+end
+
+local function Gamepad_IsOpenBagDropdownContextActionValid()
+	return not CursorHasItem() and not Gamepad_IsItemUseBlocked();
+end
+
+local function Gamepad_IsClickContextActionValid()
+	local button = SmartNavigation:GetCurrentButton();
+	local isItem = button.hasItem;
+	local isClickableBag = button.isBag and not button.isBackpack;
+	local isItemMoving = CursorHasItem();
+
+	if (isItem or isClickableBag or isItemMoving) and not InRepairMode() then
+		return true;
+	end
+	return false;
+end
+
+local function Gamepad_IsRepairActionValid()
+	if InRepairMode() then
+		local button = SmartNavigation:GetCurrentButton();
+		if button.GetBagID then
+			local durability, maxDurability = C_Container.GetContainerItemDurability(button:GetBagID(), button:GetID());
+			return durability and maxDurability and (durability < maxDurability);
+		end
+	end
+	return false;
+end
+
+local function Gamepad_IsReadActionValid()
+	local button = SmartNavigation:GetCurrentButton();
+	return not CursorHasItem() and not Gamepad_IsItemUseBlocked() and button:IsReadable();
+end
+
+local function Gamepad_IsOpenItemButtonContextActionValid()
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return;
+	end
+	local info = C_Container.GetContainerItemInfo(currentButton:GetBagID(), currentButton:GetID());
+
+	if info and not InRepairMode() then
+		return info.hasLoot;
+	end
+end
+
+local function Gamepad_IsItemButtonContextValid()
+	local button = SmartNavigation:GetCurrentButton();
+	if (button.hasItem) then
+		local item = Item:CreateFromBagAndSlot(button:GetBagID(), button:GetID());
+		if (not CursorHasItem()) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function Gamepad_IsSellItemActionValid()
+	return Gamepad_IsItemButtonContextValid() and CanSellItems() and not InRepairMode();
+end
+
+local function Gamepad_IsMoreActionsContextActionValid()
+	return Gamepad_IsItemButtonContextValid() and not InRepairMode() and not Gamepad_IsItemUseBlocked();
+end
+
+local function Gamepad_IsUseItemActionValid()
+	local button = SmartNavigation:GetCurrentButton();
+	local isItemMoving = CursorHasItem();
+
+	if (button.hasItem and not InRepairMode() and not isItemMoving and not Gamepad_IsItemUseBlocked()) then
+		local bagId = button:GetBagID();
+		local slotID = button:GetID();
+		local item = Item:CreateFromBagAndSlot(bagId, slotID)
+		if item then
+			local itemID = item:GetItemID();
+			if itemID then
+				if C_Item.IsUsableItem(itemID) then
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
+local function Gamepad_IsEquipItemActionValid()
+	local button = SmartNavigation:GetCurrentButton();
+	local isItemMoving = CursorHasItem();
+
+	if (button.hasItem and not isItemMoving and not Gamepad_IsItemUseBlocked()) then
+		local bagId = button:GetBagID();
+		local slotID = button:GetID();
+		local item = Item:CreateFromBagAndSlot(bagId, slotID)
+		if item then
+			local itemID = item:GetItemID();
+			if itemID then
+				if C_Item.IsEquippableItem(itemID) then
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
+local function Gamepad_SplitFocusedItemStack()
+	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+
+	local currentButton = SmartNavigation:GetCurrentButton();
+	local info = C_Container.GetContainerItemInfo(currentButton:GetBagID(), currentButton:GetID());
+	local itemCount = info and info.stackCount;
+	local locked = info and info.isLocked;
+	if ((not locked) and itemCount and (itemCount > 1)) then
+		currentButton.SplitStack = function(button, split)
+			C_Container.SplitContainerItem(button:GetBagID(), button:GetID(), split);
+		end
+		GamepadMode.FrameControlsManager:SuspendFrameWithFooter();
+		StackSplitFrame:OpenStackSplitFrame(itemCount, currentButton, "BOTTOMRIGHT", "TOPRIGHT");
+		ShowUIPanel(StackSplitFrame);
+	end
+end
+
+local function Gamepad_IsSplitItemStackButtonContextActionValid()
+	local currentButton = SmartNavigation:GetCurrentButton();
+	local info = C_Container.GetContainerItemInfo(currentButton:GetBagID(), currentButton:GetID());
+
+	local itemCount = 0;
+	if (info) then
+		itemCount = info.stackCount;
+	end
+
+	return (itemCount > 1);
+end
+
+local FEED_PET_SPELL_ID = 6991;
+
+local function Gamepad_IsFeedToPetValid(button)
+	if not button or not button.hasItem then
+		return false;
+	end
+
+	if not C_Spell.IsSpellUsable(FEED_PET_SPELL_ID) then
+		return false;
+	end
+
+	local slotIndex, bagId = button:GetSlotAndBagID();
+	local itemId = C_Container.GetContainerItemID(bagId, slotIndex);
+	return itemId and C_PetInfo.CanPetEatItem(itemId);
+end
+
+local function Gamepad_FeedToPet(button)
+	if not Gamepad_IsFeedToPetValid(button) then
+		return;
+	end
+
+	-- Make sure the cursor wasn't already holding something
+	ClearCursor();
+	local slotIndex, bagId = button:GetSlotAndBagID();
+	C_Container.PickupContainerItem(bagId, slotIndex);
+
+	if CursorHasItem() then
+		C_Item.DropItemOnUnit("pet");
+		-- Clear the cursor again in case DropItemOnUnit failed for some reason
+		ClearCursor();
+	end
+end
+
+local function Gamepad_BindItemToGamepadActionBar()
+	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	local containerItemInfo = C_Container.GetContainerItemInfo(focusedButton:GetBagID(), focusedButton:GetID());
+	GamepadActionBarEditFrame:BindItem(containerItemInfo.itemID);
+end
+
+local function Gamepad_DestroyFocusedButtonItem()
+	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+
+	local currentButton = SmartNavigation:GetCurrentButton();
+	local item = Item:CreateFromBagAndSlot(currentButton:GetBagID(), currentButton:GetID());
+	local itemGUID = item:GetItemGUID();
+
+	C_Item.ConfirmDeleteItem(itemGUID);
+end
+
+function ContainerFrameCombinedBagsMixin:SetupGamepad()
+	local manageBag = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP,
+																 Gamepad_OpenBagDropdownSettings,
+																 CONTEXT_ACTION_LABEL_MANAGE_BAG);
+	manageBag:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	manageBag:AddButtonContext("ButtonContext_OpenBagDropdownSettings");
+	manageBag:AddCondition(Gamepad_IsOpenBagDropdownContextActionValid);
+
+	local pickupAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM,
+																	GenerateFlatClosure(SmartNavigation.Click, SmartNavigation),
+																	ACTION_LABEL_SELECT);
+	pickupAction:AddButtonContext("ButtonContext_OpenBagDropdownSettings");
+	pickupAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	pickupAction:AddCondition(Gamepad_IsClickContextActionValid);
+
+	local repairAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM,
+																	GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																	CONTEXT_ACTION_LABEL_REPAIR);
+	repairAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	repairAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	repairAction:AddCondition(Gamepad_IsRepairActionValid);
+
+	local sellAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT,
+																  GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																  CONTEXT_ACTION_LABEL_SELL);
+	sellAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	sellAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	sellAction:AddCondition(Gamepad_IsSellItemActionValid);
+
+	local readAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT,
+																  GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																  CONTEXT_ACTION_LABEL_READ);
+	readAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	readAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	readAction:AddCondition(Gamepad_IsReadActionValid);
+
+	local holdTimeUntilAutoLootSettingUsed = 0.5;
+	local openAction = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTimeUntilAutoLootSettingUsed,
+																		   GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																		   Gamepad_OpenItemButtonContextAction_OnHeld, CONTEXT_ACTION_LABEL_OPEN);
+	openAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	openAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	openAction:AddCondition(Gamepad_IsOpenItemButtonContextActionValid);
+	openAction:AddCondition(Gamepad_IsItemButtonContextValid);
+
+	local useAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT,
+																 GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																 CONTEXT_ACTION_LABEL_USE);
+	useAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	useAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	useAction:AddCondition(Gamepad_IsUseItemActionValid);
+
+	local equipAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT,
+																   GenerateFlatClosure(SmartNavigation.RightClick, SmartNavigation),
+																   CONTEXT_ACTION_LABEL_EQUIP);
+	equipAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	equipAction:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	equipAction:AddCondition(Gamepad_IsEquipItemActionValid);
+
+	local function maintainButtonHighlight(promptedBinding, menu)
+		local button = menu:GetOwnerRegion();
+		button:SetHighlightLocked(true);
+	end
+	local function clearButtonHighlight(promptedBinding, menu)
+		local button = menu:GetOwnerRegion();
+		button:SetHighlightLocked(false);
+	end
+
+	local itemMoreActions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	itemMoreActions:SetMenuOpenedCallback(maintainButtonHighlight);
+	itemMoreActions:SetMenuClosedCallback(clearButtonHighlight);
+	itemMoreActions:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	itemMoreActions:AddButtonContext("ButtonContext_ContainerFrameItemButton");
+	itemMoreActions:AddCondition(Gamepad_IsMoreActionsContextActionValid);
+	itemMoreActions:AddCondition(Gamepad_IsItemButtonContextValid);
+	if UnitClassBase("player") == "HUNTER" then
+		itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_FEED_TO_PET, Gamepad_FeedToPet, Gamepad_IsFeedToPetValid);
+	end
+	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR, Gamepad_BindItemToGamepadActionBar, Gamepad_IsUseItemActionValid);
+	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_DESTROY_ITEM, Gamepad_DestroyFocusedButtonItem, nil);
+	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_SPLIT_ITEM_STACK, Gamepad_SplitFocusedItemStack, Gamepad_IsSplitItemStackButtonContextActionValid);
+
+	-- We need to additionally refresh on this action, since "back" can drop held items and change the hovered button state.
+	local backAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateFlatClosure(Gamepad_DoBackAction, self), FRAME_ACTION_CLOSE);
+
+	-- Actions here are added in descending priority order, per key.
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ContainerFrameCombinedBagsFooter");
+	self.gamepadFooter:AddPromptedBinding(manageBag);
+	self.gamepadFooter:AddPromptedBinding(repairAction);
+	self.gamepadFooter:AddPromptedBinding(pickupAction);
+	self.gamepadFooter:AddPromptedBinding(sellAction);
+	self.gamepadFooter:AddPromptedBinding(readAction);
+	self.gamepadFooter:AddPromptedBinding(openAction);
+	self.gamepadFooter:AddPromptedBinding(useAction);
+	self.gamepadFooter:AddPromptedBinding(equipAction);
+	self.gamepadFooter:AddPromptedBinding(itemMoreActions);
+	self.gamepadFooter:AddStandardFrameControlManagerBindings(self);
+	self.gamepadFooter:AddPromptedBinding(backAction);
+	self.gamepadFooter:Finalize();
+end
+
+function ContainerFrameCombinedBagsMixin:SmartNavPanelInfoAdded(panelInfo)
+	assert(InputUtil.IsGamepadUIEnabled(), "FindTopLeftButton called outside gamepad mode!");
+	local itemToFocus = nil;
+	for _, item in self:EnumerateValidItems() do
+		if (item:GetBagID() == 0) and (item:GetID() == 1) then
+			itemToFocus = item;
+			break;
+		end
+	end
+
+	SmartNavigation:SetTargetButtonForFrame(self, itemToFocus);
+end
+
+function ContainerFrameCombinedBagsMixin:SetFocusByItemID(itemID)
+	local itemToFocus = nil;
+	for _, item in self:EnumerateValidItems() do
+		local bagID = item:GetBagID();
+		local slotID = item:GetID();
+		local id = C_Container.GetContainerItemID(bagID, slotID);
+		if (id == itemID) then
+			itemToFocus = item;
+			break;
+		end
+	end
+
+	SmartNavigation:SetTargetButtonForFrame(self, itemToFocus);
+end
+
+function ContainerFrameCombinedBagsMixin:SetFocusByItemLink(itemLink)
+	local itemToFocus = nil;
+	for _, item in self:EnumerateValidItems() do
+		local bagID = item:GetBagID();
+		local slotID = item:GetID();
+		local info = C_Container.GetContainerItemInfo(bagID, slotID);
+		local link = info and info.hyperlink;
+		if (link == itemLink) then
+			itemToFocus = item;
+			break;
+		end
+	end
+
+	SmartNavigation:SetTargetButtonForFrame(self, itemToFocus);
+end
+
+function ContainerFrameCombinedBagsMixin:FocusGamepad()
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function ContainerFrameCombinedBagsMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
+function ContainerFrameCombinedBagsMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadInit(self, GenerateFlatClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateFlatClosure(self.UninitializeGamepad, self));
+	InputUtil.RegisterGamepadSetup(self, GenerateFlatClosure(self.SetupGamepad, self));
 end
 
 ContainerFrameCurrencyBorderMixin = {};

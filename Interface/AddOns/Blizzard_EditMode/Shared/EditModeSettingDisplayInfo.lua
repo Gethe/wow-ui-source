@@ -678,18 +678,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 		},
-
-		-- Size
-		{
-			setting = Enum.EditModeMicroMenuSetting.EyeSize,
-			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_EYE_SIZE,
-			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 50,
-			maxValue = 150,
-			stepSize = 5,
-			ConvertValue = ConvertValueDefault,
-			formatter = ShowAsPercentage,
-		},
 	},
 
 	[Enum.EditModeSystem.Bags] =
@@ -783,6 +771,89 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.SwingTimer] =
+	{
+		-- Scale
+		{
+			setting = Enum.EditModeSwingTimerSetting.Scale,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SCALE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeSwingTimerSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Width
+		{
+			setting = Enum.EditModeSwingTimerSetting.Width,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 213,
+			maxValue = 852,
+			stepSize = 10,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Height
+		{
+			setting = Enum.EditModeSwingTimerSetting.Height,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 15,
+			maxValue = 60,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Show Bar Title
+		{
+			setting = Enum.EditModeSwingTimerSetting.ShowBarTitle,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SHOW_BAR_TITLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Time
+		{
+			setting = Enum.EditModeSwingTimerSetting.ShowTime,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SHOW_TIME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Visibility
+		{
+			setting = Enum.EditModeSwingTimerSetting.Visibility,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EditModeSwingTimerVisibility.Always, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.EditModeSwingTimerVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.EditModeSwingTimerVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_HIDDEN},
+			},
 		},
 	},
 
@@ -1401,6 +1472,31 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	[Enum.EditModeSystem.TotemActionBar] =
 	{
 
+	},
+
+	[Enum.EditModeSystem.MainActionBarEndCap] =
+	{
+		-- Hidden
+		{
+			setting = Enum.EditModeMainActionBarEndCapSetting.Hidden,
+			name = HUD_EDIT_MODE_SETTING_END_CAP_HIDDEN,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	[Enum.EditModeSystem.GroupFinder] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeGroupFinderSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_GROUP_FINDER_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 
 	[Enum.EditModeSystem.LossOfControl] =

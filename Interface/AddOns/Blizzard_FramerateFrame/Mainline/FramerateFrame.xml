@@ -2,6 +2,10 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="FramerateFrame" mixin="FramerateFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="WorldFrame">
 		<Size x="12" y="12"/>
+		<Anchors>
+			<!-- NOTE: Modern WoW overrides this by anchoring to the MicroMenu instead. -->
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">

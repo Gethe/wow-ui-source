@@ -1,12 +1,15 @@
 ## Title: Blizzard_CustomizationUI
 ## AllowLoad: Both
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_SharedXML
 
 Blizzard_CustomizationUtil.lua [AllowLoadGameType mainline]
 Blizzard_CustomizationTemplates.lua [AllowLoadGameType mainline]
 Blizzard_CustomizationTemplates.xml [AllowLoadGameType mainline]
 Blizzard_CustomizationOptionTemplates.lua [AllowLoadGameType mainline]
 Blizzard_CustomizationOptionTemplates.xml [AllowLoadGameType mainline]
+Shared\Blizzard_CustomizationOptionTemplates.xml [ExcludeLoadGameType camelot classic]
+[Game]\Blizzard_CustomizationOptionTemplates.xml [AllowLoadGameType camelot]
 Blizzard_CustomizationAudioInterface.lua [AllowLoadGameType mainline]
 Blizzard_CustomizationAudioInterface.xml [AllowLoadGameType mainline]
 Blizzard_CustomizationUI.lua [AllowLoadGameType mainline]

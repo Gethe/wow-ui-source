@@ -103,6 +103,14 @@ local function StaticPopup_CollapseTable()
 	end
 end
 
+local PopupEvents = {
+	"PopupOpened",
+	"PopupClosed",
+};
+PopupEventManager = CreateFromMixins(CallbackRegistryMixin);
+PopupEventManager:OnLoad();
+PopupEventManager:GenerateCallbackEvents(PopupEvents);
+
 local fullscreenFrameOverride;
 local function GetFullScreenFrame()
 	return fullscreenFrameOverride or GetAppropriateTopLevelParent();
@@ -229,6 +237,7 @@ end
 -- .cancelText: custom text for the cancel button.
 -- .showAlert: whether or not the alert texture should show.
 -- .referenceKey: used with StaticPopup_IsCustomGenericConfirmationShown.
+-- .skipGamepadAutoFocus: used to indicate the popup should not gain focus immediately when using non mouse based inputs. 
 function StaticPopup_ShowCustomGenericConfirmation(customData, insertedFrame)
 	StaticPopup_Show("GENERIC_CONFIRMATION", nil, nil, customData, insertedFrame);
 end
@@ -403,6 +412,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame, cust
 	dialog.insertedFrame = insertedFrame;
 	dialog.customOnHideScript = customOnHideScript;
 	dialog.progressBarDuration = nil;
+	dialog.skipGamepadAutoFocus = dialogInfo.skipGamepadAutoFocus;
 
 	dialog:SetParent(GetAppropriateTopLevelParent());
 	dialog:Init(which, text_arg1, text_arg2, data, insertedFrame);
@@ -603,6 +613,8 @@ function StaticPopup_OnShow(dialog)
 		dialog:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
 	end
 
+	PopupEventManager:TriggerEvent("PopupOpened", dialog);
+
 	if NarrationUtil then
 		local narrationInfo = NarrationUtil.RegionToNarrationInfo(dialog, NarrationUtil.TriggerType.Notification);
 		if narrationInfo then
@@ -643,6 +655,8 @@ function StaticPopup_OnHide(dialog)
 	StaticPopup_ReleaseInsertedFrame(dialog);
 
 	StaticPopup_CollapseTable();
+
+	PopupEventManager:TriggerEvent("PopupClosed", dialog);
 end
 
 function StaticPopup_OnCloseButtonClicked(closeButton, button)
@@ -772,6 +786,14 @@ local function OnKeyDownClickHandler(dialog, dialogInfo, index)
 	end
 end
 
+local function StaticPopup_CallEscapeHandler(dialog, dialogInfo)
+	if dialogInfo.OnEscape then
+		dialogInfo.OnEscape(dialog, dialog.data, "clicked");
+	elseif dialogInfo.OnCancel and (not dialogInfo.noCancelOnEscape) then
+		dialogInfo.OnCancel(dialog, dialog.data, "clicked");
+	end
+end
+
 local function StaticPopup_OnEscapeKeyDown(dialog)
 	local dialogInfo = StaticPopupDialogs[dialog.which];
 	if not dialogInfo or dialogInfo.ignoreKeys then
@@ -780,6 +802,12 @@ local function StaticPopup_OnEscapeKeyDown(dialog)
 
 	if dialogInfo.escapeHides then
 		dialog:Hide();
+	end
+
+	if dialogInfo.OnEscape then
+		StaticPopup_CallEscapeHandler(dialog, dialogInfo);
+		dialog:Hide();
+		return;
 	end
 
 	if atGlues then
@@ -817,9 +845,7 @@ function StaticPopup_EscapePressed()
 		if dialog.hideOnEscape then
 			local dialogInfo = StaticPopupDialogs[dialog.which];
 			if dialogInfo then
-				if dialogInfo.OnCancel and (not dialogInfo.noCancelOnEscape) then
-					dialogInfo.OnCancel(dialog, dialog.data, "clicked");
-				end
+				StaticPopup_CallEscapeHandler(dialog, dialogInfo);
 				dialog:Hide();
 			else
 				StaticPopupSpecial_Hide(dialog);

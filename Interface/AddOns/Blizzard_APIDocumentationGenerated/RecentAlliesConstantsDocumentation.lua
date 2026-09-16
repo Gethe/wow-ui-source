@@ -3,19 +3,19 @@ local RecentAlliesConstants =
 	Tables =
 	{
 		{
-			Name = "RecentAlliesFriendTag",
+			Name = "RecentAlliesInteractionCategoryFilter",
 			Type = "Enumeration",
 			NumValues = 6,
 			MinValue = 0,
 			MaxValue = 5,
 			Fields =
 			{
-				{ Name = "Professions", Type = "RecentAlliesFriendTag", EnumValue = 0 },
-				{ Name = "PvP", Type = "RecentAlliesFriendTag", EnumValue = 1 },
-				{ Name = "Raiding", Type = "RecentAlliesFriendTag", EnumValue = 2 },
-				{ Name = "Dungeons", Type = "RecentAlliesFriendTag", EnumValue = 3 },
-				{ Name = "Delves", Type = "RecentAlliesFriendTag", EnumValue = 4 },
-				{ Name = "Questing", Type = "RecentAlliesFriendTag", EnumValue = 5 },
+				{ Name = "Professions", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 0 },
+				{ Name = "PvP", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 1 },
+				{ Name = "Raiding", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 2 },
+				{ Name = "Dungeons", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 3 },
+				{ Name = "Delves", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 4 },
+				{ Name = "Questing", Type = "RecentAlliesInteractionCategoryFilter", EnumValue = 5 },
 			},
 		},
 		{

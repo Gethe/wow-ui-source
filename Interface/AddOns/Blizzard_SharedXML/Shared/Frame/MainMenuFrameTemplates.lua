@@ -72,12 +72,12 @@ end
 
 function MainMenuFrameMixin:AddCloseButton(customText, customSpacing)
 	self:AddSection(customSpacing);
-	self:AddButton(customText or CLOSE, function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_CONTINUE);
+	return self:AddButton(customText or CLOSE, function()
 		self:CloseMenu();
 	end);
 end
 
 function MainMenuFrameMixin:CloseMenu()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CONTINUE);
 	self:Hide();
 end

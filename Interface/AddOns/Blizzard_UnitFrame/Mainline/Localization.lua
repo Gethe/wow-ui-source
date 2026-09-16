@@ -59,8 +59,10 @@ local l10nTable = {
 
 			-- Target Frame
 			local targetFrameContentMain = TargetFrame.TargetFrameContent.TargetFrameContentMain;
-			targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
-			targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 1);
+			if not targetFrameContentMain.skipLevelAndNameTextLocalizationAdjustment then
+				targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
+				targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 1);
+			end
 
 			local targetFrameHealthBar = targetFrameContentMain.HealthBarsContainer;
 			targetFrameHealthBar.HealthBarText:SetPoint("CENTER", 0, 2);
@@ -76,22 +78,25 @@ local l10nTable = {
 		end
 	},
 	zhTW = {
-        localize = function()
+		localize = function()
 			LocalizePlayerFrame_zhTW();
-        end,
+		end,
 
-        localizeFrames = function()
+		localizeFrames = function()
 			-- Player Frame
 			PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
 
 			-- Target Frame
 			local targetFrameContentMain = TargetFrame.TargetFrameContent.TargetFrameContentMain;
-			targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
-			targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 2);
+			if not targetFrameContentMain.skipLevelAndNameTextLocalizationAdjustment then
+				targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
+				targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 2);
+			end
+
 			targetFrameContentMain.HealthBarsContainer.DeadText:SetPoint("CENTER", 0, 2);
 			targetFrameContentMain.HealthBarsContainer.UnconsciousText:SetPoint("CENTER", 0, 2);
-        end,
-    },
+		end,
+	},
 };
 
 SetupLocalization(l10nTable);

@@ -324,7 +324,7 @@ StaticPopupDialogs["DEATH"] = {
 	noCancelOnReuse = 1,
 	hideOnEscape = false,
 	noCloseOnAlt = true,
-	cancels = "RECOVER_CORPSE"
+	cancels = "RECOVER_CORPSE",
 };
 
 StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
@@ -404,22 +404,6 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 	whileDead = 1,
 };
 
-StaticPopupDialogs["CAMP"] = {
-	text = CAMP_TIMER,
-	GetExpirationText = GameDialogDefsUtil.GetDefaultExpirationText,
-	button1 = CANCEL,
-	cancelIfNotAllowedWhileLoggingOut = true,
-	OnAccept = function(dialog, data)
-		CancelLogout();
-	end,
-	OnCancel = function(dialog, data)
-		CancelLogout();
-	end,
-	timeout = 20,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
 	text = PLUNDERSTORM_LOGOUT_TEXT,
 	GetExpirationText = GameDialogDefsUtil.GetDefaultExpirationText,
@@ -433,17 +417,20 @@ StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
 	end,
 	timeout = 20,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 }
 
-local function GetBindWarning(itemLocation)
+function GetBindWarning(itemLocation)
+	-- overridden in Camelot
 	local item = Item:CreateFromItemLocation(itemLocation);
 	if not item then
 		return;
 	end
 
 	local _itemID, _itemType, _itemSubType, _itemEquipLoc, _icon, itemClassID, itemSubclassID = C_Item.GetItemInfoInstant(item:GetItemID());
-	local isArmor = (itemClassID == Enum.ItemClass.Armor) and (itemSubclassID ~= Enum.ItemArmorSubclass.Shield);
+	local isArmor = (itemClassID == Enum.ItemClass.Armor) and (itemSubclassID ~= Enum.ItemArmorSubclass.Shield) and (itemSubclassID ~= Enum.ItemArmorSubclass.Idol)
+	and (itemSubclassID ~= Enum.ItemArmorSubclass.Libram) and (itemSubclassID ~= Enum.ItemArmorSubclass.Totem) and (itemSubclassID ~= Enum.ItemArmorSubclass.Relic);
+
 	if isArmor and not IsItemPreferredArmorType(item:GetItemLocation()) then
 		return NOT_BEST_ARMOR_TYPE_WARNING;
 	end
@@ -471,7 +458,7 @@ StaticPopupDialogs["EQUIP_BIND"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
 	text = END_REFUND,
@@ -495,7 +482,7 @@ StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
@@ -519,7 +506,7 @@ StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM"] = {
@@ -536,13 +523,13 @@ StaticPopupDialogs["CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM"] = {
 		ClearPendingBindConversionItem();
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if not CursorHasItem() then
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
 			dialog:Hide();
 		end
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE"] = {
@@ -585,13 +572,18 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		DeleteCursorItem();
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
 	end,
 	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if ( not CursorHasItem() ) then
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
 			dialog:Hide();
 		end
 	end,
@@ -638,7 +630,11 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		if ( editBox:GetParent():GetButton1():IsEnabled() ) then
-			DeleteCursorItem();
+			if ( data and data.itemGUID ) then
+				C_Item.DeleteItem(data.itemGUID);
+			else
+				DeleteCursorItem();
+			end
 			editBox:GetParent():Hide();
 		end
 	end,
@@ -651,18 +647,84 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	end
 };
 
-StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
-	text = DELETE_GOOD_QUEST_ITEM,
+StaticPopupDialogs["DELETE_GOOD_ITEM_GAMEPAD"] = {
+	text = DELETE_GOOD_ITEM_GAMEPAD,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		DeleteCursorItem();
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
 	end,
 	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if ( not CursorHasItem() ) then
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
+			dialog:Hide();
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	requiresConfirmation = 1,
+	OnShow = function(dialog, data)
+		local itemLocation = C_Cursor.GetCursorItem();
+		if itemLocation and C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+			local msg = C_SpellBook.ContainsAnyDisenchantSpell() and DELETE_AZERITE_SCRAPPABLE_OR_DISENCHANTABLE_ITEM or DELETE_AZERITE_SCRAPPABLE_ITEM;
+			local itemName = dialog:GetTextFontString().text_arg1;
+			local azeriteIconMarkup = CreateTextureMarkup("Interface\\Icons\\INV_AzeriteDebuff",64,64,16,16,0,1,0,1,0,-2);
+			dialog:SetText(string.format(msg, itemName, azeriteIconMarkup));
+		end
+
+		dialog:GetButton1():Disable();
+		dialog:GetButton2():Enable();
+	end,
+	OnHide = function(dialog, data)
+		ChatFrameUtil.FocusActiveWindow();
+		dialog:GetEditBox():SetText("");
+		MerchantFrame_ResetRefundItem();
+		if GameTooltip:GetOwner() == dialog then
+			GameTooltip:Hide();
+		end
+	end,
+	OnHyperlinkEnter = function(dialog, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+		GameTooltip:SetOwner(dialog, "ANCHOR_PRESERVE");
+		GameTooltip:ClearAllPoints();
+		local cursorClearance = 30;
+		GameTooltip:SetPoint("TOPLEFT", region, "BOTTOMLEFT", boundsLeft, boundsBottom - cursorClearance);
+		GameTooltip:SetHyperlink(link);
+	end,
+	OnHyperlinkLeave = function(dialog)
+		GameTooltip:Hide();
+	end,
+	OnHyperlinkClick = function(dialog, link, text, button)
+		GameTooltip:Hide();
+	end,
+};
+
+StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
+	text = DELETE_GOOD_QUEST_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
+	end,
+	OnCancel = function(dialog, data)
+		ClearCursor();
+	end,
+	OnUpdate = function(dialog, elapsed)
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
 			dialog:Hide();
 		end
 	end,
@@ -684,8 +746,12 @@ StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
 		MerchantFrame_ResetRefundItem();
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
-		if ( editBox:GetParent():GetButton1():IsEnabled() ) then
-			DeleteCursorItem();
+		if ( editBox:GetParent().Button1:IsEnabled() ) then
+			if ( data and data.itemGUID ) then
+				C_Item.DeleteItem(data.itemGUID);
+			else
+				DeleteCursorItem();
+			end
 			editBox:GetParent():Hide();
 		end
 	end,
@@ -696,6 +762,43 @@ StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
 		StaticPopup_StandardEditBoxOnEscapePressed(editBox);
 		ClearCursor();
 	end
+};
+
+StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM_GAMEPAD"] = {
+	text = DELETE_GOOD_QUEST_ITEM_GAMEPAD,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		if ( data and data.itemGUID ) then
+			C_Item.DeleteItem(data.itemGUID);
+		else
+			DeleteCursorItem();
+		end
+	end,
+	OnCancel = function(dialog, data)
+		ClearCursor();
+	end,
+	OnUpdate = function(dialog, elapsed)
+		-- Gamepad deletes do not depend on the cursor, only hide if Gamepad input is not active.
+		if ( not CursorHasItem() and not InputUtil.IsGamepadUIEnabled() ) then
+			dialog:Hide();
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	requiresConfirmation = 1,
+	OnShow = function(dialog, data)
+		dialog:GetButton1():Disable();
+		dialog:GetButton2():Enable();
+	end,
+	OnHide = function(dialog, data)
+		ChatFrameUtil.FocusActiveWindow();
+		dialog:GetEditBox():SetText("");
+		MerchantFrame_ResetRefundItem();
+	end,
 };
 
 StaticPopupDialogs["RELEASE_PET"] = {
@@ -1011,8 +1114,8 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	text = UNLEARN_SKILL,
 	button1 = UNLEARN,
 	button2 = CANCEL,
-	OnAccept = function(dialog, index)
-		AbandonSkill(index);
+	OnAccept = function(dialog, skillLine)
+		C_SkillInfo.AbandonSkill(skillLine);
 		HideUIPanel(ProfessionsFrame);
 	end,
 	OnShow = function(dialog, data)
@@ -1023,10 +1126,10 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	OnHide = function(dialog, data)
 		dialog:GetEditBox():SetText("");
 	end,
-	EditBoxOnEnterPressed = function(editBox, index)
+	EditBoxOnEnterPressed = function(editBox, skillLine)
 		local dialog = editBox:GetParent();
 		if dialog:GetButton1():IsEnabled() then
-			AbandonSkill(index);
+			C_SkillInfo.AbandonSkill(skillLine);
 			HideUIPanel(ProfessionsFrame);
 			dialog:Hide();
 		end
@@ -1045,6 +1148,29 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	hideOnEscape = 1,
 	hasEditBox = 1,
 	maxLetters = 32,
+};
+
+StaticPopupDialogs["UNLEARN_SKILL_GAMEPAD"] = {
+	text = UNLEARN_SKILL_GAMEPAD,
+	button1 = UNLEARN,
+	button2 = CANCEL,
+	OnAccept = function(dialog, skillLine)
+		C_SkillInfo.AbandonSkill(skillLine);
+		HideUIPanel(ProfessionsFrame);
+	end,
+	OnShow = function(dialog, data)
+		dialog:GetButton1():Disable();
+		dialog:GetButton2():Enable();
+	end,
+	OnHide = function(dialog, data)
+		dialog:GetEditBox():SetText("");
+	end,
+	timeout = StaticPopupTimeoutSec,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	requiresConfirmation = 1,
 };
 
 StaticPopupDialogs["XP_LOSS"] = {
@@ -1070,7 +1196,7 @@ StaticPopupDialogs["XP_LOSS"] = {
 	exclusive = 1,
 	whileDead = 1,
 	showAlert = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["BIND_SOCKET"] = {

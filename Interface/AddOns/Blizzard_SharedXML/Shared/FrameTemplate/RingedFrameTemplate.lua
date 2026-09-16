@@ -47,10 +47,9 @@ end
 function RingedFrameWithTooltipMixin:AddExtraStuffToTooltip()
 end
 
-function RingedFrameWithTooltipMixin:OnEnter()
+function RingedFrameWithTooltipMixin:ShowTooltip()
 	if self.tooltipLines then
 		local tooltip = self:GetAppropriateTooltip();
-
 		self:SetupAnchors(tooltip);
 
 		if self.tooltipMinWidth then
@@ -71,9 +70,19 @@ function RingedFrameWithTooltipMixin:OnEnter()
 	end
 end
 
-function RingedFrameWithTooltipMixin:OnLeave()
+function RingedFrameWithTooltipMixin:HideTooltip()
 	local tooltip = self:GetAppropriateTooltip();
-	tooltip:Hide();
+	if tooltip then
+		tooltip:Hide();
+	end
+end
+
+function RingedFrameWithTooltipMixin:OnEnter()
+	self:ShowTooltip();
+end
+
+function RingedFrameWithTooltipMixin:OnLeave()
+	self:HideTooltip();
 end
 
 RingedMaskedButtonMixin = CreateFromMixins(RingedFrameWithTooltipMixin);
@@ -98,6 +107,16 @@ function RingedMaskedButtonMixin:OnLoad()
 		self.Ring:SetAtlas(self.ringAtlas, true);
 		self.Flash.Ring:SetAtlas(self.ringAtlas, true);
 		self.Flash.Ring2:SetAtlas(self.ringAtlas, true);
+	end
+
+	self.checkedAtlas = self.checkedAtlas or "charactercreate-ring-select";
+	self.CheckedTexture:SetAtlas(self.checkedAtlas);
+
+	-- Texture actually set in UpdateHighlightTexture
+	self.highlightAtlas = self.highlightAtlas or "charactercreate-ring-select";
+
+	if self.maskAtlas then
+		self.CircleMask:SetAtlas(self.maskAtlas);
 	end
 
 	self.NormalTexture:AddMaskTexture(self.CircleMask);
@@ -186,7 +205,7 @@ end
 
 function RingedMaskedButtonMixin:UpdateHighlightTexture()
 	if self:GetChecked() then
-		self.HighlightTexture:SetAtlas("charactercreate-ring-select");
+		self.HighlightTexture:SetAtlas(self.highlightAtlas);
 		self.HighlightTexture:SetPoint("TOPLEFT", self.CheckedTexture);
 		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.CheckedTexture);
 	else

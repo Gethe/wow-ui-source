@@ -81,8 +81,11 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 	-- Grab the string after the slash command
 	local target = strmatch(msg, "%s*(.*)");
 
+	-- Wherever regional unique names are enabled we need to support 'FirstName-SecondName' and 'FirstName SecondName' whisper constructions
+	local targetMatchString = RegionalUniqueNamesEnabled() and "[%s-](%w+)%s" or "%s";
+
 	--If we haven't even finished one word, we aren't done.
-	if ( not target or not strfind(target, "%s") ) then
+	if ( not target or not strfind(target, targetMatchString) ) then
 		return false;
 	end
 
@@ -96,13 +99,15 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 	end
 
 	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-	while ( strfind(target, "%s") ) do
+	while ( strfind(target, targetMatchString) ) do
 		--Pull off everything after the last space.
 		target = strmatch(target, "(.+)%s+[^%s]*");
+
 		if ( #C_AutoComplete.GetAutoCompleteResults(target, 1, 0, true, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude) > 0 ) then
 			break;
 		end
 	end
+
 	msg = strsub(msg, strlen(target) + 2);
 
 	if ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
@@ -110,6 +115,7 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 	else
 		chatType = "WHISPER";
 	end
+
 	return true, target, chatType, msg;
 end
 
@@ -391,6 +397,9 @@ end
 function ChatFrameEditBoxMixin:OnEditFocusGained()
 	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxFocusGained", self);
 	ChatFrameUtil.ActivateChat(self);
+
+	-- Handle case where edit box gains focus from the mouse rather than gamepad actions
+	self.chatFrame:SetGamepadFocus();
 end
 
 function ChatFrameEditBoxMixin:OnEditFocusLost()
@@ -400,12 +409,11 @@ function ChatFrameEditBoxMixin:OnEditFocusLost()
 	if self:ShouldDeactivateChatOnEditFocusLost() then
 		ChatFrameUtil.DeactivateChat(self);
 	end
+
+	self.chatFrame:ClearGamepadFocus();
 end
 
-function ChatFrameEditBoxMixin:OnEnterPressed()
-	if(AutoCompleteEditBox_OnEnterPressed(self)) then
-		return;
-	end
+function ChatFrameEditBoxMixin:SendMessage()
 	self:SendText(1);
 
 	if IsVoiceTranscription(SELECTED_CHAT_FRAME) then
@@ -429,6 +437,13 @@ function ChatFrameEditBoxMixin:OnEnterPressed()
 	end
 
 	self:ClearChat();
+end
+
+function ChatFrameEditBoxMixin:OnEnterPressed()
+	if(AutoCompleteEditBox_OnEnterPressed(self)) then
+		return;
+	end
+	self:SendMessage();
 end
 
 function ChatFrameEditBoxMixin:OnEscapePressed()
@@ -535,6 +550,8 @@ function ChatFrameEditBoxMixin:ClearChat()
 	if ( not self.isGM and ((not IsVoiceTranscription(self.chatFrame) and GetCVar("chatStyle") ~= "im")) ) then
 		self:SetText("");
 		self:Hide();
+	elseif InputUtil.IsGamepadUIEnabled() then
+		self:SetText("");
 	else
 		ChatFrameUtil.DeactivateChat(self);
 	end

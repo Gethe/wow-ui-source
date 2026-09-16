@@ -1,11 +1,4 @@
 
-MicroMenuPositionEnum = {
-	BottomLeft = 1;
-	BottomRight = 2;
-	TopLeft = 3;
-	TopRight = 4;
-};
-
 MicroMenuContainerMixin = {};
 
 function MicroMenuContainerMixin:OnLoad()
@@ -58,32 +51,7 @@ function MicroMenuContainerMixin:Layout()
 		AddFrameSize(MicroMenu);
 	end
 
-	if QueueStatusButton then
-		local includeOffsetYes = true;
-		AddFrameSize(QueueStatusButton, includeOffsetYes);
-	end
-
 	self:SetSize(math.max(width, 1), math.max(height, 1));
-end
-
-function MicroMenuContainerMixin:GetPosition()
-	local centerX, centerY = self:GetCenter();
-	local halfScreenWidth = UIParent:GetWidth() / 2;
-	local halfScreenHeight = UIParent:GetHeight() / 2;
-
-	if centerY < halfScreenHeight then
-		if centerX < halfScreenWidth then
-			return MicroMenuPositionEnum.BottomLeft;
-		else
-			return MicroMenuPositionEnum.BottomRight;
-		end
-	else
-		if centerX < halfScreenWidth then
-			return MicroMenuPositionEnum.TopLeft;
-		else
-			return MicroMenuPositionEnum.TopRight;
-		end
-	end
 end
 
 MicroMenuMixin = {};
@@ -183,13 +151,13 @@ function MicroMenuMixin:UpdateHelpTicketButtonAnchor(position)
 
 	-- Update help button anchor so it stays on screen
 	local isOnBottomSideOfScreen, isOnLeftSideOfScreen;
-	if position == MicroMenuPositionEnum.BottomLeft then
+	if position == FrameUtilQuadrantEnum.BottomLeft then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, true;
-	elseif position == MicroMenuPositionEnum.BottomRight then
+	elseif position == FrameUtilQuadrantEnum.BottomRight then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, false;
-	elseif position == MicroMenuPositionEnum.TopLeft then
+	elseif position == FrameUtilQuadrantEnum.TopLeft then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, true;
-	elseif position == MicroMenuPositionEnum.TopRight then
+	elseif position == FrameUtilQuadrantEnum.TopRight then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, false;
 	end
 
@@ -198,22 +166,13 @@ function MicroMenuMixin:UpdateHelpTicketButtonAnchor(position)
 	HelpOpenWebTicketButton:SetPoint("CENTER", relativeTo, "CENTER", 0, offsetY);
 end
 
-function MicroMenuMixin:UpdateQueueStatusAnchors(position)
-	if QueueStatusButton then
-		QueueStatusButton:UpdatePosition(position, self.isHorizontal);
-	end
-
-	if QueueStatusFrame then
-		QueueStatusFrame:UpdatePosition(position, self.isHorizontal);
-	end
-end
-
 function MicroMenuMixin:UpdateFramerateFrameAnchor(position)
 	if not FramerateFrame then
 		return;
 	end
 
-	FramerateFrame:UpdatePosition(position, self.isHorizontal);
+	local defaultPosition = EditModeSystemMixin.IsInDefaultPosition(MicroMenuContainer);
+	FramerateFrame:UpdatePosition(position, self.isHorizontal, defaultPosition);
 end
 
 function MicroMenuMixin:AnchorToMenuContainer(position)
@@ -224,33 +183,24 @@ function MicroMenuMixin:AnchorToMenuContainer(position)
 	end
 
 	local point;
-	if position == MicroMenuPositionEnum.BottomLeft then
+	if position == FrameUtilQuadrantEnum.BottomLeft then
 		point = "BOTTOMLEFT";
-	elseif position == MicroMenuPositionEnum.BottomRight then
+	elseif position == FrameUtilQuadrantEnum.BottomRight then
 		point = "BOTTOMRIGHT";
-	elseif position == MicroMenuPositionEnum.TopLeft then
+	elseif position == FrameUtilQuadrantEnum.TopLeft then
 		point = "TOPLEFT";
-	elseif position == MicroMenuPositionEnum.TopRight then
+	elseif position == FrameUtilQuadrantEnum.TopRight then
 		point = "TOPRIGHT";
 	end
 	self:ClearAllPoints();
 	self:SetPoint(point, MicroMenuContainer, point, 0, 0);
 end
 
-function MicroMenuMixin:SetQueueStatusScale(scale)
-	if QueueStatusButton then
-		QueueStatusButton:SetScale(scale);
-	end
-
-	self:UpdateQueueStatusAnchors(MicroMenuContainer:GetPosition());
-end
-
 function MicroMenuMixin:Layout()
 	GridLayoutFrameMixin.Layout(self);
 
-	local position = MicroMenuContainer:GetPosition();
+	local position = FrameUtil.GetScreenQuadrant(MicroMenuContainer);
 	self:AnchorToMenuContainer(position);
-	self:UpdateQueueStatusAnchors(position);
 	self:UpdateFramerateFrameAnchor(position);
 	self:UpdateHelpTicketButtonAnchor(position);
 end

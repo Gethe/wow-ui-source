@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="InspectFrameModeSideTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="InspectTabButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="InspectFrameMixin">
+		<Frames>
+			<Button name="InspectFrameTab1" inherits="PanelTabButtonTemplate" id="1" text="CHARACTER" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="InspectFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="GUILD" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(GUILD, 1.0,1.0,1.0 );
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Frame name="InspectUITabs" parentKey="ModeTabs">
+				<Size x="64" y="384"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-30"/>
+				</Anchors>
+				<Frames>
+					<Frame name="InspectFrameModeTab1" parentArray="Tabs" parentKey="CharacterTab" inherits="InspectFrameModeSideTabTemplate" id="1"/>
+					<Frame name="InspectFrameModeTab2" parentArray="Tabs" parentKey="GuildTab" inherits="InspectFrameModeSideTabTemplate" id="2"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="isVertical" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+</Ui>

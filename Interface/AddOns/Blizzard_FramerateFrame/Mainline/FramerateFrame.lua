@@ -3,9 +3,7 @@ local FRAMERATE_FREQUENCY = 0.25;
 FramerateFrameMixin = {};
 
 function FramerateFrameMixin:OnLoad()
-	-- Position is based on position of micro menu
-	local position = MicroMenuContainer:GetPosition();
-	MicroMenu:UpdateFramerateFrameAnchor(position);
+	-- Overridden by certain flavors.
 end
 
 function FramerateFrameMixin:OnUpdate(elapsed)
@@ -43,34 +41,8 @@ function FramerateFrameMixin:EndBenchmark()
 	self:Hide();
 end
 
-function FramerateFrameMixin:GetMicroMenuRelativeAnchoring(microMenuPosition, isMenuHorizontal)
-	if isMenuHorizontal then
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-			return "BOTTOMLEFT", "BOTTOMRIGHT", 5, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-			return "BOTTOMRIGHT", "BOTTOMLEFT", -5, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-			return "TOPLEFT", "TOPRIGHT", 5, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-			return "TOPRIGHT", "TOPLEFT", -5, 0;
-		end
-	else
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-			return "BOTTOMLEFT", "TOPLEFT", 0, 5;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-			return "BOTTOMRIGHT", "TOPRIGHT", 0, 5;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-			return "TOPLEFT", "BOTTOMLEFT", 0, -5;
-		else -- MicroMenuPositionEnum.TopRight
-			return "TOPRIGHT", "BOTTOMRIGHT", 0, -5;
-		end
-	end
-end
-
-function FramerateFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
-	-- Position relative to micro menu's position to avoid going off screen
-	local point, relativePoint, offsetX, offsetY = self:GetMicroMenuRelativeAnchoring(microMenuPosition, isMenuHorizontal);
-
-	self:ClearAllPoints();
-	self:SetPoint(point, MicroMenuContainer, relativePoint, offsetX, offsetY);
+function FramerateFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal, isDefaultPosition)
+	-- Mainline positions the FramerateFrame relative to the MicroMenu,
+	-- so this function can be overridden to accomplish that.
+	-- (But by default, it does nothing and is just here for safe compatability!)
 end

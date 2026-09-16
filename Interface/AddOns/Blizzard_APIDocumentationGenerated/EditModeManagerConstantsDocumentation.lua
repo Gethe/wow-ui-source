@@ -201,9 +201,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 36,
+			NumValues = 38,
 			MinValue = 0,
-			MaxValue = 35,
+			MaxValue = 37,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -241,7 +241,9 @@ local EditModeManagerConstants =
 				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
 				{ Name = "ShowRaidWarning", Type = "EditModeAccountSetting", EnumValue = 33 },
 				{ Name = "ShowTotemActionBar", Type = "EditModeAccountSetting", EnumValue = 34 },
-				{ Name = "ShowLossOfControl", Type = "EditModeAccountSetting", EnumValue = 35 },
+				{ Name = "ShowGroupFinder", Type = "EditModeAccountSetting", EnumValue = 35 },
+				{ Name = "ShowLossOfControl", Type = "EditModeAccountSetting", EnumValue = 36 },
+				{ Name = "ShowSwingTimer", Type = "EditModeAccountSetting", EnumValue = 37 },
 			},
 		},
 		{
@@ -480,6 +482,17 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeGroupFinderSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeGroupFinderSetting", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "EditModeLayoutType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -505,6 +518,29 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeMainActionBarEndCapSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "EditModeMainActionBarEndCapSetting", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "EditModeMainActionBarEndCapSystemIndices",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "EndCapLeft", Type = "EditModeMainActionBarEndCapSystemIndices", EnumValue = 1 },
+				{ Name = "EndCapRight", Type = "EditModeMainActionBarEndCapSystemIndices", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeMicroMenuSetting",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -515,7 +551,7 @@ local EditModeManagerConstants =
 				{ Name = "Orientation", Type = "EditModeMicroMenuSetting", EnumValue = 0 },
 				{ Name = "Order", Type = "EditModeMicroMenuSetting", EnumValue = 1 },
 				{ Name = "Size", Type = "EditModeMicroMenuSetting", EnumValue = 2 },
-				{ Name = "EyeSize", Type = "EditModeMicroMenuSetting", EnumValue = 3 },
+				{ Name = "DeprecatedEyeSize", Type = "EditModeMicroMenuSetting", EnumValue = 3 },
 			},
 		},
 		{
@@ -573,13 +609,14 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModePresetLayouts",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Modern", Type = "EditModePresetLayouts", EnumValue = 0 },
 				{ Name = "Classic", Type = "EditModePresetLayouts", EnumValue = 1 },
+				{ Name = "Gamepad", Type = "EditModePresetLayouts", EnumValue = 2 },
 			},
 		},
 		{
@@ -633,11 +670,54 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeSwingTimerSetting",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Scale", Type = "EditModeSwingTimerSetting", EnumValue = 0 },
+				{ Name = "Opacity", Type = "EditModeSwingTimerSetting", EnumValue = 1 },
+				{ Name = "Visibility", Type = "EditModeSwingTimerSetting", EnumValue = 2 },
+				{ Name = "Width", Type = "EditModeSwingTimerSetting", EnumValue = 3 },
+				{ Name = "Height", Type = "EditModeSwingTimerSetting", EnumValue = 4 },
+				{ Name = "ShowBarTitle", Type = "EditModeSwingTimerSetting", EnumValue = 5 },
+				{ Name = "ShowTime", Type = "EditModeSwingTimerSetting", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "EditModeSwingTimerSystemIndices",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "MainHand", Type = "EditModeSwingTimerSystemIndices", EnumValue = 1 },
+				{ Name = "OffHand", Type = "EditModeSwingTimerSystemIndices", EnumValue = 2 },
+				{ Name = "Ranged", Type = "EditModeSwingTimerSystemIndices", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "EditModeSwingTimerVisibility",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "EditModeSwingTimerVisibility", EnumValue = 0 },
+				{ Name = "InCombat", Type = "EditModeSwingTimerVisibility", EnumValue = 1 },
+				{ Name = "Hidden", Type = "EditModeSwingTimerVisibility", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 30,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 29,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -666,7 +746,10 @@ local EditModeManagerConstants =
 				{ Name = "DamageMeter", Type = "EditModeSystem", EnumValue = 23 },
 				{ Name = "RaidWarning", Type = "EditModeSystem", EnumValue = 24 },
 				{ Name = "TotemActionBar", Type = "EditModeSystem", EnumValue = 25 },
-				{ Name = "LossOfControl", Type = "EditModeSystem", EnumValue = 26 },
+				{ Name = "MainActionBarEndCap", Type = "EditModeSystem", EnumValue = 26 },
+				{ Name = "GroupFinder", Type = "EditModeSystem", EnumValue = 27 },
+				{ Name = "LossOfControl", Type = "EditModeSystem", EnumValue = 28 },
+				{ Name = "SwingTimer", Type = "EditModeSystem", EnumValue = 29 },
 			},
 		},
 		{
@@ -943,6 +1026,14 @@ local EditModeManagerConstants =
 				{ Name = "EditModeMinGridSpacing", Type = "number", Value = 20 },
 				{ Name = "EditModeMaxGridSpacing", Type = "number", Value = 300 },
 				{ Name = "EditModeMaxLayoutsPerType", Type = "number", Value = 5 },
+			},
+		},
+		{
+			Name = "EditModeLayoutConsts_Mainline",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "EditModeDefaultLayout", Type = "EditModePresetLayouts", Value = Enum.EditModePresetLayouts.Modern },
 			},
 		},
 	},

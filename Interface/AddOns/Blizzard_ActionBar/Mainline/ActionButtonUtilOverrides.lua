@@ -11,6 +11,7 @@ local MicroButtonNames = {
 	"EJMicroButton",
 	"MainMenuMicroButton",
 	"QuickJoinToastButton",
+	"LegacyMicroButton",
 }
 
 function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)

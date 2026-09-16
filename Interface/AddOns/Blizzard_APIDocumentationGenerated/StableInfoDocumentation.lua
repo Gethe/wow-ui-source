@@ -8,6 +8,10 @@ local StableInfo =
 	Functions =
 	{
 		{
+			Name = "BuyStableSlot",
+			Type = "Function",
+		},
+		{
 			Name = "ClosePetStables",
 			Type = "Function",
 		},
@@ -30,6 +34,15 @@ local StableInfo =
 			},
 		},
 		{
+			Name = "GetNextStableSlotCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActivePets",
 			Type = "Function",
 
@@ -45,6 +58,15 @@ local StableInfo =
 			Returns =
 			{
 				{ Name = "numStablePets", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumStableSlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numSlots", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -210,6 +232,11 @@ local StableInfo =
 				{ Name = "petNumber", Type = "number", Nilable = false },
 				{ Name = "creatureID", Type = "number", Nilable = false },
 				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "loyaltyLevel", Type = "number", Nilable = false },
+				{ Name = "loyaltyName", Type = "string", Nilable = false },
+				{ Name = "happinessLevel", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "experienceNeeded", Type = "number", Nilable = false },
 			},
 		},
 		{

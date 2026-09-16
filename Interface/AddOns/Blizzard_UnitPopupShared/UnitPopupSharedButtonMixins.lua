@@ -876,7 +876,7 @@ function UnitPopupGuildPromoteButtonMixin:CanShow(contextData)
 	end
 
 	local playerName, playerServer = UnitFullName("player");
-	return playerName ~= contextData.name or playerServer ~= contextData.server;
+	return playerName ~= contextData.name or playerServer ~= contextData.surname;
 end
 
 function UnitPopupGuildPromoteButtonMixin:OnClick(contextData)
@@ -1442,7 +1442,7 @@ function UnitPopupCopyCharacterNameButtonMixin:GetText(contextData)
 end
 
 function UnitPopupCopyCharacterNameButtonMixin:OnClick(contextData)
-	CopyToClipboard(contextData.name);
+	CopyToClipboard(NameUtil.GetFullNameWithoutRealm(contextData.name, contextData.surname));
 end
 
 function UnitPopupCopyCharacterNameButtonMixin:CanShow(contextData)
@@ -2458,10 +2458,6 @@ end
 UnitPopupRaidTargetButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupRaidTargetButtonMixin:IsEnabled(contextData)
-	if Kiosk.IsEnabled() then
-		return false;
-	end
-
 	return true;
 end
 
@@ -3259,6 +3255,37 @@ end
 	return CanDestroyMessage(clubId, streamId, messageId);
 end
 
+UnitPopupLootThresholdButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupLootThresholdButtonMixin:GetText(contextData)
+	return  _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
+end
+
+function UnitPopupLootThresholdButtonMixin:GetColor()
+	local colorData = ColorManager.GetColorDataForItemQuality(GetLootThreshold());
+	if colorData then
+		return colorData.color:GetRGB();
+	end
+	return 1, 1, 1;
+end
+
+function UnitPopupLootThresholdButtonMixin:CanShow(contextData)
+	return IsInGroup() and C_PartyInfo.GetLootMethod() ~= Enum.LootMethod.Personal;
+end 
+
+function UnitPopupLootThresholdButtonMixin:GetEntries()
+	if UnitIsGroupLeader("player") then
+		return { 
+			UnitPopupItemQuality2DescButtonMixin,
+			UnitPopupItemQuality3DescButtonMixin,
+			UnitPopupItemQuality4DescButtonMixin,
+			UnitPopupCancelButtonMixin,
+		}
+	end
+
+	return nil;
+end
+
 UnitPopupItemQuality2DescButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
 function UnitPopupItemQuality2DescButtonMixin:GetText(contextData)
@@ -3323,6 +3350,10 @@ function UnitPopupOptOutLootTitleMixin:GetEntries()
 	}
 end
 
+function UnitPopupOptOutLootTitleMixin:CanShow()
+	return C_PartyInfo.GetLootMethod() ~= Enum.LootMethod.Personal;
+end
+
 UnitPopupOptOutLootEnableMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
 function UnitPopupOptOutLootEnableMixin:GetText(contextData)
@@ -3334,7 +3365,7 @@ function UnitPopupOptOutLootEnableMixin:IsChecked(contextData)
 end
 
 function UnitPopupOptOutLootEnableMixin:OnClick(contextData)
-	SetOptOutOfLoot(1);
+	SetOptOutOfLoot(true);
 	return MenuResponse.Close;
 end
 
@@ -3349,7 +3380,7 @@ function UnitPopupOptOutLootDisableMixin:IsChecked(contextData)
 end
 
 function UnitPopupOptOutLootDisableMixin:OnClick(contextData)
-	SetOptOutOfLoot(nil);
+	SetOptOutOfLoot(false);
 	return MenuResponse.Close;
 end
 
@@ -3791,4 +3822,22 @@ function UnitPopupReportRecentAllyButtonMixin:CanShow(contextData)
 	end
 
 	return not (playerLocation:IsChatLineID() or playerLocation:IsCommunityData());
+end
+
+UnitPopupGamepadInteractButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupGamepadInteractButtonMixin:GetText(contextData)
+	return BINDING_NAME_INTERACTTARGET;
+end
+
+function UnitPopupGamepadInteractButtonMixin:OnClick(contextData)
+	C_PlayerInteractionManager.InteractUnit(contextData.unit);
+end
+
+function UnitPopupGamepadInteractButtonMixin:CanShow(contextData)
+	return InputUtil.IsGamepadUIEnabled();
+end
+
+function UnitPopupGamepadInteractButtonMixin:IsEnabled(contextData)
+	return UnitIsInInteractRange(contextData.unit);
 end

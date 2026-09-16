@@ -1,3 +1,8 @@
+PlayerFrameMixin = {};
+
+function PlayerFrameMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+end
 
 PlayerBottomManagedFrameContainerMixin = {};
 

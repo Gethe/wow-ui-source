@@ -76,10 +76,8 @@ function ClubFinderGetPlayerSettingsByValue(value)
 end
 
 local function ClubFinderGetTotalNumSpecializations()
-	local numClasses = GetNumClasses();
 	local count = 0;
-	for i = 1, numClasses do
-		local _, _, classID = GetClassInfo(i);
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
 		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			count = count + 1
 		end
@@ -548,8 +546,8 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 				return MenuResponse.Refresh;
 			end);
 
-			for classIndex = 1, GetNumClasses() do
-				local className, classFile, classID = GetClassInfo(classIndex);
+			for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
+				local className, classFile = GetClassInfo(classID);
 
 				if className and classFile and classID then
 					local classColor = GetClassColorObj(classFile);
@@ -602,10 +600,9 @@ function ClubLookingForDropdownMixin:SetCheckedList(specIds)
 end
 
 function ClubLookingForDropdownMixin:IsEverySpecCheckedForRole(roleToMatch)
-	local numClasses = GetNumClasses();
 	local sex = UnitSex("player");
-	for i = 1, numClasses do
-		local className, classTag, classID = GetClassInfo(i);
+
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
 		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
@@ -619,10 +616,10 @@ function ClubLookingForDropdownMixin:IsEverySpecCheckedForRole(roleToMatch)
 end
 
 function ClubLookingForDropdownMixin:CheckOrUncheckAll(info, roleToMatch, checkAll)
-	local numClasses = GetNumClasses();
 	local sex = UnitSex("player");
-	for i = 1, numClasses do
-		local className, classTag, classID = GetClassInfo(i);
+
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
+		local className = GetClassInfo(classID);
 		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then

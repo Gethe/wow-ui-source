@@ -1,0 +1,28 @@
+<Bindings>
+	<Binding name="OPENRADIAL" category="GAMEPAD_LABEL" hidden="true">
+		GamepadMode.OpenRadial();
+	</Binding>
+
+	<Binding name="TOGGLEUIFOCUS" category="GAMEPAD_LABEL" hidden="true">
+		GamepadMode.ToggleUIFocus();
+	</Binding>
+
+	<Binding name="TOGGLEPINGSYSTEM" runOnUp="true" category="GAMEPAD_LABEL" hidden="true">
+		GamepadMode.TogglePingSystem(keystate == "down");
+	</Binding>
+
+	<Binding name="GAMEPADLEFTMOD" runOnUp="true" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMode.OnCrossBarModifierChanged("left", keystate == "down");
+	</Binding>
+	<Binding name="GAMEPADRIGHTMOD" runOnUp="true" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMode.OnCrossBarModifierChanged("right", keystate == "down");
+	</Binding>
+
+	<Binding name="GAMEPADLEFTTARGETMODIFIER" runOnUp="true" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMode.OnLeftTargetModifierChanged(keystate == "down");
+	</Binding>
+
+	<Binding name="GAMEPADRIGHTTARGETMODIFIER" runOnUp="true" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
+		GamepadMode.OnRightTargetModifierChanged(keystate == "down");
+	</Binding>
+</Bindings>

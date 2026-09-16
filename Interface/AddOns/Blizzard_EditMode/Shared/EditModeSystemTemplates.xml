@@ -317,6 +317,16 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="EditModeSwingTimerSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeSwingTimerSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.SwingTimer" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
 	<Frame name="EditModeVehicleSeatIndicatorSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleSeatIndicatorSystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.VehicleSeatIndicator" type="global"/>
@@ -412,6 +422,42 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="EditModeMainActionBarEndCapSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMainActionBarEndCapSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.MainActionBarEndCap" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeMainActionBarEndCapLeftSystemTemplate" inherits="EditModeMainActionBarEndCapSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeMainActionBarEndCapSystemIndices.EndCapLeft" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_END_CAP_LEFT_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeMainActionBarEndCapRightSystemTemplate" inherits="EditModeMainActionBarEndCapSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeMainActionBarEndCapSystemIndices.EndCapRight" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_END_CAP_RIGHT_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeGroupFinderSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeGroupFinderSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.GroupFinder" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_GROUP_FINDER_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+	
 	<Frame name="EditModeLossOfControlSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeLossOfControlSystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.LossOfControl" type="global"/>

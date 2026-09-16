@@ -27,6 +27,22 @@ local Bank =
 			},
 		},
 		{
+			Name = "BankBagTypeAndIDToInvSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "slot", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "CanDepositMoney",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -177,6 +193,21 @@ local Bank =
 			},
 		},
 		{
+			Name = "FetchMaxNumBankTabs",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "numPurchasedBankTabs", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "FetchNextPurchasableBankTabData",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -285,6 +316,15 @@ local Bank =
 			Arguments =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUsePlayerBagsInBank",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldUsePlayerBagsInBank", Type = "bool", Nilable = false },
 			},
 		},
 		{

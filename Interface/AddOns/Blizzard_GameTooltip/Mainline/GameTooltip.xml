@@ -327,4 +327,6 @@
 			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
 		</KeyValues>
 	</GameTooltip>
+	<GameTooltip name="BuffFrameTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+	</GameTooltip>
 </Ui>

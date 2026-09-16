@@ -7,6 +7,8 @@ ArenaUtil.lua
 [Family]\ArenaUtil.lua [AllowLoadGameType classic]
 PartyUtil.lua
 Classic\PartyUtil.lua [AllowLoadGameType classic]
+Mainline\QuestUtilsOverrides.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+Camelot\QuestUtilsOverrides.lua [AllowLoadGameType camelot]
 [Family]\QuestUtils.lua
 AchievementUtil.lua [AllowLoadGameType mainline]
 [Family]\MapUtil.lua
@@ -29,6 +31,7 @@ DifficultyUtil_Shared.lua [AllowLoadGameType classic]
 Classic\DifficultyUtil.lua [AllowLoadGameType classic]
 Mainline\DifficultyUtil_Base.lua [AllowLoadGameType mainline]
 DifficultyUtil_Shared.lua [AllowLoadGameType mainline]
+Camelot\DifficultyUtilOverrides.lua [AllowLoadGameType camelot]
 Mainline\DifficultyUtil.lua [AllowLoadGameType mainline]
 RenownRewardUtil.lua [AllowLoadGameType mainline]
 TitleUtil.lua [AllowLoadGameType mainline]
@@ -36,6 +39,7 @@ AdventureGuideUtil.lua
 ProfessionsUtil.lua [AllowLoadGameType mainline]
 CampaignUtil.lua [AllowLoadGameType mainline]
 CollectionsUtil.lua
+[Game]\CollectionsUtilOverrides.lua [AllowLoadGameType camelot]
 CurrencyUtil.lua [AllowLoadGameType mainline]
 [Family]\RAFUtil.lua [AllowLoadGameType mainline]
 [Family]\PlayerSpellsUtil.lua [AllowLoadGameType mainline]
@@ -50,3 +54,5 @@ AreaPoiUtil.lua [AllowLoadGameType mainline]
 [Family]\ReputationUtil.lua [AllowLoadGameType mainline]
 [Family]\TraitUtil.lua [AllowLoadGameType mainline]
 Localization.lua
+NameUtil.lua [ExcludeLoadGameType camelot]
+Camelot\NameUtil.lua [AllowLoadGameType camelot]

@@ -1,4 +1,5 @@
-MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 35;
+MAIN_ACTION_BAR_OFFSET_Y = 35;
+MAIN_ACTION_BAR_MANAGE_END_CAPS = true;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -5;
 RIGHT_ACTION_BAR_DEFAULT_PADDING_X = 0;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
@@ -24,7 +25,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 36,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -173,7 +174,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -190,7 +191,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -206,7 +207,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 	},
@@ -380,7 +381,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 		},
 	},
 
@@ -392,7 +393,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 		},
 	},
 
@@ -441,7 +442,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 		},
 	},
 
@@ -469,7 +470,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 		},
 	},
 
@@ -517,7 +518,6 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
 			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
 			[Enum.EditModeMicroMenuSetting.Size] = 6,
-			[Enum.EditModeMicroMenuSetting.EyeSize] = 10,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",

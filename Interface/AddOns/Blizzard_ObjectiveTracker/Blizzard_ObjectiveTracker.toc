@@ -33,6 +33,7 @@ Blizzard_ScenarioObjectiveTracker.xml
 Blizzard_AutoQuestPopUpTracker.lua
 Blizzard_AutoQuestPopUpTracker.xml
 Blizzard_QuestObjectiveTracker.lua
+[Game]/Blizzard_QuestObjectiveTrackerOverride.lua [AllowLoadGameType camelot]
 Blizzard_QuestObjectiveTracker.xml
 Blizzard_CampaignQuestObjectiveTracker.lua
 Blizzard_CampaignQuestObjectiveTracker.xml

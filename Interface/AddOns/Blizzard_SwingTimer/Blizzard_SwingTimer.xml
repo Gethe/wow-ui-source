@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SwingTimerFrameTemplate" virtual="true" mixin="SwingTimerMixin" inherits="EditModeSwingTimerSystemTemplate, BottomManagedFrameTemplate" roleset="swingTimers">
+		<KeyValues>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ui-swingtimerbar-background" setAllPoints="true"/>
+				<Texture parentKey="Border" atlas="ui-swingtimerbar-frame" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="StatusBar" minValue="0" maxValue="1" defaultValue="0" setAllPoints="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Pip" atlas="ui-swingtimerbar-pip" useAtlasSize="true"/>
+						<Texture parentKey="TypeLabelShadow" atlas="ui-swingtimerbar-textshadow-left">
+							<Size x="171"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TypeLabel" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeLabel" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SwingTimerMainHandFrame" parent="UIParent" inherits="SwingTimerFrameTemplate">
+		<!--Anchoring and Size controlled by Edit Mode and BottomManagedFrame logic. -->
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeSwingTimerSystemIndices.MainHand" type="global"/>
+			<KeyValue key="systemNameString" value="SWING_TIMER_MAIN_HAND" type="global"/>
+			<KeyValue key="swingType" value="Enum.PlayerSwingType.MainHand" type="global"/>
+			<KeyValue key="typeText" value="SWING_TIMER_MAIN_HAND" type="global"/>
+			<KeyValue key="barTexture" value="ui-swingtimerbar-filling-mainhand" type="string"/>
+			<KeyValue key="layoutIndex" value="9" type="number"/>
+			<KeyValue key="bottomPadding" value="-6" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SwingTimerOffHandFrame" parent="UIParent" inherits="SwingTimerFrameTemplate">
+		<!--Anchoring and Size controlled by Edit Mode and BottomManagedFrame logic. -->
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeSwingTimerSystemIndices.OffHand" type="global"/>
+			<KeyValue key="systemNameString" value="SWING_TIMER_OFF_HAND" type="global"/>
+			<KeyValue key="swingType" value="Enum.PlayerSwingType.OffHand" type="global"/>
+			<KeyValue key="typeText" value="SWING_TIMER_OFF_HAND" type="global"/>
+			<KeyValue key="barTexture" value="ui-swingtimerbar-filling-offhand" type="string"/>
+			<KeyValue key="layoutIndex" value="10" type="number"/>
+			<KeyValue key="bottomPadding" value="-6" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SwingTimerRangedFrame" parent="UIParent" inherits="SwingTimerFrameTemplate">
+		<!--Anchoring and Size controlled by Edit Mode and BottomManagedFrame logic. -->
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeSwingTimerSystemIndices.Ranged" type="global"/>
+			<KeyValue key="systemNameString" value="SWING_TIMER_RANGED" type="global"/>
+			<KeyValue key="swingType" value="Enum.PlayerSwingType.Ranged" type="global"/>
+			<KeyValue key="typeText" value="SWING_TIMER_RANGED" type="global"/>
+			<KeyValue key="barTexture" value="ui-swingtimerbar-filling-ranged" type="string"/>
+			<KeyValue key="layoutIndex" value="11" type="number"/>
+		</KeyValues>
+	</Frame>
+</Ui>

@@ -1,0 +1,10 @@
+<Bindings>
+	<Binding name="INTERACTSOFTTARGET" category="GAMEPAD_LABEL" hidden="true">
+		if not InputUtil.IsGamepadUIEnabled() then
+			return;
+		end
+
+		<!-- Unlike "anyinteract", "softinteract" will not trigger an auto-attack -->
+		C_PlayerInteractionManager.InteractUnit("softinteract");
+	</Binding>
+</Bindings>

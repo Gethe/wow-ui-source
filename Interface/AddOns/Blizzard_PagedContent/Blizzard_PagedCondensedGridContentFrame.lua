@@ -87,9 +87,11 @@ function VerticalElementSetMixin:Init(columnsPerRow)
 end
 
 function VerticalElementSetMixin:Reset(numElements)
+	self.filledRowsPerColumn = {};
+
 	self.rowsNeeded = math.ceil(numElements / self.columnsPerRow);
 	self.currentColumn = 1;
-	self.filledRowsInCurrentColumn = 0;
+	self.filledRowsPerColumn[self.currentColumn] = 0;
 
 	self.viewRowsFilledAtStartOfSet = 0;
 	self.viewSpaceAvailableAtStartOfSet = 0;
@@ -98,11 +100,18 @@ end
 
 function VerticalElementSetMixin:StartNewColumn()
 	self.currentColumn = self.currentColumn + 1;
-	self.filledRowsInCurrentColumn = 0;
+	self.filledRowsPerColumn[self.currentColumn] = 0;
+end
+
+function VerticalElementSetMixin:MoveToNextColumn()
+	self.currentColumn = self.currentColumn + 1;
+	if not self.filledRowsPerColumn[self.currentColumn] then
+		self.filledRowsPerColumn[self.currentColumn] = 0;
+	end
 end
 
 function VerticalElementSetMixin:IncrementFilledRows()
-	self.filledRowsInCurrentColumn = self.filledRowsInCurrentColumn + 1;
+	self.filledRowsPerColumn[self.currentColumn] = self.filledRowsPerColumn[self.currentColumn] + 1;
 end
 
 function VerticalElementSetMixin:SetViewRowsFilledAtStartOfSet(viewRowsFilled)
@@ -132,7 +141,8 @@ end
 function VerticalElementSetMixin:GetCurrentViewRow()
 	-- filledRowsInCurrentColumn is local to this current column, in this current set
 	-- So to get the current row at the view-scope, adds that to the filledRowsInView cached at the start of the set
-	return self.viewRowsFilledAtStartOfSet + self.filledRowsInCurrentColumn;
+	local filledRowsInCurrentColumn = self.filledRowsPerColumn[self.currentColumn];
+	return self.viewRowsFilledAtStartOfSet + filledRowsInCurrentColumn;
 end
 
 function VerticalElementSetMixin:IsInFirstColumn()
@@ -140,7 +150,7 @@ function VerticalElementSetMixin:IsInFirstColumn()
 end
 
 function VerticalElementSetMixin:IsCurrentColumnFilled()
-	return self.filledRowsInCurrentColumn >= self.rowsNeeded;
+	return self.filledRowsPerColumn[self.currentColumn] >= self.rowsNeeded;
 end
 
 function VerticalElementSetMixin:CanStartNewColumn()
@@ -148,7 +158,7 @@ function VerticalElementSetMixin:CanStartNewColumn()
 end
 
 function VerticalElementSetMixin:AnyElementsPlaced()
-	return not self:IsInFirstColumn() or self.filledRowsInCurrentColumn > 0;
+	return not self:IsInFirstColumn() or self.filledRowsPerColumn[self.currentColumn] > 0;
 end
 
 
@@ -168,6 +178,8 @@ function PagedCondensedVerticalGridContentFrameMixin:InitializeElementSplit(spli
 	-- Initialize helper instances to track element placement progress
 	splitData.currentDataGroup = CreateAndInitFromMixin(VerticalDataGroupMixin);
 	splitData.currentElementSet = CreateAndInitFromMixin(VerticalElementSetMixin, self.columnsPerRow);
+
+	splitData.viewSpaceRemainingPerColumn = {};
 end
 
 function PagedCondensedVerticalGridContentFrameMixin:GetTotalViewSpace(viewFrame)
@@ -251,8 +263,13 @@ function PagedCondensedVerticalGridContentFrameMixin:OnElementSpaceTakenFromView
 	elementData.gridRow = currentElementSet:GetCurrentViewRow();
 
 	local groupHasMoreElementsToPlace = currentDataGroup:HasUnplacedElements();
-	-- Can't continue this column if: We've run out of elements to place OR We've run out of vertical space OR We've reached our current calculated row count
-	local reachedTheEndOfThisColumn = (not groupHasMoreElementsToPlace) or (splitData.viewSpaceRemaining < sizeOfNextElement) or (currentElementSet:IsCurrentColumnFilled());
+	local reachedTheEndOfThisColumn = false;
+	if elementData.isFiller then
+		reachedTheEndOfThisColumn = (splitData.viewSpaceRemaining < sizeOfNextElement);
+	else
+		-- Can't continue this column if: We've run out of elements to place OR We've run out of vertical space OR We've reached our current calculated row count
+		reachedTheEndOfThisColumn = (not groupHasMoreElementsToPlace) or (splitData.viewSpaceRemaining < sizeOfNextElement) or (currentElementSet:IsCurrentColumnFilled());
+	end
 
 	if reachedTheEndOfThisColumn then
 		if currentElementSet:IsInFirstColumn() or splitData.viewSpaceRemaining < currentElementSet:GetSpaceAvailableAtEndOfSet() then
@@ -261,10 +278,17 @@ function PagedCondensedVerticalGridContentFrameMixin:OnElementSpaceTakenFromView
 		end
 
 		if groupHasMoreElementsToPlace and currentElementSet:CanStartNewColumn() then
+			splitData.viewSpaceRemainingPerColumn[currentElementSet:GetCurrentColumn()] = splitData.viewSpaceRemaining;
 			-- Start a new column and reset the space available to the top of the set
 			currentElementSet:StartNewColumn();
 			splitData.viewSpaceRemaining = currentElementSet:GetSpaceAvailableAtStartOfSet();
+		elseif elementData.isFiller and splitData.viewSpaceRemaining < sizeOfNextElement and currentElementSet:CanStartNewColumn() then
+			-- move to the next column if there is a next column, and start from the last filled row
+			currentElementSet:MoveToNextColumn();
+			local viewSpaceForNewColumn = splitData.viewSpaceRemainingPerColumn[currentElementSet:GetCurrentColumn()];
+			splitData.viewSpaceRemaining = viewSpaceForNewColumn and viewSpaceForNewColumn or currentElementSet:GetSpaceAvailableAtStartOfSet();
 		else
+			splitData.viewSpaceRemainingPerColumn[currentElementSet:GetCurrentColumn()] = splitData.viewSpaceRemaining;
 			-- Ran out of either space or elements, meaning we've reached the end of the current ElementSet
 			-- Reset space remaining so when we either start a new DataGroup or check whether to start a new View, we're starting beneath this finished ElementSet
 			splitData.viewSpaceRemaining = currentElementSet:GetSpaceAvailableAtEndOfSet();
@@ -303,4 +327,12 @@ function PagedCondensedVerticalGridContentFrameMixin:ApplyLayout(layoutFrames, v
 	end
 
 	viewFrame:Layout();
+end
+
+function PagedCondensedVerticalGridContentFrameMixin:OnFillerStarted(splitData)
+	splitData.currentElementSet.currentColumn = 1;
+end
+
+function PagedCondensedVerticalGridContentFrameMixin:ShouldContinueFiller(viewSpaceRemaining, totalSizeNeededForElement, splitData)
+	return splitData.viewSpaceRemaining > totalSizeNeededForElement or splitData.currentElementSet:CanStartNewColumn();
 end

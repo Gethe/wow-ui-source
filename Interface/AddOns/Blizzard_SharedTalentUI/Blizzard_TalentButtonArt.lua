@@ -234,6 +234,21 @@ TalentButtonArtMixin.ArtSet = {
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
 
+	LegacySquare = {
+		iconMask = nil,
+		shadow = "talents-node-square-shadow",
+		normal = "Legacy-Tree-Frame-icon-frame-Green",
+		disabled = "Legacy-Tree-Frame-icon-frame-disable",
+		selectable = "Legacy-Tree-Frame-icon-frame-Green",
+		maxed = "Legacy-Tree-Frame-icon-frame",
+		refundInvalid = "talents-node-square-red",
+		displayError = "talents-node-square-red",
+		locked = "Legacy-Tree-Frame-icon-frame-disable",
+		glow = "talents-node-square-greenglow",
+		ghost = "talents-node-square-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
+	},
+
 };
 
 function TalentButtonArtMixin:OnLoad()
@@ -292,34 +307,34 @@ function TalentButtonArtMixin:UpdateNonStateVisuals()
 	self:UpdateGlow();
 end
 
+function TalentButtonArtMixin:SetBorderAtlas(atlas, visualState)
+	self.StateBorder:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+
+	if self.StateBorderHover then
+		self.StateBorderHover:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		self.StateBorderHover:SetAlpha(TalentButtonUtil.GetHoverAlphaForVisualStyle(visualState));
+	end
+end
+
 function TalentButtonArtMixin:UpdateStateBorder(visualState)
 	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Gated)
 					or (visualState == TalentButtonUtil.BaseVisualState.Locked)
 					or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
 
-	local function SetAtlas(atlas)
-		self.StateBorder:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-
-		if self.StateBorderHover then
-			self.StateBorderHover:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-			self.StateBorderHover:SetAlpha(TalentButtonUtil.GetHoverAlphaForVisualStyle(visualState));
-		end
-	end
-
 	if (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid) then
-		SetAtlas(self.artSet.refundInvalid);
+		self:SetBorderAtlas(self.artSet.refundInvalid, visualState);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.DisplayError) then
-		SetAtlas(self.artSet.displayError);
+		self:SetBorderAtlas(self.artSet.displayError, visualState);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Gated) then
-		SetAtlas(self.artSet.locked);
+		self:SetBorderAtlas(self.artSet.locked, visualState);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Selectable) then
-		SetAtlas(self.artSet.selectable);
+		self:SetBorderAtlas(self.artSet.selectable, visualState);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Maxed) then
-		SetAtlas(self.artSet.maxed);
+		self:SetBorderAtlas(self.artSet.maxed, visualState);
 	elseif not isDisabled then
-		SetAtlas(self.artSet.normal);
+		self:SetBorderAtlas(self.artSet.normal, visualState);
 	else
-		SetAtlas(self.artSet.disabled);
+		self:SetBorderAtlas(self.artSet.disabled, visualState);
 	end
 end
 

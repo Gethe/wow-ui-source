@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="QuestTimerFrame" parentKey="QuestTimerFrame" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="ObjectiveTrackerFrame" mixin="QuestTimerMixin">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="layoutIndex" value="13" type="number"/>
+		</KeyValues>
+		<Size x="158" y="72"/>
+		<Anchors>
+			<Anchor point="TOP" relativePoint="TOP" x="0" y="-10"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="QUEST_TIMERS" type="global"/>
+					<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+					<KeyValue key="headerTextPadding" value="42" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+</Ui>

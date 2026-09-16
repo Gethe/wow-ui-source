@@ -1,0 +1,13 @@
+## Title: Blizzard_TimeManager
+## LoadOnDemand: 1
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_RaidWarning [AllowLoadGameType mainline]
+## Dep: Blizzard_GameMenuEsc [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_Plunderstorm
+## SavedVariablesPerCharacter: BlizzardStopwatchOptions
+
+Blizzard_TimeManager_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_TimeManager.lua
+Cata\Blizzard_TimeManagerOverrides.lua	[AllowLoadGameType cata, mists]
+[Family]\Blizzard_TimeManager.xml
+[Family]\Localization.lua

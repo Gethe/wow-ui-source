@@ -3837,6 +3837,10 @@ function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled,
 		self.Enumerate:Hide();
 		self.PlayerCount:Show();
 		LFGListGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
+	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.Comment ) then
+		self.RoleCount:Hide();
+		self.Enumerate:Hide();
+		self.PlayerCount:Hide();
 	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.HideAll ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();

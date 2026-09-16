@@ -74,6 +74,27 @@ function CharacterSelectUtil.ChangeRealm()
 	C_RealmList.RequestChangeRealmList();
 end
 
+function CharacterSelectUtil.ChangeSuperDistrict(superDistrictID)
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
+
+	if (superDistrictID ~= nil) then
+		SelectSuperDistrict(superDistrictID);
+		ConnectToSuperDistrictRealm();
+
+		CharacterSelectUtil.ExitAccountLoginSelection();
+	else
+		StartSuperDistrictSelection();
+	end
+end
+
+function CharacterSelectUtil.ExitAccountLoginSelection()
+	if ( CharacterSelectUtil.ShouldShowRetrievingCharacterList() ) then
+		StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
+	end
+
+	GlueParent_EnsureValidScreen();
+end
+
 function CharacterSelectUtil.SetAutoSwitchRealm(autoSwitchRealm)
 	s_autoSwitchRealm = autoSwitchRealm;
 end
@@ -129,7 +150,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 	end
 
 	-- Block 1
-	local name = characterInfo.name;
+	local name = characterInfo.characterName;
 	local realmName = characterInfo.realmName;
 
 	-- Block 2
@@ -225,4 +246,9 @@ end
 
 function CharacterSelectUtil.IsFilteringCharacterList()
 	return CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() ~= "";
+end
+
+function CharacterSelectUtil.ShouldShowRetrievingCharacterList()
+	local loginState = C_Login.GetState();
+	return IsRetrievingCharacters() and not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") and not loginState.superDistrictChoicePending and loginState.hasSelectedExperiencePreset;
 end

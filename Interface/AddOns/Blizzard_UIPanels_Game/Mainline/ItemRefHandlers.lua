@@ -116,7 +116,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, 
 	if ( IsModifiedClick("CHATLINK") ) then
 		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
 		if appearanceSourceInfo then
-			HandleModifiedItemClick(appearanceSourceInfo.itemLink);			
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);
 		end
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
@@ -320,7 +320,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUser,
 			local bnetIDAccount, discordUserID, lineID, chatGroup, chatTarget = string.split(":", linkData.options);
 			discordUserID = tonumber(discordUserID);
 
-			local menuContextData = 
+			local menuContextData =
 			{
 				name = string.format(DISCORD_USER_WITH_ID, C_Discord.GetDiscordUserName(discordUserID));
 				lineID = lineID,
@@ -329,6 +329,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUser,
 				communityEpoch = nil,
 				communityPosition = nil,
 				bnetIDAccount = bnetIDAccount,
+				ownerFrame = contextData.frame,
 			};
 
 			local which = "DISCORD_USER";
@@ -348,7 +349,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUserCommunity,
 			local bnetIDAccount, discordUserID, clubId, streamId, epoch, position = string.split(":", linkData.options);
 			discordUserID = tonumber(discordUserID);
 
-			local menuContextData = 
+			local menuContextData =
 			{
 				name = string.format(DISCORD_USER_WITH_ID, C_Discord.GetDiscordUserName(discordUserID));
 				lineID = nil,
@@ -357,6 +358,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.DiscordUserCommunity,
 				communityEpoch = epoch,
 				communityPosition = position,
 				bnetIDAccount = bnetIDAccount,
+				ownerFrame = contextData.frame,
 			};
 			local which = "DISCORD_USER";
 			if discordUserID == C_Discord.GetDiscordUserID() then

@@ -378,6 +378,10 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 };
 
 function GameTooltip_OnShow(self)
+	if (InputUtil.IsGamepadUIEnabled() and GamepadMode.FrameControlsManager:GetShownFrameCount() > 0 and GetCVarBool("GamepadDisableTooltips")) then
+		self:Hide();
+	end
+
 	NarratableTooltipMixin.OnShow(self);
 
 	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
@@ -438,7 +442,7 @@ function GameTooltip_SetTooltipWaitingForData(self, waitingForData)
 	self.waitingForData = waitingForData;
 end
 
-function GameTooltip_IsUpdateNeeded(self, elapsed)
+function GameTooltip_IsUpdateNeeded(self, elapsed) 
 	self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
 	if self.updateTooltipTimer > 0 then
 		return false;

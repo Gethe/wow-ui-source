@@ -364,11 +364,8 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Button name="QueueStatusButton" mixin="QueueStatusButtonMixin" parent="MicroMenuContainer" hidden="true">
+	<Button name="QueueStatusButton" parent="UIParent" inherits="EditModeGroupFinderSystemTemplate" mixin="QueueStatusButtonMixin" hidden="true" roleset="queuestatus">
 		<Size x="45" y="45"/>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="-45" y="4"/>
-		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="false">
@@ -401,10 +398,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnUpdate method="OnUpdate"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
+			<OnEnter method="OnEnter" inherit="prepend"/>
+			<OnLeave method="OnLeave" inherit="prepend"/>
 			<OnClick method="OnClick"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

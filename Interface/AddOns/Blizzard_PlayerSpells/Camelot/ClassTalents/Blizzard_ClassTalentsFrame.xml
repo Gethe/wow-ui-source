@@ -1,0 +1,599 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ClassTalentCurrencyDisplayTemplate" mixin="ClassTalentCurrencyDisplayMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="Talents-Square-Box-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="UnspentLabel" inherits="SystemFont_Shadow_Med1" justifyH="RIGHT" text="UNSPENT_POINTS">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="LEFT" x ="60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CurrentAmountContainer">
+				<Size x="48" y="36"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrencyAmount" inherits="Game32Font_Shadow2" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="ClassTalentTreeHeaderTemplate" mixin="ClassTalentTreeHeaderMixin" virtual="true" frameLevel="1010">
+		<Size x="48" y="48"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIcon" parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontWhiteLarge" outline="NORMAL">
+					<Anchors>
+						<Anchor point="LEFT" x="54" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="MainRing" atlas="Talents-Main-Ring-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TextBackground" atlas="talents-main-ring-box-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="14" y="-12"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyV="MIDDLE" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TextBackground" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="Talents-small-divider-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="60" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="ClassTalentsFrameTabTemplate" inherits="TabSystemButtonTemplate" mixin="ClassTalentsFrameTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isTabOnTop" value="true" type="boolean"/>
+			<KeyValue key="selectedFontObject" value="GameFontHighlight" type="global"/>
+			<KeyValue key="unselectedFontObject" value="GameFontNormal" type="global"/>
+		</KeyValues>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
+
+	<Frame name="ClassTalentActiveSpecTemplate" mixin="ClassTalentActiveSpecMixin" virtual="true" frameLevel="1010">
+		<Size x="164" y="24"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormalLargeLeft" parentKey="ActiveLabel" text="TALENT_SPEC_ACTIVE">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color color="GREEN_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ActivateButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_SPEC_ACTIVATE" frameLevel="4001">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="YellowGlow" hidden="true">
+						<Size y="1"/>
+						<Anchors>
+							<Anchor point="LEFT" x="-12" y="0"/>
+							<Anchor point="RIGHT" x="12" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Left" atlas="newplayertutorial-yellowGlow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Right" atlas="newplayertutorial-yellowGlow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="newplayertutorial-yellowGlow-redbutton-middle" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ClassTalentsFrameTemplate" mixin="ClassTalentsFrameMixin" inherits="TalentFrameBaseTemplate, TabSystemOwnerTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="getTemplateType" value="ClassTalentUtil.GetTemplateForTalentType" type="global"/>
+			<KeyValue key="getSpecializedMixin" value="ClassTalentUtil.GetSpecializedMixin" type="global"/>
+			<KeyValue key="getSpecializedChoiceMixin" value="ClassTalentUtil.GetSpecializedChoiceMixin" type="global"/>
+			<KeyValue key="getEdgeTemplateType" value="ClassTalentUtil.GetEdgeTemplateType" type="global"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="40" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
+			<KeyValue key="basePanOffsetX" value="49" type="number"/>
+			<KeyValue key="basePanOffsetY" value="24" type="number"/>
+			<KeyValue key="maximumCommitTime" value="6" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value=".5" type="number"/>
+			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
+			<KeyValue key="enableCommitCastBar" value="true" type="boolean"/>
+			<KeyValue key="enableCommitSpinner" value="true" type="boolean"/>
+			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
+			<KeyValue key="heroSpecSelectionDialog" value="HeroTalentsSelectionDialog" type="global" />
+			<KeyValue key="missingFromActionBarSuggested" value="true" type="boolean"/>
+			<KeyValue key="refreshOnShow" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="Talents-Background-c60" horizTile="true" >
+					<Size y="701"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="ClassBackground" atlas="talents-background-druid-restoration" useAtlasSize="true" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" y="-70"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" y="36"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="OverlayBackgroundRight" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="OverlayBackgroundRightMask" atlas="talents-animations-mask-specart" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="OverlayBackgroundRight"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<Texture parentKey="OverlayBackgroundMid" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="OverlayBackgroundMidMask" atlas="talents-animations-mask-specart-mid" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="OverlayBackgroundMid"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Clouds1" atlas="talents-animations-clouds" useAtlasSize="true" alpha="0.05" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="Clouds2" atlas="talents-animations-clouds" useAtlasSize="true" alpha="0.05" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="AirParticlesClose" atlas="talents-animations-particles" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ClassBackground" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="AirParticlesFar" atlas="talents-animations-particles" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="800" y="473"/>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ClassBackground" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="ActivationExpandFx" atlas="talents-animations-gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="320" y="320"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ClassBackground" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="ActivationExpandFxMask" atlas="talents-animations-mask-filigree-activate" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActivationExpandFx"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<Texture parentKey="ActivationClassFx" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ClassBackground" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivationClassFx2" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivationClassFx3" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivationClassFx4" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivationTitansFX" parentArray="Textures" atlas="talents-animations-titans" alphaMode="ADD" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ClassBackground" relativePoint="CENTER" x="100" y="-18"/>
+					</Anchors>
+				</Texture>
+
+				<MaskTexture parentKey="FullMask" atlas="talents-animations-mask-full" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Clouds1"/>
+						<MaskedTexture childKey="Clouds2"/>
+						<MaskedTexture childKey="AirParticlesClose"/>
+						<MaskedTexture childKey="AirParticlesFar"/>
+						<MaskedTexture childKey="ActivationTitansFX"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="BackgroundBorder" atlas="Talents-inner-frame-c60" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ClassBackground" relativePoint="TOPLEFT" x="-2" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ClassBackground" relativePoint="BOTTOMRIGHT" x="2" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DividerHorizontalLeft" atlas="Talents-divider-left-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.BackgroundBorder" relativePoint="CENTER"/>
+						<Anchor point="TOP" relativeKey="$parent.BackgroundBorder" relativePoint="TOP" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DividerHorizontalRight" atlas="Talents-divider-right-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BackgroundBorder" relativePoint="CENTER"/>
+						<Anchor point="TOP" relativeKey="$parent.BackgroundBorder" relativePoint="TOP" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DividerVerticalLeft" atlas="Talents-divider-vertical-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.DividerHorizontalLeft" relativePoint="CENTER" x="95" y="-60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DividerVerticalRight" atlas="Talents-divider-vertical-c60" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.DividerHorizontalRight" relativePoint="CENTER" x="-95" y="-60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate" frameLevel="1010">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="150" type="number"/>
+					<KeyValue key="maxTabWidth" value="200" type="number"/>
+					<KeyValue key="tabTemplate" value="ClassTalentsFrameTabTemplate" type="string"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundBorder" relativePoint="TOPLEFT" x="70" y="-4"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="GamepadPrimaryTabIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.TabSystem" relativePoint="LEFT" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="GamepadSecondaryTabIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.TabSystem" relativePoint="RIGHT" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="HeroTalentsContainer" inherits="HeroTalentsContainerTemplate" frameLevel="1010">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ButtonsParent" x="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ClassCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundBorder" relativePoint="TOPRIGHT" x="-20" y="-6"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ActiveSpec" inherits="ClassTalentActiveSpecTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BackgroundBorder" y="-20"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="LoadSystem" inherits="DropdownLoadSystemTemplate">
+				<Size x="200" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="48" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<EditBox parentKey="SearchBox" inherits="SpellSearchBoxTemplate" hidden="false" frameLevel="1010">
+				<!-- Anchored in code -->
+			</EditBox>
+
+			<Frame parentKey="SearchBoxIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SearchBox" relativePoint="LEFT" x="-7" y="0" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SearchPreviewContainer" inherits="SpellSearchPreviewContainerTemplate" hidden="true" frameLevel="2000">
+				<Size x="176"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-4" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<DropdownButton parentKey="SearchOptionsDropdown" inherits="WowStyle1ArrowDropdownTemplate" frameLevel="1010">
+				<!-- Anchored in code -->
+			</DropdownButton>
+			
+			<Frame parentKey="SettingsTopFaceIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SearchOptionsDropdown" relativePoint="LEFT" x="0" y="1" />
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" relativePoint="BOTTOM" x="0" y="8"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="YellowGlow" hidden="true">
+						<Size y="1"/>
+						<Anchors>
+							<Anchor point="LEFT" x="-12" y="0"/>
+							<Anchor point="RIGHT" x="12" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Left" atlas="newplayertutorial-yellowGlow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Right" atlas="newplayertutorial-yellowGlow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="newplayertutorial-yellowGlow-redbutton-middle" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Button>
+
+			<Button parentKey="InspectCopyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate">
+				<KeyValues>
+					<KeyValue key="fitTextWidthPadding" value="80" type="number"/>
+				</KeyValues>
+				<Size x="220" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" relativePoint="BOTTOM" x="0" y="3"/>
+				</Anchors>
+			</Button>
+
+			<DropdownButton parentKey="ResetButton" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="BOTTOMLEFT"/>
+					<KeyValue key="menuPointX" type="number" value="0"/>
+					<KeyValue key="menuPointY" type="number" value="0"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="iconAtlas" value="talents-button-reset" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="14" y="0"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="GamepadUndoButton" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ResetButton" relativePoint="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="UndoButton" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ResetButton" relativePoint="CENTER"/>
+				</Anchors>
+			</Button>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<!-- Art TODO: Update Animations -->
+		<Animations>
+			<AnimationGroup parentArray="commitFlashAnims" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Scale childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromScaleX="1" fromScaleY="1" toScaleX="20" toScaleY="20"/>
+				<Alpha childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromAlpha="0.65" toAlpha="0"/>
+				<Alpha childKey="ActivationClassFx" smoothing="OUT" duration="1.2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ActivationClassFx2" smoothing="OUT" duration="1.2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ActivationClassFx3" smoothing="OUT" duration=".3" fromAlpha=".3" toAlpha="0"/>
+				<Alpha childKey="ActivationClassFx4" smoothing="OUT" duration=".5" fromAlpha=".2" toAlpha="0"/>
+				<Scale childKey="ActivationClassFx3" duration=".3" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+				<Scale childKey="ActivationClassFx4" duration=".5" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+				<Alpha childKey="ActivationTitansFX" duration="1" fromAlpha="0.7" toAlpha="0" smoothing="IN"/>
+				<Scale childKey="ActivationTitansFX" duration="2" fromScaleX="1.3" fromScaleY="1.3" toScaleX="1.2" toScaleY="1.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="Clouds1" order="1" offsetX="0" offsetY="0"/>
+				<Translation childKey="Clouds1" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="80" />
+				<Translation childKey="Clouds1" order="3" offsetX="1612" offsetY="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="Clouds2" order="1" offsetX="1612" offsetY="0"/>
+				<Translation childKey="Clouds2" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="80"/>
+				<Translation childKey="Clouds2" order="3" offsetX="1612" offsetY="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha="0" toAlpha=".15" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha=".15" toAlpha="0" startDelay="22" duration="5" smoothing="NONE"/>
+				<Translation childKey="AirParticlesClose" order="1" offsetX="300" offsetY="0"/>
+				<Translation childKey="AirParticlesClose" order="2" offsetX="-600" offsetY="0" startDelay="0" duration="27"/>
+				<Translation childKey="AirParticlesClose" order="3" offsetX="600" offsetY="0" startDelay="0"/>
+				<Rotation childKey="AirParticlesClose" duration="27" order="2" degrees="20" />
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0" toAlpha="0.14" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0.14" toAlpha="0" startDelay="31" duration="5" smoothing="NONE"/>
+				<Translation childKey="AirParticlesFar" order="1" offsetX="100" offsetY="0"/>
+				<Translation childKey="AirParticlesFar" order="2" offsetX="-200" offsetY="0" startDelay="0" duration="36"/>
+				<Translation childKey="AirParticlesFar" order="3" offsetX="200" offsetY="0" startDelay="0"/>
+				<Rotation childKey="AirParticlesFar" duration="36" order="2" degrees="-20" />
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundRight" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight" order="2" fromAlpha="0" toAlpha=".7" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight" order="2" fromAlpha=".7" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight" order="3" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight" order="4" fromAlpha="0" toAlpha=".2" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight" order="4" fromAlpha=".2" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundMid" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid" order="2" fromAlpha="0" toAlpha=".7" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid" order="2" fromAlpha=".7" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid" order="3" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid" order="4" fromAlpha="0" toAlpha=".3" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid" order="4" fromAlpha=".3" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,11 @@
+## Title: Blizzard_GlueParent
+## Dep: Blizzard_GlueXMLBase
+## Dep: Blizzard_StaticPopup_Glue
+## LoadFirst: 1
+## AllowLoad: Glue
+## EscalateErrorDuringLoad: 1
+Shared\GlueParentUtil.lua
+[Family]\GlueScreenTags.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\GlueScreenTags.lua [AllowLoadGameType camelot]
+[Family]\GlueParent.lua
+[Family]\GlueParent.xml

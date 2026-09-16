@@ -338,18 +338,16 @@ function HousingDecorDyeSwatchMixin.Reset(framePool, self)
 end
 
 function HousingDecorDyeSwatchMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 	if self.dyeColorInfo then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_AddHighlightLine(GameTooltip, self.dyeColorInfo.name);
-		local itemName = self.dyeColorInfo.itemID and C_Item.GetItemNameByID(self.dyeColorInfo.itemID) or nil;
-		if itemName then
-			GameTooltip_AddNormalLine(GameTooltip, itemName);
-		end
-		GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DECOR_CUSTOMIZATION_DYE_NUM_OWNED, self.dyeColorInfo.numOwned));
+		GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DECOR_CUSTOMIZATION_DYE_NUM_OWNED, self.dyeColorInfo.numOwned))
+		GameTooltip:Show();
 	else
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DECOR_CUSTOMIZATION_DEFAULT_COLOR);
+		GameTooltip:Show();
 	end
-	GameTooltip:Show();
 
 	if not self.isCurrentSwatch then
 		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_HOVER);

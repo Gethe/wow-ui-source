@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<DropdownButton name="LFGOptionsButton" virtual="true" mixin="LFGOptionsButton">
+		<KeyValues>
+			<KeyValue key="menuMixin" value="MenuStyle2Mixin" type="global"/>
+		</KeyValues>
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="OptionsIcon-Brown" alpha="0.8"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DropdownButton>
+	<Frame name="LFGVanillaRightTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="LFGParentFrameRightTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<!-- Start LFG Parent Frame -->
+	<Frame name="LFGParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent" mixin="LFGParentFrameMixin">
+		<Size x="458" y="535"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="74"/>
+		</HitRectInsets>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentTab1" parentKey="Tab1" inherits="LFGVanillaTabButtonTemplate" mixin="LFGVanillaListTabButtonMixin" id="1" text="LFG_LIST_TAB_1">
+				<KeyValues>
+					<KeyValue key="tabIndex" value="1" type="number"/>
+				</KeyValues>
+				<!-- Text updated in script.-->
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="45"/>
+					<!-- Reanchored in code. -->
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnterTemp" inherit="prepend"/>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentTab2" parentKey="Tab2" inherits="LFGVanillaTabButtonTemplate" mixin="LFGVanillaBrowserTabButtonMixin" id="2" text="LFG_LIST_TAB_2">
+				<KeyValues>
+					<KeyValue key="tabIndex" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT" x="-14" y="0"/>
+					<!-- Reanchored in code. -->
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnterTemp" inherit="prepend"/>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentTab3" parentKey="Tab3" inherits="LFGVanillaTabButtonTemplate" mixin="LFGVanillaWhoListTabButtonMixin" id="3" text="LFG_LIST_TAB_3">
+				<KeyValues>
+					<KeyValue key="tabIndex" value="3" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT" x="-14" y="0"/>
+					<!-- Reanchored in code. -->
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnterTemp" inherit="prepend"/>
+				</Scripts>
+			</Button>
+			
+			<Frame name="$parentPortrait" inherits="LFGEyeTemplate" hidden="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="LowerFrameLevel"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ListingTab" inherits="LFGVanillaRightTabTemplate" id="1">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="LFG_LIST_TAB_1" type="global"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\INV_Helmet_08" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-60"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BrowsingTab" inherits="LFGVanillaRightTabTemplate" id="2">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="LFG_LIST_TAB_2" type="global"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\Achievement_General_StayClassy" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ListingTab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="WhoListingTab" inherits="LFGVanillaRightTabTemplate" id="3">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="LFG_LIST_TAB_3" type="global"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\INV_OwlDragonMount" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BrowsingTab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+	<!-- End LFG Parent Frame -->
+</Ui>

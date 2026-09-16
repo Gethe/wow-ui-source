@@ -64,6 +64,18 @@
 		<Size x="287" y="400"/>
 		<Frames>
 			<Button parentKey="ExpandBar" mixin="NarrationForwardToParentMixin" inherits="ExpandBarTemplate">
+				<Frames>
+					<Frame parentKey="ToggleIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.ExpandButton" relativePoint="LEFT" x="-5" y="0" />
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Size x="0" y="60"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>

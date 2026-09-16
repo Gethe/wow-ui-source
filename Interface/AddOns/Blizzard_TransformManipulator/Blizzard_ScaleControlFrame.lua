@@ -120,34 +120,27 @@ function ScaleControlFrameMixin:UpdateFill()
 		currentDirection = ScaleControlDirection.Negative
 	end
 
-	if self.lastDirectionUpdate ~= currentDirection then
-		-- We want the "fill bar" to stretch from the default value to wherever it's currently been dragged to
-		-- That means if we're above 100% (positive), we want the left edge of the fill anchored to the default/100% mark, & right side anchored to the thumb
-		-- For below 100% (negative) - right edge at the default mark, left side anchored to the thumb
-		-- If we're at exactly 100% then obviously no fill needed
-		if currentDirection == ScaleControlDirection.Positive then
-			self.FillMask:ClearAllPoints();
-			self.FillMask:SetPoint("RIGHT", self.Thumb, "CENTER");
-			self.FillMask:SetPoint("LEFT", self.defaultAnchorOffset, 0);
-			self.Fill:Show();
-		elseif currentDirection == ScaleControlDirection.Negative then
-			self.FillMask:ClearAllPoints();
-			self.FillMask:SetPoint("LEFT", self.Thumb, "CENTER");
-			self.FillMask:SetPoint("RIGHT", self, "LEFT", self.defaultAnchorOffset, 0);
-			self.Fill:Show();
-		end
+	if self.lastDirectionUpdate == currentDirection then
+		return;
 	end
 
-	if currentDirection ~= ScaleControlDirection.None and self.FillMask:GetWidth() < 1 then
-		-- If the negative/positive anchors are now such that there is no fill mask width due to current position of the Thumb, then just treat it as "None" and hide it
-		-- This avoids any potential weirdness caused by the two anchors overlapping eachother
-		-- And yes, we do need to check against 1 rather than 0, because wildly small "technically above zero" floating point values will still lead to said potential weirdness
-		currentDirection = ScaleControlDirection.None;
-	end
-	
+	-- We want the "fill bar" to stretch from the default value to wherever it's currently been dragged to
+	-- That means if we're above 100% (positive), we want the left edge of the fill anchored to the default/100% mark, & right side anchored to the thumb
+	-- For below 100% (negative) - right edge at the default mark, left side anchored to the thumb
+	-- If we're at exactly 100% then obviously no fill needed
 	if currentDirection == ScaleControlDirection.None then
 		self.FillMask:ClearAllPoints();
 		self.Fill:Hide();
+	elseif currentDirection == ScaleControlDirection.Positive then
+		self.FillMask:ClearAllPoints();
+		self.FillMask:SetPoint("RIGHT", self.Thumb, "CENTER");
+		self.FillMask:SetPoint("LEFT", self.defaultAnchorOffset, 0);
+		self.Fill:Show();
+	elseif currentDirection == ScaleControlDirection.Negative then
+		self.FillMask:ClearAllPoints();
+		self.FillMask:SetPoint("LEFT", self.Thumb, "CENTER");
+		self.FillMask:SetPoint("RIGHT", self, "LEFT", self.defaultAnchorOffset, 0);
+		self.Fill:Show();
 	end
 
 	self.lastDirectionUpdate = currentDirection;

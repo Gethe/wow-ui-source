@@ -1,0 +1,5 @@
+## Title: Blizzard_GamepadSoftCursor
+## Dependencies: Blizzard_SharedXML
+## AllowLoadGameType: mainline
+SoftCursor.lua
+SoftCursor.xml

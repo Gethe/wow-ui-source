@@ -298,13 +298,19 @@ function ObjectiveTrackerBlockMixin:OnHeaderLeave()
 end
 
 function ObjectiveTrackerBlockMixin:UpdateHighlight()
-	local headerColor, dashColor;
+	-- It's possible for a ObjectiveTrackerBlock to not have a quest ID if its being removed from the pool
+	if not self.poiQuestID then
+		return;
+	end
+
+	local showDifficultyColor = CVarCallbackRegistry:GetCVarValueBool("showQuestDifficultyColor");
+	local dashColor = OBJECTIVE_TRACKER_COLOR["Normal"];
+	local questColor, questColorHighlight = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(self.poiQuestID));
+	local headerColor = (showDifficultyColor and questColor) or OBJECTIVE_TRACKER_COLOR["Header"];
+
 	if self.isHighlighted then
-		headerColor = OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
+		headerColor = (showDifficultyColor and questColorHighlight) or OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
 		dashColor = OBJECTIVE_TRACKER_COLOR["NormalHighlight"];
-	else
-		headerColor = OBJECTIVE_TRACKER_COLOR["Header"];
-		dashColor = OBJECTIVE_TRACKER_COLOR["Normal"];		
 	end
 
 	if self.HeaderText then

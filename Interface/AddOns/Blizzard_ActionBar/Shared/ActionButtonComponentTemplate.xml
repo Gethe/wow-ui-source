@@ -276,7 +276,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="AnimIn">
-						<Translation childKey="HighlightTexture" duration="0.5" order="1" offsetX="0" offsetY="-150"/>
+						<Translation parentKey="Translation" childKey="HighlightTexture" duration="0.5" order="1" offsetX="0" offsetY="-150"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>

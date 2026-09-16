@@ -89,6 +89,7 @@ ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flas
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["COLLECTED_APPEARANCE"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -291,6 +292,10 @@ ChatTypeGroup["PET_BATTLE_INFO"] = {
 
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
+};
+
+ChatTypeGroup["COLLECTED_APPEARANCE"] = {
+	"CHAT_MSG_COLLECTED_APPEARANCE",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.

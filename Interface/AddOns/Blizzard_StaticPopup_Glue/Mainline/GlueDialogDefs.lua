@@ -13,8 +13,12 @@ StaticPopupDialogs["CONFIRM_PAID_SERVICE"].OnAccept = function(dialog, data)
 	-- need to get desired faction in case of pandaren doing faction change to another pandaren
 	-- this will be nil in any other case
 	local noNPE = false;
-	C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(),
-		noNPE, CharacterCreateFrame:GetCreateCharacterFaction());
+	C_CharacterCreation.CreateCharacter(
+		CharacterCreateFrame:GetSelectedName(),
+		CharacterCreateFrame:GetSelectedSurname(),
+		noNPE,
+		CharacterCreateFrame:GetCreateCharacterFaction()
+	);
 end;
 
 StaticPopupDialogs["CONFIRM_PAID_SERVICE"].OnCancel = function(dialog, data)
@@ -191,7 +195,7 @@ StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"] = {
 local function DoCharacterRename(dialog)
 	local characterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 	local newName = dialog:GetEditBoxText();
-	RenameCharacter(characterID, newName);
+	return RenameCharacterFullName(characterID, newName, "");
 end
 
 StaticPopupDialogs["FORCE_RENAME_CHARACTER"] = {
@@ -207,12 +211,15 @@ StaticPopupDialogs["FORCE_RENAME_CHARACTER"] = {
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
-		DoCharacterRename(dialog);
+		-- Invert the return value to keep the dialog open on failure
+		return not DoCharacterRename(dialog);
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
 		local dialog = editBox:GetParent();
-		DoCharacterRename(dialog);
-		dialog:Hide();
+		local sentToServer = DoCharacterRename(dialog);
+		if (sentToServer) then
+			dialog:Hide();
+		end
 	end,
 	EditBoxOnEscapePressed = function(editBox, data)
 		editBox:GetParent():Hide();

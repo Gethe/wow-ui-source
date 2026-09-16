@@ -66,6 +66,21 @@ local RecentAllies =
 			},
 		},
 		{
+			Name = "IsInteractionCategoryFilterSupportedForCurrentGameType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "interactionCategoryFilter", Type = "RecentAlliesInteractionCategoryFilter", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInteractionCategoryFilterSupportedForCurrentGameType", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRecentAllyByFullName",
 			Type = "Function",
 			RequiresRecentAllies = true,
@@ -239,7 +254,7 @@ local RecentAllies =
 				{ Name = "isDND", Type = "bool", Nilable = false },
 				{ Name = "isAFK", Type = "bool", Nilable = false },
 				{ Name = "isOffline", Type = "bool", Nilable = false },
-				{ Name = "interests", Type = "table", InnerType = "RecentAlliesFriendTag", Nilable = false },
+				{ Name = "interactionCategoryFilters", Type = "table", InnerType = "RecentAlliesInteractionCategoryFilter", Nilable = false },
 			},
 		},
 		{

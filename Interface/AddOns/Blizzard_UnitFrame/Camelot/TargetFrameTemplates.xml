@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<FontString name="LevelTextTemplate" inherits="WhiteLargeNumberFont" justifyH="RIGHT" justifyV="MIDDLE" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+		</Anchors>
+	</FontString>
+
+	<Texture name="LevelBackgroundCircleTemplate" atlas="UI-HUD-UnitFrame-SmallCircle" useAtlasSize="true" virtual="true"/>
+	<Texture name="PvpBackgroundCircleTemplate" atlas="UI-HUD-UnitFrame-SmallCircle" useAtlasSize="true" virtual="true"/>
+	<Texture name="PvpBackgroundIconTemplate" atlas="UI-HUD-UnitFrame-SmallCircle-Alliance" useAtlasSize="true" virtual="true"/>	
+
+</Ui>

@@ -1,6 +1,6 @@
 ## Title: Blizzard_AchievementUI
 ## LoadOnDemand: 1
-## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+## OptionalDep: Blizzard_Plunderstorm
 ## Dep: Blizzard_FrameXMLUtil
 ## AllowLoadGameType: mainline, tbc, wrath, cata, mists
 Blizzard_AchievementUI_Bootstrap.lua [Bootstrap]

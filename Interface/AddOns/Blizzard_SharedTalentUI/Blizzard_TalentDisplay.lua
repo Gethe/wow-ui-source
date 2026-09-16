@@ -408,12 +408,14 @@ function TalentDisplayMixin:IsInspecting()
 end
 
 function TalentDisplayMixin:UpdateMouseOverInfo()
-	if self:IsMouseMotionFocus() then
+	local hasGamePadFocus = InputUtil.IsGamepadUIEnabled() and self == SmartNavigation:GetCurrentButton();
+	if self:IsMouseMotionFocus() or hasGamePadFocus then
 		-- Multiple update steps can end up calling UpdateMouseOverInfo in the same frame, so ensure we only actually do it once at the end of all those updates
 		if not self.updateMouseInfoTimer then
 			self.updateMouseInfoTimer = C_Timer.NewTimer(0, function()
+				local hasGamePadFocus = InputUtil.IsGamepadUIEnabled() and self == SmartNavigation:GetCurrentButton();
 				self.updateMouseInfoTimer = nil;
-				if self:IsMouseMotionFocus() then
+				if self:IsMouseMotionFocus() or hasGamePadFocus then
 					self:OnEnter();
 				end
 			end)

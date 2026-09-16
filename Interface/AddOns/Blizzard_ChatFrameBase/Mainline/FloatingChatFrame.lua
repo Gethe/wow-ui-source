@@ -112,6 +112,262 @@ function FloatingChatFrameMixin:OnLoad()
 	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollToBottomButton, "TOPLEFT", 0, 2);
 
 	FloatingChatFrame_SetupScrolling(self);
+	self:RegisterForInterfaceTransitions();
+end
+
+function FloatingChatFrameMixin:OnHide()
+	--If the top-level parent is hidden (Alt-Z), OnHide is called, but self:IsShown() is still true (self:IsVisible() would be false)
+	if ( not self:IsShown() ) then
+		if ( not self.minimized ) then
+			SetChatWindowShown(self:GetID(), false);
+		end
+	end
+
+	self:ClearGamepadFocus();
+end
+
+function FloatingChatFrameMixin:IsGamepadMenuOpen()
+	return InputUtil.IsGamepadUIEnabled() and self.isGamepadMenuOpen;
+end
+
+function FloatingChatFrameMixin:HasGamepadFocus()
+	return InputUtil.IsGamepadUIEnabled() and self.editBox:HasFocus();
+end
+
+function FloatingChatFrameMixin:SetGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+end
+
+function FloatingChatFrameMixin:ClearGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
+end
+
+function FloatingChatFrameMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function FloatingChatFrameMixin:SetupGamepad()
+	SmartNavigation_MarkScrollFrameMaintainPreviousButtonOnScroll(self);
+	self:CreateFooter();
+
+	SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, function()
+		SmartNavigation:SetScrollFrameForFrame(self, self);
+		SmartNavigation:SetTargetButtonForFrame(self, self.editBox);
+	end);
+end
+
+function FloatingChatFrameMixin:InitializeGamepad()
+	self.buttonFrame:Hide();
+end
+
+function FloatingChatFrameMixin:UninitializeGamepad()
+	self.buttonFrame:Show();
+end
+
+function FloatingChatFrameMixin:SmartNavigationCloseHandler()
+	self:ClearGamepadFocus();
+end
+
+function FloatingChatFrameMixin:FocusGamepad()
+	SELECTED_CHAT_FRAME = self;
+	ChatFrameUtil.SetLastActiveWindow(self.editBox);
+	ChatFrameMenuButtonMixin.ValidateSelectedLanguage();
+
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+	self:SetFading(false);	-- Always display the text while the chat frame has focus.
+	FCF_FadeInChatFrame(self);
+
+	if self.isDocked then
+		if FCFDock_GetSelectedWindow(self.dock) ~= self then
+			FCF_SelectDockFrame(self);
+		end
+		self.dock:ActivateFooterBindings();
+	end
+
+	self.footer:ShowAndActivateBindings();
+	self.editBox:SetFocus();
+end
+
+function FloatingChatFrameMixin:UnfocusGamepad()
+	self:SetFading(true);
+	self:ResetAllFadeTimes();
+
+	self.footer:HideAndDeactivateBindings();
+	self.editBox:ClearFocus();
+
+	if self.isDocked then
+		self.dock:DeactivateFooterBindings();
+	end
+end
+
+function FloatingChatFrameMixin:CreateFooter()
+	local editBoxButtonContext = "ButtonContext_FloatingChatFrameEditBox";
+
+	local chatChannels = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.OpenGamepadChatMenu, self), ACTION_LABEL_CHAT_CHANNELS);
+	chatChannels:AddButtonContext(editBoxButtonContext);
+
+	local tabSettings = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenGamepadTabMenu, self), ACTION_LABEL_TAB_SETTINGS);
+	tabSettings:AddButtonContext(editBoxButtonContext);
+
+	local sendMessage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.editBox.SendMessage, self.editBox), ACTION_LABEL_SEND);
+	sendMessage:AddButtonContext(editBoxButtonContext);
+
+	local footerAnchor = CreateAnchor("TOPLEFT", self.editBox, "BOTTOMLEFT");
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "FloatingChatFrame");
+	self.footer:SetCustomAnchor(footerAnchor);
+	self.footer:AddPromptedBinding(chatChannels);
+	self.footer:AddPromptedBinding(tabSettings);
+	self.footer:AddPromptedBinding(sendMessage);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function FloatingChatFrameMixin:OpenGamepadChatMenu()
+	if not self:HasGamepadFocus() then
+		return;
+	end
+
+	self.isGamepadMenuOpen = true;
+
+	local editBox = self.editBox;
+
+	local menu = MenuUtil.CreateContextMenu(editBox, function(_, rootDescription)
+		rootDescription:SetTag("CHAT_WINDOW_CHAT_CHANNEL_MENU");
+		local numTotalChatChannels = GetNumDisplayChannels();
+
+		-------------
+		-- GENERAL --
+		-------------
+		local general = rootDescription:CreateButton(GENERAL);
+
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, SAY_MESSAGE, SLASH_SAY1, ChatFrameMenuButtonMixin.CHAT_TYPES.SAY, self);
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, PARTY_MESSAGE, SLASH_PARTY1, ChatFrameMenuButtonMixin.CHAT_TYPES.PARTY, self);
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, RAID_MESSAGE, SLASH_RAID1, ChatFrameMenuButtonMixin.CHAT_TYPES.RAID, self);
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, ChatFrameMenuButtonMixin.CHAT_TYPES.INSTANCE_CHAT, self);
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, GUILD_MESSAGE, SLASH_GUILD1, ChatFrameMenuButtonMixin.CHAT_TYPES.GUILD, self);
+		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, YELL_MESSAGE, SLASH_YELL1, ChatFrameMenuButtonMixin.CHAT_TYPES.YELL, self);
+
+		local whisperButton = general:CreateButton(WHISPER_MESSAGE, function()
+			ChatFrameUtil.OpenChat(SLASH_SMART_WHISPER1.." "..editBox:GetText());
+			editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
+		end);
+		ChatFrameMenuButtonMixin.AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
+
+		local replyButton = general:CreateButton(REPLY_MESSAGE, function()
+			ChatFrameUtil.ReplyTell();
+		end);
+		ChatFrameMenuButtonMixin.AddSlashInitializer(replyButton, SLASH_REPLY1);
+
+		-- Add active world channels.
+		for channelIndex = 1, numTotalChatChannels do
+			local name, header, _, channelNumber, _, active, category = GetChannelDisplayInfo(channelIndex);
+			if (active and ChannelFrame_IsCategoryGlobal(category) and not header) then
+				local worldChannelSlashCommand = "/"..tostring(channelNumber);
+				local worldButton = general:CreateButton(name, function()
+					local existingText = self.editBox:GetText();
+					ChatFrameUtil.OpenChat(worldChannelSlashCommand.." "..existingText, self);
+				end);
+				ChatFrameMenuButtonMixin.AddSlashInitializer(worldButton, worldChannelSlashCommand);
+			end
+		end
+
+		------------
+		-- CUSTOM --
+		------------
+		local custom = rootDescription:CreateButton(CUSTOM);
+
+		local foundActiveCustomChannel = false;
+		for channelIndex = 1, numTotalChatChannels do
+			local name, header, _, channelNumber, _, active, category = GetChannelDisplayInfo(channelIndex);
+			if (active and ChannelFrame_IsCategoryCustom(category) and not header) then
+				foundActiveCustomChannel = true;
+				local customChannelSlashCommand = "/"..tostring(channelNumber);
+				local customButton = custom:CreateButton(name, function()
+					local existingText = self.editBox:GetText();
+					ChatFrameUtil.OpenChat(customChannelSlashCommand.." "..existingText);
+				end);
+				ChatFrameMenuButtonMixin.AddSlashInitializer(customButton, customChannelSlashCommand);
+			end
+		end
+
+		if (not foundActiveCustomChannel) then
+			custom:SetEnabled(false);
+		end
+
+		---------------
+		-- LANGUAGES --
+		---------------
+		if (not isOnGlueScreen) then
+			local languageButton = rootDescription:CreateButton(LANGUAGE);
+
+			local numLanguages = GetNumLanguages();
+			if (numLanguages == 0) then
+				languageButton:SetEnabled(false);
+			else
+				for i = 1, numLanguages do
+					local language, languageID = GetLanguageByIndex(i);
+					local function SetLanguage(languageData)
+						ChatFrameMenuButtonMixin.SetLanguageSelected(languageData);
+						self.editBox:SetFocus();
+					end
+					languageButton:CreateRadio(language, ChatFrameMenuButtonMixin.IsLanguageSelected, SetLanguage, {language, languageID});
+				end
+			end
+		end
+
+		------------------------
+		-- OPEN CHANNEL FRAME --
+		------------------------
+		rootDescription:CreateButton(ACTION_LABEL_CHAT_CHANNELS, ToggleChannelFrame);
+	end);
+
+	menu:ClearAllPoints();
+	menu:SetPoint("BOTTOMLEFT", editBox, "TOPLEFT", 10, -5);
+	menu:SetClosedCallback(function()
+		self.isGamepadMenuOpen = false;
+		self:SetGamepadFocus();
+	end);
+end
+
+function FloatingChatFrameMixin:DontRestoreGamepadFocusOnMenuClose()
+	self.restoreGamepadFocusOnMenuClose = false;
+end
+
+function FloatingChatFrameMixin:OpenGamepadTabMenu()
+	if not self:HasGamepadFocus() then
+		return;
+	end
+
+	CURRENT_CHAT_FRAME_ID = self:GetID();
+	local chatTab = FCFTab_GetChatTabByID(CURRENT_CHAT_FRAME_ID);
+	if (chatTab) then
+		self.restoreGamepadFocusOnMenuClose = true;
+		self.isGamepadMenuOpen = true;
+
+		local menu = FCF_Tab_SetupMenu(chatTab);
+
+		menu:SetClosedCallback(function()
+			self.isGamepadMenuOpen = false;
+
+			if self.restoreGamepadFocusOnMenuClose then
+				self:SetGamepadFocus();
+			else
+				-- This didn't happen when we lost focus due to the menu opening, so do it now
+				-- instead.
+				if self.editBox:ShouldDeactivateChatOnEditFocusLost() then
+					self.editBox:Deactivate();
+				end
+			end
+		end);
+	end
 end
 
 function FloatingChatFrame_UpdateBackgroundAnchors(self)
@@ -206,6 +462,8 @@ function PrimaryChatFrameMixin:OnLoad()
 	-- Default chat tab remains locked and is controlled via edit mode for position and size
 	FCF_SetLocked(self, true);
 	self.ResizeButton:Hide();
+
+	self:RegisterForInterfaceTransitions();
 end
 
 local function SetChatFrameButtonsEnabled(enabled, buttonDisabledTooltip)
@@ -377,110 +635,128 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 end
 
 function FCF_Tab_SetupMenu(self)
-	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+	local isGamepadUIEnabled = InputUtil.IsGamepadUIEnabled();
+
+	local menu = MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_FCF_TAB");
 
-	-- Window preferences
-	local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
+		-- Window preferences
+		local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 		local currentChatFrame = FCF_GetCurrentChatFrame();
 		local isTemporary = currentChatFrame and currentChatFrame.isTemporary;
 		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		local tabChatFrame = FCF_GetChatFrameByID(self:GetID());
 
-	-- Window options
-	if ( not isOnGlueScreen ) then
-			-- EditModeManagerFrame is not available at glues.
-			if (EditModeManagerFrame and (tabChatFrame == DEFAULT_CHAT_FRAME)) then
-				-- If you are the default chat frame then show the enter edit mode option
-				EditModeManagerFrame:CreateEnterEditModeMenuButton(rootDescription, HUD_EDIT_MODE_MENU);
-			else
-				-- If you aren't the default chat frame then show lock/unlock option
-				local text;
-				local func;
-				if( tabChatFrame == GENERAL_CHAT_DOCK.primary ) then
-					text = tabChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
-					func = FCF_ToggleLockOnDockedFrame;
+		-- Window options
+		if (not isOnGlueScreen) then
+			if (not isGamepadUIEnabled) then
+				-- EditModeManagerFrame is not available at glues.
+				if (EditModeManagerFrame and (tabChatFrame == DEFAULT_CHAT_FRAME)) then
+					-- If you are the default chat frame then show the enter edit mode option
+					EditModeManagerFrame:CreateEnterEditModeMenuButton(rootDescription, HUD_EDIT_MODE_MENU);
 				else
-					func = FCF_ToggleLock;
-					if(tabChatFrame.isDocked) then
-						text = UNDOCK_WINDOW;
-					elseif ( tabChatFrame.isLocked ) then
-						text = UNLOCK_WINDOW;
+					-- If you aren't the default chat frame then show lock/unlock option.
+					local text;
+					local func;
+					if (tabChatFrame == GENERAL_CHAT_DOCK.primary) then
+						text = tabChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
+						func = FCF_ToggleLockOnDockedFrame;
 					else
-						text = LOCK_WINDOW;
+						func = FCF_ToggleLock;
+						if(tabChatFrame.isDocked) then
+							text = UNDOCK_WINDOW;
+						elseif ( tabChatFrame.isLocked ) then
+							text = UNLOCK_WINDOW;
+						else
+							text = LOCK_WINDOW;
+						end
 					end
+					rootDescription:CreateButton(text, function(...)
+						func();
+					end);
 				end
+
+				--Add Uninteractable button.
+				local text = tabChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
 				rootDescription:CreateButton(text, function(...)
-					func();
+					FCF_ToggleUninteractable();
 				end);
 			end
 
-			--Add Uninteractable button
-			local text = tabChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
-			rootDescription:CreateButton(text, function(...)
-				FCF_ToggleUninteractable();
-			end);
-
-		if ( not isTemporary ) then
-			-- Add name button
+			if (not isTemporary) then
+				-- Add name button.
 				rootDescription:CreateButton(RENAME_CHAT_WINDOW, function(...)
 					FCF_RenameChatWindow_Popup();
+					currentChatFrame:DontRestoreGamepadFocusOnMenuClose();
 				end);
-		end
+			end
 
-			if ( currentChatFrame == DEFAULT_CHAT_FRAME ) then
-			-- Create new chat window
+			if (currentChatFrame == DEFAULT_CHAT_FRAME) then
+				-- Create new chat window.
 				local button = rootDescription:CreateButton(NEW_CHAT_WINDOW, function(...)
 					FCF_NewChatWindow();
+					currentChatFrame:DontRestoreGamepadFocusOnMenuClose();
 				end);
 				if not FCF_CanOpenNewWindow() then
 					button:SetEnabled(false);
+				end
 			end
-		end
 
-		-- Close current chat window
-			if ( currentChatFrame and not IsBuiltinChatWindow(currentChatFrame) ) then
-				if ( not currentChatFrame.isTemporary ) then
+			-- Close current chat window.
+			if (currentChatFrame and not IsBuiltinChatWindow(currentChatFrame)) then
+				local currentDockFrame = currentChatFrame.isDocked and currentChatFrame.dock;
+				local function HandleFocusRestorationAfterClose()
+					local newChatFrame = currentDockFrame and FCFDock_GetSelectedWindow(currentDockFrame);
+					if newChatFrame then
+						newChatFrame:SetGamepadFocus();
+					end
+					currentChatFrame:DontRestoreGamepadFocusOnMenuClose();
+				end
+
+				if (not currentChatFrame.isTemporary) then
 					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
 						FCF_PopInWindow(tabChatFrame);
+						HandleFocusRestorationAfterClose();
 					end);
-				elseif (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER" ) then
-						rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
-							FCF_PopInWindow(tabChatFrame);
-						end);
+				elseif (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER") then
+					rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
+						FCF_PopInWindow(tabChatFrame);
+						HandleFocusRestorationAfterClose();
+					end);
 				else
-						rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
-							FCF_Close(tabChatFrame);
-						end);
+					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
+						FCF_Close(tabChatFrame);
+						HandleFocusRestorationAfterClose();
+					end);
 				end
 			end
 		end
 
-	-- Display header
+		-- Display header
 		rootDescription:CreateTitle(DISPLAY);
 
 		do
-	-- Font size
+			-- Font size
 			local fontSizeSubmenu = rootDescription:CreateButton(FONT_SIZE);
 
 			local fontFile, fontHeight, fontFlags = currentChatFrame:GetFont();
 			local floorHeight = floor(fontHeight + 0.5);
 			local function IsSelected(height)
 				return height == floorHeight;
-	end
+			end
 
 			local function SetSelected(height)
 				FCF_SetChatWindowFontSize(nil, tabChatFrame, height);
-	end
+			end
 
-			for i=1, #CHAT_FONT_HEIGHTS do
+			for i = 1, #CHAT_FONT_HEIGHTS do
 				local height = CHAT_FONT_HEIGHTS[i];
 				local text = format(FONT_SIZE_TEMPLATE, height);
 				fontSizeSubmenu:CreateRadio(text, IsSelected, SetSelected, height);
 			end
 		end
 
-		if ( not isOnGlueScreen ) then
+		if (not isOnGlueScreen) then
 			-- Set Background color
 			local colorInfo = {
 				r = r, g = g, b = b, opacity = a,
@@ -492,20 +768,24 @@ function FCF_Tab_SetupMenu(self)
 
 			local function OnClick(...)
 				ColorPickerFrame:SetupColorPickerAndShow(colorInfo);
+				currentChatFrame:DontRestoreGamepadFocusOnMenuClose();
 			end
 
 			rootDescription:CreateColorSwatch(BACKGROUND, OnClick, colorInfo);
 		end
 
-		if ( not isOnGlueScreen and not (isTemporary or Kiosk.IsEnabled()) ) then
+		if (not isOnGlueScreen and not (isTemporary or Kiosk.IsEnabled())) then
 			-- Filter header
 			rootDescription:CreateTitle(FILTERS);
 			-- Configure settings
 			rootDescription:CreateButton(CHAT_CONFIGURATION, function(...)
 				ShowUIPanel(ChatConfigFrame);
+				currentChatFrame:DontRestoreGamepadFocusOnMenuClose();
 			end);
-	end
+		end
 	end);
+
+	return menu;
 end
 
 function FCF_GetNumActiveChatFrames()
@@ -1127,10 +1407,12 @@ function FCF_OnUpdate(elapsed)
 			if ( IsCombatLog(chatFrame) ) then
 				topOffset = topOffset + CombatLogQuickButtonFrame_Custom:GetHeight();
 			end
+
 			--Items that will always cause the frame to fade in.
 			if ( MOVING_CHATFRAME or chatFrame.ResizeButton:GetButtonState() == "PUSHED" or
 				(chatFrame.isDocked and GENERAL_CHAT_DOCK.overflowButton.list:IsShown()) or
-				(chatFrame.ScrollBar and chatFrame.ScrollBar:IsThumbMouseDown())) then
+				(chatFrame.ScrollBar and chatFrame.ScrollBar:IsThumbMouseDown()) or
+				(chatFrame:HasGamepadFocus() or chatFrame:IsGamepadMenuOpen())) then
 				chatFrame.mouseOutTime = 0;
 				if ( not chatFrame.hasBeenFaded ) then
 					FCF_FadeInChatFrame(chatFrame);
@@ -1503,6 +1785,10 @@ function FCF_SelectDockFrame(frame)
 	FCF_DockUpdate();
 end
 
+function FCFTab_GetChatTabByID(id)
+	return _G["ChatFrame" .. id .. "Tab"];
+end
+
 function FCF_Tab_OnClick(self, button)
 	local chatFrame = FCF_GetChatFrameByID(self:GetID());
 	-- If Rightclick bring up the options menu
@@ -1582,7 +1868,9 @@ function FCF_Close(frame, fallback)
 	if ( frame == DEFAULT_CHAT_FRAME ) then
 		return;
 	end
+
 	FCF_UnDockFrame(frame);
+
 	HideUIPanel(frame);
 	_G[frame:GetName().."Tab"]:Hide();
 	if ( GetCVar("chatStyle") == "im" and LAST_ACTIVE_CHAT_EDIT_BOX == frame.editBox ) then
@@ -1721,23 +2009,30 @@ function IsBuiltinChatWindow(frame)
 	return ( frame == DEFAULT_CHAT_FRAME ) or IsCombatLog(frame) or IsVoiceTranscription(frame);
 end
 
-function FCFClickAnywhereButton_OnLoad(self)
+FloatingChatFrameClickAnywhereButtonMixin = {};
+
+function FloatingChatFrameClickAnywhereButtonMixin:OnLoad()
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
-	FCFClickAnywhereButton_UpdateState(self);
+	self:UpdateState();
 end
 
-function FCFClickAnywhereButton_OnEvent(self, event, ...)
+function FloatingChatFrameClickAnywhereButtonMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ( event == "VARIABLES_LOADED" or
 		(event == "CVAR_UPDATE" and arg1 == "chatStyle") ) then
-		FCFClickAnywhereButton_UpdateState(self);
+		self:UpdateState(self);
 	end
 end
 
-function FCFClickAnywhereButton_UpdateState(self)
+function FloatingChatFrameClickAnywhereButtonMixin:OnClick()
+	local chatFrame = self:GetParent();
+	ChatFrameUtil.SetLastActiveWindow(chatFrame.editBox);
+end
+
+function FloatingChatFrameClickAnywhereButtonMixin:UpdateState()
 	if ( GetCVar("chatStyle") == "im" and GetCVarBool("wholeChatWindowClickable") and
 		LAST_ACTIVE_CHAT_EDIT_BOX ~=  self:GetParent().editBox ) then
 		self:Show();
@@ -1876,9 +2171,82 @@ Since we've been discussing allowing multiple docks, this code is designed to be
 To keep with this, please ensure that "dock" is the first argument of every function.)
 ]]
 
-function FCFDock_OnLoad(dock)
-	dock.DOCKED_CHAT_FRAMES = {};
-	dock.isDirty = true;	--You dirty, dirty frame
+local MAX_RESERVED_LEFT_PADDING_FOR_RIGHT_TAB_HINT = 3;
+
+FloatingChatFrameDockMixin = {}
+
+function FloatingChatFrameDockMixin:OnLoad()
+	self.DOCKED_CHAT_FRAMES = {};
+	self.isDirty = true;
+
+	self:RegisterForInterfaceTransitions();
+end
+
+function FloatingChatFrameDockMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(FCFDock_UpdateTabs, self, true));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(FCFDock_UpdateTabs, self, true));
+end
+
+function FloatingChatFrameDockMixin:SetUpGamepad()
+	local tabLeftPrompt = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_LEFT, GenerateClosure(self.SelectPrevWindow, self));
+	tabLeftPrompt:SetCustomPromptFrame(self.LeftTabHint, self.LeftTabHint.SetPressable, self.LeftTabHint.SetDisabled);
+	tabLeftPrompt:AddButtonContext("ButtonContext_FloatingChatFrameEditBox");
+	tabLeftPrompt:AddCondition(function()
+		return self.DOCKED_CHAT_FRAMES[1] and FCFDock_GetSelectedWindow(self) ~= self.DOCKED_CHAT_FRAMES[1];
+	end);
+
+	local tabRightPrompt = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, GenerateClosure(self.SelectNextWindow, self));
+	tabRightPrompt:SetCustomPromptFrame(self.RightTabHint, self.RightTabHint.SetPressable, self.RightTabHint.SetDisabled);
+	tabRightPrompt:AddButtonContext("ButtonContext_FloatingChatFrameEditBox");
+	tabRightPrompt:AddCondition(function()
+		local numDockedFrames = #self.DOCKED_CHAT_FRAMES;
+		return numDockedFrames > 0 and self.DOCKED_CHAT_FRAMES[numDockedFrames] ~= FCFDock_GetSelectedWindow(self);
+	end);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "FloatingChatFrameDock");
+	self.footer:AddPromptedBinding(tabLeftPrompt);
+	self.footer:AddPromptedBinding(tabRightPrompt);
+	self.footer:Finalize();
+end
+
+function FloatingChatFrameDockMixin:ActivateFooterBindings()
+	self.footer:ShowAndActivateBindings();
+end
+
+function FloatingChatFrameDockMixin:DeactivateFooterBindings()
+	self.footer:HideAndDeactivateBindings();
+end
+
+function FloatingChatFrameDockMixin:RefreshFooterBindings()
+	self.footer:Refresh();
+end
+
+function FloatingChatFrameDockMixin:SelectNextWindow()
+	local currentWindow = FCFDock_GetSelectedWindow(self);
+	for index, value in ipairs(self.DOCKED_CHAT_FRAMES) do
+		if (value == currentWindow) then
+			local nextWindowIndex = index + 1;
+			if (self.DOCKED_CHAT_FRAMES[nextWindowIndex]) then
+				FCFDock_SelectWindow(self, self.DOCKED_CHAT_FRAMES[nextWindowIndex]);
+			end
+			return;
+		end
+	end
+end
+
+function FloatingChatFrameDockMixin:SelectPrevWindow()
+	local currentWindow = FCFDock_GetSelectedWindow(self);
+	for index, value in ipairs(self.DOCKED_CHAT_FRAMES) do
+		if (value == currentWindow) then
+			local prevWindowIndex = index - 1;
+			if (self.DOCKED_CHAT_FRAMES[prevWindowIndex]) then
+				FCFDock_SelectWindow(self, self.DOCKED_CHAT_FRAMES[prevWindowIndex]);
+			end
+			return;
+		end
+	end
 end
 
 function FCFDock_OnEvent(dock, event, ...)
@@ -1894,8 +2262,8 @@ end
 
 function FCFDock_SetPrimary(dock, chatFrame)
 	dock.primary = chatFrame;
-	dock:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 0, 3);
-	dock:SetPoint("BOTTOMRIGHT", chatFrame, "TOPRIGHT", 0, 3);
+	dock:SetPoint("BOTTOMLEFT", chatFrame.Background, "TOPLEFT");
+	dock:SetPoint("BOTTOMRIGHT", chatFrame.Background, "TOPRIGHT");
 
 	chatFrame:SetScript("OnSizeChanged", function(self) FCFDock_OnPrimarySizeChanged(dock) end);
 
@@ -1944,8 +2312,19 @@ function FCFDock_AddChatFrame(dock, chatFrame, position)
 		return;	--We're already docked...
 	end
 
+	local hadGamepadFocus = chatFrame.isDocked and chatFrame:HasGamepadFocus();
+
+	if hadGamepadFocus then
+		chatFrame.dock:DeactivateFooterBindings();
+	end
+
 	dock.isDirty = true;
 	chatFrame.isDocked = 1;
+	chatFrame.dock = dock;
+
+	if hadGamepadFocus then
+		dock:ActivateFooterBindings();
+	end
 
 	if ( position and position <= #dock.DOCKED_CHAT_FRAMES + 1 ) then
 		assert(position ~= 1 or chatFrame == dock.primary);
@@ -1980,8 +2359,9 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	tDeleteItem(dock.DOCKED_CHAT_FRAMES, chatFrame);
 	local chatTab = _G[chatFrame:GetName().."Tab"];
 	chatFrame.isDocked = nil;
+	chatFrame.dock = nil;
 	chatTab:SetParent(FullscreenFrame);
-	chatTab:SetFrameStrata("LOW");
+	chatTab:SetFrameStrata("MEDIUM");
 	chatFrame:SetMovable(true);
 	chatFrame:SetResizable(true);
 	FCFTab_UpdateColors(chatTab, true);
@@ -1990,8 +2370,14 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	else
 		PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
 	end
-	if ( FCFDock_GetSelectedWindow(dock) == chatFrame ) then
+
+	local selectedWindow = FCFDock_GetSelectedWindow(dock);
+	if ( selectedWindow == chatFrame ) then
+		dock.removingSelectedWindow = true;
 		FCFDock_SelectWindow(dock, dock.DOCKED_CHAT_FRAMES[1]);
+		dock.removingSelectedWindow = nil;
+	elseif chatFrame:HasGamepadFocus() then
+		dock:DeactivateFooterBindings();
 	end
 
 	chatFrame.buttonFrame.minimizeButton:Show();
@@ -2006,10 +2392,18 @@ end
 
 function FCFDock_SelectWindow(dock, chatFrame)
 	assert(chatFrame)
+
+	local hadGamepadFocus = dock.selected and dock.selected:HasGamepadFocus();
+
 	dock.isDirty = true;
 	dock.selected = chatFrame;
 	dock.overflowButton.list:Hide();
+
 	FCFDock_UpdateTabs(dock);
+
+	if hadGamepadFocus then
+		chatFrame:SetGamepadFocus();
+	end
 end
 
 function FCFDock_GetSelectedWindow(dock)
@@ -2049,6 +2443,8 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 			PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0);
 			if ( lastDockedStaticTab ) then
 				chatTab:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 1, 0);
+			elseif (InputUtil.IsGamepadUIEnabled()) then
+				chatTab:SetPoint("BOTTOMLEFT", dock.LeftTabHint, "BOTTOMRIGHT", 1, 0);
 			else
 				chatTab:SetPoint("BOTTOMLEFT", dock, "BOTTOMLEFT", 0, 0);
 			end
@@ -2071,11 +2467,13 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	end
 
 	if lastDockedStaticTab then
-		dock.scrollFrame:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 0, 0);
-		dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, -1);
+		dock.scrollFrame:SetPoint("LEFT", lastDockedStaticTab, "RIGHT");
+	else
+		dock.scrollFrame:SetPoint("LEFT");
 	end
+	dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, -1);
 
-	local dynTabSize, hasOverflow = FCFDock_CalculateTabSize(dock, numDynFrames);
+	local dynTabSize, hasOverflow, scrollSize = FCFDock_CalculateTabSize(dock, numDynFrames);
 
 	for index, chatFrame in ipairs(dock.DOCKED_CHAT_FRAMES) do
 		if ( not chatFrame.isStaticDocked ) then
@@ -2088,11 +2486,38 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 		end
 	end
 
+	dock.RightTabHint:ClearAllPoints();
+
 	if ( hasOverflow ) then
 		dock.overflowButton:Show();
-		dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock.overflowButton, "BOTTOMLEFT", -5, 0);
+
+		if (InputUtil.IsGamepadUIEnabled()) then
+			dock.RightTabHint:SetPoint("BOTTOMRIGHT"); -- Place the right tab hint all the way on the right hand side.
+
+			-- Use all the reserved units of padding between the right tab hint and the overflow button.
+			dock.overflowButton:SetPoint("BOTTOMRIGHT", dock.RightTabHint, "BOTTOMLEFT", -MAX_RESERVED_LEFT_PADDING_FOR_RIGHT_TAB_HINT, 0);
+		else
+			dock.overflowButton:SetPoint("BOTTOMRIGHT");
+		end
+
+		if (lastDockedStaticTab) then
+			dock.scrollFrame:SetPoint("BOTTOMRIGHT", lastDockedStaticTab, "BOTTOMRIGHT", scrollSize, -1);
+		else
+			dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMLEFT", scrollSize, -1);
+		end
 	else
 		dock.overflowButton:Hide();
+		dock.scrollFrame:SetPoint("BOTTOMRIGHT");
+
+		if (lastDockedDynamicTab) then
+			-- Only use 1 of the reserved units of padding between the right hint tab and the last dynamic tab.
+			dock.RightTabHint:SetPoint("BOTTOMLEFT", lastDockedDynamicTab, "BOTTOMRIGHT", 1, 0);
+		elseif (lastDockedStaticTab) then
+			-- Only use 1 of the reserved units of padding between the right hint tab and the last static tab.
+			dock.RightTabHint:SetPoint("BOTTOMLEFT", lastDockedStaticTab, "BOTTOMRIGHT", 1, 0);
+		else
+			dock.RightTabHint:SetPoint("BOTTOMRIGHT");
+		end
 	end
 
 	--Cache some of this data on the scroll frame for animating to the selected tab.
@@ -2105,17 +2530,22 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	return FCFDock_ScrollToSelectedTab(dock);
 end
 
---Returns dynTabSize, hasOverflow
+--Returns dynTabSize, hasOverflow, scrollSize
 function FCFDock_CalculateTabSize(dock, numDynFrames)
 	local MIN_SIZE, MAX_SIZE = 60, 90;
 	local scrollSize = dock.scrollFrame:GetWidth();
+
+	if (InputUtil.IsGamepadUIEnabled() and #dock.DOCKED_CHAT_FRAMES > 1) then
+		-- Reserve units of padding between the right tab hint and the element to the left of it.
+		scrollSize = scrollSize - dock.RightTabHint:GetWidth() - MAX_RESERVED_LEFT_PADDING_FOR_RIGHT_TAB_HINT;
+	end
 
 	--First, see if we can fit all the tabs at the maximum size
 	if ( numDynFrames * MAX_SIZE < scrollSize ) then
 		return MAX_SIZE, false;
 	end
 
-	if ( scrollSize / MIN_SIZE < numDynFrames ) then
+	if (math.floor(scrollSize / MIN_SIZE) <= numDynFrames ) then
 		--Not everything fits, so we'll need room for the overflow button.
 		scrollSize = scrollSize - dock.overflowButton.width - 5;
 	end
@@ -2132,7 +2562,7 @@ function FCFDock_CalculateTabSize(dock, numDynFrames)
 	--How big each tab should be.
 	local tabSize = scrollSize / numWholeTabs;
 
-	return tabSize, (numDynFrames > numWholeTabs);
+	return tabSize, (numDynFrames > numWholeTabs), scrollSize;
 end
 
 function FCFDock_ScrollToSelectedTab(dock)
@@ -2399,6 +2829,17 @@ end
 
 function FCFDockOverflowListButton_OnClick(self, button)
 	FCFDock_SelectWindow(self:GetParent():GetParent():GetParent(), self.chatFrame);
+
+	local lastActiveWindowEditBox = ChatFrameUtil.GetLastActiveWindow();
+	local chatFrameWithEditBox = lastActiveWindowEditBox.chatFrame;
+	if (chatFrameWithEditBox.dock == self.chatFrame.dock) then
+		--[[
+			We are switching to another tab on the same dock, so we need to
+			update the editbox that is shown on the currently selected tab on this dock
+			to match the tab we are selecting.
+		]]
+		ChatFrameUtil.SetLastActiveWindow(self.chatFrame.editBox);
+	end
 end
 
 ---------------------------------------------------

@@ -1,0 +1,29 @@
+## Interface: 0
+## Title: Blizzard Group Finder (Vanilla Style)
+## Notes: A premade group finder with "Vanilla flavored" functionality.
+## Secure: 1
+## AllowLoadGameType: classic, camelot
+## LoadOnDemand: 1
+## Dependencies: Blizzard_LFGUtil
+
+Blizzard_GroupFinder_VanillaStyle_Bootstrap.lua [Bootstrap]
+
+[Family]\LFGVanilla_Constants.lua
+
+[Family]\Templates.lua							[ExcludeLoadGameType classic]
+[Family]\Templates.xml							[ExcludeLoadGameType classic]
+
+
+[Family]\LFGVanillaTabTemplates.xml				[ExcludeLoadGameType camelot]
+
+Blizzard_LFGVanilla_ParentFrame.lua
+[Family]\Blizzard_LFGVanilla_ParentFrame.xml
+
+Blizzard_LFGVanilla_Listing.lua
+[Family]\Blizzard_LFGVanilla_Listing.xml
+
+Blizzard_LFGVanilla_Browse.lua
+[Family]\Blizzard_LFGVanilla_Browse.xml
+
+[Family]\WhoList.lua							[ExcludeLoadGameType classic]
+[Family]\WhoList.xml							[ExcludeLoadGameType classic]

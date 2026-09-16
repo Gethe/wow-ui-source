@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadReticle" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="false" mixin="GamepadReticleMixin">
+		<Size x="25" y="25" />
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="90"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="IntroAnim">
+				<Scale childKey="TargetingIcon" order="1" duration="0.25" smoothing="IN" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="UpdateAnim">
+				<Scale childKey="TargetingIcon" order="1" duration="0.2" smoothing="IN" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StandardIcon" alphaMode="BLEND" file="Interface\CharacterFrame\TempPortraitAlphaMask">
+					<Size x="4" y="4" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TargetingIcon" alphaMode="BLEND" atlas="gamepad-reticletargeting-indicator-x1" useAtlasSize="false">
+					<Size x="40" y="40" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,9 @@
+## Title: Blizzard_TrainerUI
+## LoadOnDemand: 1
+## SavedVariables: TRAINER_FILTER_AVAILABLE_BOOL, TRAINER_FILTER_UNAVAILABLE_BOOL, TRAINER_FILTER_USED_BOOL [AllowLoadGameType classic]
+
+Blizzard_TrainerUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_TrainerUI.lua
+[Family]\Blizzard_TrainerUI.xml
+Localization.lua
+[Family]\Blizzard_TrainerUI_Camelot.lua [AllowLoadGameType camelot]

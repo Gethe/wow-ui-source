@@ -108,6 +108,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local settingGraphicsQuality = settings["graphicsQuality"] or settings["raidGraphicsQuality"];
 	local settingShadowQuality = settings["graphicsShadowQuality"] or settings["raidGraphicsShadowQuality"];
 	local settingLiquidDetail = settings["graphicsLiquidDetail"] or settings["raidGraphicsLiquidDetail"];
+	local settingPBRLiquidDetail = nil;
+	if C_VideoOptions.IsPBRWaterSupported() then
+		settingPBRLiquidDetail = settings["graphicsPBRLiquidDetail"] or settings["raidGraphicsPBRLiquidDetail"];
+	end
 	local settingParticleDensity = settings["graphicsParticleDensity"] or settings["raidGraphicsParticleDensity"];
 	local settingSSAO = settings["graphicsSSAO"] or settings["raidGraphicsSSAO"];
 	local settingDepthEffects = settings["graphicsDepthEffects"] or settings["raidGraphicsDepthEffects"];
@@ -119,9 +123,17 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		settingSpellDensity = settings["graphicsSpellDensity"] or settings["raidGraphicsSpellDensity"];
 	end
 	local settingProjectedTextures = settings["graphicsProjectedTextures"] or settings["raidGraphicsProjectedTextures"];
+	local settingLightMode = nil;
+	if(C_VideoOptions.IsSecondaryLightingSupported()) then
+		settingLightMode = settings["graphicsLightMode"] or settings["raidGraphicsLightMode"];
+	end
 	local settingViewDistance = settings["graphicsViewDistance"] or settings["raidGraphicsViewDistance"];
 	local settingEnvironmentDetail = settings["graphicsEnvironmentDetail"] or settings["raidGraphicsEnvironmentDetail"];
 	local settingGroundClutter = settings["graphicsGroundClutter"] or settings["raidGraphicsGroundClutter"];
+	local settingBloomMult = nil;
+	if(C_VideoOptions.IsLinearEnabledOnStart()) then
+		settingBloomMult = settings["graphicsBloomUserMult"] or settings["raidGraphicsBloomUserMult"];
+	end
 
 	local function GetShadowQualityOptions()
 		local container = Settings.CreateControlTextContainer();
@@ -136,6 +148,16 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		return container:GetData();
 	end
 
+	local function GetLightModeOptions()
+		local container = Settings.CreateControlTextContainer();
+		local cvar = settingLightMode.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_ADVANCEDLIGHT_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_ADVANCEDLIGHT_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_ADVANCEDLIGHT_HIGH);
+		AddRecommended(container, cvar);
+		return container:GetData();
+	end
+
 	local function GetLiquidDetailOptions()
 		local container = Settings.CreateControlTextContainer();
 		local cvar = settingLiquidDetail.cvar;
@@ -143,6 +165,16 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_LIQUID_DETAIL_FAIR);
 		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM);
 		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA);
+		AddRecommended(container, cvar);
+		return container:GetData();
+	end
+
+	local function GetPBRLiquidDetailOptions()
+		local container = Settings.CreateControlTextContainer();
+		local cvar = settingPBRLiquidDetail.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW,		VIDEO_OPTIONS_PBR_LIQUID_DETAIL_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_HIGH,		VIDEO_OPTIONS_PBR_LIQUID_DETAIL_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_ULTRA,	VIDEO_OPTIONS_PBR_LIQUID_DETAIL_ULTRA);
 		AddRecommended(container, cvar);
 		return container:GetData();
 	end
@@ -228,6 +260,40 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		return container:GetData();
 	end
 
+	local function GetBloomMultOptions()
+		local container = Settings.CreateControlTextContainer();
+		local cvar = settingBloomMult.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_HIGH);
+		AddRecommended(container, cvar);
+		return container:GetData();
+	end
+
+	local controlDropdownGroup = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent or GlueParent, "GraphicsSettingsDropDownControl");
+	do
+		local function Increment()
+			local focusedSetting = SmartNavigation:GetCurrentButton();
+			focusedSetting.Control.IncrementButton:Click();
+		end
+
+		local function Decrement()
+			local focusedSetting = SmartNavigation:GetCurrentButton();
+			focusedSetting.Control.DecrementButton:Click();
+		end
+
+		local function OpenDropdown()
+			local focusedSetting = SmartNavigation:GetCurrentButton();
+			focusedSetting.Control.Dropdown:MouseDown();
+			focusedSetting.Control.Dropdown:MouseUp();
+		end
+
+		controlDropdownGroup:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrement);
+		controlDropdownGroup:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increment);
+		controlDropdownGroup:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, OpenDropdown);
+		controlDropdownGroup:AddFunctionBinding(GAMEPAD_FACE_TOP, OpenDropdown);
+		controlDropdownGroup:Finalize();
+	end
+
 	local function InitControlDropdown(containerFrame, setting, name, tooltip, options)
 		if not setting then
 			containerFrame:Hide();
@@ -239,6 +305,14 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 
 		local control = containerFrame.Control;
 		control:SetWidth(220);
+
+		SmartNavigation_MarkFrameIgnored(control);
+		SmartNavigation_MarkFrameFocusable(containerFrame);
+		containerFrame.OnSmartNavSelect = GenerateClosure(controlDropdownGroup.ShowAndActivateBindings, controlDropdownGroup);
+		containerFrame.OnSmartNavDeselect = GenerateClosure(controlDropdownGroup.HideAndDeactivateBindings, controlDropdownGroup);
+
+		local smartNaCursorAnchor = CreateAnchor("RIGHT", containerFrame.Text, "LEFT");
+		SmartNavigation_SetCustomCursorAnchorPointForFrame(containerFrame, smartNaCursorAnchor);
 
 		local inserter = Settings.CreateDropdownOptionInserter(setting, options, {});
 		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
@@ -260,6 +334,22 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		self.cbrHandles:SetOnValueChangedCallback(setting:GetVariable(), OnSettingValueChanged);
 	end
 
+	local sliderBindingGroup = GamepadSharedUtility.CreatePromptedBindingFooter(UIParent or GlueParent, "GraphicsSettingsSliderControl");
+	do
+		local function Decrement()
+			local control = SmartNavigation:GetCurrentButton();
+			control.SliderWithSteppers.Back:Click();
+		end
+
+		local function Increment()
+			local control = SmartNavigation:GetCurrentButton();
+			control.SliderWithSteppers.Forward:Click();
+		end
+
+		sliderBindingGroup:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrement);
+		sliderBindingGroup:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increment);
+		sliderBindingGroup:Finalize();
+	end
 
 	local function InitControlSlider(containerFrame, setting, name, tooltip, options)
 		if not setting then
@@ -294,6 +384,14 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		end
 
 		self.cbrHandles:SetOnValueChangedCallback(setting:GetVariable(), OnSettingValueChanged);
+
+		local cursorAnchor = CreateAnchor("RIGHT", containerFrame.Text, "LEFT");
+		SmartNavigation_MarkFrameIgnored(containerFrame.SliderWithSteppers);
+		SmartNavigation_MarkFrameFocusable(containerFrame);
+		SmartNavigation_SetCustomCursorAnchorPointForFrame(containerFrame, cursorAnchor);
+
+		containerFrame.OnSmartNavSelect = GenerateClosure(sliderBindingGroup.ShowAndActivateBindings, sliderBindingGroup);
+		containerFrame.OnSmartNavDeselect = GenerateClosure(sliderBindingGroup.HideAndDeactivateBindings, sliderBindingGroup);
 	end
 
 	local function InitControlCheckboxSlider(containerFrame, cbSetting, sliderSetting, cbName, cbTooltip, name, tooltip, options)
@@ -357,21 +455,48 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	self.GraphicsQuality.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.GraphicsQuality.SliderWithSteppers, "ANCHOR_TOP", 0, 0);
 
 	InitControlDropdown(self.ShadowQuality, settingShadowQuality, SHADOW_QUALITY, OPTION_TOOLTIP_SHADOW_QUALITY, GetShadowQualityOptions);
-	InitControlDropdown(self.LiquidDetail, settingLiquidDetail, LIQUID_DETAIL, OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
+	InitControlDropdown(self.LiquidDetail, settingLiquidDetail, C_VideoOptions.IsPBRWaterSupported() and LEGACY_LIQUID_DETAIL or LIQUID_DETAIL, C_VideoOptions.IsPBRWaterSupported() and OPTION_TOOLTIP_LEGACY_LIQUID_DETAIL or OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
+	if C_VideoOptions.IsPBRWaterSupported() then
+		InitControlDropdown(self.PBRLiquidDetail, settingPBRLiquidDetail, PBR_LIQUID_DETAIL, OPTION_TOOLTIP_PBR_LIQUID_DETAIL, GetPBRLiquidDetailOptions);
+	else
+		self.PBRLiquidDetail:Hide()
+		local point, _, relativePoint, offsetX, offsetY = self.ParticleDensity:GetPoint();
+		self.ParticleDensity:SetPoint(point, self.LiquidDetail, relativePoint, offsetX, offsetY);
+	end
 	InitControlDropdown(self.ParticleDensity, settingParticleDensity, PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
 	InitControlDropdown(self.SSAO, settingSSAO,	SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
+	if(C_VideoOptions.IsLinearEnabledOnStart()) then
+		InitControlDropdown(self.BloomMult, settingBloomMult, BLOOM_MULT, OPTION_TOOLTIP_BLOOM_MULT, GetBloomMultOptions);
+	else
+		self.BloomMult:Hide()
+		local point, _, relativePoint, offsetX, offsetY = self.DepthEffects:GetPoint();
+		self.DepthEffects:SetPoint(point, self.SSAO, relativePoint, offsetX, offsetY);
+	end
 	InitControlDropdown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
 	InitControlDropdown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
-	InitControlDropdown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
+	if(C_VideoOptions.IsOutlineModeSupported()) then
+		InitControlDropdown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
+	else
+		self.OutlineMode:Hide()
+		local point, _, relativePoint, offsetX, offsetY = self.TextureResolution:GetPoint();
+		self.TextureResolution:SetPoint(point, self.ComputeEffects, relativePoint, offsetX, offsetY);
+	end
 	InitControlDropdown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
 	if(C_VideoOptions.IsSpellVisualDensitySystemSupported()) then
 		InitControlDropdown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
 	else
-		self.SpellDensity:Hide()		
+		self.SpellDensity:Hide()
 		local point, _, relativePoint, offsetX, offsetY = self.ProjectedTextures:GetPoint();
 		self.ProjectedTextures:SetPoint(point, self.TextureResolution, relativePoint, offsetX, offsetY);
 	end
 	InitControlDropdown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
+	if(C_VideoOptions.IsSecondaryLightingSupported()) then
+		InitControlDropdown(self.LightMode, settingLightMode,	LIGHTING_MODE, OPTION_TOOLTIP_LIGHTING_MODE, GetLightModeOptions);
+	else
+		self.LightMode:Hide()
+		local point, _, relativePoint, offsetX, offsetY = self.ViewDistance:GetPoint();
+		self.ViewDistance:SetPoint(point, self.ProjectedTextures, relativePoint, offsetX, offsetY);
+	end
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
 	InitControlSlider(	self.EnvironmentDetail, settingEnvironmentDetail,	ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);
 	InitControlSlider(	self.GroundClutter, settingGroundClutter,	GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
@@ -619,7 +744,7 @@ function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
 	initializer.data = {name=name, settings=settings, raidSettings=raidSettings};
 	initializer:AddSearchTags(BASE_GRAPHICS_QUALITY, SETTINGS_RAID_GRAPHICS_QUALITY, SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS,
-		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
+		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, LIGHTING_MODE, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
 end
 
@@ -648,7 +773,7 @@ local function Register()
 			for index = 2, GetMonitorCount() do
 				local value = index - 1;
 				local label, isPrimary = GetMonitorName(index);
-				if (not label) then 
+				if (not label) then
 					label = string.format(VIDEO_OPTIONS_MONITOR, value);
 				end
 				if (isPrimary) then
@@ -867,11 +992,12 @@ local function Register()
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
-			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
-			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
-			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
-			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_INTEL_XELL);
+			AddValidatedCVarOption(container, cvar, 0, GX_ADAPTER_AUTO_DETECT);
+			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_DISABLED);
+			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_BUILTIN);
+			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX);
+			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			AddValidatedCVarOption(container, cvar, 5, VIDEO_OPTIONS_INTEL_XELL);
 			return container:GetData();
 		end
 
@@ -1051,6 +1177,8 @@ local function Register()
 		end
 	end
 
+	GraphicsOverrides.CreateHDSDToggleOptions(category, layout);
+
 	GraphicsOverrides.CreateHiResOptions(category, layout);
 
 	-- Camera FOV
@@ -1073,7 +1201,7 @@ local function Register()
 	local function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
 		local setting = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
 		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
-		settings[cvar] = setting; 
+		settings[cvar] = setting;
 	end
 
 	local advSettings = GraphicsOverrides.CreateAdvancedSettingsTable(category, AddAdvancedQualitySetting);
@@ -1463,7 +1591,7 @@ local function Register()
 	do
 		local monitorCVar = CreateCVarAccessor("gxMonitor", Settings.VarType.Number);
 		local displayModeCVar = CreateCVarAccessor("gxMaximize", Settings.VarType.Boolean);
-		
+
 		local function HandleDisplaySizeChanged()
 			local resSetting = Settings.GetSetting("PROXY_RESOLUTION");
 			local resScaleSetting = Settings.GetSetting("PROXY_RESOLUTION_RENDER_SCALE");
@@ -1503,7 +1631,7 @@ local function Register()
 		local function AddCompatSettingsCheckbox(cvar, proxyName, name, tooltip)
 			if C_CVar.GetCVar(cvar) then
 				local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
-				local setting = Settings.RegisterProxySetting(category, proxyName, 
+				local setting = Settings.RegisterProxySetting(category, proxyName,
 					Settings.VarType.Boolean, name, getDefaultValue(), getValue, setValue);
 				setting:SetCommitFlags(Settings.CommitFlag.KioskProtected, Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 
@@ -1513,7 +1641,7 @@ local function Register()
 					AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_ENABLED);
 					return container:GetData();
 				end
-		
+
 				Settings.CreateCheckboxWithOptions(category, setting, GetOptions, tooltip);
 			end
 		end

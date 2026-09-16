@@ -9,6 +9,9 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="ExpandBar" inherits="ExpandBarTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size y="190"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -41,6 +44,9 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="UpgradeButton" inherits="GlueGoldRedButtonTemplate" text="UPGRADE" frameLevel="10">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_CharacterSelectListUpgradeButton" type="string"/>
+				</KeyValues>
 				<Size x="215" y="50"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="12"/>
@@ -288,7 +294,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="GameLogoDarkBackdrop" inherits="GameLogoDarkBackdropTemplate"/>
 			<Frame parentKey="CharacterSelectUI" name="CharacterSelectUI" inherits="CharacterSelectUITemplate" setAllPoints="true" enableMouse="true" propagateMouseInput="Motion">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnoredDontPropagate" value="true" type="boolean"/>
+					<KeyValue key="smartNavigationCanFocus" value="false" type="boolean"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="FadeInBackground" setAllPoints="true" hidden="true">
@@ -467,7 +478,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="NavBar" inherits="CharacterSelectNavBarTemplate">
+							<Frame parentKey="NavBar" inherits="CharacterSelectNavBarCustomTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 									<Anchor point="TOPRIGHT"/>
@@ -820,6 +831,18 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" x="8" y="-8"/>
 								</Anchors>
+								<Frames>
+									<Frame parentKey="FocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+										<KeyValues>
+											<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
+											<KeyValue key="useDropShadow" value="true" type="boolean"/>
+										</KeyValues>
+										<Size x="20" y="20"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.ExpandBar.ExpandButton" relativePoint="LEFT" x="-5" y="0" />
+										</Anchors>
+									</Frame>
+								</Frames>
 							</Frame>
 							<Frame name="CharacterSelectServerAlertFrame" inherits="CollapsibleServerAlertTemplate" mixin="CharacterSelectServerAlertFrameMixin" hidden="true">
 								<Anchors>
@@ -920,6 +943,9 @@
 								</Frames>
 							</Frame>
 							<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
 								<Size x="220" y="150"/>
 								<KeyValues>
 									<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
@@ -967,6 +993,9 @@
 								</Scripts>
 							</Button>
 							<Frame parentKey="ToolTray" hidden="true" inherits="CharacterSelectToolTrayTemplate">
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOMLEFT" x="-40" y="0"/>
 									<Anchor point="BOTTOM" x="0" y="0"/>
@@ -1007,7 +1036,7 @@
 
 	<Frame name="CharacterDeleteDialog" mixin="CharacterDeletionDialogMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame parentKey="Background">
+			<Frame parentKey="Background" inherits="DefaultDialogPanelTemplate">
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
@@ -1075,6 +1104,11 @@
 				</Layers>
 				<FontString inherits="GlueFontHighlight"/>
 			</EditBox>
+			<Frame parentKey="GamepadSequence" inherits="GamepadInputSequenceTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Background.Text2" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -3,4 +3,7 @@
 ## Dependencies: Blizzard_SharedXML, Blizzard_GameModeSelect, Blizzard_GlueMenuFrame
 ## AllowLoad: Glue
 CharacterSelectNavBar.lua
+[Game]\CharacterSelectNavBar.lua	[AllowLoadGameType camelot]
 CharacterSelectNavBar.xml
+CharacterSelectNavTemplates.xml	[ExcludeLoadGameType camelot]
+[Game]\CharacterSelectNavTemplates.xml		[AllowLoadGameType camelot]

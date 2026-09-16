@@ -1,0 +1,13 @@
+## Title: Blizzard_RaidFrame
+## Dep: Blizzard_SocialUIShared [AllowLoadGameType mainline]
+## Dep: Blizzard_UIPanels_Game
+## Dep: Blizzard_UnitFrame
+## Dep: Blizzard_FriendsFrame [AllowLoadGameType mainline]
+
+[Family]\RaidFrame.lua
+[Family]\RaidFrame.xml					[AllowLoadGameType mainline, vanilla, tbc]
+Wrath\RaidFrame.xml						[AllowLoadGameType wrath, cata, mists]
+[Family]\RaidFrameSocialView.lua		[AllowLoadGameType mainline]
+[Family]\RaidFrameSocialView.xml		[AllowLoadGameType mainline]
+[Family]\RaidInfoFrameSocialView.lua	[AllowLoadGameType mainline]
+[Family]\RaidInfoFrameSocialView.xml	[AllowLoadGameType mainline]

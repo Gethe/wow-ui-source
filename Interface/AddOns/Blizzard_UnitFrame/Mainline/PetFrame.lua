@@ -50,7 +50,9 @@ function PetFrameMixin:OnLoad()
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		if UnitExists(unit) then
 			local which = nil;
-			local contextData = {};
+			local contextData = {
+				ownerFrame = frame,
+			};
 			if unit == "player" then
 				which = "SELF";
 				contextData.unit = "player";

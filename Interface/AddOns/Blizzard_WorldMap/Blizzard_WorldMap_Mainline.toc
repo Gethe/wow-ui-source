@@ -2,6 +2,8 @@
 ## Author: Blizzard Entertainment
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders, Blizzard_HelpPlate
 
+[Family]/Blizzard_WorldMapConstants.lua [ExcludeLoadGameType camelot]
+[Game]/Blizzard_WorldMapConstants.lua [AllowLoadGameType camelot]
 QuestLogOwnerMixin.lua
 MapTexturePreloader.lua
 WM_WorldQuestDataProvider.xml
@@ -9,5 +11,12 @@ WM_EventOverlayDataProvider.xml
 WM_DebugDataProvider.xml
 WoWLabs/WM_WoWLabsAreaDataProvider.lua [AllowLoadGameType plunderstorm]
 WoWLabs/WM_WoWLabsAreaDataProvider.xml [AllowLoadGameType plunderstorm]
+[Family]/Blizzard_WorldMapTemplates.xml [ExcludeLoadGameType camelot]
+[Game]/Blizzard_WorldMapTemplates.xml [AllowLoadGameType camelot]
 Blizzard_WorldMapTemplates.xml
+Blizzard_WorldMapTemplates.lua
+[Family]/Blizzard_WorldMapTemplates.lua	[AllowLoadGameType standard]
+[Game]/Blizzard_WorldMapTemplates.lua [AllowLoadGameType camelot]
+Blizzard_WorldMap.lua
+[Game]/Blizzard_WorldMap.lua [AllowLoadGameType camelot]
 Blizzard_WorldMap.xml

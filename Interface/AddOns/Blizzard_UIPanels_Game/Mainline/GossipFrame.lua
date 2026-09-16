@@ -55,6 +55,7 @@ function GossipFrameMixin:OnLoad()
 		self:UpdateScrollBox();
 	end
 	Settings.SetOnValueChangedCallback("PROXY_QUEST_TEXT_CONTRAST", OnQuestTextContrastSettingChanged);
+	self:RegisterForTransitions();
 end
 
 function GossipFrameMixin:HandleShow(textureKit)
@@ -70,6 +71,33 @@ function GossipFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function GossipFrameMixin:Update()
+	GossipFrameSharedMixin.Update(self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local gossipFrames = self.GreetingPanel.ScrollBox:GetFrames();
+		local firstButton = nil;
+
+		if gossipFrames and #gossipFrames > 0 then
+			for _, frame in ipairs(gossipFrames) do
+				if (frame:IsObjectType("Button") and frame:IsShown()) then
+					firstButton = frame;
+					break;
+				end
+			end
+
+			if firstButton then
+				SmartNavigation:SelectButton(firstButton);
+				SmartNavigation:ShowCursor();
+			end
+		end
+
+		if not firstButton then
+			SmartNavigation:SelectFirstButton();
+		end
+	end
+end
+
 function GossipFrameMixin:SetGossipTutorialMode(tutorialMode)
 	self.tutorialMode = tutorialMode;
 	self.tutorialButtons = { };
@@ -82,4 +110,40 @@ end
 
 function GossipFrameMixin:SortOrder(leftInfo, rightInfo)
 	return leftInfo.orderIndex < rightInfo.orderIndex;
+end
+
+function GossipFrameMixin:SetUpGamepad()
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "GossipFrameFooter");
+	self.gamepadFooter:AddStandardSelectPrompt();
+	self.gamepadFooter:AddStandardBackPrompt();
+	self.gamepadFooter:Finalize();
+
+	function GossipFrame.UnfocusGamepad()
+		self.gamepadFooter:HideAndDeactivateBindings();
+	end
+
+	function GossipFrame.FocusGamepad()
+		self.gamepadFooter:ShowAndActivateBindings();
+		SmartNavigation:SetScrollFrameForFrame(self, self.GreetingPanel.ScrollBox);
+		GamepadScrollBarHint:SetOwner(self.GreetingPanel.ScrollBar.Track.Thumb, "CENTER");
+		GamepadScrollBarHint:Show();
+
+	end
+end
+
+function GossipFrameMixin:InitializeGamepad()
+	self.GreetingPanel.GoodbyeButton:Hide();
+	GossipFrameCloseButton:Hide();
+end
+
+function GossipFrameMixin:UninitializeGamepad()
+	self.GreetingPanel.GoodbyeButton:Show();
+	GossipFrameCloseButton:Show();
+end
+
+function GossipFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end

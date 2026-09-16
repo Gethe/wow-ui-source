@@ -1,0 +1,14 @@
+## Title: Blizzard_MoneyFrame
+## Dep: Blizzard_SharedXML [AllowLoadGameType mainline]
+## Dep: Blizzard_SharedXMLGame [AllowLoadGameType classic]
+## AllowLoad: Both [AllowLoadGameType mainline]
+
+Shared\MoneyFrame.lua
+Shared\MoneyFrame.xml
+[Family]\MoneyFrame.lua
+[Family]\MoneyFrame.xml
+Shared\MoneyInputFrame.lua
+Shared\MoneyInputFrame.xml
+[Family]\MoneyInputFrame.lua
+[Family]\MoneyInputFrame.xml
+[Family]\Localization.lua

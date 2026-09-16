@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ProfessionsTemplates.lua"/>
-
 	<StatusBar name="ProfessionsStatusBarArtTemplate" minValue="0" maxValue="1" defaultValue="1" virtual="true">
 		<Size x="58" y="14"/>
 		<Layers>
@@ -53,12 +51,7 @@
 				<Texture parentKey="Icon"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="IconBorder" atlas="Professions-Slot-Frame" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="IconBorder" atlas="Professions-Slot-Frame" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconOverlay" hidden="true">
@@ -84,6 +77,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</ItemButton>
 	
 	<Frame name="ProfessionsTableCellTextTemplate" mixin="ProfessionsTableCellTextMixin" virtual="true">
@@ -383,5 +379,11 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
+	</Frame>
+
+	<Frame name="ProfessionsFrameRightTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="ProfessionsFrameRightTabMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

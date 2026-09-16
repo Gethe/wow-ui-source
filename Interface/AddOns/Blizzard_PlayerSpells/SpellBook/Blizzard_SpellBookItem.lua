@@ -20,6 +20,8 @@ function SpellBookItemMixin:OnLoad()
 
 	self.Backplate:SetAlpha(self.defaultBackplateAlpha);
 	self.Button.IconHighlight:SetAlpha(self.iconHighlightHoverAlpha);
+
+	InputUtil.RegisterInterfaceTransitionCallback(GenerateClosure(self.UpdateActionBarStatus, self));
 end
 
 function SpellBookItemMixin:Init(elementData)
@@ -36,7 +38,7 @@ end
 
 function SpellBookItemMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SpellBookItemEvents);
-	self:UpdateActionBarAnim();
+	self:UpdateActionBarStatus();
 	self:UpdateBorderAnim();
 	self:UpdateTrainableFX();
 end
@@ -71,11 +73,8 @@ function SpellBookItemMixin:OnEvent(event, ...)
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
 		self:UpdateActionBarStatus();
 	elseif event == "CURSOR_CHANGED" then
-		-- Spell was being dragged from spellbook, update action bar status since we may have hidden visual during drag
-		if self.spellGrabbed then
-			self.spellGrabbed = false;
-			self:UpdateActionBarStatus();
-		end
+		self.spellGrabbed = false;
+		self:UpdateActionBarStatus();
 	end
 end
 
@@ -265,21 +264,9 @@ function SpellBookItemMixin:UpdateVisuals()
 
 	local borderAtlas = self.isUnlearned and self.artSet.inactiveBorder or self.artSet.activeBorder;
 	local borderAnchors = self.isUnlearned and self.artSet.inactiveBorderAnchors or self.artSet.activeBorderAnchors;
-	self.Button.Border:SetAtlas(borderAtlas, TextureKitConstants.IgnoreAtlasSize);
-	self.Button.Border:ClearAllPoints();
-	for _, anchor in ipairs(borderAnchors) do
-		local point, relativeTo, relativePoint, x, y = anchor:Get();
-		relativeTo = relativeTo or self.Button;
-		self.Button.Border:SetPoint(point, relativeTo, relativePoint, x, y);
-	end
+	self:ApplyBorderArt(borderAtlas, borderAnchors);
 
-	self.Button.BorderSheenMask:SetAtlas(self.artSet.borderSheenMask, TextureKitConstants.UseAtlasSize);
-	self.Button.BorderSheenMask:ClearAllPoints();
-	for _, anchor in ipairs(self.artSet.borderSheenMaskAnchors) do
-		local point, relativeTo, relativePoint, x, y = anchor:Get();
-		relativeTo = relativeTo or self.Button.Border;
-		self.Button.BorderSheenMask:SetPoint(point, relativeTo, relativePoint, x, y);
-	end
+	self:ApplyBorderSheenMaskArt();
 
 	local isLevelLinkLocked = self.spellBookItemInfo.spellID and C_LevelLink.IsSpellLocked(self.spellBookItemInfo.spellID) or false;
 	self.Button.LevelLinkLock:SetShown(isLevelLinkLocked);
@@ -485,7 +472,7 @@ function SpellBookItemMixin:UpdateClickBindState()
 	end
 end
 
-function SpellBookItemMixin:OnIconEnter()
+function SpellBookItemMixin:ShowSpellBookTooltip()
 	if not self:HasValidData() then
 		return;
 	end
@@ -497,11 +484,6 @@ function SpellBookItemMixin:OnIconEnter()
 		GameTooltip_AddErrorLine(tooltip, CLICK_BINDING_NOT_AVAILABLE);
 		tooltip:Show();
 		return;
-	end
-
-	if not self.isUnlearned then
-		self.Button.IconHighlight:Show();
-		self.Backplate:SetAlpha(self.hoverBackplateAlpha);
 	end
 
 	tooltip:SetSpellBookItem(self.slotIndex, self.spellBank)
@@ -516,7 +498,30 @@ function SpellBookItemMixin:OnIconEnter()
 		AssistedCombatManager:AddSpellTooltipLine(tooltip, spellID);
 	end
 
+	-- Adjust gamepad tooltip based on final size and spellbook item location
+	if (InputUtil.IsGamepadUIEnabled()) then
+		self:GamepadAdjustTooltipAnchor(tooltip);
+	end
+
 	tooltip:Show();
+end
+
+function SpellBookItemMixin:OnIconEnter()
+	if self.isFiller then
+		self:OnFillerEnter();
+	end
+
+	if not self:HasValidData() then
+		return;
+	end
+
+	self:ShowSpellBookTooltip();
+
+	-- highlighting
+	if not self.isUnlearned then
+		self.Button.IconHighlight:Show();
+		self.Backplate:SetAlpha(self.hoverBackplateAlpha);
+	end
 
 	ClearOnBarHighlightMarks();
 
@@ -537,8 +542,13 @@ function SpellBookItemMixin:OnIconEnter()
 	ActionBarController_UpdateAllSpellHighlights();
 end
 
+function SpellBookItemMixin:OnFillerEnter()
+	self.Button.IconHighlight:Show();
+	self.Backplate:SetAlpha(self.hoverBackplateAlpha);
+end
+
 function SpellBookItemMixin:OnIconLeave()
-	if not self:HasValidData() then
+	if not self:HasValidData() and not self.isFiller then
 		return;
 	end
 
@@ -722,6 +732,193 @@ function SpellBookItemMixin:UpdateArtSet()
 	end
 end
 
+function SpellBookItemMixin:ApplyBorderArt(borderAtlas, borderAnchors)
+	self.Button.Border:SetAtlas(borderAtlas, TextureKitConstants.IgnoreAtlasSize);
+	self.Button.Border:ClearAllPoints();
+
+	for _, anchor in ipairs(borderAnchors) do
+		local point, relativeTo, relativePoint, x, y = anchor:Get();
+		relativeTo = relativeTo or self.Button;
+		self.Button.Border:SetPoint(point, relativeTo, relativePoint, x, y);
+	end
+end
+
+function SpellBookItemMixin:ApplyBorderSheenMaskArt()
+	self.Button.BorderSheenMask:SetAtlas(self.artSet.borderSheenMask, TextureKitConstants.UseAtlasSize);
+	self.Button.BorderSheenMask:ClearAllPoints();
+
+	for _, anchor in ipairs(self.artSet.borderSheenMaskAnchors) do
+		local point, relativeTo, relativePoint, x, y = anchor:Get();
+		relativeTo = relativeTo or self.Button.Border;
+		self.Button.BorderSheenMask:SetPoint(point, relativeTo, relativePoint, x, y);
+	end
+end
+
+function SpellBookItemMixin:SetupFiller()
+	self.isFiller = true;
+	self.Button.Icon:SetVertexColor(SPELLBOOK_UNLEARNED_TINT_COLOR:GetRGB());
+	self.Button.Icon:SetAlpha(self.unlearnedIconAlpha);
+
+	self.artSet = SpellBookItemMixin.ArtSet.Square;
+
+	local borderAtlas = self.artSet.activeBorder;
+	local borderAnchors = self.artSet.activeBorderAnchors;
+	self:ApplyBorderArt(borderAtlas, borderAnchors);
+
+	self.Button.TrainableShadow:SetShown(true);
+end
+
+function SpellBookItemMixin:GamepadAdjustTooltipAnchor(tooltip)
+	local width, height = tooltip:GetSize();
+	local inCompactView = PlayerSpellsFrame:IsMinimized();
+	local lastColMaxWidth = inCompactView and 376 or 392;
+
+	local topLeft =
+		(self.gridColumn == 1 and width <= 251 and height <= 204) or
+		(self.gridRow == 7 and height > 148) or
+		(self.gridRow == 8 and height > 88);
+
+	local bottomLeft =
+		(self.gridColumn == 3 and width > lastColMaxWidth);
+
+	tooltip:ClearAllPoints();
+
+	if topLeft then
+		tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT");
+	elseif bottomLeft then
+		tooltip:SetPoint("TOPRIGHT", self.Button, "BOTTOMLEFT");
+	else
+		tooltip:SetPoint("TOPLEFT", self.Button, "BOTTOMRIGHT");
+	end
+end
+
+SpellBookOutfitItemMixin = CreateFromMixins(SpellBookItemMixin);
+
+local SpellBookOutfitItemEvents = {
+	"SPELL_UPDATE_COOLDOWN",
+};
+
+function SpellBookOutfitItemMixin:Init(elementData)
+	self.elementData = elementData;
+	self.Button.buttonContext = "ButtonContext_OutfitButton";
+
+	self:UpdateSpellData(true);
+end
+
+function SpellBookOutfitItemMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, SpellBookOutfitItemEvents);
+	self:UpdateCooldown();
+	self:UpdateBorderAnim();
+end
+
+function SpellBookOutfitItemMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, SpellBookOutfitItemEvents);
+	self:UpdateBorderAnim();
+end
+
+function SpellBookOutfitItemMixin:OnEvent(event, ...)
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		self:UpdateCooldown();
+	end
+end
+
+function SpellBookOutfitItemMixin:UpdateSpellData(_forceUpdate)
+	self:UpdateVisuals();
+end
+
+function SpellBookOutfitItemMixin:UpdateVisuals()
+	local elementData = self.elementData;
+	if not elementData then
+		return;
+	end
+
+	self.artSet = SpellBookItemMixin.ArtSet.Square;
+	self.Name:SetText(elementData.name);
+	self.SubName:SetText("");
+	self.RequiredLevel:SetText("");
+	self.RequiredLevel:Hide();
+
+	self.Button.Icon:SetTexture(elementData.icon);
+
+	self.Button:ClearPopup();
+	self.Button.IconMask:Hide();
+	self.Button.IconHighlight:SetAtlas(self.artSet.iconHighlight, TextureKitConstants.IgnoreAtlasSize);
+
+	local borderAtlas = self.artSet.activeBorder;
+	local borderAnchors = self.artSet.activeBorderAnchors;
+	self:ApplyBorderArt(borderAtlas, borderAnchors);
+	self:ApplyBorderSheenMaskArt();
+
+	self:UpdateTextContainer();
+	self:UpdateCooldown();
+	self:UpdateBorderAnim();
+end
+
+function SpellBookOutfitItemMixin:OnIconClick(button)
+	local outfitID = self:GetOutfitID();
+	if not outfitID then
+		return;
+	end
+
+	local allowRemoveOutfit = true;
+	local toggleLock = button == "RightButton";
+
+	C_TransmogOutfitInfo.ChangeDisplayedOutfit(
+		outfitID,
+		Enum.TransmogSituationTrigger.Manual,
+		toggleLock,
+		allowRemoveOutfit);
+end
+
+function SpellBookOutfitItemMixin:OnModifiedIconClick(_button)
+	-- Transmog outfits are not SpellBookItems and do not support spell modified-click behavior.
+end
+
+function SpellBookOutfitItemMixin:OnIconEnter()
+	local outfitID = self:GetOutfitID();
+	if not outfitID then
+		return;
+	end
+
+	local tooltip = GameTooltip;
+	tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+	if outfitID == 0 then
+		tooltip:SetSpellByID(Constants.TransmogOutfitDataConsts.CLEAR_TRANSMOG_OUTFIT_MANUAL_SPELL_ID);
+	else
+		tooltip:SetOutfit(outfitID);
+	end
+	tooltip:Show();
+
+	-- Adjust gamepad tooltip based on final size and spellbook item location
+	if (InputUtil.IsGamepadUIEnabled()) then
+		self:GamepadAdjustTooltipAnchor(tooltip);
+	end
+end
+
+function SpellBookOutfitItemMixin:OnIconDragStart()
+	if not self:HasValidData() then
+		return;
+	end
+
+	C_TransmogOutfitInfo.PickupOutfit(self:GetOutfitID());
+end
+
+function SpellBookOutfitItemMixin:HasValidData()
+	return self.elementData ~= nil;
+end
+
+function SpellBookOutfitItemMixin:GetOutfitID()
+	return self:HasValidData() and self.elementData.outfitID;
+end
+
+function SpellBookOutfitItemMixin:UpdateCooldown()
+	local cooldownInfo = C_Spell.GetSpellCooldown(Constants.TransmogOutfitDataConsts.EQUIP_TRANSMOG_OUTFIT_MANUAL_SPELL_ID);
+	if cooldownInfo then
+		CooldownFrame_Set(self.Button.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+	else
+		CooldownFrame_Clear(self.Button.Cooldown);
+	end
+end
 
 SpellBookItemButtonMixin = {};
 

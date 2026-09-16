@@ -41,6 +41,7 @@
 		</ScrollChild>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -54,6 +55,8 @@
 		<KeyValues>
 			<KeyValue key="debugInspectionSystem" type="string" value="MapCanvas"/>
 		</KeyValues>
+		<Frames>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>

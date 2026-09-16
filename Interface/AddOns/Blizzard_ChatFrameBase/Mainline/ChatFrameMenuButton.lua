@@ -12,17 +12,22 @@ end
 
 ChatFrameMenuButtonMixin = {};
 
+ChatFrameMenuButtonMixin.CHAT_TYPES =
+{
+	SAY = "SAY",
+	PARTY = "PARTY",
+	RAID = "RAID",
+	INSTANCE_CHAT = "INSTANCE_CHAT",
+	GUILD = "GUILD",
+	YELL = "YELL",
+	EMOTE = "EMOTE"
+}
+
 function ChatFrameMenuButtonMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("CAN_PLAYER_SPEAK_LANGUAGE_CHANGED");
-
-	local function SetChatTypeAttribute(chatType)
-		local editBox = ChatFrameUtil.OpenChat("");
-		editBox:SetChatType(chatType);
-		editBox:UpdateHeader();
-	end
 
 	local function AddEmotes(description, list, func)
 		for index, value in ipairs(list) do
@@ -43,26 +48,6 @@ function ChatFrameMenuButtonMixin:OnLoad()
 		end
 	end
 
-	local function IsLanguageSelected(language)
-		return GetSelectedLanguageID() == language[2];
-	end
-
-	local function SetLanguageSelected(languageData)
-		DEFAULT_CHAT_FRAME.editBox:SetGameLanguage(languageData[1], languageData[2]);
-	end
-
-	local function AddSlashInitializer(button, chatShortcut)
-		button:AddInitializer(function(button, description, menu)
-			local fontString2 = button:AttachFontString();
-			local offset = description:HasElements() and -20 or 0;
-			fontString2:SetPoint("RIGHT", offset, 0);
-			fontString2:SetJustifyH("RIGHT");
-			fontString2:SetTextToFit(chatShortcut);
-
-			button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		end);
-	end
-
 	local function ColorInitializer(button, description, menu)
 		button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	end
@@ -71,39 +56,30 @@ function ChatFrameMenuButtonMixin:OnLoad()
 		rootDescription:SetTag("MENU_CHAT_SHORTCUTS", block);
 		rootDescription:SetMinimumWidth(180);
 
-		local function CreateButtonWithShortcut(chatName, chatShortcut, chatType)
-			local button = rootDescription:CreateButton(chatName, function()
-				SetChatTypeAttribute(chatType);
-			end);
-
-			AddSlashInitializer(button, chatShortcut);
-			return button;
-		end
-
 		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		if not isOnGlueScreen then
-			CreateButtonWithShortcut(SAY_MESSAGE, SLASH_SAY1, "SAY");
+			self.CreateButtonWithShortcut(rootDescription, SAY_MESSAGE, SLASH_SAY1, self.CHAT_TYPES.SAY);
 		end
 
-		CreateButtonWithShortcut(PARTY_MESSAGE, SLASH_PARTY1, "PARTY");
+		self.CreateButtonWithShortcut(rootDescription, PARTY_MESSAGE, SLASH_PARTY1, self.CHAT_TYPES.PARTY);
 
 		if not isOnGlueScreen then
-			CreateButtonWithShortcut(RAID_MESSAGE, SLASH_RAID1, "RAID");
-			CreateButtonWithShortcut(INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, "INSTANCE_CHAT");
-			CreateButtonWithShortcut(GUILD_MESSAGE, SLASH_GUILD1, "GUILD");
-			CreateButtonWithShortcut(YELL_MESSAGE, SLASH_YELL1, "YELL");
+			self.CreateButtonWithShortcut(rootDescription, RAID_MESSAGE, SLASH_RAID1, self.CHAT_TYPES.RAID);
+			self.CreateButtonWithShortcut(rootDescription, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, self.CHAT_TYPES.INSTANCE_CHAT);
+			self.CreateButtonWithShortcut(rootDescription, GUILD_MESSAGE, SLASH_GUILD1, self.CHAT_TYPES.GUILD);
+			self.CreateButtonWithShortcut(rootDescription, YELL_MESSAGE, SLASH_YELL1, self.CHAT_TYPES.YELL);
 		end
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_MESSAGE, function()
 			local editBox = ChatFrameUtil.OpenChat(SLASH_SMART_WHISPER1.." ");
 			editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
 		end);
-		AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
+		self.AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
 
 		local replyButton = rootDescription:CreateButton(REPLY_MESSAGE, function()
 			ChatFrameUtil.ReplyTell();
 		end);
-		AddSlashInitializer(replyButton, SLASH_REPLY1);
+		self.AddSlashInitializer(replyButton, SLASH_REPLY1);
 
 		if not isOnGlueScreen then
 			if not C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
@@ -114,10 +90,10 @@ function ChatFrameMenuButtonMixin:OnLoad()
 
 					ShowMacroFrame();
 				end);
-				AddSlashInitializer(macroButton, SLASH_MACRO1);
+				self.AddSlashInitializer(macroButton, SLASH_MACRO1);
 			end
 
-			local emoteSubmenu = CreateButtonWithShortcut(EMOTE_MESSAGE, SLASH_EMOTE1, "EMOTE");
+			local emoteSubmenu = self.CreateButtonWithShortcut(rootDescription, EMOTE_MESSAGE, SLASH_EMOTE1, self.CHAT_TYPES.EMOTE);
 			AddEmotes(emoteSubmenu, EmoteList, function(index)
 				C_ChatInfo.PerformEmote(EmoteList[index]);
 			end);
@@ -144,10 +120,53 @@ function ChatFrameMenuButtonMixin:OnLoad()
 			for i = 1, GetNumLanguages() do
 				local language, languageID = GetLanguageByIndex(i);
 				local languageData = {language, languageID};
-				languageSubmenu:CreateRadio(language, IsLanguageSelected, SetLanguageSelected, languageData);
+				languageSubmenu:CreateRadio(language, self.IsLanguageSelected, self.SetLanguageSelected, languageData);
 			end
 		end
 	end);
+end
+
+function ChatFrameMenuButtonMixin.SetChatTypeAttribute(chatType, chatFrame)
+	local existingText = "";
+	if (chatFrame) then
+		local chatFrameEditBox = ChatFrameUtil.ChooseBoxForSend(chatFrame);
+		if (chatFrameEditBox) then
+			existingText = chatFrameEditBox:GetText();
+		end
+	end
+
+	local editBox = ChatFrameUtil.OpenChat(existingText, chatFrame);
+	editBox:SetChatType(chatType);
+	editBox:UpdateHeader();
+end
+
+function ChatFrameMenuButtonMixin.AddSlashInitializer(button, chatShortcut)
+	button:AddInitializer(function(button, description)
+		local fontString2 = button:AttachFontString();
+		local offset = description:HasElements() and -20 or 0;
+		fontString2:SetPoint("RIGHT", offset, 0);
+		fontString2:SetJustifyH("RIGHT");
+		fontString2:SetTextToFit(chatShortcut);
+
+		button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end);
+end
+
+function ChatFrameMenuButtonMixin.CreateButtonWithShortcut(description, chatName, chatShortcut, chatType, chatFrame)
+	local button = description:CreateButton(chatName, function()
+		ChatFrameMenuButtonMixin.SetChatTypeAttribute(chatType, chatFrame);
+	end);
+
+	ChatFrameMenuButtonMixin.AddSlashInitializer(button, chatShortcut);
+	return button;
+end
+
+function ChatFrameMenuButtonMixin.IsLanguageSelected(language)
+	return GetSelectedLanguageID() == language[2];
+end
+
+function ChatFrameMenuButtonMixin.SetLanguageSelected(languageData)
+	DEFAULT_CHAT_FRAME.editBox:SetGameLanguage(languageData[1], languageData[2]);
 end
 
 function ChatFrameMenuButtonMixin:Reinitialize()
@@ -170,7 +189,7 @@ function ChatFrameMenuButtonMixin:OnShow()
 	self:Reinitialize();
 end
 
-function ChatFrameMenuButtonMixin:ValidateSelectedLanguage()
+function ChatFrameMenuButtonMixin.ValidateSelectedLanguage()
 	local editBoxLanguageID = GetSelectedLanguageID();
 	if not editBoxLanguageID or not C_ChatInfo.CanPlayerSpeakLanguage(editBoxLanguageID) then
 		local defaultLanguage, defaultLanguageId = GetDefaultLanguage();

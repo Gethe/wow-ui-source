@@ -30,19 +30,33 @@ local battleNetFriendTagInterestsUIOrder =
 	Enum.BattleNetFriendTag.Roleplaying,
 };
 
-function SocialUIUtil.GetBattleNetFriendTagInterestsUIOrder()
-	return battleNetFriendTagInterestsUIOrder;
-end
-
 local battleNetFriendTagRoleUIOrder =
 {
 	Enum.BattleNetFriendTag.DamagerRole,
 	Enum.BattleNetFriendTag.HealerRole,
 	Enum.BattleNetFriendTag.TankRole,
 };
+assertsafe(Enum.BattleNetFriendTagMeta.NumValues == (#battleNetFriendTagInterestsUIOrder + #battleNetFriendTagRoleUIOrder), "Not all BattleNetFriendTags are listed in the BattleNetFriendTag UI order tables!");
 
-function SocialUIUtil.GetBattleNetFriendTagRoleUIOrder()
-	return battleNetFriendTagRoleUIOrder;
+local function BuildSupportedBattleNetFriendTagsForCurrentGameType(battleNetFriendTags)
+	local supportedBattleNetFriendTags = {};
+	for _index, battleNetFriendTag in ipairs(battleNetFriendTags) do
+		if C_BattleNet.IsFriendTagSupportedForCurrentGameType(battleNetFriendTag) then
+			table.insert(supportedBattleNetFriendTags, battleNetFriendTag);
+		end
+	end
+
+	return supportedBattleNetFriendTags;
+end
+
+local supportedBattleNetFriendTagInterests = BuildSupportedBattleNetFriendTagsForCurrentGameType(battleNetFriendTagInterestsUIOrder);
+function SocialUIUtil.GetSupportedBattleNetFriendTagInterestsForCurrentGameType()
+	return supportedBattleNetFriendTagInterests;
+end
+
+local supportedBattleNetFriendTagRoles = BuildSupportedBattleNetFriendTagsForCurrentGameType(battleNetFriendTagRoleUIOrder);
+function SocialUIUtil.GetSupportedBattleNetFriendTagRolesForCurrentGameType()
+	return supportedBattleNetFriendTagRoles;
 end
 
 local presenceTypeToIcon =

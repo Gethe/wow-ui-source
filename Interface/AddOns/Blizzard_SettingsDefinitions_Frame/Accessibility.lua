@@ -18,7 +18,7 @@ local function RegisterMinimumCharacterNameSize(category)
 
 	local function GetValue()
 		if CanModifySetting() then
-			return GetCVarNumberOrDefault(cvarName);
+			GetCVarNumberOrDefault(cvarName);
 		end
 
 		return 0;

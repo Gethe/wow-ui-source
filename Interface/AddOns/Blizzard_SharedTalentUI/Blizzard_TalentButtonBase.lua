@@ -251,7 +251,7 @@ function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	local talentFrame = self:GetTalentFrame()
 
 	local shouldAddSpacer = true;
-	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer, self.nodeInfo.groupIDs);
 	talentFrame:AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
 
 	local isLocked, errorMessage = talentFrame:IsLocked();

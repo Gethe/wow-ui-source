@@ -7,6 +7,7 @@
 	<Frame name="ClassTalentButtonArtTemplate" mixin="ClassTalentButtonArtMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="" type="string"/>
+			<KeyValue key="buttonContext" value="ButtonContext_ClassTalent" type="string"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">

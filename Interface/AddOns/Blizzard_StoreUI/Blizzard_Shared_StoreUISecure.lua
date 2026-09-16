@@ -1290,8 +1290,8 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
 		if (C_Glue.IsOnGlueScreen()) then
-			local auroraState = C_Login.GetState();
-			if ( auroraState == LE_AURORA_STATE_NONE ) then
+			local loginState = C_Login.GetState();
+			if ( loginState.auroraState == LE_AURORA_STATE_NONE ) then
 				self:Hide();
 			end
 		end
@@ -1596,8 +1596,8 @@ function StoreFrame_IsLoading(self)
 	-- can open the store UI while in queue, but in that state we don't ask for, nor need the purchase list
 	if ( not C_StoreSecure.HasPurchaseList() ) then
 		if (C_Glue.IsOnGlueScreen()) then
-			local _, _, wowConnectionState = C_Login.GetState();
-			if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+			local loginState = C_Login.GetState();
+			if ( loginState.wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 				return true;
 			end
 		end

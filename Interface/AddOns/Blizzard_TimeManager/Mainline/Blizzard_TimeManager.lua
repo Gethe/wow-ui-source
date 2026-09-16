@@ -93,8 +93,16 @@ end
 function TimeManager_Toggle()
 	if ( TimeManagerFrame:IsShown() ) then
 		TimeManagerFrame:Hide();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			GamepadMode.FrameControlsManager:FrameHidden(TimeManagerFrame);
+		end
 	else
 		TimeManagerFrame:Show();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			GamepadMode.FrameControlsManager:FrameShown(TimeManagerFrame);
+		end
 	end
 end
 
@@ -373,6 +381,10 @@ function TimeManagerClockButton_OnClick(self)
 		TimeManager_TurnOffAlarm();
 	else
 		TimeManager_Toggle();
+
+		if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+			GamepadHudMode:Hide();
+		end
 	end
 end
 

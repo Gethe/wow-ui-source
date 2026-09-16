@@ -111,6 +111,19 @@ local CVar =
 			},
 		},
 		{
+			Name = "RemoveTempCVar",
+			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "ResetTestCVars",
 			Type = "Function",
 		},
@@ -152,6 +165,20 @@ local CVar =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTempCVar",
+			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
 			},
 		},
 	},

@@ -11,13 +11,14 @@ local LootHistoryElementEvents =
 
 function LootHistoryElementMixin:OnLoad()
 	self.Item.IconBorder:SetSize(self.Item:GetWidth(), self.Item:GetHeight());
+	SmartNavigation_MarkFrameFocusable(self);
 end
 
 function LootHistoryElementMixin:OnEvent(event, ...)
 	if event == "LOOT_HISTORY_UPDATE_DROP" then
-		local encounterID, lootListID = ...;
-		if encounterID == self.encounterID and lootListID == self.lootListID then
-			local dropInfo = C_LootHistory.GetSortedInfoForDrop(encounterID, lootListID);
+		local encounterID, lootListKey = ...;
+		if encounterID == self.encounterID and lootListKey == self.lootListKey then
+			local dropInfo = C_LootHistory.GetSortedInfoForDrop(encounterID, lootListKey);
 			self:Init(dropInfo);
 		end
 	end
@@ -25,11 +26,21 @@ end
 
 function LootHistoryElementMixin:OnEnter()
 	self:SetTooltip();
+
+	-- For gamepad, always show the item info alongside the roll tooltip.
+	if InputUtil.IsGamepadUIEnabled() then
+		LootHistoryExtraTooltip:SetOwner(GameTooltip, "ANCHOR_RIGHT", 12, 0);
+		LootHistoryExtraTooltip:SetHyperlink(self.dropInfo.itemHyperlink);
+	end
 end
 
 function LootHistoryElementMixin:OnLeave()
 	GameTooltip:Hide();
 	tooltipLinePool:ReleaseAll();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		LootHistoryExtraTooltip:Hide();
+	end
 end
 
 function LootHistoryElementMixin:SetTooltip()
@@ -187,11 +198,11 @@ function LootHistoryElementMixin:Init(dropInfo)
 	end
 end
 
-function LootHistoryElementMixin:SetDrop(encounterID, lootListID)
+function LootHistoryElementMixin:SetDrop(encounterID, lootListKey)
 	self.encounterID = encounterID;
-	self.lootListID = lootListID;
+	self.lootListKey = lootListKey;
 
-	local dropInfo = C_LootHistory.GetSortedInfoForDrop(self.encounterID, self.lootListID);
+	local dropInfo = C_LootHistory.GetSortedInfoForDrop(self.encounterID, self.lootListKey);
 	self:Init(dropInfo);
 end
 
@@ -309,9 +320,12 @@ function LootHistoryFrameMixin:OnLoad()
 	self:InitScrollBox();
 
 	tooltipLinePool = CreateFramePool("FRAME", nil, "LootHistoryRollTooltipLineTemplate");
+
+	self:RegisterForTransitions();
 end
 
 function LootHistoryFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, LootHistoryElementEvents);
 	FrameUtil.RegisterFrameForEvents(self, LootHistoryFrameWhenShownEvents);
 	self.PerfectAnimFrame.PerfectRollFrame.Anim:SetScript("OnFinished", GenerateClosure(self.CleanUpPerfectRollAnim, self));
 
@@ -328,6 +342,10 @@ function LootHistoryFrameMixin:OnShow()
 			self:SetInfoShown(false);
 		end
 	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self, true);
+	end
 end
 
 function LootHistoryFrameMixin:OnHide()
@@ -338,10 +356,16 @@ function LootHistoryFrameMixin:OnHide()
 	self.PerfectAnimFrame:StopPerfectRollAnim();
 end
 
+function LootHistoryFrameMixin:ShouldAutoOpen()
+	return true;
+end
+
 function LootHistoryFrameMixin:OnEvent(event, ...)
 	if event == "LOOT_HISTORY_GO_TO_ENCOUNTER" then
+		if self:ShouldAutoOpen() then
+			self:Show();
+		end	
 		local encounterID = ...;
-		self:Show();
 		self:OpenToEncounter(encounterID);
 	elseif event == "LOOT_HISTORY_UPDATE_ENCOUNTER" then
 		local encounterID = ...;
@@ -355,10 +379,10 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		self.encounterInfo = nil;
 		self.PerfectAnimFrame:StopPerfectRollAnim();
 	elseif event == "LOOT_HISTORY_ONE_HUNDRED_ROLL" then
-		local encounterID, lootListID = ...;
+		local encounterID, lootListKey = ...;
 
 		if encounterID == self:GetSelectedEncounterID() then
-			self:AddPerfectAnimToQueue(encounterID, lootListID);
+			self:AddPerfectAnimToQueue(encounterID, lootListKey);
 			self:DoFullRefresh();
 		end
 	end
@@ -378,11 +402,11 @@ function LootHistoryFrameMixin:InitScrollBox()
 	local view = CreateScrollBoxListLinearView(ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxSpacing);
 
 	local function Initializer(frame, elementData)
-		frame:SetDrop(self:GetSelectedEncounterID(), elementData.lootListID);
+		frame:SetDrop(self:GetSelectedEncounterID(), elementData.lootListKey);
 	end
 
 	view:SetElementFactory(function(factory, elementData)
-		if elementData.lootListID then
+		if elementData.lootListKey then
 			factory("LootHistoryElementTemplate", Initializer);
 		elseif elementData.isPassedHeader then
 			factory("LootHistoryPassedHeaderTemplate");
@@ -392,7 +416,7 @@ function LootHistoryFrameMixin:InitScrollBox()
 	end);
 
 	view:SetElementExtentCalculator(function(dataIndex, elementData)
-		if elementData.lootListID then
+		if elementData.lootListKey then
 			return 58;
 		elseif elementData.isPassedHeader then
 			return 12;
@@ -519,7 +543,7 @@ function LootHistoryFrameMixin:DoFullRefresh()
 			anyRolledOn = true;
 		end
 
-		dataProvider:Insert({encounterID = selectedEncounterID, lootListID = dropInfo.lootListID});
+		dataProvider:Insert({encounterID = selectedEncounterID, lootListKey = dropInfo.lootListKey});
 	end
 	local scrollPercentage = self.ScrollBox:GetScrollPercentage();
 	self.ScrollBox:SetDataProvider(dataProvider);
@@ -543,7 +567,7 @@ function LootHistoryFrameMixin:DoFullRefresh()
 
 	if self.perfectRollItemQueue[1] then
 		local itemData = dataProvider:FindElementDataByPredicate(function(itemData)
-			return self.perfectRollItemQueue[1].loot == itemData.lootListID and self.perfectRollItemQueue[1].encounter == itemData.encounterID;
+			return self.perfectRollItemQueue[1].loot == itemData.lootListKey and self.perfectRollItemQueue[1].encounter == itemData.encounterID;
 		end);
 
 		if itemData then
@@ -574,8 +598,8 @@ function LootHistoryFrameMixin:UpdatePerfectAnimQueue(itemData, itemFrame, dropI
 	self.PerfectAnimFrame:SetPoint("BOTTOMRIGHT", itemFrame, "BOTTOMRIGHT", 0, 0);
 end
 
-function LootHistoryFrameMixin:AddPerfectAnimToQueue(encounterID, lootListID)
-	table.insert(self.perfectRollItemQueue, {encounter = encounterID, loot = lootListID });
+function LootHistoryFrameMixin:AddPerfectAnimToQueue(encounterID, lootListKey)
+	table.insert(self.perfectRollItemQueue, {encounter = encounterID, loot = lootListKey });
 end
 
 function LootHistoryFrameMixin:RemoveItemFromQueue()
@@ -595,6 +619,52 @@ function LootHistoryFrameMixin:CleanUpPerfectRollAnim()
 	if self:IsShown() then
 		self:DoFullRefresh();
 	end
+end
+
+function LootHistoryFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, LootHistoryElementEvents);
+end
+
+function LootHistoryFrameMixin:UnfocusGamepad()
+	self.InputLegend:Hide();
+end
+
+function LootHistoryFrameMixin:FocusGamepad()
+	self.InputLegend:Show();
+end
+
+function LootHistoryFrameMixin:SetupGamepad()
+	-- Setup input legend footer.
+	self.InputLegend = InputPromptLegends.CreateInputLegend(self, "inputLegend");
+	self.InputLegend:SetLegendWidth(self:GetWidth());
+	self.InputLegend:SetPoint("TOPLEFT", self, "BOTTOMLEFT");
+	self.InputLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_CLOSE);
+	self.InputLegend:InitializePrompts();
+	self.InputLegend:Hide();
+
+	local function CloseLootHistory()
+		self.ClosePanelButton:Click();
+		return true;
+	end
+	self.SmartNavigationCloseHandler = CloseLootHistory;
+	self.skipGamepadAutoFocus = true;
+end
+
+function LootHistoryFrameMixin:InitializeGamepad()
+	self.ClosePanelButton:Hide();
+	self.ResizeButton:Hide();
+end
+
+function LootHistoryFrameMixin:UninitializeGamepad()
+	self.ClosePanelButton:Show();
+	self.ResizeButton:Show();
+end
+
+function LootHistoryFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end
 
 function ToggleLootHistoryFrame()

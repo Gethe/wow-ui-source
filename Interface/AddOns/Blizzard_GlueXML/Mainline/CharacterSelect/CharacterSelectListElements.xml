@@ -97,6 +97,9 @@
 	</Frame>
 
 	<Button name="CharacterSelectListCharacterTemplate" mixin="CharacterSelectListCharacterMixin" virtual="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_CharacterSelectListCharacterButton" type="string"/>
+		</KeyValues>
 		<Size x="347" y="95"/>
 		<HitRectInsets>
 			<AbsInset left="20" right="12" top="0" bottom="0"/>
@@ -145,6 +148,9 @@
 				</Layers>
 				<Frames>
 					<Button parentKey="Button" mixin="RestoreCharacterServiceButtonMixin">
+						<KeyValues>
+							<KeyValue key="smartNavigationNonCollapsingScrollBoxElement" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="58" y="58"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.Pointer" relativePoint="LEFT" x="17" y="-2"/>

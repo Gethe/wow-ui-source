@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="TargetFrame.lua"/>
 
 	<Frame name="TargetFrameBarSegmentTemplate" virtual="true">
 		<KeyValues>
@@ -116,11 +115,12 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-106" y="-1"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="LevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
+								<Texture parentKey="LevelBackgroundCircle" inherits="LevelBackgroundCircleTemplate" hidden="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-2"/>
+										<Anchor point="BOTTOMRIGHT" x="-13" y="7"/>
 									</Anchors>
-								</FontString>
+								</Texture>
+								<FontString parentKey="LevelText" inherits="LevelTextTemplate"/>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -256,6 +256,20 @@
 					</Frame>
 					<Frame parentKey="TargetFrameContentContextual" setAllPoints="true">
 						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="-1">
+								<Texture parentKey="PvpBackgroundCircle" inherits="PvpBackgroundCircleTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPRIGHT" x="-24" y="-30"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PvpBackgroundIcon" inherits="PvpBackgroundIconTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture parentKey="HighLevelTexture" atlas="UI-HUD-UnitFrame-Target-HighLevelTarget_Icon" useAtlasSize="true">
 									<Anchors>

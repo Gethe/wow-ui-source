@@ -39,3 +39,20 @@ function MenuVariants.CreateRadio(text, frame, isSelected, data)
 
 	return leftTexture1, leftTexture2;
 end
+
+function MenuVariants.CreateSearchEntry(text, frame, data)
+	local leftTexture1 = frame:AttachTexture();
+	frame.leftTexture1 = leftTexture1;
+	leftTexture1:SetAtlas("common-search-magnifyingglass", TextureKitConstants.IgnoreAtlasSize);
+	leftTexture1:SetSize(12, 12);
+	leftTexture1:SetPoint("LEFT", -1, 1);
+
+	local fontString = frame:AttachFontString();
+	frame.fontString = fontString;
+	fontString:SetPoint("LEFT", leftTexture1, "RIGHT", 7, 0);
+	fontString:SetHeight(20);
+	fontString:SetTextToFit(text);
+	fontString:SetAlpha(0.5);
+
+	return leftTexture1;
+end

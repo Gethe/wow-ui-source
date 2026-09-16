@@ -57,6 +57,40 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" hidden="true">
+					<Size x="36" y="35"/>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture parentKey="SquareBackground" parentArray="SquareTextures" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareBackgroundActive" parentArray="SquareTextures" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SquareBackgroundActiveGlow" parentArray="SquareTextures" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="RotatedTextures" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>

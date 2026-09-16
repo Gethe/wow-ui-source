@@ -1222,10 +1222,10 @@ function TalentFrameBaseMixin:GetAndCacheEntryInfo(entryID)
 	return GetOrCreateTableEntryByCallback(self.entryInfoCache, entryID, GetEntryInfoCallback);
 end
 
-function TalentFrameBaseMixin:GetAndCacheCondInfo(condID, ignoreFontColor)
+function TalentFrameBaseMixin:GetAndCacheCondInfo(condID, ignoreFontColor, traitTreeName)
 	local function GetCondInfoCallback()
 		self.dirtyCondIDSet[condID] = nil;
-		return C_Traits.GetConditionInfo(self:GetConfigID(), condID, ignoreFontColor);
+		return C_Traits.GetConditionInfo(self:GetConfigID(), condID, ignoreFontColor, traitTreeName);
 	end
 
 	return GetOrCreateTableEntryByCallback(self.condInfoCache, condID, GetCondInfoCallback);
@@ -1893,7 +1893,12 @@ function TalentFrameBaseMixin:DisableZoomAndPan()
 	self.ButtonsParent:EnableMouse(false);
 end
 
-function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shouldAddSpacer)
+function TalentFrameBaseMixin:GetTraitTreeName(talentTreeID, groupIDs)
+	--Meant to be overriden.
+	return "";
+end
+
+function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shouldAddSpacer, groupIDs)
 	if #conditionIDs < 0 then
 		return false;
 	end
@@ -1906,8 +1911,11 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 
 	local typesWithAnySufficientConditionMet = {};
 
+	local traitTreeID = self:GetTalentTreeID();
+	local traitTreeName = self:GetTraitTreeName(traitTreeID, groupIDs);
+
 	for i, conditionID in ipairs(conditionIDs) do
-		local condInfo = self:GetAndCacheCondInfo(conditionID);
+		local condInfo = self:GetAndCacheCondInfo(conditionID, false, traitTreeName);
 		if condInfo.isSufficient and condInfo.isMet then
 			table.insert(typesWithAnySufficientConditionMet, condInfo.type);
 		end
@@ -1954,7 +1962,7 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 
 	local addedAny = false;
 	for i, conditionID in ipairs(conditionIDs) do
-		local condInfo = self:GetAndCacheCondInfo(conditionID);
+		local condInfo = self:GetAndCacheCondInfo(conditionID, false, traitTreeName);
 		if ShouldDisplayTooltip(conditionID, condInfo) then
 			if shouldAddSpacer then
 				shouldAddSpacer = false;
@@ -1986,7 +1994,7 @@ function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shou
 		end
 	end
 
-	if requiresAllPrecedingTraits and numOfEdges > 1 and not areAllPrecedingEdgesActive then
+	if self:ShouldAddEdgeRequirementsToTooltip(requiresAllPrecedingTraits, numOfEdges, areAllPrecedingEdgesActive) then
 		if shouldAddSpacer then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 		end
@@ -1996,6 +2004,10 @@ function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shou
 	end
 
 	return false;
+end
+
+function TalentFrameBaseMixin:ShouldAddEdgeRequirementsToTooltip(requiresAllPrecedingTraits, numOfEdges, areAllPrecedingEdgesActive)
+	return requiresAllPrecedingTraits and numOfEdges > 1 and not areAllPrecedingEdgesActive;
 end
 
 function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
@@ -2050,6 +2062,27 @@ end
 function TalentFrameBaseMixin:GetButtonAnimationStates()
 	-- Override in your derived Mixin as desired
 	return nil;
+end
+
+function TalentFrameBaseMixin:ShowOrHideGlowOnChangesPending()
+	local _, canApplyChanges = self:GetConfigApplicationState();
+
+	if canApplyChanges then
+		GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+		self.ApplyButton.YellowGlow:Hide();
+	else
+		GlowEmitterFactory:Hide(self.ApplyButton);
+		self.ApplyButton.YellowGlow:Show();
+	end
+end
+
+function TalentFrameBaseMixin:RefreshConditionsCache()
+	for condID, condInfo in pairs(self.condInfoCache) do
+		self:MarkCondInfoCacheDirty(condID);
+		self:ForceCondInfoUpdate(condID);
+	end
+
+	self:RefreshGates();
 end
 
 TalentFrameFixedPositionsMixin = {};

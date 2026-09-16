@@ -63,7 +63,7 @@ local LootHistory =
 			Arguments =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "lootListID", Type = "number", Nilable = false },
+				{ Name = "lootListKey", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -99,7 +99,7 @@ local LootHistory =
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "lootListID", Type = "number", Nilable = false },
+				{ Name = "lootListKey", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -110,7 +110,7 @@ local LootHistory =
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "lootListID", Type = "number", Nilable = false },
+				{ Name = "lootListKey", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -148,7 +148,7 @@ local LootHistory =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "lootListID", Type = "number", Nilable = false },
+				{ Name = "lootListKey", Type = "number", Nilable = false },
 				{ Name = "itemHyperlink", Type = "string", Nilable = false },
 				{ Name = "playerRollState", Type = "EncounterLootDropRollState", Nilable = false },
 				{ Name = "currentLeader", Type = "EncounterLootDropRollInfo", Nilable = true },

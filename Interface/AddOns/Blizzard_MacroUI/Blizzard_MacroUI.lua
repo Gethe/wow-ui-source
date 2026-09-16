@@ -42,6 +42,22 @@ function MacroButtonMixin:OnDragStart()
 	PickupMacro(actualIndex);
 end
 
+local function MacroButton_BindToGamepadActionBar()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	local macroIndex = MacroFrame:GetMacroDataIndex(focusedButton:GetElementData());
+	GamepadActionBarEditFrame:BindMacro(macroIndex);
+end
+
+local function IsBindMacroButtonContextActionValid(macroButton)
+	if (not GamepadMode.FrameControlsManager:IsFrameSuspended()) then
+		GamepadMode.FrameControlsManager:SuspendFrame();
+	end
+
+	-- Only macro buttons that contain macros (non-empty) can be bound.
+	local macroIndex = MacroFrame:GetMacroDataIndex(macroButton:GetElementData());
+	return C_Macro.GetMacroName(macroIndex) ~= nil;
+end
+
 
 MacroFrameMixin = {};
 
@@ -87,6 +103,8 @@ function MacroFrameMixin:OnLoad()
 	end)
 
 	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", self.UpdateButtons, self);
+
+	self:RegisterForInterfaceTransitions();
 end
 
 function MacroFrameMixin:OnShow()
@@ -235,6 +253,10 @@ function MacroFrameMixin:UpdateButtons()
 	end
 
 	self.MacroSelector:UpdateAllSelectedTextures();
+
+	if self.footer then
+		self.footer:Refresh();
+	end
 end
 
 function MacroFrameMixin:GetMacroDataIndex(index)
@@ -345,4 +367,30 @@ function MacroFrameMixin:SaveMacro()
 		self:SelectMacro(selectedMacroIndex); -- Make sure we update the selected icon art if needed (default overridden icon case).
 		self.textChanged = nil;
 	end
+end
+
+function MacroFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+end
+
+function MacroFrameMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
+end
+
+function MacroFrameMixin:SetUpGamepad()
+	local bind = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT,
+															MacroButton_BindToGamepadActionBar,
+															CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR);
+	bind:AddButtonContext("ButtonContext_MacroButton");
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "MacroUIFooter");
+	self.footer:SetAnchorOffsets(0, -5);
+	self.footer:AddPromptedBinding(bind);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function MacroFrameMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(MacroFrameMixin.SetUpGamepad, self));
 end

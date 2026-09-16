@@ -1,88 +1,3 @@
-local SpecializationVisuals = {
-	-- DK
-	[250] = { background = "talents-background-deathknight-blood", heroContainerOffset = -15, },
-	[251] = { background = "talents-background-deathknight-frost", heroContainerOffset = -15, },
-	[252] = { background = "talents-background-deathknight-unholy", heroContainerOffset = -15, },
-
-	-- DH
-	[577] =  { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },
-	[581] =  { background = "talents-background-demonhunter-vengeance", heroContainerOffset = -45, },
-	[1480] = { background = "talents-background-demonhunter-devourer", heroContainerOffset = 0 },
-
-	-- Druid
-	[102] = { background = "talents-background-druid-balance", heroContainerOffset = 15, },
-	[103] = { background = "talents-background-druid-feral", heroContainerOffset = 15, },
-	[104] = { background = "talents-background-druid-guardian", heroContainerOffset = 15, },
-	[105] = { background = "talents-background-druid-restoration", heroContainerOffset = -15, },
-
-	-- Evoker
-	[1467] = { background = "talents-background-evoker-devastation", heroContainerOffset = -15, },
-	[1468] = { background = "talents-background-evoker-preservation", heroContainerOffset = -15, },
-	[1473] = { background = "talents-background-evoker-augmentation", heroContainerOffset = -15, },
-
-	-- Hunter
-	[253] = { background = "talents-background-hunter-beastmastery", heroContainerOffset = -15, },
-	[254] = { background = "talents-background-hunter-marksmanship", heroContainerOffset = -15, },
-	[255] = { background = "talents-background-hunter-survival", heroContainerOffset = -15, },
-
-	-- Mage
-	[62] = { background = "talents-background-mage-arcane", heroContainerOffset = -15, },
-	[63] = { background = "talents-background-mage-fire", heroContainerOffset = -15, },
-	[64] = { background = "talents-background-mage-frost", heroContainerOffset = -15, },
-
-	-- Monk
-	[268] = { background = "talents-background-monk-brewmaster", heroContainerOffset = -15, },
-	[269] = { background = "talents-background-monk-windwalker", heroContainerOffset = -15, },
-	[270] = { background = "talents-background-monk-mistweaver", heroContainerOffset = -15, },
-
-	-- Paladin
-	[65] = { background = "talents-background-paladin-holy", heroContainerOffset = -45, },
-	[66] = { background = "talents-background-paladin-protection", heroContainerOffset = -15, },
-	[70] = { background = "talents-background-paladin-retribution", heroContainerOffset = -45, },
-
-	-- Priest
-	[256] = { background = "talents-background-priest-discipline", heroContainerOffset = 15, },
-	[257] = { background = "talents-background-priest-holy", heroContainerOffset = 15, },
-	[258] = { background = "talents-background-priest-shadow", heroContainerOffset = 15, },
-
-	-- Rogue
-	[259] = { background = "talents-background-rogue-assassination", heroContainerOffset = -45, },
-	[260] = { background = "talents-background-rogue-outlaw", heroContainerOffset = -45, },
-	[261] = { background = "talents-background-rogue-subtlety", heroContainerOffset = -45, },
-
-	-- Shaman
-	[262] = { background = "talents-background-shaman-elemental", heroContainerOffset = 15, },
-	[263] = { background = "talents-background-shaman-enhancement", heroContainerOffset = 15, },
-	[264] = { background = "talents-background-shaman-restoration", heroContainerOffset = 15, },
-
-	-- Warlock
-	[265] = { background = "talents-background-warlock-affliction", heroContainerOffset = -15, },
-	[266] = { background = "talents-background-warlock-demonology", heroContainerOffset = -15, },
-	[267] = { background = "talents-background-warlock-destruction", heroContainerOffset = -15, },
-
-	-- Warrior
-	[71] = { background = "talents-background-warrior-arms", heroContainerOffset = -15, },
-	[72] = { background = "talents-background-warrior-fury", heroContainerOffset = -15, },
-	[73] = { background = "talents-background-warrior-protection", heroContainerOffset = -15, },
-};
-
--- panOffsets are required to account for minor differences in the positioning between different classes.
-local ClassVisuals = {
-	[1]	 --[[Warrior--]]	 = { activationFX = "talents-animations-class-warrior", panOffset = { x = 60, y = 31 }, },
-	[2]  --[[Paladin--]] 	 = { activationFX = "talents-animations-class-paladin", panOffset = { x = -60, y = -29 }, },
-	[3]  --[[Hunter--]] 	 = { activationFX = "talents-animations-class-hunter", panOffset = { x = 0, y = -29 }, },
-	[4]  --[[Rogue--]] 		 = { activationFX = "talents-animations-class-rogue", panOffset = { x = 30, y = -29 }, },
-	[5]  --[[Priest--]] 	 = { activationFX = "talents-animations-class-priest", panOffset = { x = -30, y = -29 }, },
-	[6]  --[[DeathKnight--]] = { activationFX = "talents-animations-class-deathknight", panOffset = { x = 0, y = 1 }, },
-	[7]  --[[Shaman--]] 	 = { activationFX = "talents-animations-class-shaman", panOffset = { x = 0, y = 1 }, },
-	[8]  --[[Mage--]] 		 = { activationFX = "talents-animations-class-mage", panOffset = { x = 30, y = -29 }, },
-	[9]  --[[Warlock--]] 	 = { activationFX = "talents-animations-class-warlock", panOffset = { x = 0, y = 1 }, },
-	[10] --[[Monk--]] 		 = { activationFX = "talents-animations-class-monk", panOffset = { x = 0, y = -29 }, },
-	[11] --[[Druid--]] 		 = { activationFX = "talents-animations-class-druid", panOffset = { x = 30, y = -29 }, },
-	[12] --[[DemonHunter--]] = { activationFX = "talents-animations-class-demonhunter", panOffset = { x = 30, y = -29 }, },
-	[13] --[[Evoker--]]		 = { activationFX = "talents-animations-class-evoker", panOffset = { x = 30, y = -29 }, },
-}
-
 local ClassTemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "ClassTalentButtonSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "ClassTalentButtonCircleTemplate",
@@ -109,6 +24,13 @@ local SheenAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
 	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0,
 	[TalentButtonUtil.BaseVisualState.DisplayError] = 1,
+};
+
+local DEFAULT_SPEND_SOUND_KIT_BY_ENTRY_TYPE = {
+	[Enum.TraitNodeEntryType.SpendSquare] = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR,
+	[Enum.TraitNodeEntryType.SpendCircle] = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND,
+	[Enum.TraitNodeEntryType.SpendCapstoneCircle] = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND,
+	[Enum.TraitNodeEntryType.SpendCapstoneSquare] = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR,
 };
 
 ClassTalentUtil = {};
@@ -213,6 +135,23 @@ end
 
 function ClassTalentUtil.GetSheenAlphaForVisualState(visualState)
 	return SheenAlphaByVisualState[visualState];
+end
+
+local spendSoundKitByEntryType = CopyTable(DEFAULT_SPEND_SOUND_KIT_BY_ENTRY_TYPE);
+
+-- Allows other game modes to use different spend sounds for each type.
+if ClassTalentUtilSpendSoundKitByEntryTypeOverrides then
+	for entryType, soundKitID in pairs(ClassTalentUtilSpendSoundKitByEntryTypeOverrides) do
+		spendSoundKitByEntryType[entryType] = soundKitID;
+	end
+end
+
+function ClassTalentUtil.GetSpendSoundKitID(entryType)
+	if not entryType then
+		return SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	end
+
+	return spendSoundKitByEntryType[entryType] or SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
 end
 
 ClassTalentUtil.ShouldRefundClearEdges = IsShiftKeyDown;

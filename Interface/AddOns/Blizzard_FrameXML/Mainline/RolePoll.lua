@@ -15,18 +15,19 @@ function RolePollPopup_Show(self)
 	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
-	if ( canBeTank ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank);
+	local softAllowAnyRole = AreClassRolesSoftSuggestions();
+	if ( canBeTank or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank, canBeTank);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonTank);
 	end
-	if ( canBeHealer ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonHealer);
+	if ( canBeHealer or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonHealer, canBeHealer);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonHealer);
 	end
-	if ( canBeDamager ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonDPS);
+	if ( canBeDamager or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonDPS, canBeDamager);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonDPS);
 	end
@@ -49,14 +50,15 @@ function RolePollPopup_UpdateChecked(self)
 	end
 end
 
-function RolePollPopupRoleButton_Enable(button)
+function RolePollPopupRoleButton_Enable(button, isRecommended)
 	button:Enable();
-	local showDisabled = false;
+	local showDisabled = not isRecommended;
 	button:SetNormalAtlas(GetIconForRoleEnum(button.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	button.checkButton:Enable();
 	button.checkButton:Show();
 	
 	button.permDisabled = false;
+	button.isRecommended = isRecommended;
 end
 
 function RolePollPopupRoleButton_Disable(button)
@@ -67,6 +69,7 @@ function RolePollPopupRoleButton_Disable(button)
 	button.checkButton:Hide();
 	
 	button.permDisabled = true;
+	button.isRecommended = false;
 end
 
 function RolePollPopupRoleButtonCheckButton_OnClick(self, button)

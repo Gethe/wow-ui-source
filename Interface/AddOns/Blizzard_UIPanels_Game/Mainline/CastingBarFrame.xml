@@ -465,7 +465,7 @@
 		</Scripts>
 	</StatusBar>
 
-	<StatusBar name="PlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate, BottomManagedFrameTemplate, EditModeCastBarSystemTemplate" fixedFrameStrata="true" frameStrata="HIGH" mixin="PlayerCastingBarMixin">
+	<StatusBar name="PlayerCastingBarFrameTemplate" toplevel="true" inherits="CastingBarFrameTemplate, EditModeCastBarSystemTemplate" hidden="true" fixedFrameStrata="true" frameStrata="HIGH" mixin="PlayerCastingBarMixin" virtual="true">
 		<Size x="208" y="11"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>
@@ -476,9 +476,11 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>
+
+	<StatusBar name="PlayerCastingBarFrame" inherits="PlayerCastingBarFrameTemplate, BottomManagedFrameTemplate" mixin="PlayerCastingBarFrameMixin"/>
+	<StatusBar name="GamepadPlayerCastingBarFrame" inherits="PlayerCastingBarFrameTemplate" mixin="GamepadPlayerCastingBarFrameMixin"/>
 
 	<StatusBar name="OverlayPlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate" parent="UIParent" hidden="true" frameStrata="HIGH" mixin="OverlayPlayerCastingBarMixin">
 		<Size x="208" y="11"/>

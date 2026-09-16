@@ -8,6 +8,8 @@ local ProfessionsFrameEvents =
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 	"SKILL_LINE_SPECS_UNLOCKED",
 	"IGNORELIST_UPDATE",
+	"TRADE_SKILL_SHOW",
+	"SKILL_LINES_CHANGED"
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
@@ -35,26 +37,30 @@ ProfessionsMixin = {};
 function ProfessionsMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsFrameEvents);
 
-	TabSystemOwnerMixin.OnLoad(self);
-	self:SetTabSystem(self.TabSystem);
+	if self.TabSystem then
+		TabSystemOwnerMixin.OnLoad(self);
+		self:SetTabSystem(self.TabSystem);
 
-	self.recipesTabID = self:AddNamedTab(PROFESSIONS_RECIPES_TAB_NAME, self.CraftingPage);
-	self.specializationsTabID = self:AddNamedTab(PROFESSIONS_SPECIALIZATIONS_TAB_NAME, self.SpecPage);
-	self.craftingOrdersTabID = self:AddNamedTab(PROFESSIONS_CRAFTING_ORDERS_TAB_NAME, self.OrdersPage);
+		self.recipesTabID = self:AddNamedTab(PROFESSIONS_RECIPES_TAB_NAME, self.CraftingPage);
+		self.specializationsTabID = self:AddNamedTab(PROFESSIONS_SPECIALIZATIONS_TAB_NAME, self.SpecPage);
+		self.craftingOrdersTabID = self:AddNamedTab(PROFESSIONS_CRAFTING_ORDERS_TAB_NAME, self.OrdersPage);
+	end
 
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
 
-	local function OnMaximize(frame)
-		self:SetMaximized();
+	if self.MaximizeMinimize then
+		local function OnMaximize(frame)
+			self:SetMaximized();
+		end
+
+		self.MaximizeMinimize:SetOnMaximizedCallback(OnMaximize);
+
+		local function OnMinimize(frame)
+			self:SetMinimized();
+		end
+
+		self.MaximizeMinimize:SetOnMinimizedCallback(OnMinimize);
 	end
-
-	self.MaximizeMinimize:SetOnMaximizedCallback(OnMaximize);
-
-	local function OnMinimize(frame)
-		self:SetMinimized();
-	end
-
-	self.MaximizeMinimize:SetOnMinimizedCallback(OnMinimize);
 
 	self:RegisterEvent("OPEN_RECIPE_RESPONSE");
 
@@ -62,6 +68,22 @@ function ProfessionsMixin:OnLoad()
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(info, useLastSkillLine);
 	 end, self);
+
+	EventRegistry:RegisterCallback("Professions.ShowSelectedCraftingPage", function(_, info)
+		if self.BookPage and self.BookPage:IsShown() then
+			self.BookPage:Hide();
+			self.CraftingPage:Show();
+			self:RefreshRightTabs();
+		end
+	end, self);
+
+	self:OverrideArt();
+
+	self:RegisterForTransitions();
+end
+
+function ProfessionsMixin:OverrideArt()
+	-- derived
 end
 
 function ProfessionsMixin:ApplyDesiredWidth()
@@ -173,6 +195,14 @@ function ProfessionsMixin:OnEvent(event, ...)
 		self:UpdateTabs();
 	elseif event == "IGNORELIST_UPDATE" then
 		C_CraftingOrders.UpdateIgnoreList();
+	elseif event == "TRADE_SKILL_SHOW" then
+		if self.BookPage then
+			self.BookPage:Hide();
+			self.CraftingPage:Show();
+		end
+		self:RefreshRightTabs();
+	elseif event == "SKILL_LINES_CHANGED" then
+		self:RefreshRightTabs();
 	end
 end
 
@@ -192,7 +222,9 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 		end
 		if professionChanged then
 			SearchBoxTemplate_ClearText(self.CraftingPage.RecipeList.SearchBox);
-			SearchBoxTemplate_ClearText(self.OrdersPage.BrowseFrame.RecipeList.SearchBox);
+			if self.OrdersPage then
+				SearchBoxTemplate_ClearText(self.OrdersPage.BrowseFrame.RecipeList.SearchBox);
+			end
 			Professions.SetAllSourcesFiltered(false);
 			self.CraftingPage.RecipeList.FilterDropdown:ValidateResetState();
 		end
@@ -212,6 +244,11 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
+	if self.BookPage and self.BookPage:IsShown() then
+		-- Do not update to the profession specific title when we are on the BookPage.
+		return;
+	end
+
 	if C_TradeSkillUI.IsTradeSkillGuild() then
 		self:SetTitleFormatted(GUILD_TRADE_SKILL_TITLE, skillLineName);
 	else
@@ -256,7 +293,7 @@ local recipeTabName =
 	[Professions.ProfessionType.Gathering] = PROFESSIONS_JOURNAL_TAB_NAME,
 };
 function ProfessionsMixin:UpdateTabs()
-	if not self.professionInfo or not self:IsVisible() then
+	if not self.professionInfo or not self:IsVisible() or not self.TabSystem then
 		return;
 	end
 
@@ -347,6 +384,10 @@ local npcCraftingOrdersHelpTipInfo =
 };
 
 function ProfessionsMixin:SetTab(tabID, forcedOpen)
+	if not self.TabSystem then
+		return;
+	end
+
 	if self.changingTabs then
 		return;
 	end
@@ -356,7 +397,9 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	local isCraftingOrderTab = (tabID == self.craftingOrdersTabID);
 	local isRecipesTab = (tabID == self.recipesTabID);
 
-	self.MaximizeMinimize:SetShown(isRecipesTab);
+	if self.MaximizeMinimize then
+		self.MaximizeMinimize:SetShown(isRecipesTab);
+	end
 
 	local previousTab = self:GetTab();
 
@@ -471,6 +514,14 @@ function ProfessionsMixin:OnShow()
 	MicroButtonPulseStop(ProfessionMicroButton);
 	MainMenuMicroButton_HideAlert(ProfessionMicroButton);
 	ProfessionMicroButton.showProfessionSpellHighlights = nil;
+
+	self:RefreshRightTabs();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:RegisterCallback("SelectedButtonUpdated", function()
+			self:UpdateGamepadUnlearnIcons();
+		end, self);
+	end
 end
 
 function ProfessionsMixin:OnHide()
@@ -487,6 +538,10 @@ function ProfessionsMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	C_CraftingOrders.CloseCrafterCraftingOrders();
 	C_WowSurvey.TriggerSurveyServe(Enum.SurveyDeliveryMoment.ProfessionTable);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
+	end
 end
 
 -- Set dynamically
@@ -500,7 +555,7 @@ function ProfessionsMixin:Update()
 end
 
 function ProfessionsMixin:CheckConfirmClose()
-	if self:GetTab() == self.specializationsTabID and C_Traits.ConfigHasStagedChanges(self.SpecPage:GetConfigID()) then
+	if self.TabSystem and self:GetTab() == self.specializationsTabID and C_Traits.ConfigHasStagedChanges(self.SpecPage:GetConfigID()) then
 		if not StaticPopup_Visible("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE") then
 			self.SpecPage:HideAllPopups();
 			StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
@@ -512,4 +567,589 @@ end
 
 function ProfessionsMixin:GetCurrentRecraftingRecipeID()
 	return self.CraftingPage:GetCurrentRecraftingRecipeID();
+end
+
+function ProfessionsMixin:RefreshRightTabs()
+	-- Stub for Mainline, overridden by specific flavors.
+end
+
+local function GetFirstInitializedSecondaryProfession(frame)
+	local focusTargets =
+	{
+		frame.SecondaryProfession1,
+		frame.SecondaryProfession2,
+		frame.SecondaryProfession3,
+	};
+
+	for _, profession in ipairs(focusTargets) do
+		if profession.professionInitialized then
+			return profession;
+		end
+	end
+end
+
+local function GetJumpNavigationButton(frame)
+	for i = #frame.spellButtons, 1, -1 do
+		local spellButton = frame.spellButtons[i];
+		if spellButton:IsShown() then
+			return spellButton;
+		end
+	end
+end
+
+local function GetBottommostSpellButton(frame)
+	for i = 1, #frame.spellButtons do
+		local spellButton = frame.spellButtons[i];
+		if spellButton:IsShown() then
+			return spellButton;
+		end
+	end
+end
+
+local function GetInitialProfession(firstPrimaryProfession, firstSecondaryProfession)
+	if firstPrimaryProfession.professionInitialized then
+		return firstPrimaryProfession;
+	end
+
+	if firstSecondaryProfession and firstSecondaryProfession.professionInitialized then
+		return firstSecondaryProfession;
+	end
+
+	return nil;
+end
+
+local function UpdateSmartNavFocus_BookPage(frame)
+	local firstPrimaryProfession = frame.PrimaryProfession1;
+	local firstSecondaryProfession = GetFirstInitializedSecondaryProfession(frame);
+
+	local initialProfession = GetInitialProfession(
+		firstPrimaryProfession,
+		firstSecondaryProfession);
+
+	if not initialProfession then
+		return;
+	end
+
+	SmartNavigation:SelectButton(initialProfession.SpellButton1);
+end
+
+local function UpdateSmartNavJumps_BookPage(frame)
+	local firstPrimaryProfession = frame.PrimaryProfession1;
+	local secondPrimaryProfession = frame.PrimaryProfession2;
+	local firstSecondaryProfession = frame.SecondaryProfession1;
+	local secondSecondaryProfession = frame.SecondaryProfession2;
+	local thirdSecondaryProfession = frame.SecondaryProfession3;
+
+	if not thirdSecondaryProfession.professionInitialized then
+		return;
+	end
+
+	local lastPrimaryProfession;
+	if secondPrimaryProfession.professionInitialized then
+		lastPrimaryProfession = secondPrimaryProfession;
+	elseif firstPrimaryProfession.professionInitialized then
+		lastPrimaryProfession = firstPrimaryProfession;
+	end
+
+	if not lastPrimaryProfession then
+		return;
+	end
+
+	local sourceButton = GetJumpNavigationButton(lastPrimaryProfession);
+
+	-- SmartNav's default navigation does not correctly resolve the rightmost secondary profession.
+	--Add an explicit UP jump back to the last primary profession.
+	SmartNavigation_AddJumpNavigationOverride(
+		GetJumpNavigationButton(thirdSecondaryProfession),
+		SMART_NAV_INPUT_DIRECTION.UP,
+		sourceButton);
+
+	-- If the rightmost secondary profession is the only one initialized, also add a DOWN jump
+	if not firstSecondaryProfession.professionInitialized and not secondSecondaryProfession.professionInitialized then
+		local dest = GetJumpNavigationButton(thirdSecondaryProfession);
+		SmartNavigation_AddJumpNavigationOverride(
+			sourceButton,
+			SMART_NAV_INPUT_DIRECTION.DOWN,
+			dest);
+	end
+end
+
+local function ClearProfessionJumpOverrides(frame)
+	-- Only these profession frames receive custom jump overrides.
+	local professionFrames =
+	{
+		frame.PrimaryProfession1,
+		frame.PrimaryProfession2,
+		frame.SecondaryProfession3,
+	};
+	for _, professionFrame in ipairs(professionFrames) do
+		for _, spellButton in ipairs(professionFrame.spellButtons) do
+			SmartNavigation_ClearJumpNavigationOverrides(spellButton);
+		end
+	end
+end
+
+local function UpdateSmartNavFocus_RecipePage(page, elementData)
+	SmartNavigation:SetScrollFrameForFrame(ProfessionsFrame, page.RecipeList.ScrollBox);
+
+	GamepadScrollBarHint:SetOwner(page.RecipeList.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	if not elementData then
+		return;
+	end
+
+	for _, frame in pairs(page.RecipeList.ScrollBox:GetFrames()) do
+		local recipeElementData = frame.GetElementData and frame:GetElementData();
+		if elementData == recipeElementData then
+			SmartNavigation:SelectButton(frame);
+			return;
+		end
+	end
+end
+
+function ProfessionsMixin:RefreshBookPageSmartNavJumps()
+	local professionsFrame = self.BookPage.ProfessionsContentFrame;
+
+	ClearProfessionJumpOverrides(professionsFrame);
+	UpdateSmartNavJumps_BookPage(professionsFrame);
+end
+
+function ProfessionsMixin:UpdateGamepadUnlearnIcons()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+
+	local function UpdateProfessionFrame(primaryProfessionFrame)
+		local show =
+			focusedButton and
+			focusedButton:GetParent() == primaryProfessionFrame and
+			primaryProfessionFrame.isPrimary;
+
+		primaryProfessionFrame.GamepadUnlearnButton:SetShown(show);
+	end
+
+	UpdateProfessionFrame(self.BookPage.ProfessionsContentFrame.PrimaryProfession1);
+	UpdateProfessionFrame(self.BookPage.ProfessionsContentFrame.PrimaryProfession2);
+end
+
+local function FocusChatAndInsertLink(link)
+	if not link then
+		return;
+	end
+
+	local activeChatFrame = FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK);
+	if activeChatFrame and activeChatFrame:IsShown() then
+		activeChatFrame:SetGamepadFocus();
+	end
+
+	ChatFrameUtil.InsertLink(link);
+end
+
+function ProfessionsMixin:SetUpGamepadBookPageFooter(toggleTooltips)
+	local function UnlearnProfession()
+		local button = SmartNavigation:GetCurrentButton();
+		local primaryProfessionFrame = button:GetParent();
+		primaryProfessionFrame.UnlearnButton:Click();
+	end
+
+	local function CanUnlearn()
+		local button = SmartNavigation:GetCurrentButton();
+		local primaryProfessionFrame = button:GetParent();
+
+		return primaryProfessionFrame.isPrimary;
+	end
+
+	local unlearnProfession = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, UnlearnProfession, FRAME_ACTION_HOLD_TO_UNLEARN);
+	unlearnProfession:AddButtonContext("ButtonContext_ProfessionsButton");
+	unlearnProfession:AddCondition(CanUnlearn);
+	unlearnProfession:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local function BindToActionBar()
+		GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+
+		local button = SmartNavigation:GetCurrentButton();
+		local slotIndex = ProfessionsBook_GetSpellBookItemSlot(button);
+		GamepadActionBarEditFrame:BindSpellBookItem(slotIndex, Enum.SpellBookSpellBank.Player);
+	end
+
+	local function LinkInChat()
+		GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+		local button = SmartNavigation:GetCurrentButton();
+
+		local slotIndex = ProfessionsBook_GetSpellBookItemSlot(button);
+		local activeSpellBank = Enum.SpellBookSpellBank.Player;
+
+		local tradeSkillLink = C_SpellBook.GetSpellBookItemTradeSkillLink(slotIndex, activeSpellBank);
+		if ( tradeSkillLink ) then
+			FocusChatAndInsertLink(tradeSkillLink);
+			return;
+		end
+
+		local spellLink = C_SpellBook.GetSpellBookItemLink(slotIndex, activeSpellBank);
+		if ( spellLink ) then
+			FocusChatAndInsertLink(spellLink);
+			return;
+		end
+	end
+
+	local function CanLinkInChat()
+		local button = SmartNavigation:GetCurrentButton();
+		return button and button:IsShown();
+	end
+
+	local moreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	moreOptions:AddButtonContext("ButtonContext_ProfessionsButton");
+	moreOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR, BindToActionBar);
+	moreOptions:AddMoreActionsEntry(SOCIAL_SHARE_TEXT, LinkInChat, CanLinkInChat);
+
+	self.bookPageFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ProfessionsBookPageFooter");
+	self.bookPageFooter:AddPromptedBinding(toggleTooltips);
+	self.bookPageFooter:AddPromptedBinding(unlearnProfession);
+	self.bookPageFooter:AddPromptedBinding(moreOptions);
+	self.bookPageFooter:AddStandardBackPrompt();
+	self.bookPageFooter:AddStandardSelectPrompt();
+	self.bookPageFooter:SetAnchorOffsets(0, -5);
+	self.bookPageFooter:Finalize();
+end
+
+function ProfessionsMixin:GetRecipeMoreOptions()
+	local function ToggleRecipeFavoriteStatus()
+		local favoriteButton = self.CraftingPage.SchematicForm.FavoriteButton;
+		favoriteButton:Click();
+	end
+
+	local function CanFavoriteRecipe()
+		local favoriteButton = self.CraftingPage.SchematicForm.FavoriteButton;
+		return not favoriteButton:GetChecked();
+	end
+
+	local function ToggleRecipeTracking()
+		local trackRecipe = self.CraftingPage.SchematicForm.TrackRecipeCheckbox;
+		trackRecipe:Click();
+	end
+
+	local function CanTrackRecipe()
+		local trackRecipe = self.CraftingPage.SchematicForm.TrackRecipeCheckbox;
+		return not trackRecipe:GetChecked();
+	end
+
+	local function LinkRecipeInChat()
+		Menu.GetManager():CloseMenus();
+
+		local previousRecipeID = self.CraftingPage.RecipeList:GetPreviousRecipeID();
+		local link = C_TradeSkillUI.GetRecipeLink(previousRecipeID);
+
+		FocusChatAndInsertLink(link);
+	end
+
+	local function CanLinkRecipeInChat()
+		return self.CraftingPage.RecipeList:GetPreviousRecipeID();
+	end
+
+	local function SelectHighlightedElement()
+		local button = SmartNavigation:GetCurrentButton();
+
+		if button then
+			button:Click();
+		end
+	end
+
+	local recipeMoreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	recipeMoreOptions:SetMenuOpeningCallback(SelectHighlightedElement);
+	recipeMoreOptions:AddButtonContext("ButtonContext_ProfessionsRecipeButton");
+	recipeMoreOptions:AddTwoStateMoreActionsEntry(ADD_FAVORITE_STATUS, REMOVE_FAVORITE_STATUS, ToggleRecipeFavoriteStatus, CanFavoriteRecipe);
+	recipeMoreOptions:AddTwoStateMoreActionsEntry(PROFESSIONS_TRACK_RECIPE, PROFESSIONS_UNTRACK_RECIPE, ToggleRecipeTracking, CanTrackRecipe);
+	recipeMoreOptions:AddMoreActionsEntry(SOCIAL_SHARE_TEXT, LinkRecipeInChat, CanLinkRecipeInChat);
+
+	return recipeMoreOptions;
+end
+
+function ProfessionsMixin:GetReagentMoreOptions()
+	local function LinkInChat()
+		Menu.GetManager():CloseMenus();
+
+		local button = SmartNavigation:GetCurrentButton();
+		if not button then
+			return;
+		end
+
+		local reagent = button.GetReagent and button:GetReagent();
+		if not reagent then
+			return;
+		end
+
+		local link;
+		if reagent.itemID then
+			link = ItemUtil.GetItemHyperlink(reagent.itemID);
+		elseif reagent.currencyID then
+			link = C_CurrencyInfo.GetCurrencyLink(reagent.currencyID, 1);
+		end
+
+		FocusChatAndInsertLink(link);
+	end
+
+	local function CanLinkInChat()
+		local button = SmartNavigation:GetCurrentButton();
+		return button and button:IsShown();
+	end
+
+	local function OpenBagTo()
+		GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+		local button = SmartNavigation:GetCurrentButton();
+		if not button then
+			return;
+		end
+
+		local reagent = button.GetReagent and button:GetReagent();
+		local itemID = reagent and reagent.itemID;
+		if not itemID then
+			return;
+		end
+
+		OpenBackpack();
+		GamepadMode.FrameControlsManager:FocusFrame(ContainerFrameCombinedBags);
+		ContainerFrameCombinedBags:SetFocusByItemID(itemID);
+	end
+
+	local function CanOpenBagTo()
+		local button = SmartNavigation:GetCurrentButton();
+		if not button then
+			return;
+		end
+
+		local reagent = button.GetReagent and button:GetReagent();
+		if not reagent then
+			return;
+		end
+
+		return SearchBagsForFirstItem(reagent.itemID) >= 0;
+	end
+
+	local function CanSearchAuctionHouse()
+		return AuctionHouseFrame and AuctionHouseFrame:IsVisible();
+	end
+
+	local function SearchAuctionHouse()
+		GamepadMode.FrameControlsManager:UnsuspendAllFrames();
+		local button = SmartNavigation:GetCurrentButton();
+		if not button then
+			return;
+		end
+
+		local reagent = button.GetReagent and button:GetReagent();
+		local itemID = reagent and reagent.itemID or 0;
+		local itemName = C_Item.GetItemInfo(itemID);
+
+		if not itemName then
+			return;
+		end
+
+		AuctionHouseFrame:SetSearchText(itemName);
+		AuctionHouseFrame.SearchBar.SearchButton:Click();
+		GamepadMode.FrameControlsManager:FocusFrame(AuctionHouseFrame);
+	end
+	
+	local reagentMoreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	reagentMoreOptions:AddButtonContext("ButtonContext_ProfessionsReagentButton");
+	reagentMoreOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_SEE_IN_BAG, OpenBagTo, CanOpenBagTo);
+	reagentMoreOptions:AddMoreActionsSearchEntry(BUTTON_LAG_AUCTIONHOUSE, SearchAuctionHouse, CanSearchAuctionHouse);
+	reagentMoreOptions:AddMoreActionsEntry(SOCIAL_SHARE_TEXT, LinkInChat, CanLinkInChat);
+
+	return reagentMoreOptions;
+end
+
+function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
+	local function OpenFilter()
+		local filter = self.CraftingPage.RecipeList.FilterDropdown;
+		filter:MouseDown();
+		filter:MouseUp();
+	end
+
+	local function FocusSearchBox()
+		local searchBox = self.CraftingPage.RecipeList.SearchBox;
+		if searchBox.GamepadFocusIcon:IsShown() then
+			SmartNavigation:SelectButton(searchBox);
+			searchBox:SetFocus();
+		end
+	end
+	local function ShouldShowFocusSearchBox()
+		local button = SmartNavigation:GetCurrentButton();
+		return button ~= self.CraftingPage.RecipeList.SearchBox;
+	end
+	
+	local function CreateAll()
+		self.CraftingPage.CreateAllButton:Click();
+	end
+
+	local function Create()
+		self.CraftingPage.CreateButton:Click();
+	end
+
+	local function CanCreate()
+		return self.CraftingPage.CreateButton:IsEnabled();
+	end
+
+	local function SetAmount()
+		local targetFrame = self.CraftingPage.GamepadCreateMultiple;
+		targetFrame.SplitStack = function(button, amount)
+			self.CraftingPage.CreateMultipleInputBox:SetValue(amount);
+			GamepadMode.FrameControlsManager:UnsuspendFrame();
+		end
+
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		local maxValue = self.CraftingPage.CreateMultipleInputBox:GetMaxValue();
+		StackSplitFrame:OpenStackSplitFrame(maxValue, targetFrame, "BOTTOMRIGHT", "TOPRIGHT");
+
+		GamepadMode.FrameControlsManager:DismissOnUnfocus(StackSplitFrame);
+		GamepadMode.FrameControlsManager:FrameShown(StackSplitFrame);
+
+		self.CraftingPage:Update();
+	end
+
+	local function CanSetAmount()
+		return self.CraftingPage.CreateMultipleInputBox:IsEnabled();
+	end
+
+	-- Filter
+	local filterDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, OpenFilter, nil);
+	filterDropdown:SetCustomPromptFrame(self.CraftingPage.RecipeList.FilterDropdown.GamepadFocusIcon);
+
+	-- Search
+	local focusSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, FocusSearchBox, nil);
+	focusSearchBox:SetCustomPromptFrame(self.CraftingPage.RecipeList.SearchBox.GamepadFocusIcon);
+	focusSearchBox:AddCondition(ShouldShowFocusSearchBox);
+	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	-- Create / Create All
+	local create = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, Create, CreateAll, CONTEXT_ACTION_LABEL_CREATE_ALL);
+	create:AddCondition(CanCreate);
+	self.gamepadCreateAllIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateAllButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.0), });
+	GamepadMode.SetGamepadIconShown(self.gamepadCreateAllIcon, true);
+	self.gamepadCreateIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.0),  });
+	GamepadMode.SetGamepadIconShown(self.gamepadCreateIcon, true);
+
+	-- Adjust Create Amount
+	self.adjustAmount = GamepadMode.CreateBindingGroup("ProfessionsCreateMultiple");
+	self.adjustAmount:AddFunctionBinding(GAMEPAD_STICK_RIGHT_PRESS, SetAmount);
+
+	-- 'More' Menus
+	local recipeMoreOptions = self:GetRecipeMoreOptions();
+	local reagentMoreOptions = self:GetReagentMoreOptions();
+
+	self.craftingPageFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ProfessionsCraftingPageFooter");
+	self.craftingPageFooter:AddPromptedBinding(toggleTooltips);
+	self.craftingPageFooter:AddPromptedBinding(filterDropdown);
+	self.craftingPageFooter:AddPromptedBinding(focusSearchBox);
+	self.craftingPageFooter:AddPromptedBinding(create);
+	self.craftingPageFooter:AddPromptedBinding(recipeMoreOptions);
+	self.craftingPageFooter:AddPromptedBinding(reagentMoreOptions);
+	self.craftingPageFooter:AddStandardFrameControlManagerBindings(self);
+	self.craftingPageFooter:AddStandardBackPrompt();
+	self.craftingPageFooter:AddStandardSelectPrompt();
+	self.craftingPageFooter:SetAnchorOffsets(0, -5);
+	self.craftingPageFooter:Finalize();
+end
+
+function ProfessionsMixin:SetUpGamepad()
+	local toggleTooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
+
+	self:SetUpGamepadBookPageFooter(toggleTooltips);
+	self:SetUpGamepadCraftingPageFooter(toggleTooltips);
+
+	EventRegistry:RegisterCallback(
+		"SKILL_LINES_CHANGED",
+		self.RefreshBookPageSmartNavJumps,
+	self);
+
+	EventRegistry:RegisterCallback(
+		"Professions.RecipeSelected",
+		function(_, page, recipeInfo)
+			UpdateSmartNavFocus_RecipePage(page, recipeInfo);
+		end,
+	self);
+
+	EventRegistry:RegisterCallback(
+		"Professions.CraftingDisplayRefresh",
+		function()
+			GamepadMode.UpdateGamepadIconAnchor(self.gamepadCreateIcon);
+			GamepadMode.UpdateGamepadIconAnchor(self.gamepadCreateAllIcon);
+		end,
+	self);
+end
+
+function ProfessionsMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+
+	local professionFrame1 = self.BookPage.ProfessionsContentFrame.PrimaryProfession1;
+	professionFrame1.StatusBar.overrideWidth = 400;
+	professionFrame1.StatusBar:OnLoad();
+	professionFrame1.StatusBar:SetPoint("RIGHT", professionFrame1, "RIGHT", -80, 0);
+	professionFrame1.UnlearnButton:ClearAllPoints();
+	professionFrame1.UnlearnButton:SetPoint("LEFT", professionFrame1.StatusBar, "RIGHT", 15, -4);
+
+	local professionFrame2 = self.BookPage.ProfessionsContentFrame.PrimaryProfession2;
+	professionFrame2.StatusBar.overrideWidth = 400;
+	professionFrame2.StatusBar:OnLoad();
+	professionFrame2.StatusBar:SetPoint("RIGHT", professionFrame2, "RIGHT", -80, 0);
+	professionFrame2.UnlearnButton:ClearAllPoints();
+	professionFrame2.UnlearnButton:SetPoint("LEFT", professionFrame2.StatusBar, "RIGHT", 15, -4);
+
+	self.CraftingPage.RecipeList.SearchBox:ClearAllPoints();
+	self.CraftingPage.RecipeList.SearchBox:SetPoint("TOPLEFT", self.CraftingPage.RecipeList, "TOPLEFT", 42, -8);
+	self.CraftingPage.RecipeList.SearchBox:SetPoint("RIGHT", self.CraftingPage.RecipeList.FilterDropdown.GamepadFocusIcon, "LEFT", -2, 0);
+	self.CraftingPage.CreateAllButton:SetWidth(130);
+	self.CraftingPage.CreateButton:SetWidth(130);
+	self.CraftingPage.CreateAllButton.smartNavigationIgnored = true;
+	self.CraftingPage.CreateButton.smartNavigationIgnored = true;
+	self.CraftingPage.GamepadCreateMultiple.ControlDescText.FontString:SetWidth(60);
+	self.CraftingPage.GamepadCreateMultiple.ControlDescText.FontString:SetMaxLines(2);
+	self.CraftingPage.LinkButton:Hide();
+
+	local tabs = { self.ProfessionsOverviewTab };
+	for _, tab in ipairs(self.rightProfessionTabs) do
+		table.insert(tabs, tab);
+	end
+
+	self.TabIndicators:SetUpTabs(tabs);
+end
+
+function ProfessionsMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function ProfessionsMixin:FocusGamepad()
+	self.TabIndicators:Show();
+
+	if self.selectedGamepadTabID then
+		self.TabIndicators:SetCurrentIndex(self.selectedGamepadTabID);
+		self.TabIndicators:UpdateTabIndicators();
+	end
+
+	self:UpdateSmartNavFocus();
+end
+
+function ProfessionsMixin:UnfocusGamepad()
+	self.bookPageFooter:HideAndDeactivateBindings();
+	self.craftingPageFooter:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.adjustAmount);
+
+	self.TabIndicators:Hide();
+end
+
+function ProfessionsMixin:UpdateSmartNavFocus()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	if self.BookPage:IsShown() then
+		self.craftingPageFooter:HideAndDeactivateBindings();
+		self.bookPageFooter:ShowAndActivateBindings();
+		UpdateSmartNavFocus_BookPage(self.BookPage.ProfessionsContentFrame);
+	elseif self.CraftingPage:IsShown() then
+		self.bookPageFooter:HideAndDeactivateBindings();
+		self.craftingPageFooter:ShowAndActivateBindings();
+		GamepadMode.ActivateBindingGroup(self.adjustAmount, true);
+		UpdateSmartNavFocus_RecipePage(self.CraftingPage);
+	end
 end

@@ -150,10 +150,10 @@
 			<OnClick function="UIPanelCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="UIPanelCloseButtonDefaultAnchors" inherits="UIPanelCloseButton" virtual="true">
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="1" y="0"/>
-		</Anchors>
+	<Button name="UIPanelCloseButtonDefaultAnchors" mixin="UIPanelCloseButtonDefaultAnchorsMixin" inherits="UIPanelCloseButton" virtual="true">
+		<Scripts>
+			<OnLoad method= "OnLoad" inherit="append"/>
+		</Scripts>
 	</Button>
 	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
@@ -475,12 +475,14 @@
 	It makes its own nine-slice border.
 *******************************************************************************
 -->
-	<Frame name="DefaultPanelBaseTemplate" mixin="DefaultPanelMixin" virtual="true">
+	<Frame name="DefaultPanelBaseTemplate" mixin="DefaultPanelMixin, FocusFramesInterfaceMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
 		</KeyValues>
 		<Size x="338" y="424"/>
 		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
 			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
 				<Anchors>
@@ -499,7 +501,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="DefaultDialogPanelTemplate" mixin="FocusFramesInterfaceMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+		</KeyValues>
+		<Size x="338" y="424"/>
+		<Frames>
+			<Frame parentKey="FrameGlow" inherits="DialogFrameGlowTemplate" hidden="true" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
 		</Frames>
 	</Frame>
 
@@ -541,9 +563,10 @@
 	This is an empty frame with space for a portrait/icon in the top left corner.
 *******************************************************************************
 -->
-	<Frame name="PortraitFrameBaseTemplate" mixin="PortraitFrameMixin" virtual="true">
+	<Frame name="PortraitFrameBaseTemplate" mixin="PortraitFrameMixin, FocusFramesInterfaceMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
+			<!-- <KeyValue key="FocusFrameParent" value="..." type="string"/> -->
 		</KeyValues>
 		<Size x="338" y="424"/>
 		<Frames>
@@ -573,6 +596,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
 			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
 				<Anchors>
@@ -591,6 +615,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
 		</Frames>
 	</Frame>
 
@@ -979,7 +1006,11 @@
 	<Button name="PanelTopTabButtonTemplate" inherits="PanelTabButtonTemplate" mixin="PanelTopTabButtonMixin" virtual="true"/>
 
 	<Frame name="LargeSideTabButtonTemplate" mixin="SidePanelTabButtonMixin" virtual="true">
-		<Size x="43" y="55"/>
+		<!--<KeyValues>
+			<KeyValue key="fillToInterior" value="false" type="boolean"/>
+			<KeyValue key="interiorExtent" value="50" type="number"/>
+		</KeyValues>-->
+		<!-- Size is set in SidePanelTabButtonMixin:InitializeSizeForTabArt because Camelot tabs are wider -->
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="common-sidetab" useAtlasSize="true">
@@ -990,10 +1021,16 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER" x="-2"/>
-					</Anchors>
+					<!-- Anchored in SidePanelTabButtonMixin:InitializeIconAnchoring because Camelot tabs are wider -->
 				</Texture>
+				<MaskTexture parentKey="Mask" atlas="common-sidetab-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="common-sidetab-selected" useAtlasSize="true">
@@ -1022,6 +1059,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
@@ -1366,10 +1404,21 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Instructions" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontDisableLarge">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.35" g="0.35" b="0.35"/>
+				</FontString>
+			</Layer>
 		</Layers>
 		<FontString inherits="NumberFont_Shadow_Large"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnTextChanged method="OnTextChanged"/>
 		</Scripts>
 	</EditBox>
 
@@ -1467,27 +1516,41 @@
 		</Frames>
 	</Button>
 
+	<Button name="SteppersIncrementButtonTemplate" inherits="WowStyle2IconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-next"/>
+			<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-next-disabled"/>
+		</KeyValues>		
+	</Button>
+
+	<Button name="SteppersDecrementButtonTemplate" inherits="WowStyle2IconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-back"/>
+			<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-back-disabled"/>
+		</KeyValues>
+	</Button>
+	
 	<!-- 'Dropdown' needs to be defined in the frame inheriting this template.-->
 	<Frame name="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersMixin" virtual="true">
 		<Size x="223" y="38"/>
 		<Frames>
-			<!--<DropDownToggleButton parentKey="Dropdown">-->
-			<Button parentKey="IncrementButton" inherits="WowStyle2IconButtonTemplate">
-				<KeyValues>
-					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-next"/>
-					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-next-disabled"/>
-				</KeyValues>
-			</Button>
-			<Button parentKey="DecrementButton" inherits="WowStyle2IconButtonTemplate">
-				<KeyValues>
-					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-back"/>
-					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-back-disabled"/>
-				</KeyValues>
-			</Button>
+			<Button parentKey="IncrementButton" inherits="SteppersIncrementButtonTemplate"/>
+			<Button parentKey="DecrementButton" inherits="SteppersDecrementButtonTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
+	</Frame>
+	
+	<Frame name="DropdownWithSteppersLargeTemplate" mixin ="DropdownWithSteppersMixin"  virtual="true">
+		<Size x="265" y="38"/>
+		<Frames>
+			<Button parentKey="IncrementButton" inherits="SteppersIncrementButtonTemplate" scale="1.7"/>
+			<Button parentKey="DecrementButton" inherits="SteppersDecrementButtonTemplate" scale="1.7"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>		
 	</Frame>
 
 	<!-- See DropdownWithSteppersTemplate for dropdown requirements. -->
@@ -1497,6 +1560,24 @@
 				<FontString parentKey="Label" font="GameFontHighlightMed2">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DropdownWithSteppersAndLabelLargeTemplate" inherits="DropdownWithSteppersLargeTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="useDropdownWithSteppersDefaultSmartNavCursorAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="SystemFont_Shadow_Large">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DecrementButton" relativePoint="TOPLEFT" x="2" y="4"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2240,6 +2321,30 @@
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture atlas="questlog-icon-setting" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DropdownButton>
+
+	<DropdownButton name="UIPanelArrowDropdownButtonTemplate" mixin="UIPanelIconDropdownButtonMixin" virtual="true">
+		<Size x="15" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="common-dropdown-a-button" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="common-dropdown-a-button" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

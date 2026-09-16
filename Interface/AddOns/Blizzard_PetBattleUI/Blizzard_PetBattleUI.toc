@@ -1,6 +1,6 @@
 ## Title: Blizzard Pet Battle UI
 ## LoadOnDemand: 0
-## AllowLoadGameType: standard, mists
+## AllowLoadGameType: standard, camelot, mists
 ## Dependencies: Blizzard_Colors, Blizzard_MicroMenu, Blizzard_RaidWarning, Blizzard_UIModes
 Shared\Blizzard_PetBattleUIPatchwerks.xml
 Shared\Blizzard_PetBattleUI.lua

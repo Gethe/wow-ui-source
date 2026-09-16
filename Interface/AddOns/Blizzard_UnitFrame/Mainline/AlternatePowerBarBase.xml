@@ -1,9 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="AlternatePowerBarBase.lua"/>
 
 	<StatusBar name="AlternatePowerBarBaseTemplate" mixin="AlternatePowerBarBaseMixin" inherits="TextStatusBar" virtual="true">
-		<!-- 
+		<!--
 			powerName: Key used for looking up art info for a particular bar type
 			baseMixin: The ui-context-specific base mixin used by a particular template (ex: PlayerFrameAlternatePowerBarBaseTemplate or ClassNameplateAlternatePowerBarBaseMixin)
 					   Provides bar implementations with a way to generically call the right base implementation within an overriden function (ex: self.baseMixin.Initialize(self); )

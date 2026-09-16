@@ -533,6 +533,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "RegionalUniqueNamesEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ReportPlayerIsPVPAFK",
 			Type = "Function",
 			HasRestrictions = true,
@@ -593,6 +602,7 @@ local Unit =
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "style", Type = "CursorStyle", Nilable = true },
 				{ Name = "includeLowPriority", Type = "bool", Nilable = true },
+				{ Name = "preferGamepadIcon", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -683,6 +693,7 @@ local Unit =
 			{
 				{ Name = "attackSpeed", Type = "number", Nilable = false },
 				{ Name = "offhandAttackSpeed", Type = "number", Nilable = true },
+				{ Name = "rangedAttackSpeed", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -1055,6 +1066,23 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDefenseSkill",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "base", Type = "number", Nilable = false },
+				{ Name = "modifier", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -1331,6 +1359,52 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHasEffectivelyTankAura",
+			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHasLootInteraction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHasMouseoverHighlight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1987,6 +2061,21 @@ local Unit =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsInInteractRange",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -2919,6 +3008,25 @@ local Unit =
 			Returns =
 			{
 				{ Name = "realmRelationship", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitResistance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "damageClass", Type = "Damageclass", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseResistance", Type = "number", Nilable = false },
+				{ Name = "realResistance", Type = "number", Nilable = false },
+				{ Name = "effectiveResistance", Type = "number", Nilable = false },
+				{ Name = "bonusResistance", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -4159,6 +4267,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitHappiness",
+			Type = "Event",
+			LiteralName = "UNIT_HAPPINESS",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitHealAbsorbAmountChanged",
 			Type = "Event",
 			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
@@ -4323,6 +4441,16 @@ local Unit =
 			Name = "UnitPetExperience",
 			Type = "Event",
 			LiteralName = "UNIT_PET_EXPERIENCE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPetTrainingPoints",
+			Type = "Event",
+			LiteralName = "UNIT_PET_TRAINING_POINTS",
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4797,9 +4925,9 @@ local Unit =
 		{
 			Name = "PhaseReason",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Phasing", Type = "PhaseReason", EnumValue = 0 },
@@ -4807,6 +4935,7 @@ local Unit =
 				{ Name = "WarMode", Type = "PhaseReason", EnumValue = 2 },
 				{ Name = "ChromieTime", Type = "PhaseReason", EnumValue = 3 },
 				{ Name = "TimerunningHwt", Type = "PhaseReason", EnumValue = 4 },
+				{ Name = "RuleSet", Type = "PhaseReason", EnumValue = 5 },
 			},
 		},
 		{

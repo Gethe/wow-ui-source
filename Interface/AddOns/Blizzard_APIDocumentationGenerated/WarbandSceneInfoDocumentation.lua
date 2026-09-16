@@ -88,6 +88,15 @@ local WarbandSceneInfo =
 				{ Name = "favorite", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "WarbandScenesAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areWarbandScenesAvailable", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

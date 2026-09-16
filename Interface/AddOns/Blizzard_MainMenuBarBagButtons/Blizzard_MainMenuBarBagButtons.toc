@@ -1,0 +1,15 @@
+## Title: Blizzard_MainMenuBarBagButtons
+## Dep: Blizzard_CharacterFrame [AllowLoadGameType classic]
+Shared\MainMenuBarBagManager.lua
+Classic\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType vanilla, tbc]
+Wrath\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType wrath, cata]
+Mists\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType mists]
+Shared\MainMenuBarBagButtons.lua [AllowLoadGameType mainline]
+[Family]\MainMenuBarBagButtons.lua [ExcludeLoadGameType camelot]
+[Game]\MainMenuBarBagButtons.lua [AllowLoadGameType camelot]
+Shared\BagsBar.lua
+Classic\BagsBarOverrides.lua [AllowLoadGameType classic]
+Classic\Keyring.lua [AllowLoadGameType classic]
+Mainline\MainMenuBarBagButtonTemplates.xml [AllowLoadGameType mainline]
+[Family]\MainMenuBarBagButtons.xml [ExcludeLoadGameType camelot]
+[Game]\MainMenuBarBagButtons.xml [AllowLoadGameType camelot]

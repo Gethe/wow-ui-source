@@ -1,0 +1,6 @@
+## Title: Blizzard_ExpansionTrial
+## LoadOnDemand: 1
+## ExcludeLoadGameType: camelot
+[Family]\Blizzard_ExpansionTrial_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_ExpansionTrial.lua [AllowLoadGameType mainline]
+[Family]\Blizzard_ExpansionTrial.xml [AllowLoadGameType mainline]

@@ -1,7 +1,7 @@
 ## Title: Blizzard_ActionBarController
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar, Blizzard_OverrideActionBar
+## Dependencies: Blizzard_ActionBar, Blizzard_OverrideActionBar, Blizzard_StatusTrackingBar
 ## AllowLoad: Game
 ActionBarController.lua
 ActionBarController.xml

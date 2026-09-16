@@ -8,6 +8,7 @@
 ## Dep: Blizzard_GameMenuEsc
 ## LoadOnDemand: 1
 ## AllowLoadGameType: mainline
+## ExcludeLoadGameType: camelot
 [Family]\Blizzard_GarrisonUI_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_GarrisonBuildingUI.lua
 [Family]\Blizzard_GarrisonBuildingUI.xml
