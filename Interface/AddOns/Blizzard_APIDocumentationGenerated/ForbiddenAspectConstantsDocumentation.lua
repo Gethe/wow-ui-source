@@ -5,9 +5,9 @@ local ForbiddenAspectConstants =
 		{
 			Name = "ForbiddenAspect",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 13,
 			MinValue = 1,
-			MaxValue = 1024,
+			MaxValue = 4096,
 			Fields =
 			{
 				{ Name = "SetToDefaults", Type = "ForbiddenAspect", EnumValue = 1, Documentation = { "Restricts resetting this object to a default state. Implied automatically when any other forbidden aspect is set." } },
@@ -21,6 +21,8 @@ local ForbiddenAspectConstants =
 				{ Name = "ChangeAnimationTarget", Type = "ForbiddenAspect", EnumValue = 256, Documentation = { "Restricts APIs that can change the target object of an animation." } },
 				{ Name = "RemoveSecretAspects", Type = "ForbiddenAspect", EnumValue = 512, Documentation = { "Restricts APIs that clear secret aspects from objects." } },
 				{ Name = "ChangeParent", Type = "ForbiddenAspect", EnumValue = 1024, Documentation = { "Restricts APIs that change the parent of an object." } },
+				{ Name = "SetTexture", Type = "ForbiddenAspect", EnumValue = 2048, Documentation = { "Restricts APIs that set the texture on a texture object." } },
+				{ Name = "QueryRotation", Type = "ForbiddenAspect", EnumValue = 4096, Documentation = { "Restricts APIs that query texture rotation." } },
 			},
 		},
 	},
