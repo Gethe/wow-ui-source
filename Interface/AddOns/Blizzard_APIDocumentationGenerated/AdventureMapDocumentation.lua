@@ -17,6 +17,33 @@ local AdventureMap =
 			},
 		},
 		{
+			Name = "GetNumMapInsets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numMapInsets", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumQuestOffers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numQuestOffers", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumZoneChoices",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numZoneChoices", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestPortraitInfo",
 			Type = "Function",
 			MayReturnNothing = true,

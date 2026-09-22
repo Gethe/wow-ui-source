@@ -120,7 +120,7 @@ function HousingBlueprintExportFrameMixin:OnExportFailure(result)
 		errorText = ERR_HOUSING_RESULT_BLUEPRINT_GENERIC_EXPORT_ERROR;
 	end
 
-	self.InputContent:SetError(HOUSING_BLUEPRINT_EXPORT_ERROR_FMT:format(errorText));
+	self.InputContent:SetNoticeText(HOUSING_BLUEPRINT_EXPORT_ERROR_FMT:format(errorText), --[[isError=]]true);
 end
 
 function HousingBlueprintExportFrameMixin:IsOperationInProgress()
@@ -199,9 +199,15 @@ function HousingBlueprintExportInputContentMixin:UpdateLoadingState(isWaitingFor
 	self:UpdateSaveButton();
 end
 
-function HousingBlueprintExportInputContentMixin:SetError(errorText)
-	self.ErrorText:SetText(errorText);
-	self.ErrorText:SetShown(errorText and erroText ~= "");
+function HousingBlueprintExportInputContentMixin:SetNoticeText(text, isError)
+	self.ErrorText:SetText(text);
+	if text and text ~= "" then
+		local textColor = isError and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+		self.ErrorText:SetTextColor(textColor:GetRGB());
+		self.ErrorText:Show();
+	else
+		self.ErrorText:Hide();
+	end
 	self:MarkDirty();
 end
 
@@ -226,12 +232,12 @@ end
 function HousingBlueprintExportInputContentMixin:UpdateStairwellWarning(blueprintType, roomGUID)
 	if blueprintType == Enum.HousingBlueprintType.Room then
 		if C_HousingLayout.RoomHasStairs(roomGUID) then
-			self:SetError(HOUSING_BLUEPRINT_EXPORT_STAIRWELL_WARNING);
+			self:SetNoticeText(HOUSING_BLUEPRINT_EXPORT_STAIRWELL_WARNING, --[[isError=]]false);
 			return;
 		end
 	end
 
-	self:SetError("");
+	self:SetNoticeText("", --[[isError=]]false);
 end
 
 function HousingBlueprintExportInputContentMixin:UpdateSaveButton()

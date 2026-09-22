@@ -51,6 +51,7 @@ local RaidMarkers =
 		{
 			Name = "IsRaidMarkerActive",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

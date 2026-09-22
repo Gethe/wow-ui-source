@@ -3919,7 +3919,6 @@ Interface\AddOns\Blizzard_UnitFrame\Mainline\TargetFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrame.lua
-Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrameUtil.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.xml
 Interface\AddOns\Blizzard_UnitFrame\Shared\CompactPartyFrame.lua
@@ -3949,6 +3948,7 @@ Interface\AddOns\Blizzard_UnitFrame\Shared\TargetFrameAuraContainer.xml
 Interface\AddOns\Blizzard_UnitFrame\Shared\TargetFrameAuraShared.lua
 Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrame.xml
+Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrameUtil.lua
 Interface\AddOns\Blizzard_UnitPopupShared\Blizzard_UnitPopupShared_Mainline.toc
 Interface\AddOns\Blizzard_UnitPopupShared\Mainline\UnitPopupSharedButtonMixins.lua
 Interface\AddOns\Blizzard_UnitPopupShared\UnitPopupShared.lua

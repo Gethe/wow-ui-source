@@ -7,7 +7,7 @@ Mainline\BuilderSpenderFrame.lua
 Mainline\BuilderSpenderFrame.xml
 Mainline\UnitPowerBarAlt.xml
 Mainline\PowerBarColorUtil.lua
-Mainline\UnitFrameUtil.lua
+Shared\UnitFrameUtil.lua
 Shared\StatusBarOverlaySegment.lua
 Shared\StatusBarOverlaySegment.xml
 Shared\UnitFrame.lua

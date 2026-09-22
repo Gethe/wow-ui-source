@@ -166,6 +166,8 @@ function CooldownViewerItemMixin:OnSpellUpdateIconEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
+
 	if self:GetAuraSpellID() == self:GetLinkedSpell() then
 		-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent", "AuraSpell %s matches linked spell, clearing linked spell.", tostring(self:GetAuraSpellID()));
 		self:SetLinkedSpell(nil);
@@ -176,6 +178,7 @@ function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraUpdatedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraUpdatedEvent");
 	self:RefreshData();
 
 	-- Because active state may not have changed it's still required to check for pandemic time updates.
@@ -186,6 +189,7 @@ function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
 		if self:NeedsAddedAuraUpdate(aura) then
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
 			self:RefreshData();
 			break;
 		end
@@ -527,18 +531,16 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTriggerTime(auraData, time
 	auraData = auraData or self:GetAuraDataCached();
 	timeNow = timeNow or GetTime();
 	local isActive = auraData and (auraData.expirationTime > timeNow);
-	if isActive then
-		-- If the related spell could be cast again right now, what would the new duration be? This informs the pandemic-time alert.
-		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local baseDuration = C_UnitAuras.GetAuraBaseDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local carriedOverToNewCast = (extendedDuration and baseDuration) and (extendedDuration - baseDuration) or 0;
-		local allowPandemicAlert = carriedOverToNewCast > 0 and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime);
+	if isActive and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime) then
+		local carriedOverDuration = C_UnitAuras.GetRefreshCarryOverDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID()) or 0;
+		local allowPandemicAlert = carriedOverDuration > 0;
 
 		if allowPandemicAlert then
-			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverToNewCast, auraData.expirationTime);
+			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverDuration, auraData.expirationTime);
 		end
 
-		-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTriggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Spell[%d], AuraSpell[%d] Duration[%.2f] AStart[%.2f]: PEnd[%.2f] - PStart[%.2f] = Carry[%.2f], NextAllowedAlert[%.2f]", self:GetSpellID(), auraData.spellId, auraData.duration, auraData.expirationTime - auraData.duration, auraData.expirationTime, auraData.expirationTime - carriedOverDuration, carriedOverDuration, (self.nextAvailableTimeToPlayPandemicAlert or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Callstack:\n%s", debugstack());
 
 		return allowPandemicAlert;
 	end
@@ -550,8 +552,6 @@ function CooldownViewerItemMixin:SetPandemicAlertTriggerTime(timeNow, pandemicSt
 	self.pandemicAlertTriggerTime = pandemicStartTime;
 	self.pandemicStartTime = pandemicStartTime;
 	self.pandemicEndTime = pandemicEndTime;
-
-	-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
 
 	self:CheckPandemicTimeDisplay(timeNow);
 	self:RefreshOnUpdateRegistration();

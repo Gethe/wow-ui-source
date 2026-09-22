@@ -20,10 +20,6 @@ CVarCallbackRegistry:SetCVarCachable(useClassColorsCvarName);
 local spellDiminishEnemiesCvarName = "spellDiminishPVPEnemiesEnabled";
 CVarCallbackRegistry:SetCVarCachable(spellDiminishEnemiesCvarName);
 
-local function GetUseClassColors()
-	return CVarCallbackRegistry:GetCVarValueBool(useClassColorsCvarName);
-end
-
 local function GetArenaSize()
 	-- Use opponent specs first since we know those before the match has started
 	local numOpponentSpecs = GetNumArenaOpponentSpecs();
@@ -56,27 +52,6 @@ end
 
 local function GetPetUnitToken(unitIndex)
 	return "arenapet"..unitIndex;
-end
-
-local function SetRoleIconTexture(texture, role)
-	if role and (role == "TANK" or role == "HEALER" or role == "DAMAGER") then
-		texture:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
-		texture:SetTexCoord(GetTexCoordsForOldRoleSmallCircle(role));
-		texture:Show();
-		texture:SetSize(12, 12);
-	else
-		texture:Hide();
-		texture:SetSize(1, 12);
-	end
-end
-
-local function SetFrameBarColor(barTexture, class)
-	local r, g, b = 1.0, 0.0, 0.0;
-	if GetUseClassColors() and class then
-		local classColor = RAID_CLASS_COLORS[class];
-		r, g, b = classColor.r, classColor.g, classColor.b;
-	end
-	barTexture:SetVertexColor(r, g, b);
 end
 
 function CompactArenaFrame_Generate()
@@ -332,21 +307,15 @@ end
 PreMatchArenaUnitFrameMixin = {};
 
 function PreMatchArenaUnitFrameMixin:Update(index)
-	local specID, gender = GetArenaOpponentSpec(index);
-	if specID and specID > 0 then
-		local _, specName, _, specIcon, role, class, className = GetSpecializationInfoByID(specID, gender);
+	local hasSpec = UnitFrameUtil.UpdateArenaOpponentSpecDisplay({
+		specNameText = self.SpecNameText,
+		classNameText = self.ClassNameText,
+		specPortrait = self.SpecPortraitTexture,
+		roleIcon = self.RoleIconTexture,
+		barTexture = self.BarTexture,
+	}, index);
 
-		self.SpecNameText:SetText(specName);
-		self.ClassNameText:SetText(className);
-
-		self.SpecPortraitTexture:SetTexture(specIcon);
-		SetRoleIconTexture(self.RoleIconTexture , role);
-		SetFrameBarColor(self.BarTexture, class);
-
-		self:Show();
-	else
-		self:Hide();
-	end
+	self:SetShown(hasSpec);
 end
 
 ArenaUnitFrameCcRemoverMixin = {};
@@ -565,10 +534,12 @@ function StealthedArenaUnitFrameMixin:SetUnitFrame(unitFrame)
 
 	CompactUnitFrame_SubscribeToVisibilityChanged(self.unitFrame, self, self.UpdateShownState);
 
-	local unitClassInfo = self:GetUnitClassInfo();
-	SetRoleIconTexture(self.RoleIconTexture , unitClassInfo.role);
-	SetFrameBarColor(self.BarTexture, unitClassInfo.class);
-	self:UpdateName(unitClassInfo);
+	UnitFrameUtil.UpdateArenaOpponentSpecDisplay({
+		roleIcon = self.RoleIconTexture,
+		barTexture = self.BarTexture,
+	}, self.unitFrame.unitIndex);
+
+	self:UpdateName();
 	self:UpdateShownState();
 end
 
@@ -576,30 +547,13 @@ function StealthedArenaUnitFrameMixin:HasValidUnitFrame()
 	return self.unitFrame and self.unitFrame.unitToken and self.unitFrame.unitIndex;
 end
 
-function StealthedArenaUnitFrameMixin:GetUnitClassInfo()
-	local unitClassInfo = {
-		role = nil;
-		class = nil;
-		specName = nil;
-		className = nil,
-	};
-	if self.unitFrame and self.unitFrame.unitIndex then
-		local specID, gender = GetArenaOpponentSpec(self.unitFrame.unitIndex);
-		if specID and specID > 0 then
-			local _;
-			_, unitClassInfo.specName, _, _, unitClassInfo.role, unitClassInfo.class, unitClassInfo.className = GetSpecializationInfoByID(specID, gender);
-		end
+function StealthedArenaUnitFrameMixin:UpdateName()
+	if not self.unitFrame or not self.unitFrame.unitToken then
+		return;
 	end
 
-	return unitClassInfo;
-end
-
-function StealthedArenaUnitFrameMixin:UpdateName(unitClassInfo)
-	local name;
-	if self.unitFrame and self.unitFrame.unitToken then
-		name = GetUnitName(self.unitFrame.unitToken);
-	end
-	self.NameText:SetText(name or unitClassInfo.specName or unitClassInfo.className or "");
+	-- The name falls back to the spec/class name, which are secret, so the whole decision has to happen inside the delegate.
+	UnitFrameUtil.UpdateArenaOpponentSpecDisplayName(self.NameText, self.unitFrame.unitIndex, GetUnitName(self.unitFrame.unitToken));
 end
 
 function StealthedArenaUnitFrameMixin:UpdateShownState()

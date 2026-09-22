@@ -408,6 +408,27 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetRefreshCarryOverDuration",
+			Type = "Function",
+			RequiresUnitAuraAccess = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the client-predicted amount of time that a new spellcast of the same spell would carry over to the new application of that aura. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "newDuration", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRefreshExtendedDuration",
 			Type = "Function",
 			RequiresUnitAuraAccess = true,

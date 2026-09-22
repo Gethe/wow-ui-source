@@ -18,6 +18,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "ClearSVG",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.SetTexture } },
 
 			Arguments =
 			{
@@ -168,6 +169,7 @@ local SimpleTextureBaseAPI =
 			Name = "GetRotation",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.Rotation },
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryRotation } },
 
 			Arguments =
 			{
@@ -401,6 +403,7 @@ local SimpleTextureBaseAPI =
 			Name = "SetColorTexture",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.SetTexture } },
 
 			Arguments =
 			{
@@ -536,6 +539,7 @@ local SimpleTextureBaseAPI =
 			Name = "SetSVG",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.SetTexture } },
 
 			Arguments =
 			{
