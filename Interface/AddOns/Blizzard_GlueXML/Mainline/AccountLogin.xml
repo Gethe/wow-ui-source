@@ -317,6 +317,7 @@
 							<OnLoad function="WoWAccountSelect_OnLoad"/>
 							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
 							<OnShow function="WoWAccountSelect_OnShow"/>
+							<OnHide function="WoWAccountSelect_OnHide"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="CaptchaEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">

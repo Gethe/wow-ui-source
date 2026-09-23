@@ -411,6 +411,12 @@ function WoWAccountSelect_OnShow(self)
 	end
 end
 
+function WoWAccountSelect_OnHide(self)
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(AccountLogin.UI.WoWAccountSelectDialog);
+	end
+end
+
 function WoWAccountSelect_SelectAccount(selectedIndex)
 	local dialog = AccountLogin.UI.WoWAccountSelectDialog;
 	dialog:Hide();

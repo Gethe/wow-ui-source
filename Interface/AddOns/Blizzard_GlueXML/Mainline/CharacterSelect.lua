@@ -3173,12 +3173,17 @@ function CharacterSelectFrameMixin:OnGamepadCloseButton()
 	end
 
 	local element = SmartNavigation:GetCurrentButton();
-	if element and element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton" then
-		if element and element.ClearFocus then
-			element:ClearFocus(); 
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	if element then
+		if (element == searchBox) and not element:HasFocus() then
+			CharacterSelect_Exit();
+			return;
 		end
-		SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
-		return;
+
+		if element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton" then
+			SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
+			return;
+		end
 	end
 
 	CharacterSelect_Exit();
